@@ -4310,29 +4310,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public void updateSkipPaymentWhiteLabel(Long userId, Long applicationId, Integer businessTypeId, Long orgId,
-			Long fpProductId) throws Exception {
-
-		logger.info("Enter in Update Skip Payment Details for WhiteLabel!!");
-
-		// UPDATE PAYMENT STATE IN LOAN MASTER
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-
-		if (loanApplicationMaster == null) {
-			throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + applicationId);
-		}
-		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
-		loanApplicationRepository.save(loanApplicationMaster);
-
-		// UPDATE CONNECT POST PAYMENT
+			Long fpProductId) throws LoansException {
 		try {
-			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,
-					loanApplicationMaster.getBusinessTypeId());
+			logger.info("Enter in Update Skip Payment Details for WhiteLabel!!");
 
-			if (!CommonUtils.isObjectListNull(connectResponse)) {
-				logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
-				logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
+			// UPDATE PAYMENT STATE IN LOAN MASTER
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+
+			if (loanApplicationMaster == null) {
+				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + applicationId);
+			}
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+			loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			loanApplicationRepository.save(loanApplicationMaster);
+
+			// UPDATE CONNECT POST PAYMENT
+			try {
+				ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,
+						loanApplicationMaster.getBusinessTypeId());
+
+				if (!CommonUtils.isObjectListNull(connectResponse)) {
+					logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
+					logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
 				/*if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
@@ -4343,239 +4343,248 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}*/
 
-				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
+					if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+					}
+				} else {
+					logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
+					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 				}
-			} else {
-				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
-		}
 
-		// TRUE MATCHES PROPOSAL
-		try {
-			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
-					.activateProposalOnPayment(applicationId);
-			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
-				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new LoansException(proposalMappingResponse.getMessage());
+			// TRUE MATCHES PROPOSAL
+			try {
+				ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
+						.activateProposalOnPayment(applicationId);
+				if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+					logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
+					if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+						throw new LoansException(proposalMappingResponse.getMessage());
+					}
+				} else {
+					logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
+					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 				}
-			} else {
-				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+
+			// Sending In-Principle for WhiteLabel
+			// ====================================================================
+			GatewayRequest gatewayRequest = new GatewayRequest();
+
+			gatewayRequest.setUserId(userId);
+			gatewayRequest.setApplicationId(applicationId);
+			gatewayRequest.setBusinessTypeId(businessTypeId);
+
+			Boolean status = null;
+			status = gatewayClient.skipPayment(gatewayRequest);
+			logger.info("In-Principle send for WhiteLabel Status=====>" + status);
+
+			// ====================================================================
+
+			ProposalMappingResponse response = null;
+			Map<String, Object> proposalresp = null;
+			try {
+				logger.info("Calling Proposal details client for getting In-principle response for applicationId:-"
+						+ applicationId);
+				response = proposalDetailsClient.getInPricipleById(applicationId);
+				logger.info("Got Inprinciple response from Proposal Details Client" + response);
+				proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
+						Map.class);
+			} catch (Exception e) {
+				logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
+			}
+
+			LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+
+			PaymentRequest paymentRequest = new PaymentRequest();
+			paymentRequest.setApplicationId(applicationId);
+			paymentRequest.setNameOfEntity(loansRequest.getUserName());
+
+			// ==================Sending Mail to all Checker's & Maker's & HO & BO of that
+			// branch after FS recieves In-principle Approval==================
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
+			}
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
+						orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG,e);
+			}
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG,e);
+			}
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG,e);
+			}
+
+			// =======================================================================================================================================
+
+			logger.info("Exit on Update Skip Payment WhiteLabel");
+		}
+		catch (Exception e){
+			throw new LoansException(e);
 		}
 
-		// Sending In-Principle for WhiteLabel
-		// ====================================================================
-		GatewayRequest gatewayRequest = new GatewayRequest();
-
-		gatewayRequest.setUserId(userId);
-		gatewayRequest.setApplicationId(applicationId);
-		gatewayRequest.setBusinessTypeId(businessTypeId);
-
-		Boolean status = null;
-		status = gatewayClient.skipPayment(gatewayRequest);
-		logger.info("In-Principle send for WhiteLabel Status=====>" + status);
-
-		// ====================================================================
-
-		ProposalMappingResponse response = null;
-		Map<String, Object> proposalresp = null;
-		try {
-			logger.info("Calling Proposal details client for getting In-principle response for applicationId:-"
-					+ applicationId);
-			response = proposalDetailsClient.getInPricipleById(applicationId);
-			logger.info("Got Inprinciple response from Proposal Details Client" + response);
-			proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
-					Map.class);
-		} catch (Exception e) {
-			logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
-		}
-
-		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
-
-		PaymentRequest paymentRequest = new PaymentRequest();
-		paymentRequest.setApplicationId(applicationId);
-		paymentRequest.setNameOfEntity(loansRequest.getUserName());
-
-		// ==================Sending Mail to all Checker's & Maker's & HO & BO of that
-		// branch after FS recieves In-principle Approval==================
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
-		}
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
-					orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG,e);
-		}
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG,e);
-		}
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG,e);
-		}
-
-		// =======================================================================================================================================
-
-		logger.info("Exit on Update Skip Payment WhiteLabel");
 	}
 
 	@Override
 	public void sendInPrincipleForPersonalLoan(Long userId, Long applicationId, Integer businessTypeId, Long orgId,
-			Long fpProductId) throws Exception {
-
-		logger.info("Enter in sendInPrincipleForPersonalLoan!!");
-
-		// UPDATE PAYMENT STATE IN LOAN MASTER
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-
-		if (loanApplicationMaster == null) {
-			throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + applicationId);
-		}
-		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
-		loanApplicationRepository.save(loanApplicationMaster);
-
-		// UPDATE CONNECT POST PAYMENT
+			Long fpProductId) throws LoansException {
 		try {
-			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,
-					loanApplicationMaster.getBusinessTypeId());
+			logger.info("Enter in sendInPrincipleForPersonalLoan!!");
 
-			if (!CommonUtils.isObjectListNull(connectResponse)) {
-				logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
-				logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
-				// if(orgId==10L) {
-				/*
-				 * logger.info("Start Saving Phase 1 sidbi API -------------------->" +
-				 * loanApplicationMaster.getId()); Long fpMappingId = null; try {
-				 * savePhese1DataToSidbi(loanApplicationMaster.getId(),
-				 * userId,orgId,fpProductId); }catch(Exception e) { logger.error(CommonUtils.EXCEPTION,e); }
-				 */
-				// }
+			// UPDATE PAYMENT STATE IN LOAN MASTER
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 
-				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
+			if (loanApplicationMaster == null) {
+				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + applicationId);
+			}
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+			loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			loanApplicationRepository.save(loanApplicationMaster);
+
+			// UPDATE CONNECT POST PAYMENT
+			try {
+				ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,
+						loanApplicationMaster.getBusinessTypeId());
+
+				if (!CommonUtils.isObjectListNull(connectResponse)) {
+					logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
+					logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
+					// if(orgId==10L) {
+					/*
+					 * logger.info("Start Saving Phase 1 sidbi API -------------------->" +
+					 * loanApplicationMaster.getId()); Long fpMappingId = null; try {
+					 * savePhese1DataToSidbi(loanApplicationMaster.getId(),
+					 * userId,orgId,fpProductId); }catch(Exception e) { logger.error(CommonUtils.EXCEPTION,e); }
+					 */
+					// }
+
+					if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+					}
+				} else {
+					logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
+					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 				}
-			} else {
-				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
-		}
 
-		// TRUE MATCHES PROPOSAL
-		try {
-			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
-					.activateProposalOnPayment(applicationId);
-			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
-				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new LoansException(proposalMappingResponse.getMessage());
+			// TRUE MATCHES PROPOSAL
+			try {
+				ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
+						.activateProposalOnPayment(applicationId);
+				if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+					logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
+					if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+						throw new LoansException(proposalMappingResponse.getMessage());
+					}
+				} else {
+					logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
+					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 				}
-			} else {
-				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+
+			// Sending In-Principle for Personal Loan
+			// ====================================================================
+			GatewayRequest gatewayRequest = new GatewayRequest();
+
+			gatewayRequest.setUserId(userId);
+			gatewayRequest.setApplicationId(applicationId);
+			gatewayRequest.setBusinessTypeId(businessTypeId);
+
+			Boolean status = null;
+			status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
+			logger.info("In-Principle send for Personal Loan Status=====>" + status);
+			// ====================================================================
+
+			ProposalMappingResponse response = null;
+			Map<String, Object> proposalresp = null;
+			try {
+				logger.info("Calling Proposal details client for getting In-principle response for applicationId:-"
+						+ applicationId);
+				response = proposalDetailsClient.getInPricipleById(applicationId);
+				logger.info("Got Inprinciple response from Proposal Details Client" + response);
+				proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
+						Map.class);
+			} catch (Exception e) {
+				logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
+			}
+
+			LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+
+			PaymentRequest paymentRequest = new PaymentRequest();
+			paymentRequest.setApplicationId(applicationId);
+			paymentRequest.setNameOfEntity(loansRequest.getUserName());
+
+			// ==================Sending Mail to all Checker's & Maker's & HO & BO of that
+			// branch after FS recieves In-principle Approval==================
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
+			}
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
+						orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG,e);
+			}
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG,e);
+			}
+
+			try {
+				logger.info(INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
+				fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
+			} catch (Exception e) {
+				logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG,e);
+			}
+
+			// =======================================================================================================================================
+
+			logger.info("Exit on sendInPrincipleForPersonalLoan");
 		}
-
-		// Sending In-Principle for Personal Loan
-		// ====================================================================
-		GatewayRequest gatewayRequest = new GatewayRequest();
-
-		gatewayRequest.setUserId(userId);
-		gatewayRequest.setApplicationId(applicationId);
-		gatewayRequest.setBusinessTypeId(businessTypeId);
-
-		Boolean status = null;
-		status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
-		logger.info("In-Principle send for Personal Loan Status=====>" + status);
-		// ====================================================================
-
-		ProposalMappingResponse response = null;
-		Map<String, Object> proposalresp = null;
-		try {
-			logger.info("Calling Proposal details client for getting In-principle response for applicationId:-"
-					+ applicationId);
-			response = proposalDetailsClient.getInPricipleById(applicationId);
-			logger.info("Got Inprinciple response from Proposal Details Client" + response);
-			proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
-					Map.class);
-		} catch (Exception e) {
-			logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
+		catch (Exception e){
+			throw new LoansException(e);
 		}
-
-		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
-
-		PaymentRequest paymentRequest = new PaymentRequest();
-		paymentRequest.setApplicationId(applicationId);
-		paymentRequest.setNameOfEntity(loansRequest.getUserName());
-
-		// ==================Sending Mail to all Checker's & Maker's & HO & BO of that
-		// branch after FS recieves In-principle Approval==================
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
-		}
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
-					orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG,e);
-		}
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG,e);
-		}
-
-		try {
-			logger.info(INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
-			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
-		} catch (Exception e) {
-			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG,e);
-		}
-
-		// =======================================================================================================================================
-
-		logger.info("Exit on sendInPrincipleForPersonalLoan");
 	}
 
 	@Override
