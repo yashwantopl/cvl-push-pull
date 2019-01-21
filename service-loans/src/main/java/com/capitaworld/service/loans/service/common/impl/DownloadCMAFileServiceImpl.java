@@ -465,9 +465,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(17).getCell(j).setCellValue(assetsDetails.getExportReceivables());
 				sheet3.getRow(19).getCell(j).setCellValue(assetsDetails.getInstalmentsDeferred());
 				
-				//sheet3.getRow(21).getCell(j).setCellValue(assetsDetails.getInventory());
+				/* sheet3.getRow(21).getCell(j).setCellValue(assetsDetails.getInventory());
 				
-				//sheet3.getRow(23).getCell(j).setCellValue(assetsDetails.getRawMaterial());
+				   sheet3.getRow(23).getCell(j).setCellValue(assetsDetails.getRawMaterial()); */
 				
 				sheet3.getRow(25).getCell(j).setCellValue(assetsDetails.getRawMaterialImported());
 				sheet3.getRow(26).getCell(j).setCellValue(assetsDetails.getRawMaterialIndegenous());
@@ -485,9 +485,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(38).getCell(j).setCellValue(assetsDetails.getAdvancePaymentTaxes());
 				sheet3.getRow(40).getCell(j).setCellValue(assetsDetails.getOtherCurrentAssets());
 				
-				//sheet3.getRow(42).getCell(j).setCellValue(assetsDetails.getTotalCurrentAssets());
+				/* sheet3.getRow(42).getCell(j).setCellValue(assetsDetails.getTotalCurrentAssets());
 				
-				//sheet3.getRow(44).getCell(j).setCellValue(assetsDetails.getGrossBlock());
+				   sheet3.getRow(44).getCell(j).setCellValue(assetsDetails.getGrossBlock()); */
 				
 				sheet3.getRow(45).getCell(j).setCellValue(assetsDetails.getLandBuilding());
 				sheet3.getRow(46).getCell(j).setCellValue(assetsDetails.getPlantMachines());
@@ -722,9 +722,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				
 				sheet1.getRow(76).getCell(j).setCellValue(profitibilityStatementDetails.getDeferredTax());
 				
-				//sheet1.getRow(78).getCell(j).setCellValue(profitibilityStatementDetails.getProfitAfterTax());
+				/* sheet1.getRow(78).getCell(j).setCellValue(profitibilityStatementDetails.getProfitAfterTax());
 				
-				//sheet1.getRow(80).getCell(j).setCellValue(profitibilityStatementDetails.getDividend());
+				   sheet1.getRow(80).getCell(j).setCellValue(profitibilityStatementDetails.getDividend()); */
 				
 				sheet1.getRow(81).getCell(j).setCellValue(profitibilityStatementDetails.getAlreadyPaid());
 				sheet1.getRow(82).getCell(j).setCellValue(profitibilityStatementDetails.getBsProvision());

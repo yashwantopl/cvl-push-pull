@@ -637,12 +637,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
 		}
-//		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
-//    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
-//    	}
-//    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
-//    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
-//    	}
+/*		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
+    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
+    	}
+    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
+    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
+    	} */
 		
 		
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());

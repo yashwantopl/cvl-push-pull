@@ -1241,12 +1241,12 @@ public class LoanApplicationController {
 								HttpStatus.OK);
 
 					}
-					// Integer index = campaignCodes
-					// .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
-					// logger.info("index==={}=of Code====>{}", index,
-					// CommonUtils.CampaignCodes.ALL1MSME.getValue());
-					// if (index > -1) {
-					// }
+					/* Integer index = campaignCodes
+					   .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					   logger.info("index==={}=of Code====>{}", index,
+					   CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					   if (index > -1) {
+					   } */
 				}
 			} catch (Exception e) {
 				logger.error("Error while Set Campaign Code to LoanApplication Master : ",e);

@@ -588,12 +588,12 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				}
 				
 
-				//logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
-				//logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
-				//logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				/* logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				   logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				   logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 
 				
-				//map.put("bankStatement", bankStatement);
+				map.put("bankStatement", bankStatement); */
 				map.put("monthlyDetails", monthlyDetails);
 				map.put("top5FundReceived", top5FundReceived);
 				map.put("top5FundTransfered", top5FundTransfered);
