@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1448,37 +1449,43 @@ public enum APIFlags {
 	public static String formatValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
 	}
-	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws Exception {
-		if(obj ==  null) {
-			return null;
-		}
-		DecimalFormat decim = new DecimalFormat("0.00");
-		if(obj instanceof Double) {
-			obj = Double.parseDouble(decim.format(obj));
+	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws LoansException {
+		try {
+			if(obj ==  null) {
+				return null;
+			}
+			DecimalFormat decim = new DecimalFormat("0.00");
+			if(obj instanceof Double) {
+				obj = Double.parseDouble(decim.format(obj));
+				return obj;
+			}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for(Field field : fields) {
+					field.setAccessible(true);
+					Object value = field.get(obj);
+					if(data != null) {
+						data.put(field.getName(), value);
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
+						value = Double.parseDouble(decim.format(value));
+						if(data != null) {
+							value = decimal.format(value);
+							data.put(field.getName(), value);
+						}else {
+							field.set(obj,value);
+						}
+					}
+				}
+			}
+			if(data != null) {
+				return data;
+			}
 			return obj;
-		}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
-			Field[] fields = obj.getClass().getDeclaredFields();
-			 for(Field field : fields) {
-				 field.setAccessible(true);
-	             Object value = field.get(obj);
-	             if(data != null) {
-	            	 data.put(field.getName(), value);
-	             }
-	             if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
-					 value = Double.parseDouble(decim.format(value));
-					 if(data != null) {
-						 value = decimal.format(value);
-						 data.put(field.getName(), value);
-					 }else {
-						 field.set(obj,value);
-					 }
-	             }
-			 }			
 		}
-		 if(data != null) {
-			 return data;
-		 }
-		return obj;
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
 	}
 	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {

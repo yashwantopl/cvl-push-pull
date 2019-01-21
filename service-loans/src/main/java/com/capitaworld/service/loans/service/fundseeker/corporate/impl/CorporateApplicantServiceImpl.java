@@ -608,20 +608,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return coApplicantService.getList(applicationId, userId);
 	}
 
-//	@Override
-//	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
-//		boolean msmeScoreRequired = false;
-//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-//				.findOne(msmeScoreRequest.getApplicationId());
-//		if (msmeScoreRequest.isMsmeScoreRequired()) {
-//			loanApplicationMaster.setIsMsmeScoreRequired(true);
-//			msmeScoreRequired = true;
-//		} else {
-//			loanApplicationMaster.setIsMsmeScoreRequired(false);
-//			msmeScoreRequired = false;
-//		}
-//		return msmeScoreRequired;
-//	}
+/*	@Override
+	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
+		boolean msmeScoreRequired = false;
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+				.findOne(msmeScoreRequest.getApplicationId());
+		if (msmeScoreRequest.isMsmeScoreRequired()) {
+			loanApplicationMaster.setIsMsmeScoreRequired(true);
+			msmeScoreRequired = true;
+		} else {
+			loanApplicationMaster.setIsMsmeScoreRequired(false);
+			msmeScoreRequired = false;
+		}
+		return msmeScoreRequired;
+	} */
 
 	/*
 	 * @Override public CompanyDetails getCompanyDetails(Long applicationId, Long
@@ -633,14 +633,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	 * return companyDetails; }
 	 */
 
-//	@Override
-//	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
-//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-//		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
-//			return false;
-//		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
-//		return msmeScoreRequired;
-//	}
+/*	@Override
+	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+			return false;
+		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
+		return msmeScoreRequired;
+	} */
 
 	@SuppressWarnings("unchecked")
 	@Override

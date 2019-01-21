@@ -1311,28 +1311,28 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		// documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
-		// try {
-		// DocumentResponse documentResponse =
-		// dmsClient.listProductDocument(documentRequest);
-		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
-		// } catch (DocumentException e) {
-		// logger.error(CommonUtils.EXCEPTION,e);
-		// }
-		// List<Long> ids=new ArrayList<>();
-		// ids.add(354l);
-		// ids.add(358l);
-		// ids.add(365l);
-		// ids.add(406l);
-		// ZipRequest zipRequest=new ZipRequest();
-		// zipRequest.setApplicationId(toApplicationId);
-		// zipRequest.setProductDocumentMappingIds(ids);
-		// try {
-		// DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
-		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
-		// } catch (DocumentException e) {
-		// logger.error(CommonUtils.EXCEPTION,e);
-		// }
+		/* documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
+		   try {
+		   DocumentResponse documentResponse =
+		   dmsClient.listProductDocument(documentRequest);
+		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
+		   } catch (DocumentException e) {
+		   logger.error(CommonUtils.EXCEPTION,e);
+		   }
+		   List<Long> ids=new ArrayList<>();
+		   ids.add(354l);
+		   ids.add(358l);
+		   ids.add(365l);
+		   ids.add(406l);
+		   ZipRequest zipRequest=new ZipRequest();
+		   zipRequest.setApplicationId(toApplicationId);
+		   zipRequest.setProductDocumentMappingIds(ids);
+		   try {
+		   DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
+		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
+		   } catch (DocumentException e) {
+		   logger.error(CommonUtils.EXCEPTION,e);
+		   } */
 
 		return corporatePrimaryViewResponse;
 	}

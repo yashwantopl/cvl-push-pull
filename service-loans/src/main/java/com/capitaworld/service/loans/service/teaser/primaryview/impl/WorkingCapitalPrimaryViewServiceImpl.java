@@ -606,32 +606,32 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		}
 
 		// get value of Past Financial and set in response
-//		try {
-//			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
-//			if (pastFinancialEstimatesDetailRequestList.size()>4){
-//				pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList.subList((pastFinancialEstimatesDetailRequestList.size()-4),pastFinancialEstimatesDetailRequestList.size());
-//			}
-//			workingCapitalPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(pastFinancialEstimatesDetailRequestList);
-//		} catch (Exception e) {
-//			logger.error("Problem to get Data of Past Financial {}", e);
-//		}
-//
-//		// get value of Future Projection and set in response
-//		try {
-//			workingCapitalPrimaryViewResponse
-//					.setFutureFinancialEstimatesDetailRequestList(futureFinancialEstimatesDetailsService
-//							.getFutureFinancialEstimateDetailsList(toApplicationId, userId));
-//		} catch (Exception e) {
-//			logger.error("Problem to get Data of Future Projection {}", e);
-//		}
-//
-//		// get value of Security and set in response
-//		try {
-//			workingCapitalPrimaryViewResponse.setSecurityCorporateDetailRequestList(
-//					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
-//		} catch (Exception e) {
-//			logger.error("Problem to get Data of Security Details {}", e);
-//		}
+/*		try {
+			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
+			if (pastFinancialEstimatesDetailRequestList.size()>4){
+				pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList.subList((pastFinancialEstimatesDetailRequestList.size()-4),pastFinancialEstimatesDetailRequestList.size());
+			}
+			workingCapitalPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(pastFinancialEstimatesDetailRequestList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Past Financial {}", e);
+		}
+
+		// get value of Future Projection and set in response
+		try {
+			workingCapitalPrimaryViewResponse
+					.setFutureFinancialEstimatesDetailRequestList(futureFinancialEstimatesDetailsService
+							.getFutureFinancialEstimateDetailsList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Future Projection {}", e);
+		}
+
+		// get value of Security and set in response
+		try {
+			workingCapitalPrimaryViewResponse.setSecurityCorporateDetailRequestList(
+					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Security Details {}", e);
+		} */
 
 		// get value of Financial Arrangements and set in response
 		try {

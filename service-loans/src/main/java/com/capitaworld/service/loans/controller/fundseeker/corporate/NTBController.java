@@ -205,7 +205,7 @@ public class NTBController {
         }else if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){
             userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         }else{
-            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG,userId);
+            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
         // request must not be null

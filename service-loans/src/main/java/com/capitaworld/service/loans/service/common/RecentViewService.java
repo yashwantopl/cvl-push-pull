@@ -18,6 +18,6 @@ public interface RecentViewService {
 
 	RecentProfileViewDetailResponse getLatestRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException;
 
-	RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long applicationId, Long userId) throws Exception;
+	RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long applicationId, Long userId) throws LoansException;
 
 }

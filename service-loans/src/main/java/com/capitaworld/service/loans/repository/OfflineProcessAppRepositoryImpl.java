@@ -17,6 +17,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 
 	private static final String APP_ID = "appId";
 	private static final String RESULT  = "result";
+	private static final String ORG_ID = "orgId";
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -34,7 +35,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	public IneligibleProposalDetails findByAppliationId(Long applicationId,Long orgId) {
 		List<IneligibleProposalDetails> data = entityManager.createQuery("SELECT ipd FROM IneligibleProposalDetails ipd where ipd.applicationId =:applicationId and ipd.userOrgId =:orgId and ipd.isActive = true",IneligibleProposalDetails.class)
 				.setParameter("applicationId", applicationId)
-				.setParameter("orgId", orgId)
+				.setParameter(ORG_ID, orgId)
 				.getResultList();
 		if(data != null && !data.isEmpty()) {
 			return data.get(0);
@@ -45,12 +46,12 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spUpdateOfflineSanctionedFlag");
 		storedProcedureQuery.registerStoredProcedureParameter(APP_ID,Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("branchId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(RESULT,Boolean.class, ParameterMode.OUT);
 		storedProcedureQuery.setParameter(APP_ID,appId);
-		storedProcedureQuery.setParameter("orgId",orgId);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter("branchId",branchId);
 		storedProcedureQuery.setParameter("userId",userId);
 		storedProcedureQuery.execute();
