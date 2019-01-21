@@ -36,6 +36,8 @@ public class NhbsApplicationRequest implements Serializable{
 	//added by Dhaval
 	private Long npUserId;
 
+	private Long userOrgId;
+
 	public Long getFpMakerId() {
 		return fpMakerId;
 	}
@@ -139,4 +141,12 @@ public class NhbsApplicationRequest implements Serializable{
     public void setProposalMappingId(Long proposalMappingId) {
         this.proposalMappingId = proposalMappingId;
     }
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
 }

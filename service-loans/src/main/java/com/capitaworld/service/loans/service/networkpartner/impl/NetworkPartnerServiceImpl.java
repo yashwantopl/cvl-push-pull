@@ -1120,6 +1120,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		Long branchId = null;
 		UsersRequest usersRequest = new UsersRequest();
 		usersRequest.setId(request.getUserId());
+		usersRequest.setUserOrgId(request.getUserOrgId());
 		try {
 			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequest);
 			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
