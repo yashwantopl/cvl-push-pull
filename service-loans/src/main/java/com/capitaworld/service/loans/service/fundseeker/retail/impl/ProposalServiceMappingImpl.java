@@ -1445,7 +1445,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			String messageOfButton=null;
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
 			{
-				if(!proposalDetails.getUserOrgId().toString().equals(userOrgId))
+				if(proposalDetails.getUserOrgId() != userOrgId)
 				{
 					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
 						messageOfButton="This proposal has been Sanctioned by Other Bank.";
