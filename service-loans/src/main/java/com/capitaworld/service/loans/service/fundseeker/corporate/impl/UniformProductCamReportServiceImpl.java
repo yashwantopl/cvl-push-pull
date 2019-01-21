@@ -700,12 +700,11 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 				LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 				AssetDetailsString assetDetailsString = new AssetDetailsString();
 				CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
-		        //SET SHARE FACE VALUE
-				Double shareFaceVal=1.00;
 				CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
-						shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+						//SET SHARE FACE VALUE
+						Double shareFaceVal=corporateApplicantDetail.getSharePriceFace();
 						financialInputRequestDbl.setShareFaceValue(shareFaceVal);
 					}else{
 						financialInputRequestDbl.setShareFaceValue(1.00);
