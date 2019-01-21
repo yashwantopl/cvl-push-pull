@@ -1928,17 +1928,19 @@ public class LoanApplicationController {
 		}
 
 	}
-
-	@RequestMapping(value = "/get_client/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoanApplicationRequest> getClient(@PathVariable("id") Long id) {
+/**
+ * used the proposal id instead of applicationId
+ * */
+	@RequestMapping(value = "/get_client/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoanApplicationRequest> getClient(@PathVariable("proposalId") Long proposalId) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Loan Application Details. ID==>" + id);
+			if (proposalId == null) {
+				logger.warn("ID Require to get Loan Application Details. ID==>" + proposalId);
 				return null;
 			}
 			CommonDocumentUtils.endHook(logger, "get");
-			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getFromClient(id), HttpStatus.OK);
+			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getFromClient(proposalId), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details from Client==>", e);

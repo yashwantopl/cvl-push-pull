@@ -275,6 +275,7 @@ public class IrrServiceImpl implements IrrService{
 		RatingResponse ratingResponse = new RatingResponse();
 		try {
 
+			irrRequest.setProposalMappingId(proposalId);
 			ratingResponse = ratingClient.calculateIrrRating(irrRequest);
 			log.info("rating respo->" + ratingResponse.toString());
 			// ratingResponse.setData(irrRequest);
