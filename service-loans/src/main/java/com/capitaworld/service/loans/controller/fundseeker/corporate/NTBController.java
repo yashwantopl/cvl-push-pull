@@ -32,8 +32,8 @@ public class NTBController {
     private static final Logger logger = LoggerFactory.getLogger(NTBController.class);
 
     private static final String SUCCESSFULLY_FETCHED_MSG = "Successfully Fetched ";
-    private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty ";
-    private static final String APPLICATION_ID_FOR_GETTING_MSG = "Application Id for Getting============>{}";
+    private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty : ";
+    private static final String APPLICATION_ID_FOR_GETTING_MSG = "Application Id for Getting ==>{}";
 
     @Autowired
     private NTBService ntbService;
@@ -205,7 +205,7 @@ public class NTBController {
         }else if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){
             userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         }else{
-            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
+            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG,userId);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
         // request must not be null
