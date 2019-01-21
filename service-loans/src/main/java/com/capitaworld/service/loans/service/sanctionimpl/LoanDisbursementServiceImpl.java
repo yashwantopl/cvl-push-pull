@@ -207,7 +207,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			return Collections.emptyList();
 		}catch (Exception e){
 			logger.error("Error/Exception in getDisbursedList() -----------------------> Message : ",e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 

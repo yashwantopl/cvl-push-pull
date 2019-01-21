@@ -554,7 +554,6 @@ public class AsyncComponent {
 
 	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to)
 			throws NotificationException {
-//		String to[] = {toNo};
 		NotificationRequest req = new NotificationRequest();
 		req.setClientRefId(userId);
 		Notification notification = new Notification();

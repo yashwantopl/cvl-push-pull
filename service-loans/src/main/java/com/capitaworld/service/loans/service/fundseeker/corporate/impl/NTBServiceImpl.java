@@ -470,7 +470,6 @@ public class NTBServiceImpl implements NTBService {
 	                      
 			}
 		} catch (Exception e) {
-			//throw new Exception();
 			logger.error("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL : ",e);
 			 return new LoansResponse("Successfully Saved", HttpStatus.OK.value());
 		}

@@ -39,13 +39,7 @@ public class PromotorBackgroundDetailsController {
 	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
 	
 	@Autowired
-	private LoanApplicationService loanApplicationService; 
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
+	private LoanApplicationService loanApplicationService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {

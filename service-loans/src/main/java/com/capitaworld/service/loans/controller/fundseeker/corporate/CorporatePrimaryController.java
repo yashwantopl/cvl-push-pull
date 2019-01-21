@@ -31,12 +31,6 @@ public class CorporatePrimaryController {
     @Autowired
     private PrimaryCorporateService primaryCorporateService;
 
-    /*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-    public String getPing() {
-        logger.info("Ping success");
-        return "Ping Succeed";
-    }*/
-
     @RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> savePrimary(@RequestBody PrimaryCorporateRequest primaryCorporateRequest,
                                                      HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)

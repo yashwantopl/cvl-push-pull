@@ -95,9 +95,9 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 			CorporateCoApplicantRequest applicantRequest = new CorporateCoApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-			//copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			/* copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 			
-			//applicantRequest.setCurrencyId(retailApplicantDetailRepository.getCurrency(userId, applicationId));
+			   applicantRequest.setCurrencyId(retailApplicantDetailRepository.getCurrency(userId, applicationId)); */
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {

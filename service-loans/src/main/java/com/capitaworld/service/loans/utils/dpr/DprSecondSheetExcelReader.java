@@ -102,7 +102,6 @@ public class DprSecondSheetExcelReader
             } catch (Exception e) {
                 logger.error(CommonUtils.EXCEPTION,e);
             }
-//             logger.info(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
         }
     }
     public static void saveEmployeeCategoryStatus(Long storageDetailsId, XSSFSheet sheet, String rowNumber,LoanApplicationMaster loanApplicationMaster,EmployeesCategoryBreaksDetailRepository employeesCategoryBreaksDetailRepository)
@@ -111,7 +110,6 @@ public class DprSecondSheetExcelReader
         String category           = getDataFromCell(sheet,"B"+rowNumber);
         String currentNumber      = getDataFromCell(sheet,"C"+rowNumber);
         String proposedNumber     = getDataFromCell(sheet,"D"+rowNumber);
-//        logger.info("current : " + currentNumber + "-- Proposed :" + proposedNumber);
 
         if (currentNumber.isEmpty())
         {

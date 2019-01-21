@@ -28,12 +28,6 @@ public class TermLoanParameterController {
 	@Autowired
 	private TermLoanParameterService termLoanParameterService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody TermLoanParameterRequest  termLoanParameterRequest,HttpServletRequest request) {
 		// request must not be null
@@ -56,7 +50,6 @@ public class TermLoanParameterController {
 		}
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		//Long userId=1755l;
 		if(userId==null)
 		{
 			logger.warn("userId  id can not be empty ==>", userId);

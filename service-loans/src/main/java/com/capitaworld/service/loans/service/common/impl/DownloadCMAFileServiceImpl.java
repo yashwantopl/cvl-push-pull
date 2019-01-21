@@ -70,9 +70,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DownloadCMAFileServiceImpl.class);
     
-//	private static final String PROFITIBILITY_SHEET ="PS";
+/*	private static final String PROFITIBILITY_SHEET ="PS";
 	
-//	private static final String BALANCE_SHEET ="BS";
+	private static final String BALANCE_SHEET ="BS"; */
 	@Override
 	public Workbook cmaFileGenerator(Long applicationId , Long productDocumentMappingId) {
 		logger.info("Enter in cmaFileGenerator()  Forming Excel Data");
@@ -455,7 +455,6 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				temp=Double.parseDouble(assetsDetails.getYear());
 				// save in excel
 				sheet3.getRow(4).getCell(j).setCellValue(temp);
-				//logger.info(""+sheet3.getRow(4).getCell(j).getNumericCellValue());
 				 sheet3.getRow(8).getCell(j).setCellValue(assetsDetails.getCashAndBankBalance());
 				 
 				//sheet3.getRow(10).getCell(j).setCellValue(assetsDetails.getInvestments());
@@ -521,9 +520,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(75).getCell(j).setCellValue(assetsDetails.getNonConsumableStoreAndSpares());
 				sheet3.getRow(77).getCell(j).setCellValue(assetsDetails.getOtherNonCurrentAssets());
 				
-				//sheet3.getRow(79).getCell(j).setCellValue(assetsDetails.getTotalOtherNonCurrentAssets());
+				/* sheet3.getRow(79).getCell(j).setCellValue(assetsDetails.getTotalOtherNonCurrentAssets());
 				
-				//sheet3.getRow(81).getCell(j).setCellValue(assetsDetails.getIntangibleAssets());
+				sheet3.getRow(81).getCell(j).setCellValue(assetsDetails.getIntangibleAssets()); */
 				
 				sheet3.getRow(82).getCell(j).setCellValue(assetsDetails.getPatents());
 				sheet3.getRow(83).getCell(j).setCellValue(assetsDetails.getGoodWill());
@@ -531,23 +530,23 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(85).getCell(j).setCellValue(assetsDetails.getBadOrDoubtfulExpenses());
 				sheet3.getRow(86).getCell(j).setCellValue(assetsDetails.getAnyOther());
 				sheet3.getRow(87).getCell(j).setCellValue(assetsDetails.getOtherIncomeNeedTocCheckAsset() != null ? assetsDetails.getOtherIncomeNeedTocCheckAsset() : 0.0);
-				//sheet3.getRow(88).getCell(j).setCellValue(assetsDetails.getTotalAssets());
+				/* sheet3.getRow(88).getCell(j).setCellValue(assetsDetails.getTotalAssets());
 				
-				//sheet3.getRow(90).getCell(j).setCellValue(assetsDetails.getTangibleNetWorth());
+				   sheet3.getRow(90).getCell(j).setCellValue(assetsDetails.getTangibleNetWorth());
 				
-				//sheet3.getRow(92).getCell(j).setCellValue(assetsDetails.getNetWorkingCapital());
+				   sheet3.getRow(92).getCell(j).setCellValue(assetsDetails.getNetWorkingCapital());
 				
-				//sheet3.getRow(94).getCell(j).setCellValue(assetsDetails.getCurrentRatio());
+				   sheet3.getRow(94).getCell(j).setCellValue(assetsDetails.getCurrentRatio());
 				
-				//sheet3.getRow(96).getCell(j).setCellValue(assetsDetails.getTotalOutSideLiability());
+				   sheet3.getRow(96).getCell(j).setCellValue(assetsDetails.getTotalOutSideLiability());
 				
-				//sheet3.getRow(98).getCell(j).setCellValue(assetsDetails.getTotalTermLiability());
+				   sheet3.getRow(98).getCell(j).setCellValue(assetsDetails.getTotalTermLiability()); */
 
 				sheet3.getRow(10).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(10).getCell(j)));
 				sheet3.getRow(21).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(21).getCell(j)));
 				sheet3.getRow(23).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(23).getCell(j)));
-				//sheet3.getRow(28).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(28).getCell(j)));
-				//sheet3.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(30).getCell(j)));
+				/* sheet3.getRow(28).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(28).getCell(j)));
+				   sheet3.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(30).getCell(j))); */
 				sheet3.getRow(32).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(32).getCell(j)));
 				sheet3.getRow(42).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(42).getCell(j)));
 				sheet3.getRow(44).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(44).getCell(j)));
@@ -634,10 +633,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet1.getRow(14).getCell(j).setCellValue(profitibilityStatementDetails.getLessItem4());
 				sheet1.getRow(15).getCell(j).setCellValue(profitibilityStatementDetails.getLessItem5());
 				
-				//sheet1.getRow(16).getCell(j).setCellValue(profitibilityStatementDetails.getNetSales());
+				/* sheet1.getRow(16).getCell(j).setCellValue(profitibilityStatementDetails.getNetSales());
 				
 				
-				//sheet1.getRow(17).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue());
+				  sheet1.getRow(17).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue()); */
 				
 				sheet1.getRow(18).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue1());
 				sheet1.getRow(19).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue2());
@@ -645,13 +644,13 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet1.getRow(21).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue4());
 				sheet1.getRow(22).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue5());
 				
-				//sheet1.getRow(23).getCell(j).setCellValue(profitibilityStatementDetails.getGrossOperatingRevenue());
+				/* sheet1.getRow(23).getCell(j).setCellValue(profitibilityStatementDetails.getGrossOperatingRevenue());
 				
 				
-				//sheet1.getRow(25).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingExpenses());
+				  sheet1.getRow(25).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingExpenses());
 				
 				
-				//sheet1.getRow(26).getCell(j).setCellValue(profitibilityStatementDetails.getCostRawMaterialConsumed());
+				  sheet1.getRow(26).getCell(j).setCellValue(profitibilityStatementDetails.getCostRawMaterialConsumed()); */
 				
 				sheet1.getRow(27).getCell(j).setCellValue(profitibilityStatementDetails.getRawMaterialImported());
 				sheet1.getRow(28).getCell(j).setCellValue(profitibilityStatementDetails.getRawMaterialIndigenous());
@@ -691,9 +690,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet1.getRow(50).getCell(j).setCellValue(profitibilityStatementDetails.getExpenseCapitalized3());
 				sheet1.getRow(51).getCell(j).setCellValue(profitibilityStatementDetails.getExpenseCapitalized4());
 				
-				//sheet1.getRow(52).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeDepreciation());
+				/* sheet1.getRow(52).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeDepreciation());
 				
-				//sheet1.getRow(54).getCell(j).setCellValue(profitibilityStatementDetails.getDepreciationAndAmortisation());
+				   sheet1.getRow(54).getCell(j).setCellValue(profitibilityStatementDetails.getDepreciationAndAmortisation()); */
 				
 				sheet1.getRow(55).getCell(j).setCellValue(profitibilityStatementDetails.getDepreciation());
 				sheet1.getRow(56).getCell(j).setCellValue(profitibilityStatementDetails.getAmortisation());
@@ -715,9 +714,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet1.getRow(70).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems4());
 				sheet1.getRow(71).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems5());
 				
-				//sheet1.getRow(72).getCell(j).setCellValue(profitibilityStatementDetails.getProfitBeforeTax());
+				/* sheet1.getRow(72).getCell(j).setCellValue(profitibilityStatementDetails.getProfitBeforeTax());
 
-				//sheet1.getRow(74).getCell(j).setCellValue(profitibilityStatementDetails.getProvisionForTax());
+				   sheet1.getRow(74).getCell(j).setCellValue(profitibilityStatementDetails.getProvisionForTax()); */
 				
 				sheet1.getRow(75).getCell(j).setCellValue(profitibilityStatementDetails.getCurrentTax());
 				
@@ -796,10 +795,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet2.getRow(28).getCell(j).setCellValue(balanceSheetDetail.getOthers4());
 				sheet2.getRow(29).getCell(j).setCellValue(balanceSheetDetail.getOthers5());
 				
-				//sheet2.getRow(30).getCell(j).setCellValue(balanceSheetDetail.getOtherNonCurrentLiability());
+				/* sheet2.getRow(30).getCell(j).setCellValue(balanceSheetDetail.getOtherNonCurrentLiability());
 				
 				
-				//sheet2.getRow(31).getCell(j).setCellValue(balanceSheetDetail.getLongTermBorrowing());
+				   sheet2.getRow(31).getCell(j).setCellValue(balanceSheetDetail.getLongTermBorrowing()); */
 				
 				sheet2.getRow(32).getCell(j).setCellValue(balanceSheetDetail.getDebentures());
 				
@@ -821,10 +820,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet2.getRow(45).getCell(j).setCellValue(balanceSheetDetail.getOthersLiabilities2());
 				sheet2.getRow(46).getCell(j).setCellValue(balanceSheetDetail.getOthersLiabilities3() );
 				
-			    //sheet2.getRow(47).getCell(j).setCellValue(balanceSheetDetail.getOthersCurrentLiability());
+			    /* sheet2.getRow(47).getCell(j).setCellValue(balanceSheetDetail.getOthersCurrentLiability());
 			    
 				
-			    //sheet2.getRow(48).getCell(j).setCellValue(balanceSheetDetail.getShortTermBorrowings());
+			       sheet2.getRow(48).getCell(j).setCellValue(balanceSheetDetail.getShortTermBorrowings()); */
 			    
 				sheet2.getRow(49).getCell(j).setCellValue(balanceSheetDetail.getCurrentLiabilitiesSecured());
 				sheet2.getRow(50).getCell(j).setCellValue(balanceSheetDetail.getCurrentLiabilitiesUnsecured());
@@ -880,9 +879,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet2.getRow(89).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit3());
 				sheet2.getRow(90).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit4());
                   				
-				//sheet2.getRow(91).getCell(j).setCellValue(balanceSheetDetail.getOthersCurrentAssets());
+				/* sheet2.getRow(91).getCell(j).setCellValue(balanceSheetDetail.getOthersCurrentAssets());
 								
-				//sheet2.getRow(92).getCell(j).setCellValue(balanceSheetDetail.getCurrentInvestments());
+				   sheet2.getRow(92).getCell(j).setCellValue(balanceSheetDetail.getCurrentInvestments()); */
 				
 				sheet2.getRow(93).getCell(j).setCellValue(balanceSheetDetail.getGovernmentAndOtherTrustee());
 				sheet2.getRow(94).getCell(j).setCellValue(balanceSheetDetail.getFixedDepositsWithBanks());
@@ -893,11 +892,11 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet2.getRow(97).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment2());
 				sheet2.getRow(98).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment3());
 				sheet2.getRow(99).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment4());
-				//sheet2.getRow(100).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment5());
+				/* sheet2.getRow(100).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment5());
 				
-				//sheet2.getRow(100).getCell(j).setCellValue(balanceSheetDetail.getInventory());
+				   sheet2.getRow(100).getCell(j).setCellValue(balanceSheetDetail.getInventory());
 								
-				//sheet2.getRow(101).getCell(j).setCellValue(balanceSheetDetail.getRawMaterial());
+				   sheet2.getRow(101).getCell(j).setCellValue(balanceSheetDetail.getRawMaterial()); */
 				
 				sheet2.getRow(102).getCell(j).setCellValue(balanceSheetDetail.getRawMaterialImported());
 				sheet2.getRow(103).getCell(j).setCellValue(balanceSheetDetail.getRawMaterialIndegenous());
@@ -1001,11 +1000,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		int i = 0 ;
 		for (i = j ; temp <= totalYear; ++temp , i++) {
 			if(flag) {
-				//logger.info(""+i+" cell "+sheet.getRow(4));
-				//logger.info(""+i+" " + temp);
 				sheet.getRow(4).getCell(i).setCellValue(temp);
-				//logger.info(""+i+" cell "+sheet.getRow(4));
-				//logger.info(""+i+" " + temp);
 			}
 			else {
 				sheet.getRow(3).getCell(i).setCellValue(temp);

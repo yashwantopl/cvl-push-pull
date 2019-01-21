@@ -871,7 +871,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						if (mcaCompanyId != null) {
 							mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId);
 							logger.info("MCA Response" + mcaResponse);
-//							logger.info("MCA Response---===+++>>"+ mcaResponse != null ? mcaResponse.getData().toString() : null);
 							if ("true".equalsIgnoreCase(String.valueOf(mcaResponse.getData()))) {
 								nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
 							} else {

@@ -35,13 +35,7 @@ public class UniformProductParameterController {
 	private UniformProductParameterService uniformProductParameterService; 
 	
 	@Autowired
-	private UniformProductParameterAuditService uniformProductParameterAuditService; 
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
+	private UniformProductParameterAuditService uniformProductParameterAuditService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody UniformProductParamterRequest paramterRequest,HttpServletRequest httpServletRequest) {
@@ -51,7 +45,6 @@ public class UniformProductParameterController {
 
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
@@ -83,7 +76,6 @@ public class UniformProductParameterController {
 		try {
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
@@ -140,7 +132,6 @@ public class UniformProductParameterController {
 		try {
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
@@ -164,7 +155,6 @@ public class UniformProductParameterController {
 		try {
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);

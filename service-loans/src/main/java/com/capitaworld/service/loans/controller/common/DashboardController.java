@@ -32,12 +32,6 @@ public class DashboardController {
 	@Autowired
 	private DashboardService dashboardService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/profile_detail/{userType}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> profileDetails(@RequestBody DataRequest data, HttpServletRequest request,@PathVariable("userType")Integer userType,
 			@RequestParam(value = "clientId", required = false) Long clientId) {

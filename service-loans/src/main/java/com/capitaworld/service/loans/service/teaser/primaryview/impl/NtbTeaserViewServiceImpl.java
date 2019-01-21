@@ -369,8 +369,8 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			 * ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
 			 * CommonUtils.isObjectNullOrEmpty(byIdProCons) ?
 			 * Integer.valueOf(byIdProCons.getValue()) : null); }
-			 */
-			/*
+			 *
+			 *
 			 * if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.
 			 * getProposedDetailsOfUnit())) { ProposedDetailOfUnitNTB byIdProConsDet =
 			 * ProposedDetailOfUnitNTB

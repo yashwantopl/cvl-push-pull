@@ -76,12 +76,6 @@ public class CorporateUploadController {
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepo;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/profile/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadProfileImage(@RequestPart("fileName") String fileName,
 			@RequestPart("userType") String userType, @RequestPart("productDocMapId") String productDocMapId,

@@ -1798,20 +1798,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request,
 			Long userId) {
 
-		// UserResponse userData = usersClient.getUserDetailsById(userId);
+		/* UserResponse userData = usersClient.getUserDetailsById(userId);
 
-		// UsersRequest data = (UsersRequest) userData.getData();
+		   UsersRequest data = (UsersRequest) userData.getData();
 
-		// userData.toString());
+		   userData.toString());
 
-		// Long roleId = (Long) userData.get("roleId");
+		   Long roleId = (Long) userData.get("roleId"); */
 		List<Object[]> result;
 
-		// if(UsersRoles.HO.equals(roleId)) {
-		// result =
-		// proposalDetailRepository.getProposalDetailsByOrgId(userOrgId,
-		// request.getFromDate(), request.getToDate());
-		// } else if(UsersRoles.BO.equals(roleId)) {
+		/* if(UsersRoles.HO.equals(roleId)) {
+		 result =
+		 proposalDetailRepository.getProposalDetailsByOrgId(userOrgId,
+		 request.getFromDate(), request.getToDate());
+		 } else if(UsersRoles.BO.equals(roleId)) { */
 		result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(),
 				request.getToDate());
 		// }

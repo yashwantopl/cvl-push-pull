@@ -43,7 +43,6 @@ public class AuditComponentBankToCW {
 		logger.info("Exit saveLoanDisbursementDetail() -----------------------> BankCWAuditTrailDomain ==>" +bankCWAuditTrailDomain);
 		}catch (Exception e) {
 			logger.error("Error/Exception in saveBankReqRes() -----------------------> Message "+e);
-			/*throw e;*/
 		}
 	}
 

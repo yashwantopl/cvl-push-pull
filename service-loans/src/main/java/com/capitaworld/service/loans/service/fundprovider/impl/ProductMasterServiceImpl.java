@@ -865,7 +865,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
 				if (!CommonUtils.isObjectNullOrEmpty(master) && !productMasterRequest.getProductId().toString()
 						.equals(productDetailsForSps.get(0).getProductId().toString())) {
-					// if(master.getId())
 						CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 						return true;
 				}
