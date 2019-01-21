@@ -2914,7 +2914,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
 
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 
@@ -3097,7 +3096,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
+
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -3349,7 +3348,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
+
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			// code for got eligibility
 			if (loanApplicationMaster.getEligibleAmnt() != null && CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked()) ) {
@@ -3466,7 +3465,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
+
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -3618,7 +3617,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
+
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -5897,7 +5896,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						}
 					}
 					if (detail.getResidenceSinceYear() != null && detail.getResidenceSinceMonth() != null) {
-						Calendar a = Calendar.getInstance();
 						LocalDate now = LocalDate.now();
 						LocalDate before = LocalDate.of(detail.getResidenceSinceYear(), detail.getResidenceSinceMonth(),
 								1);
