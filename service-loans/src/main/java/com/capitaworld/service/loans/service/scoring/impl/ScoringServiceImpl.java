@@ -1909,15 +1909,25 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.YEARS_IN_BUSINESS: {
                             try {
 
-                                java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                                todayDate.setTime(new Date());
+                            	Double yearsInBusiness = null;
+                            	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
+                            	Integer monthsDiff = null;
+                            	if(yearsInBetween == null) {
+                            		java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                                    todayDate.setTime(new Date());
 
-                                Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-                                Integer monthsDiff = 0;
+                                    yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
 
-                                monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+                                    monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
 
-                                Double yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                                    yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                            	}else {
+                            		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
+                            		if(monthsDiff > 6)
+                            			yearsInBusiness = (double)yearsInBetween + 1;
+                            		else
+                            			yearsInBusiness = (double)yearsInBetween;
+                            	}
 
                                 scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                 scoringParameterRequest.setYearsInBusiness_p(true);
@@ -2972,16 +2982,25 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.YEARS_IN_BUSINESS: {
                                 try {
+                                	Double yearsInBusiness = null;
+                                	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
+                                	Integer monthsDiff = null;
+                                	if(yearsInBetween == null) {
+                                		java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                                        todayDate.setTime(new Date());
 
-                                    java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                                    todayDate.setTime(new Date());
+                                        yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
 
-                                    Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-                                    Integer monthsDiff = 0;
+                                        monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
 
-                                    monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
-
-                                    Double yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                                        yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                                	}else {
+                                		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
+                                		if(monthsDiff > 6)
+                                			yearsInBusiness = (double)yearsInBetween + 1;
+                                		else
+                                			yearsInBusiness = (double)yearsInBetween;
+                                	}
 
                                     scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                     scoringParameterRequest.setYearsInBusiness_p(true);
