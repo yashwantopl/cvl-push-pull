@@ -2325,7 +2325,7 @@ public class IrrServiceImpl implements IrrService{
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
-			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(proposalMapId, currentYear-1+"");
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);//-----formula based
 			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
@@ -2345,7 +2345,7 @@ public class IrrServiceImpl implements IrrService{
 					totalCostEstimate=corporateApplicantDetail.getTotalCostOfEstimate();
 
 				int c_Year = Calendar.getInstance().get(Calendar.YEAR);
-				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, c_Year-1+"");
+				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(proposalMapId, c_Year-1+"");
 				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
 					totalAsset=assetsDetails.getTotalAssets();
 
@@ -2364,7 +2364,7 @@ public class IrrServiceImpl implements IrrService{
 					totalCostEstimate=corporateApplicantDetail.getTotalCostOfEstimate();
 
 				int c_Year = Calendar.getInstance().get(Calendar.YEAR);
-				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, c_Year-1+"");
+				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(proposalMapId, c_Year-1+"");
 				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
 					totalAsset=assetsDetails.getTotalAssets();
 
@@ -2640,8 +2640,9 @@ public class IrrServiceImpl implements IrrService{
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
-			//assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+""); PREVIOUS 
-			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, currentYear-1+""); // NEW
+
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(proposalMapId, currentYear-1+"");
+
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetServRequest.setContingentLiabilities(0.0);//-----formula based
 			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
@@ -2804,8 +2805,9 @@ public class IrrServiceImpl implements IrrService{
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
-			//assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+""); PREVIOUS REPO.
-			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, currentYear-1+""); // NEW REPO.
+
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(proposalMapId, currentYear-1+"");
+
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);//-----formula based
 			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
