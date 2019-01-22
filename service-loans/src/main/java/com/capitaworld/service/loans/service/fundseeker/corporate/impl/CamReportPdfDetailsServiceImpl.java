@@ -323,20 +323,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		DecimalFormat decim = new DecimalFormat("####");
-		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+
+		// CHANGES FOR NEW MULTIPLE BANKS----->
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
+		logger.info("======================>"+applicationProposalMapping.getApplicationId()+"======app"+applicationProposalMapping.getProposalId());
+		map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
+
+		Long toApplicationId = applicationProposalMapping.getApplicationId();
+		
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(toApplicationId);
+		logger.info("======================>"+userId);
+        // ENDS HERE MULTIPLE BANK----->
 		
 		//CHANGES====>
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		 //map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(toApplicationId, userId);
 		
-		// CHANGES FOR NEW MULTIPLE BANKS----->
-		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(applicationId,proposalId);
-		  logger.info("GETTING DATA BASED ON APPLICATION ID AND PROPOSAL ID IN"
-				+ " APPROVE DATE ========>"+applicationProposalMapping.getApprovedDate()+"====CREATED DATE====> "+applicationProposalMapping.getCreatedBy()+" === tenure"+
-			applicationProposalMapping.getTenure()+" loan amount "+applicationProposalMapping.getLoanAmount()+"application code"+""+applicationProposalMapping.getProposalId());
-		map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
-				// ENDS HERE MULTIPLE BANK----->
-		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(toApplicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
 		if(userResponse!= null) {
 			LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
@@ -414,7 +416,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getCreatedDate())? CommonUtils.DATE_FORMAT.format(applicationProposalMapping.getCreatedDate()):"-");
 		try {
 			WorkflowRequest workflowRequest = new WorkflowRequest();
-			workflowRequest.setApplicationId(applicationId);
+			workflowRequest.setApplicationId(toApplicationId);
 			workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
 			workflowRequest.setUserId(userId);
 			WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
@@ -426,7 +428,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		try {
 			/*ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());*/
-			Date InPrincipleDate=loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			Date InPrincipleDate=loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate):"-");
 			}
@@ -454,7 +456,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(toApplicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString()) : "-");
@@ -492,7 +494,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			//DIRECTOR'S BACKGROUND
 			try {
-				List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
+				List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
 				List<DirectorBackgroundDetailResponseString> directorBackgroundDetailResponseList = new ArrayList<>();
 				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 					DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
@@ -607,7 +609,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 		    //FINANCIAL ARRANGEMENTS
 			try {
-                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(toApplicationId, userId);
                 List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
                 for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
                 	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
@@ -631,7 +633,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             }
 			
 		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
+			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? CommonUtils.convertValueRound(primaryCorporateRequest.getAmount()) : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
 			map.put("promotorsContribution", CommonUtils.convertValueRound(primaryCorporateRequest.getPromoterContribution()));
@@ -651,8 +653,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			int currentYear = scoringService.getFinYear(applicationId);
+			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
+			int currentYear = scoringService.getFinYear(toApplicationId);
 			map.put("currentYr",currentYear-1);
 			// PENDING
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
@@ -660,20 +662,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
 			for(Integer year : years) {
 				//Object[] data = calculateFinancials(userId, applicationId, null, denominationValue, year); // PREVIOUS
-				Object[] data = calculateFinancials(userId, applicationId, null, denominationValue,proposalId, year);//NEW BASED ON PROPOSAL ID 
+				Object[] data = calculateFinancials(userId, toApplicationId, null, denominationValue,proposalId, year);//NEW BASED ON PROPOSAL ID 
 				financials.put(year, data);
 			}
-			calculateRatioAnalysis(financials, applicationId);
+			calculateRatioAnalysis(financials, toApplicationId);
 			map.put("financials", financials);
 			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(applicationProposalMapping.getTenure().intValue());
-			if(primaryCorporateRequest.getProductId() == 1) {
+			//if(primaryCorporateRequest.getProductId() == 1) { previous 
+			 if(applicationProposalMapping.getProductId() == 1){  // new 
 				//		projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue, currentYear)); // PREVIOUS
-				projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue,proposalId, currentYear));// NEW BASED ON PROPOSAL ID
+				projectedFin.put(currentYear , calculateFinancials(userId, toApplicationId, null, denominationValue,proposalId, currentYear));// NEW BASED ON PROPOSAL ID
 				map.put("tenure", 1);
 			}else {
 				for(int i=0; i<=applicationProposalMapping.getTenure().intValue();i++) {
 					//projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));// PREVIOUS
-					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, proposalId,currentYear + i));// NEW BASED ON PROPOSAL ID 
+					projectedFin.put(currentYear + i, calculateFinancials(userId, toApplicationId, null, denominationValue, proposalId,currentYear + i));// NEW BASED ON PROPOSAL ID 
 				}
 				map.put("tenure", applicationProposalMapping.getTenure().intValue() +1);
 			}
@@ -684,7 +687,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();
-			matchRequest.setApplicationId(applicationId);
+			matchRequest.setApplicationId(toApplicationId);
 			matchRequest.setProductId(productId);
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
@@ -695,10 +698,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//PROPOSAL RESPONSE
 		try {
 				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setApplicationId(applicationId);
+				proposalMappingRequest.setApplicationId(toApplicationId);
 				proposalMappingRequest.setFpProductId(productId);
 				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
 				proposalMappingRequestString = new ProposalMappingRequestString();
+				logger.info("======================>"+proposalMappingRequestString.getId());
 				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
@@ -709,7 +713,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//SCORING DATA 
 		try {
 			ScoringRequest scoringRequest = new ScoringRequest();
-			scoringRequest.setApplicationId(applicationId);
+			scoringRequest.setApplicationId(toApplicationId);
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			DecimalFormat df = new DecimalFormat(".##");
@@ -965,7 +969,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//NAME AS PER ITR
 		try{
-			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
+			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(toApplicationId);
 			logger.info("ITR RESPONSE===========>"+itrResponse);
 			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
 		}catch(Exception e) {
@@ -974,7 +978,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//CGTMSE DATA
 		try {
-			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId,productId);
+			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(toApplicationId,productId);
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
 				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse,null));
 				if(cgtmseDataResponse.getNatureOfEntity().equals("Manufacturer")) {
@@ -1003,8 +1007,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			int loanId = primaryCorporateRequest.getProductId();
+			//PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationProposalMapping.getApplicationId(), userId); // previous
+		 // 	primaryCorporateRequest.getProductId(); // previous  
+			int loanId = applicationProposalMapping.getProductId(); // new 
 			switch (loanId) {
 				case 1:
 				WorkingCapitalParameter workingCapitalPara = workingCapitalParameterRepository.getByID(productId);
@@ -1042,7 +1047,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		try{
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
-			eligibilityReq.setApplicationId(applicationId);
+			eligibilityReq.setApplicationId(toApplicationId);
 			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 			
@@ -1076,7 +1081,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
 		try {
-			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(applicationId);
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
 				map.put("checkItr", itrConnectionResponse.getData());
 			}
@@ -1087,7 +1092,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
+		reportRequest.setApplicationId(toApplicationId);
 		reportRequest.setUserId(userId);
 
 		List<Data> datas = new ArrayList<>();
@@ -1164,8 +1169,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//FITCH DATA
 			try {
 			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
-
-			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(proposalMappingRequestString.getId(), userId, proposalMappingRequestString.getId()).getBody().getData();
+				
+			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(proposalMappingRequestString.getId(), userId, proposalMappingRequestString.getId()).getBody().getData();// PREVIOUS 
+				RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(toApplicationId, userId, applicationProposalMapping.getProposalId()).getBody().getData(); //NEW BASED ON PROPOSAL MAPPING ID 
 			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
@@ -1206,7 +1212,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			//OWNERSHIP DETAILS :- 
 			try {
-				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
+				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(toApplicationId, userId);
 				List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
 				for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
 					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
@@ -1222,7 +1228,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		    }
 			//PROMOTOR BACKGROUND DETAILS
 			try {
-				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
+				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
 				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
@@ -1252,39 +1258,39 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			//ASSOCIATE ENTITY
 			try {
-				map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId),null));
+				map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId),null));
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			try {
-				map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId),null));
-				map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId),null));
-				map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId),null));
+				map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailList(applicationProposalMapping.getApplicationId(), userId),null));
+				map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailList(applicationProposalMapping.getApplicationId(), userId),null));
+				map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailList(applicationProposalMapping.getApplicationId(), userId),null));
 			}catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			
 			//SHARE PRICE
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, toApplicationId);
 			map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
 			map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
 			
 			//DETAILS OF GUARANTER
 			try {
-					map.put("guaDetails", CommonUtils.printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId),null));
+					map.put("guaDetails", CommonUtils.printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId),null));
 			} catch (Exception e) {
 					logger.error("Problem to get Data of Details of Guarantor {}", e);
 			}
 		    //MONTHLY TURNOVER
 			try {
-				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId),null));
+				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId, userId),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Monthly Turnover {}", e);
 			}
 			
 			//COST ESTIMATES
 			try {
-				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService.getCostOfProjectDetailList(applicationId, userId);
+				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService.getCostOfProjectDetailList(toApplicationId, userId);
 				List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
 				for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
 				TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
@@ -1300,7 +1306,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			//MEANS OF FINANCE
 			try {
-				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService.getMeansOfFinanceList(applicationId, userId);
+				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService.getMeansOfFinanceList(toApplicationId, userId);
 				List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
 				for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
 					FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
@@ -1316,7 +1322,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			//COLLATERAL SECURITY			
 			try {
-				map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId),null));
+				map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Security Details {}", e);
 			}
@@ -1460,7 +1466,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		//CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);// PREVIOUS 
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(null,proposalId);//NEW BASED ON PROPOSAL ID 
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalId);//NEW BASED ON PROPOSAL ID 
 		logger.info("user id and application ID  fs corporate Applicatiion details======>"+corporateFinalInfoRequest.getSharePriceFace());
         //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;

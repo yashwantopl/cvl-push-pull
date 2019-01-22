@@ -24,7 +24,7 @@ public class CommonTeaserController {
 	@Autowired
 	private CommonTeaserViewService  commonTeaserViewService;
 	@GetMapping(value = "/primaryViewByApplicationId/{applicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> PrimaryViewByApplicationId(@PathVariable(value = "applicationId") Long applicationId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> PrimaryViewByApplicationId(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "proposalId") Long proposalId,HttpServletRequest httpServletRequest) {
 		 LoansResponse loansResponse = new LoansResponse();
 	        //get user id from http servlet request
 	      

@@ -221,7 +221,9 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			LoanApplicationRequest response = loanApplicationService.get(id, userId);
+
+			Long userOrdId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			LoanApplicationRequest response = loanApplicationService.get(id, userId,userOrdId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			CommonDocumentUtils.endHook(logger, "get");
@@ -655,8 +657,8 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/primary_locked/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> isPrimaryLocked(@PathVariable("applicationId") Long applicationId,
+	@RequestMapping(value = "/primary_locked/{proposalId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> isPrimaryLocked(@PathVariable("proposalId") Long proposalId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
@@ -667,8 +669,8 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-
-			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+           
+			if (CommonUtils.isObjectNullOrEmpty(proposalId)) {
 				logger.error(APPLICATION_ID_MUST_NOT_BE_NULL);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
@@ -677,14 +679,15 @@ public class LoanApplicationController {
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
 
 			loansResponse.setData(true);
-
-			if (!loanApplicationService.isApplicationIdActive(applicationId)) {
+			//if (!loanApplicationService.isApplicationIdActive(applicationId)) {
+			if (!loanApplicationService.getByProposalId(proposalId)) {
 				loansResponse.setData(false);
 				loansResponse.setMessage("Requested user is Inactive");
 				CommonDocumentUtils.endHook(logger, IS_PRIMARY_LOCKED);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
-			if (!loanApplicationService.isPrimaryLocked(applicationId, userId)) {
+			//loanApplicationService.isPrimaryLocked(applicationId, userId)
+			if (!loanApplicationService.isPrimaryLockedByProposalId(proposalId, userId)) {
 				loansResponse.setData(false);
 				loansResponse.setMessage("Requested User has not filled Primary Details");
 				CommonDocumentUtils.endHook(logger, IS_PRIMARY_LOCKED);
@@ -734,9 +737,9 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/final_locked/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/final_locked/{applicationId}/{proposalId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> isFinalLocked(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+			@PathVariable("proposalId") Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, IS_FINAL_LOCKED);
@@ -757,14 +760,18 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
 			loansResponse.setData(true);
-			if (!loanApplicationService.isApplicationIdActive(applicationId)) {
+			//
+			if(!loanApplicationService.getByProposalId(proposalId)) {
+			//if (!loanApplicationService.isApplicationIdActive(applicationId)) {
 				loansResponse.setData(false);
 				loansResponse.setMessage("Requested user is Inactive");
 				CommonDocumentUtils.endHook(logger, IS_FINAL_LOCKED);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
-			if (!loanApplicationService.isFinalLocked(applicationId, userId)) {
-				loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
+			if (!loanApplicationService.isFinalLockedByProposalId(proposalId, userId)) {
+			//if (!loanApplicationService.isFinalLocked(applicationId, userId)) {
+				loansResponse.setData(loanApplicationService.isFinalLockedByProposalId(applicationId, userId));
+				//loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
 				loansResponse.setMessage("Requested User has not filled Final Details");
 				if (CommonUtils.UserType.FUND_PROVIDER == userType) {
 					logger.info("Start Sending Mail To Fs for Fill Final Details When FP Click View More Details");
@@ -842,7 +849,7 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			JSONObject json = new JSONObject();
-			json.put("isPrimaryLock", loanApplicationService.isPrimaryLockedByProposalId(applicationId, userId));
+			json.put("isPrimaryLock", loanApplicationService.isPrimaryLocked(applicationId, userId));
 			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
 			loansResponse.setData(json);
@@ -857,9 +864,10 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/get_selfview_primary_locked/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/get_selfview_primary_locked/{applicationId}/{proposalId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getSelfViewAndPrimaryLocked(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+			@PathVariable("proposalId") Long proposalId,HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("proposalId===================>"+proposalId +"applicationID=====================>>>"+applicationId);
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getSelfViewAndPrimaryLocked");
@@ -870,7 +878,7 @@ public class LoanApplicationController {
 			 * userId = (Long) request.getAttribute(CommonUtils.USER_ID); }
 			 */
 
-			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+			if (CommonUtils.isObjectNullOrEmpty(applicationId) ||CommonUtils.isObjectNullOrEmpty(proposalId)) {
 				logger.error(APPLICATION_ID_MUST_NOT_BE_NULL);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
@@ -1920,17 +1928,19 @@ public class LoanApplicationController {
 		}
 
 	}
-
-	@RequestMapping(value = "/get_client/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoanApplicationRequest> getClient(@PathVariable("id") Long id) {
+/**
+ * used the proposal id instead of applicationId
+ * */
+	@RequestMapping(value = "/get_client/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoanApplicationRequest> getClient(@PathVariable("proposalId") Long proposalId) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Loan Application Details. ID==>" + id);
+			if (proposalId == null) {
+				logger.warn("ID Require to get Loan Application Details. ID==>" + proposalId);
 				return null;
 			}
 			CommonDocumentUtils.endHook(logger, "get");
-			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getFromClient(id), HttpStatus.OK);
+			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getFromClient(proposalId), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details from Client==>", e);
@@ -3414,13 +3424,14 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getLoanApplicationById/{applicationId}", method = RequestMethod.GET)
-	public ResponseEntity<LoansResponse> getLoanApplicationById(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+	@RequestMapping(value = "/getLoanApplicationById/{proposalId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getApplicationProposalByProposalId(@PathVariable("proposalId") Long proposalId, HttpServletRequest request) {
 		try {
 			logger.info("Inside getLoanApplicationById start");
-			ApplicationProposalMapping applicationMaster = appPropMappService.getByApplicationId(applicationId);
+			ApplicationProposalMapping applicationMaster = appPropMappService.getApplicationProposalMappingByProposalId(proposalId);
 			if (applicationMaster == null) {
-				throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+				logger.info("may be Loan Application is inActive");
+				throw new NullPointerException("Invalid Loan Application ID==>" + proposalId);
 			}
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			BeanUtils.copyProperties(applicationMaster, applicationRequest);

@@ -242,11 +242,11 @@ public class LoansClient {
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
     private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
     private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
-    private static final String GET_LOAN_PROPOSAL_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
+    private static final String GET_LOAN_APPLICATION_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
     private static final String AND_FOR_APPLICATION_ID = " and For Application Id====>";
-
     private static final String REQ_AUTH = "req_auth";
-
+    private static final String GET_CORPORATE_BY_PROPOSAL_ID="/final_info/getByProposalId";
+    
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -2453,8 +2453,23 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getLoanByApplicationId(Long applcationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_PROPOSAL_BY_PROPOSAL_ID).concat("/" + applcationId);
+	public LoansResponse getLoanApplicationByProposalId(Long proposalId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_APPLICATION_BY_PROPOSAL_ID).concat("/" + proposalId);
+		try {
+			logger.info("Enter in GET_LOAN_PROPOSAL_BY_PROPOSAL_ID ---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available While Get responce from /GET_LOAN_PROPOSAL_BY_PROPOSAL_ID");
+		}
+	}
+	
+	public LoansResponse getCorporateApplicantByProposalId(Long proposalId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_CORPORATE_BY_PROPOSAL_ID).concat("/" + proposalId);
 		try {
 			logger.info("Enter in GET_LOAN_PROPOSAL_BY_PROPOSAL_ID ---------->" + url);
 			HttpHeaders headers = new HttpHeaders();

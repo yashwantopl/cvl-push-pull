@@ -88,12 +88,12 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		case WORKING_CAPITAL:
 				/*loansResponse.setData(workingCapitalPrimaryViewService.getWorkingCapitalPrimaryViewDetails(applicantId, null, null));
 				loansResponse.setMessage(LoanType.WORKING_CAPITAL.getId().toString());*/
-				loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId, null, null));
+				loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId,null, null, null));
 				loansResponse.setMessage(LoanType.WORKING_CAPITAL.getId().toString());
 			break;
 		case TERM_LOAN:
 			//loansResponse.setData(termLoanPrimaryViewService.getTermLoanPrimaryViewDetails(applicantId, null, null));
-			loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId, null, null));
+			loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId,null, null, null));
 			loansResponse.setMessage(LoanType.TERM_LOAN.getId().toString());
 			break;
 		case PERSONAL_LOAN:
@@ -114,7 +114,7 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 			break;
 		case UNSECURED_LOAN:
 			//loansResponse.setData(unsecuredLoanPrimaryViewService.getUnsecuredLoanPrimaryViewDetails(applicantId, null, null));
-			loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId, null, null));
+			loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId,null, null, null));
 			loansResponse.setMessage(LoanType.UNSECURED_LOAN.getId().toString());
 			break;
 		

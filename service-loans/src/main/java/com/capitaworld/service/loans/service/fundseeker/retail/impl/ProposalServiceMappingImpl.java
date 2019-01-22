@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
@@ -302,7 +303,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 							.getByProposalId(proposalMappingId);
-					System.out.println("User Is: " + proposalrequest.getUserId() + " Applicationid: " + applicationId + " Proposal Mapping id: "  + proposalMappingId);
 
 					if (corporateApplicantDetail == null)
 						continue;
@@ -539,6 +539,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						corporateProposalDetails.setIsAssignedToBranch(false);
 					}
+
+					//checking whether proposal already sanction or not.
+					ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(applicationId);
+					if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+						if (!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) {
+							corporateProposalDetails.setIsSanction(true);
+						} else {
+							corporateProposalDetails.setIsSanction(false);
+						}
+					} else {
+						corporateProposalDetails.setIsSanction(false);
+					}
+					//
+
 					proposalDetailsList.add(corporateProposalDetails);
 				} else {
 					Long fpProductId = request.getFpProductId();
@@ -1376,11 +1390,88 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public ProposalMappingResponse get(ProposalMappingRequest request) {
 		ProposalMappingResponse response = new ProposalMappingResponse();
+		ProposalMappingRequest proposalMappingRequest=null;
 		try {
 			response = proposalDetailsClient.getProposal(request);
+
+			proposalMappingRequest = (ProposalMappingRequest) MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
+
+			ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(proposalMappingRequest.getApplicationId());
+
+			Boolean isButtonDisplay=true;
+			String messageOfButton=null;
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				if(!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString()))
+				{
+					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Sanctioned by Other Bank.";
+					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Disbursed by Other Bank.";
+					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
+					isButtonDisplay=false;
+
+					proposalMappingRequest.setMessageOfButton(messageOfButton);
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+				else
+				{
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+			}
+			else
+			{
+				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			}
+			response.setData(proposalMappingRequest);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+
+		return response;
+	}
+
+	@Override
+	public ProposalMappingResponse getSanctionProposalByApplicationId(Long applicationId,Long userOrgId) {
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		ProposalMappingRequest proposalMappingRequest=new ProposalMappingRequest();
+		try {
+
+			ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(applicationId);
+
+			Boolean isButtonDisplay=true;
+			String messageOfButton=null;
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				if(proposalDetails.getUserOrgId() != userOrgId)
+				{
+					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Sanctioned by Other Bank.";
+					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Disbursed by Other Bank.";
+					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
+					isButtonDisplay=false;
+
+					proposalMappingRequest.setMessageOfButton(messageOfButton);
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+				else
+				{
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+			}
+			else
+			{
+				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			}
+			response.setData(proposalMappingRequest);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
 		return response;
 	}
 
@@ -2266,26 +2357,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest,Long userOrgId) {
 		LoansResponse loansResponse = new LoansResponse();
 
 		try {
-			// "+userRequest.getApplicationId() + "userRequest.getId() :
-			// "+userRequest.getId()+" getLoanAmount() :
-			// "+userRequest.getLoanAmount());
 			loansResponse.setFlag(true);
 
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-					.findOne(userRequest.getApplicationId());
+			ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(userRequest.getApplicationId(),userOrgId);
 
-			if (loanApplicationMaster != null && userRequest != null) {
-				// Check If Requested Application is assigned to Currunt Fp
+			if (applicationProposalMapping != null && userRequest != null) {
 				// Cheker or not
 				UserResponse userResponse = null;
-				userRequest.setProductIdString(CommonUtility.encode("" + loanApplicationMaster.getProductId()));
-				if (loanApplicationMaster.getNpUserId() == null) {
+				userRequest.setProductIdString(CommonUtility.encode("" + applicationProposalMapping.getProductId()));
+				if (applicationProposalMapping.getNpUserId() == null) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
-				} else if ((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
+				} else if ((applicationProposalMapping.getNpUserId()).equals(userRequest.getId())) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
 				}
 
@@ -2297,8 +2383,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
-					// "+checkerDetailRequest.getMinAmount() + " getMaxAmount :
-					// "+checkerDetailRequest.getMaxAmount());
 					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null
 							&& checkerDetailRequest.getMaxAmount() != null
 							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()

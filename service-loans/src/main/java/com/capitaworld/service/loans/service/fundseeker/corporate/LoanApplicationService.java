@@ -40,7 +40,7 @@ public interface LoanApplicationService {
 	
 	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception;
 
-	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
+	public LoanApplicationRequest get(Long id, Long userId,Long userOrdId) throws Exception;
 	
 	public Long getIrrByApplicationId(Long id) throws Exception;
 
@@ -76,7 +76,9 @@ public interface LoanApplicationService {
 
 	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception;
 
-	public Boolean isApplicationIdActive(Long applicationId) throws Exception;
+	public Boolean isApplicationIdActive(Long applicationId) throws Exception; // previous
+	public Boolean getByProposalId(Long proposalId) throws Exception; // new 
+	
 	
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception;
 	

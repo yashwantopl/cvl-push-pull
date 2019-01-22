@@ -119,6 +119,28 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query(value = "select * from application_proposal_mapping lm where lm.application_id =:applicationId and lm.proposal_id =:proposalId and lm.is_active= true",nativeQuery = true)
    	public ApplicationProposalMapping getByApplicationIdAndProposalId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
    		//ENDS HERE=====
-   
+
+    @Query(value = "select * from application_proposal_mapping lm where lm.proposal_id =:proposalId and lm.is_active= true",nativeQuery = true)
+   	public ApplicationProposalMapping  getByApplicationIdAndProposalId(@Param("proposalId") Long proposalId);
+    
+    
+    
+	// STARTS HERE==MULTIPLE BANK===>
+    @Query(value = "select count(proposal_id) from application_proposal_mapping lm where  lm.proposal_id =:proposalId and lm.is_active= true",nativeQuery = true)
+   	public Long getByProposalId(@Param("proposalId") Long proposalId);
+
+    
+   	public ApplicationProposalMapping  findByProposalIdAndIsActive(Long proposalId,Boolean isActive);
+
+
+    //nhbs-pagination proposal mapping
+    @Query("select apm from ApplicationProposalMapping apm where apm.applicationStatusMaster.id >=:id and apm.npAssigneeId=:assigneeId and  apm.isActive = true order by apm.modifiedDate desc")
+    public List<ApplicationProposalMapping> getAssignedProposalsByAssigneeIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("assigneeId") Long assigneeId);
+
+    @Query("select apm from ApplicationProposalMapping apm where apm.npUserId=:npUserId and  apm.isActive = true ")
+    public List<ApplicationProposalMapping> getAssignedProposalsByNpUserIdForPagination(Pageable pageable,@Param("npUserId") Long npUserId);
+
+   	//ENDS HERE===== 
+
     
 }

@@ -55,7 +55,7 @@ public class ApplicationProposalMapping implements Serializable {
     private Boolean isActive = true;
 
     @Column(name = "is_final_locked")
-    private Boolean isFinalLocked = true;
+    private Boolean isFinalLocked ;
 
     @Column(name = "is_primary_locked")
     private Boolean isPrimaryLocked = true;
