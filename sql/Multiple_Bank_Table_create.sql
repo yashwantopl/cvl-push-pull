@@ -1,11 +1,11 @@
 /*
 SQLyog Community v13.1.1 (64 bit)
-MySQL - 5.7.17-log 
+MySQL - 5.7.23-log
 *********************************************************************
 */
 /*!40101 SET NAMES utf8 */;
 
-create table `application_proposal_mapping` (
+create table `loan_application`.application_proposal_mapping` (
 	`proposal_id` bigint (20),
 	`application_id` bigint (20),
 	`tenure` Decimal (11),
