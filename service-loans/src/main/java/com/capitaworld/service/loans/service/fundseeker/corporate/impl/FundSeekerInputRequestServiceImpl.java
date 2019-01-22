@@ -573,6 +573,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 				try {
 					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
+					if (response != null){
+						logger.info("callHunterIIAPI is called");
+					}
 				}
 				catch (Exception e) {
 					logger.error("End invokeFraudAnalytics() with Error : "+e.getMessage());
