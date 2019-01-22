@@ -1124,6 +1124,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	@Override
 	public DDRFormDetailsRequest get(Long appId, Long userId) {
 		DDRFormDetailsRequest dDRFormDetailsRequest = null;
+
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
 		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			Long ddrFormId = dDRFormDetails.getId();
@@ -1140,6 +1141,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			// dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
+			
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId, appId, userId, false));
 			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId, appId, userId, false));
 			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
@@ -1155,6 +1157,48 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		return dDRFormDetailsRequest;
 	}
+	
+	
+	// NEW BASED ON GET PROPOSAL ID BASED
+	@Override
+	public DDRFormDetailsRequest get(Long appId, Long userId,Long proposalId) {
+		DDRFormDetailsRequest dDRFormDetailsRequest = null;
+		
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(appId,proposalId); //NEW BASED ON PROPOSAL ID
+		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			Long ddrFormId = dDRFormDetails.getId();
+			dDRFormDetailsRequest = new DDRFormDetailsRequest();
+			BeanUtils.copyProperties(dDRFormDetails, dDRFormDetailsRequest);
+			dDRFormDetailsRequest.setOutsideLoansString(CommonUtils.checkString(dDRFormDetails.getOutsideLoans()));
+			dDRFormDetailsRequest.setLoansFromFamilyMembersRelativeString(CommonUtils.checkString(dDRFormDetails.getLoansFromFamilyMembersRelative()));
+			dDRFormDetailsRequest.setdDRAuthSignDetailsList(getAuthorizedSignDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRCreditCardDetailsList(getCreditCardDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRCreditorsDetailsList(getCreaditorsDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDROperatingOfficeList(getOfficeDetails(ddrFormId, DDRFrames.OPERATING_OFFICE.getValue()));
+			dDRFormDetailsRequest.setdDRRegisteredOfficeList(getOfficeDetails(ddrFormId, DDRFrames.REGISTERED_OFFICE.getValue()));
+			dDRFormDetailsRequest.setdDROtherBankLoanDetailsList(getOtherBankLoanDetails(ddrFormId));
+			// dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
+			
+			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId, appId, userId, false));
+			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId, appId, userId, false));
+			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
+			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
+			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
+			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
+		} else {
+			dDRFormDetailsRequest = new DDRFormDetailsRequest();
+			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null, appId, userId, false));
+			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(null, appId, userId, false));
+			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(null));
+			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
+		}
+		return dDRFormDetailsRequest;
+	}
+	
+	
+	// ENDS HERE CALCULATIONS--------------->
 
 	@Override
 	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId, Long userId) {
@@ -2241,12 +2285,18 @@ public class DDRFormServiceImpl implements DDRFormService {
 		logger.info("Enter in get one form details service");
 		DDROneFormResponse response = new DDROneFormResponse();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicationId);
+		
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId); //NEW BASED ON PROPOSAL MAPPING 
+		
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 			logger.info("Data not found by this application id -------------------> " + applicationId);
 			return null;
 		}
-		response.setApprovedDate(loanApplicationMaster.getApprovedDate());
-		response.setDdrStatusId(loanApplicationMaster.getDdrStatusId());
+		/*response.setApprovedDate(loanApplicationMaster.getApprovedDate());
+		response.setDdrStatusId(loanApplicationMaster.getDdrStatusId());*/
+		
+		response.setApprovedDate(applicationProposalMapping.getApprovedDate()); // NEW 
+		response.setDdrStatusId(applicationProposalMapping.getDdrStatusId()); // NEW 
 		
 		//PROFILE DETAILS
 		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(applicationId);
@@ -5076,6 +5126,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 			throw new Exception();
 		}
 	}
+	
+	
+	public Boolean isDDRApprovedByProposaId(Long proposalId) throws Exception {
+		try {
+			
+			  ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
+
+			  if (applicationProposalMapping.getDdrStatusId() == CommonUtils.ApplicationStatus.APPROVED) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			throw new Exception();
+		}
+	}
+	
 
 	public String convertValue(Integer value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? value.toString() : "0";

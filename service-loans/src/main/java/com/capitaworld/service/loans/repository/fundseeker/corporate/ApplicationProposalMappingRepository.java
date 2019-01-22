@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.repository.fundseeker.corporate;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
+
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -124,7 +126,7 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
    	public ApplicationProposalMapping  getByApplicationIdAndProposalId(@Param("proposalId") Long proposalId);
     
     
-    
+ 
 	// STARTS HERE==MULTIPLE BANK===>
     @Query(value = "select count(proposal_id) from application_proposal_mapping lm where  lm.proposal_id =:proposalId and lm.is_active= true",nativeQuery = true)
    	public Long getByProposalId(@Param("proposalId") Long proposalId);
@@ -132,7 +134,13 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     
    	public ApplicationProposalMapping  findByProposalIdAndIsActive(Long proposalId,Boolean isActive);
 
-
+   	// getting applicationId By ProposalId for DDR purpose in final teaser
+	@Query(value = "select lm.application_id from application_proposal_mapping lm where lm.proposal_id =:proposalId and lm.is_active= true",nativeQuery = true)
+	public Long getApplicationIdByProposalId(@Param("proposalId") Long proposalId);
+	
+	@Query(value = "select lm.user_id from application_proposal_mapping lm where lm.proposal_id =:proposalId and lm.is_active= true",nativeQuery = true)
+	public Long getUserIdByProposalId(@Param("proposalId") Long proposalId);
+   	
     //nhbs-pagination proposal mapping
     @Query("select apm from ApplicationProposalMapping apm where apm.applicationStatusMaster.id >=:id and apm.npAssigneeId=:assigneeId and  apm.isActive = true order by apm.modifiedDate desc")
     public List<ApplicationProposalMapping> getAssignedProposalsByAssigneeIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("assigneeId") Long assigneeId);
