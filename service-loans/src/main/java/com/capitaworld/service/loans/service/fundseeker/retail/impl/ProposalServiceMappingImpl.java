@@ -743,7 +743,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-				UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+				UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
@@ -758,7 +758,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				userRequest.setId(master.getUserId());
 
 				// calling USER for getting fp details
-				UserResponse userResponse = usersClient.getFPDetails(userRequest);
+				UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
@@ -1260,7 +1260,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
@@ -1280,7 +1280,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClient.getFPDetails(userRequest);
+						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -1332,7 +1332,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
@@ -1348,7 +1348,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClient.getFPDetails(userRequest);
+						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),

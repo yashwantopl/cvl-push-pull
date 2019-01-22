@@ -2414,13 +2414,14 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 
-		} catch (Exception e) {
+		} catch (LoansException e) {
 			logger.error("Error while saveDetailedInfo()----------------------> ", e);
-			if (e instanceof LoansException)
-				loansResponse = new LoansResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
-			else
-				loansResponse = new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
-						HttpStatus.OK);
+			loansResponse = new LoansResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
+			loansResponse.setData(isSuccess);
+			reason = "Error while save profileReqRes ===> Msg " + e.getMessage();
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			loansResponse = new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(),HttpStatus.OK);
 			loansResponse.setData(isSuccess);
 			reason = "Error while save profileReqRes ===> Msg " + e.getMessage();
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

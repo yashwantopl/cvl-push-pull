@@ -61,6 +61,10 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
 			BeanUtils.copyProperties(finalCarLoanDetailRequest, finalCarLoanDetail,corporate);
 			finalCarLoanDetail = finalCarLoanDetailRepository.save(finalCarLoanDetail);
+
+			if (finalCarLoanDetail != null){
+				logger.info("finalCarLoanDetail is saved successfully");
+			}
 			
 			//setting Flag to DB
 			if(!CommonUtils.isObjectNullOrEmpty(finalCarLoanDetailRequest.getIsFinalInformationFilled())){

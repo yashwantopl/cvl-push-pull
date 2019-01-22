@@ -215,6 +215,8 @@ public class OperatingStatementDetailsExcelReader {
             operatingStatementDetails.setRetainedProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setRetainedProfitOrNetProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
+            log.info("arrayListCounter : "+arrayListCounter);
+
             operatingStatementDetails.setIsActive(true);
             
 //          operatingStatementDetails.setCreatedBy(createdBy);

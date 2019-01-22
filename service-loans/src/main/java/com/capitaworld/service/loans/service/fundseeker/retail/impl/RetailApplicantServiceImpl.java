@@ -110,6 +110,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setBusinessStartDate(businessStartDate);
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
+
+			if (applicantDetail != null){
+				logger.info("applicantDetail is saved successfully");
+			}
+
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
 			}
@@ -163,6 +168,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail.setBirthDate(applicantRequest.getDob());
 			applicantDetail = applicantRepository.save(applicantDetail);
+
+			if (applicantDetail != null){
+				logger.info("applicantDetail is saved successfully");
+			}
 
 			//SAVE INCOME DETAILS 
 			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
