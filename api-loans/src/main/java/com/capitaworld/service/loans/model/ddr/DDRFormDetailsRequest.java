@@ -14,6 +14,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	
 	private Long id;
 	private Long applicationId;
+	private Long proposalMappingId;
 //	private String referenceNo;
 	private Long userId;
 	private String godownStockyard;
@@ -1113,13 +1114,20 @@ public class DDRFormDetailsRequest implements Serializable {
 		this.password = password;
 	}
 
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
 
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
 
 	@Override
 	public String toString() {
 		return "DDRFormDetailsRequest{" +
 				"id=" + id +
 				", applicationId=" + applicationId +
+				", proposalMappingId=" + proposalMappingId +
 				", userId=" + userId +
 				", godownStockyard='" + godownStockyard + '\'' +
 				", companySuccessPlan='" + companySuccessPlan + '\'' +

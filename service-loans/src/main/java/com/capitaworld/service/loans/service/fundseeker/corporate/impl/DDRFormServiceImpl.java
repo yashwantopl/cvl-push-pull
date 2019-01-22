@@ -1069,8 +1069,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 		Long userId = ddrFormDetailsRequest.getUserId();
 
 		try {
-			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByIdAndAppIdAndIsActive(
-					ddrFormDetailsRequest.getId(), ddrFormDetailsRequest.getApplicationId());
+			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByIdAndProposaMappingIdAndApplicationId(
+					ddrFormDetailsRequest.getId(), ddrFormDetailsRequest.getProposalMappingId(),ddrFormDetailsRequest.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 				logger.info("DDR ===============> New DDR Form Saving ------------------------->");
 				dDRFormDetails = new DDRFormDetails();
@@ -4679,10 +4679,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		// DDRFormDetailsRequest
 		try {
 			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
-					.getByAppIdAndIsActive(documentUploadFlagRequest.getApplicationId());
+					.getByProposaMappingIdAndApplicationId(documentUploadFlagRequest.getProposalMappingId(), documentUploadFlagRequest.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 				dDRFormDetails = new DDRFormDetails();
 				dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());
+				dDRFormDetails.setProposalMappingId(documentUploadFlagRequest.getProposalMappingId());
 				dDRFormDetails.setUserId(documentUploadFlagRequest.getUserId());
 				dDRFormDetails.setCreatedBy(documentUploadFlagRequest.getUserId());
 				dDRFormDetails.setCreatedDate(new Date());
@@ -4969,7 +4970,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 				if (ddrUploadRequest.getTotalDocs() < 1) {
 					DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
-							.getByAppIdAndIsActive(ddrUploadRequest.getApplicationId());
+							.getByProposaMappingIdAndApplicationId(ddrUploadRequest.getProposalMappingId(),ddrUploadRequest.getApplicationId());
 
 					switch (ddrUploadRequest.getModelName()) {
 					case "fieldAuditReport":
