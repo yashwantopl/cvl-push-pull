@@ -1746,7 +1746,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(userRequest.getApplicationId());
 
-			if (loanApplicationMaster != null && userRequest != null) {
+			if (loanApplicationMaster != null) {
 				// Check If Requested Application is assigned to Currunt Fp
 				// Cheker or not
 				UserResponse userResponse = null;

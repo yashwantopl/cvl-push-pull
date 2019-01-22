@@ -918,7 +918,7 @@ public class CommonUtils {
 				return new BigDecimal((String) obj.toString().replaceAll(",", ""));
 			}
 			if (obj instanceof Double) {
-				return new BigDecimal((Double) obj);
+				return BigDecimal.valueOf((Double) obj);
 			}
 			if (obj instanceof Long) {
 				return new BigDecimal((Long) obj);
@@ -937,12 +937,10 @@ public class CommonUtils {
 			return "zero";
 		}
 
-		String snumber = Long.toString(number);
-
 		// pad with "0"
 		String mask = "000000000000";
 		DecimalFormat df = new DecimalFormat(mask);
-		snumber = df.format(number);
+		String snumber = df.format(number);
 
 		// XXXnnnnnnnnn
 		int billions = Integer.parseInt(snumber.substring(0, 3));
