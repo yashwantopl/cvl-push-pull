@@ -635,7 +635,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	public Long saveDocumentFLag(DocumentRequest documentUploadFlagRequest) throws Exception {
 //		DDRFormDetailsRequest
 		try{
-		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(documentUploadFlagRequest.getApplicationId());
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(documentUploadFlagRequest.getProposalMappingId(),documentUploadFlagRequest.getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(dDRFormDetails)){
 			dDRFormDetails = new DDRFormDetails();
 			dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());
