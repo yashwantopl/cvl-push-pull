@@ -25,6 +25,7 @@ public interface DDRFormService {
 	public void saveMergeDDRByProposalId(DDRRequest dDRRequest) throws Exception;
 	
 	public DDRFormDetailsRequest get(Long id,Long userId);
+	public DDRFormDetailsRequest get(Long id,Long userId,Long proposalId); 
 	
 	public List<JSONObject> getFinancialSummaryFieldsList();
 	
@@ -34,7 +35,8 @@ public interface DDRFormService {
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception;
 	
-	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception;
+	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception; // PREVIOUS
+	public Boolean isDDRApprovedByProposaId(Long proposalId) throws Exception; // NEW BASED ON PROPOSAL ID 
 	
 	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
 	

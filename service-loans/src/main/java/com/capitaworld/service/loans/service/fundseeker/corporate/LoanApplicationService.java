@@ -11,6 +11,7 @@ import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.gateway.model.GatewayRequest;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -136,7 +137,11 @@ public interface LoanApplicationService {
 	
 	public Long getTotalUserApplication(Long userId);
 	
-	public Long getUserIdByApplicationId(Long applicationId);
+	public Long getUserIdByApplicationId(Long applicationId); // previous
+	
+	public Long getApplicationIdByProposalId(Long proposalId); //NEW 
+	
+	public Long getUserIdByProposalId(Long proposalId); //NEW 
 	
 	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws Exception;
 	

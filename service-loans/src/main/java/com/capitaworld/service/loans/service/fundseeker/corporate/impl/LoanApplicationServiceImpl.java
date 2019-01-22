@@ -4511,6 +4511,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public Long getUserIdByApplicationId(Long applicationId) {
 		return loanApplicationRepository.getUserIdByApplicationId(applicationId);
 	}
+	
+	@Override
+	public Long getApplicationIdByProposalId(Long proposalId) {
+		return applicationProposalMappingRepository.getApplicationIdByProposalId(proposalId);  // NEW 
+	}
+	
+	@Override
+	public Long getUserIdByProposalId(Long proposalId) {
+		return applicationProposalMappingRepository.getUserIdByProposalId(proposalId);  // NEW 
+	}
+	
 
 	@Override
 	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws Exception {
