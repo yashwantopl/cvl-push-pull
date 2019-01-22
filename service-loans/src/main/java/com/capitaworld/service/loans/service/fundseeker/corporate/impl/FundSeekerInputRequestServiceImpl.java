@@ -491,7 +491,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				/*if(diff.getMonths() > 6) {
 					diffYear = diffYear + 1;
 				}*/
-				fundSeekerInputResponse.setEstablishmentYear(diffYear);
+				fundSeekerInputResponse.setEstYear(diffYear);
 
 			}catch (Exception e) {
 				logger.error("error while find diff of establishment year : ",e);

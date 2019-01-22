@@ -87,7 +87,7 @@ public class FundSeekerInputRequestResponse {
     private Integer sinceYear;
     private Integer sinceMonth;
     
-    private Integer establishmentYear;
+    private Integer estYear;
 
     //-------------For NTB
     private Double tenureRequired;
@@ -600,12 +600,13 @@ public class FundSeekerInputRequestResponse {
 		this.sinceMonth = sinceMonth;
 	}
 	
-	public Integer getEstablishmentYear() {
-		return establishmentYear;
+
+	public Integer getEstYear() {
+		return estYear;
 	}
 
-	public void setEstablishmentYear(Integer establishmentYear) {
-		this.establishmentYear = establishmentYear;
+	public void setEstYear(Integer estYear) {
+		this.estYear = estYear;
 	}
 
 	@Override
