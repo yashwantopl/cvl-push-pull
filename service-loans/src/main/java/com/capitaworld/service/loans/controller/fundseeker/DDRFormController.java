@@ -26,6 +26,7 @@ import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
@@ -347,19 +348,30 @@ public class DDRFormController {
 		}
 	}
 
-	@RequestMapping(value = "/generateDDRPDF/{appId}", method = RequestMethod.GET)
-	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "clientId", required = false) Long clientId) {
+	@RequestMapping(value = "/generateDDRPDF/{appId}/{proposalId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId,@PathVariable(value = "proposalId") Long proposalId, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("In generateDDRPDF");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
+		
+		Long  toApplicationId = loanApplicationService.getApplicationIdByProposalId(proposalId);
+		Long toUserId = loanApplicationService.getUserIdByProposalId(proposalId);
+		
+/*		 toApplicationId = ApplicationProposalMapping.getApplicationId();
+	     Long toUserId = ApplicationProposalMapping.getUserId();*/
+	     logger.info("THIS IS THE USER ID ----------->"+toUserId);
+	     logger.info("THIS IS THE application Id ----------->"+toApplicationId);
+		
 		if (CommonUtils.UserType.FUND_PROVIDER == userType) {
-			userId = loanApplicationService.getUserIdByApplicationId(appId);
+		//userId = loanApplicationService.getUserIdByApplicationId(appId);
+			userId = loanApplicationService.getUserIdByApplicationId(toApplicationId); // NEW BASED ON PROPOSAL MAPPING ID 
 		} else if (CommonDocumentUtils.isThisClientApplication(request)) {
 			userId = clientId;
 		}
 		Boolean isDDRApproved = false;
 		try {
-			isDDRApproved = ddrFormService.isDDRApproved(userId, appId);
+			//isDDRApproved = ddrFormService.isDDRApproved(userId, appId); // PRREVIOUS
+			isDDRApproved = ddrFormService.isDDRApprovedByProposaId(proposalId); // NEW BASED ON PROPOSALID 
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -369,8 +381,12 @@ public class DDRFormController {
 		}
 
 		try {
-			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId, userId);
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
+			/*DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId, userId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);*/ // PREVIOUS
+			
+			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(toApplicationId, toUserId,proposalId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(toUserId, toApplicationId,true); // BASED ON NEW APPLICATION ID 
+			
 			DDRFormDetailsRequest.printFields(dDRFormDetailsRequest);
 			DDROneFormResponse.printFields(oneFormDetails);
 			Map<String, Object> obj = new HashMap<String, Object>();
@@ -386,10 +402,10 @@ public class DDRFormController {
 			MultipartFile multipartFile = new DDRMultipart(byteArr);
 			JSONObject jsonObj = new JSONObject();
 
-			jsonObj.put("applicationId", appId);
+			jsonObj.put("applicationId", toApplicationId);
 			jsonObj.put("productDocumentMappingId", 329L);
 			jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-			jsonObj.put("originalFileName", "NHBS_" + appId + ".pdf");
+			jsonObj.put("originalFileName", "NHBS_" + toApplicationId + ".pdf");
 
 			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 			if (documentResponse.getStatus() == 200) {
