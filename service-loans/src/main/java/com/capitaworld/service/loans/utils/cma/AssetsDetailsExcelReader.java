@@ -230,7 +230,8 @@ public class AssetsDetailsExcelReader
             cmaAssets.setTotalOutSideLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setTotalTermLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
-            
+            log.info("arrayListCounter : "+arrayListCounter);
+
             cmaAssets.setIsActive(true);
             
 //          cmaAssets.setCreatedBy(createdBy);

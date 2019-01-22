@@ -1429,9 +1429,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 				
 				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-				String json = ow.writeValueAsString(monthlyDetails);
-				
-//				logger.info("monthlyDetails : "+json);
+				ow.writeValueAsString(monthlyDetails);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);

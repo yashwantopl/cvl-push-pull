@@ -465,7 +465,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String PLEASE_FILL_CO_APPLICANT_1_FINAL_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-1 FINAL details to Move Next !";
 	private static final String PLEASE_FILL_CO_APPLICANT_2_FINAL_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-2 FINAL details to Move Next !";
 	private static final String GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL = "GetLoanDetailsForAdminPanel, from and todate for admin panel --------> ";
-	private static final String DATE_FORMAT_YYYY_MM_DD_HH_MM_SS  = "yyyy/MM/dd hh:mm:ss";
 	private static final String DATE_FORMAT_DD_MM_YYYY = "dd-MM-yyyy";
 
     @Value("${cw.gst.unit.test}")
@@ -1069,6 +1068,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				// calling USER for getting fp details
 				UserResponse userResponse = userClient.getFPDetails(userRequest);
+
+				if (userResponse != null){
+					logger.info("userResponse successfully getFPDetails");
+				}
 
 				// FundProviderDetailsRequest fundProviderDetailsRequest =
 				// MultipleJSONObjectHelper.getObjectFromMap(
@@ -1786,6 +1789,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			logger.info("isPrimaryLocked : "+isPrimaryLocked);
 			/*
 			 * if (!isPrimaryLocked) { response.put(MESSAGE_LITERAL,
 			 * PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT); response.put(RESULT_LITERAL, false);
@@ -4643,6 +4647,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							ProposalMappingRequest mappingRequest = MultipleJSONObjectHelper.getObjectFromMap(
 									(LinkedHashMap<String, Object>) respProp.getData(), ProposalMappingRequest.class);
 							fpProductId = mappingRequest.getFpProductId();
+							logger.info("fpProductId : "+fpProductId);
 						}
 						logger.info("Call Connector client for update payment status");
 						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),

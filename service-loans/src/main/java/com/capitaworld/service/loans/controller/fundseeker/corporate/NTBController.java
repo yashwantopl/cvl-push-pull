@@ -208,6 +208,9 @@ public class NTBController {
             logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
+
+        logger.info("UserId is : "+userId);
+
         // request must not be null
         try {
             if (applicationId == null) {

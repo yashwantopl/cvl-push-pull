@@ -100,7 +100,7 @@ public class DprEighthSheetExcelReader
     }
     public static String getDataFromCell(XSSFSheet sheet,String cellNumber)
     {
-        String returnValue= new String();
+        String returnValue = "";
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());

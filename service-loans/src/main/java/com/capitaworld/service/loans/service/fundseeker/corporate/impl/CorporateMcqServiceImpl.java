@@ -56,6 +56,10 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
             BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.getCORPORATE());
             corporateMcqDetail = corporateMcqDetailRepository.save(corporateMcqDetail);
 
+            if (corporateMcqDetail != null){
+                logger.info("corporateMcqDetail saved successfully");
+            }
+
             // saving Data
            /* saveOverseasNetworkMapping(corporateMcqRequest.getApplicationId(), userId,
                     corporateMcqRequest.getOverseasNetworkIds());

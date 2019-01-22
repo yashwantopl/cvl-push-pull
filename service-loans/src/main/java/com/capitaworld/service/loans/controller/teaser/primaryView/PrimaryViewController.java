@@ -60,6 +60,8 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class PrimaryViewController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PrimaryViewController.class);
+	private static final String USER_ID_MSG = "userId : ";
+	private static final String USER_TYPE_MSG = " userType : ";
 
 	@Autowired
 	private HomeLoanPrimaryViewService homeLoanPrimaryViewService;
@@ -225,6 +227,8 @@ public class PrimaryViewController {
 			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+		logger.info(USER_ID_MSG + userId + USER_TYPE_MSG + userType);
+
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
@@ -298,6 +302,8 @@ public class PrimaryViewController {
 			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+		logger.info(USER_ID_MSG + userId + USER_TYPE_MSG + userType);
+
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
@@ -369,6 +375,8 @@ public class PrimaryViewController {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
+
+		logger.info(USER_ID_MSG + userId + USER_TYPE_MSG + userType);
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);

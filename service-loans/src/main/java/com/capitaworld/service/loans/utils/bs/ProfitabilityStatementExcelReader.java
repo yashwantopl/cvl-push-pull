@@ -217,6 +217,8 @@ public class ProfitabilityStatementExcelReader {
 			bsProfitabilityStatement.setBsProvision(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 			bsProfitabilityStatement.setRetainedProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
+			logger.info("arrayListCounter : "+arrayListCounter);
+
 			bsProfitabilityStatement.setIsActive(true);
 			bsProfitabilityStatement.setCreatedDate(new Date());
 			bsProfitabilityStatement.setModifiedDate(new Date());

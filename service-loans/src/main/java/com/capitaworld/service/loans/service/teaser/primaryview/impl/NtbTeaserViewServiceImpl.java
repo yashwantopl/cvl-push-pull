@@ -523,6 +523,10 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 
+			if (proposalScoreResponse != null){
+				logger.info("getObjectFromMap called successfully");
+			}
+
 			ntbPrimaryViewRespone.setDataList(scoringResponse.getDataList());
 			ntbPrimaryViewRespone.setDataObject(scoringResponse.getDataObject());
 			ntbPrimaryViewRespone.setScoringResponseList(scoringResponse.getScoringResponseList());
