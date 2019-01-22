@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -189,6 +190,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 	@Autowired
 	private PincodeDateService pincodeDateService;
 
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	/*
@@ -278,7 +280,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				ntbPrimaryViewRespone.setNpOrgId(loanApplicationMaster.getNpOrgId());
 				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 					ntbPrimaryViewRespone.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-							? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+							? simpleDateFormat.format(primaryCorporateDetail.getModifiedDate())
 							: null);
 			}
 
@@ -367,8 +369,8 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			 * ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
 			 * CommonUtils.isObjectNullOrEmpty(byIdProCons) ?
 			 * Integer.valueOf(byIdProCons.getValue()) : null); }
-			 */
-			/*
+			 *
+			 *
 			 * if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.
 			 * getProposedDetailsOfUnit())) { ProposedDetailOfUnitNTB byIdProConsDet =
 			 * ProposedDetailOfUnitNTB
@@ -520,6 +522,10 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
+
+			if (proposalScoreResponse != null){
+				logger.info("getObjectFromMap called successfully");
+			}
 
 			ntbPrimaryViewRespone.setDataList(scoringResponse.getDataList());
 			ntbPrimaryViewRespone.setDataObject(scoringResponse.getDataObject());

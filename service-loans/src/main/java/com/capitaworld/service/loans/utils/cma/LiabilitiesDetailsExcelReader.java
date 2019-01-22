@@ -27,7 +27,7 @@ public class LiabilitiesDetailsExcelReader
     private static final List<String> LIABILITIES_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,LiabilitiesDetailsRepository liabilitiesDetailsRepository) throws Exception {
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,LiabilitiesDetailsRepository liabilitiesDetailsRepository) throws ExcelException {
         LIABILITIES_MAPPING_LIST.clear();
         LIABILITIES_MAPPING_LIST.add("11");
         LIABILITIES_MAPPING_LIST.add("12");
@@ -206,7 +206,9 @@ public class LiabilitiesDetailsExcelReader
             cmaLiabilities.setNetWorth(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaLiabilities.setOtherIncomeNeedTocCheckLia(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaLiabilities.setTotalLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
-            
+
+            log.info("arrayListCounter : "+arrayListCounter);
+
             cmaLiabilities.setIsActive(true);
 //          cmaLiabilities.setCreatedBy(createdBy);
 //          cmaLiabilities.setModifiedBy(modifiedBy);

@@ -25,12 +25,6 @@ public class CMAController {
 	@Autowired
 	private CMAService cmaService;
 	
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-	
 	@RequestMapping(value = "/get/{applicationId}",method = RequestMethod.GET)
 	public CMARequest get(@PathVariable("applicationId") Long applicationId) {
 		logger.info("Enter in get CMA details");

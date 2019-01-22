@@ -79,7 +79,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.PL_RETAIL_PRIMARY);
+            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
             copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
 
             applicantRepository.save(applicantDetail);
@@ -104,6 +104,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
                         userId);
+                if (applicationMaster != null){
+                    logger.info("getByIdAndUserId called successfully ");
+                }
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
@@ -208,7 +211,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.PL_RETAIL_PROFILE);
+            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailProfile());
 
             applicantRepository.save(applicantDetail);
 
@@ -290,6 +293,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
                         userId);
+                if (applicationMaster != null){
+                    logger.info("getByIdAndUserId called successfully");
+                }
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
@@ -347,7 +353,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
-            BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
+            BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailPlProfile());
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, PERMANENT_LITERAL);
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
             applicantRepository.save(applicantDetail);
@@ -372,7 +378,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                         + userId + "  ApplicationId==>" + applicationId);
             }
             RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
-            BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
+            BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailPlProfile());
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);

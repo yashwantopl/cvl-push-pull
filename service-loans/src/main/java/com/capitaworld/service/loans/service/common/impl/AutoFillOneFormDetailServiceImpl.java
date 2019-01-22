@@ -1998,7 +1998,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			dmsClient.deleteProductDocument(json.toJSONString());
 			logger.error("Error While Uploading Document==>{}", json.toJSONString());
 		}*/
-		logger.info("================ Exit in readAndSaveExcelData() ===========");
+		logger.info("================ Exit in readAndSaveExcelData() =========== flag : "+flag);
 	}
 
 	public void copyCMAData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,

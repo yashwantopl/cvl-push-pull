@@ -374,7 +374,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// logger.info("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 
 								 mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
@@ -405,7 +404,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// logger.info("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
@@ -424,7 +422,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// logger.info("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
@@ -610,8 +607,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						}
 					}
 
-//					else
-//						address = address + "," + landMark;
 					String city = "";
 					try {
 						city = CommonDocumentUtils.getCity(Long.valueOf(plRequest.getAddressCity().toString()),

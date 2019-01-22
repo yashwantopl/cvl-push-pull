@@ -162,8 +162,13 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 
 						loanDisbursementRequest.setIsDisbursedFrom(2L);
 						loanDisbursementRequest.setOrgId(orgId);
-						IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
+						IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanDisbursementRequest.getApplicationId(),orgId);
 						ineligibleProposalDetails.setIsDisbursed(true);
+						ineligibleProposalDetails.setModifiedDate(new Date());
+						if(!CommonUtils.isObjectNullOrEmpty(loanDisbursementRequest.getActionBy())) {
+							ineligibleProposalDetails.setModifiedBy(Long.valueOf(loanDisbursementRequest.getActionBy()));
+						}
+						ineligibleProposalDetails.setStatus(CommonUtils.InEligibleProposalStatus.DISBURED);
 						LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
 						loanSanctionDomainOld.setIsPartiallyDisbursedOffline(true);
 					}
@@ -202,7 +207,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			return Collections.emptyList();
 		}catch (Exception e){
 			logger.error("Error/Exception in getDisbursedList() -----------------------> Message : ",e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 

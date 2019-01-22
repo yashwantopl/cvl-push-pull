@@ -244,7 +244,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 
 	private List<FutureFinancialEstimatesDetailRequest> getRequestFromDomain(
 			List<FutureFinancialEstimatesDetail> details) {
-		if(CommonUtils.isListNullOrEmpty(details)){
+		if(details == null || details.isEmpty()){
 			return Collections.emptyList();
 		}
 

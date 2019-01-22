@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -305,6 +306,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private ProductMasterRepository productMasterRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	private static final String ASSESSMENT_ID = "assessmentId";
 	private static final String FITCH_RESPONSE = "fitchResponse";
@@ -319,7 +321,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		if(loanApplicationMaster != null) {
 			map.put("applicationCode", loanApplicationMaster.getApplicationCode());
-			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? simpleDateFormat.format(loanApplicationMaster.getApprovedDate()):"-");
 			map.put("isMcqSkipped", loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
 		}
 		
@@ -396,7 +398,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				
 
 		//TIMELINE DATES
-		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {
 			WorkflowRequest workflowRequest = new WorkflowRequest();
 			workflowRequest.setApplicationId(applicationId);
@@ -413,7 +415,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			/*ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());*/
 			Date InPrincipleDate=loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate):"-");
+				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
@@ -441,7 +443,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
+			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? simpleDateFormat.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString()) : "-");
@@ -1219,7 +1221,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin())?decim.format(promotorBackgroundDetailRequest.getDin()).toString() : "");
 					promotorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(promotorBackgroundDetailRequest.getTotalExperience()));
 					promotorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(promotorBackgroundDetailRequest.getNetworth()));
-					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? CommonUtils.DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
+					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? simpleDateFormat.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
 					promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
 					promotorBackgroundDetailResponse.setDesignation(promotorBackgroundDetailRequest.getDesignation());
 					promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
@@ -1427,9 +1429,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 				
 				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-				String json = ow.writeValueAsString(monthlyDetails);
-				
-//				logger.info("monthlyDetails : "+json);
+				ow.writeValueAsString(monthlyDetails);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
@@ -1446,12 +1446,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
-        //SET SHARE FACE VALUE
-		Double shareFaceVal=1.00;
 		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
-				shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+				//SET SHARE FACE VALUE
+				Double shareFaceVal=corporateApplicantDetail.getSharePriceFace();
 				financialInputRequestDbl.setShareFaceValue(shareFaceVal);
 			}else{
 				financialInputRequestDbl.setShareFaceValue(1.00);

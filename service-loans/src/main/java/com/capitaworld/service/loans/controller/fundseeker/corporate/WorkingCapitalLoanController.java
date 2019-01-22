@@ -34,12 +34,6 @@ public class WorkingCapitalLoanController {
 
 	@Autowired
 	private PrimaryWorkingCapitalLoanService primaryWCService;
-	
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
 
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalWorkingCapitalLoanRequest capitalLoanRequest,

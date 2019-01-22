@@ -124,12 +124,6 @@ public class LoanApplicationController {
 	@Autowired
 	private TokenService tokenService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -1247,12 +1241,12 @@ public class LoanApplicationController {
 								HttpStatus.OK);
 
 					}
-					// Integer index = campaignCodes
-					// .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
-					// logger.info("index==={}=of Code====>{}", index,
-					// CommonUtils.CampaignCodes.ALL1MSME.getValue());
-					// if (index > -1) {
-					// }
+					/* Integer index = campaignCodes
+					   .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					   logger.info("index==={}=of Code====>{}", index,
+					   CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					   if (index > -1) {
+					   } */
 				}
 			} catch (Exception e) {
 				logger.error("Error while Set Campaign Code to LoanApplication Master : ",e);
@@ -2420,13 +2414,14 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 
-		} catch (Exception e) {
+		} catch (LoansException e) {
 			logger.error("Error while saveDetailedInfo()----------------------> ", e);
-			if (e instanceof LoansException)
-				loansResponse = new LoansResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
-			else
-				loansResponse = new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
-						HttpStatus.OK);
+			loansResponse = new LoansResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
+			loansResponse.setData(isSuccess);
+			reason = "Error while save profileReqRes ===> Msg " + e.getMessage();
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			loansResponse = new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(),HttpStatus.OK);
 			loansResponse.setData(isSuccess);
 			reason = "Error while save profileReqRes ===> Msg " + e.getMessage();
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -2595,14 +2590,9 @@ public class LoanApplicationController {
 			loansResponse.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,
 					paymentRequest.getUserId()));
 			logger.info("end updatePaymentForMobileStatus()");
-			// return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for mobile==>{}", e);
-			/*
-			 * return new ResponseEntity<LoansResponse>( new
-			 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
-			 * HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-			 */ }
+		}
 
 	}
 
@@ -2664,15 +2654,9 @@ public class LoanApplicationController {
 			loansResponse.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,
 					paymentRequest.getUserId()));
 			logger.info("end updatePaymentForMobileStatus()");
-			// return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for mobile==>{}", e);
-
-			/*
-			 * return new ResponseEntity<LoansResponse>( new
-			 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
-			 * HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-			 */ }
+		}
 
 	}
 

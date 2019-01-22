@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import com.capitaworld.service.loans.exceptions.ExcelException;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -102,7 +104,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	OperatingStatementDetailsService operatingStatementDetailsService; 
 	
 	
-	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws Exception {
+	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws ExcelException {
 		InputStream file;
 		XSSFWorkbook workbook;
 		XSSFSheet operatingStatementSheet,liabilitiesSheet,assetsSheet;
@@ -128,8 +130,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			log.error("Error while reading CMA : ",e);
-			throw e ;
-			/*return false;*/
+			throw new ExcelException(e) ;
 		}
 		
 		return true;

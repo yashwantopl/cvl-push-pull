@@ -32,8 +32,8 @@ public class NTBController {
     private static final Logger logger = LoggerFactory.getLogger(NTBController.class);
 
     private static final String SUCCESSFULLY_FETCHED_MSG = "Successfully Fetched ";
-    private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty ";
-    private static final String APPLICATION_ID_FOR_GETTING_MSG = "Application Id for Getting============>{}";
+    private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty : ";
+    private static final String APPLICATION_ID_FOR_GETTING_MSG = "Application Id for Getting ==>{}";
 
     @Autowired
     private NTBService ntbService;
@@ -42,12 +42,6 @@ public class NTBController {
 
     @Autowired
     private ConnectClient connectClient;
-
-//    @RequestMapping(value = "/ping", method = RequestMethod.GET)
-//    public String getPing() {
-//        logger.info("Ping success");
-//        return "Ping Succeed";
-//    }
 
     @RequestMapping(value = "/oneform_director_detail/get/{directorId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getOneformDetailByDirectorId(@PathVariable("directorId") Long directorId, HttpServletRequest request, @RequestParam(value = "clientId",required = false) Long clientId) {
@@ -214,6 +208,9 @@ public class NTBController {
             logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
+
+        logger.info("UserId is : "+userId);
+
         // request must not be null
         try {
             if (applicationId == null) {

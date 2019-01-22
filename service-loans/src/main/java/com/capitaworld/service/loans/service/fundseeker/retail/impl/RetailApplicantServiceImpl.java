@@ -93,7 +93,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailFinal());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
 					&& applicantRequest.getYear() != null) {
@@ -110,6 +110,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setBusinessStartDate(businessStartDate);
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
+
+			if (applicantDetail != null){
+				logger.info("applicantDetail is saved successfully");
+			}
+
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
 			}
@@ -147,7 +152,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.RETAIL_FINAL_WITH_ID);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.getRetailFinalWithId());
 			applicantDetail.setEmail(applicantRequest.getEmail());
 			applicantDetail.setMobile(applicantRequest.getLanLineNo());
 			Address address = applicantRequest.getFirstAddress();
@@ -163,6 +168,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail.setBirthDate(applicantRequest.getDob());
 			applicantDetail = applicantRepository.save(applicantDetail);
+
+			if (applicantDetail != null){
+				logger.info("applicantDetail is saved successfully");
+			}
 
 			//SAVE INCOME DETAILS 
 			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
@@ -236,7 +245,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 						+ id + "  ApplicationId==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(applicantDetail.getCurrencyId()));
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
@@ -264,7 +273,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailProfile());
 			applicantRepository.save(applicantDetail);
 			// Updating Final Flag
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
@@ -357,11 +366,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
 			}
 			// Email ID
-//			UserResponse userResponse = usersClient.getEmailMobile(userId);
-//			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
-//				@SuppressWarnings("unchecked")
-//				UsersRequest request = MultipleJSONObjectHelper
-//						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+/*			UserResponse userResponse = usersClient.getEmailMobile(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				@SuppressWarnings("unchecked")
+				UsersRequest request = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class); */
 				cibilFullFillOfferRequest.setEmail(applicantDetail.getEmail());
 				cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getMobile());
 //			}

@@ -53,8 +53,12 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
                 corporateMcqDetail.setActive(true);
                 corporateMcqDetail.setApplicationId(new LoanApplicationMaster(corporateMcqRequest.getApplicationId()));
             }
-            BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.CORPORATE);
+            BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.getCORPORATE());
             corporateMcqDetail = corporateMcqDetailRepository.save(corporateMcqDetail);
+
+            if (corporateMcqDetail != null){
+                logger.info("corporateMcqDetail saved successfully");
+            }
 
             // saving Data
            /* saveOverseasNetworkMapping(corporateMcqRequest.getApplicationId(), userId,

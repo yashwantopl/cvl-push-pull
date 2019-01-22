@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -43,6 +44,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
     private PincodeDateService pincodeDateService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws LoansException {
@@ -186,7 +188,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("designation", corpObj.getDesignation());
 							map.put("directorsName", corpObj.getDirectorsName());
 							map.put("totalExperience", corpObj.getTotalExperience());
-							map.put("dob", CommonUtils.DATE_FORMAT.format(corpObj.getDob()));
+							map.put("dob", simpleDateFormat.format(corpObj.getDob()));
 							map.put("mobile", corpObj.getMobile());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
 								Gender byIdGndr = Gender.getById(corpObj.getGender());

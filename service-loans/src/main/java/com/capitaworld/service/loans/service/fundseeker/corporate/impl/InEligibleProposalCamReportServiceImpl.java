@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -179,6 +180,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(InEligibleProposalCamReportServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public Map<String, Object> getInEligibleCamReport(Long applicationId) {
@@ -190,7 +192,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserIdForInEligibleCam(applicationId, userId);
 		if(loanApplicationMaster!= null) {
 		
-			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? simpleDateFormat.format(loanApplicationMaster.getApprovedDate()):"-");
 			
 		}
 		
@@ -250,7 +252,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		//TIMELINE DATES
 		if(loanApplicationMaster != null && loanApplicationMaster.getCreatedDate() != null)
 		{
-			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
 			
 		}
 		
@@ -297,7 +299,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
+			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? simpleDateFormat.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString()) : "-");
@@ -586,12 +588,12 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				}
 				
 
-				//logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
-				//logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
-				//logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				/* logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				   logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				   logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 
 				
-				//map.put("bankStatement", bankStatement);
+				map.put("bankStatement", bankStatement); */
 				map.put("monthlyDetails", monthlyDetails);
 				map.put("top5FundReceived", top5FundReceived);
 				map.put("top5FundTransfered", top5FundTransfered);
@@ -683,12 +685,11 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 			AssetDetailsString assetDetailsString = new AssetDetailsString();
 			CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
-	        //SET SHARE FACE VALUE
-			Double shareFaceVal=1.00;
 			CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
-					shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+					//SET SHARE FACE VALUE
+					Double shareFaceVal=corporateApplicantDetail.getSharePriceFace();
 					financialInputRequestDbl.setShareFaceValue(shareFaceVal);
 				}else{
 					financialInputRequestDbl.setShareFaceValue(1.00);

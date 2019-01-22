@@ -119,7 +119,6 @@ public class PlRetailApplicantController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            //PLRetailApplicantRequest plRetailApplicantRequest = ;
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(plRetailApplicantService.getPrimary(userId,applicationId));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

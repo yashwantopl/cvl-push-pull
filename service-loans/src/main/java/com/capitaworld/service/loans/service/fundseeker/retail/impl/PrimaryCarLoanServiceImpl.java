@@ -51,7 +51,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 				throw new NullPointerException("PrimaryCarLoanDetail not exist in DB with ID=>"
 						+ carLoanDetailRequest.getId() + " and User Id ==>" + userId);
 			}
-			BeanUtils.copyProperties(carLoanDetailRequest, primaryCarLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(carLoanDetailRequest, primaryCarLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			primaryCarLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getTenure()) ? null : (carLoanDetailRequest.getTenure() * 12));
 			primaryCarLoanDetail.setModifiedBy(userId);
 			primaryCarLoanDetail.setModifiedDate(new Date());

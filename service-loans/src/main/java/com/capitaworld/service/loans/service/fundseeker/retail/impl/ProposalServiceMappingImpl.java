@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
+import org.joda.time.DateTimeComparator;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.utility.CibilUtils;
@@ -36,6 +37,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -741,7 +743,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-				UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+				UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
@@ -756,7 +758,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				userRequest.setId(master.getUserId());
 
 				// calling USER for getting fp details
-				UserResponse userResponse = usersClient.getFPDetails(userRequest);
+				UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
@@ -1258,7 +1260,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
@@ -1278,7 +1280,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClient.getFPDetails(userRequest);
+						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -1330,7 +1332,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
@@ -1346,7 +1348,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClient.getFPDetails(userRequest);
+						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -1712,9 +1714,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try {
 			// set branch id to proposal request
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> " + request.toString());
-
+			DateTimeComparator comparator = DateTimeComparator.getDateOnlyInstance();
 			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
-			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0)) {
+			
+			//Comparing Date only
+			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0) {
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 			}
@@ -1742,7 +1746,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(userRequest.getApplicationId());
 
-			if (loanApplicationMaster != null && userRequest != null) {
+			if (loanApplicationMaster != null) {
 				// Check If Requested Application is assigned to Currunt Fp
 				// Cheker or not
 				UserResponse userResponse = null;
@@ -1794,20 +1798,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request,
 			Long userId) {
 
-		// UserResponse userData = usersClient.getUserDetailsById(userId);
+		/* UserResponse userData = usersClient.getUserDetailsById(userId);
 
-		// UsersRequest data = (UsersRequest) userData.getData();
+		   UsersRequest data = (UsersRequest) userData.getData();
 
-		// userData.toString());
+		   userData.toString());
 
-		// Long roleId = (Long) userData.get("roleId");
+		   Long roleId = (Long) userData.get("roleId"); */
 		List<Object[]> result;
 
-		// if(UsersRoles.HO.equals(roleId)) {
-		// result =
-		// proposalDetailRepository.getProposalDetailsByOrgId(userOrgId,
-		// request.getFromDate(), request.getToDate());
-		// } else if(UsersRoles.BO.equals(roleId)) {
+		/* if(UsersRoles.HO.equals(roleId)) {
+		 result =
+		 proposalDetailRepository.getProposalDetailsByOrgId(userOrgId,
+		 request.getFromDate(), request.getToDate());
+		 } else if(UsersRoles.BO.equals(roleId)) { */
 		result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(),
 				request.getToDate());
 		// }

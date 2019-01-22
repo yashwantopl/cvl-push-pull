@@ -27,9 +27,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-//import com.capitaworld.service.rating.RatingClient;
-//import com.capitaworld.service.rating.model.CompanyDetails;
-//import com.capitaworld.service.rating.model.RatingResponse;
 
 @RestController
 @RequestMapping("/fs_profile")
@@ -49,12 +46,6 @@ public class CorporateApplicantController {
 	/*
 	 * @Autowired private RatingClient ratingClient;
 	 */
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
 	
 	@RequestMapping(value = "/saveITRMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveITRMappingData(@RequestBody CorporateApplicantRequest applicantRequest){
@@ -114,12 +105,12 @@ public class CorporateApplicantController {
 				}
 			}
 
-			// ==============
-			// if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
-			// request.getAttribute(CommonUtils.USER_TYPE))
-			// .intValue()) {
-			// applicantRequest.setClientId(clientId);
-			// }
+			/*
+			 if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
+			 request.getAttribute(CommonUtils.USER_TYPE))
+			 .intValue()) {
+			 applicantRequest.setClientId(clientId);
+			 } */
 
 			if (applicantRequest == null) {
 				logger.warn("applicantRequest  can not be empty ==>", userId);
@@ -197,7 +188,6 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getSectorListByIndustryList");
 			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			// Long id=1l;
 			if (id == null) {
 				logger.warn("userId  Require to get sectors Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -380,27 +370,27 @@ public class CorporateApplicantController {
 	 * HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 	 * } }
 	 */
-//	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
-//			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
-//		try {
-//			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
-//				logger.warn("request cannot be empty");
-//				return new ResponseEntity<LoansResponse>(
-//						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-//			} else {
-//				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
-//				LoansResponse loansResponse = new LoansResponse();
-//				loansResponse.setData(response);
-//				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-//			}
-//		} catch (Exception e) {
-//			logger.error("Error while getting msme score==>", e);
-//			return new ResponseEntity<LoansResponse>(
-//					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-//					HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
+/*	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
+			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn("request cannot be empty");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			} else {
+				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
+				LoansResponse loansResponse = new LoansResponse();
+				loansResponse.setData(response);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting msme score==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	} */
 
 	@RequestMapping(value = "/get_coapplicants/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoApplicants(@PathVariable("applicationId") Long applicationId,

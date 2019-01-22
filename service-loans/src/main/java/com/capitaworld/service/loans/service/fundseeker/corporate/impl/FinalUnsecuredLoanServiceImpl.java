@@ -54,8 +54,12 @@ public class FinalUnsecuredLoanServiceImpl implements FinalUnsecuredLoanService 
 				unsecuredLoanDetail.setIsActive(true);
 				unsecuredLoanDetail.setApplicationId(new LoanApplicationMaster(unsecuredLoanRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(unsecuredLoanRequest, unsecuredLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(unsecuredLoanRequest, unsecuredLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			unsecuredLoanDetail = unsecuredLoanDetailRepository.save(unsecuredLoanDetail);
+
+			if (unsecuredLoanDetail != null){
+				logger.info("unsecuredLoanDetail is saved successfully");
+			}
 
 			// saving Data
 			saveOverseasNetworkMapping(unsecuredLoanRequest.getApplicationId(), userId,

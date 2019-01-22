@@ -58,13 +58,6 @@ public class ProductMasterController {
 	@Autowired
 	private ProductMasterService productMasterService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
-	
 	@RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> addProduct(@RequestBody AddProductRequest addProductRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -187,7 +180,6 @@ public class ProductMasterController {
 			}
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			//Long userId=1755l;
 			if(userId==null)
 			{
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
@@ -241,7 +233,6 @@ public class ProductMasterController {
 			}
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			//Long userId=1755l;
 			if(userId==null)
 			{
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
@@ -792,7 +783,6 @@ public class ProductMasterController {
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId==null)
 			{
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
@@ -804,7 +794,6 @@ public class ProductMasterController {
 			corporateProduct.setUserId(userId);
 			corporateProduct.setUserOrgId(userOrgId);
 			boolean response = productMasterService.saveCorporateInTemp(corporateProduct);
-		//	boolean response =true;
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
@@ -849,7 +838,6 @@ public class ProductMasterController {
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId==null)
 			{
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
@@ -861,7 +849,6 @@ public class ProductMasterController {
 			retailProduct.setUserId(userId);
 			retailProduct.setUserOrgId(userOrgId);
 			boolean response = productMasterService.saveRetailInTemp(retailProduct);
-		//	boolean response =true;
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(

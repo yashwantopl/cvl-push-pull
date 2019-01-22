@@ -46,12 +46,6 @@ public class MatchesController {
 	
 	@Autowired
 	private AsyncComponent asyncComponent;
-	
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
 
 	@RequestMapping(value = "/${corporate}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSCorporate(@RequestBody MatchRequest matchRequest,
@@ -66,7 +60,7 @@ public class MatchesController {
 		   }
 		matchRequest.setUserId(userId);
 		
-		if (matchRequest == null || matchRequest.getApplicationId() == null) {
+		if (matchRequest.getApplicationId() == null) {
 			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -111,7 +105,7 @@ public class MatchesController {
 		   }
 		matchRequest.setUserId(userId);
 		
-		if (matchRequest == null || matchRequest.getApplicationId() == null) {
+		if (matchRequest.getApplicationId() == null) {
 			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -154,7 +148,7 @@ public class MatchesController {
 		   }
 		matchRequest.setUserId(userId);
 		
-		if (matchRequest == null || matchRequest.getProductId() == null) {
+		if (matchRequest.getProductId() == null) {
 			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -207,7 +201,7 @@ public class MatchesController {
 		
 		
 		
-		if (matchRequest == null || matchRequest.getProductId() == null) {
+		if (matchRequest.getProductId() == null) {
 			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -249,7 +243,7 @@ public class MatchesController {
 		   }
 		   proposalList.setUserId(userId);
 		
-		if (proposalList == null || proposalList.getApplicationId() == null ||CommonUtils.isObjectNullOrEmpty(proposalList.getApplicationId())) {
+		if (proposalList.getApplicationId() == null ||CommonUtils.isObjectNullOrEmpty(proposalList.getApplicationId())) {
 			logger.warn("proposalList must not be empty ==>" + proposalList);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);

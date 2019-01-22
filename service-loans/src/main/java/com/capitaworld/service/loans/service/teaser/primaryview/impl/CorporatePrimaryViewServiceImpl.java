@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -112,6 +113,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporatePrimaryViewServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -518,7 +520,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				corporatePrimaryViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? simpleDateFormat.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 			
 			// other Details
@@ -1309,28 +1311,28 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		// documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
-		// try {
-		// DocumentResponse documentResponse =
-		// dmsClient.listProductDocument(documentRequest);
-		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
-		// } catch (DocumentException e) {
-		// logger.error(CommonUtils.EXCEPTION,e);
-		// }
-		// List<Long> ids=new ArrayList<>();
-		// ids.add(354l);
-		// ids.add(358l);
-		// ids.add(365l);
-		// ids.add(406l);
-		// ZipRequest zipRequest=new ZipRequest();
-		// zipRequest.setApplicationId(toApplicationId);
-		// zipRequest.setProductDocumentMappingIds(ids);
-		// try {
-		// DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
-		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
-		// } catch (DocumentException e) {
-		// logger.error(CommonUtils.EXCEPTION,e);
-		// }
+		/* documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
+		   try {
+		   DocumentResponse documentResponse =
+		   dmsClient.listProductDocument(documentRequest);
+		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
+		   } catch (DocumentException e) {
+		   logger.error(CommonUtils.EXCEPTION,e);
+		   }
+		   List<Long> ids=new ArrayList<>();
+		   ids.add(354l);
+		   ids.add(358l);
+		   ids.add(365l);
+		   ids.add(406l);
+		   ZipRequest zipRequest=new ZipRequest();
+		   zipRequest.setApplicationId(toApplicationId);
+		   zipRequest.setProductDocumentMappingIds(ids);
+		   try {
+		   DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
+		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
+		   } catch (DocumentException e) {
+		   logger.error(CommonUtils.EXCEPTION,e);
+		   } */
 
 		return corporatePrimaryViewResponse;
 	}

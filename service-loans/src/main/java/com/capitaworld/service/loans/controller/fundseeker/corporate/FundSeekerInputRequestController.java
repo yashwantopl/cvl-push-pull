@@ -104,11 +104,11 @@ public class FundSeekerInputRequestController {
         	logger.info("Application Id for Getting one form============>{}",fundSeekerInputRequestResponse.getApplicationId());
         	//Commented by Akshay discussed with Hiren
 
-//            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
-//                logger.warn("userId/applicationId can not be empty");
-//                return new ResponseEntity<LoansResponse>(
-//                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-//            }
+/*            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
+                logger.warn("userId/applicationId can not be empty");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+              } */
 
             return fundSeekerInputRequestService.get(fundSeekerInputRequestResponse);
 
@@ -189,11 +189,11 @@ public class FundSeekerInputRequestController {
         	logger.info("Application Id for Getting============>{}",applicationId);
         	//Commented by Akshay discussed with Hiren
 
-//            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
-//                logger.warn("userId/applicationId can not be empty");
-//                return new ResponseEntity<LoansResponse>(
-//                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-//            }
+/*            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
+                logger.warn("userId/applicationId can not be empty");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+              } */
 
             LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(applicationId,userId,businessTypeId);
             logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
@@ -280,13 +280,13 @@ public class FundSeekerInputRequestController {
      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
         	
-//        	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsGstCompleted()) || !fundSeekerInputRequestResponse.getIsGstCompleted()){
-//        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);	
-//        	}
-//        	
-//        	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsItrCompleted()) || !fundSeekerInputRequestResponse.getIsItrCompleted()){
-//        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);	
-//        	}
+/*        	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsGstCompleted()) || !fundSeekerInputRequestResponse.getIsGstCompleted()){
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+        	}
+
+        	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsItrCompleted()) || !fundSeekerInputRequestResponse.getIsItrCompleted()){
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+        	} */
         	
         	fundSeekerInputRequestResponse.setUserId(userId);
         	LoansResponse eligibility = fundSeekerInputRequestService.saveOrUpdateForOnePagerEligibility(fundSeekerInputRequestResponse);

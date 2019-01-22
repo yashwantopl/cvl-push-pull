@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.exceptions.ExcelException;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 	}
 
 	@Override
-	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws Exception{
+	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException {
 		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
 				assetsDetailsRepository);
 

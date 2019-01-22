@@ -1,8 +1,13 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -295,6 +300,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setModifiedDate(new Date());
 			}
+			
+			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
+			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 			copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
@@ -454,6 +462,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = new ArrayList<DirectorBackgroundDetailRequest>(
 					directorBackgroundDetailList.size());
 
+			Date dobOfProprietor = null;
 			DirectorBackgroundDetailRequest directorBackgroundDetailRequest = null;
 			for (DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailList) {
 
@@ -463,11 +472,32 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					DirectorPersonalDetailRequest directorPersonalDetailRequest = new DirectorPersonalDetailRequest();
 					BeanUtils.copyProperties(directorBackgroundDetail.getDirectorPersonalDetail(), directorPersonalDetailRequest);
 					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(directorPersonalDetailRequest);
+					dobOfProprietor = directorBackgroundDetail.getDob();
 				}
 				directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
 			}
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
+			
+			try {
+				LocalDate start = null;
+				if(corporateApplicantDetail.getConstitutionId() == 7) {
+					start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				}else {
+					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
+				}
+				LocalDate now = LocalDate.now();
+				Period diff = Period.between(start, now);
+				Integer diffYear = diff.getYears();
+				/*if(diff.getMonths() > 6) {
+					diffYear = diffYear + 1;
+				}*/
+				fundSeekerInputResponse.setEstablishmentYear(diffYear);
 
+			}catch (Exception e) {
+				logger.error("error while find diff of establishment year : ",e);
+			}
+			
+			
 			logger.info("director detail successfully fetched");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Director detail successfully fetched",
 					HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
@@ -573,6 +603,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 				try {
 					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
+					if (response != null){
+						logger.info("callHunterIIAPI is called");
+					}
 				}
 				catch (Exception e) {
 					logger.error("End invokeFraudAnalytics() with Error : "+e.getMessage());
@@ -637,12 +670,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
 		}
-//		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
-//    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
-//    	}
-//    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
-//    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
-//    	}
+/*		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
+    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
+    	}
+    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
+    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
+    	} */
 		
 		
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());

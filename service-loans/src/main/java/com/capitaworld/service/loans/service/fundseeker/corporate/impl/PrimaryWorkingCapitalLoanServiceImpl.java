@@ -46,7 +46,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 				throw new NullPointerException("PrimaryWorkingDetail not exist in DB with ID=>"
 						+ capitalLoanRequest.getId() + " and userId==>" + userId);
 			}
-			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			capitalLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getTenure()) ? null
 					: (capitalLoanRequest.getTenure() * 12));
 			capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());

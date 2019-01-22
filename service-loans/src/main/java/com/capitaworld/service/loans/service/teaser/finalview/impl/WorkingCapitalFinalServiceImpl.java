@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -160,6 +161,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public WorkingCapitalFinalViewResponse getWorkingCapitalFinalViewDetails(Long toApplicationId) {
@@ -719,7 +721,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			response.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 			response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
-				response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+				response.setDateOfProposal(simpleDateFormat.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
 			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
             response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
             response.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
