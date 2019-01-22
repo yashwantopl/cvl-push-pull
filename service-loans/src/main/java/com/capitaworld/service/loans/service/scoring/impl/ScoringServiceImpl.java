@@ -3390,9 +3390,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                         IrrRequest irrIndustryRequest = new IrrRequest();
 
-                        LoanApplicationMaster applicationMaster = null;
-
-                        applicationMaster = loanApplicationRepository.findOne(applicationId);
                         Long irrId = null;
                         try {
                             irrId = loanApplicationService.getIrrByApplicationId(applicationId);

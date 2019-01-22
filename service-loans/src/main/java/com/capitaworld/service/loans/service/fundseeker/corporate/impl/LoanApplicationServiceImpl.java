@@ -1789,6 +1789,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			logger.info("isPrimaryLocked : "+isPrimaryLocked);
 			/*
 			 * if (!isPrimaryLocked) { response.put(MESSAGE_LITERAL,
 			 * PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT); response.put(RESULT_LITERAL, false);
@@ -4646,6 +4647,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							ProposalMappingRequest mappingRequest = MultipleJSONObjectHelper.getObjectFromMap(
 									(LinkedHashMap<String, Object>) respProp.getData(), ProposalMappingRequest.class);
 							fpProductId = mappingRequest.getFpProductId();
+							logger.info("fpProductId : "+fpProductId);
 						}
 						logger.info("Call Connector client for update payment status");
 						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
