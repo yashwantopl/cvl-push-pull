@@ -481,7 +481,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			try {
 				LocalDate start = null;
 				if(corporateApplicantDetail.getConstitutionId() == 7) {
-					start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					if (dobOfProprietor != null) {
+						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					}
 				}else {
 					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
 				}
