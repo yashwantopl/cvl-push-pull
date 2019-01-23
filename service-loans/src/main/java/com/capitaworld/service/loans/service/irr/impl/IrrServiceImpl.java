@@ -136,14 +136,15 @@ public class IrrServiceImpl implements IrrService{
 			applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
 			applicationMaster = loanApplicationRepository.findOne(appId);
 
-			Long denom = null;
-			if (applicationMaster.getDenominationId() != null) {
+			Long denom = 1l; // CHANGES FOR MULTIPLE BANK
+			/*if (applicationMaster.getDenominationId() != null) {
 				denom = Denomination.getById(applicationMaster.getDenominationId()).getDigit();
 			} else {
 				denom = 1L;
-			}
+			}*/
 
-			userId = applicationMaster.getUserId();
+			//userId = applicationMaster.getUserId();
+			userId = applicationProposalMapping.getUserId();
 			corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId,
 					appId.longValue());
 
@@ -241,15 +242,15 @@ public class IrrServiceImpl implements IrrService{
 			if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
 				// ---- Manufacturing
 				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, userId,
-						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, industryRiskScore, denom, proposalId));
+						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, industryRiskScore, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
 				// ---- Service
 				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId,
-						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
+						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
 				// ---- Trading
 				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId,
-						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
+						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			}
 
 			// if CMA filled
