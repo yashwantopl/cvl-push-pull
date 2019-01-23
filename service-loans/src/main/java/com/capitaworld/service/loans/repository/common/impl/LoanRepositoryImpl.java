@@ -29,11 +29,10 @@ public class LoanRepositoryImpl implements LoanRepository {
 	
 	public Object[] getRoleIdAndBranchIdByUserId(Long userId) {
 		try {
-			Object[] value = (Object[]) entityManager
+			return  (Object[]) entityManager
 					.createNativeQuery("SELECT user_role_id,branch_id FROM users.`users` WHERE user_id =:userId")
 					.setParameter(CommonUtils.USER_ID, userId)
 					.getSingleResult();
-			return value;	
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -103,10 +102,9 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	public String getGSTINByAppId(Long applicationId) {
-		String fpProductName =(String) entityManager
+		return  (String) entityManager
 				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId")
 						.setParameter("applicationId", applicationId).getSingleResult();
-		return fpProductName;
 	}
 	
 	public String getCommonPropertiesValue(String key) {

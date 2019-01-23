@@ -1470,9 +1470,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		
 		WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
 				WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
-		Long jobId = workflowResponse != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
-		
-		return jobId;
+		return workflowResponse != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
 	}
 
 	@Override

@@ -1720,8 +1720,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 			}
-			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
-			return mappingResponse;
+			return proposalDetailsClient.saveDisbursementDetails(request);
 
 		} catch (Exception e) {
 			logger.error("Throw Exception While saveDisbursementDetails : ",e);

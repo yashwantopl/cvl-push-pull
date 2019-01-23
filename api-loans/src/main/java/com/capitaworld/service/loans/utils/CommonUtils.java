@@ -763,8 +763,7 @@ public class CommonUtils {
 		int year = todayYear - estYear;
 		int month = todayMonth - estMonth;
 
-		String value = year + " Years " + month + " Months ";
-		return value;
+		return year + " Years " + month + " Months ";
 	}
 
 	public static String CurrencyFormat(String value) {
@@ -1312,8 +1311,7 @@ public enum APIFlags {
 		a= isObjectNullOrEmpty(a) ? 0.0 : a;
 		b= isObjectNullOrEmpty(b) ? 0.0 : b;
 		
-		Double sub= a-b;
-		return sub;
+		return a-b;
 	}
 	
 	public static Double substractThreeNumbers(Double a, Double b, Double c){
@@ -1321,8 +1319,7 @@ public enum APIFlags {
 		b= isObjectNullOrEmpty(b) ? 0.0 : b;
 		c= isObjectNullOrEmpty(c) ? 0.0 : c;
 		
-		Double sub= a-b-c;
-		return sub;
+		return a-b-c;
 	}
 	public static Double divideNumbers(Double a1,Double a2) {
 		return !isObjectListNull(a1,a2) && a1 != 0 && a2 != 0 ? (a1 / a2) : 0.0;
@@ -1402,8 +1399,7 @@ public enum APIFlags {
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
 		String keyToEncode = userName + ":" + password;
-		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		return encodedString;
+		return  "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
 	}
 	
 	public static String getCMAFilterYear(String year) {
@@ -1667,8 +1663,7 @@ public enum APIFlags {
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
     			if(obj instanceof String) {
-    				String value = (String) obj;
-        			return value;	
+    				return  (String) obj;
     			} else {
     				return String.valueOf(obj);
     			}
