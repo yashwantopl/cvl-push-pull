@@ -587,12 +587,20 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setCurrencyDenomination(Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue()
 								+ " in " + Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
 			}
-			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
+/*			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
 					? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
-					: null);
-			corporateFinalViewResponse.setLoanAmount(
+					: null);*/
+			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
+					? LoanType.getById(applicationProposalMapping.getProductId()).getValue()
+					: null); // NEW
+			
+/*			corporateFinalViewResponse.setLoanAmount(
 					primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
-							: null);
+							: null);*/ 
+			corporateFinalViewResponse.setLoanAmount(
+					primaryCorporateDetail.getAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
+							: null); // NEW 
+			
 			corporateFinalViewResponse.setGstIn(
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
 							: null);
@@ -1078,8 +1086,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		}
 		// CREDIT RATING TABLE
 		try {
+/*			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
+					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);*/
 			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
-					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
+					.getCreditRatingOrganizationDetailsListFromProposalId(proposalMapId, userId);
 			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
 			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
 				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
@@ -1137,31 +1147,42 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// EXISTING PRODUCT DETAILS
 		try {
+			/*corporateFinalViewResponse.setExistingProductDetailRequestList(
+					existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setExistingProductDetailRequestList(
-					existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
+					existingProductDetailsService.getExistingProductDetailListByProposalId(proposalMapId, userId)); // NEW
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Existing Product {}", e);
 		}
 		// PROPOSED PRODUCT DETAILS
 		try {
+			/*corporateFinalViewResponse.setProposedProductDetailRequestList(
+					proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setProposedProductDetailRequestList(
-					proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));
+					proposedProductDetailsService.getProposedProductDetailListFromProposalId(proposalMapId, userId)); // new 
+			
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Proposed Product {}", e);
 		}
 
 		// ASSOCIATED CONCERNS
 		try {
+			/*corporateFinalViewResponse.setAssociatedConcernDetailRequests(
+					associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setAssociatedConcernDetailRequests(
-					associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));
+					associatedConcernDetailService.getAssociatedConcernsDetailListByProposalId(proposalMapId,userId));
+			
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Associated Concerns {}", e);
 		}
 
 		// PROMOTOR BACKGROUND DETAILS
 		try {
+/*			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService
+					.getPromotorBackgroundDetailList(toApplicationId, userId);*/
 			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService
-					.getPromotorBackgroundDetailList(toApplicationId, userId);
+					.getPromotorBackgroundDetailListByProposalId(toApplicationId, proposalMapId,userId); // NEW BASED ON PROPOSAL MAPID 
+			
 			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
@@ -1206,7 +1227,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			//CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(toApplicationId);
 			CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(proposalMapId);
-
+                
 			corporateFinalViewResponse.setTechnologyRiskId(corporateMcqRequest.getTechnologyRiskId() != null
 					? TechnologyRisk.getById(corporateMcqRequest.getTechnologyRiskId()).getValue()
 					: null);
@@ -1339,7 +1360,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// OwnerShipDetails
 		try {
 			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownerShipDetailsService
-					.getOwnershipDetailList(toApplicationId, userId);
+					.getOwnershipDetailList(toApplicationId, userId,proposalMapId);
 			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
 			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
 				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
@@ -1357,8 +1378,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// cost of project
 		try {
+		/*	List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
+					.getCostOfProjectDetailList(toApplicationId, userId);*/
+			
 			List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
-					.getCostOfProjectDetailList(toApplicationId, userId);
+					.getCostOfProjectDetailListByProposalId(proposalMapId, userId);
 			List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
 			for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
 				TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
@@ -1376,8 +1400,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Means of finance
 
 		try {
+			/*List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
+					.getMeansOfFinanceList(toApplicationId, userId);*/
 			List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
-					.getMeansOfFinanceList(toApplicationId, userId);
+					.getMeansOfFinanceListByProposalId(proposalMapId, userId);
 			List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
 			for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
 				FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
@@ -1397,8 +1423,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Security
 
 		try {
+	/*		corporateFinalViewResponse.setSecurityCorporateDetailRequestList(
+					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setSecurityCorporateDetailRequestList(
-					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+					securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(proposalMapId, userId));
+			
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Security Details {}", e);
 		}
@@ -1409,8 +1438,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// get data of Details of Guarantors
 		try {
+/*			corporateFinalViewResponse.setGuarantorsCorporateDetailRequestList(
+					guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setGuarantorsCorporateDetailRequestList(
-					guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
+					guarantorsCorporateDetailService.getGuarantorsCorporateDetailListByProposalId(proposalMapId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Details of Guarantor {}", e);
 		}
@@ -1697,7 +1728,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
-			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+	/*		corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);*/
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId); // NEW BASED ON PROPOSAL ID--->
 			//ADMIN OFFICE ADDRESS
 			try {
 				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
@@ -1723,7 +1755,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		
 		try {
-			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			/*corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);*/
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId);
 			//Reg OFFICE ADDRESS
 			try {
 				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {

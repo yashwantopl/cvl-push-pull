@@ -84,4 +84,24 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId ,Long proposalId) throws Exception {
+		try {
+			List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppIdAndProposalId(applicationId,proposalId); // new 
+			List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
+
+			for (OwnershipDetail detail : ownershipDetails) {
+				OwnershipDetailRequest ownershipDetailRequest = new OwnershipDetailRequest();
+				BeanUtils.copyProperties(detail, ownershipDetailRequest);
+				ownershipDetailRequests.add(ownershipDetailRequest);
+			}
+			return ownershipDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception  in get ownershipDetail  :-",e);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }
