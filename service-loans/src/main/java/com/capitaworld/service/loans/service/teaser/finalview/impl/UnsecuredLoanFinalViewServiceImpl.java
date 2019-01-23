@@ -159,7 +159,6 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Service
 public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalViewService{

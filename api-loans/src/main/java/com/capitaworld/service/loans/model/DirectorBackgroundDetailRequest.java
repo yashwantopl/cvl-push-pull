@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -17,7 +17,6 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.ScoringRequestDetail;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
