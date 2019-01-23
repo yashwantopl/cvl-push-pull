@@ -57,6 +57,10 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.ID,"currencyId");
 			capitalLoanDetail = finalWCRepository.save(capitalLoanDetail);
 
+			if (capitalLoanDetail != null){
+				logger.info("capitalLoanDetail is successfully saved");
+			}
+
 			// saving Data
 			saveOverseasNetworkMapping(capitalLoanRequest.getApplicationId(), userId,
 					capitalLoanRequest.getOverseasNetworkIds());

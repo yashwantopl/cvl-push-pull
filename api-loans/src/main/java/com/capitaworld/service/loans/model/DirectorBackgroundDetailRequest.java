@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -339,10 +338,6 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.shareholding = shareholding;
 	}
 
-	public Boolean getFamilyMemberInBusiness() {
-		return isFamilyMemberInBusiness;
-	}
-
 	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
 		isFamilyMemberInBusiness = familyMemberInBusiness;
 	}
@@ -379,32 +374,16 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.isOneFormCompleted = isOneFormCompleted;
 	}
 
-	public Boolean getItrCompleted() {
-		return isItrCompleted;
-	}
-
 	public void setItrCompleted(Boolean itrCompleted) {
 		isItrCompleted = itrCompleted;
-	}
-
-	public Boolean getCibilCompleted() {
-		return isCibilCompleted;
 	}
 
 	public void setCibilCompleted(Boolean cibilCompleted) {
 		isCibilCompleted = cibilCompleted;
 	}
 
-	public Boolean getBankStatementCompleted() {
-		return isBankStatementCompleted;
-	}
-
 	public void setBankStatementCompleted(Boolean bankStatementCompleted) {
 		isBankStatementCompleted = bankStatementCompleted;
-	}
-
-	public Boolean getOneFormCompleted() {
-		return isOneFormCompleted;
 	}
 
 	public void setOneFormCompleted(Boolean oneFormCompleted) {

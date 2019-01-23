@@ -208,6 +208,12 @@ public class CorporateApplicantDetail implements Serializable {
     
     private String remarks;
     
+    @Column(name="business_since_year")
+    private Integer businessSinceYear;
+    
+    @Column(name="business_since_month")
+    private Integer businessSinceMonth;
+    
 
 	public CorporateApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -685,6 +691,23 @@ public class CorporateApplicantDetail implements Serializable {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
+	public Integer getBusinessSinceYear() {
+		return businessSinceYear;
+	}
+
+	public Integer getBusinessSinceMonth() {
+		return businessSinceMonth;
+	}
+
+	public void setBusinessSinceYear(Integer businessSinceYear) {
+		this.businessSinceYear = businessSinceYear;
+	}
+
+	public void setBusinessSinceMonth(Integer businessSinceMonth) {
+		this.businessSinceMonth = businessSinceMonth;
+	}
+
 	
 	
 }

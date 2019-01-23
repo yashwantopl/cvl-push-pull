@@ -104,6 +104,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
                         userId);
+                if (applicationMaster != null){
+                    logger.info("getByIdAndUserId called successfully ");
+                }
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
@@ -290,6 +293,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
                         userId);
+                if (applicationMaster != null){
+                    logger.info("getByIdAndUserId called successfully");
+                }
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();

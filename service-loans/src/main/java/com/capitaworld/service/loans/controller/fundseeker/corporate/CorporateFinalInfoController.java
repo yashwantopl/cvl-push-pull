@@ -65,12 +65,12 @@ public class CorporateFinalInfoController {
                 }
             }
 
-            // ==============
-            // if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
-            // request.getAttribute(CommonUtils.USER_TYPE))
-            // .intValue()) {
-            // applicantRequest.setClientId(clientId);
-            // }
+            /*
+             if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
+             request.getAttribute(CommonUtils.USER_TYPE))
+             .intValue()) {
+             applicantRequest.setClientId(clientId);
+               } */
 
             if (corporateFinalInfoRequest == null) {
                 logger.warn("corporateFinalInfoRequest  can not be empty ==>", userId);
@@ -198,12 +198,12 @@ public class CorporateFinalInfoController {
                 }
             }
 
-            // ==============
-            // if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
-            // request.getAttribute(CommonUtils.USER_TYPE))
-            // .intValue()) {
-            // applicantRequest.setClientId(clientId);
-            // }
+            /*
+             if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
+             request.getAttribute(CommonUtils.USER_TYPE))
+             .intValue()) {
+             applicantRequest.setClientId(clientId);
+             } */
 
             if (corporateFinalInfoRequest == null) {
                 logger.warn("corporateFinalInfoRequest  can not be empty ==>", userId);

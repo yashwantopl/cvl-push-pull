@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -763,8 +763,7 @@ public class CommonUtils {
 		int year = todayYear - estYear;
 		int month = todayMonth - estMonth;
 
-		String value = year + " Years " + month + " Months ";
-		return value;
+		return year + " Years " + month + " Months ";
 	}
 
 	public static String CurrencyFormat(String value) {
@@ -917,7 +916,7 @@ public class CommonUtils {
 				return new BigDecimal((String) obj.toString().replaceAll(",", ""));
 			}
 			if (obj instanceof Double) {
-				return new BigDecimal((Double) obj);
+				return BigDecimal.valueOf((Double) obj);
 			}
 			if (obj instanceof Long) {
 				return new BigDecimal((Long) obj);
@@ -936,12 +935,10 @@ public class CommonUtils {
 			return "zero";
 		}
 
-		String snumber = Long.toString(number);
-
 		// pad with "0"
 		String mask = "000000000000";
 		DecimalFormat df = new DecimalFormat(mask);
-		snumber = df.format(number);
+		String snumber = df.format(number);
 
 		// XXXnnnnnnnnn
 		int billions = Integer.parseInt(snumber.substring(0, 3));
@@ -1314,8 +1311,7 @@ public enum APIFlags {
 		a= isObjectNullOrEmpty(a) ? 0.0 : a;
 		b= isObjectNullOrEmpty(b) ? 0.0 : b;
 		
-		Double sub= a-b;
-		return sub;
+		return a-b;
 	}
 	
 	public static Double substractThreeNumbers(Double a, Double b, Double c){
@@ -1323,8 +1319,7 @@ public enum APIFlags {
 		b= isObjectNullOrEmpty(b) ? 0.0 : b;
 		c= isObjectNullOrEmpty(c) ? 0.0 : c;
 		
-		Double sub= a-b-c;
-		return sub;
+		return a-b-c;
 	}
 	public static Double divideNumbers(Double a1,Double a2) {
 		return !isObjectListNull(a1,a2) && a1 != 0 && a2 != 0 ? (a1 / a2) : 0.0;
@@ -1404,8 +1399,7 @@ public enum APIFlags {
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
 		String keyToEncode = userName + ":" + password;
-		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		return encodedString;
+		return  "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
 	}
 	
 	public static String getCMAFilterYear(String year) {
@@ -1448,37 +1442,43 @@ public enum APIFlags {
 	public static String formatValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
 	}
-	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws Exception {
-		if(obj ==  null) {
-			return null;
-		}
-		DecimalFormat decim = new DecimalFormat("0.00");
-		if(obj instanceof Double) {
-			obj = Double.parseDouble(decim.format(obj));
+	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws LoansException {
+		try {
+			if(obj ==  null) {
+				return null;
+			}
+			DecimalFormat decim = new DecimalFormat("0.00");
+			if(obj instanceof Double) {
+				obj = Double.parseDouble(decim.format(obj));
+				return obj;
+			}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for(Field field : fields) {
+					field.setAccessible(true);
+					Object value = field.get(obj);
+					if(data != null) {
+						data.put(field.getName(), value);
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
+						value = Double.parseDouble(decim.format(value));
+						if(data != null) {
+							value = decimal.format(value);
+							data.put(field.getName(), value);
+						}else {
+							field.set(obj,value);
+						}
+					}
+				}
+			}
+			if(data != null) {
+				return data;
+			}
 			return obj;
-		}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
-			Field[] fields = obj.getClass().getDeclaredFields();
-			 for(Field field : fields) {
-				 field.setAccessible(true);
-	             Object value = field.get(obj);
-	             if(data != null) {
-	            	 data.put(field.getName(), value);
-	             }
-	             if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
-					 value = Double.parseDouble(decim.format(value));
-					 if(data != null) {
-						 value = decimal.format(value);
-						 data.put(field.getName(), value);
-					 }else {
-						 field.set(obj,value);
-					 }
-	             }
-			 }			
 		}
-		 if(data != null) {
-			 return data;
-		 }
-		return obj;
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
 	}
 	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
@@ -1663,8 +1663,7 @@ public enum APIFlags {
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
     			if(obj instanceof String) {
-    				String value = (String) obj;
-        			return value;	
+    				return  (String) obj;
     			} else {
     				return String.valueOf(obj);
     			}

@@ -560,7 +560,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		reportRequest.setUserId(userId);
 		
 		List<Data> datas = new ArrayList<>();
-		List<Object> bankStatement = new ArrayList<Object>();
+//		List<Object> bankStatement = new ArrayList<Object>();
 		List<Object> monthlyDetails = new ArrayList<Object>();
 		List<Object> top5FundReceived = new ArrayList<Object>();
 		List<Object> top5FundTransfered = new ArrayList<Object>();
@@ -588,12 +588,12 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				}
 				
 
-				//logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
-				//logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
-				//logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				/* logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				   logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				   logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 
 				
-				//map.put("bankStatement", bankStatement);
+				map.put("bankStatement", bankStatement); */
 				map.put("monthlyDetails", monthlyDetails);
 				map.put("top5FundReceived", top5FundReceived);
 				map.put("top5FundTransfered", top5FundTransfered);
@@ -685,12 +685,11 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 			AssetDetailsString assetDetailsString = new AssetDetailsString();
 			CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
-	        //SET SHARE FACE VALUE
-			Double shareFaceVal=1.00;
 			CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
-					shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+					//SET SHARE FACE VALUE
+					Double shareFaceVal=corporateApplicantDetail.getSharePriceFace();
 					financialInputRequestDbl.setShareFaceValue(shareFaceVal);
 				}else{
 					financialInputRequestDbl.setShareFaceValue(1.00);

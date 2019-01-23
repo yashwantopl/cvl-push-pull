@@ -1074,7 +1074,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		reportRequest.setUserId(userId);
 		
 		List<Data> datas = new ArrayList<>();
-		List<Object> bankStatement = new ArrayList<Object>();
+//		List<Object> bankStatement = new ArrayList<Object>();
 		List<Object> monthlyDetails = new ArrayList<Object>();
 		List<Object> top5FundReceived = new ArrayList<Object>();
 		List<Object> top5FundTransfered = new ArrayList<Object>();
@@ -1429,9 +1429,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 				
 				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-				String json = ow.writeValueAsString(monthlyDetails);
-				
-//				logger.info("monthlyDetails : "+json);
+				ow.writeValueAsString(monthlyDetails);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
@@ -1448,12 +1446,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
-        //SET SHARE FACE VALUE
-		Double shareFaceVal=1.00;
 		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
-				shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+				//SET SHARE FACE VALUE
+				Double shareFaceVal=corporateApplicantDetail.getSharePriceFace();
 				financialInputRequestDbl.setShareFaceValue(shareFaceVal);
 			}else{
 				financialInputRequestDbl.setShareFaceValue(1.00);

@@ -61,6 +61,10 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
 			BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetail,corporate);
 			finalHomeLoanDetail = finalHomeLoanDetailRepository.save(finalHomeLoanDetail);
+
+			if (finalHomeLoanDetail != null){
+				logger.info("finalHomeLoanDetail is saved successfully");
+			}
 			
 			//setting Flag to DB
 			if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getIsFinalInformationFilled())){

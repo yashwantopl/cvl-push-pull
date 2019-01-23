@@ -261,7 +261,6 @@ public class LoansClient {
 	public ExcelResponse readCMA(ExcelRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(READ_CMA);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in readCMA : ",e);
@@ -287,7 +286,6 @@ public class LoansClient {
 	public ExcelResponse readDPR(ExcelRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(READ_DPR);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in readDPR : ",e);
@@ -298,7 +296,6 @@ public class LoansClient {
 	public ExcelResponse inactiveCMA(ExcelRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(INACTIVE_CMA);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in inactiveCMA : ",e);
@@ -309,7 +306,6 @@ public class LoansClient {
 	public ExcelResponse inactiveDPR(ExcelRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(INACTIVE_DPR);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in inactiveDPR : ",e);
@@ -320,7 +316,6 @@ public class LoansClient {
 	public ExcelResponse readBS(ExcelRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(READ_BS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in readBS : ",e);
@@ -331,7 +326,6 @@ public class LoansClient {
 	public ExcelResponse inactiveBS(ExcelRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(INACTIVE_BS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in inactiveBS : ",e);
@@ -353,9 +347,6 @@ public class LoansClient {
 			headers.set(REQ_AUTH, "true");
 			HttpEntity<List<Long>> entity = new HttpEntity<List<Long>>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
-			/*
-			 * return restTemplate.postForObject(url, request, LoansResponse.class);
-			 */
 		} catch (Exception e) {
 			logger.error("Exception in getLoanDetailsByUserIdList : ",e);
 			throw new LoansException(e.getCause().getMessage());
@@ -370,9 +361,6 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
-			/*
-			 * return restTemplate.postForObject(url, request, LoansResponse.class);
-			 */
 
 		} catch (Exception e) {
 			logger.error("Exception in getUserNameByApplicationId : ",e);
@@ -388,9 +376,6 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
-			/*
-			 * return restTemplate.postForObject(url, request, LoansResponse.class);
-			 */
 
 		} catch (Exception e) {
 			logger.error("Exception in getPrimaryViewByApplicationId : ",e);
@@ -406,10 +391,6 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
-			/*
-			 * return restTemplate.postForObject(url, request, LoansResponse.class);
-			 */
-
 		} catch (Exception e) {
 			logger.error("Exception in getFinalViewByApplicationId : ",e);
 			throw new LoansException(e.getCause().getMessage());
@@ -607,7 +588,6 @@ public class LoansClient {
 			} else {
 				throw new LoansException("Loan Response Found Null While Getting UserId by Product Id");
 			}
-			/* return restTemplate.postForObject(url, request, LoansResponse.class); */
 		} catch (Exception e) {
 			logger.error("Exception in getUserIdByProductId : ",e);
 			throw new LoansException(e.getCause().getMessage());
@@ -722,7 +702,6 @@ public class LoansClient {
 	public LoansResponse saveAchievementdetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(SAVE_ACHIEVEMENT_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -737,7 +716,6 @@ public class LoansClient {
 	public LoansResponse saveAssociatedConcernDetail(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(SAVE_ASSOCIATED_CONCERN_DETAIL);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -752,7 +730,6 @@ public class LoansClient {
 	public LoansResponse saveCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_SAVE);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -768,7 +745,6 @@ public class LoansClient {
 	public LoansResponse saveITRMappingCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_ITR_MAPPING_SAVE);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -785,7 +761,6 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
 		logger.info("url for Getting Corporate Details From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
@@ -800,7 +775,6 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET_NEW).concat("/" + applicationId);
 		logger.info("url for Getting Corporate Details From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
@@ -813,7 +787,6 @@ public class LoansClient {
 	public LoansResponse saveCreditRatingOrganizationDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(CREDIT_RATING_ORGANIZATION_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
@@ -827,7 +800,6 @@ public class LoansClient {
 	public LoansResponse saveExistingProductDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(EXISTING_PRODUCT_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -842,7 +814,6 @@ public class LoansClient {
 	public LoansResponse saveMeansOfFinance(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(MEANS_OF_FINANCE);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -857,7 +828,6 @@ public class LoansClient {
 	public LoansResponse saveFinancialArrangementDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -873,7 +843,6 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
 		logger.info("url for Getting TotalEMI From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
@@ -888,7 +857,6 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_UNIFORM).concat("/" + applicationId);
 		logger.info("url for Getting TotalEMI From Client FOr Uniform Product=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
@@ -904,7 +872,6 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID);
 		logger.info("url for Getting TotalEMIDirector From Client=================>" + url);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -919,7 +886,6 @@ public class LoansClient {
 	public LoansResponse saveFutureFinancialEstimatesDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(FUTURE_FINANCIAL_ESTIMATE_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -934,7 +900,6 @@ public class LoansClient {
 	public LoansResponse saveGuarantorsCorporateDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(GUARANTORS_CORPORATE_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -949,7 +914,6 @@ public class LoansClient {
 	public LoansResponse saveMonthlyTurnoverDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(MONTHLY_TURNOVER_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -964,7 +928,6 @@ public class LoansClient {
 	public LoansResponse saveOwnershipDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(OWNERSHIP_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -979,7 +942,6 @@ public class LoansClient {
 	public LoansResponse savePastFinancialEstimateDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(PAST_FINANCIAL_ESTIMATE_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -994,7 +956,6 @@ public class LoansClient {
 	public LoansResponse savePromotorBackgroundDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(PROMOTOR_BACKGROUND_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1009,7 +970,6 @@ public class LoansClient {
 	public LoansResponse saveProposedProductDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(PROPOSED_PRODUCT_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1024,7 +984,6 @@ public class LoansClient {
 	public LoansResponse saveSecurityCorporateDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(SECURITY_CORPORATE_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1039,7 +998,6 @@ public class LoansClient {
 	public LoansResponse saveTermLoanFinal(FinalTermLoanRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(SAVE_TERM_LOAN_FINAL);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set(REQ_AUTH, "true");
@@ -1054,7 +1012,6 @@ public class LoansClient {
 	public LoansResponse saveTermLoanPrimary(PrimaryTermLoanRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(SAVE_TERM_LOAN_PRIMARY);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1069,7 +1026,6 @@ public class LoansClient {
 	public LoansResponse saveTotalCostOfProject(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(TOTAL_COST_OF_PROJECT);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1084,7 +1040,6 @@ public class LoansClient {
 	public LoansResponse saveWorkingCapitalPrimary(PrimaryWorkingCapitalLoanRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(WORKING_CAPITAL_PRIMARY);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1101,7 +1056,6 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(WORKING_CAPITAL_PRIMARY_GET).concat("/" + applicationId);
 		logger.info("url for Getting Working Capital Primary From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
@@ -1115,7 +1069,6 @@ public class LoansClient {
 	public LoansResponse saveWorkingCapitalFinal(FinalWorkingCapitalLoanRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(WORKING_CAPITAL_FINAL);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1131,7 +1084,6 @@ public class LoansClient {
 	public LoansResponse saveLoanApplicationMaster(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(UPDATE_LOAN_APPLICATION);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1146,7 +1098,6 @@ public class LoansClient {
 	public LoansResponse updateLoanApplicationMaster(LoanApplicationRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(UPDATE_LOAN_APPLICATION);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1541,10 +1492,6 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(applicantId, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
-			/*
-			 * return restTemplate.postForObject(url, request, LoansResponse.class);
-			 */
-
 		} catch (Exception e) {
 			logger.error("Exception in convertToByteArrayFile : ",e);
 			throw new LoansException(e.getCause().getMessage());
@@ -1660,7 +1607,6 @@ public class LoansClient {
 	public LoansResponse saveDirectorBackgroundDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1760,7 +1706,6 @@ public class LoansClient {
 	public LoansResponse getFilledDetails(Long appId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_FINANCIAL_TO_BE_FILLED).concat("/"+appId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1775,7 +1720,6 @@ public class LoansClient {
 	public LoansResponse getAutoFilledDetails(Long appId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_FINANCIAL_AUTO_FILLED_MASTER).concat("/"+appId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1834,7 +1778,6 @@ public class LoansClient {
 	public CMADetailResponse getCMADetils(Long appId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/"+appId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1927,10 +1870,6 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
-			/*
-			 * return restTemplate.postForObject(url, request, LoansResponse.class);
-			 */
-
 		} catch (Exception e) {
 			logger.error("Exception in inactiveApplication : ",e);
 			throw new LoansException(e.getCause().getMessage());
@@ -2007,13 +1946,9 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
-			/*
-			 * return restTemplate.postForObject(url, request, LoansResponse.class);
-			 */
-
 		} catch (Exception e) {
 			logger.error("Exception in getCorporateScore : ",e);
-			throw e;//(e.getCause().getMessage());
+			throw new LoansException(e);
 		}
 	}
 		
@@ -2062,7 +1997,6 @@ public class LoansClient {
 	public MobileApiResponse saveOneFormForMobile(FundSeekerInputRequestResponse request) throws ExcelException {
 		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2129,7 +2063,6 @@ public class LoansClient {
 			logger.error("Exception in getScoringExcel : ",e);
 
 			throw new ExcelException(e.getCause().getMessage());
-			//throw e;//(e.getCause().getMessage());
 		}
 	}
 	

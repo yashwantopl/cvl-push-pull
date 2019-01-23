@@ -369,8 +369,8 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			 * ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
 			 * CommonUtils.isObjectNullOrEmpty(byIdProCons) ?
 			 * Integer.valueOf(byIdProCons.getValue()) : null); }
-			 */
-			/*
+			 *
+			 *
 			 * if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.
 			 * getProposedDetailsOfUnit())) { ProposedDetailOfUnitNTB byIdProConsDet =
 			 * ProposedDetailOfUnitNTB
@@ -522,6 +522,10 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
+
+			if (proposalScoreResponse != null){
+				logger.info("getObjectFromMap called successfully");
+			}
 
 			ntbPrimaryViewRespone.setDataList(scoringResponse.getDataList());
 			ntbPrimaryViewRespone.setDataObject(scoringResponse.getDataObject());

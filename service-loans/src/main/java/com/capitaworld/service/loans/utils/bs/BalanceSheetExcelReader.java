@@ -318,7 +318,8 @@ public class BalanceSheetExcelReader
             bsBalanceSheet.setDeferredTaxAsset(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             bsBalanceSheet.setMiscExpences(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             bsBalanceSheet.setGrandTotal(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
-           
+
+            logger.info("arrayListCounter : "+arrayListCounter);
             
             bsBalanceSheet.setIsActive(true);
             bsBalanceSheet.setCreatedDate(new Date());

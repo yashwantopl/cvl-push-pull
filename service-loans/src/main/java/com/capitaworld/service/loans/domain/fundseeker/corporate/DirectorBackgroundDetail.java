@@ -424,32 +424,16 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.isOneFormCompleted = isOneFormCompleted;
 	}
 
-	public Boolean getItrCompleted() {
-		return isItrCompleted;
-	}
-
 	public void setItrCompleted(Boolean itrCompleted) {
 		isItrCompleted = itrCompleted;
-	}
-
-	public Boolean getCibilCompleted() {
-		return isCibilCompleted;
 	}
 
 	public void setCibilCompleted(Boolean cibilCompleted) {
 		isCibilCompleted = cibilCompleted;
 	}
 
-	public Boolean getBankStatementCompleted() {
-		return isBankStatementCompleted;
-	}
-
 	public void setBankStatementCompleted(Boolean bankStatementCompleted) {
 		isBankStatementCompleted = bankStatementCompleted;
-	}
-
-	public Boolean getOneFormCompleted() {
-		return isOneFormCompleted;
 	}
 
 	public void setOneFormCompleted(Boolean oneFormCompleted) {

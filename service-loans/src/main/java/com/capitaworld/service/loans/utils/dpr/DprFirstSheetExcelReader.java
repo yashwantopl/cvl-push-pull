@@ -143,7 +143,6 @@ public class DprFirstSheetExcelReader {
             } catch (Exception e) {
                 logger.error(CommonUtils.EXCEPTION,e);
             }
-//             logger.info(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
         }
 
     }

@@ -787,62 +787,68 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public FpProductDetails getProductDetails(Long productMappingId) throws Exception {
-		CommonDocumentUtils.startHook(logger, "getProductDetails");
-		ProductMaster productMaster = productMasterRepository.findOne(productMappingId);
-		LoanType loanType = LoanType.getById(productMaster.getProductId());
-		FpProductDetails fpProductDetails = new FpProductDetails();
-		if (!CommonUtils.isObjectNullOrEmpty(productMaster.getName())) {
-			fpProductDetails.setName(productMaster.getName());
-		}
-		switch (loanType) {
-		case WORKING_CAPITAL:
-			productMaster = workingCapitalParameterRepository.findOne(productMappingId);
-			break;
-		case TERM_LOAN:
-			productMaster = termLoanParameterRepository.findOne(productMappingId);
-			break;
-		case HOME_LOAN:
-			productMaster = homeLoanParameterRepository.findOne(productMappingId);
-			break;
-		case CAR_LOAN:
-			productMaster = carLoanParameterRepository.findOne(productMappingId);
-			break;
-		case PERSONAL_LOAN:
-			productMaster = personalLoanParameterRepository.findOne(productMappingId);
-			break;
-		case LOAN_AGAINST_PROPERTY:
-			productMaster = lapParameterRepository.findOne(productMappingId);
-			break;
-		case LOAN_AGAINST_SHARES_AND_SECUIRITIES:
-			productMaster = lasParameterRepository.findOne(productMappingId);
-			break;
-
-		default:
-			break;
-		}
-		fpProductDetails.setTypeOfInvestment(LoanType.getById(productMaster.getProductId()).getValue());
-		List<String> countryname = new ArrayList<String>();
-		List<Long> countryList = geoCountry.getCountryByFpProductId(productMappingId);
-		if (!CommonUtils.isListNullOrEmpty(countryList)) {
-			OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-			List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-
-				for (int i = 0; i < oneResponseDataList.size(); i++) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper
-							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					countryname.add(masterResponse.getValue());
-				}
+	public FpProductDetails getProductDetails(Long productMappingId) throws LoansException {
+		try {
+			CommonDocumentUtils.startHook(logger, "getProductDetails");
+			ProductMaster productMaster = productMasterRepository.findOne(productMappingId);
+			LoanType loanType = LoanType.getById(productMaster.getProductId());
+			FpProductDetails fpProductDetails = new FpProductDetails();
+			if (!CommonUtils.isObjectNullOrEmpty(productMaster.getName())) {
+				fpProductDetails.setName(productMaster.getName());
 			}
-			fpProductDetails.setGeographicalFocus(countryname);
+			switch (loanType) {
+				case WORKING_CAPITAL:
+					productMaster = workingCapitalParameterRepository.findOne(productMappingId);
+					break;
+				case TERM_LOAN:
+					productMaster = termLoanParameterRepository.findOne(productMappingId);
+					break;
+				case HOME_LOAN:
+					productMaster = homeLoanParameterRepository.findOne(productMappingId);
+					break;
+				case CAR_LOAN:
+					productMaster = carLoanParameterRepository.findOne(productMappingId);
+					break;
+				case PERSONAL_LOAN:
+					productMaster = personalLoanParameterRepository.findOne(productMappingId);
+					break;
+				case LOAN_AGAINST_PROPERTY:
+					productMaster = lapParameterRepository.findOne(productMappingId);
+					break;
+				case LOAN_AGAINST_SHARES_AND_SECUIRITIES:
+					productMaster = lasParameterRepository.findOne(productMappingId);
+					break;
+
+				default:
+					break;
+			}
+			fpProductDetails.setTypeOfInvestment(LoanType.getById(productMaster.getProductId()).getValue());
+			List<String> countryname = new ArrayList<String>();
+			List<Long> countryList = geoCountry.getCountryByFpProductId(productMappingId);
+			if (!CommonUtils.isListNullOrEmpty(countryList)) {
+				OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+
+					for (int i = 0; i < oneResponseDataList.size(); i++) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						countryname.add(masterResponse.getValue());
+					}
+				}
+				fpProductDetails.setGeographicalFocus(countryname);
+			}
+
+			// fp profile details
+			fpProductDetails.setFpDashboard(usersClient.getFPDashboardDetails(productMaster.getUserId()));
+
+			CommonDocumentUtils.endHook(logger, "getProductDetails");
+			return fpProductDetails;
+		}
+		catch (Exception e){
+			throw new LoansException(e);
 		}
 
-		// fp profile details
-		fpProductDetails.setFpDashboard(usersClient.getFPDashboardDetails(productMaster.getUserId()));
-
-		CommonDocumentUtils.endHook(logger, "getProductDetails");
-		return fpProductDetails;
 	}
 
 	@Override
@@ -865,7 +871,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
 				if (!CommonUtils.isObjectNullOrEmpty(master) && !productMasterRequest.getProductId().toString()
 						.equals(productDetailsForSps.get(0).getProductId().toString())) {
-					// if(master.getId())
 						CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 						return true;
 				}
@@ -1465,9 +1470,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		
 		WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
 				WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
-		Long jobId = workflowResponse != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
-		
-		return jobId;
+		return workflowResponse != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
 	}
 
 	@Override

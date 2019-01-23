@@ -37,10 +37,6 @@ public class LoansClient1 {
 		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/" + appId);
 		logger.info("Getting CMA DEtails========>" + url);
 		try {
-			/*
-			 * return restTemplate.postForObject(url, request,
-			 * ExcelResponse.class);
-			 */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -58,7 +54,6 @@ public class LoansClient1 {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
 		logger.info("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);

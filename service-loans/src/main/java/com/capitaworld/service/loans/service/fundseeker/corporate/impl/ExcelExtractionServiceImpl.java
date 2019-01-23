@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -131,7 +130,6 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			log.error("Error while reading CMA : ",e);
 			throw new ExcelException(e) ;
-			/*return false;*/
 		}
 		
 		return true;

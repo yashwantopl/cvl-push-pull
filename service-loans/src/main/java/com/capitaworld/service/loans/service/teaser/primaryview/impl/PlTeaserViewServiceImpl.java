@@ -487,6 +487,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 
+			if (proposalScoreResponse != null){
+				logger.info("getObjectFromMap called successfully");
+			}
+
 			plTeaserViewResponse.setDataList(scoringResponse.getDataList());
 			plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
 			plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());

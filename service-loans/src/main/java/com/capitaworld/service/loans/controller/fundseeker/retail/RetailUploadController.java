@@ -45,12 +45,6 @@ public class RetailUploadController {
 	@Autowired
 	private ExcelExtractionService excelExtractionService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/profile/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadProfileImage(@RequestPart("fileName") String fileName,
 			@RequestPart("productDocMapId") Long mappingId, @RequestPart("file") MultipartFile multipartFiles,
@@ -121,8 +115,7 @@ public class RetailUploadController {
 		jsonObj.put("userType", DocumentAlias.UERT_TYPE_APPLICANT);
 		jsonObj.put("originalFileName", fileName);
 		try {
-			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
-			return documentResponse;
+			return dmsClient.productImage(jsonObj.toString(), multipartFile);
 		} catch (DocumentException e) {
 			logger.error("Error while uploading Profile Document : ",e);
 		}

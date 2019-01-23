@@ -743,7 +743,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-				UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+				UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
@@ -758,7 +758,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				userRequest.setId(master.getUserId());
 
 				// calling USER for getting fp details
-				UserResponse userResponse = usersClient.getFPDetails(userRequest);
+				UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
@@ -1260,7 +1260,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
@@ -1280,7 +1280,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClient.getFPDetails(userRequest);
+						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -1332,7 +1332,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
+						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
@@ -1348,7 +1348,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClient.getFPDetails(userRequest);
+						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -1396,8 +1396,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 		} catch (Exception e) {
-			ProposalMappingResponse proposalMappingResponseErr = new ProposalMappingResponse(
-					"Error while getting connection list", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			logger.error(CommonUtils.EXCEPTION,e);
 			return null;
 		}
@@ -1722,8 +1720,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 			}
-			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
-			return mappingResponse;
+			return proposalDetailsClient.saveDisbursementDetails(request);
 
 		} catch (Exception e) {
 			logger.error("Throw Exception While saveDisbursementDetails : ",e);
@@ -1746,7 +1743,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(userRequest.getApplicationId());
 
-			if (loanApplicationMaster != null && userRequest != null) {
+			if (loanApplicationMaster != null) {
 				// Check If Requested Application is assigned to Currunt Fp
 				// Cheker or not
 				UserResponse userResponse = null;
@@ -1798,20 +1795,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request,
 			Long userId) {
 
-		// UserResponse userData = usersClient.getUserDetailsById(userId);
+		/* UserResponse userData = usersClient.getUserDetailsById(userId);
 
-		// UsersRequest data = (UsersRequest) userData.getData();
+		   UsersRequest data = (UsersRequest) userData.getData();
 
-		// userData.toString());
+		   userData.toString());
 
-		// Long roleId = (Long) userData.get("roleId");
+		   Long roleId = (Long) userData.get("roleId"); */
 		List<Object[]> result;
 
-		// if(UsersRoles.HO.equals(roleId)) {
-		// result =
-		// proposalDetailRepository.getProposalDetailsByOrgId(userOrgId,
-		// request.getFromDate(), request.getToDate());
-		// } else if(UsersRoles.BO.equals(roleId)) {
+		/* if(UsersRoles.HO.equals(roleId)) {
+		 result =
+		 proposalDetailRepository.getProposalDetailsByOrgId(userOrgId,
+		 request.getFromDate(), request.getToDate());
+		 } else if(UsersRoles.BO.equals(roleId)) { */
 		result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(),
 				request.getToDate());
 		// }

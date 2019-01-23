@@ -38,12 +38,6 @@ public class ObligationDetailController {
     @Autowired
     private LoanApplicationService loanApplicationService;
 
-    /*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-    public String getPing() {
-        logger.info("Ping success");
-        return "Ping Succeed";
-    }*/
-
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
                                               @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -114,7 +108,6 @@ public class ObligationDetailController {
             LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
             loansResponse.setListData(response);
             Integer currencyId = null;
-            Long applicantIdById = null;
             switch (applicationType) {
                 case CommonUtils.ApplicantType.APPLICANT:
                     currencyId = retailApplicantService.getCurrency(id, userId);

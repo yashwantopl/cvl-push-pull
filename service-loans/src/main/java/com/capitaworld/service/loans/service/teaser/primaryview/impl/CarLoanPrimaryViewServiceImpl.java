@@ -319,7 +319,6 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
             }
         } catch (Exception e) {
             logger.error("Problem Occured while Fetching Retail Details : ",e);
-           // throw new Exception("Problem Occured while Fetching Retail Details");
         }
 
         //setting co-application details

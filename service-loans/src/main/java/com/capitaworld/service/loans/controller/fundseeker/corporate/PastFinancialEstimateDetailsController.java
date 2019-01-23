@@ -42,12 +42,6 @@ public class PastFinancialEstimateDetailsController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
@@ -141,23 +135,23 @@ public class PastFinancialEstimateDetailsController {
 
 	}
 	
-//	@RequestMapping(value = "/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<LoansResponse> getYearList(@PathVariable("applicationId") Long applicationId) {
-//		// request must not be null
-//		try {
-//			if (applicationId == null) {
-//				logger.warn("ApplicationId Require to get Past Financial Estimate Details ==>" + applicationId);
-//				return new ResponseEntity<LoansResponse>(
-//						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-//			}
-//			return new ResponseEntity<LoansResponse>(new LoansResponse(), HttpStatus.OK);
-//		} catch (Exception e) {
-//			logger.error("Error while getting Past Financial Estimate Details==>", e);
-//			return new ResponseEntity<LoansResponse>(
-//					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-//					HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//
-//	}
+/*	@RequestMapping(value = "/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getYearList(@PathVariable("applicationId") Long applicationId) {
+		// request must not be null
+		try {
+			if (applicationId == null) {
+				logger.warn("ApplicationId Require to get Past Financial Estimate Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<LoansResponse>(new LoansResponse(), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Past Financial Estimate Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}  */
 
 }

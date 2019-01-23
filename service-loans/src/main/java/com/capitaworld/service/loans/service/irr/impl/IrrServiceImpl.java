@@ -337,8 +337,8 @@ public class IrrServiceImpl implements IrrService{
 
 		financialInputRequest.setShareFaceValue(shareFaceVal);
 
-		LoanApplicationMaster applicationMaster = null;
-		/*applicationMaster = loanApplicationRepository.findOne(aplicationId);
+		/* LoanApplicationMaster applicationMaster = null;
+		applicationMaster = loanApplicationRepository.findOne(aplicationId);
 		LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -2226,7 +2226,6 @@ public class IrrServiceImpl implements IrrService{
 	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom)
 			throws LoansException {
 
-		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
 
 		return setQualitativeInputManu(aplicationId,productId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);

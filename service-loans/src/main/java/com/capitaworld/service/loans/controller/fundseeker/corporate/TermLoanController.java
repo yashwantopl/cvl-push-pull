@@ -36,12 +36,6 @@ public class TermLoanController {
 	@Autowired
 	private PrimaryTermLoanService primaryTLService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FinalTermLoanRequest termLoanRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)

@@ -17,7 +17,6 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.ScoringRequestDetail;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -229,8 +228,6 @@ public class ScoringServiceImpl implements ScoringService {
             scoreParameterRetailRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoreParameterRetailRequest.class);
         }
 
-
-        ScoringResponse scoringResponseMain = null;
 
         ScoringRequest scoringRequest = new ScoringRequest();
         scoringRequest.setScoringModelId(scoreModelId);
@@ -599,7 +596,7 @@ public class ScoringServiceImpl implements ScoringService {
         scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
 
         try {
-            scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+            scoringClient.calculateScore(scoringRequest);
 
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
@@ -613,8 +610,6 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
     public ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
-
-        ScoringResponse scoringResponseMain = null;
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
 
@@ -669,8 +664,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                     logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
-                    LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
                     break;
                 }
 
@@ -1020,7 +1013,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
+            scoringClient.calculateScoreList(scoringRequestList);
 
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
@@ -1188,11 +1181,11 @@ public class ScoringServiceImpl implements ScoringService {
             OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-            LiabilitiesDetails liabilitiesDetailsFY;
-            LiabilitiesDetails liabilitiesDetailsSY;
+           /* LiabilitiesDetails liabilitiesDetailsFY;
+            LiabilitiesDetails liabilitiesDetailsSY; */
             LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-            AssetsDetails assetsDetailsFY;
+//            AssetsDetails assetsDetailsFY;
             AssetsDetails assetsDetailsSY = new AssetsDetails();
             AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -1202,12 +1195,12 @@ public class ScoringServiceImpl implements ScoringService {
                 operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
 
                 liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
-                liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + "");
+              /*  liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
+                  liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + ""); */
 
                 assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
                 assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
-                assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
+//                assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
             } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId || ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId) {
                 operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                 liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
@@ -1915,15 +1908,25 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.YEARS_IN_BUSINESS: {
                             try {
 
-                                java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                                todayDate.setTime(new Date());
+                            	Double yearsInBusiness = null;
+                            	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
+                            	Integer monthsDiff = null;
+                            	if(yearsInBetween == null) {
+                            		java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                                    todayDate.setTime(new Date());
 
-                                Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-                                Integer monthsDiff = 0;
+                                    yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
 
-                                monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+                                    monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
 
-                                Double yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                                    yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                            	}else {
+                            		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
+                            		if(monthsDiff > 6)
+                            			yearsInBusiness = (double)yearsInBetween + 1;
+                            		else
+                            			yearsInBusiness = (double)yearsInBetween;
+                            	}
 
                                 scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                 scoringParameterRequest.setYearsInBusiness_p(true);
@@ -2252,11 +2255,11 @@ public class ScoringServiceImpl implements ScoringService {
                 OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-                LiabilitiesDetails liabilitiesDetailsFY;
-                LiabilitiesDetails liabilitiesDetailsSY;
+            /*    LiabilitiesDetails liabilitiesDetailsFY;
+                  LiabilitiesDetails liabilitiesDetailsSY; */
                 LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-                AssetsDetails assetsDetailsFY;
+//                AssetsDetails assetsDetailsFY;
                 AssetsDetails assetsDetailsSY = new AssetsDetails();
                 AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -2266,12 +2269,12 @@ public class ScoringServiceImpl implements ScoringService {
                     operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
 
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
-                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + "");
+                 /*   liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
+                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + ""); */
 
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
-                    assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
+//                    assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
                 } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId() || ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
                     operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
@@ -2978,16 +2981,25 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.YEARS_IN_BUSINESS: {
                                 try {
+                                	Double yearsInBusiness = null;
+                                	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
+                                	Integer monthsDiff = null;
+                                	if(yearsInBetween == null) {
+                                		java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                                        todayDate.setTime(new Date());
 
-                                    java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                                    todayDate.setTime(new Date());
+                                        yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
 
-                                    Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-                                    Integer monthsDiff = 0;
+                                        monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
 
-                                    monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
-
-                                    Double yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                                        yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                                	}else {
+                                		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
+                                		if(monthsDiff > 6)
+                                			yearsInBusiness = (double)yearsInBetween + 1;
+                                		else
+                                			yearsInBusiness = (double)yearsInBetween;
+                                	}
 
                                     scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                     scoringParameterRequest.setYearsInBusiness_p(true);
@@ -3208,7 +3220,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         if (directorBackgroundDetailsList.size() > 0) {
             for (DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
-                Boolean flag = calculateDirectorScore(scoringRequestLoans, directorBackgroundDetail, primaryCorporateDetail);
+                 calculateDirectorScore(scoringRequestLoans, directorBackgroundDetail, primaryCorporateDetail);
             }
         }
 
@@ -3361,7 +3373,6 @@ public class ScoringServiceImpl implements ScoringService {
                     case ScoreParameter.NTB.BALANCE_GESTATION_PERIOD: {
                         try {
 
-                            Integer years = 0;
                             java.util.Calendar proposedDate = java.util.Calendar.getInstance();
                             proposedDate.setTime(primaryCorporateDetail.getProposedOperationDate());
 
@@ -3396,9 +3407,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                         IrrRequest irrIndustryRequest = new IrrRequest();
 
-                        LoanApplicationMaster applicationMaster = null;
-
-                        applicationMaster = loanApplicationRepository.findOne(applicationId);
                         Long irrId = null;
                         try {
                             irrId = loanApplicationService.getIrrByApplicationId(applicationId);
@@ -3800,21 +3808,15 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             } catch (Exception e) {
                 logger.error(ERROR_WHILE_CALLING_SCORING,e);
-                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
-                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
                 logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
-                LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
                 return true;
-                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } else {
                 logger.error(ERROR_WHILE_CALLING_SCORING);
-                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
-                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
 
@@ -3949,7 +3951,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         } catch (NullPointerException | IOException e) {
             logger.error("----------------Error/Exception while calculating scorring()------------------------------> " + e.getMessage());
-            throw e;
+            throw new LoansException(e);
         }
         return workbook;
     }
@@ -3964,12 +3966,10 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ScoringModelReqRes getScoringModelTempList(ScoringModelReqRes scoringModelReqRes) {
         try {
-            /*scoringModelReqRes.setOrgId(1l);*/
             UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
 
             if (!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
-                /*scoringModelReqRes.setOrgId(1l);*/
             } else {
                 logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In getScoringModelTempList");
                 return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
@@ -3993,7 +3993,6 @@ public class ScoringServiceImpl implements ScoringService {
     public ScoringModelReqRes saveScoringModelTemp(ScoringModelReqRes scoringModelReqRes) {
 
         try {
-            /*scoringModelReqRes.getScoringModelResponse().setOrgId(1l);*/
 
             UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
 
@@ -4052,12 +4051,10 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes) {
         try {
-            /*scoringModelReqRes.setOrgId(1l);*/
             UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
 
             if (!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
-                /*scoringModelReqRes.setOrgId(1l);*/
             } else {
                 logger.error(ORG_ID_IS_NULL_OR_EMPTY + " In getScoringModelMasterList ");
                 return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());

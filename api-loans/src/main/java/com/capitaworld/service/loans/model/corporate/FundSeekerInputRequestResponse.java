@@ -83,6 +83,11 @@ public class FundSeekerInputRequestResponse {
     * added for machinery equipment finance
     * */
     private Integer assessmentId;
+    
+    private Integer sinceYear;
+    private Integer sinceMonth;
+    
+    private Integer estYear;
 
     //-------------For NTB
     private Double tenureRequired;
@@ -577,6 +582,31 @@ public class FundSeekerInputRequestResponse {
 
 	public void setEnhancementAmount(Double enhancementAmount) {
 		this.enhancementAmount = enhancementAmount;
+	}
+	
+	public Integer getSinceYear() {
+		return sinceYear;
+	}
+
+	public Integer getSinceMonth() {
+		return sinceMonth;
+	}
+
+	public void setSinceYear(Integer sinceYear) {
+		this.sinceYear = sinceYear;
+	}
+
+	public void setSinceMonth(Integer sinceMonth) {
+		this.sinceMonth = sinceMonth;
+	}
+	
+
+	public Integer getEstYear() {
+		return estYear;
+	}
+
+	public void setEstYear(Integer estYear) {
+		this.estYear = estYear;
 	}
 
 	@Override
