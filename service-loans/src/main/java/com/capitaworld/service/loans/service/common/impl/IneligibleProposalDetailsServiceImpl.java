@@ -138,6 +138,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			} else {
 				isCreateNew = true;
 			}
+			
 			if(!CommonUtils.isObjectNullOrEmpty(gstin)) {
 				//UPDARE STATUS FOR SAME GSTIN OLD APPLICATIONS
 				List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
@@ -178,6 +179,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				inlProposalDetails.setCreatedDate(new Date());
 				inlProposalDetails.setCreatedBy(inlPropReq.getUserId());
 				inlProposalDetails.setStatus(InEligibleProposalStatus.PENDING);
+				inlProposalDetails.setBusinessTypeId(inlPropReq.getBusinessTypeId());
 				try {
 					//SET GSTIN 
 					inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));	
@@ -201,6 +203,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getIsSanctioned())) {
 					inlProposalDetails.setIsSanctioned(inlPropReq.getIsSanctioned());
 				}
+				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getBusinessTypeId())) {
+					inlProposalDetails.setBusinessTypeId(inlPropReq.getBusinessTypeId());
+				}
+				
 				try {
 					//SET GSTIN
 					if(CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getGstin())) {
