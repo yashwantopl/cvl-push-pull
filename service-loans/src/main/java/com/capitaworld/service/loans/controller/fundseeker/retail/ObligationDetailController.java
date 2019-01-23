@@ -108,7 +108,6 @@ public class ObligationDetailController {
             LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
             loansResponse.setListData(response);
             Integer currencyId = null;
-            Long applicantIdById = null;
             switch (applicationType) {
                 case CommonUtils.ApplicantType.APPLICANT:
                     currencyId = retailApplicantService.getCurrency(id, userId);

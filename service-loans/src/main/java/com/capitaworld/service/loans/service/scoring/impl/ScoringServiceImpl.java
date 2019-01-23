@@ -17,7 +17,6 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.ScoringRequestDetail;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -1182,11 +1181,11 @@ public class ScoringServiceImpl implements ScoringService {
             OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-            LiabilitiesDetails liabilitiesDetailsFY;
-            LiabilitiesDetails liabilitiesDetailsSY;
+           /* LiabilitiesDetails liabilitiesDetailsFY;
+            LiabilitiesDetails liabilitiesDetailsSY; */
             LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-            AssetsDetails assetsDetailsFY;
+//            AssetsDetails assetsDetailsFY;
             AssetsDetails assetsDetailsSY = new AssetsDetails();
             AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -2256,11 +2255,11 @@ public class ScoringServiceImpl implements ScoringService {
                 OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-                LiabilitiesDetails liabilitiesDetailsFY;
-                LiabilitiesDetails liabilitiesDetailsSY;
+            /*    LiabilitiesDetails liabilitiesDetailsFY;
+                  LiabilitiesDetails liabilitiesDetailsSY; */
                 LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-                AssetsDetails assetsDetailsFY;
+//                AssetsDetails assetsDetailsFY;
                 AssetsDetails assetsDetailsSY = new AssetsDetails();
                 AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -3374,7 +3373,6 @@ public class ScoringServiceImpl implements ScoringService {
                     case ScoreParameter.NTB.BALANCE_GESTATION_PERIOD: {
                         try {
 
-                            Integer years = 0;
                             java.util.Calendar proposedDate = java.util.Calendar.getInstance();
                             proposedDate.setTime(primaryCorporateDetail.getProposedOperationDate());
 

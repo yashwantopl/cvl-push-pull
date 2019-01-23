@@ -533,10 +533,6 @@ public class FinalUnsecuredLoanRequest implements Serializable {
 		this.numberOfLc = numberOfLc;
 	}
 
-	public Boolean getWhetherTechnologyIsTied() {
-		return whetherTechnologyIsTied;
-	}
-
 	public Integer getUnhedgedForeignCurrency() {
 		return unhedgedForeignCurrency;
 	}
