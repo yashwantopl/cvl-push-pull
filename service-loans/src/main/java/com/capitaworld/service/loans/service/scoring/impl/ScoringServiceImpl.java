@@ -1181,11 +1181,11 @@ public class ScoringServiceImpl implements ScoringService {
             OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-            LiabilitiesDetails liabilitiesDetailsFY;
-            LiabilitiesDetails liabilitiesDetailsSY;
+           /* LiabilitiesDetails liabilitiesDetailsFY;
+            LiabilitiesDetails liabilitiesDetailsSY; */
             LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-            AssetsDetails assetsDetailsFY;
+//            AssetsDetails assetsDetailsFY;
             AssetsDetails assetsDetailsSY = new AssetsDetails();
             AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -2255,11 +2255,11 @@ public class ScoringServiceImpl implements ScoringService {
                 OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-                LiabilitiesDetails liabilitiesDetailsFY;
-                LiabilitiesDetails liabilitiesDetailsSY;
+            /*    LiabilitiesDetails liabilitiesDetailsFY;
+                  LiabilitiesDetails liabilitiesDetailsSY; */
                 LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-                AssetsDetails assetsDetailsFY;
+//                AssetsDetails assetsDetailsFY;
                 AssetsDetails assetsDetailsSY = new AssetsDetails();
                 AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -3373,7 +3373,6 @@ public class ScoringServiceImpl implements ScoringService {
                     case ScoreParameter.NTB.BALANCE_GESTATION_PERIOD: {
                         try {
 
-                            Integer years = 0;
                             java.util.Calendar proposedDate = java.util.Calendar.getInstance();
                             proposedDate.setTime(primaryCorporateDetail.getProposedOperationDate());
 
