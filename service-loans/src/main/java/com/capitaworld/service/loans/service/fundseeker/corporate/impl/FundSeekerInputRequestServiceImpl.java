@@ -969,6 +969,19 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		jsonObject.put("projectedProfitCurrFinYear", primaryCorporateDetail.getProjectedProfitCurrFinYear());
 		jsonObject.put("turnOverCurrFinYearTillMonth", primaryCorporateDetail.getTurnOverCurrFinYearTillMonth());
 		jsonObject.put("projectedTurnOverCurrFinYear", primaryCorporateDetail.getProjectedTurnOverCurrFinYear());
+		
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+			jsonObject.put("premiseNumber", corporateApplicantDetail.getRegisteredPremiseNumber());
+			jsonObject.put("landMark", corporateApplicantDetail.getRegisteredLandMark());
+			jsonObject.put("streetName", corporateApplicantDetail.getRegisteredStreetName());
+			jsonObject.put("pincode", corporateApplicantDetail.getRegisteredPincode());
+			jsonObject.put("cityId", corporateApplicantDetail.getRegisteredCityId());
+			jsonObject.put("stateId", corporateApplicantDetail.getRegisteredStateId());
+			jsonObject.put("countryId", corporateApplicantDetail.getRegisteredCountryId());
+			jsonObject.put("districtMappingId", corporateApplicantDetail.getRegisteredDistMappingId());
+		}
+		
 		try {
 			jsonObject.put("direcorsList",directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 		} catch (Exception e) {
