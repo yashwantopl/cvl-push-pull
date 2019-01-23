@@ -2467,7 +2467,7 @@ public class LoanApplicationController {
 
 				logger.info("Checking whether the Response is from BillDesk or PayUMoney");
 				String key;
-				String value;
+//				String value;
 				try {
 					key = m.nextToken();
 					if ("msg".equals(key)) {
