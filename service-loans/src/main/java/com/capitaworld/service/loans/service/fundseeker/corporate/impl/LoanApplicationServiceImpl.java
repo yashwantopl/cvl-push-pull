@@ -1226,9 +1226,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return null;
 		}
 
-		UsersRequest request = MultipleJSONObjectHelper
+		return MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
-		return request;
 	}
 
 	private Object[] getFPName(Long fpMappingId) {
@@ -1239,8 +1238,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private String getApplicantName(long applicationId) throws LoansException {
 		try {
-			String applicantName = getFsApplicantName(applicationId);
-			return applicantName;
+			return getFsApplicantName(applicationId);
 		} catch (LoansException e1) {
 			logger.error("Exception in getApplicantName : ",e1);
 			return "NA";
@@ -3823,9 +3821,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 					UserResponse userResponse = userClient.getFPNameListByUserId(fpUserIdList);
 					if (userResponse != null && userResponse.getData() != null) {
-						List<FpProfileBasicDetailRequest> basicDetailRequests = (List<FpProfileBasicDetailRequest>) userResponse
-								.getData();
-						return basicDetailRequests;
+						return  (List<FpProfileBasicDetailRequest>) userResponse.getData();
 					}
 
 				}
@@ -4817,8 +4813,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setUserId(userId);
 			gatewayRequest.setClientId(ClientId);
 			logger.info("End getPaymentStatus() with success");
-			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
-			return paymentStatus;
+			return gatewayClient.getPaymentStatus(gatewayRequest);
 		} catch (Exception e) {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);

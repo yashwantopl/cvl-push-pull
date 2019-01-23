@@ -2467,7 +2467,7 @@ public class LoanApplicationController {
 
 				logger.info("Checking whether the Response is from BillDesk or PayUMoney");
 				String key;
-				String value;
+//				String value;
 				try {
 					key = m.nextToken();
 					if ("msg".equals(key)) {
@@ -2477,13 +2477,13 @@ public class LoanApplicationController {
 					}
 				} catch (Exception e) {
 					logger.error(TOKEN_NULL_MSG + e.getMessage());
-					key = null;
+//					key = null;
 				}
 				try {
-					value = m.nextToken();
+//					value = m.nextToken();
 				} catch (Exception e) {
 					logger.error(TOKEN_NULL_MSG + e.getMessage());
-					value = null;
+//					value = null;
 				}
 				// map.put(key, value);
 			}

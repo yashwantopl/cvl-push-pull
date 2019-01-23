@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
-import com.capitaworld.service.loans.model.corporate.MsmeValueMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingTempRepository;
 import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;

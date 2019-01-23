@@ -1074,7 +1074,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		reportRequest.setUserId(userId);
 		
 		List<Data> datas = new ArrayList<>();
-		List<Object> bankStatement = new ArrayList<Object>();
+//		List<Object> bankStatement = new ArrayList<Object>();
 		List<Object> monthlyDetails = new ArrayList<Object>();
 		List<Object> top5FundReceived = new ArrayList<Object>();
 		List<Object> top5FundTransfered = new ArrayList<Object>();

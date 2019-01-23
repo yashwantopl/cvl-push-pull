@@ -115,8 +115,7 @@ public class RetailUploadController {
 		jsonObj.put("userType", DocumentAlias.UERT_TYPE_APPLICANT);
 		jsonObj.put("originalFileName", fileName);
 		try {
-			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
-			return documentResponse;
+			return dmsClient.productImage(jsonObj.toString(), multipartFile);
 		} catch (DocumentException e) {
 			logger.error("Error while uploading Profile Document : ",e);
 		}

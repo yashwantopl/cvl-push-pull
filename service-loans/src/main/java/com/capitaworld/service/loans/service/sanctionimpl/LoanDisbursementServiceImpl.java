@@ -214,7 +214,6 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	//Its for list of disbursement per sanction
 	@Override
 	public List<LoanDisbursementRequest> bankRequestValidationAndSave(Long sanctionPrimaryId ,List<LoanDisbursementRequest> loanDisbursementRequestsList,Long orgId , Integer apiType) throws IOException {
-		int rowUpdated = 0;
 		String status = null;
 		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
 			

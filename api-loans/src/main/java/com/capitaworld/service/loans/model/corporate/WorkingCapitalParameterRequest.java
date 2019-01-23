@@ -448,16 +448,8 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		isRiskModelScoreMandatory = riskModelScoreMandatory;
 	}
 
-	public Boolean getTenureDisplay() {
-		return isTenureDisplay;
-	}
-
 	public void setTenureDisplay(Boolean tenureDisplay) {
 		isTenureDisplay = tenureDisplay;
-	}
-
-	public Boolean getTenureMandatory() {
-		return isTenureMandatory;
 	}
 
 	public void setTenureMandatory(Boolean tenureMandatory) {

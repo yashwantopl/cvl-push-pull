@@ -579,9 +579,8 @@ public class AsyncComponent {
 			return null;
 		}
 
-		UsersRequest request = MultipleJSONObjectHelper
+		return MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
-		return request;
 	}
 
 	/**

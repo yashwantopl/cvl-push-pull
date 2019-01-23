@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.sanction;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
-import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 
 public interface LoanSanctionService {
 	

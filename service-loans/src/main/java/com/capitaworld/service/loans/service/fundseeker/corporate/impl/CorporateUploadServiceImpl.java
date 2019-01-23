@@ -85,8 +85,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			jsonObj.put("productDocumentMappingId", mappingId);
 			jsonObj.put("userType", userType);
 			jsonObj.put("originalFileName", fileName);
-			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
-			return documentResponse;
+			return dmsClient.productImage(jsonObj.toString(), multipartFile);
 		} catch (DocumentException e) {
 			logger.error("Error while uploading Profile Document : ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
