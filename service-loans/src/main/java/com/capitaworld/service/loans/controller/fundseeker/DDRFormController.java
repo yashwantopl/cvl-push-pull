@@ -357,10 +357,11 @@ public class DDRFormController {
 		Long  toApplicationId = loanApplicationService.getApplicationIdByProposalId(proposalId);
 		Long toUserId = loanApplicationService.getUserIdByProposalId(proposalId);
 		
-/*		 toApplicationId = ApplicationProposalMapping.getApplicationId();
-	     Long toUserId = ApplicationProposalMapping.getUserId();*/
 	     logger.info("THIS IS THE USER ID ----------->"+toUserId);
 	     logger.info("THIS IS THE application Id ----------->"+toApplicationId);
+		
+/*		 toApplicationId = ApplicationProposalMapping.getApplicationId();
+	     Long toUserId = ApplicationProposalMapping.getUserId();*/
 		
 		if (CommonUtils.UserType.FUND_PROVIDER == userType) {
 		//userId = loanApplicationService.getUserIdByApplicationId(appId);

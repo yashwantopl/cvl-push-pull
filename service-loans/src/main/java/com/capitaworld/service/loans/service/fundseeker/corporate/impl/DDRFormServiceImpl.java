@@ -2288,6 +2288,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 		
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId); //NEW BASED ON PROPOSAL MAPPING 
 		
+		Long toProposalId = applicationProposalMapping.getProposalId();
+		logger.info("this is getting proposalId By Application id===========>>>>>>"+toProposalId);
+		
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 			logger.info("Data not found by this application id -------------------> " + applicationId);
 			return null;
@@ -2299,7 +2302,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 		response.setDdrStatusId(applicationProposalMapping.getDdrStatusId()); // NEW 
 		
 		//PROFILE DETAILS
-		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(applicationId);
+	/*	CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(applicationId);*/
+		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndApplicationIdAndIsAtive(applicationId,toProposalId); // NEW 
+		
 		if (CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
 			return response;
@@ -2388,7 +2393,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 		
 		//PROMOTOR BACKGROUND DETAILS :- LINENO:12
 		try {
-			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
+		//	List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId); // PREVIOUS
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailListByProposalId(applicationId,toProposalId, userId);  // NEW 
 			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
@@ -2416,7 +2422,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		//OWNERSHIP DETAILS :- LINENO:12
 		try {
-			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
+			/*List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);*/
+			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId,userId,toProposalId);
 			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
 			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
 				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
@@ -2432,11 +2439,12 @@ public class DDRFormServiceImpl implements DDRFormService {
 	    }
 		//CURRENT FINANCIAL ARRANGEMENT DETAILS (Existing Banker(s) Details) :-
 		if (setExistingData) {
-			response.setFinancialArrangementsDetailResponseList(setFinancialArrangDetails(applicationId));
+			response.setFinancialArrangementsDetailResponseList(setFinancialArrangDetails(applicationId,toProposalId));
 		}
 		//SECURITY DETAIL :- LINENO:12
 		try {
-			response.setSecurityCorporateDetailList(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId));
+			//response.setSecurityCorporateDetailList(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId));
+			response.setSecurityCorporateDetailList(securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(toProposalId, userId)); //NEW 
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get Primary Security Details in DDR OneForm : ",e);
 		}
@@ -2446,14 +2454,17 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		//PRODUCT DETAILS PROPOSED AND EXISTING (Description of Products) :- LINENO:111
 		try {
-			response.setProposedProductDetailList(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId));
-			response.setExistingProductDetailList(existingProductDetailsService.getExistingProductDetailList(applicationId, userId));
+			/*response.setProposedProductDetailList(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId));
+			response.setExistingProductDetailList(existingProductDetailsService.getExistingProductDetailList(applicationId, userId));*/
+			response.setProposedProductDetailList(proposedProductDetailsService.getProposedProductDetailListFromProposalId(toProposalId, userId)); // NEW 
+			response.setExistingProductDetailList(existingProductDetailsService.getExistingProductDetailListByProposalId(toProposalId, userId)); // NEW 
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get Product Proposed and Existing details in DDR OneForm : ",e);
 		}
 		//ASSOCIATES CONCERN :- LINENO:17
 		try {
-			response.setAssociatedConcernDetailList(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId));
+/*			response.setAssociatedConcernDetailList(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId));*/
+			response.setAssociatedConcernDetailList(associatedConcernDetailService.getAssociatedConcernsDetailListByProposalId(toProposalId, userId)); // NEW 
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get associates concern in DDR OneForm : ",e);
 		}
@@ -2461,9 +2472,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 		return response;
 	}
 
-	private List<FinancialArrangementDetailResponseString> setFinancialArrangDetails(Long applicationId) {
+	private List<FinancialArrangementDetailResponseString> setFinancialArrangDetails(Long applicationId,Long toProposalId) {
 		try {
-			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
+		/*	List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);*/
+			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId,toProposalId);//NEW
 			List<FinancialArrangementDetailResponseString> finArrDetailResList = new ArrayList<>(financialArrangementsList.size());
 			FinancialArrangementDetailResponseString finArrDetailRes = null;
 			for (FinancialArrangementsDetail finArrDetailReq : financialArrangementsList) {
