@@ -116,10 +116,6 @@ public class FpRatingValueMappingTemp implements Serializable {
         this.modifiedDate = modifiedDate;
     }
 
-    public Boolean getActive() {
-        return isActive;
-    }
-
     public void setActive(Boolean active) {
         isActive = active;
     }

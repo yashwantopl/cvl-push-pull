@@ -1396,8 +1396,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 		} catch (Exception e) {
-			ProposalMappingResponse proposalMappingResponseErr = new ProposalMappingResponse(
-					"Error while getting connection list", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			logger.error(CommonUtils.EXCEPTION,e);
 			return null;
 		}
