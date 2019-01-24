@@ -545,6 +545,10 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 						logger.error("Error while getting Eligibility data : ",e);
 					}
 					
+					/* eligibility financialCalculation year */
+					map.put("eligibilityFinancialYear",CommonUtils.getFinancialYear());
+					
+					
 					/* associated concern , Group concern Details */
 					
 					try {
