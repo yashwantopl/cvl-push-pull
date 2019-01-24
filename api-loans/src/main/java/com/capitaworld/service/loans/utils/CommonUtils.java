@@ -1691,6 +1691,23 @@ public enum APIFlags {
 		public static final long INELIGIBLE_USERS_OFFLINE_APPLICATION = 2;
 		public static final long FROM_API = 3;
 	}
-	
+
+	/**
+	 * to get financial year by date 
+	 * @return String
+	 * @author nilay.darji
+	 */
+	public static String getFinancialYear() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		if(calendar.get(Calendar.MONTH)<3) {
+			String s=calendar.get(Calendar.YEAR)-1 +"-" +calendar.get(Calendar.YEAR);
+			return s;
+		}else if (calendar.get(Calendar.MONTH)>=3) {
+			String s=calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.YEAR) + 1 );
+			return s;
+		}
+		return "-";
+	}
 	
 }
