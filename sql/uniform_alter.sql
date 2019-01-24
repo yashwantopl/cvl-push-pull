@@ -213,3 +213,41 @@ MODIFY COLUMN is_active_audit VARCHAR(200);
 ALTER TABLE `loan_application`.`fp_product_master` MODIFY COLUMN action_for VARCHAR(1000)
 
 ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN action_for VARCHAR(1000)
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+MODIFY COLUMN `max_growth` DOUBLE;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+MODIFY COLUMN `wc_requirement` DOUBLE;
+
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `promotor_contribution` DOUBLE;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `assessment_method` DOUBLE;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `min_cibil_score` DOUBLE;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `wc_requirement` DOUBLE;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `denomination` INT;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `currency` INT;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `min_cmr` INT;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `max_cmr` INT;
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `min_cibil_score` DOUBLE
+
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details`
+ADD COLUMN `wc_requirement` DOUBLE
