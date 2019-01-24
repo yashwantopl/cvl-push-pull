@@ -139,7 +139,7 @@ public class AsyncComponent {
 				"Start sent mail process for user logout withour filled first application profile or primary details");
 		try {
 			List<LoanApplicationRequest> loanApplicationRequestList = loanApplicationService.getList(userId);
-			if (loanApplicationRequestList.size() > 1 || loanApplicationRequestList.size() == 0) {
+			if (loanApplicationRequestList.size() > 1 || loanApplicationRequestList.isEmpty()) {
 				logger.info("User has more one application or not application list========>"
 						+ loanApplicationRequestList.size());
 				return;
