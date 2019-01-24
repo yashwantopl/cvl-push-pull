@@ -533,7 +533,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 					
 					/* loanEligibility data  */
 					try{
-						EligibililityRequest eligibilityReq=new EligibililityRequest();
+						OnePageEligibilityResponse eligibilityReq=new OnePageEligibilityResponse();
 						eligibilityReq.setApplicationId(applicationId);
 						eligibilityReq.setFpProductMappingId(fpProductId);
 						EligibilityResponse eligibilityResp= eligibilityClient.getOnePagerEligibilityData(eligibilityReq);
