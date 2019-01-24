@@ -499,7 +499,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 						matchRequest.setProductId(fpProductId);
 					/*	matchRequest.setProductId(productId);*/
 						List<MatchDisplayObject> matchesResponse = matchEngineClient.getMatchesResponse(matchRequest);
-						if(matchesResponse != null && matchesResponse.size() != 0) {
+						if(matchesResponse != null && !matchesResponse.isEmpty()) {
 							map.put("matchesResponse", matchesResponse);
 						}else {
 							logger.info("matchesResponse is null..."+applicationId);
@@ -549,7 +549,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 					
 					try {
 						List<AssociatedConcernDetailRequest> associationConcenrn=associateConcernDetails.getAssociatedConcernsDetailList(applicationId, userId);
-						if(associationConcenrn != null && associationConcenrn.size() !=0) {
+						if(associationConcenrn != null && !associationConcenrn.isEmpty()) {
 							map.put("groupConcernDetails", associationConcenrn);
 						}else {
 							logger.info("groupConcernDetails is null for applicationId===>>"+applicationId);
@@ -562,7 +562,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 					/* Manually Added loans Details. */
 					try {
 						List<FinancialArrangementsDetailRequest> manuallyAddedLoans=financialArrangmentDetails.getManuallyAddedFinancialArrangementDetailsList(applicationId);
-						if(manuallyAddedLoans != null && manuallyAddedLoans.size() != 0) {
+						if(manuallyAddedLoans != null && !manuallyAddedLoans.isEmpty()) {
 							map.put("manuallyAddedLoans", manuallyAddedLoans);
 						}else {
 							logger.info("manuallyAddedLoans data is null...."+applicationId);
