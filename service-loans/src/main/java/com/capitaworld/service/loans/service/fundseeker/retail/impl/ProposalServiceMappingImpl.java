@@ -235,8 +235,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				Long applicationId = proposalrequest.getApplicationId();
 				Long proposalMappingId = proposalrequest.getId();
 				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalrequest.getId());
-				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping))
+				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+					logger.info("Proposal not in application_proposal_mapping table "+proposalMappingId);
 					continue;
+				}
 				//LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 				Integer bId = applicationProposalMapping.getBusinessTypeId();
 
