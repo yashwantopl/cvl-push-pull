@@ -40,7 +40,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getApplicationList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getInEligibleRecordList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -76,7 +76,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getRejectProposalList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getRejectProposalsList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -110,7 +110,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getOtherProposalList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getOtherProposalsList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -144,7 +144,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getSanctionedApplicationList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -170,7 +170,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getDisbursedApplicationList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -212,7 +212,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getUniformApplicationList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getUniformApplications(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -247,7 +247,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getUniformSanctionedApplicationList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getUniformSanctionedApplicationList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -275,7 +275,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getUniformDisbursedApplicationList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getUniformDisbursedApplicationList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -304,7 +304,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getUniformRejectProposalList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getUniformRejectProposalsList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
@@ -341,7 +341,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Override
 	public List<OfflineProcessedApplicationRequest> getUniformOtherProposalList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getUniformOtherProposalsList(userId);
-		if(lst.size() == 0) {
+		if(lst.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
