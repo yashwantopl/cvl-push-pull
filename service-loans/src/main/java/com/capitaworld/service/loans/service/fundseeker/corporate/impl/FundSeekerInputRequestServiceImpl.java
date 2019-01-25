@@ -721,6 +721,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		} catch (Exception e) {
 			logger.error("Oneform Uniform Product ===============> Throw Exception While Save Oneform Uniform Product -------->{}",e);
 		}
+		financialArrangementDetailsRepository.inActiveManuallyAddedLoans(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
 		financialArrangementDetailsService.saveOrUpdateManuallyAddedLoans(fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 		associatedConcernDetailService.saveOrUpdate(fundSeekerInputRequest.getAssociatedConcernDetailRequestsList(), fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 		LoansResponse res = new LoansResponse(msg, HttpStatus.OK.value());
