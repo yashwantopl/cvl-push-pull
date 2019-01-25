@@ -116,7 +116,6 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	
 	@Override
 	public Boolean saveOrUpdateManuallyAddedLoans(List<FinancialArrangementsDetailRequest> finArrDetailRequest,Long applicationId,Long userId) {
-		financialArrangementDetailsRepository.inActiveManuallyAddedLoans(userId, applicationId);
 		for (FinancialArrangementsDetailRequest req : finArrDetailRequest) {
 			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
 			BeanUtils.copyProperties(req, arrangementsDetail,"id");
