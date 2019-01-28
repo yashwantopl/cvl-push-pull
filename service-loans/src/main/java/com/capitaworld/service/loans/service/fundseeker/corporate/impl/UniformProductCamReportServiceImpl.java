@@ -24,7 +24,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.OnePageEligibilityResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
@@ -36,13 +35,6 @@ import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
-import com.capitaworld.itr.client.ITRClient;
-import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.gst.GstCalculation;
-import com.capitaworld.service.gst.GstResponse;
-import com.capitaworld.service.gst.client.GstClient;
-import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -128,8 +120,6 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 	@Autowired
 	private MatchEngineClient matchEngineClient; 
 	
-	@Autowired
-	private AnalyzerClient analyzerClient;
 	
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
@@ -152,9 +142,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 	
 	@Autowired
 	private CIBILClient cibilClient;
-	
-	@Autowired
-	private GstClient gstClient;
+
 	
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -171,11 +159,6 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 	@Autowired
 	private WorkflowClient workflowClient;
 	
-	@Autowired
-	private ConnectClient connectClient;
-	
-	@Autowired
-	private ITRClient itrClient;
 	
 	@Autowired
 	private ScoringService scoringService;
@@ -321,7 +304,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 		}
 		
 		//GST DATA
-				try {
+				/*try {
 					GSTR1Request gstr1Request = new GSTR1Request();
 					gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 					GstResponse response = gstClient.getCalculations(gstr1Request);
@@ -339,7 +322,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 					}
 				}catch(Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
-				}
+				}*/
 				PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 				if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 					map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? simpleDateFormat.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
