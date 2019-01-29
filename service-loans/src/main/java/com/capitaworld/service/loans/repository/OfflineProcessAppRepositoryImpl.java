@@ -7,9 +7,10 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.utils.CommonUtils;
 import org.springframework.stereotype.Repository;
+
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 
 @Repository
@@ -22,13 +23,12 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getInEligibleRecordList(Long userId) {
+	public String getInEligibleRecordList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflinePendingProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
 	@Override
@@ -67,40 +67,36 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (Integer) storedProcedureQuery.getOutputParameterValue(RESULT);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getSanctionedApplicationList(Long userId) {
+	public String getSanctionedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineSanctionedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getDisbursedApplicationList(Long userId) {
+	public String getDisbursedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineDisbursedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getRejectProposalsList(Long userId) {
+	public String getRejectProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineRejectProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getOtherProposalsList(Long userId) {
+	public String getOtherProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineOtherProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
 
