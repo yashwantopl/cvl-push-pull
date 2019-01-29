@@ -4,9 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.service.loans.model.NTBRequest;
-import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -53,13 +58,13 @@ public class FinancialArrangementDetailsController {
 
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
 		if (frameRequest.getApplicationId() == null) {
 			logger.warn("application id and user id must not be null ==>" + frameRequest);
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
@@ -74,18 +79,18 @@ public class FinancialArrangementDetailsController {
 			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(frameRequest.getApplicationId(),
 					finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
-				return new ResponseEntity<LoansResponse>(
+				return new ResponseEntity<>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			financialArrangementDetailsService.saveOrUpdate(frameRequest);
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Financial Arrangement Details==>", e);
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
@@ -105,7 +110,7 @@ public class FinancialArrangementDetailsController {
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get Financial Arrangement Details ==>" + id);
-				return new ResponseEntity<LoansResponse>(
+				return new ResponseEntity<>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
@@ -118,11 +123,11 @@ public class FinancialArrangementDetailsController {
 			loansResponse.setData(data);
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Financial Arrangement Details==>", e);
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -136,13 +141,13 @@ public class FinancialArrangementDetailsController {
 		// request must not be null
 		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
 			logger.warn("frameRequest can not be empty ==>" + detailRequests);
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
 		if (applicationId == null || userId == null) {
 			logger.warn("application id, user id must not be null ==>");
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 
@@ -158,7 +163,7 @@ public class FinancialArrangementDetailsController {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
 			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
-				return new ResponseEntity<LoansResponse>(
+				return new ResponseEntity<>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
@@ -171,12 +176,12 @@ public class FinancialArrangementDetailsController {
 				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId,directorId);
 			}
 			
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Existing Loan Details==>", e);
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
@@ -189,7 +194,7 @@ public class FinancialArrangementDetailsController {
 		// application id and user id must not be null
 		if (fundSeekerInputRequestResponse.getApplicationId() == null) {
 			logger.warn("application id must not be null ==>");
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		fundSeekerInputRequestResponse.setUserId(userId);
@@ -199,14 +204,14 @@ public class FinancialArrangementDetailsController {
 			// Checking Profile is Locked
 			Boolean primaryLocked = loanApplicationService.isFinalLocked(fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 			}
 			financialArrangementDetailsService.saveOrUpdate(fundSeekerInputRequestResponse.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());	
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),HttpStatus.OK);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Existing Loan Details==>", e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 	
@@ -248,13 +253,31 @@ public class FinancialArrangementDetailsController {
 				LoansResponse loansResponse = new LoansResponse();
 				loansResponse.setMessage("Successfully get Data!");
 				loansResponse.setData(emi);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
+	@PostMapping(value = "/getTotalEmiFromForAllDir", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTotalEmiFromForAllDir(@RequestBody Long applicationId) {
+		try {
+			if (!CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				Double emi = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
+				LoansResponse loansResponse = new LoansResponse();
+				loansResponse.setMessage("Successfully get Data!");
+				loansResponse.setData(emi);
+				return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
+
 }
