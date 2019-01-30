@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.domain.ScoringRequestDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
@@ -3249,6 +3250,34 @@ public class ScoringServiceImpl implements ScoringService {
                                 } catch (Exception e) {
                                     logger.error("error while getting COLLATERAL_COVERAGE parameter : ",e);
                                     scoringParameterRequest.setCollateralCoverage_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.DEBT_SERVICE_COVERAGE_RATIO: {
+
+                                try {
+
+                                    scoringParameterRequest.setEbitda(operatingStatementDetailsTY.getDepreciation());
+
+                                    Double totalExistingLoanObligation=0.0;
+
+                                    Double individualLoanObligation=financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+                                    Double commercialLoanObligation=financialArrangementDetailsRepository.getTotalEmiOfAllDirByApplicationId(applicationId);
+                                    if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation))
+                                        totalExistingLoanObligation+=individualLoanObligation;
+
+                                    if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation))
+                                        totalExistingLoanObligation+=commercialLoanObligation;
+
+                                    scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
+
+                                    scoringParameterRequest.setLoanType(primaryCorporateDetail.getPurposeOfLoanId());
+
+                                    scoringParameterRequest.setDebtServiceCoverageRatio_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting DEBT_SERVICE_COVERAGE_RATIO parameter : ",e);
+                                    scoringParameterRequest.setDebtServiceCoverageRatio_p(false);
                                 }
                                 break;
                             }
