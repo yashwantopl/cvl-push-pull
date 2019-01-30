@@ -339,7 +339,195 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	@Column(name="trading")
 	private BigDecimal trading;
 	
-	
+	@Column(name="max_drop_in_turnover")
+	private BigDecimal maxDropInTurnover;
+
+	@Column(name="is_max_drop_in_turnover_display")
+	private Boolean isMaxDropInTurnoverDisplay = false;
+
+	@Column(name="is_max_drop_in_turnover_mandatory")
+	private Boolean isMaxDropInTurnoverMandatory = false;
+
+	@Column(name="min_utilisation_percentage")
+	private BigDecimal minUtilisationPercentage;
+
+	@Column(name="max_utilisation_percentage")
+	private BigDecimal maxUtilisationPercentage;
+
+	@Column(name="is_utilisation_percentage_display")
+	private Boolean isUtilisationPercentageDisplay = false;
+
+	@Column(name="is_utilisation_percentage_mandatory")
+	private Boolean isUtilisationPercentageMandatory = false;
+
+	@Column(name="min_credit_summation")
+	private BigDecimal minCreditSummation;
+
+	@Column(name="max_credit_summation")
+	private BigDecimal maxCreditSummation;
+
+	@Column(name="is_credit_summation_display")
+	private Boolean isCreditSummationDisplay = false;
+
+	@Column(name="is_credit_summation_mandatory")
+	private Boolean isCreditSummationMandatory = false;
+
+	@Column(name="min_collateral_coverage")
+	private BigDecimal minCollateralCoverage;
+
+	@Column(name="max_collateral_coverage")
+	private BigDecimal maxCollateralCoverage;
+
+	@Column(name="is_collateral_coverage_display")
+	private Boolean isCollateralCoverageDisplay = false;
+
+	@Column(name="is_collateral_coverage_mandatory")
+	private Boolean isCollateralCoverageMandatory = false;
+
+	@Column(name="new_tol_tnw")
+	private BigDecimal newTolTnw;
+
+	@Column(name="new_collateral_coverage")
+	private BigDecimal newCollateralCoverage;
+
+	@Column(name="is_new_collateral_coverage")
+	private Boolean isNewCollateralCoverageCheck = false;
+
+	@Column(name="is_new_tol_tnw_check")
+	private Boolean isNewTolTnwCheck = false;
+
+	@Column(name="kotak_sub_parameter")
+	private Integer kotakSubParameter ;
+
+
+
+
+
+
+	public BigDecimal getMaxDropInTurnover() {
+		return maxDropInTurnover;
+	}
+
+	public void setMaxDropInTurnover(BigDecimal maxDropInTurnover) {
+		this.maxDropInTurnover = maxDropInTurnover;
+	}
+
+	public Boolean getIsMaxDropInTurnoverDisplay() {
+		return isMaxDropInTurnoverDisplay;
+	}
+
+	public void setIsMaxDropInTurnoverDisplay(Boolean isMaxDropInTurnoverDisplay) {
+		this.isMaxDropInTurnoverDisplay = isMaxDropInTurnoverDisplay;
+	}
+
+	public Boolean getIsMaxDropInTurnoverMandatory() {
+		return isMaxDropInTurnoverMandatory;
+	}
+
+	public void setIsMaxDropInTurnoverMandatory(Boolean isMaxDropInTurnoverMandatory) {
+		this.isMaxDropInTurnoverMandatory = isMaxDropInTurnoverMandatory;
+	}
+
+	public BigDecimal getMinUtilisationPercentage() {
+		return minUtilisationPercentage;
+	}
+
+	public void setMinUtilisationPercentage(BigDecimal minUtilisationPercentage) {
+		this.minUtilisationPercentage = minUtilisationPercentage;
+	}
+
+	public BigDecimal getMaxUtilisationPercentage() {
+		return maxUtilisationPercentage;
+	}
+
+	public void setMaxUtilisationPercentage(BigDecimal maxUtilisationPercentage) {
+		this.maxUtilisationPercentage = maxUtilisationPercentage;
+	}
+
+	public Boolean getIsUtilisationPercentageDisplay() {
+		return isUtilisationPercentageDisplay;
+	}
+
+	public void setIsUtilisationPercentageDisplay(Boolean isUtilisationPercentageDisplay) {
+		this.isUtilisationPercentageDisplay = isUtilisationPercentageDisplay;
+	}
+
+	public Boolean getIsUtilisationPercentageMandatory() {
+		return isUtilisationPercentageMandatory;
+	}
+
+	public void setIsUtilisationPercentageMandatory(Boolean isUtilisationPercentageMandatory) {
+		this.isUtilisationPercentageMandatory = isUtilisationPercentageMandatory;
+	}
+
+	public BigDecimal getMinCreditSummation() {
+		return minCreditSummation;
+	}
+
+	public void setMinCreditSummation(BigDecimal minCreditSummation) {
+		this.minCreditSummation = minCreditSummation;
+	}
+
+	public BigDecimal getMaxCreditSummation() {
+		return maxCreditSummation;
+	}
+
+	public void setMaxCreditSummation(BigDecimal maxCreditSummation) {
+		this.maxCreditSummation = maxCreditSummation;
+	}
+
+	public Boolean getIsCreditSummationDisplay() {
+		return isCreditSummationDisplay;
+	}
+
+	public void setIsCreditSummationDisplay(Boolean isCreditSummationDisplay) {
+		this.isCreditSummationDisplay = isCreditSummationDisplay;
+	}
+
+	public Boolean getIsCreditSummationMandatory() {
+		return isCreditSummationMandatory;
+	}
+
+	public void setIsCreditSummationMandatory(Boolean isCreditSummationMandatory) {
+		this.isCreditSummationMandatory = isCreditSummationMandatory;
+	}
+
+	public BigDecimal getMinCollateralCoverage() {
+		return minCollateralCoverage;
+	}
+
+	public void setMinCollateralCoverage(BigDecimal minCollateralCoverage) {
+		this.minCollateralCoverage = minCollateralCoverage;
+	}
+
+	public BigDecimal getMaxCollateralCoverage() {
+		return maxCollateralCoverage;
+	}
+
+	public void setMaxCollateralCoverage(BigDecimal maxCollateralCoverage) {
+		this.maxCollateralCoverage = maxCollateralCoverage;
+	}
+
+	public Boolean getIsCollateralCoverageDisplay() {
+		return isCollateralCoverageDisplay;
+	}
+
+	public void setIsCollateralCoverageDisplay(Boolean isCollateralCoverageDisplay) {
+		this.isCollateralCoverageDisplay = isCollateralCoverageDisplay;
+	}
+
+	public Boolean getIsCollateralCoverageMandatory() {
+		return isCollateralCoverageMandatory;
+	}
+
+	public void setIsCollateralCoverageMandatory(Boolean isCollateralCoverageMandatory) {
+		this.isCollateralCoverageMandatory = isCollateralCoverageMandatory;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	/**
 	 * @return the jobId
 	 */
@@ -1210,7 +1398,49 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	public void setTrading(BigDecimal trading) {
 		this.trading = trading;
 	}
- 
-	
+
+	public BigDecimal getNewTolTnw() {
+		return newTolTnw;
+	}
+
+	public void setNewTolTnw(BigDecimal newTolTnw) {
+		this.newTolTnw = newTolTnw;
+	}
+
+	public BigDecimal getNewCollateralCoverage() {
+		return newCollateralCoverage;
+	}
+
+	public void setNewCollateralCoverage(BigDecimal newCollateralCoverage) {
+		this.newCollateralCoverage = newCollateralCoverage;
+	}
+
+	public Boolean getIsNewCollateralCoverageCheck() {
+		return isNewCollateralCoverageCheck;
+	}
+
+	public void setIsNewCollateralCoverageCheck(Boolean isNewCollateralCoverageCheck) {
+		this.isNewCollateralCoverageCheck = isNewCollateralCoverageCheck;
+	}
+
+	public Boolean getIsNewTolTnwCheck() {
+		return isNewTolTnwCheck;
+	}
+
+	public void setIsNewTolTnwCheck(Boolean isNewTolTnwCheck) {
+		this.isNewTolTnwCheck = isNewTolTnwCheck;
+	}
+
+	public Integer getKotakSubParameter() {
+		return kotakSubParameter;
+	}
+
+	public void setKotakSubParameter(Integer kotakSubParameter) {
+		this.kotakSubParameter = kotakSubParameter;
+	}
+
+
+
+
 
 }

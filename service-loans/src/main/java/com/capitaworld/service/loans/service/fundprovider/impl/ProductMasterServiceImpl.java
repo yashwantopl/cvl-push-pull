@@ -278,6 +278,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					case WORKING_CAPITAL:
 						WorkingCapitalParameterTemp workingCapitalParameterTemp = new WorkingCapitalParameterTemp();
 						WorkingCapitalParameterRequest workingCapitalParameterRequest=workingCapitalParameterService.getWorkingCapitalParameter(addProductRequest.getLoanId());
+						industrySecIdList=workingCapitalParameterRequest.getIndustrylist();
 						//set multiple value in temp
 						industrySecIdList=workingCapitalParameterRequest.getIndustrylist();
 						secIdList=workingCapitalParameterRequest.getSectorlist();
@@ -285,6 +286,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyState=workingCapitalParameterRequest.getStateList();
 						geogaphicallyCity=workingCapitalParameterRequest.getCityList();
 						negativeIndList=workingCapitalParameterRequest.getUnInterestedIndustrylist();
+						if(addProductRequest.getFinId()==4)
+						{
+							workingCapitalParameterRequest.setIsNewTolTnwCheck(false);
+							workingCapitalParameterRequest.setNewTolTnw(null);
+						}
 						//END set multiple value in temp
 						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id");
 						productMaster = workingCapitalParameterTemp;
@@ -296,6 +302,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							
 							NtbTermLoanParameterTemp ntbTermLoanParameterTemp = new NtbTermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId());
+							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							secIdList=termLoanParameterRequest.getSectorlist();
@@ -304,6 +311,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							geogaphicallyCity=termLoanParameterRequest.getCityList();
 							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
 							//END set multiple value in temp
+							if(addProductRequest.getFinId()==4)
+							{
+								termLoanParameterRequest.setIsNewTolTnwCheck(false);
+								termLoanParameterRequest.setNewTolTnw(null);
+							}
 							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
 							productMaster = ntbTermLoanParameterTemp;
 							productMaster.setIsParameterFilled(true);
@@ -311,6 +323,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							//productMaster = new TermLoanParameterTemp();
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
+							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							secIdList=termLoanParameterRequest.getSectorlist();
@@ -319,6 +332,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							geogaphicallyCity=termLoanParameterRequest.getCityList();
 							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
 							//END set multiple value in temp
+							if(addProductRequest.getFinId()==4)
+							{
+								termLoanParameterRequest.setIsNewTolTnwCheck(false);
+								termLoanParameterRequest.setNewTolTnw(null);
+							}
 							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
 							productMaster = termLoanParameterTemp;
 							productMaster.setIsParameterFilled(true);
@@ -327,6 +345,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					case WCTL_LOAN:
 						WcTlParameterTemp wcTlParameterTemp= new WcTlParameterTemp();
 						WcTlParameterRequest wcTlParameterRequest=wcTlParameterService.getWcTlRequest(addProductRequest.getLoanId());
+						industrySecIdList=wcTlParameterRequest.getIndustrylist();
 						//set multiple value in temp
 						industrySecIdList=wcTlParameterRequest.getIndustrylist();
 						secIdList=wcTlParameterRequest.getSectorlist();
@@ -335,11 +354,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyCity=wcTlParameterRequest.getCityList();
 						negativeIndList=wcTlParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
+						if(addProductRequest.getFinId()==4)
+						{
+							wcTlParameterRequest.setIsNewTolTnwCheck(false);
+							wcTlParameterRequest.setNewTolTnw(null);
+						}
 						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
 						productMaster = wcTlParameterTemp;
 						productMaster.setIsParameterFilled(true);
 						break;
 					case PERSONAL_LOAN:
+						productMaster = new PersonalLoanParameterTemp();
 						PersonalLoanParameterTemp personalLoanParameterTemp = new PersonalLoanParameterTemp();
 						PersonalLoanParameterRequest personalLoanParameterRequest=personalLoanParameterService.getPersonalLoanParameterRequest(addProductRequest.getLoanId());
 					

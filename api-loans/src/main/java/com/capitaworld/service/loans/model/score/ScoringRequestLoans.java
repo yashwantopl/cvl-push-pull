@@ -23,6 +23,15 @@ public class ScoringRequestLoans {
 
 	private ScoreParameterRetailRequest scoreParameterRetailRequest;
 
+	private Double eligibleLoanAmountCircular;
+
+	public Double getEligibleLoanAmountCircular() {
+		return eligibleLoanAmountCircular;
+	}
+
+	public void setEligibleLoanAmountCircular(Double eligibleLoanAmountCircular) {
+		this.eligibleLoanAmountCircular = eligibleLoanAmountCircular;
+	}
 
 	public ScoreParameterRetailRequest getScoreParameterRetailRequest() {
 		return scoreParameterRetailRequest;
@@ -90,9 +99,18 @@ public class ScoringRequestLoans {
 	}
 	@Override
 	public String toString() {
-		return "ScoringRequestLoans [fsDigit=" + fsDigit + ", fpProductId=" + fpProductId + ", scoringModelId="
-				+ scoringModelId + ", applicationId=" + applicationId + ", scoreParameterRequestLoans="
-				+ scoreParameterRequestLoans + ", scoreParameterNTBRequest=" + scoreParameterNTBRequest + "]";
+		return "ScoringRequestLoans{" +
+				"fsDigit=" + fsDigit +
+				", fpProductId=" + fpProductId +
+				", scoringModelId=" + scoringModelId +
+				", applicationId=" + applicationId +
+				", financialTypeIdProduct=" + financialTypeIdProduct +
+				", userId=" + userId +
+				", scoreParameterRequestLoans=" + scoreParameterRequestLoans +
+				", scoreParameterNTBRequest=" + scoreParameterNTBRequest +
+				", scoreParameterRetailRequest=" + scoreParameterRetailRequest +
+				", eligibleLoanAmountCircular=" + eligibleLoanAmountCircular +
+				'}';
 	}
 
 }
