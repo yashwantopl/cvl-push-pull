@@ -698,6 +698,8 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>7");
 				cmaDetailResponse.setProvisionForDeferredTax((Double)operating.get(0)[5]);
 				logger.info("==================================>8");
+				cmaDetailResponse.setOpProfitBeforeIntrest((Double)operating.get(0)[6]);
+				logger.info("==================================>9");
 				logger.info("Successfully get from operating ");
 			}
 			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
@@ -712,6 +714,8 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>13");
 				cmaDetailResponse.setTotalCurrentLiabilities((Double)liabilitie.get(0)[3]);
 				logger.info("==================================>14");
+				cmaDetailResponse.setTotalOutsideLiabilities((Double)liabilitie.get(0)[4]);
+				logger.info("==================================>15");
 				logger.info("Successfully get from liabilitie ");
 			}
 			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
@@ -730,6 +734,8 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>21");
 				cmaDetailResponse.setTotalCurrentAssets((Double)asset.get(0)[5]);
 				logger.info("==================================>22");
+				cmaDetailResponse.setTangibleNetWorth((Double)asset.get(0)[6]);
+				logger.info("==================================>23");
 				logger.info("Successfully get from asset ");
 			}
 			

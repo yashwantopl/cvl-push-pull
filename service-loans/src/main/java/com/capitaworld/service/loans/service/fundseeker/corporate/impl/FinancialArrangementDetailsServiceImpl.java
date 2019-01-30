@@ -178,6 +178,13 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		return totalEmi;
 	}
 
+	@Override
+	public Double getTotalEmiOfAllDirByApplicationId(Long applicationId) {
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiOfAllDirByApplicationId(applicationId);
+		logger.info("getTotalEmiOfAllDirByApplicationId {} For Application Id = {}", totalEmi ,applicationId);
+		return totalEmi;
+	}
+
 	/* (non-Javadoc)
 	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService#getFinancialArrangementDetailsListDirId(java.lang.Long, java.lang.Long)
 	 */

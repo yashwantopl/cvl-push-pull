@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.scoring.impl;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
+import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -228,6 +229,8 @@ public class ScoringServiceImpl implements ScoringService {
             scoreParameterRetailRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoreParameterRetailRequest.class);
         }
 
+
+        ScoringResponse scoringResponseMain = null;
 
         ScoringRequest scoringRequest = new ScoringRequest();
         scoringRequest.setScoringModelId(scoreModelId);
@@ -596,7 +599,7 @@ public class ScoringServiceImpl implements ScoringService {
         scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
 
         try {
-            scoringClient.calculateScore(scoringRequest);
+            scoringResponseMain = scoringClient.calculateScore(scoringRequest);
 
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
@@ -610,6 +613,8 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
     public ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
+
+        ScoringResponse scoringResponseMain = null;
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
 
@@ -664,6 +669,8 @@ public class ScoringServiceImpl implements ScoringService {
 
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                     logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
+                    LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
                     break;
                 }
 
@@ -1013,7 +1020,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringClient.calculateScoreList(scoringRequestList);
+            scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
 
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
@@ -1050,6 +1057,7 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             if (data != null) {
                 List<Xn> xns = data.getXns().getXn();
+                List<Double> al = new ArrayList<Double>();
                 for (Xn xn : xns) {
                     if (xn.getCategory().equalsIgnoreCase("Salary")) {
                         salaryWithBank=true;
@@ -1181,11 +1189,11 @@ public class ScoringServiceImpl implements ScoringService {
             OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-           /* LiabilitiesDetails liabilitiesDetailsFY;
-            LiabilitiesDetails liabilitiesDetailsSY; */
+            LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
+            LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
             LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-//            AssetsDetails assetsDetailsFY;
+            AssetsDetails assetsDetailsFY = new AssetsDetails();
             AssetsDetails assetsDetailsSY = new AssetsDetails();
             AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -1195,13 +1203,17 @@ public class ScoringServiceImpl implements ScoringService {
                 operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
 
                 liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-              /*  liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
-                  liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + ""); */
+                liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
+                liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + "");
 
                 assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
                 assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
-//                assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
-            } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId || ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId) {
+                assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
+            } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId) {
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
+                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
+            } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId) {
                 operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                 liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
                 assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
@@ -1537,21 +1549,21 @@ public class ScoringServiceImpl implements ScoringService {
                                 if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
                                     exportSalesFy = 0.0;
 
-                                Double totalSale_FY;
+                                Double totalSale_FY = 0.0;
                                 if (domesticSalesFy + exportSalesFy == 0.0) {
                                     totalSale_FY = 1.0;
                                 } else {
                                     totalSale_FY = domesticSalesFy + exportSalesFy;
                                 }
 
-                                Double totalSale_SY;
+                                Double totalSale_SY = 0.0;
                                 if (domesticSalesSy + exportSalesSy == 0.0) {
                                     totalSale_SY = 1.0;
                                 } else {
                                     totalSale_SY = domesticSalesSy + exportSalesSy;
                                 }
 
-                                Double totalSale_TY;
+                                Double totalSale_TY = 0.0;
                                 if (domesticSalesTy + exportSalesTy == 0.0) {
                                     totalSale_TY = 1.0;
                                 } else {
@@ -1739,6 +1751,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                             Double totalCredit = null;
                             Double projctedSales = null;
+                            Integer noOfMonths = 1;
 
                             // start get total credit from Analyser
                             ReportRequest reportRequest = new ReportRequest();
@@ -1747,6 +1760,11 @@ public class ScoringServiceImpl implements ScoringService {
                                 AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                                 Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
                                         Data.class);
+
+                                if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                    noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
+                                }
+
                                 if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
                                     {
                                         if (!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit())) {
@@ -1763,11 +1781,13 @@ public class ScoringServiceImpl implements ScoringService {
                                 logger.error("error while calling analyzer client : ",e);
                             }
 
-                            // get get total credit from Analyser
+                            totalCredit=totalCredit/noOfMonths;
+
+                            // end get total credit from Analyser
 
                             // start get projected sales from GST client
 
-                            projctedSales = gstCalculation.getProjectedSales();
+                            projctedSales = gstCalculation.getProjectedSales()/12;
 
                             // end get projected sales from GST client
 
@@ -2167,6 +2187,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setApplicationId(applicationId);
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
+            scoringRequest.setEligibleLoanAmountCircular(scoringRequestLoans.getEligibleLoanAmountCircular());
 
 
 
@@ -2255,11 +2276,11 @@ public class ScoringServiceImpl implements ScoringService {
                 OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-            /*    LiabilitiesDetails liabilitiesDetailsFY;
-                  LiabilitiesDetails liabilitiesDetailsSY; */
+                LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
+                LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
                 LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-//                AssetsDetails assetsDetailsFY;
+                AssetsDetails assetsDetailsFY = new AssetsDetails();
                 AssetsDetails assetsDetailsSY = new AssetsDetails();
                 AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -2269,13 +2290,17 @@ public class ScoringServiceImpl implements ScoringService {
                     operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
 
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                 /*   liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
-                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + ""); */
+                    liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
+                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + "");
 
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
-//                    assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
-                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId() || ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
+                    assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
+                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
+                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
+                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
+                } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
                     operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
@@ -2611,21 +2636,21 @@ public class ScoringServiceImpl implements ScoringService {
                                     if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
                                         exportSalesFy = 0.0;
 
-                                    Double totalSale_FY;
+                                    Double totalSale_FY = 0.0;
                                     if (domesticSalesFy + exportSalesFy == 0.0) {
                                         totalSale_FY = 1.0;
                                     } else {
                                         totalSale_FY = domesticSalesFy + exportSalesFy;
                                     }
 
-                                    Double totalSale_SY;
+                                    Double totalSale_SY = 0.0;
                                     if (domesticSalesSy + exportSalesSy == 0.0) {
                                         totalSale_SY = 1.0;
                                     } else {
                                         totalSale_SY = domesticSalesSy + exportSalesSy;
                                     }
 
-                                    Double totalSale_TY;
+                                    Double totalSale_TY = 0.0;
                                     if (domesticSalesTy + exportSalesTy == 0.0) {
                                         totalSale_TY = 1.0;
                                     } else {
@@ -3156,6 +3181,77 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
+                            case ScoreParameter.UTILISATION_PERCENTAGE: {
+
+                                try {
+                                    Integer noOfMonths = 1;
+
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(data)) {
+                                        {
+
+                                            if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                                noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
+                                            }
+
+                                            if(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()))
+                                            {
+                                                scoringParameterRequest.setAverageDailyBalance(Double.parseDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()) / noOfMonths);
+                                            }
+                                        }
+                                    }
+
+                                    List<String> loanTypeList=new ArrayList<String>();
+                                    loanTypeList.add(CibilUtils.CreditTypeEnum.CASH_CREDIT.getValue());
+                                    loanTypeList.add(CibilUtils.CreditTypeEnum.OVERDRAFT.getValue());
+
+                                    scoringParameterRequest.setLimitsInAccount(financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList ));
+
+                                    scoringParameterRequest.setUtilisationPercentage_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting UTILISATION_PERCENTAGE parameter : ",e);
+                                    scoringParameterRequest.setUtilisationPercentage_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.TURN_OVER_TO_LIMIT_RATIO: {
+
+                                try {
+
+                                    scoringParameterRequest.setTurnOver(operatingStatementDetailsTY.getDomesticSales() + operatingStatementDetailsTY.getExportSales());
+
+                                    scoringParameterRequest.setTurnOverToLimitRatio_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting TURN_OVER_TO_LIMIT_RATIO parameter : ",e);
+                                    scoringParameterRequest.setTurnOverToLimitRatio_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.COLLATERAL_COVERAGE: {
+
+                                try {
+
+                                    if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCollateralSecurityAmount()))
+                                        scoringParameterRequest.setAmountOfCollateral(primaryCorporateDetail.getCollateralSecurityAmount());
+                                    else
+                                        scoringParameterRequest.setAmountOfCollateral(0.0);
+
+
+                                    scoringParameterRequest.setCollateralCoverage_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting COLLATERAL_COVERAGE parameter : ",e);
+                                    scoringParameterRequest.setCollateralCoverage_p(false);
+                                }
+                                break;
+                            }
 
                             default: break;
                         }
@@ -3220,7 +3316,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         if (directorBackgroundDetailsList.size() > 0) {
             for (DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
-                 calculateDirectorScore(scoringRequestLoans, directorBackgroundDetail, primaryCorporateDetail);
+                Boolean flag = calculateDirectorScore(scoringRequestLoans, directorBackgroundDetail, primaryCorporateDetail);
             }
         }
 
@@ -3373,6 +3469,7 @@ public class ScoringServiceImpl implements ScoringService {
                     case ScoreParameter.NTB.BALANCE_GESTATION_PERIOD: {
                         try {
 
+                            Integer years = 0;
                             java.util.Calendar proposedDate = java.util.Calendar.getInstance();
                             proposedDate.setTime(primaryCorporateDetail.getProposedOperationDate());
 

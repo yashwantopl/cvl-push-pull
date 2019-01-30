@@ -100,6 +100,8 @@ public class LoansClient {
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi_sanction_amount";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_UNIFORM = "/financial_arrangement_details/get_total_emi_sanction_amount_uniform";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS = "/financial_arrangement_details/getTotalEmiFromForAllDir";
+	
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
 	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
@@ -882,6 +884,24 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
+	
+	//Akshay
+	public LoansResponse getTotalEMIOfAllDir(Long applicationId) throws LoansException{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS);
+		logger.info("url for Getting getTotalEMIOfAllDir From Client=================>{}", url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getTotalEMIOfAllDir : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	
 
 	public LoansResponse saveFutureFinancialEstimatesDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(FUTURE_FINANCIAL_ESTIMATE_DETAILS);

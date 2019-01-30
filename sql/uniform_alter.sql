@@ -9,6 +9,7 @@ ALTER TABLE `loan_application`.`fp_uniform_product_details`
   ADD COLUMN `max_growth` DOUBLE UNSIGNED NULL AFTER `wc_requirement`;
 
 
+
 CREATE TABLE `loan_application`.`fp_uniform_product_details_temp`(
  `fp_product_id` BIGINT(20) UNSIGNED NOT NULL, 
  `min_amount` DOUBLE, 
@@ -210,9 +211,9 @@ ALTER TABLE `loan_application`.`fp_uniform_product_details_audit`
 MODIFY COLUMN is_active_audit VARCHAR(200);
 
 
-ALTER TABLE `loan_application`.`fp_product_master` MODIFY COLUMN action_for VARCHAR(1000)
+ALTER TABLE `loan_application`.`fp_product_master` MODIFY COLUMN action_for VARCHAR(1000);
 
-ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN action_for VARCHAR(1000)
+ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN action_for VARCHAR(1000);
 
 ALTER TABLE `loan_application`.`fp_uniform_product_details`
 MODIFY COLUMN `max_growth` DOUBLE;
@@ -246,8 +247,8 @@ ALTER TABLE `loan_application`.`fp_uniform_product_details`
 ADD COLUMN `max_cmr` INT;
 
 ALTER TABLE `loan_application`.`fp_uniform_product_details`
-ADD COLUMN `min_cibil_score` DOUBLE
+ADD COLUMN `min_cibil_score` DOUBLE;
 
 
 ALTER TABLE `loan_application`.`fp_uniform_product_details`
-ADD COLUMN `wc_requirement` DOUBLE
+ADD COLUMN `wc_requirement` DOUBLE;
