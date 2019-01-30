@@ -231,7 +231,9 @@ public class CorporateFinalViewResponse implements Serializable {
     
     private Boolean isMcqSkipped;
     private String companyId;
-    			
+    private String scoringModelName;
+    private String eligibilityFinancialYear;
+
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2154,8 +2156,23 @@ public class CorporateFinalViewResponse implements Serializable {
 		this.enhancementAmount = enhancementAmount;
 	}
 
-	
+	public String getScoringModelName() {
+		return scoringModelName;
+	}
 
-	
+	public void setScoringModelName(String scoringModelName) {
+		this.scoringModelName = scoringModelName;
+	}
+
+	public String getEligibilityFinancialYear() {
+		return eligibilityFinancialYear;
+	}
+
+	public void setEligibilityFinancialYear(String eligibilityFinancialYear) {
+		this.eligibilityFinancialYear = eligibilityFinancialYear;
+	}
+
+
+
 
 }

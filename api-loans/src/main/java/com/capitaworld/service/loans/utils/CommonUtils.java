@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -66,6 +67,8 @@ public class CommonUtils {
    
 	public static final String SCORING_EXCEL ="score_result.xlsx";
 
+	public static final DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
 	public static final String SUCCESS = "Success";
@@ -118,6 +121,8 @@ public class CommonUtils {
 	public static final String MODIFIED_BY = "modifiedBy";
 	public static final String MODIFIED_DATE = "modifiedDate";
 	public static final String IS_ACTIVE = "isActive";
+
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class UsersRoles {
 		private UsersRoles(){

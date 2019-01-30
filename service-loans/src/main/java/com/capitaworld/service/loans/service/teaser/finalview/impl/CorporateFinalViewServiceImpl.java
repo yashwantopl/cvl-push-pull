@@ -319,6 +319,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = loanApplicationMaster.getUserId();
+		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
@@ -1451,6 +1452,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 				corporateFinalViewResponse.setDataList(scoringResponse.getDataList());
+				corporateFinalViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName() != null ? proposalScoreResponse.getScoringModelName() : "-");
 				corporateFinalViewResponse.setManagementRiskScore(
 						CommonUtils.checkDoubleNull(proposalScoreResponse.getManagementRiskScore()));
 				corporateFinalViewResponse.setFinancialRiskScore(
@@ -1573,6 +1575,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 
+		/*loan eligibility financial year*/
+		corporateFinalViewResponse.setEligibilityFinancialYear(CommonUtils.getFinancialYear());
+
 		// CGTMSE
 		try {
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
@@ -1607,12 +1612,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 				
-				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporateFinalViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}
+				}*/
 				
 			} else {
 				logger.warn("Mca Company Id is Null");

@@ -987,6 +987,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 				corporatePrimaryViewResponse.setDataList(scoringResponse.getDataList());
+				corporatePrimaryViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName() != null ? proposalScoreResponse.getScoringModelName() : "-");
 				corporatePrimaryViewResponse.setManagementRiskScore(proposalScoreResponse.getManagementRiskScore());
 				corporatePrimaryViewResponse.setFinancialRiskScore(proposalScoreResponse.getFinancialRiskScore());
 				corporatePrimaryViewResponse.setBuisnessRiskScore(proposalScoreResponse.getBusinessRiskScore());
@@ -1092,6 +1093,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			} catch (Exception e1) {
 				logger.error(CommonUtils.EXCEPTION,e1);
 			}
+
+
+			/*loan eligibility financial year  */
+			corporatePrimaryViewResponse.setEligibilityFinancialYear(CommonUtils.getFinancialYear());
+
 			// CGTMSE
 			try {
 
@@ -1134,12 +1140,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 				
-				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporatePrimaryViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}
+				}*/
 			} else {
 				logger.warn("Mca Company Id is Null");
 

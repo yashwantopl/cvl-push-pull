@@ -137,9 +137,10 @@ public class CorporatePrimaryViewResponse {
     
     private String applicationType;
     private String fpProductName;
-    
+    private String scoringModelName;
     private Object mcaFinancialAndDetailsResponse;
-     
+    private String eligibilityFinancialYear;
+
     
    
 	public List<Object> getCibilReport() {
@@ -1198,7 +1199,18 @@ public class CorporatePrimaryViewResponse {
 	public void setEnhancementAmount(Double enhancementAmount) {
 		this.enhancementAmount = enhancementAmount;
 	}
-	
+    public String getScoringModelName() {
+        return scoringModelName;
+    }
+    public void setScoringModelName(String scoringModelName) {
+        this.scoringModelName = scoringModelName;
+    }
+    public String getEligibilityFinancialYear() {
+        return eligibilityFinancialYear;
+    }
+    public void setEligibilityFinancialYear(String eligibilityFinancialYear) {
+        this.eligibilityFinancialYear = eligibilityFinancialYear;
+    }
 	
 	
     
