@@ -3267,7 +3267,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
 
-                                    scoringParameterRequest.setEbitda(operatingStatementDetailsTY.getDepreciation());
+                                    scoringParameterRequest.setEbitda(operatingStatementDetailsTY.getOpProfitBeforeIntrest() + operatingStatementDetailsTY.getDepreciation());
 
                                     Double totalExistingLoanObligation=0.0;
 
