@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailR
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -132,6 +133,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
+    
+    @Autowired
+    private FinancialArrangementDetailsService financialArrangementDetailsService; 
 
     @Autowired
     private ITRClient itrClient;
@@ -3272,7 +3276,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Double totalExistingLoanObligation=0.0;
 
                                     Double individualLoanObligation=financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-                                    Double commercialLoanObligation=financialArrangementDetailsRepository.getTotalEmiOfAllDirByApplicationId(applicationId);
+                                    Double commercialLoanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
                                     if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation))
                                         totalExistingLoanObligation+=(individualLoanObligation*12);
 
