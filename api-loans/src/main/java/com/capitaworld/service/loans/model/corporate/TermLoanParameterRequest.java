@@ -323,6 +323,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCollateralCoverageMandatory = false;
 
 	private Integer kotakSubParameter ;
+	
+	private Boolean isNewDscrCheck = false;
+	
+	private BigDecimal newDscrCheck;
 
 
 	public Object getWorkflowData() {
@@ -1607,9 +1611,21 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
 
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
 
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
 
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
 
 
 
