@@ -750,13 +750,21 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		FundSeekerInputRequestResponse fundSeekerInputResponse = new FundSeekerInputRequestResponse();
 		fundSeekerInputResponse.setApplicationId(applicationId);
 		try {
+			//Getting Financial Information from PrimaryCorporateDetails
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
+			if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
+				logger.info("Data not found for given applicationid from Primary Corporate Details");
+				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
+			}
+			
 			// === Applicant Address
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
 				fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(Collections.emptyList());
 				logger.info(DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG);
-				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
+				return new LoansResponse("Data not found for given applicationid",HttpStatus.OK.value(), fundSeekerInputResponse);
 			}
 
 			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
@@ -766,14 +774,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
 			fundSeekerInputResponse.setAssociatedConcernDetailRequestsList(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, null));
 			
-			//Getting Financial Information from PrimaryCorporateDetails
-
-			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
-			if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
-				logger.info("Data not found for given applicationid from Primary Corporate Details");
-				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
-			}
 			
 			fundSeekerInputResponse.setTurnOverPrevFinYear(primaryCorporateDetail.getTurnOverPrevFinYear());
 			fundSeekerInputResponse.setProfitCurrFinYear(primaryCorporateDetail.getProfitCurrFinYear());
