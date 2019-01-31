@@ -233,7 +233,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private String companyId;
     private String scoringModelName;
     private String eligibilityFinancialYear;
-
+    private Double loanObligation;
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2170,6 +2170,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setEligibilityFinancialYear(String eligibilityFinancialYear) {
 		this.eligibilityFinancialYear = eligibilityFinancialYear;
+	}
+
+	public Double getLoanObligation() {
+		return loanObligation;
+	}
+
+	public void setLoanObligation(Double loanObligation) {
+		this.loanObligation = loanObligation;
 	}
 
 

@@ -684,6 +684,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
+		
+		/*get personal loan obligation od dir*/
+		
+		Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(toApplicationId);
+		corporatePrimaryViewResponse.setLoanObligation(loanObligation!= null ? loanObligation : 0);
+		
 
 		Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
 
