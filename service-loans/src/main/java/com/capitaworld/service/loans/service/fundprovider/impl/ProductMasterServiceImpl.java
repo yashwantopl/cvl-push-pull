@@ -278,7 +278,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					case WORKING_CAPITAL:
 						WorkingCapitalParameterTemp workingCapitalParameterTemp = new WorkingCapitalParameterTemp();
 						WorkingCapitalParameterRequest workingCapitalParameterRequest=workingCapitalParameterService.getWorkingCapitalParameter(addProductRequest.getLoanId());
-						industrySecIdList=workingCapitalParameterRequest.getIndustrylist();
+
 						//set multiple value in temp
 						industrySecIdList=workingCapitalParameterRequest.getIndustrylist();
 						secIdList=workingCapitalParameterRequest.getSectorlist();
@@ -298,11 +298,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						break;
 					case TERM_LOAN:
 						if (addProductRequest.getBusinessTypeId()==2) {
-							//productMaster = new NtbTermLoanParameterTemp();
 							
 							NtbTermLoanParameterTemp ntbTermLoanParameterTemp = new NtbTermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId());
-							industrySecIdList=termLoanParameterRequest.getIndustrylist();
+
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							secIdList=termLoanParameterRequest.getSectorlist();
@@ -320,10 +319,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							productMaster = ntbTermLoanParameterTemp;
 							productMaster.setIsParameterFilled(true);
 						} else {
-							//productMaster = new TermLoanParameterTemp();
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
-							industrySecIdList=termLoanParameterRequest.getIndustrylist();
+
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							secIdList=termLoanParameterRequest.getSectorlist();
@@ -345,7 +343,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					case WCTL_LOAN:
 						WcTlParameterTemp wcTlParameterTemp= new WcTlParameterTemp();
 						WcTlParameterRequest wcTlParameterRequest=wcTlParameterService.getWcTlRequest(addProductRequest.getLoanId());
-						industrySecIdList=wcTlParameterRequest.getIndustrylist();
+
 						//set multiple value in temp
 						industrySecIdList=wcTlParameterRequest.getIndustrylist();
 						secIdList=wcTlParameterRequest.getSectorlist();
@@ -364,7 +362,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						productMaster.setIsParameterFilled(true);
 						break;
 					case PERSONAL_LOAN:
-						productMaster = new PersonalLoanParameterTemp();
+
 						PersonalLoanParameterTemp personalLoanParameterTemp = new PersonalLoanParameterTemp();
 						PersonalLoanParameterRequest personalLoanParameterRequest=personalLoanParameterService.getPersonalLoanParameterRequest(addProductRequest.getLoanId());
 					
