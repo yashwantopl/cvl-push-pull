@@ -224,6 +224,10 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Boolean isNewCollateralCoverageCheck = false;
 
 	private Boolean isNewTolTnwCheck = false;
+	
+	private Boolean isNewDscrCheck;
+	
+	private BigDecimal newDscrCheck;
 
 	private Integer kotakSubParameter ;
 	public Integer getIndividualCibil() {
@@ -1332,8 +1336,20 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
 
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
 
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
 
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
 
 }
