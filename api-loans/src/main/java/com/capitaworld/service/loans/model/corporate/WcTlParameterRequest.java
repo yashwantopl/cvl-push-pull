@@ -260,6 +260,10 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Boolean isNewTolTnwCheck = false;
 
 	private Integer kotakSubParameter ;
+	
+	private Boolean isNewDscrCheck;
+	
+	private BigDecimal newDscrCheck;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1295,9 +1299,21 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
 
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
 
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
 
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
 
 	
 }
