@@ -140,7 +140,7 @@ public class CorporatePrimaryViewResponse {
     private String scoringModelName;
     private Object mcaFinancialAndDetailsResponse;
     private String eligibilityFinancialYear;
-
+    private Double loanObligation;
     
    
 	public List<Object> getCibilReport() {
@@ -1211,6 +1211,12 @@ public class CorporatePrimaryViewResponse {
     public void setEligibilityFinancialYear(String eligibilityFinancialYear) {
         this.eligibilityFinancialYear = eligibilityFinancialYear;
     }
+	public Double getLoanObligation() {
+		return loanObligation;
+	}
+	public void setLoanObligation(Double loanObligation) {
+		this.loanObligation = loanObligation;
+	}
 	
 	
     

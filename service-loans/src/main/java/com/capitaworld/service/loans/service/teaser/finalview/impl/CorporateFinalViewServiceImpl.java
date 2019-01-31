@@ -1013,6 +1013,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.error("Error while getting irr mapping data : ",e);
 		}
+		
+		Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(toApplicationId);
+		corporateFinalViewResponse.setLoanObligation(loanObligation!= null ? loanObligation : 0);
 
 		// ============================================FINAL TEASER VIEW
 		// DETAILS=============================================//
