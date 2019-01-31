@@ -3264,10 +3264,10 @@ public class ScoringServiceImpl implements ScoringService {
                                     Double individualLoanObligation=financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
                                     Double commercialLoanObligation=financialArrangementDetailsRepository.getTotalEmiOfAllDirByApplicationId(applicationId);
                                     if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation))
-                                        totalExistingLoanObligation+=individualLoanObligation;
+                                        totalExistingLoanObligation+=(individualLoanObligation*12);
 
                                     if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation))
-                                        totalExistingLoanObligation+=commercialLoanObligation;
+                                        totalExistingLoanObligation+=(commercialLoanObligation*12);
 
                                     scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
 
