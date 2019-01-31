@@ -9,10 +9,7 @@ import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
-import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.analyzer.model.common.Xn;
+import com.capitaworld.service.analyzer.model.common.*;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
@@ -3196,14 +3193,27 @@ public class ScoringServiceImpl implements ScoringService {
                                     if (!CommonUtils.isObjectNullOrEmpty(data)) {
                                         {
 
-                                            if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                           /* if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
                                                 noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
                                             }
 
                                             if(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()))
                                             {
                                                 scoringParameterRequest.setAverageDailyBalance(Double.parseDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()) / noOfMonths);
+                                            }*/
+
+                                            Double avrgBalance=0.0;
+                                            if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                                noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
+                                                for (MonthlyDetail monthlyObj:data.getMonthlyDetailList().getMonthlyDetails()) {
+                                                    if(!CommonUtils.isObjectNullOrEmpty(monthlyObj.getBalAvg())){
+                                                        avrgBalance+=Math.abs(Double.valueOf(monthlyObj.getBalAvg()));
+                                                    }
+                                                }
                                             }
+                                            scoringParameterRequest.setAverageDailyBalance(avrgBalance/noOfMonths);
+
+
                                         }
                                     }
 
