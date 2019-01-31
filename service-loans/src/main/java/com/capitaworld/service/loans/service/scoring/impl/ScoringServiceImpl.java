@@ -9,10 +9,7 @@ import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
-import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.analyzer.model.common.Xn;
+import com.capitaworld.service.analyzer.model.common.*;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
@@ -21,6 +18,7 @@ import com.capitaworld.service.loans.domain.ScoringRequestDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
@@ -29,6 +27,7 @@ import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailR
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -134,6 +133,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
+    
+    @Autowired
+    private FinancialArrangementDetailsService financialArrangementDetailsService; 
 
     @Autowired
     private ITRClient itrClient;
@@ -3195,14 +3197,27 @@ public class ScoringServiceImpl implements ScoringService {
                                     if (!CommonUtils.isObjectNullOrEmpty(data)) {
                                         {
 
-                                            if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                           /* if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
                                                 noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
                                             }
 
                                             if(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()))
                                             {
                                                 scoringParameterRequest.setAverageDailyBalance(Double.parseDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()) / noOfMonths);
+                                            }*/
+
+                                            Double avrgBalance=0.0;
+                                            if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                                noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
+                                                for (MonthlyDetail monthlyObj:data.getMonthlyDetailList().getMonthlyDetails()) {
+                                                    if(!CommonUtils.isObjectNullOrEmpty(monthlyObj.getBalAvg())){
+                                                        avrgBalance+=Math.abs(Double.valueOf(monthlyObj.getBalAvg()));
+                                                    }
+                                                }
                                             }
+                                            scoringParameterRequest.setAverageDailyBalance(avrgBalance/noOfMonths);
+
+
                                         }
                                     }
 
@@ -3249,6 +3264,34 @@ public class ScoringServiceImpl implements ScoringService {
                                 } catch (Exception e) {
                                     logger.error("error while getting COLLATERAL_COVERAGE parameter : ",e);
                                     scoringParameterRequest.setCollateralCoverage_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.DEBT_SERVICE_COVERAGE_RATIO: {
+
+                                try {
+
+                                    scoringParameterRequest.setEbitda(operatingStatementDetailsTY.getDepreciation());
+
+                                    Double totalExistingLoanObligation=0.0;
+
+                                    Double individualLoanObligation=financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+                                    Double commercialLoanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
+                                    if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation))
+                                        totalExistingLoanObligation+=(individualLoanObligation*12);
+
+                                    if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation))
+                                        totalExistingLoanObligation+=(commercialLoanObligation*12);
+
+                                    scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
+
+                                    scoringParameterRequest.setLoanType(primaryCorporateDetail.getPurposeOfLoanId());
+
+                                    scoringParameterRequest.setDebtServiceCoverageRatio_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting DEBT_SERVICE_COVERAGE_RATIO parameter : ",e);
+                                    scoringParameterRequest.setDebtServiceCoverageRatio_p(false);
                                 }
                                 break;
                             }

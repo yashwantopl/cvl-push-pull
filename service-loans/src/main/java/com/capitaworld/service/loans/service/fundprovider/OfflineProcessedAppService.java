@@ -6,15 +6,15 @@ import com.capitaworld.service.loans.model.OfflineProcessedApplicationRequest;
 
 public interface OfflineProcessedAppService {
 
-	public String getApplicationList(Long userId);
+	public List<OfflineProcessedApplicationRequest> getApplicationList(Long userId);
 	
-	public String getSanctionedApplicationList(Long userId);
+	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long userId);
 	
-	public String getDisbursedApplicationList(Long userId);
+	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long userId);
 	
-	public String getRejectProposalList(Long userId);
+	public List<OfflineProcessedApplicationRequest> getRejectProposalList(Long userId);
 	
-	public String getOtherProposalList(Long userId);
+	public List<OfflineProcessedApplicationRequest> getOtherProposalList(Long userId);
 	
 	/**
 	 * Getting Application List of Uniform Product
