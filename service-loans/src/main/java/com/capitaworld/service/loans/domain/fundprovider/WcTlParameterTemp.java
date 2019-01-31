@@ -395,6 +395,12 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 
 	@Column(name="kotak_sub_parameter")
 	private Integer kotakSubParameter ;
+	
+	@Column(name="is_new_dscr_check")
+	private Boolean isNewDscrCheck;
+	
+	@Column(name="new_dscr_check")
+	private BigDecimal newDscrCheck;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1379,9 +1385,21 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
 
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
 
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
 
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
 
 	
 }
