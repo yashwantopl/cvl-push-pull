@@ -3271,7 +3271,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
 
-                                    scoringParameterRequest.setEbitda(operatingStatementDetailsTY.getDepreciation());
+                                    scoringParameterRequest.setEbitda(operatingStatementDetailsTY.getOpProfitBeforeIntrest() + operatingStatementDetailsTY.getDepreciation());
 
                                     Double totalExistingLoanObligation=0.0;
 
@@ -3285,7 +3285,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
 
-                                    scoringParameterRequest.setLoanType(primaryCorporateDetail.getPurposeOfLoanId());
+                                    if(primaryCorporateDetail.getPurposeOfLoanId() == 1)
+                                        scoringParameterRequest.setLoanType(2);
+                                    else
+                                        scoringParameterRequest.setLoanType(1);
 
                                     scoringParameterRequest.setDebtServiceCoverageRatio_p(true);
 
