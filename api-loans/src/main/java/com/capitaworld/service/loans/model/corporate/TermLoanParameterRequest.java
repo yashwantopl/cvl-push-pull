@@ -323,6 +323,8 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCollateralCoverageMandatory = false;
 
 	private Integer kotakSubParameter ;
+	
+	private Boolean wcReqCheck = false;
 
 
 	public Object getWorkflowData() {
@@ -1607,7 +1609,16 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
 
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+
+	
 
 
 

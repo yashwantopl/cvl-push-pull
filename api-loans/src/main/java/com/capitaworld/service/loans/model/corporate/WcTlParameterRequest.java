@@ -260,6 +260,8 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Boolean isNewTolTnwCheck = false;
 
 	private Integer kotakSubParameter ;
+	
+	private Boolean wcReqCheck = false;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1295,6 +1297,15 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 
 
 

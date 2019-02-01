@@ -388,9 +388,14 @@ public class WcTlParameter extends ProductMaster implements Serializable {
 
 	@Column(name="is_new_tol_tnw_check")
 	private Boolean isNewTolTnwCheck = false;
+	
+	@Column(name="is_wc_req_check")
+	private Boolean wcReqCheck = false;
 
 	@Column(name="kotak_sub_parameter")
 	private Integer kotakSubParameter ;
+	
+	
 	/**
 	 * @return the jobId
 	 */
@@ -1392,6 +1397,15 @@ public class WcTlParameter extends ProductMaster implements Serializable {
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 
 
 

@@ -396,6 +396,9 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 
 	@Column(name="kotak_sub_parameter")
 	private Integer kotakSubParameter ;
+	
+	@Column(name="is_wc_req_check")
+	private Boolean wcReqCheck = false;
 
 
 	public Integer getIndividualCibil() {
@@ -1414,6 +1417,15 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 
 
 

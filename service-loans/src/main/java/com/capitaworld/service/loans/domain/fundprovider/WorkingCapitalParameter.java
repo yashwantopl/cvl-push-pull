@@ -395,6 +395,9 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 
 	@Column(name="is_new_tol_tnw_check")
 	private Boolean isNewTolTnwCheck = false;
+	
+	@Column(name="is_wc_req_check")
+	private Boolean wcReqCheck = false;
 
 	@Column(name="kotak_sub_parameter")
 	private Integer kotakSubParameter ;
@@ -1439,6 +1442,15 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 
 
 

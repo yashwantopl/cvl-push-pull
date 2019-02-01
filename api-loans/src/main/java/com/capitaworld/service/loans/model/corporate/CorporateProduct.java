@@ -308,6 +308,8 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isNewCollateralCoverageCheck = false;
 
 	private Boolean isNewTolTnwCheck = false;
+	
+	private Boolean wcReqCheck = false;
 
 	private Integer kotakSubParameter ;
 
@@ -1607,6 +1609,15 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 
 
 

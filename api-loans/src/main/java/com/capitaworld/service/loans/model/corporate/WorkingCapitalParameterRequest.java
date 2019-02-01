@@ -226,6 +226,8 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Boolean isNewTolTnwCheck = false;
 
 	private Integer kotakSubParameter ;
+	
+	private Boolean wcReqCheck = false;
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -1332,6 +1334,15 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 
 
 
