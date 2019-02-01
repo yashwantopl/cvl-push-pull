@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class DashboardServiceImpl implements DashboardService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
+	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
@@ -54,14 +59,13 @@ public class DashboardServiceImpl implements DashboardService {
 		}else{
 			productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);			
 		}*/
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		ApplicationProposalMapping loanApplicationMaster = applicationProposalMappingRepository.getLastByApplicationIdAndUserId(applicationId,userId);
 		productId = loanApplicationMaster.getProductId();
 		DashboardProfileResponse dashboardProfileResponse = null;
 		int userMainType = CommonUtils.getUserMainType(productId);
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-			dashboardProfileResponse.setModeOfPayment(loanApplicationMaster.getTypeOfPayment());
 			CorporateApplicantDetail corporateApplicantDetail = null;
 			if(isSP){
 				corporateApplicantDetail = corporateApplicantDetailRepository
