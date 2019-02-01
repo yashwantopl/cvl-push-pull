@@ -144,5 +144,7 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query("select apm from ApplicationProposalMapping apm where apm.npUserId=:npUserId and  apm.isActive = true ")
     public List<ApplicationProposalMapping> getAssignedProposalsByNpUserIdForPagination(Pageable pageable,@Param("npUserId") Long npUserId);
 
-   	
+    @Query(value = "select * from application_proposal_mapping apm where apm.application_id=:applicationId and apm.user_id=:userId and apm.is_active = true order by proposal_id desc limit 1",nativeQuery = true)
+    public ApplicationProposalMapping getLastByApplicationIdAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
+
 }

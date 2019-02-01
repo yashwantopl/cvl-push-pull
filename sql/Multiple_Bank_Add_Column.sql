@@ -21,4 +21,3 @@ ALTER TABLE `loan_application`.`fs_corporate_ownership_details` ADD COLUMN `prop
 ALTER TABLE `loan_application`.`fs_corporate_achievement_details` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_corporate_guarantors_corporate_details` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_corporate_proposed_product_details` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
-ALTER TABLE `loan_application`.`fs_corporate_applicant_details` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
