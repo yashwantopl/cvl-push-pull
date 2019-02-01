@@ -4382,7 +4382,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setBusinessTypeId(businessTypeId);
 
 			Boolean status = null;
-			status = gatewayClient.skipPayment(gatewayRequest);
+			status =null;
 			logger.info("In-Principle send for WhiteLabel Status=====>" + status);
 
 			// ====================================================================
@@ -4522,7 +4522,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setBusinessTypeId(businessTypeId);
 
 			Boolean status = null;
-			status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
+			status = null;
 			logger.info("In-Principle send for Personal Loan Status=====>" + status);
 			// ====================================================================
 

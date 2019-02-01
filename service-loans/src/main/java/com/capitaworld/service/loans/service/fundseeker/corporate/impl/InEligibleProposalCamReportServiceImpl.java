@@ -485,6 +485,10 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
                 logger.error("Problem to get Data of Financial Arrangements Details {}", e);
             }
 			
+			/*get loan obligation of dir*/
+			Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
+			map.put("loanObligation", loanObligation != null ? CommonUtils.CurrencyFormat(loanObligation.toString()) : 0);
+			
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? CommonUtils.convertValueWithoutDecimal(primaryCorporateRequest.getAmount()) : " ");

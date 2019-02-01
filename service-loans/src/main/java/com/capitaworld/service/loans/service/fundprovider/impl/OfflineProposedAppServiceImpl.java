@@ -38,154 +38,153 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	 * RETURN DATA BASED ON ROLE ID
 	 */
 	@Override
-	public String getApplicationList(Long userId) {
-		return offlineProcessedAppRepository.getInEligibleRecordList(userId);
-//		if(lst.isEmpty()) {
-//			return Collections.emptyList();
-//		}
-//		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
-//		OfflineProcessedApplicationRequest request = null;
-//		for(Object[] obj : lst) {
-//			request = new OfflineProcessedApplicationRequest();
-//			request.setApplicationId(CommonUtils.convertLong(obj[0]));
-//			request.setOrganisationName(CommonUtils.convertString(obj[1]));
-//			request.setPan(CommonUtils.convertString(obj[2]));
-//			request.setGstin(CommonUtils.convertString(obj[3]));
-//			request.setUserId(CommonUtils.convertLong(obj[4]));
-//			request.setLoanAmount(CommonUtils.convertDouble(obj[5]));
-//			request.setBranchName(CommonUtils.convertString(obj[6]));
-//			request.setBranchCode(CommonUtils.convertString(obj[7]));
-//			request.setBranchAddress(CommonUtils.convertString(obj[8]));
-//			request.setCampaignCode(CommonUtils.convertString(obj[9]));
-//			Integer campId = CommonUtils.convertInteger(obj[10]);
-//			if(campId == 0) {
-//				request.setIsCampaignUser(MARKET_PLACE);
-//			} else {
-//				request.setIsCampaignUser(BANK_SPECIFIC);
-//			}
-//			request.setBranchId(CommonUtils.convertLong(obj[11]));
-//			applicationRequests.add(request);
-//		}
-//		return applicationRequests;
+	public List<OfflineProcessedApplicationRequest> getApplicationList(Long userId) {
+		List<Object []> lst = offlineProcessedAppRepository.getInEligibleRecordList(userId);
+		if(lst.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+		OfflineProcessedApplicationRequest request = null;
+		for(Object[] obj : lst) {
+			request = new OfflineProcessedApplicationRequest();
+			request.setApplicationId(CommonUtils.convertLong(obj[0]));
+			request.setOrganisationName(CommonUtils.convertString(obj[1]));
+			request.setPan(CommonUtils.convertString(obj[2]));
+			request.setGstin(CommonUtils.convertString(obj[3]));
+			request.setUserId(CommonUtils.convertLong(obj[4]));
+			request.setLoanAmount(CommonUtils.convertDouble(obj[5]));
+			request.setBranchName(CommonUtils.convertString(obj[6]));
+			request.setBranchCode(CommonUtils.convertString(obj[7]));
+			request.setBranchAddress(CommonUtils.convertString(obj[8]));
+			request.setCampaignCode(CommonUtils.convertString(obj[9]));
+			Integer campId = CommonUtils.convertInteger(obj[10]);
+			if(campId == 0) {
+				request.setIsCampaignUser(MARKET_PLACE);
+			} else {
+				request.setIsCampaignUser(BANK_SPECIFIC);
+			}
+			request.setBranchId(CommonUtils.convertLong(obj[11]));
+			applicationRequests.add(request);
+		}
+		return applicationRequests;
 	}
 	
 	/**
 	 * author Harshit
 	 * Rejection List By Organization Id
-	 * Commented Code removed by Jaimin (Used JSONArrayAgg)
 	 */
 	@Override
-	public String getRejectProposalList(Long userId) {
-		return offlineProcessedAppRepository.getRejectProposalsList(userId);
-//		if(applicationRequests.isEmpty()) {
-//			return Collections.emptyList();
-//		}
-//		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
-//		OfflineProcessedApplicationRequest request = null;
-//		for(Object[] obj : lst) {
-//			request = new OfflineProcessedApplicationRequest();
-//			request.setApplicationId(CommonUtils.convertLong(obj[0]));
-//			request.setOrganisationName(CommonUtils.convertString(obj[1]));
-//			request.setPan(CommonUtils.convertString(obj[2]));
-//			request.setGstin(CommonUtils.convertString(obj[3]));
-//			request.setUserId(CommonUtils.convertLong(obj[4]));
-//			request.setLoanAmount(CommonUtils.convertDouble(obj[5]));
-//			request.setBranchName(CommonUtils.convertString(obj[6]));
-//			request.setBranchCode(CommonUtils.convertString(obj[7]));
-//			request.setBranchAddress(CommonUtils.convertString(obj[8]));
-//			request.setReason(CommonUtils.convertString(obj[9]));
-//			request.setModifiedDate(CommonUtils.convertDate(obj[10]));
-//			request.setCampaignCode(CommonUtils.convertString(obj[11]));
-//			Integer campId = CommonUtils.convertInteger(obj[12]);
-//			if(campId == 0) {
-//				request.setIsCampaignUser(MARKET_PLACE);
-//			} else {
-//				request.setIsCampaignUser(BANK_SPECIFIC);
-//			}
-//			request.setBranchId(CommonUtils.convertLong(obj[13]));
-//			applicationRequests.add(request);
-//		}
-//		return applicationRequests;
+	public List<OfflineProcessedApplicationRequest> getRejectProposalList(Long userId) {
+		List<Object []> lst = offlineProcessedAppRepository.getRejectProposalsList(userId);
+		if(lst.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+		OfflineProcessedApplicationRequest request = null;
+		for(Object[] obj : lst) {
+			request = new OfflineProcessedApplicationRequest();
+			request.setApplicationId(CommonUtils.convertLong(obj[0]));
+			request.setOrganisationName(CommonUtils.convertString(obj[1]));
+			request.setPan(CommonUtils.convertString(obj[2]));
+			request.setGstin(CommonUtils.convertString(obj[3]));
+			request.setUserId(CommonUtils.convertLong(obj[4]));
+			request.setLoanAmount(CommonUtils.convertDouble(obj[5]));
+			request.setBranchName(CommonUtils.convertString(obj[6]));
+			request.setBranchCode(CommonUtils.convertString(obj[7]));
+			request.setBranchAddress(CommonUtils.convertString(obj[8]));
+			request.setReason(CommonUtils.convertString(obj[9]));
+			request.setModifiedDate(CommonUtils.convertDate(obj[10]));
+			request.setCampaignCode(CommonUtils.convertString(obj[11]));
+			Integer campId = CommonUtils.convertInteger(obj[12]);
+			if(campId == 0) {
+				request.setIsCampaignUser(MARKET_PLACE);
+			} else {
+				request.setIsCampaignUser(BANK_SPECIFIC);
+			}
+			request.setBranchId(CommonUtils.convertLong(obj[13]));
+			applicationRequests.add(request);
+		}
+		return applicationRequests;
 	}
 	
 	@Override
-	public String getOtherProposalList(Long userId) {
-		return offlineProcessedAppRepository.getOtherProposalsList(userId);
-//		if(applicationRequests.isEmpty()) {
-//			return Collections.emptyList();
-//		}
-//		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
-//		OfflineProcessedApplicationRequest request = null;
-//		for(Object[] obj : lst) {
-//			request = new OfflineProcessedApplicationRequest();
-//			request.setApplicationId(CommonUtils.convertLong(obj[0]));
-//			request.setOrganisationName(CommonUtils.convertString(obj[1]));
-//			request.setPan(CommonUtils.convertString(obj[2]));
-//			request.setGstin(CommonUtils.convertString(obj[3]));
-//			request.setUserId(CommonUtils.convertLong(obj[4]));
-//			request.setLoanAmount(CommonUtils.convertDouble(obj[5]));
-//			request.setBranchName(CommonUtils.convertString(obj[6]));
-//			request.setBranchCode(CommonUtils.convertString(obj[7]));
-//			request.setBranchAddress(CommonUtils.convertString(obj[8]));
-//			request.setModifiedDate(CommonUtils.convertDate(obj[9]));
-//			request.setCampaignCode(CommonUtils.convertString(obj[10]));
-//			Integer campId = CommonUtils.convertInteger(obj[11]);
-//			if(campId == 0) {
-//				request.setIsCampaignUser(MARKET_PLACE);
-//			} else {
-//				request.setIsCampaignUser(BANK_SPECIFIC);
-//			}
-//			request.setBranchId(CommonUtils.convertLong(obj[12]));
-//			request.setStatus(CommonUtils.convertInteger(obj[13]));
-//			applicationRequests.add(request);
-//		}
-//		return applicationRequests;
+	public List<OfflineProcessedApplicationRequest> getOtherProposalList(Long userId) {
+		List<Object []> lst = offlineProcessedAppRepository.getOtherProposalsList(userId);
+		if(lst.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+		OfflineProcessedApplicationRequest request = null;
+		for(Object[] obj : lst) {
+			request = new OfflineProcessedApplicationRequest();
+			request.setApplicationId(CommonUtils.convertLong(obj[0]));
+			request.setOrganisationName(CommonUtils.convertString(obj[1]));
+			request.setPan(CommonUtils.convertString(obj[2]));
+			request.setGstin(CommonUtils.convertString(obj[3]));
+			request.setUserId(CommonUtils.convertLong(obj[4]));
+			request.setLoanAmount(CommonUtils.convertDouble(obj[5]));
+			request.setBranchName(CommonUtils.convertString(obj[6]));
+			request.setBranchCode(CommonUtils.convertString(obj[7]));
+			request.setBranchAddress(CommonUtils.convertString(obj[8]));
+			request.setModifiedDate(CommonUtils.convertDate(obj[9]));
+			request.setCampaignCode(CommonUtils.convertString(obj[10]));
+			Integer campId = CommonUtils.convertInteger(obj[11]);
+			if(campId == 0) {
+				request.setIsCampaignUser(MARKET_PLACE);
+			} else {
+				request.setIsCampaignUser(BANK_SPECIFIC);
+			}
+			request.setBranchId(CommonUtils.convertLong(obj[12]));
+			request.setStatus(CommonUtils.convertInteger(obj[13]));
+			applicationRequests.add(request);
+		}
+		return applicationRequests;
 	}
 
 	@Override
-	public String getSanctionedApplicationList(Long userId) {
-		return offlineProcessedAppRepository.getSanctionedApplicationList(userId);
-//		if(applicationRequests.isEmpty()) {
-//			return Collections.emptyList();
-//		}
-//		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
-//		OfflineProcessedApplicationRequest request = null;
-//		for(Object[] obj : lst) {
-//			request = new OfflineProcessedApplicationRequest();
-//			request.setApplicationId(CommonUtils.convertLong(obj[0]));
-//			request.setOrganisationName(CommonUtils.convertString(obj[1]));
-//			request.setSanctionDate(CommonUtils.convertDate(obj[2]));
-//			request.setSanctionedAmount(CommonUtils.convertDouble(obj[3]));
-//			request.setTenure(CommonUtils.convertDouble(obj[4]));
-//			request.setRoi(CommonUtils.convertDouble(obj[5]));
-//			request.setProcessingFee(CommonUtils.convertDouble(obj[6]));
-//			request.setRemark(CommonUtils.convertString(obj[7]));
-//			request.setBranchName(CommonUtils.convertString(obj[8]));
-//			request.setBranchCode(CommonUtils.convertString(obj[9]));
-//			request.setBranchId(CommonUtils.convertLong(obj[10]));
-//			applicationRequests.add(request);
-//		}
-//		return applicationRequests;
+	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long userId) {
+		List<Object []> lst = offlineProcessedAppRepository.getSanctionedApplicationList(userId);
+		if(lst.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+		OfflineProcessedApplicationRequest request = null;
+		for(Object[] obj : lst) {
+			request = new OfflineProcessedApplicationRequest();
+			request.setApplicationId(CommonUtils.convertLong(obj[0]));
+			request.setOrganisationName(CommonUtils.convertString(obj[1]));
+			request.setSanctionDate(CommonUtils.convertDate(obj[2]));
+			request.setSanctionedAmount(CommonUtils.convertDouble(obj[3]));
+			request.setTenure(CommonUtils.convertDouble(obj[4]));
+			request.setRoi(CommonUtils.convertDouble(obj[5]));
+			request.setProcessingFee(CommonUtils.convertDouble(obj[6]));
+			request.setRemark(CommonUtils.convertString(obj[7]));
+			request.setBranchName(CommonUtils.convertString(obj[8]));
+			request.setBranchCode(CommonUtils.convertString(obj[9]));
+			request.setBranchId(CommonUtils.convertLong(obj[10]));
+			applicationRequests.add(request);
+		}
+		return applicationRequests;
 	}
 
 	@Override
-	public String getDisbursedApplicationList(Long userId) {
-		return offlineProcessedAppRepository.getDisbursedApplicationList(userId);
-//		if(applicationRequests.isEmpty()) {
-//			return Collections.emptyList();
-//		}
-//		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
-//		OfflineProcessedApplicationRequest request = null;
-//		for(Object[] obj : lst) {
-//			request = new OfflineProcessedApplicationRequest();
-//			request.setApplicationId(CommonUtils.convertLong(obj[0]));
-//			request.setOrganisationName(CommonUtils.convertString(obj[1]));
-//			request.setBranchName(CommonUtils.convertString(obj[2]));
-//			request.setBranchCode(CommonUtils.convertString(obj[3]));
-//			request.setBranchId(CommonUtils.convertLong(obj[4]));
-//			applicationRequests.add(request);
-//		}
-//		return applicationRequests;
+	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long userId) {
+		List<Object []> lst = offlineProcessedAppRepository.getDisbursedApplicationList(userId);
+		if(lst.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+		OfflineProcessedApplicationRequest request = null;
+		for(Object[] obj : lst) {
+			request = new OfflineProcessedApplicationRequest();
+			request.setApplicationId(CommonUtils.convertLong(obj[0]));
+			request.setOrganisationName(CommonUtils.convertString(obj[1]));
+			request.setBranchName(CommonUtils.convertString(obj[2]));
+			request.setBranchCode(CommonUtils.convertString(obj[3]));
+			request.setBranchId(CommonUtils.convertLong(obj[4]));
+			applicationRequests.add(request);
+		}
+		return applicationRequests;
 	}
 	
 	/**

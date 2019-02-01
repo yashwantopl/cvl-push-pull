@@ -325,6 +325,9 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Integer kotakSubParameter ;
 	
 	private Boolean wcReqCheck = false;
+	private Boolean isNewDscrCheck = false;
+	
+	private BigDecimal newDscrCheck;
 
 
 	public Object getWorkflowData() {
@@ -1612,6 +1615,9 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public Boolean getWcReqCheck() {
 		return wcReqCheck;
 	}
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
 
 	public void setWcReqCheck(Boolean wcReqCheck) {
 		this.wcReqCheck = wcReqCheck;
@@ -1619,8 +1625,17 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 
 	
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
 
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
 
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
 
 
 

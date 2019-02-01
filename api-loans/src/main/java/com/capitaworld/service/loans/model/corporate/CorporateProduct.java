@@ -312,6 +312,10 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean wcReqCheck = false;
 
 	private Integer kotakSubParameter ;
+	
+	private Boolean isNewDscrCheck=false;
+	
+	private BigDecimal newDscrCheck;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1618,6 +1622,22 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	}
 
 	
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
+
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
+
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
+
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
+
 
 
 

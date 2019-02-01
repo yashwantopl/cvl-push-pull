@@ -408,6 +408,11 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	
 	@Column(name="is_wc_req_check")
 	private Boolean wcReqCheck = false;
+	@Column(name="is_new_dscr_check")
+	private Boolean isNewDscrCheck;
+	
+	@Column(name="new_dscr_check")
+	private BigDecimal newDscrCheck;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1425,9 +1430,21 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	}
 
 	
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
 
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
 
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
 
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
 
 
 	

@@ -399,6 +399,12 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	
 	@Column(name="is_wc_req_check")
 	private Boolean wcReqCheck = false;
+	
+	@Column(name="is_new_dscr_check")
+	private Boolean isNewDscrCheck;
+	
+	@Column(name="new_dscr_check")
+	private BigDecimal newDscrCheck;
 
 
 	public Integer getIndividualCibil() {
@@ -1426,8 +1432,20 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	}
 
 	
+	public Boolean getIsNewDscrCheck() {
+		return isNewDscrCheck;
+	}
 
+	public BigDecimal getNewDscrCheck() {
+		return newDscrCheck;
+	}
 
+	public void setIsNewDscrCheck(Boolean isNewDscrCheck) {
+		this.isNewDscrCheck = isNewDscrCheck;
+	}
 
+	public void setNewDscrCheck(BigDecimal newDscrCheck) {
+		this.newDscrCheck = newDscrCheck;
+	}
 
 }
