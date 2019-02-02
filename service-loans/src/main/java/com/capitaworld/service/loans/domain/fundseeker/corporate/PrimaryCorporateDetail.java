@@ -1,10 +1,18 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 @Entity
 @Table(name = "fs_corporate_primary_details")
@@ -19,22 +27,15 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "loan_amount")
     private Double loanAmount;
-
+    
+    @Column(name = "enhancement_amount")
+    private Double enhancementAmount;
 
     @Column(name = "have_collateral_security")
     private Boolean haveCollateralSecurity;
 
     @Column(name = "collateral_security_amt")
     private Double collateralSecurityAmount;
-
-    /*@Column(name = "is_business_asset_checked")
-    private Boolean isBusinessAssetChecked;
-
-    @Column(name = "is_working_capital_checked")
-    private Boolean isWorkingCapitalChecked;
-
-    @Column(name = "is_other_general_checked")
-    private Boolean isOtherGeneralChecked;*/
 
     @Column(name = "purpose_of_loan_id")
     private Integer purposeOfLoanId;
@@ -91,23 +92,6 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "total_amt_percentage")
     private Double totalAmtPercentage;
 
-   /* @Column(name="created_by")
-    private Long createdBy;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="created_date")
-    private Date createdDate;
-
-    @Column(name="is_active")
-    private Boolean isActive;
-
-    @Column(name="modified_by")
-    private Long modifiedBy;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="modified_date")
-    private Date modifiedDate;*/
-
     //Dhaval
     @Column(name = "state_id")
     private Long stateId;
@@ -120,8 +104,32 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "incremental_margin")
     private Double incrementalMargin;
+    
+    
+    //Start By Akshay for OnePager Eligibility
+    @Column(name = "turn_over_prev_fin_year")
+    private Double turnOverPrevFinYear;
+    
+    @Column(name = "turn_over_curr_fin_year_till_month")
+    private Double turnOverCurrFinYearTillMonth;
+    
+    @Column(name = "projected_turn_over_curr_fin_year")
+    private Double projectedTurnOverCurrFinYear;
+    
+    @Column(name = "profit_curr_fin_year")
+    private Double profitCurrFinYear;
+    
+    @Column(name = "projected_profit_curr_fin_year")
+    private Double projectedProfitCurrFinYear;
+    
+    @Column(name = "gross_sales")
+    private Double grossSales;
+    
+  //End By Akshay for OnePager Eligibility
+    
 
     public PrimaryCorporateDetail() {
+        // Do nothing because of X and Y.
     }
 
     public LoanApplicationMaster getApplicationId() {
@@ -276,89 +284,6 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.totalAmtPercentage = totalAmtPercentage;
     }
 
-    /* @Override
-
-    public Date getCommercialOperationDate() {
-        return commercialOperationDate;
-    }
-
-    public void setCommercialOperationDate(Date commercialOperationDate) {
-        this.commercialOperationDate = commercialOperationDate;
-    }
-
-    public Integer getFactoryPremise() {
-        return factoryPremise;
-    }
-
-    public void setFactoryPremise(Integer factoryPremise) {
-        this.factoryPremise = factoryPremise;
-    }
-
-    public Integer getKnowHow() {
-        return knowHow;
-    }
-
-    public void setKnowHow(Integer knowHow) {
-        this.knowHow = knowHow;
-    }
-
-    public Integer getCompetition() {
-        return competition;
-    }
-
-    public void setCompetition(Integer competition) {
-        this.competition = competition;
-    }
-
-    /* @Override
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    @Override
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    @Override
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    @Override
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    @Override
-    public Long getModifiedBy() {
-        return modifiedBy;
-    }
-
-    @Override
-    public void setModifiedBy(Long modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    @Override
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    @Override
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }*/
-
-    //Dhaval
     public Long getStateId() {
         return stateId;
     }
@@ -390,4 +315,62 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setIncrementalMargin(Double incrementalMargin) {
         this.incrementalMargin = incrementalMargin;
     }
+
+	public Double getTurnOverPrevFinYear() {
+		return turnOverPrevFinYear;
+	}
+
+	public void setTurnOverPrevFinYear(Double turnOverPrevFinYear) {
+		this.turnOverPrevFinYear = turnOverPrevFinYear;
+	}
+
+	public Double getTurnOverCurrFinYearTillMonth() {
+		return turnOverCurrFinYearTillMonth;
+	}
+
+	public void setTurnOverCurrFinYearTillMonth(Double turnOverCurrFinYearTillMonth) {
+		this.turnOverCurrFinYearTillMonth = turnOverCurrFinYearTillMonth;
+	}
+
+	public Double getProjectedTurnOverCurrFinYear() {
+		return projectedTurnOverCurrFinYear;
+	}
+
+	public void setProjectedTurnOverCurrFinYear(Double projectedTurnOverCurrFinYear) {
+		this.projectedTurnOverCurrFinYear = projectedTurnOverCurrFinYear;
+	}
+
+	public Double getProfitCurrFinYear() {
+		return profitCurrFinYear;
+	}
+
+	public void setProfitCurrFinYear(Double profitCurrFinYear) {
+		this.profitCurrFinYear = profitCurrFinYear;
+	}
+
+	public Double getProjectedProfitCurrFinYear() {
+		return projectedProfitCurrFinYear;
+	}
+
+	public void setProjectedProfitCurrFinYear(Double projectedProfitCurrFinYear) {
+		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
+	}
+
+	public Double getGrossSales() {
+		return grossSales;
+	}
+
+	public void setGrossSales(Double grossSales) {
+		this.grossSales = grossSales;
+	}
+
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
+	}
+	
+	
 }

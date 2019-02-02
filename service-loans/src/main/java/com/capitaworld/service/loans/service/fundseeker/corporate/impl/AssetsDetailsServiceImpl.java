@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.exceptions.ExcelException;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,8 @@ import com.capitaworld.service.loans.utils.cma.AssetsDetailsExcelReader;
 @Service
 public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 
+	private static final Logger logger = LoggerFactory.getLogger(AssetsDetailsServiceImpl.class);
+
 	@Autowired
 	AssetsDetailsRepository assetsDetailsRepository;
 
@@ -21,13 +26,11 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 
 	@Override
 	public void saveOrUpdate(AssetsDetails assetsDetails) {
-		// TODO Auto-generated method stub
 		assetsDetailsRepository.save(assetsDetails);
 	}
 
 	@Override
-	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) {
-		// TODO Auto-generated method stub
+	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException {
 		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
 				assetsDetailsRepository);
 
@@ -35,10 +38,9 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 
 	@Override
 	public void inActiveAssetsDetails(Long storageDetailsId) {
-		// TODO Auto-generated method stub
-		System.out.println("in asset service");
+		logger.info("in asset service");
 		assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
-		System.out.println("out from asset service");
+		logger.info("out from asset service");
 
 	}
 

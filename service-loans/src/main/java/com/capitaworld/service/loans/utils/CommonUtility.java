@@ -5,8 +5,14 @@ import java.util.Base64;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 
 public class CommonUtility {
+	private CommonUtility() {
+		// Do nothing because of X and Y.
+	}
 
-	public interface ApiType{
+	public static final class ApiType{
+		private ApiType () {
+			// Do nothing because of X and Y.
+		}
 		public static final Integer SANCTION = 1; 
 		public static final Integer DISBURSEMENT = 2;
 		public static final Integer DDR_API = 3; 
@@ -16,6 +22,10 @@ public class CommonUtility {
 		public static final Integer REVERSE_SANCTION = 7  ;
 		public static final Integer REVERSE_DISBURSEMENT = 8 ;
 		public static final Integer REVERSE_SANCTION_AND_DISBURSEMENT = 9;
+		public static final Integer PROPOSAL_UPDATE_STATUS_SUCCESS_REVERSE_SANCTION = 10;
+		public static final Integer PROPOSAL_UPDATE_STATUS_FAILED_REVERSE_SANCTION = 11;
+		public static final Integer PROPOSAL_UPDATE_STATUS_SUCCESS_REVERSE_DISBURSEMENT = 12; 
+		public static final Integer PROPOSAL_UPDATE_STATUS_FAILED_REVERSE_DISBURSEMENT = 13; 
 	}
 	
 	public static Boolean getCashCredit(CibilUtils.CreditTypeEnum name) {
@@ -78,7 +88,10 @@ public class CommonUtility {
 		}
 	}
 	
-	public interface SanctionDisbursementAPIStatusCode{
+	public static final class SanctionDisbursementAPIStatusCode{
+		private SanctionDisbursementAPIStatusCode () {
+		// Do nothing because of X and Y.
+		}
 		public static final String SUCCESS = "100";
 		public static final String INVALID_APPLICATION_ID = "101"; 
 		public static final String  DISBURSEMENT_WITHOUT_SANCTION = "102";

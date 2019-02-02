@@ -3,10 +3,23 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
 
 
 /**
@@ -54,6 +67,7 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	private Integer salutationId;
 
 	@Column(name="pan_no")
+	@Convert(converter = EncryptionUtils.class)
 	private String panNo;
 	
 	@Column(name="designation")
@@ -181,6 +195,7 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	private DirectorPersonalDetail directorPersonalDetail;
 
 	public DirectorBackgroundDetail() {
+		// Do nothing because of X and Y.
 	}
 	
 	public DirectorBackgroundDetail(Long id) {
@@ -409,32 +424,16 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.isOneFormCompleted = isOneFormCompleted;
 	}
 
-	public Boolean getItrCompleted() {
-		return isItrCompleted;
-	}
-
 	public void setItrCompleted(Boolean itrCompleted) {
 		isItrCompleted = itrCompleted;
-	}
-
-	public Boolean getCibilCompleted() {
-		return isCibilCompleted;
 	}
 
 	public void setCibilCompleted(Boolean cibilCompleted) {
 		isCibilCompleted = cibilCompleted;
 	}
 
-	public Boolean getBankStatementCompleted() {
-		return isBankStatementCompleted;
-	}
-
 	public void setBankStatementCompleted(Boolean bankStatementCompleted) {
 		isBankStatementCompleted = bankStatementCompleted;
-	}
-
-	public Boolean getOneFormCompleted() {
-		return isOneFormCompleted;
 	}
 
 	public void setOneFormCompleted(Boolean oneFormCompleted) {

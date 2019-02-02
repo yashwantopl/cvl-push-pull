@@ -27,15 +27,15 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-//import com.capitaworld.service.rating.RatingClient;
-//import com.capitaworld.service.rating.model.CompanyDetails;
-//import com.capitaworld.service.rating.model.RatingResponse;
 
 @RestController
 @RequestMapping("/fs_profile")
 public class CorporateApplicantController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateApplicantController.class.getName());
+
+	private static final String ERROR_WHILE_GETTING_CORPORATE_APPLICANT_PROFILE_DETAILS_MSG = "Error while getting Corporate Applicant Profile Details==>";
+	private static final String APPLICATION_ID_REQUIRE_TO_GET_CORPORATE_PROFILE_DETAILS_FOR_CLIENT_APPLICATION_ID_MSG =  "ApplicationId Require to get Corporate Profile Details for CLient Application Id ==>";
 
 	@Autowired
 	private CorporateApplicantService applicantService;
@@ -46,12 +46,6 @@ public class CorporateApplicantController {
 	/*
 	 * @Autowired private RatingClient ratingClient;
 	 */
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
 	
 	@RequestMapping(value = "/saveITRMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveITRMappingData(@RequestBody CorporateApplicantRequest applicantRequest){
@@ -66,7 +60,7 @@ public class CorporateApplicantController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully Saved Data!!", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -111,12 +105,12 @@ public class CorporateApplicantController {
 				}
 			}
 
-			// ==============
-			// if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
-			// request.getAttribute(CommonUtils.USER_TYPE))
-			// .intValue()) {
-			// applicantRequest.setClientId(clientId);
-			// }
+			/*
+			 if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
+			 request.getAttribute(CommonUtils.USER_TYPE))
+			 .intValue()) {
+			 applicantRequest.setClientId(clientId);
+			 } */
 
 			if (applicantRequest == null) {
 				logger.warn("applicantRequest  can not be empty ==>", userId);
@@ -146,7 +140,7 @@ public class CorporateApplicantController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -171,16 +165,16 @@ public class CorporateApplicantController {
 				logger.warn(
 						"ApplicationId Require to get Corporate Profile Details. Application Id ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			CorporateApplicantRequest response = applicantService.getCorporateApplicant(id, applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			CommonDocumentUtils.endHook(logger, "get");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_CORPORATE_APPLICANT_PROFILE_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -194,7 +188,6 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getSectorListByIndustryList");
 			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			// Long id=1l;
 			if (id == null) {
 				logger.warn("userId  Require to get sectors Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -209,9 +202,9 @@ public class CorporateApplicantController {
 			List<Long> response = applicantService.getSectorListByIndustryId(industryIdList);
 			LoansResponse loansResponse;
 			if (response == null || response.isEmpty()) {
-				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			} else {
-				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				loansResponse.setListData(response);
 			}
 			CommonDocumentUtils.endHook(logger, "getSectorListByIndustryList");
@@ -238,7 +231,7 @@ public class CorporateApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			List<SubSectorListRequest> response = applicantService.getSubSectorList(sectorIdList);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getSubSectorListBySectorList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -269,7 +262,7 @@ public class CorporateApplicantController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(applicantService.getGraphs(applicationId, userId));
 			CommonDocumentUtils.endHook(logger, "getGraphs");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -377,34 +370,34 @@ public class CorporateApplicantController {
 	 * HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 	 * } }
 	 */
-//	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
-//			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
-//		try {
-//			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
-//				logger.warn("request cannot be empty");
-//				return new ResponseEntity<LoansResponse>(
-//						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-//			} else {
-//				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
-//				LoansResponse loansResponse = new LoansResponse();
-//				loansResponse.setData(response);
-//				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-//			}
-//		} catch (Exception e) {
-//			logger.error("Error while getting msme score==>", e);
-//			return new ResponseEntity<LoansResponse>(
-//					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-//					HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
+/*	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
+			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn("request cannot be empty");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			} else {
+				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
+				LoansResponse loansResponse = new LoansResponse();
+				loansResponse.setData(response);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting msme score==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	} */
 
 	@RequestMapping(value = "/get_coapplicants/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoApplicants(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
@@ -414,11 +407,11 @@ public class CorporateApplicantController {
 				logger.warn("Application ID Require to get  Co-Applicant Profile Details. Application ID==>"
 						+ applicationId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			List<CorporateCoApplicantRequest> coApplicants = applicantService.getCoApplicants(userId, applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(coApplicants);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -445,13 +438,12 @@ public class CorporateApplicantController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(applicantService.getCoapAndGuarIds(userId, applicationId));
 			logger.info("Successfully get Coap And Guar Ids for retail profile");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting CoapAndGuarIds==>");
-			e.printStackTrace();
+			logger.error("Error while getting CoapAndGuarIds==>",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -480,13 +472,12 @@ public class CorporateApplicantController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(applicantService.getPaymentInfor(userId, applicationId));
 			logger.info("Successfully get Paymnt Info");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting Payment Info==>");
-			e.printStackTrace();
+			logger.error("Error while getting Payment Info==>",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -499,7 +490,7 @@ public class CorporateApplicantController {
 													HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			CommonDocumentUtils.startHook(logger, "getPrimary");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
@@ -510,17 +501,16 @@ public class CorporateApplicantController {
 				logger.warn("ID and User Id Require to get Primary Working Details ==>" + applicationId + "User ID ==>"
 						+ userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			CorporateApplicantRequest response = applicantService.getCorporateApplicant(userId, applicationId);
 
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response.getConstitutionId());
 			CommonDocumentUtils.endHook(logger, "getPrimary");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -536,7 +526,7 @@ public class CorporateApplicantController {
 			if (applicationId == null) {
 				logger.info("AppplicationId is NULL so returnig ()");
 				logger.warn(
-						"ApplicationId Require to get Corporate Profile Details for CLient Application Id ==>" + applicationId);
+						APPLICATION_ID_REQUIRE_TO_GET_CORPORATE_PROFILE_DETAILS_FOR_CLIENT_APPLICATION_ID_MSG + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -544,7 +534,7 @@ public class CorporateApplicantController {
 
 			CorporateApplicantRequest response = applicantService.getCorporateApplicant(applicationId);
 			logger.info("Result retruned");
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			logger.info("Loans Response onject creted");
 			loansResponse.setData(response);
 			logger.info("Data Ste");
@@ -553,8 +543,7 @@ public class CorporateApplicantController {
 			logger.info("Returning okay");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
-			logger.info("Returning  with Exception");
+			logger.error(ERROR_WHILE_GETTING_CORPORATE_APPLICANT_PROFILE_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -570,7 +559,7 @@ public class CorporateApplicantController {
 			if (applicationId == null) {
 				logger.info("AppplicationId is NULL so returnig from getApplicationClientForEligibility ()");
 				logger.warn(
-						"ApplicationId Require to get Corporate Profile Details for CLient Application Id ==>" + applicationId);
+						APPLICATION_ID_REQUIRE_TO_GET_CORPORATE_PROFILE_DETAILS_FOR_CLIENT_APPLICATION_ID_MSG + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -578,7 +567,7 @@ public class CorporateApplicantController {
 
 			CorporateApplicantRequest response = applicantService.getCorporateApplicant(applicationId);
 			logger.info("Result retruned from getApplicationClientForEligibility()");
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			logger.info("Loans Response onject creted from getApplicationClientForEligibility()");
 			loansResponse.setData(response);
 			logger.info("Data Set from getApplicationClientForEligibility()");
@@ -586,8 +575,7 @@ public class CorporateApplicantController {
 			logger.info("Returning okay");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
-			logger.info("Returning  with Exception");
+			logger.error(ERROR_WHILE_GETTING_CORPORATE_APPLICANT_PROFILE_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -601,13 +589,13 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "get");
 			if (applicationId == null) {
 				logger.warn(
-						"ApplicationId Require to get Corporate Profile Details for CLient Application Id ==>" + applicationId);
+						APPLICATION_ID_REQUIRE_TO_GET_CORPORATE_PROFILE_DETAILS_FOR_CLIENT_APPLICATION_ID_MSG + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			JSONObject response = applicantService.getOrgAndPanByAppId(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			CommonDocumentUtils.endHook(logger, "get");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

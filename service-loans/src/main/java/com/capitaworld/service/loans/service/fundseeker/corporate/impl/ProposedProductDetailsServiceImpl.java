@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,7 +39,7 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				ProposedProductDetailRequest proposedProductDetailRequest = (ProposedProductDetailRequest) MultipleJSONObjectHelper
@@ -59,15 +60,14 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save proposedProductDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save proposedProductDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id,Long userId) throws Exception {
+	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id,Long userId) throws LoansException {
 		try {
 			List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
 					.findByApplicationIdIdAndIsActive(id,true);
@@ -83,9 +83,8 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save proposedProductDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save proposedProductDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

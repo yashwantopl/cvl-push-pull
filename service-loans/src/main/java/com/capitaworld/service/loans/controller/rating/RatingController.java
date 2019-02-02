@@ -35,13 +35,12 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	public ResponseEntity<RatingResponse> calculateIrrRating(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		if(CommonDocumentUtils.isThisClientApplication(httpRequest)){
 		   userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
-		
+
 		return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId);
 	}
 	
@@ -49,7 +48,6 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	public ResponseEntity<RatingResponse> cmaIrrMappingService(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		if(CommonDocumentUtils.isThisClientApplication(httpRequest)){
 		   userId = clientId;
 		} else {
@@ -71,9 +69,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 			return new ResponseEntity<RatingResponse>(new RatingResponse(financialInputRequest,"financial input fetched from cma", HttpStatus.OK.value()), HttpStatus.OK);
 			
 		} catch (Exception e) {
-			// TODO: handle exception
-			logger.error("error while getting financial input from cma");
-			e.printStackTrace();
+			logger.error("error while getting financial input from cma : ",e);
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse("error while getting financial input from cma", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			

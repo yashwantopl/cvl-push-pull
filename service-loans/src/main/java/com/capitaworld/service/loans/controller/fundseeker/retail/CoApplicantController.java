@@ -27,14 +27,11 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class CoApplicantController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CoApplicantController.class.getName());
+
+	private static final String AND_ID_MSG = " and ID ==>";
+
 	@Autowired
 	private CoApplicantService coApplicantService;
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
 
 	// Primary Portion
 	@RequestMapping(value = "${profile}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,7 +61,7 @@ public class CoApplicantController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -85,7 +82,7 @@ public class CoApplicantController {
 			}
 			if (applicationId == null || id == null) {
 				logger.warn("ID and Application ID Require to get CoApplicant Profile Details. Application ID==>"
-						+ applicationId + " and ID==>" + id);
+						+ applicationId + AND_ID_MSG + id);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -119,7 +116,7 @@ public class CoApplicantController {
 
 			if (applicantRequest.getApplicationId() == null || applicantRequest.getId() == null) {
 				logger.warn("ID and Application Id can not be empty Application ID==>"
-						+ applicantRequest.getApplicationId() + " and ID==>" + applicantRequest.getId());
+						+ applicantRequest.getApplicationId() + AND_ID_MSG + applicantRequest.getId());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
@@ -133,7 +130,7 @@ public class CoApplicantController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -146,7 +143,7 @@ public class CoApplicantController {
 			@PathVariable("applicationId") Long applicationId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{
@@ -154,7 +151,7 @@ public class CoApplicantController {
 			}
 			if (applicationId == null || id == null) {
 				logger.warn("Application ID and IDRequire to get CoApplicant Profile Details. Application ID==>"
-						+ applicationId + " and ID==>" + id);
+						+ applicationId + AND_ID_MSG + id);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}

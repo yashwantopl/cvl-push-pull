@@ -5,16 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,23 +22,15 @@ import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
-import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -84,7 +73,6 @@ import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service
@@ -161,7 +149,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 	private SecurityCorporateDetailsService securityCorporateDetailsService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(NtbCamReportServiceImpl.class);
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	
 	@Override
 	public Map<String, Object> getNtbCamReport(Long applicationId, Long productId, Long userId, boolean isFinalView) {
@@ -170,7 +158,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		Map<String, Object> map = new HashMap<String, Object>();
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate())) {
-			map.put("dateOfProposal",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()) ? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate()) : null);
+			map.put("dateOfProposal",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()) ? simpleDateFormat.format(primaryCorporateDetail.getModifiedDate()) : null);
 		}
 		//MATCHES RESPONSE
 		try {
@@ -181,14 +169,15 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 		}catch (Exception e) {
-			logger.info("Error while getting Match Engine data");
-			e.printStackTrace();
+			logger.error("Error while getting Match Engine data : ",e);
 		}
 		
 		// GET DIRECTOR BACKGROUND DETAILS
 		try {
 			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService.getDirectorBackGroundDetails(applicationId);
-			map.put("directorBackgroundDetails", directorBackgroundDetails);
+			if (directorBackgroundDetails != null && !directorBackgroundDetails.isEmpty()) {
+				map.put("directorBackgroundDetails", directorBackgroundDetails);
+			}
 			if (directorBackgroundDetails.size() == 1) {
 				map.put("isMultipleDirector", false);
 			} else {
@@ -231,7 +220,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			//KEY VERTICAL SECTOR
@@ -250,7 +239,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					map.put("keyVerticalSector", "-");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			//KEY VERTICAL SUBSECTOR
 			try {
@@ -259,11 +248,11 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					map.put("keyVerticalSubSector",(String) oneFormResponse.getData());
 				}
 			} catch (Exception e) {
-				logger.warn("error while getting key vertical sub-sector");
+				logger.error("error while getting key vertical sub-sector : ",e);
 			}
 
 			map.put("otherDetails",fundSeekerInputRequestResponse);
-			map.put("proposedOperationDate",DATE_FORMAT.format(fundSeekerInputRequestResponse.getProposedOperationDate()));
+			map.put("proposedOperationDate",simpleDateFormat.format(fundSeekerInputRequestResponse.getProposedOperationDate()));
 
 		} catch (Exception e) {
 			logger.error("Problem to get Other Details=========> {}", e);
@@ -272,8 +261,11 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		// GET DIRECTOR INCOME DETAILS
 		try {
 			List<CorporateDirectorIncomeRequest> directorIncomeDetails = corporateDirectorIncomeService.getDirectorIncomeDetails(applicationId);
-			Map<String, List<CorporateDirectorIncomeRequest>> dirIncomeDetail = directorIncomeDetails.stream().collect(Collectors.groupingBy(CorporateDirectorIncomeRequest:: getDirectorName));
-			if(!CommonUtils.isObjectNullOrEmpty(dirIncomeDetail)) {
+			Map<String, List<CorporateDirectorIncomeRequest>> dirIncomeDetail = null;
+			if (directorIncomeDetails != null && !directorIncomeDetails.isEmpty()) {
+				dirIncomeDetail = directorIncomeDetails.stream().collect(Collectors.groupingBy(CorporateDirectorIncomeRequest::getDirectorName));
+			}
+			if(dirIncomeDetail != null && !dirIncomeDetail.isEmpty()) {
 				map.put("directorIncomeDetails", dirIncomeDetail);
 			}
 		} catch (Exception e) {
@@ -307,7 +299,6 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					}
 
 				}catch (Exception e) {
-					e.printStackTrace();
 					logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 				}
 			}
@@ -332,8 +323,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				map.put("dirEligibility", CommonUtils.printFields(dirEl, new HashMap<>()));
 			}
 		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.info("Error while getting Eligibility data");
+			logger.error("Error while getting Eligibility data : ",e1);
 		}
 		
 		//SCORING DATA
@@ -493,8 +483,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					map.put("companyScoreResponse", scoreResponse);
 			
 		}catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting scoring data");
+			logger.error("Error while getting scoring data : ",e);
 		}
 		
 		//CGTMSE 
@@ -518,9 +507,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				}
 			}
 		} catch (Exception e) {
-		
-			e.printStackTrace();
-			logger.info("Error while getting CGTMSE data");
+			logger.error("Error while getting CGTMSE data : ",e);
 		}
 		
 		//HUNTER API ANALYSIS
@@ -530,7 +517,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 						map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
 					}
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		/**********************************************FINAL DETAILS*****************************************************/
@@ -539,7 +526,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					try {
 						map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId),null));
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
 					//DETAILS OF GUARANTER

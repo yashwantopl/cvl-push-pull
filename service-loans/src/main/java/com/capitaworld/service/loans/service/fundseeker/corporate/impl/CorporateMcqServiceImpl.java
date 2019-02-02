@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateMcqDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateMcqDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -35,7 +36,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
     private LoanApplicationRepository loanApplicationRepository;
 
     @Override
-    public boolean saveOrUpdate(CorporateMcqRequest corporateMcqRequest, Long userId) throws Exception {
+    public boolean saveOrUpdate(CorporateMcqRequest corporateMcqRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getClientId()) ? userId : corporateMcqRequest.getClientId());
             CorporateMcqDetail corporateMcqDetail = corporateMcqDetailRepository
@@ -52,8 +53,12 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
                 corporateMcqDetail.setActive(true);
                 corporateMcqDetail.setApplicationId(new LoanApplicationMaster(corporateMcqRequest.getApplicationId()));
             }
-            BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.CORPORATE);
+            BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.getCORPORATE());
             corporateMcqDetail = corporateMcqDetailRepository.save(corporateMcqDetail);
+
+            if (corporateMcqDetail != null){
+                logger.info("corporateMcqDetail saved successfully");
+            }
 
             // saving Data
            /* saveOverseasNetworkMapping(corporateMcqRequest.getApplicationId(), userId,
@@ -65,9 +70,8 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
 
             return true;
         } catch (Exception e) {
-            logger.error("Error while Saving Corporate final mcq Details:-");
-            e.printStackTrace();
-            throw new Exception("Something went Wrong !");
+            logger.error("Error while Saving Corporate final mcq Details:-",e);
+            throw new LoansException("Something went Wrong !");
         }
     }
 
@@ -84,7 +88,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
     }
 
     @Override
-    public CorporateMcqRequest get(Long userId, Long applicationId) throws Exception {
+    public CorporateMcqRequest get(Long userId, Long applicationId) throws LoansException {
         try {
             CorporateMcqDetail loanDetail = corporateMcqDetailRepository.getByApplicationAndUserId(applicationId);
             if (loanDetail == null) {
@@ -96,9 +100,17 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
          //   corporateMcqRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
             return corporateMcqRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Final Mcq Details:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while getting Final Mcq Details:-",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
+
+	@Override
+	public boolean skipMcq(CorporateMcqRequest corporateMcqRequest, Long userId) throws LoansException {
+        Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getClientId()) ? userId : corporateMcqRequest.getClientId());
+       
+        loanApplicationRepository.setIsMcqSkipped(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getIsMcqSkipped()) ? false : corporateMcqRequest.getIsMcqSkipped());
+        
+        return true;
+	}
 }

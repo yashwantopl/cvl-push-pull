@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.common.impl;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,8 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @Service
 @Transactional
 public class ArrayOfBytesToFileServiceImpl implements ArrayOfBytesToFileService {
+
+	private static final Logger logger = LoggerFactory.getLogger(ArrayOfBytesToFileServiceImpl.class);
 
 	@Autowired
 	private FsDetailsForPdfService fsDetailsForPdfService;
@@ -47,8 +51,7 @@ public class ArrayOfBytesToFileServiceImpl implements ArrayOfBytesToFileService 
             }
             return mapValues.getBytes();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Exception in createByteFileFromMap() : ",e);
 		}
 		return null;
 	}

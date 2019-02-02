@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.client;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -34,19 +35,15 @@ public class LoansClient1 {
 	public CMADetailResponse getCMADetils(Long appId) throws ExcelException {
 		
 		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/" + appId);
-		System.out.println("Getting CMA DEtails========>" + url);
+		logger.info("Getting CMA DEtails========>" + url);
 		try {
-			/*
-			 * return restTemplate.postForObject(url, request,
-			 * ExcelResponse.class);
-			 */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailResponse.class).getBody();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new ExcelException("Loans service is not available");
 		}
 
@@ -55,15 +52,14 @@ public class LoansClient1 {
 	
 	public LoansResponse getCorporateApplicant(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
-		System.out.println("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
-			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new ExcelException("Loans service is not available");
 		}
 	}

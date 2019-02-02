@@ -1,0 +1,1 @@
+ALTER TABLE `loan_application`.`fs_corporate_current_financial_arrangements_details` ADD COLUMN `is_manually_added` BIT(1) NULL AFTER `others_bank_name`;

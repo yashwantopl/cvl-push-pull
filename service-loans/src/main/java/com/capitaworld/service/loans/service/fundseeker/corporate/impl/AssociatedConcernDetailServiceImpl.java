@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,7 +36,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
 	
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -43,8 +44,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 						.getObjectFromMap(obj, AssociatedConcernDetailRequest.class);
 				AssociatedConcernDetail associatedConcernDetail = null;
 				if (associatedConcernDetailRequest.getId() != null) {
-					associatedConcernDetail = associatedConcernDetailRepository
-							.findOne(associatedConcernDetailRequest.getId());
+					associatedConcernDetail = associatedConcernDetailRepository.findOne(associatedConcernDetailRequest.getId());
 				} else {
 					associatedConcernDetail = new AssociatedConcernDetail();
 					associatedConcernDetail.setCreatedBy(frameRequest.getUserId());
@@ -61,21 +61,37 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in save Associated Concern :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save Associated Concern :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception {
+	public Boolean saveOrUpdate(List<AssociatedConcernDetailRequest> requests,Long applicationId,Long userId) {
+		// Inactivating Previous Details
+		associatedConcernDetailRepository.inActive(userId, applicationId);
+		AssociatedConcernDetail associatedConcernDetail = null;
+		for (AssociatedConcernDetailRequest associatedConcernDetailRequest : requests) {
+			associatedConcernDetail = new AssociatedConcernDetail();
+			associatedConcernDetail.setCreatedBy(userId);
+			associatedConcernDetail.setCreatedDate(new Date());
+			associatedConcernDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			BeanUtils.copyProperties(associatedConcernDetailRequest, associatedConcernDetail);
+			associatedConcernDetail.setModifiedBy(userId);
+			associatedConcernDetail.setModifiedDate(new Date());
+			associatedConcernDetailRepository.save(associatedConcernDetail);
+		}
+		return true;
+	}
+
+
+	@Override
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws LoansException {
 		try {
 			CommonDocumentUtils.startHook(logger, "getAssociatedConcernsDetailList");
-			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
-					.listAssociatedConcernFromAppId(id);
-			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
-
+			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository.listAssociatedConcernFromAppId(id);
+			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>(associatedConcernDetail.size());
 			for (AssociatedConcernDetail detail : associatedConcernDetail) {
 				AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
 				associatedConcernDetailRequest.setProfitPastOneYearString(CommonUtils.convertValue(detail.getProfitPastOneYear()));
@@ -93,9 +109,8 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in get monthlyTurnoverDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in get monthlyTurnoverDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

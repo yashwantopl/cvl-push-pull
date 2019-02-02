@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -40,7 +41,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	
 	@Override
-	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws LoansException {
 		// ID must not be null
 		try{
 		Long finalUserId = (CommonUtils.isObjectNullOrEmpty(homeLoanDetailRequest.getClientId()) ? userId : homeLoanDetailRequest.getClientId());
@@ -49,7 +50,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			throw new NullPointerException(
 					"PrimaryHomeLoanDetail not exist in DB with Application Id=>" + homeLoanDetailRequest.getId() + " and user Id ==>" + userId); 
 		}
-		BeanUtils.copyProperties(homeLoanDetailRequest, primaryHomeLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		BeanUtils.copyProperties(homeLoanDetailRequest, primaryHomeLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 		primaryHomeLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(homeLoanDetailRequest.getTenure()) ? null : (homeLoanDetailRequest.getTenure() * 12));
 		primaryHomeLoanDetail.setModifiedBy(userId);
 		primaryHomeLoanDetail.setModifiedDate(new Date());
@@ -63,14 +64,12 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		saveNegativeList(primaryHomeLoanDetail.getApplicationId().getId(), homeLoanDetailRequest.getNegativeList());
 		return true;
 		} catch (Exception e) {
-			logger.error("Error while saving Primary Working Details Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while saving Primary Working Details Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -88,7 +87,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	}
 	
 	@Override
-	public PrimaryHomeLoanDetailRequest get(Long applicationId,Long userId) throws Exception {
+	public PrimaryHomeLoanDetailRequest get(Long applicationId,Long userId) throws LoansException {
 		try{
 		PrimaryHomeLoanDetail loanDetail = primaryHomeLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 		if (loanDetail == null) {
@@ -103,9 +102,8 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		primaryHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 		return primaryHomeLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Home Loan Details Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Primary Home Loan Details Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

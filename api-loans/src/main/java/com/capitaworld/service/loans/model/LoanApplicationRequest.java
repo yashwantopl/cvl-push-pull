@@ -104,7 +104,7 @@ public class LoanApplicationRequest implements Serializable {
 	
 	private Boolean isNhbsApplication;
 	
-	private Integer ddrStatusId;
+	private Long ddrStatusId;
 
 	private String gstIn;
 
@@ -125,6 +125,8 @@ public class LoanApplicationRequest implements Serializable {
 
     private String applicationStatus;
     private Integer wcRenewalStatus;
+    
+    private Boolean isMcqSkipped;
 
 	public String getApplicationStatus() {
 		return applicationStatus;
@@ -158,14 +160,6 @@ public class LoanApplicationRequest implements Serializable {
 		this.gstIn = gstIn;
 	}
 
-	public Integer getDdrStatusId() {
-		return ddrStatusId;
-	}
-
-	public void setDdrStatusId(Integer ddrStatusId) {
-		this.ddrStatusId = ddrStatusId;
-	}
-
 	public Boolean getIsNhbsApplication() {
 		return isNhbsApplication;
 	}
@@ -175,6 +169,7 @@ public class LoanApplicationRequest implements Serializable {
 	}
 
 	public LoanApplicationRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationRequest(Long id) {
@@ -630,6 +625,25 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setWcRenewalStatus(Integer wcRenewalStatus) {
 		this.wcRenewalStatus = wcRenewalStatus;
+	}
+
+	
+	public Boolean getIsMcqSkipped() {
+		return isMcqSkipped;
+	}
+
+	public void setIsMcqSkipped(Boolean isMcqSkipped) {
+		this.isMcqSkipped = isMcqSkipped;
+	}
+	
+	
+
+	public Long getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(Long ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
 	}
 
 	/* (non-Javadoc)

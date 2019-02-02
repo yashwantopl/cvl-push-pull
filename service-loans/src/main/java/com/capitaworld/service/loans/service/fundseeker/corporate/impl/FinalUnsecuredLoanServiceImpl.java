@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ public class FinalUnsecuredLoanServiceImpl implements FinalUnsecuredLoanService 
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public boolean saveOrUpdate(FinalUnsecuredLoanRequest unsecuredLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FinalUnsecuredLoanRequest unsecuredLoanRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(unsecuredLoanRequest.getClientId()) ? userId : unsecuredLoanRequest.getClientId());
 			FinalUnsecureLoanDetail unsecuredLoanDetail = unsecuredLoanDetailRepository
@@ -53,8 +54,12 @@ public class FinalUnsecuredLoanServiceImpl implements FinalUnsecuredLoanService 
 				unsecuredLoanDetail.setIsActive(true);
 				unsecuredLoanDetail.setApplicationId(new LoanApplicationMaster(unsecuredLoanRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(unsecuredLoanRequest, unsecuredLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(unsecuredLoanRequest, unsecuredLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			unsecuredLoanDetail = unsecuredLoanDetailRepository.save(unsecuredLoanDetail);
+
+			if (unsecuredLoanDetail != null){
+				logger.info("unsecuredLoanDetail is saved successfully");
+			}
 
 			// saving Data
 			saveOverseasNetworkMapping(unsecuredLoanRequest.getApplicationId(), userId,
@@ -65,14 +70,13 @@ public class FinalUnsecuredLoanServiceImpl implements FinalUnsecuredLoanService 
 			loanApplicationRepository.setFinalFilledCount(unsecuredLoanRequest.getApplicationId(), finalUserId,unsecuredLoanRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Unsecured Loan Details:-");
-			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			logger.error("Error while Saving Final Unsecured Loan Details:-",e);
+			throw new LoansException("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public FinalUnsecuredLoanRequest get(Long userId, Long applicationId) throws Exception {
+	public FinalUnsecuredLoanRequest get(Long userId, Long applicationId) throws LoansException {
 		try {
 			FinalUnsecureLoanDetail loanDetail = unsecuredLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
@@ -84,9 +88,8 @@ public class FinalUnsecuredLoanServiceImpl implements FinalUnsecuredLoanService 
 			unsecuredLoanRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
 			return unsecuredLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Unsecured Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Final Unsecured Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

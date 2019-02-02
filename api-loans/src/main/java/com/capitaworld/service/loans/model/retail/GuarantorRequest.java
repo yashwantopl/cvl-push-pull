@@ -1,9 +1,6 @@
 package com.capitaworld.service.loans.model.retail;
 
-import java.util.Date;
-
 import com.capitaworld.service.loans.model.Address;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class GuarantorRequest {
 

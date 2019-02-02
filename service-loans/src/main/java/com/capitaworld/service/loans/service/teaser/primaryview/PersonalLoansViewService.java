@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
 
 /**
@@ -7,5 +8,5 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewR
  *
  */
 public interface PersonalLoansViewService {
-	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long parseLong) throws Exception;
+	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long parseLong) throws LoansException;
 }

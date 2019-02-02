@@ -59,6 +59,7 @@ public class AchievementDetail implements Serializable {
 	private String year;
 
 	public AchievementDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

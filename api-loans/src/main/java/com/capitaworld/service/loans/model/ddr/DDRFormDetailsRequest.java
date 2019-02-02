@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -125,7 +126,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	List<DDRFamilyDirectorsDetailsRequest> dDRFamilyDirectorsList = new ArrayList<DDRFamilyDirectorsDetailsRequest>();
 	
 	private String userName;
-	
+
 	private String password;
 	
 	public String getOutsideLoansString() {
@@ -1113,7 +1114,21 @@ public class DDRFormDetailsRequest implements Serializable {
 		this.password = password;
 	}
 
+	public String getCustomerId() {
+		return customerId;
+	}
 
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 
 	@Override
 	public String toString() {
@@ -1202,21 +1217,26 @@ public class DDRFormDetailsRequest implements Serializable {
 				", existingBankerDetailList=" + existingBankerDetailList +
 				", dDRFamilyDirectorsList=" + dDRFamilyDirectorsList +
 				", userName =" + userName +
-				", password =" + password +
-				
+
 				'}';
 	}
 
-	public static void printFields(Object obj) throws Exception {
-         Field[] fields = DDRFormDetailsRequest.class.getDeclaredFields();
-         for(Field field : fields) {
-             Object value = field.get(obj);
-             if(value instanceof String){
-              String a = value.toString().replaceAll("&", "&amp;");
-              value = a;
-              field.set(obj, value);
-             }
+	public static void printFields(Object obj) throws LoansException {
+		try {
+			Field[] fields = DDRFormDetailsRequest.class.getDeclaredFields();
+			for(Field field : fields) {
+				Object value = field.get(obj);
+				if(value instanceof String){
+					String a = value.toString().replaceAll("&", "&amp;");
+					value = a;
+					field.set(obj, value);
+				}
+			}
 		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
 	}
 
 }

@@ -6,8 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
@@ -33,14 +33,14 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-//import com.capitaworld.service.rating.model.CompanyDetails;
-//import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -82,6 +82,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
     @Autowired
     private RetailApplicantDetailRepository retailApplicantDetailRepository;
+    
+    @Autowired
+    private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
 	@Autowired
 	private UsersClient usersClient;
@@ -93,6 +96,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Override
 	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
+		//Updating OneForm Uniform Fields
+		/*if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverPrevFinYear()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverCurrFinYearTillMonth()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getProfitCurrFinYear())){*/
+			logger.info("TurnOverPrevFinYear===>{}TurnOverCurrFinYearTillMonth====>{}ProfitCurrFinYear===>{}====>GrossSales==>{}",applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear(),applicantRequest.getGrossSales());
+			int count = primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(applicantRequest.getApplicationId(), applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear(),applicantRequest.getGrossSales());
+			logger.info("Count in Updation===>{}",count);
+		/*}*/
 		
 		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
@@ -130,7 +139,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 	
 	@Override
-	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
+	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws LoansException {
 		try {
 			// application id must not be null
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
@@ -155,7 +164,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE_FINAL);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getCorporateFinal());
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
@@ -184,16 +193,15 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Corporate Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Saving Corporate Profile :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception {
+	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws LoansException {
 		try {
-			// TODO Auto-generated method stub
+
 			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 
@@ -217,15 +225,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantRequest.setLandlineNo(userRequest.getMobile());
 			}
 			catch (Exception e){
-				logger.warn("error while get user data");
-				e.printStackTrace();
+				logger.error("error while get user data : ",e);
 			}
 			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Corporate Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Corporate Profile :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -234,8 +240,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	 * userId, Boolean flag) throws Exception { try {
 	 * loanApplicationRepository.setIsApplicantFinalMandatoryFilled( applicationId,
 	 * userId, flag); } catch (Exception e) {
-	 * logger.error("Error while updating final information flag");
-	 * e.printStackTrace(); throw new Exception(CommonUtils.SOMETHING_WENT_WRONG); }
+	 * logger.error("Error while updating final information flag : ",e);
+	 * throw new Exception(CommonUtils.SOMETHING_WENT_WRONG); }
 	 * }
 	 */
 	@Override
@@ -364,14 +370,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception {
-		// TODO Auto-generated method stub
+	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws LoansException {
+
 		return sectorIndustryMappingRepository.getSectorListByIndustryList(industryList);
 	}
 
 	@Override
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list) {
-		// TODO Auto-generated method stub
+
 		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
 		for (Long id : list) {
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
@@ -440,7 +446,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> patsPercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= pats.size() - 1; i++) {
-			// System.out.println(pats.get(i)+"-"+sales.get(i));
 			val = (pats.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -453,7 +458,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		salesPercentage.add(null);
 		// calculate revenue % (Previous sales/sales)%
 		for (int i = 0; i <= (sales.size() - 2); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (sales.get(i + 1) - sales.get(i));
 			val = val / sales.get(i);
 			val = val * 100;
@@ -465,7 +469,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate Ebidta Percentage (Ebidta/sales)%
 		List<Double> ebidtaPercentage = new ArrayList<>(sales.size());
 		for (int i = 0; i <= (sales.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -476,7 +479,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROE(%) (pat/netWorth)%
 		List<Double> roePercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= (pats.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (pats.get(i) / netWorth.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -487,7 +489,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROCE(%) (EBIDTA/CurrentAssets+FixsedAssets)%
 		List<Double> rocePercentage = new ArrayList<>(ebidta.size());
 		for (int i = 0; i <= (ebidta.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / (currentAsset.get(i) + fixedAsset.get(i)));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -498,7 +499,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
 		for (int i = 0; i <= (debt.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (debt.get(i) / netWorth.get(i));
 			if (Double.isNaN(val)) {
 				val = 0d;
@@ -509,7 +509,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate current Ration (Current Assets/Current Liabilities)
 		List<Double> currentRatio = new ArrayList<>(currentAsset.size());
 		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
 			if (Double.isNaN(val)) {
 				val = 0d;
@@ -540,7 +539,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws Exception {
+	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws LoansException {
 		try {
 			Long finalUserId = !CommonUtils.isObjectNullOrEmpty(request.getClientId()) ? request.getClientId() : userId;
 
@@ -566,14 +565,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			}
 			return latLong;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Erro While Updating Lat and Lon");
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error While Updating Lat and Lon : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws Exception {
+	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<Object[]> latLons = applicantDetailRepository.getLatLonByApplicationAndUserId(applicationId, userId);
 			if (CommonUtils.isListNullOrEmpty(latLons)) {
@@ -589,43 +587,41 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Erro While Updating Lat and Lon");
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error While Updating Lat and Lon :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Integer getCorporateEstablishmentYear(Long applicationId, Long userId) throws Exception {
+	public Integer getCorporateEstablishmentYear(Long applicationId, Long userId) throws LoansException {
 		try {
 			return applicantDetailRepository.getApplicantEstablishmentYear(userId, applicationId);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while getting Establishment Year");
+			logger.error("Error while getting Establishment Year : ",e);
 		}
 		return null;
 	}
 
 	@Override
-	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
-		// TODO Auto-generated method stub
+	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws LoansException {
+
 		return coApplicantService.getList(applicationId, userId);
 	}
 
-//	@Override
-//	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
-//		boolean msmeScoreRequired = false;
-//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-//				.findOne(msmeScoreRequest.getApplicationId());
-//		if (msmeScoreRequest.isMsmeScoreRequired()) {
-//			loanApplicationMaster.setIsMsmeScoreRequired(true);
-//			msmeScoreRequired = true;
-//		} else {
-//			loanApplicationMaster.setIsMsmeScoreRequired(false);
-//			msmeScoreRequired = false;
-//		}
-//		return msmeScoreRequired;
-//	}
+/*	@Override
+	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
+		boolean msmeScoreRequired = false;
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+				.findOne(msmeScoreRequest.getApplicationId());
+		if (msmeScoreRequest.isMsmeScoreRequired()) {
+			loanApplicationMaster.setIsMsmeScoreRequired(true);
+			msmeScoreRequired = true;
+		} else {
+			loanApplicationMaster.setIsMsmeScoreRequired(false);
+			msmeScoreRequired = false;
+		}
+		return msmeScoreRequired;
+	} */
 
 	/*
 	 * @Override public CompanyDetails getCompanyDetails(Long applicationId, Long
@@ -637,18 +633,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	 * return companyDetails; }
 	 */
 
-//	@Override
-//	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
-//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-//		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
-//			return false;
-//		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
-//		return msmeScoreRequired;
-//	}
+/*	@Override
+	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+			return false;
+		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
+		return msmeScoreRequired;
+	} */
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			List<Long> coAppIds = coApplicantService.getCoAppIds(applicationId, userId);
 
@@ -656,14 +652,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			obj.put("coAppIds", coAppIds);
 			return obj;
 		} catch (Exception e) {
-			logger.error("Error while getCoapIds:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getCoapIds :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public PaymentRequest getPaymentInfor(Long userId, Long applicationId) throws Exception {
+	public PaymentRequest getPaymentInfor(Long userId, Long applicationId) throws LoansException {
 		try {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(applicationId);
@@ -724,13 +719,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 					paymentRequest.setMobileNumber(request.getMobile());
 				}
 			}catch(Exception e) {
-				e.printStackTrace();
+				logger.error("Exception in getPaymentInfor : ",e);
 			}
 			return paymentRequest;
 		} catch (Exception e) {
-			logger.error("Error while Getting Payment Related Info:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Getting Payment Related Info :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

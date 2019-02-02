@@ -55,6 +55,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private Double sharePriceFace;
 	private Double sharePriceMarket;
 	private String loanAmount;
+	private Double enhancementAmount;
 	private String gstIn;
 	private String haveCollateralSecurity;
 	private String collateralSecurityAmount;
@@ -83,7 +84,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String contigentLiablitiesFy;
 	private String contigentLiablitiesSy;
 	private String contigentLiablitiesTy;
-;
+
 	// FINAL MCQ
 
 	private String technologyRiskId;
@@ -222,7 +223,17 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object regPinData;
     private String regAddDist;
     private String regAddTaluko;
-    			
+    
+    private String applicationType;
+    private String fpProductName;
+    
+    private Object mcaFinancialAndDetailsResponse;
+    
+    private Boolean isMcqSkipped;
+    private String companyId;
+    private String scoringModelName;
+    private String eligibilityFinancialYear;
+    private Double loanObligation;
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2097,8 +2108,79 @@ public class CorporateFinalViewResponse implements Serializable {
 		this.regAddTaluko = regAddTaluko;
 	}
 
-	
+	public String getApplicationType() {
+		return applicationType;
+	}
 
-	
+	public void setApplicationType(String applicationType) {
+		this.applicationType = applicationType;
+	}
+
+	public String getFpProductName() {
+		return fpProductName;
+	}
+
+	public void setFpProductName(String fpProductName) {
+		this.fpProductName = fpProductName;
+	}
+
+	public Object getMcaFinancialAndDetailsResponse() {
+		return mcaFinancialAndDetailsResponse;
+	}
+
+	public void setMcaFinancialAndDetailsResponse(Object mcaFinancialAndDetailsResponse) {
+		this.mcaFinancialAndDetailsResponse = mcaFinancialAndDetailsResponse;
+	}
+
+	public Boolean getIsMcqSkipped() {
+		return isMcqSkipped;
+	}
+
+	public void setIsMcqSkipped(Boolean isMcqSkipped) {
+		this.isMcqSkipped = isMcqSkipped;
+	}
+
+	public String getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
+	}
+
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
+	}
+
+	public String getScoringModelName() {
+		return scoringModelName;
+	}
+
+	public void setScoringModelName(String scoringModelName) {
+		this.scoringModelName = scoringModelName;
+	}
+
+	public String getEligibilityFinancialYear() {
+		return eligibilityFinancialYear;
+	}
+
+	public void setEligibilityFinancialYear(String eligibilityFinancialYear) {
+		this.eligibilityFinancialYear = eligibilityFinancialYear;
+	}
+
+	public Double getLoanObligation() {
+		return loanObligation;
+	}
+
+	public void setLoanObligation(Double loanObligation) {
+		this.loanObligation = loanObligation;
+	}
+
+
+
 
 }

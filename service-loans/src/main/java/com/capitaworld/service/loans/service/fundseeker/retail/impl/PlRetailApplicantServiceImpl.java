@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -41,6 +42,9 @@ import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
 public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     private static final Logger logger = LoggerFactory.getLogger(PlRetailApplicantServiceImpl.class.getName());
 
+    private static final String PERMANENT_LITERAL = "permanent";
+    private static final String OFFICE_LITERAL = "office";
+
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
 
@@ -60,7 +64,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     private CreditCardsDetailRepository creditCardsDetailRepository;
 
     @Override
-    public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws Exception {
+    public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
@@ -75,7 +79,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.PL_RETAIL_PRIMARY);
+            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
             copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
 
             applicantRepository.save(applicantDetail);
@@ -87,20 +91,22 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
 
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Profile:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while Saving Retail Profile :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws Exception {
+    public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
                         userId);
+                if (applicationMaster != null){
+                    logger.info("getByIdAndUserId called successfully ");
+                }
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
@@ -149,9 +155,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				}
                 
 			} catch (Exception e) {
-				
-				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========");
-				e.printStackTrace();
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
 			}
             
             
@@ -179,22 +183,20 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 					logger.warn("CreditCard Details is Null");
 				}
 			} catch (Exception e) {
-				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============");
-				e.printStackTrace();
+				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============",e);
 			}
             
             
 
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Profile:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while getting Retail Profile :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws Exception {
+    public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
@@ -209,7 +211,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.PL_RETAIL_PROFILE);
+            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailProfile());
 
             applicantRepository.save(applicantDetail);
 
@@ -221,18 +223,18 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                    if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                         saveFinObj.setCreatedBy(userId);
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
@@ -248,18 +250,18 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveObj = creditCardsDetailRepository.findOne(reqObj.getId());
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+                    if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
                         saveObj = new CreditCardsDetail();
-                        BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveObj.setApplicantionId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                         saveObj.setCreatedBy(userId);
                         saveObj.setCreatedDate(new Date());
                         saveObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE);
                         saveObj.setModifiedBy(userId);
                         saveObj.setModifiedDate(new Date());
                     }
@@ -278,20 +280,22 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
 
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Primary:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while Saving Retail Primary :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws Exception {
+    public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
                         userId);
+                if (applicationMaster != null){
+                    logger.info("getByIdAndUserId called successfully");
+                }
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
@@ -326,14 +330,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Primary:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while getting Retail Primary :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws Exception {
+    public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws LoansException {
         try {
             if (applicantRequest.getApplicationId() == null) {
                 throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
@@ -350,9 +353,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
-            BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
-            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "permanent");
-            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "office");
+            BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailPlProfile());
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, PERMANENT_LITERAL);
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
             applicantRepository.save(applicantDetail);
             // Updating Final Flag
             loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
@@ -361,14 +364,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             return true;
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Final:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while Saving Retail Final :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws Exception {
+    public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId, true);
             if (applicantDetail == null) {
@@ -376,15 +378,14 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                         + userId + "  ApplicationId==>" + applicationId);
             }
             RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
-            BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
+            BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailPlProfile());
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
-            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "permanent");
-            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "office");
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Final:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while getting Retail Final :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
@@ -429,7 +430,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             address.setDistrictMappingId(from.getAddressDistrictMappingId());
             to.setContactAddress(address);
         }
-        if(type.equalsIgnoreCase("permanent")){
+        if(type.equalsIgnoreCase(PERMANENT_LITERAL)){
             Address address = new Address();
             address.setPremiseNumber(from.getPermanentPremiseNumberName());
             address.setLandMark(from.getPermanentLandMark());
@@ -441,7 +442,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             address.setDistrictMappingId(from.getPermanentdistrictMappingId());
             to.setPermanentAddress(address);
         }
-        if(type.equalsIgnoreCase("office")){
+        if(type.equalsIgnoreCase(OFFICE_LITERAL)){
             Address address = new Address();
             address.setPremiseNumber(from.getOfficePremiseNumberName());
             address.setLandMark(from.getOfficeLandMark());
@@ -456,8 +457,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
 
     public static void copyAddressFromRequestToDomainForFinal(RetailFinalInfoRequest from, RetailApplicantDetail to, String type){
-        if(type.equalsIgnoreCase("permanent")){
-            if (from.getPermanentAddress() != null) {
+        if(type.equalsIgnoreCase(PERMANENT_LITERAL) && from.getPermanentAddress() != null ){
                 to.setPermanentPremiseNumberName(from.getPermanentAddress().getPremiseNumber());
                 to.setPermanentStreetName(from.getPermanentAddress().getStreetName());
                 to.setPermanentLandMark(from.getPermanentAddress().getLandMark());
@@ -466,10 +466,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setPermanentCountryId(from.getPermanentAddress().getCountryId());
                 to.setPermanentdistrictMappingId(from.getPermanentAddress().getDistrictMappingId());
                 to.setPermanentPincode(from.getPermanentAddress().getPincode());
-            }
         }
-        if(type.equalsIgnoreCase("office")){
-            if (from.getOfficeAddress() != null) {
+        if(type.equalsIgnoreCase(OFFICE_LITERAL) && from.getOfficeAddress() != null ){
                 to.setOfficePremiseNumberName(from.getOfficeAddress().getPremiseNumber());
                 to.setOfficeStreetName(from.getOfficeAddress().getStreetName());
                 to.setOfficeLandMark(from.getOfficeAddress().getLandMark());
@@ -478,7 +476,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setOfficeCountryId(from.getOfficeAddress().getCountryId());
                 to.setOfficeDistrictMappingId(from.getOfficeAddress().getDistrictMappingId());
                 to.setOfficePincode(from.getOfficeAddress().getPincode());
-            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 	private FsNegativeFpListRepository fsNegativeFpListRepository; 
 
 	@Override
-	public boolean saveOrUpdate(PrimaryUnsecureLoanRequest unsecureLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryUnsecureLoanRequest unsecureLoanRequest, Long userId) throws LoansException {
 		try {
 			PrimaryUnsecuredLoanDetail unsecureLoanDetail = primaryUSLRepository
 					.getByApplicationAndUserId(unsecureLoanRequest.getId(),  (CommonUtils.isObjectNullOrEmpty(unsecureLoanRequest.getClientId()) ? userId : unsecureLoanRequest.getClientId()));
@@ -44,7 +45,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 				throw new NullPointerException("PrimaryUnsecureLoanDetail not exist in DB with ID=>"
 						+ unsecureLoanRequest.getId() + " and UserId==>" + userId);
 			}
-			BeanUtils.copyProperties(unsecureLoanRequest, unsecureLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(unsecureLoanRequest, unsecureLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			unsecureLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(unsecureLoanRequest.getTenure()) ? null
 					: (unsecureLoanRequest.getTenure() * 12));
 			unsecureLoanDetail.setModifiedBy(userId);
@@ -55,14 +56,12 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 			saveNegativeList(unsecureLoanDetail.getApplicationId().getId(), unsecureLoanRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Primary Term Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -80,7 +79,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 	}
 	
 	@Override
-	public PrimaryUnsecureLoanRequest get(Long applicationId, Long userId) throws Exception {
+	public PrimaryUnsecureLoanRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			PrimaryUnsecuredLoanDetail loanDetail = primaryUSLRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
@@ -99,9 +98,8 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 			unsecureLoanRequest.setCurrencyValue(data);
 			return unsecureLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Primary Term Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

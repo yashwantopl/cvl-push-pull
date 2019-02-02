@@ -51,8 +51,7 @@ public class CorporateDirectorIncomeDetailsController {
 					new LoansResponse("Saving income details failed", HttpStatus.BAD_REQUEST.value(), false),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calling save/update income details");
-			e.printStackTrace();
+			logger.error("Error while calling save/update income details",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong while calling save/update Income details",
 							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
@@ -68,7 +67,7 @@ public class CorporateDirectorIncomeDetailsController {
 				logger.info("Inside Corporate Director Income Details controller===>{}"+ applicationId);
 				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeDetails(applicationId);
 				logger.info("Response from getting income details===>{}", response);
-				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				if (response != null && !response.isEmpty()) {
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse("Income details get successfully", HttpStatus.OK.value(), response),
 							HttpStatus.OK);
@@ -78,8 +77,7 @@ public class CorporateDirectorIncomeDetailsController {
 					new LoansResponse("Getting income details failed", HttpStatus.BAD_REQUEST.value(), false),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting income details");
-			e.printStackTrace();
+			logger.error("Error while getting income details : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong while getting Income details",
 							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
@@ -95,7 +93,7 @@ public class CorporateDirectorIncomeDetailsController {
 				logger.info("Inside Corporate Director Income latest year Details controller===>{}"+ applicationId);
 				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeLatestYearDetails(applicationId);
 				logger.info("Response from getting income details latest year ===>{}", response);
-				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				if (response != null && !response.isEmpty()) {
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse("Income details latest year get successfully", HttpStatus.OK.value(), response),
 							HttpStatus.OK);
@@ -105,8 +103,7 @@ public class CorporateDirectorIncomeDetailsController {
 					new LoansResponse("Getting income  latest year details failed", HttpStatus.BAD_REQUEST.value(), false),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting income latest year details");
-			e.printStackTrace();
+			logger.error("Error while getting income latest year details : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong while getting Income details",
 							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
@@ -122,7 +119,7 @@ public class CorporateDirectorIncomeDetailsController {
 				logger.info("Inside Corporate Director Details controller===>{}"+ applicationId);
 				List<Map<String,Object>> response = incomeDetailsService.getDirectorBackGroundDetails(applicationId);
 				logger.info("Response from getting Director background and employee details===>{}", response);
-				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				if (response != null && !response.isEmpty()) {
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse("Director background and employee details get successfully", HttpStatus.OK.value(), response),
 							HttpStatus.OK);
@@ -132,8 +129,7 @@ public class CorporateDirectorIncomeDetailsController {
 					new LoansResponse("Getting Director background and employee details failed", HttpStatus.BAD_REQUEST.value(), false),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting Director background and employee details");
-			e.printStackTrace();
+			logger.error("Error while getting Director background and employee details : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong while Director background details",
 							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);

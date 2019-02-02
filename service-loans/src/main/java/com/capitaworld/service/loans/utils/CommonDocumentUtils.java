@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
@@ -18,6 +19,9 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 public class CommonDocumentUtils {
+	private CommonDocumentUtils() {
+		// Do nothing because of X and Y.
+	}
 
 	public static Long getProductDocumentId(int productId) {
 		switch (productId) {
@@ -37,64 +41,90 @@ public class CommonDocumentUtils {
 			return DocumentAlias.LAS_LOAN_PROFIEL_PICTURE;
 		case 15:// UNSECURED_LOAN_PROFIEL_PICTURE
 			return DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE;
+		default: return null;
 		}
-		return null;
 	}
 
-	public static String getCity(Long cityId, OneFormClient oneFormClient) throws Exception {
-		if (CommonUtils.isObjectNullOrEmpty(cityId))
-			return null;
-		List<Long> cityIdRequest = new ArrayList<>(1);
-		cityIdRequest.add(cityId);
-		OneFormResponse response = oneFormClient.getCityByCityListId(cityIdRequest);
-		MasterResponse data = MultipleJSONObjectHelper
-				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-		return data != null ? data.getValue() : null;
-	}
-
-	public static String getState(Long stateId, OneFormClient oneFormClient) throws Exception {
-		if (CommonUtils.isObjectNullOrEmpty(stateId))
-			return null;
-		List<Long> stateIdRequest = new ArrayList<>(1);
-		stateIdRequest.add(stateId);
-		OneFormResponse response = oneFormClient.getStateByStateListId(stateIdRequest);
-		MasterResponse data = MultipleJSONObjectHelper
-				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-		return data != null ? data.getValue() : null;
-	}
-
-	public static String getStateCode(Long stateId, OneFormClient oneFormClient) throws Exception {
-		if (CommonUtils.isObjectNullOrEmpty(stateId))
-			return null;
-		List<Long> stateIdRequest = new ArrayList<>(1);
-		stateIdRequest.add(stateId);
-		OneFormResponse response = oneFormClient.getStateCodeByStateListId(stateIdRequest);
-		MasterResponse data = MultipleJSONObjectHelper
-				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-		return data != null ? data.getValue() : null;
-	}
-
-	public static String getCountry(Long countryId, OneFormClient oneFormClient) throws Exception {
-		if (CommonUtils.isObjectNullOrEmpty(countryId))
-			return null;
-		List<Long> countryIdRequest = new ArrayList<>(1);
-		countryIdRequest.add(countryId);
-		OneFormResponse response = oneFormClient.getCountryByCountryListId(countryIdRequest);
-		MasterResponse data = MultipleJSONObjectHelper
-				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-		return data != null ? data.getValue() : null;
-	}
-
-	public static Integer getYear(Long yearId, OneFormClient oneFormClient) throws Exception {
-		if (CommonUtils.isObjectNullOrEmpty(yearId))
-			return null;
-		OneFormResponse response = oneFormClient.getYearByYearId(yearId);
-		if (!CommonUtils.isListNullOrEmpty(response.getListData())) {
-			MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(
-					(LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-			return data != null ? Integer.valueOf(data.getValue()) : 0;
+	public static String getCity(Long cityId, OneFormClient oneFormClient) throws LoansException {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(cityId))
+				return null;
+			List<Long> cityIdRequest = new ArrayList<>(1);
+			cityIdRequest.add(cityId);
+			OneFormResponse response = oneFormClient.getCityByCityListId(cityIdRequest);
+			MasterResponse data = MultipleJSONObjectHelper
+					.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+			return data != null ? data.getValue() : null;
 		}
-		return 0;
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+	}
+
+	public static String getState(Long stateId, OneFormClient oneFormClient) throws LoansException {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(stateId))
+				return null;
+			List<Long> stateIdRequest = new ArrayList<>(1);
+			stateIdRequest.add(stateId);
+			OneFormResponse response = oneFormClient.getStateByStateListId(stateIdRequest);
+			MasterResponse data = MultipleJSONObjectHelper
+					.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+			return data != null ? data.getValue() : null;
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+	}
+
+	public static String getStateCode(Long stateId, OneFormClient oneFormClient) throws LoansException {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(stateId))
+				return null;
+			List<Long> stateIdRequest = new ArrayList<>(1);
+			stateIdRequest.add(stateId);
+			OneFormResponse response = oneFormClient.getStateCodeByStateListId(stateIdRequest);
+			MasterResponse data = MultipleJSONObjectHelper
+					.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+			return data != null ? data.getValue() : null;
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+	}
+
+	public static String getCountry(Long countryId, OneFormClient oneFormClient) throws LoansException {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(countryId))
+				return null;
+			List<Long> countryIdRequest = new ArrayList<>(1);
+			countryIdRequest.add(countryId);
+			OneFormResponse response = oneFormClient.getCountryByCountryListId(countryIdRequest);
+			MasterResponse data = MultipleJSONObjectHelper
+					.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+			return data != null ? data.getValue() : null;
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+	}
+
+	public static Integer getYear(Long yearId, OneFormClient oneFormClient) throws LoansException {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(yearId))
+				return null;
+			OneFormResponse response = oneFormClient.getYearByYearId(yearId);
+			if (!CommonUtils.isListNullOrEmpty(response.getListData())) {
+				MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+				return data != null ? Integer.valueOf(data.getValue()) : 0;
+			}
+			return 0;
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
 	}
 
 	public static String getCurrency(Integer currencyId) {
@@ -108,10 +138,8 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getDenomination(Integer denominationId) {
-		if (!CommonUtils.isObjectNullOrEmpty(denominationId)) {
-			if (!CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId))) {
+		if (!CommonUtils.isObjectNullOrEmpty(denominationId) && !CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId)) ) {
 				return Denomination.getById(denominationId).getValue();
-			}
 		}
 		return "NA";
 	}
@@ -147,7 +175,7 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getAdministrativeOfficeAddress(CorporateApplicantDetail applicantDetail,
-			OneFormClient oneFormClient) throws Exception {
+			OneFormClient oneFormClient) throws LoansException {
 		String admntOfficeAdd = "";
 		admntOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePremiseNumber())
 				? applicantDetail.getAdministrativePremiseNumber() + ", "
@@ -172,7 +200,7 @@ public class CommonDocumentUtils {
 	
 	
 	public static String getPermenantAddress(RetailApplicantDetail applicantDetail,
-			OneFormClient oneFormClient) throws Exception {
+			OneFormClient oneFormClient) throws LoansException {
 		String permAdd = "";
 		permAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPremiseNumberName())
 				? applicantDetail.getPermanentPremiseNumberName() + ", "

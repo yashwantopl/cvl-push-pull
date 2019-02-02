@@ -22,7 +22,6 @@ import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
 import com.capitaworld.client.eligibility.EligibilityClient;
-import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -145,7 +144,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	private ReferenceRetailDetailsService referenceRetailDetailService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	
 	@Override
 	public Map<String, Object> getCamReportDetails(Long applicationId, Long productId, boolean isFinalView) {
@@ -153,7 +152,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfile(userId, applicationId);
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
@@ -170,11 +169,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(plRetailApplicantRequest.getContactAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "");
-			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? DATE_FORMAT.format(plRetailApplicantRequest.getBirthDate()):"-");
+			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "");
 			map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentWith()) ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue() : "");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "");
@@ -198,7 +197,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			//KEY VERTICAL SECTOR
@@ -217,7 +216,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("keyVerticalSector", "-");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			//KEY VERTICAL SUBSECTOR
 			try {
@@ -226,23 +225,33 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("keyVerticalSubSector",StringEscapeUtils.escapeXml(oneFormResponse.getData().toString()));
 				}
 			} catch (Exception e) {
-				logger.warn("error while getting key vertical sub-sector");
+				logger.error("error while getting key vertical sub-sector : ",e);
 			}
 			
 		} catch (Exception e) {
-			logger.info("Error while getting profile Details");
-			e.printStackTrace();
+			logger.error("Error while getting profile Details : ",e);
 		}
-		//DATE OF IN-PRINCIPLE APPROVAL (CONNECT CLIENT)
-		try {
+		//DATE OF IN-PRINCIPLE APPROVAL (CONNECT CLIENT) EXISTING CODE
+		/*try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(connectResponse)) {
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
+				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? CommonUtils.DATE_FORMAT.format(connectResponse.getData()):"-");
 			}
 		} catch (Exception e2) {
-			logger.info("Error while getting date of in-principal approval from connect client");
-			e2.printStackTrace();
+			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
+		}*/
+		
+		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
+		try {
+			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
+				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
+			}
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
+		// ENDS HERE===================>
+		
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();
@@ -254,8 +263,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 		}
 		catch (Exception e) {
-			logger.info("Error while getting matches data");
-			e.printStackTrace();
+			logger.error("Error while getting matches data : ",e);
 		}
 		//PROPOSAL RESPONSE
 		try {
@@ -266,7 +274,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
@@ -274,8 +282,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? PersonalLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
-			logger.info("Error while getting primary Details");
-			e.printStackTrace();
+			logger.error("Error while getting primary Details : ",e);
 		}
 		
 		//INCOME DETAILS - NET INCOME
@@ -285,8 +292,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("incomeDetails", retailApplicantIncomeDetail);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting income details");
+			logger.error("Error while getting income details : ",e);
 		}
 		
 		//FINANCIAL ARRANGEMENTS
@@ -408,8 +414,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting scoring data");
+				logger.error("Error while getting scoring data : ",e);
 			}
 		
 			//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
@@ -422,8 +427,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), PersonalEligibilityRequest.class), new HashMap<>()));
 				}
 			}catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting Eligibility data");
+				logger.error("Error while getting Eligibility data : ",e);
 			}
 		/*************************************************************FINAL DETAILS***********************************************************/
 		
@@ -434,11 +438,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				List<Date[]> data1 = null;
 				data1 = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
 				if(data1 != null && !data1.isEmpty()) {
-					map.put("disbursmentDate", DATE_FORMAT.format(data1.get(0)));
+					map.put("disbursmentDate", simpleDateFormat.format(data1.get(0)));
 				}
 				data1 = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
 				if(data1 != null && !data1.isEmpty()) {
-					map.put("sanctionDate", DATE_FORMAT.format(data1.get(0)));
+					map.put("sanctionDate", simpleDateFormat.format(data1.get(0)));
 				}
 				data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 				if(data != null && !data.isEmpty()) {
@@ -450,8 +454,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					}
 				}
 				} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting PROPOSAL DATES data");
+				logger.error("Error while getting PROPOSAL DATES data : ",e);
 			}
 			//RETAIL FINAL DETAILS
 			try {
@@ -472,7 +475,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 							map.put("permanantAddressData",CommonUtils.printFields(pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId()),null));				
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					map.put("officeAddCountry", StringEscapeUtils.escapeXml(getCountryName(retailFinalInfo.getOfficeAddress().getCountryId())));
 					map.put("officeAddState", StringEscapeUtils.escapeXml(getStateName(retailFinalInfo.getOfficeAddress().getStateId())));
@@ -483,12 +486,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 							map.put("officeAddressData",CommonUtils.printFields(pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId()),null));				
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting Final Information");
+				logger.error("Error while getting Final Information : ",e);
 			}
 			
 			//INCOME DETAILS - GROSS INCOME
@@ -498,8 +500,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("grossIncomeDetails", retailApplicantIncomeDetail);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting income details");
+				logger.error("Error while getting income details : ",e);
 			}
 			
 			//BANK ACCOUNT HELD DETAILS
@@ -509,8 +510,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("bankAccountHeld", bankAccountHeldDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting bank account held details");
+				logger.error("Error while getting bank account held details : ",e);
 			}
 			
 			//FIXED DEPOSITS DETAILS
@@ -520,8 +520,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("fixedDepositeDetails", fixedDepositeDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting fixed deposite details");
+				logger.error("Error while getting fixed deposite details : ",e);
 			}
 			
 			//OTHER CURRENT ASSEST DETAILS
@@ -531,8 +530,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("otherCurrentAssetDetails", otherCurrentAssetDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting other current asset details");
+				logger.error("Error while getting other current asset details : ",e);
 			}
 			
 			//OBLIGATION DETAILS
@@ -542,8 +540,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("obligationDetails", obligationRequest);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting obligation details");
+				logger.error("Error while getting obligation details : ",e);
 			}
 			
 			//REFERENCES DETAILS
@@ -553,8 +550,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("referenceDetails", referenceDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting reference details");
+				logger.error("Error while getting reference details : ",e);
 			}
 			
 			
@@ -581,7 +577,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -602,7 +598,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -623,7 +619,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}

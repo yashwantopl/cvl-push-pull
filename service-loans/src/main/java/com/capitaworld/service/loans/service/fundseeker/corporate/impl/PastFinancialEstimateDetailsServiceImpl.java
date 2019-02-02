@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,8 +38,9 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 @Transactional
 public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEstiamateDetailsService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PastFinancialEstimateDetailsServiceImpl.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(PastFinancialEstimateDetailsServiceImpl.class.getName());
+
+	private static final String MONTH_03_DAY_31_FORMAT = "-03-31";
 
 	@Autowired
 	private OneFormClient oneFormClient; 
@@ -50,7 +52,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				PastFinancialEstimatesDetailRequest pastFinancialEstimateDetailRequest = (PastFinancialEstimatesDetailRequest) MultipleJSONObjectHelper
@@ -76,14 +78,13 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save pastFinancialEstimateDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save pastFinancialEstimateDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<PastFinancialEstimatesDetailRequest> getPastFinancialEstimateDetailsList(Long id) throws Exception {
+	public List<PastFinancialEstimatesDetailRequest> getPastFinancialEstimateDetailsList(Long id) throws LoansException {
 		try {
 			List<PastFinancialEstimatesDetail> pastFinancialEstimateDetails = pastFinancialEstimateDetailsRepository
 					.listPastFinancialEstimateDetailsFromAppId(id);
@@ -96,15 +97,14 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 			}
 			return pastFinancialEstimateDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in getting pastFinancialEstimateDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in getting pastFinancialEstimateDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<PastFinancialEstimatesDetailRequest> getFinancialListData(Long userId, Long applicationId)
-			throws Exception {
+			throws LoansException {
 		List<PastFinancialEstimatesDetail> pastFinancialEstimateDetails = pastFinancialEstimateDetailsRepository
 				.listPastFinancialEstimateDetailsFromAppId(applicationId);
 
@@ -131,7 +131,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		List<PastFinancialEstimatesDetailRequest> yearList = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		if (pastFinancialEstimateDetails != null && pastFinancialEstimateDetails.size() <= 0) {
 			try {
-				todayDate = dateFormat.parse(establishmentYear + "-03-31");
+				todayDate = dateFormat.parse(establishmentYear + MONTH_03_DAY_31_FORMAT);
 				establishmentDate = dateFormat.parse(establishmentYear + "-" + establishmentMonth + "-30");
 				int differenceOfYears = currentYear - establishmentYear;
 				if ((establishmentYear - currentYear) == 0) {
@@ -156,7 +156,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 						}
 					}
 				} else {
-					compareDate = dateFormat.parse(cal.get(Calendar.YEAR)+"-03-31");
+					compareDate = dateFormat.parse(cal.get(Calendar.YEAR)+MONTH_03_DAY_31_FORMAT);
 					if (new Date().compareTo(compareDate) > 0) {
 						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
 						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
@@ -175,14 +175,13 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				return yearList;
 
 			} catch (ParseException e) {
-				logger.error("Error While getting Year List of past Financial Year");
-				e.printStackTrace();
-				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				logger.error("Error While getting Year List of past Financial Year : ",e);
+				throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 		} else {
 			if(pastFinancialEstimateDetails.get(0).getApplicationId().getMcaCompanyId()==null){
 			try {
-				todayDate = dateFormat.parse(establishmentYear + "-03-31");
+				todayDate = dateFormat.parse(establishmentYear + MONTH_03_DAY_31_FORMAT);
 				establishmentDate = dateFormat.parse(establishmentYear + "-" + establishmentMonth + "-30");
 				int differenceOfYears = currentYear - establishmentYear;
 				if ((establishmentYear - currentYear) == 0) {
@@ -207,11 +206,9 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 					return getRequestFromDomain(pastFinancialEstimateDetails);
 				} else {
 					List<PastFinancialEstimatesDetail> financialEstimatesNewList = new ArrayList<>();
-					String recordYearsArray[] = null;
-					if(pastFinancialEstimateDetails.get(0)!=null){
-						if(pastFinancialEstimateDetails.get(0).getFinancialYear()!=null){
+					String[] recordYearsArray = null;
+					if(pastFinancialEstimateDetails.get(0)!=null && pastFinancialEstimateDetails.get(0).getFinancialYear()!=null ){
 							recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString().split("-");
-						}
 					}
 					int lastYear= 0;
 					if(recordYearsArray !=null){
@@ -236,8 +233,8 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				}
 
 			} catch (ParseException e) {
-				e.printStackTrace();
-				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				logger.error(CommonUtils.EXCEPTION,e);
+				throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 		}
 			else{
@@ -245,7 +242,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 
 				try {
 					List<PastFinancialEstimatesDetailRequest> mcaYearList = new ArrayList<PastFinancialEstimatesDetailRequest>();
-					todayDate = dateFormat.parse(establishmentYear + "-03-31");
+					todayDate = dateFormat.parse(establishmentYear + MONTH_03_DAY_31_FORMAT);
 					establishmentDate = dateFormat.parse(establishmentYear + "-" + establishmentMonth + "-30");
 					int differenceOfYears = currentYear - establishmentYear;
 					if ((establishmentYear - currentYear) == 0) {
@@ -270,7 +267,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 							}
 						}
 					} else {
-						compareDate = dateFormat.parse(cal.get(Calendar.YEAR)+"-03-31");
+						compareDate = dateFormat.parse(cal.get(Calendar.YEAR)+MONTH_03_DAY_31_FORMAT);
 						if (new Date().compareTo(compareDate) > 0) {
 							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
 							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
@@ -302,8 +299,8 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 						boolean isMatch = false;
 					for(int k = m ; k < finalYearList.size() ; k++){
 							
-							System.out.println(mcaYearList.get(m).getFinancialYear());
-							System.out.println(finalYearList.get(k).getFinancialYear());
+							logger.info(mcaYearList.get(m).getFinancialYear());
+							logger.info(finalYearList.get(k).getFinancialYear());
 							if(finalYearList.get(k).getFinancialYear().equals(mcaYearList.get(m).getFinancialYear())){
 								isMatch = true;
 								break;
@@ -318,12 +315,11 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 						finalYearList.add(mcaYearList.get(m));
 					}
 					}
-					System.out.println(finalYearList);
+					logger.info(""+finalYearList);
 					return finalYearList;
 				} catch (ParseException e) {
-					logger.error("Error While getting Year List of past Financial Year");
-					e.printStackTrace();
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					logger.error("Error While getting Year List of past Financial Year : ",e);
+					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			
 			}

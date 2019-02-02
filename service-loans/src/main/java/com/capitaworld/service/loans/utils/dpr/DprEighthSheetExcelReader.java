@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.utils.dpr;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -12,6 +13,8 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProjectImplementationScheduleDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProjectImplementationScheduleDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,6 +23,11 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.ProjectImpl
  */
 public class DprEighthSheetExcelReader
 {
+    private DprEighthSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(DprEighthSheetExcelReader.class);
 
 	public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository,DprUserDataDetail dprUserDataDetail) {
         saveProjectImplementationSchedule(storageDetailsId,sheet,"11",loanApplicationMaster,projectImplementationScheduleDetailRepository);
@@ -38,14 +46,12 @@ public class DprEighthSheetExcelReader
         try {
             //sheet number 3 fill 780 question answer in db
             String question802Answer = getDataFromCell(sheet, "C25");
-            if (!(question802Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question802Answer.equals("Insert Text Here"))) {
+            if (!(question802Answer.isEmpty()) && !(question802Answer.equals("Insert Text Here")) ) {//if textbox is empty not insert record
                     dprUserDataDetail.setProjectJjustification(question802Answer);
-                }
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
     }
 
@@ -88,13 +94,13 @@ public class DprEighthSheetExcelReader
                 projectImplementationSchedule.setModifiedDate(new Date());
                 projectImplementationScheduleDetailRepository.save(projectImplementationSchedule);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }
     public static String getDataFromCell(XSSFSheet sheet,String cellNumber)
     {
-        String returnValue= new String();
+        String returnValue = "";
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
@@ -104,7 +110,7 @@ public class DprEighthSheetExcelReader
                 if (!(cellValue.equals("0.0"))) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     Date d = cell.getDateCellValue();
-                    returnValue = simpleDateFormat.format(d).toString();
+                    returnValue = simpleDateFormat.format(d);
                 }
             } else {
               returnValue="";

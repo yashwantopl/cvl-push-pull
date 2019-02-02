@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +35,7 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 	public OwnershipDetailsRepository ownershipDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -58,14 +59,13 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save ownershipDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save ownershipDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId) throws Exception {
+	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId) throws LoansException {
 		try {
 			List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppId(applicationId,userId);
 			List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
@@ -79,9 +79,8 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in get ownershipDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in get ownershipDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

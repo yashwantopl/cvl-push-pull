@@ -5,11 +5,14 @@ import java.util.Date;
 public class OfflineProcessedApplicationRequest {
 
 	private Long applicationId;
+	private Long fpProductId;
+	private Long proposalId;
 	private Long userId;
 	private Double loanAmount;
 	private String organisationName;
 	private String branchName;
 	private String isCampaignUser;
+	private String campaignCode;
 	private Boolean isSanctioned;
 	private Boolean isDisbursed;
 	private Long branchId;
@@ -27,7 +30,19 @@ public class OfflineProcessedApplicationRequest {
 	private Double processingFee;
 	private Long isSanctionedFrom;
 	private Boolean isPartiallyDisbursedOffline;
+	private String reason;
+	private Date modifiedDate;
+	private Integer status;
 	
+	//DISBURSED APPLICATION LIST
+	private Double disbursedAmount;
+	private Date disbursedDate;
+	private String accountNo;
+	private String transactionNo;
+	private Integer paymentMode;
+	private String email;
+	private String mobile;
+	private Long userOrgId;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -161,6 +176,105 @@ public class OfflineProcessedApplicationRequest {
 	public void setLocationData(Object locationData) {
 		this.locationData = locationData;
 	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	public String getCampaignCode() {
+		return campaignCode;
+	}
+	public void setCampaignCode(String campaignCode) {
+		this.campaignCode = campaignCode;
+	}
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+	public Long getProposalId() {
+		return proposalId;
+	}
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+	public Double getDisbursedAmount() {
+		return disbursedAmount;
+	}
+	public void setDisbursedAmount(Double disbursedAmount) {
+		this.disbursedAmount = disbursedAmount;
+	}
+	public Date getDisbursedDate() {
+		return disbursedDate;
+	}
+	public void setDisbursedDate(Date disbursedDate) {
+		this.disbursedDate = disbursedDate;
+	}
+	public String getAccountNo() {
+		return accountNo;
+	}
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
+	public String getTransactionNo() {
+		return transactionNo;
+	}
+	public void setTransactionNo(String transactionNo) {
+		this.transactionNo = transactionNo;
+	}
+	public Integer getPaymentMode() {
+		return paymentMode;
+	}
+	public void setPaymentMode(Integer paymentMode) {
+		this.paymentMode = paymentMode;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
 	
-	
+	@Override
+	public String toString() {
+		return "OfflineProcessedApplicationRequest [applicationId=" + applicationId + ", fpProductId=" + fpProductId
+				+ ", proposalId=" + proposalId + ", userId=" + userId + ", loanAmount=" + loanAmount
+				+ ", organisationName=" + organisationName + ", branchName=" + branchName + ", isCampaignUser="
+				+ isCampaignUser + ", campaignCode=" + campaignCode + ", isSanctioned=" + isSanctioned
+				+ ", isDisbursed=" + isDisbursed + ", branchId=" + branchId + ", pan=" + pan + ", gstin=" + gstin
+				+ ", branchCode=" + branchCode + ", branchAddress=" + branchAddress + ", locationData=" + locationData
+				+ ", sanctionedAmount=" + sanctionedAmount + ", sanctionDate=" + sanctionDate + ", tenure=" + tenure
+				+ ", remark=" + remark + ", roi=" + roi + ", processingFee=" + processingFee + ", isSanctionedFrom="
+				+ isSanctionedFrom + ", isPartiallyDisbursedOffline=" + isPartiallyDisbursedOffline + ", reason="
+				+ reason + ", modifiedDate=" + modifiedDate + ", status=" + status + ", disbursedAmount="
+				+ disbursedAmount + ", disbursedDate=" + disbursedDate + ", accountNo=" + accountNo + ", transactionNo="
+				+ transactionNo + ", paymentMode=" + paymentMode + "]";
+	}
 }

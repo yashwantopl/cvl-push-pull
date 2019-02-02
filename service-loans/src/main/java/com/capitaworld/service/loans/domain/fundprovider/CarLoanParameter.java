@@ -222,6 +222,7 @@ public class CarLoanParameter extends ProductMaster implements Serializable {
 	private Boolean isCashProfitMandatory=false;*/
 
 	public CarLoanParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

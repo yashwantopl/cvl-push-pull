@@ -1,13 +1,22 @@
 package com.capitaworld.service.loans.model.corporate;
 
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+
+/**
+ * @author akshay
+ *
+ */
+/**
+ * @author akshay
+ *
+ */
 public class FundSeekerInputRequestResponse {
 
     private Long userId;
@@ -26,7 +35,11 @@ public class FundSeekerInputRequestResponse {
     private Address firstAddress;
 
     private String organisationName;
-    ////////////////////
+    
+    private String gstIn;
+    
+    private String pan;
+    
     private String aadhar;
 
     private String msmeRegistrationNumber;
@@ -34,26 +47,23 @@ public class FundSeekerInputRequestResponse {
     private Double loanAmount;
 
 
- //   private Boolean isBusinessAssetChecked;
-
-
- //   private Boolean isWorkingCapitalChecked;
-
-
-//    private Boolean isOtherGeneralChecked;
-
-
     private Integer purposeOfLoanId;
 
     private Boolean haveCollateralSecurity;
+    
+    private Boolean isGstCompleted;
+    
+    private Boolean isItrCompleted;
 
     private Double collateralSecurityAmount;
 
     private Integer constitutionId;
-    ///////////
 
-    private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
-    private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList;
+    private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = Collections.emptyList();
+    
+    private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList = Collections.emptyList();
+    
+    private List<AssociatedConcernDetailRequest> associatedConcernDetailRequestsList = Collections.emptyList();
 
 
     ///////////
@@ -65,11 +75,19 @@ public class FundSeekerInputRequestResponse {
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
+    
+    //Sales Variables by Akshay
+    
   
     /*
     * added for machinery equipment finance
     * */
     private Integer assessmentId;
+    
+    private Integer sinceYear;
+    private Integer sinceMonth;
+    
+    private Integer estYear;
 
     //-------------For NTB
     private Double tenureRequired;
@@ -107,6 +125,20 @@ public class FundSeekerInputRequestResponse {
     private Double incrementalMargin;
 
     private Long environmentalImpactId;
+    
+    private Integer actionId;
+    
+    private Double turnOverPrevFinYear;
+    
+    private Double turnOverCurrFinYearTillMonth;
+    
+    private Double projectedTurnOverCurrFinYear;
+    
+    private Double profitCurrFinYear;
+    
+    private Double projectedProfitCurrFinYear;
+    
+    private Double enhancementAmount;
 
     public Long getUserId() {
         return userId;
@@ -456,49 +488,153 @@ public class FundSeekerInputRequestResponse {
 		this.collateralSecurityAmountStr = collateralSecurityAmountStr;
 	}
 
+	public String getPan() {
+		return pan;
+	}
+
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+
+	public Integer getActionId() {
+		return actionId;
+	}
+
+	public void setActionId(Integer actionId) {
+		this.actionId = actionId;
+	}
+
+	public Double getTurnOverPrevFinYear() {
+		return turnOverPrevFinYear;
+	}
+
+	public void setTurnOverPrevFinYear(Double turnOverPrevFinYear) {
+		this.turnOverPrevFinYear = turnOverPrevFinYear;
+	}
+
+	public Double getTurnOverCurrFinYearTillMonth() {
+		return turnOverCurrFinYearTillMonth;
+	}
+
+	public void setTurnOverCurrFinYearTillMonth(Double turnOverCurrFinYearTillMonth) {
+		this.turnOverCurrFinYearTillMonth = turnOverCurrFinYearTillMonth;
+	}
+
+	public Double getProjectedTurnOverCurrFinYear() {
+		return projectedTurnOverCurrFinYear;
+	}
+
+	public void setProjectedTurnOverCurrFinYear(Double projectedTurnOverCurrFinYear) {
+		this.projectedTurnOverCurrFinYear = projectedTurnOverCurrFinYear;
+	}
+
+	public Double getProfitCurrFinYear() {
+		return profitCurrFinYear;
+	}
+
+	public void setProfitCurrFinYear(Double profitCurrFinYear) {
+		this.profitCurrFinYear = profitCurrFinYear;
+	}
+
+	public Double getProjectedProfitCurrFinYear() {
+		return projectedProfitCurrFinYear;
+	}
+
+	public void setProjectedProfitCurrFinYear(Double projectedProfitCurrFinYear) {
+		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
+	}
+
+	public Boolean getIsGstCompleted() {
+		return isGstCompleted;
+	}
+
+	public void setIsGstCompleted(Boolean isGstCompleted) {
+		this.isGstCompleted = isGstCompleted;
+	}
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernDetailRequestsList() {
+		return associatedConcernDetailRequestsList;
+	}
+
+	public void setAssociatedConcernDetailRequestsList(List<AssociatedConcernDetailRequest> associatedConcernDetailRequestsList) {
+		this.associatedConcernDetailRequestsList = associatedConcernDetailRequestsList;
+	}
+	
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
+	}
+	
+	public Integer getSinceYear() {
+		return sinceYear;
+	}
+
+	public Integer getSinceMonth() {
+		return sinceMonth;
+	}
+
+	public void setSinceYear(Integer sinceYear) {
+		this.sinceYear = sinceYear;
+	}
+
+	public void setSinceMonth(Integer sinceMonth) {
+		this.sinceMonth = sinceMonth;
+	}
+	
+
+	public Integer getEstYear() {
+		return estYear;
+	}
+
+	public void setEstYear(Integer estYear) {
+		this.estYear = estYear;
+	}
+
 	@Override
-    public String toString() {
-        return "FundSeekerInputRequestResponse{" +
-                "userId=" + userId +
-                ", clientId=" + clientId +
-                ", applicationId=" + applicationId +
-                ", businessTypeId=" + businessTypeId +
-                ", keyVericalFunding=" + keyVericalFunding +
-                ", keyVerticalSector=" + keyVerticalSector +
-                ", keyVerticalSubsector=" + keyVerticalSubsector +
-                ", firstAddress=" + firstAddress +
-                ", organisationName='" + organisationName + '\'' +
-                ", aadhar='" + aadhar + '\'' +
-                ", msmeRegistrationNumber='" + msmeRegistrationNumber + '\'' +
-                ", loanAmount=" + loanAmount +
-                ", purposeOfLoanId=" + purposeOfLoanId +
-                ", haveCollateralSecurity=" + haveCollateralSecurity +
-                ", collateralSecurityAmount=" + collateralSecurityAmount +
-                ", constitutionId=" + constitutionId +
-                ", financialArrangementsDetailRequestsList=" + financialArrangementsDetailRequestsList +
-                ", directorBackgroundDetailRequestsList=" + directorBackgroundDetailRequestsList +
-                ", industrylist=" + industrylist +
-                ", sectorlist=" + sectorlist +
-                ", subsectors=" + subsectors +
-                ", costOfMachinery=" + costOfMachinery +
-                ", incrementalTurnover=" + incrementalTurnover +
-                ", assessmentId=" + assessmentId +
-                ", tenureRequired=" + tenureRequired +
-                ", proposedDetailsOfUnit=" + proposedDetailsOfUnit +
-                ", costOfProject=" + costOfProject +
-                ", proposedOperationDate=" + proposedOperationDate +
-                ", proposedConstitutionOfUnit=" + proposedConstitutionOfUnit +
-                ", promoterContribution=" + promoterContribution +
-                ", totalAmtPercentage=" + totalAmtPercentage +
-                ", stateId=" + stateId +
-                ", cityId=" + cityId +
-                ", proposedCost=" + proposedCost +
-                ", commercialOperationDate=" + commercialOperationDate +
-                ", factoryPremise=" + factoryPremise +
-                ", knowHow=" + knowHow +
-                ", competition=" + competition +
-                ", incrementalMargin=" + incrementalMargin +
-                ", environmentalImpactId=" + environmentalImpactId +
-                '}';
-    }
+	public String toString() {
+		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
+				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding
+				+ ", keyVerticalSector=" + keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector
+				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName + ", gstIn="
+				+ gstIn + ", pan=" + pan + ", aadhar=" + aadhar + ", msmeRegistrationNumber="
+				+ msmeRegistrationNumber + ", loanAmount=" + loanAmount + ", purposeOfLoanId=" + purposeOfLoanId
+				+ ", haveCollateralSecurity=" + haveCollateralSecurity + ", isGstCompleted=" + isGstCompleted
+				+ ", isItrCompleted=" + isItrCompleted + ", collateralSecurityAmount=" + collateralSecurityAmount
+				+ ", constitutionId=" + constitutionId + ", financialArrangementsDetailRequestsList="
+				+ financialArrangementsDetailRequestsList + ", directorBackgroundDetailRequestsList="
+				+ directorBackgroundDetailRequestsList + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
+				+ ", subsectors=" + subsectors + ", costOfMachinery=" + costOfMachinery + ", incrementalTurnover="
+				+ incrementalTurnover + ", assessmentId=" + assessmentId + ", tenureRequired=" + tenureRequired
+				+ ", proposedDetailsOfUnit=" + proposedDetailsOfUnit + ", costOfProject=" + costOfProject
+				+ ", proposedOperationDate=" + proposedOperationDate + ", proposedConstitutionOfUnit="
+				+ proposedConstitutionOfUnit + ", promoterContribution=" + promoterContribution
+				+ ", totalAmtPercentage=" + totalAmtPercentage + ", stateId=" + stateId + ", cityId=" + cityId
+				+ ", proposedCost=" + proposedCost + ", commercialOperationDate=" + commercialOperationDate
+				+ ", factoryPremise=" + factoryPremise + ", knowHow=" + knowHow + ", competition=" + competition
+				+ ", loanAmt=" + loanAmt + ", costOfProjectStr=" + costOfProjectStr + ", collateralSecurityAmountStr="
+				+ collateralSecurityAmountStr + ", incrementalMargin=" + incrementalMargin + ", environmentalImpactId="
+				+ environmentalImpactId + ", actionId=" + actionId + ", turnOverPrevFinYear=" + turnOverPrevFinYear
+				+ ", turnOverCurrFinYearTillMonth=" + turnOverCurrFinYearTillMonth + ", projectedTurnOverCurrFinYear="
+				+ projectedTurnOverCurrFinYear + ", profitCurrFinYear=" + profitCurrFinYear
+				+ ", projectedProfitCurrFinYear=" + projectedProfitCurrFinYear + "]";
+	}
 }

@@ -1,9 +1,7 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -88,6 +86,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	private Integer subsectorlist;
 
 	public GuarantorsCorporateDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

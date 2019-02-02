@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +40,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 	private MonthlyTurnoverDetailRepository monthlyTurnoverDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest = (MonthlyTurnoverDetailRequest) MultipleJSONObjectHelper
@@ -64,15 +65,14 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save monthlyTurnoverDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception in save monthlyTurnoverDetail :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws Exception {
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws LoansException {
 		try {
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository
 					.listMonthlyTurnoverFromAppId(id,userId);
@@ -93,9 +93,8 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in get List monthlyTurnoverDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception in get List monthlyTurnoverDetail :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -122,7 +121,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 									+ cal.get(Calendar.YEAR)));
 				}
 			} else if (todayDate.compareTo(comparisonDate) <= 0) {
-				System.out.println("Comparison Date is before Today's Date");
+				logger.info("Comparison Date is before Today's Date");
 				int year = cal.get(Calendar.YEAR);
 				cal.set(year, currentMonth - 2, currentDate);
 				for (int i = 0; i < 12; i++) {
@@ -134,7 +133,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 			}
 
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("Exception in getList : ",e);
 		}
 		return yearList;
 	}

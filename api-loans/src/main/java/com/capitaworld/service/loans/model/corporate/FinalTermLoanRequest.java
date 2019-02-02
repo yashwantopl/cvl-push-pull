@@ -93,6 +93,7 @@ public class FinalTermLoanRequest implements Serializable {
 	private Boolean isFinalMcqFilled;
 	
 	public FinalTermLoanRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
@@ -534,10 +535,6 @@ public class FinalTermLoanRequest implements Serializable {
 
 	public void setNumberOfLc(Integer numberOfLc) {
 		this.numberOfLc = numberOfLc;
-	}
-
-	public Boolean getWhetherTechnologyIsTied() {
-		return whetherTechnologyIsTied;
 	}
 
 	public Integer getUnhedgedForeignCurrency() {

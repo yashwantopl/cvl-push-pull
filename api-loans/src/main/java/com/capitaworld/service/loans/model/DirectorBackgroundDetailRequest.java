@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -142,6 +143,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	}
 
 	public DirectorBackgroundDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
@@ -336,10 +338,6 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.shareholding = shareholding;
 	}
 
-	public Boolean getFamilyMemberInBusiness() {
-		return isFamilyMemberInBusiness;
-	}
-
 	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
 		isFamilyMemberInBusiness = familyMemberInBusiness;
 	}
@@ -376,32 +374,16 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.isOneFormCompleted = isOneFormCompleted;
 	}
 
-	public Boolean getItrCompleted() {
-		return isItrCompleted;
-	}
-
 	public void setItrCompleted(Boolean itrCompleted) {
 		isItrCompleted = itrCompleted;
-	}
-
-	public Boolean getCibilCompleted() {
-		return isCibilCompleted;
 	}
 
 	public void setCibilCompleted(Boolean cibilCompleted) {
 		isCibilCompleted = cibilCompleted;
 	}
 
-	public Boolean getBankStatementCompleted() {
-		return isBankStatementCompleted;
-	}
-
 	public void setBankStatementCompleted(Boolean bankStatementCompleted) {
 		isBankStatementCompleted = bankStatementCompleted;
-	}
-
-	public Boolean getOneFormCompleted() {
-		return isOneFormCompleted;
 	}
 
 	public void setOneFormCompleted(Boolean oneFormCompleted) {
@@ -708,17 +690,23 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				'}';
 	}
 
-	public static void printFields(Object obj) throws Exception {
-        Field[] fields = DirectorBackgroundDetailRequest.class.getDeclaredFields();
-        
-        for(Field field : fields) {
-            Object value = field.get(obj);
-            if(value instanceof String){
-             String a = value.toString().replaceAll("&", "&amp;");
-             value = a;
-             field.set(obj, value);
-            }
-        }
+	public static void printFields(Object obj) throws LoansException {
+		try {
+			Field[] fields = DirectorBackgroundDetailRequest.class.getDeclaredFields();
+
+			for(Field field : fields) {
+				Object value = field.get(obj);
+				if(value instanceof String){
+					String a = value.toString().replaceAll("&", "&amp;");
+					value = a;
+					field.set(obj, value);
+				}
+			}
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
     }
 	
 

@@ -83,6 +83,7 @@ public class FinalCarLoanDetail implements Serializable {
 	private Double vehicleCost;
 
 	public FinalCarLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

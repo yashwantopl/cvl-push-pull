@@ -32,7 +32,6 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
-import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
@@ -49,6 +48,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
@@ -92,6 +92,7 @@ import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.SpouseDetailMst;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -112,6 +113,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporatePrimaryViewServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -184,8 +186,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
+	
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@Override
@@ -195,11 +199,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = loanApplicationMaster.getUserId();
-
+		
 		corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
+		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			     // teaser
 				// view
 				// viwed by
 				// fund
@@ -211,22 +216,25 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					usersRequest.setId(fundProviderUserId);
 					UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId = userResponse.getId();
+					
 				} catch (Exception e) {
-					logger.error(
-							"error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
-					e.printStackTrace();
+					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
+					
+				
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
 					matchRequest.setProductId(fpProductMappingId);
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					corporatePrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+				
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
 		}
+		
+	
 
 		// get details of CorporateApplicantDetail
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -256,7 +264,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						corporatePrimaryViewResponse.setEstablishmentYear("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -278,7 +286,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						corporatePrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -299,7 +307,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						corporatePrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -321,7 +329,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						corporatePrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -341,7 +349,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						corporatePrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// set country
@@ -362,7 +370,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						corporatePrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -382,7 +390,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						corporatePrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -403,7 +411,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -435,8 +443,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					corporatePrimaryViewResponse.setKeyVericalSector("NA");
 				}
 			} catch (Exception e) {
-				// System.o
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 			// key vertical Subsector
@@ -447,8 +454,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					corporatePrimaryViewResponse.setKeyVericalSubsector((String) oneFormResponse.getData());
 				}
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.warn("error while getting key vertical sub-sector");
+				logger.error("error while getting key vertical sub-sector : ",e);
 			}
 
 		}
@@ -514,7 +520,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				corporatePrimaryViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? simpleDateFormat.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 			
 			// other Details
@@ -564,7 +570,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 								pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
@@ -607,7 +613,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorBackgroundDetailResponse.setNationality("NA");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				
@@ -630,11 +636,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						directorPersonalDetailResponse.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
 						
 						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
-						
-						
 						}
 						else {
-							
 							logger.warn("directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() is null....");
 						}
 					}else {
@@ -642,9 +645,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					}
 					
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.warn("----:::::: error while get is main dir details ::::::-----For-----",toApplicationId);
-					// TODO: handle exception
+					logger.error("----:::::: error while get is main dir details ::::::-----For-----",toApplicationId + CommonUtils.EXCEPTION + e);
 				}
 			}
 			
@@ -683,6 +684,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
+		
+		/*get personal loan obligation od dir*/
+		
+		Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(toApplicationId);
+		corporatePrimaryViewResponse.setLoanObligation(loanObligation!= null ? loanObligation : 0);
+		
 
 		Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
 
@@ -690,7 +697,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination);
 
-			System.out.println("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
+			logger.info("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -913,8 +920,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setFinancialInputRequest(financialInputRequest);
 
 		} catch (Exception e) {
-			logger.error("Error From Irr Side While Calculate Financial data .....");
-			e.printStackTrace();
+			logger.error("Error From Irr Side While Calculate Financial data .....",e);
 		}
 
 		// itr xml isUpload or Online check
@@ -923,13 +929,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			if (itrConnectionResponse != null) {
 				corporatePrimaryViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
 			} else {
-				System.out.println("itr Response is null");
+				logger.info("itr Response is null");
 
 			}
 
 		} catch (Exception e) {
-			System.out.println("error while itr xml is uploaded or not check.");
-			e.printStackTrace();
+			logger.error("error while itr xml is uploaded or not check : ",e);
 		}
 
 		// bank statement data
@@ -953,8 +958,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			// corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
 			// corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}
 
 		// scoring Data
@@ -964,9 +968,17 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(fundProviderUserId);
 			UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
-			fpProductMappingId = userResponse.getId();
+			if(userResponse != null && userResponse.getId() != null) {
+			
+				fpProductMappingId = userResponse.getId();
+				
+			}else {
+				
+				logger.info("fpProduuct MappingId is Null..");
+			}
+			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		ScoringRequest scoringRequest = new ScoringRequest();
 		scoringRequest.setApplicationId(toApplicationId);
@@ -981,6 +993,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 				corporatePrimaryViewResponse.setDataList(scoringResponse.getDataList());
+				corporatePrimaryViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName() != null ? proposalScoreResponse.getScoringModelName() : "-");
 				corporatePrimaryViewResponse.setManagementRiskScore(proposalScoreResponse.getManagementRiskScore());
 				corporatePrimaryViewResponse.setFinancialRiskScore(proposalScoreResponse.getFinancialRiskScore());
 				corporatePrimaryViewResponse.setBuisnessRiskScore(proposalScoreResponse.getBusinessRiskScore());
@@ -1021,88 +1034,97 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryViewResponse.setProportionateScore(proposalScoreResponse.getProportionateScore());
 				corporatePrimaryViewResponse.setProportionateScoreFS(proposalScoreResponse.getProportionateScoreFS());
 
-				System.out.println("complete");
+				logger.info("complete");
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
 			} 
 		} catch (ScoringException | IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 
 		// Eligibility Data
-
-		int loanId = primaryCorporateDetail.getProductId();
-		switch (loanId) {
-		case 1:
-
-			WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
-			if (workingCapitalPara.getAssessmentMethodId() != null) {
-				Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
-				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-			} else {
-				System.out.println("assesment id is null in wc");
-			}
-			break;
-		case 2:
-
-			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
-			if (termLoanParameter.getAssessmentMethodId() != null) {
-				Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-			} else {
-				System.out.println("assesment id is null tl");
-			}
-			break;
-
-		case 16:
-
-			WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
-			if (wctlPara.getAssessmentMethodId() != null) {
-				Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
-				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-			} else {
-				System.out.println("assesment id is null in wctl");
-			}
-			break;
-		default:
-			System.out.println("invalid loan id");
-			break;
-		}
-
-		EligibililityRequest eligibilityReq = new EligibililityRequest();
-		eligibilityReq.setApplicationId(toApplicationId);
-		// eligibilityReq.set
-		eligibilityReq.setFpProductMappingId(fpProductMappingId);
-		System.out.println(" for eligibility appid============>>" + toApplicationId);
-
+		
+		
 		try {
+		
+			int loanId = primaryCorporateDetail.getProductId();
+			switch (loanId) {
+			case 1:
 
-			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-			corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+				WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
+				if (workingCapitalPara.getAssessmentMethodId() != null) {
+					Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
+					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+				} else {
+					logger.info("assesment id is null in wc");
+				}
+				break;
+			case 2:
 
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// CGTMSE
-		try {
+				TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
+				if (termLoanParameter.getAssessmentMethodId() != null) {
+					Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+				} else {
+					logger.info("assesment id is null tl");
+				}
+				break;
 
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
+			case 16:
 
-			corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
+				WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
+				if (wctlPara.getAssessmentMethodId() != null) {
+					Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
+					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+				} else {
+					logger.info("assesment id is null in wctl");
+				}
+				break;
+			default:
+				logger.info("invalid loan id");
+				break;
+			}
 
+			EligibililityRequest eligibilityReq = new EligibililityRequest();
+			eligibilityReq.setApplicationId(toApplicationId);
+			// eligibilityReq.set
+			eligibilityReq.setFpProductMappingId(fpProductMappingId);
+			logger.info(" for eligibility appid============>>" + toApplicationId);
+
+			try {
+
+				EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+				corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+
+			} catch (Exception e1) {
+				logger.error(CommonUtils.EXCEPTION,e1);
+			}
+
+
+			/*loan eligibility financial year  */
+			corporatePrimaryViewResponse.setEligibilityFinancialYear(CommonUtils.getFinancialYear());
+
+			// CGTMSE
+			try {
+
+				CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
+
+				corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
+
+			} catch (Exception e) {
+				logger.error("Error while calling CGTMSE data : ",e);
+			}
+			
 		} catch (Exception e) {
-			
-			logger.error("Error while calling CGTMSE data");
-			e.printStackTrace();
-			
+			logger.error("FpProductId is null : ",e);
 		}
+
+		
 
 		// MCA DATA
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
-			System.out.println("mca comp id==>>" + companyId);
+			logger.info("mca comp id==>>" + companyId);
 
 			if (companyId != null) {
 
@@ -1123,12 +1145,19 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
+				
+				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				if(mcaFinancialAndDetailsRes.getData()!=null) {
+					corporatePrimaryViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
+				}else {
+					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
+				}*/
 			} else {
 				logger.warn("Mca Company Id is Null");
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// Name As Per
@@ -1145,30 +1174,34 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 
 		} catch (Exception e) {
-			logger.warn(":::::::::::---------Error while fetching name as per itr----------:::::::::::");
-			e.printStackTrace();
+			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
 
 		// Gst Data
 
 		try {
-			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
-			if (response != null) {
-				corporatePrimaryViewResponse.setGstData(response);
-			} else {
+			
+			if(corporateApplicantDetail.getGstIn()!= null) {
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				if (response != null) {
+					corporatePrimaryViewResponse.setGstData(response);
+				} else {
 
-				logger.warn("----------:::::::: Gst Response is null :::::::---------");
+					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
+				}
+			}else {
+				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}
+			
 
 		} catch (Exception e) {
-			logger.warn(":::::::------Error while calling gstData---:::::::");
-			e.printStackTrace();
+			logger.error(":::::::------Error while calling gstData---:::::::",e);
 		}
 
 		// Fraud Detection Data
 
-		try {
+		/*try {
 			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
 
 			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
@@ -1177,11 +1210,24 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 			}
 		} catch (Exception e1) {
-
-			logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
-					toApplicationId);
-			e1.printStackTrace();
+			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----" + toApplicationId + CommonUtils.EXCEPTION + e1);
+		}*/
+		
+		
+		// Product Name
+		
+		if(fpProductMappingId != null) {
+			String productName = productMasterRepository.getFpProductName(fpProductMappingId);
+			if(productName != null) {
+				corporatePrimaryViewResponse.setFpProductName(productName);	
+			}else {
+				logger.info("product name is null..");
+			}
+		}else {
+			logger.info("fpProductMapping id is null..");
 		}
+
+
 		
 		// address
 		
@@ -1198,8 +1244,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					pindata.getTaluka();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
 				
@@ -1207,8 +1252,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-				// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 			}	
 			
 		
@@ -1228,8 +1272,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							pindata.getTaluka();
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
-						// TODO: handle exception
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
 						
@@ -1237,8 +1280,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
-						// TODO: handle exception
+					logger.error(CommonUtils.EXCEPTION,e);
 					}	
 		
 
@@ -1251,64 +1293,64 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporatePrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporatePrimaryViewResponse.setBankStatement(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_MSME_COMPANY);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporatePrimaryViewResponse.setCibilReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_HUF_COMMERCIAL);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporatePrimaryViewResponse.setHufReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporatePrimaryViewResponse.setIrtPdfReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		// documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
-		// try {
-		// DocumentResponse documentResponse =
-		// dmsClient.listProductDocument(documentRequest);
-		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
-		// } catch (DocumentException e) {
-		// e.printStackTrace();
-		// }
-		// List<Long> ids=new ArrayList<>();
-		// ids.add(354l);
-		// ids.add(358l);
-		// ids.add(365l);
-		// ids.add(406l);
-		// ZipRequest zipRequest=new ZipRequest();
-		// zipRequest.setApplicationId(toApplicationId);
-		// zipRequest.setProductDocumentMappingIds(ids);
-		// try {
-		// DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
-		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
-		// } catch (DocumentException e) {
-		// e.printStackTrace();
-		// }
+		/* documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
+		   try {
+		   DocumentResponse documentResponse =
+		   dmsClient.listProductDocument(documentRequest);
+		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
+		   } catch (DocumentException e) {
+		   logger.error(CommonUtils.EXCEPTION,e);
+		   }
+		   List<Long> ids=new ArrayList<>();
+		   ids.add(354l);
+		   ids.add(358l);
+		   ids.add(365l);
+		   ids.add(406l);
+		   ZipRequest zipRequest=new ZipRequest();
+		   zipRequest.setApplicationId(toApplicationId);
+		   zipRequest.setProductDocumentMappingIds(ids);
+		   try {
+		   DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
+		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
+		   } catch (DocumentException e) {
+		   logger.error(CommonUtils.EXCEPTION,e);
+		   } */
 
 		return corporatePrimaryViewResponse;
 	}
 
 	public String convertValue(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value).toString() : "0";
+		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 	private LoanApplicationService loanApplicationService;
 
 	@Override
-	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getClientId()) ? userId : finalHomeLoanDetailRequest.getClientId());
 			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository
@@ -56,10 +57,14 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 				finalHomeLoanDetail.setModifiedBy(userId);
 				finalHomeLoanDetail.setModifiedDate(new Date());
 			}
-			String[] corporate = new String[CommonUtils.IgnorableCopy.CORPORATE.length + 1];
-			corporate[CommonUtils.IgnorableCopy.CORPORATE.length] = CommonUtils.IgnorableCopy.ID;
+			String[] corporate = new String[CommonUtils.IgnorableCopy.getCORPORATE().length + 1];
+			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
 			BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetail,corporate);
 			finalHomeLoanDetail = finalHomeLoanDetailRepository.save(finalHomeLoanDetail);
+
+			if (finalHomeLoanDetail != null){
+				logger.info("finalHomeLoanDetail is saved successfully");
+			}
 			
 			//setting Flag to DB
 			if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getIsFinalInformationFilled())){
@@ -71,14 +76,13 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			loanApplicationRepository.setFinalFilledCount(finalHomeLoanDetailRequest.getApplicationId(), finalUserId,finalHomeLoanDetailRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Home Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Saving Final Home Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalHomeLoanDetailRequest get(Long applicationId, Long userId) throws Exception {
+	public FinalHomeLoanDetailRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			FinalHomeLoanDetail loanDetail = finalHomeLoanDetailRepository.getByApplicationAndUserId(applicationId,
 					userId);
@@ -98,9 +102,8 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			finalHomeLoanDetailRequest.setFinalFilledCount(loanDetail.getApplicationId().getFinalFilledCount());
 			return finalHomeLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Home Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Final Home Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

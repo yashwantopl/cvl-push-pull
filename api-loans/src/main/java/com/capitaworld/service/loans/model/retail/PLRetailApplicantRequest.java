@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.model.retail;
 
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -77,7 +76,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long addressState;
 
     public PLRetailApplicantRequest() {
-
+        // Do nothing because of X and Y.
     }
 
     public Long getId() {

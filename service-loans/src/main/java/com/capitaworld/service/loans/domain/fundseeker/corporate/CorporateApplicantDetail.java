@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
 
 /**
  * The persistent class for the fs_corporate_applicant_details database table.
@@ -125,7 +127,9 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name = "website_address")
 	private String websiteAddress;
 
+	@Convert(converter=EncryptionUtils.class)
 	@Column(name = "pan")
+	
 	private String panNo;
 
 	@Column(name = "gstin")
@@ -195,8 +199,24 @@ public class CorporateApplicantDetail implements Serializable {
 
 	@Column(name = "environmental_impact_id")
 	private Long environmentalImpactId;
+	
+    @Column(name = "is_gst_completed")
+    private Boolean isGstCompleted;
+    
+    @Column(name = "is_itr_completed")
+    private Boolean isItrCompleted;
+    
+    private String remarks;
+    
+    @Column(name="business_since_year")
+    private Integer businessSinceYear;
+    
+    @Column(name="business_since_month")
+    private Integer businessSinceMonth;
+    
 
 	public CorporateApplicantDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
@@ -647,4 +667,47 @@ public class CorporateApplicantDetail implements Serializable {
 	public void setEnvironmentalImpactId(Long environmentalImpactId) {
 		this.environmentalImpactId = environmentalImpactId;
 	}
+
+	public Boolean getIsGstCompleted() {
+		return isGstCompleted;
+	}
+
+	public void setIsGstCompleted(Boolean isGstCompleted) {
+		this.isGstCompleted = isGstCompleted;
+	}
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public Integer getBusinessSinceYear() {
+		return businessSinceYear;
+	}
+
+	public Integer getBusinessSinceMonth() {
+		return businessSinceMonth;
+	}
+
+	public void setBusinessSinceYear(Integer businessSinceYear) {
+		this.businessSinceYear = businessSinceYear;
+	}
+
+	public void setBusinessSinceMonth(Integer businessSinceMonth) {
+		this.businessSinceMonth = businessSinceMonth;
+	}
+
+	
+	
 }

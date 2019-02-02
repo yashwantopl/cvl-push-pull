@@ -28,12 +28,6 @@ public class LasLoanParameterController {
 	@Autowired
 	private LasLoanParameterService lasLoanParameterService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody LasParameterRequest  lasParameterRequest,HttpServletRequest request) {
 		// request must not be null
@@ -42,7 +36,7 @@ public class LasLoanParameterController {
 			logger.warn("lasParameterRequest Object can not be empty ==>", lasParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 
@@ -51,19 +45,18 @@ public class LasLoanParameterController {
 			logger.warn("lasParameterRequest id can not be empty ==>", lasParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		//Long userId=1755l;
 		if(userId==null)
 		{
 			logger.warn("userId  id can not be empty ==>", userId);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		lasParameterRequest.setUserId(userId);
@@ -107,7 +100,6 @@ public class LasLoanParameterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting las Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

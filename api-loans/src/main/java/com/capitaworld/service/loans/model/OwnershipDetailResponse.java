@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -43,16 +44,21 @@ public class OwnershipDetailResponse implements Serializable{
         this.stackPercentage = stackPercentage;
     }
     
-    public static void printFields(Object obj) throws Exception {
-        Field[] fields = OwnershipDetailResponse.class.getDeclaredFields();
-        
-        for(Field field : fields) {
-            Object value = field.get(obj);
-            if(value instanceof String){
-             String a = value.toString().replaceAll("&", "&amp;");
-             value = a;
-             field.set(obj, value);
+    public static void printFields(Object obj) throws LoansException {
+        try {
+            Field[] fields = OwnershipDetailResponse.class.getDeclaredFields();
+
+            for(Field field : fields) {
+                Object value = field.get(obj);
+                if(value instanceof String){
+                    String a = value.toString().replaceAll("&", "&amp;");
+                    value = a;
+                    field.set(obj, value);
+                }
             }
+        }
+        catch (Exception e){
+            throw new LoansException(e);
         }
     }
 }

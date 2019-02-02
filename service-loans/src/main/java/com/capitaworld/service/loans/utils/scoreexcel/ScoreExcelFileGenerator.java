@@ -38,7 +38,7 @@ public class ScoreExcelFileGenerator {
 
 	 private String SCORE_CALCULATION_RESULT = "cw.loan.score.result.location";
 
-	private FormulaEvaluator evaluator;
+//	private FormulaEvaluator evaluator;
 
 	private final Logger logger = LoggerFactory.getLogger(ScoreExcelFileGenerator.class);
 
@@ -92,7 +92,7 @@ public class ScoreExcelFileGenerator {
 			    
 			    XSSFCellStyle style4 =  wb.createCellStyle();
 			    style4.setBorderTop(HSSFCellStyle.BORDER_THICK);
-				System.out.println(sheet.getSheetName());
+				logger.info(sheet.getSheetName());
 				List<Map<String, Object>> listData=null;
 				int i=1,j=0;
 				ProposalScoreDetailResponse proposalScoreDetailResponse =null;
@@ -104,7 +104,7 @@ public class ScoreExcelFileGenerator {
 			    	sheet.createRow(--i).createCell(0).setCellStyle(style0);
 			    	sheet.getRow(i).getCell(0).setCellValue("TEST ID");
 			    	
-			    	sheet.getRow(i).createCell(1).setCellStyle(style0);;
+			    	sheet.getRow(i).createCell(1).setCellStyle(style0);
 			    	sheet.getRow(i).getCell(1).setCellValue("PARAMETER NAME");
 			    	
 			    	sheet.getRow(i).createCell(2).setCellStyle(style0);
@@ -264,6 +264,7 @@ public class ScoreExcelFileGenerator {
  			    			sheet.getRow(i).createCell(1).setCellStyle(style1);
 		    				sheet.getRow(i).getCell(1).setCellValue("Credit Summation");
 		    				break;
+		    			default : break;
 		    		}
  			    		 sheet.getRow(i).createCell(2).setCellStyle(style2);
 			    		 sheet.getRow(i).getCell(2).setCellValue(proposalScoreDetailResponse.getParameterOption());
@@ -280,8 +281,6 @@ public class ScoreExcelFileGenerator {
 			    logger.info("--------------------- writing scoring list in excel complete -------------");
 				
 			} catch (NullPointerException | IllegalStateException | IOException | InvalidFormatException e) {
-				
-				e.printStackTrace();
 				logger.error("-----------------Exception while write data in excel ------------- message" + e.getMessage() );
 				throw new LoansException("Exception when write data in Excel File");
 			}

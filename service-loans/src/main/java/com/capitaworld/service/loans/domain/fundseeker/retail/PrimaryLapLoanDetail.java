@@ -80,6 +80,7 @@ public class PrimaryLapLoanDetail extends LoanApplicationMaster implements Seria
 	private Double propertyValue;
 
 	public PrimaryLapLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	

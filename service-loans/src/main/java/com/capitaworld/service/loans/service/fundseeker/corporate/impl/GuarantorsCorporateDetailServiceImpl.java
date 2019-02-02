@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +35,7 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 	private GuarantorsCorporateDetailRepository guarantorsCorporateDetailRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest = (GuarantorsCorporateDetailRequest) MultipleJSONObjectHelper
@@ -59,15 +60,14 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save GuarantorDetails  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save GuarantorDetails  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id,Long userId) throws Exception {
+	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id,Long userId) throws LoansException {
 		try {
 			List<GuarantorsCorporateDetail> guarantorsCorporateDetail = guarantorsCorporateDetailRepository
 					.listGuarantorsCorporateFromAppId(id,userId);
@@ -82,9 +82,8 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in get Guarantor Details :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.info("Exception  in get Guarantor Details :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

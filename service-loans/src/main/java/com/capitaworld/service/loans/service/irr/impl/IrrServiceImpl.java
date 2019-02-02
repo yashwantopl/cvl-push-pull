@@ -1,14 +1,13 @@
 package com.capitaworld.service.loans.service.irr.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
-import com.capitaworld.service.loans.service.scoring.impl.ScoringServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -104,10 +101,16 @@ public class IrrServiceImpl implements IrrService{
 	private CreditRatingCompanyDetailsRepository creditRatingCompanyDetailsRepository;
 	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
+
+	private static final String ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM = "error while getting irr id from one form : ";
+	private static final String SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES = "Something went wrong please try again after some times";
+	private static final String OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION = "operatingStatementDetails.getDepreciation()::";
+	private static final String MSG_APP_ID = "App Id::";
+	private static final String MSG_CURRENT_YEAR_1 = " currentYear-1::";
 	
 	@Override
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
-		// TODO Auto-generated method stub
+
 		Integer businessTypeId=null; // get from irr-cw industry mapping
 		//businessTypeId=3;   // temp
 		Double industryRiskScore=0.0;
@@ -129,9 +132,10 @@ public class IrrServiceImpl implements IrrService{
 			}else{
 				denom = 1L;
 			}
-			
-			userId=applicationMaster.getUserId();
-			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
+
+			log.trace("User ID : "+userId);
+			Long user_id = applicationMaster.getUserId();
+			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(user_id,appId.longValue());
 			
 			if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
 			{
@@ -154,18 +158,17 @@ public class IrrServiceImpl implements IrrService{
 				
 				if(irrId==null)
 				{
-					log.error("error while getting irr id from one form");
+					log.error(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM);
 					return new ResponseEntity<RatingResponse>(
-							new RatingResponse("error while getting irr id from one form", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+							new RatingResponse(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 				
 			} catch (Exception e) {
-				// TODO: handle exception
-				log.error("error while getting irr id from one form");
-				e.printStackTrace();
+
+				log.error(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM,e);
 				
 				return new ResponseEntity<RatingResponse>(
-						new RatingResponse("error while getting irr id from one form", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new RatingResponse(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				
 			}
 			
@@ -180,16 +183,14 @@ public class IrrServiceImpl implements IrrService{
 								{
 									log.info("Error while getting irr id from rating");	
 									return new ResponseEntity<RatingResponse>(
-											new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+											new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 								}
 										
 								businessTypeId=industryResponse.getBusinessTypeId();
 								industryRiskScore=industryResponse.getScore();
 								industry=industryResponse.getIndustry();
 							} catch (Exception e) {
-									// TODO: handle exception
-								log.error("error while getting irr industry detail from rating");
-								e.printStackTrace();
+								log.error("error while getting irr industry detail from rating : ",e);
 								
 								return new ResponseEntity<RatingResponse>(
 										new RatingResponse("error while getting irr industry detail from rating", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -200,59 +201,61 @@ public class IrrServiceImpl implements IrrService{
 			irrRequest.setApplicationId(appId);
 			irrRequest.setCompanyName(corporateApplicantDetail.getOrganisationName());
 			irrRequest.setBusinessTypeId(businessTypeId);
-			irrRequest.setUserId(userId);
-			
-			/*Boolean isCmaUploaded=isCMAUploaded(appId,applicationMaster.getProductId());
-			Boolean isCoActUploaded=isCoActUploaded(appId,applicationMaster.getProductId());*/
-			
+			irrRequest.setUserId(user_id);
+
 			Boolean isCmaUploaded=true;
 			Boolean isCoActUploaded=false;
-			
+
+			/*
+			Boolean isCmaUploaded=isCMAUploaded(appId,applicationMaster.getProductId());
+			Boolean isCoActUploaded=isCoActUploaded(appId,applicationMaster.getProductId());
+
 			if((false == isCmaUploaded) && (false == isCoActUploaded))
 			{
-				log.info("cma and coAct are not uploaded.");	
+				log.info("cma and coAct are not uploaded.");
 				return new ResponseEntity<RatingResponse>(
 						new RatingResponse("Upload either of CMA Or Company's Act in final section.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
+			} */
+
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId)
 			{
 				//---- Manufacturing
-				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, userId, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,industryRiskScore,denom));
+				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, user_id, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,industryRiskScore,denom));
 			}
 			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId)
 			{
 				//---- Service
-				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,denom));
+				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, user_id, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,denom));
 			}
 			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId)
 			{
 				//---- Trading
-				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId, applicationMaster.getProductId(),isCmaUploaded, isCoActUploaded, denom));
+				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, user_id, applicationMaster.getProductId(),isCmaUploaded, isCoActUploaded, denom));
 			}
-			
-		
-			
+
 			// if CMA filled
-			if(isCmaUploaded)			
-			irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId,appId,industry,denom));
+			if(isCmaUploaded) {
+				irrRequest.setFinancialInputRequest(cmaIrrMappingService(user_id, appId, industry, denom));
+			}
 			
 			/*// if coAct filled
 			if(isCoActUploaded)
-			irrRequest.setFinancialInputRequest(coActIrrMappingService(userId,appId,industry,denom));*/
+			irrRequest.setFinancialInputRequest(coActIrrMappingService(user_id,appId,industry,denom));*/
 			
 			
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			
-			log.info("Error while mapping irr request and qualitative input from db");	
+			log.error("Error while mapping irr request and qualitative input from db : ",e);
 			return new ResponseEntity<RatingResponse>(
-					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		
 		RatingResponse ratingResponse=new RatingResponse();
 		try {
-			 
+			
+			/*ObjectMapper mapper = new ObjectMapper();
+			mapper.writeValue(new File("e:\\file.json"), irrRequest); */
+			
 			 ratingResponse=ratingClient.calculateIrrRating(irrRequest);
 			 log.info("rating respo->"+ratingResponse.toString());
 			 //ratingResponse.setData(irrRequest);
@@ -261,17 +264,13 @@ public class IrrServiceImpl implements IrrService{
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse(ratingResponse,"Irr rating generated", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			
-			log.info("Error while callling rating client");	
+			log.error("Error while callling rating client : ",e);
 			return new ResponseEntity<RatingResponse>(
-					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 	}
 	
 	private Boolean isCMAUploaded(Long appId, Integer productId) {
-		// TODO Auto-generated method stub
 		
 		try{
 			
@@ -283,16 +282,16 @@ public class IrrServiceImpl implements IrrService{
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_CMA)).size()>0?true:false);
 			case UNSECURED_LOAN :
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CMA)).size()>0?true:false);
+			default : break;
 			}
 		}catch(DocumentException e){
-			e.printStackTrace();
+			log.error("Exception in isCMAUploaded : ",e);
 			return false;
 		}
 		return false;
 	}
 	
 	private Boolean isCoActUploaded(Long appId, Integer productId) {
-		// TODO Auto-generated method stub
 		
 		try{
 			
@@ -304,9 +303,10 @@ public class IrrServiceImpl implements IrrService{
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_COMPANY_ACT)).size()>0?true:false);
 			case UNSECURED_LOAN :
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COMPANY_ACT)).size()>0?true:false);
+			default : break;
 			}
 		}catch(DocumentException e){
-			e.printStackTrace();
+			log.error("Exception in isCoActUploaded : ",e);
 			return false;
 		}
 		return false;
@@ -315,17 +315,17 @@ public class IrrServiceImpl implements IrrService{
 	
 	
 	@Override
-	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws Exception {
-		// TODO Auto-generated method stub
+	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws LoansException {
+
 		//JSONObject jSONObject = new JSONObject();
 		log.info("APPLICATION ID:::"+aplicationId);
 		log.info("DENO::"+denom);
 		IrrRequest irrRequest = new IrrRequest();
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
-		OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
-		LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
-		AssetsDetails assetsDetails = new AssetsDetails();
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		OperatingStatementDetails operatingStatementDetails;
+		LiabilitiesDetails liabilitiesDetails;
+		AssetsDetails assetsDetails;
+		CorporateFinalInfoRequest  corporateFinalInfoRequest;
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
@@ -337,8 +337,8 @@ public class IrrServiceImpl implements IrrService{
 
 		financialInputRequest.setShareFaceValue(shareFaceVal);
 
-		LoanApplicationMaster applicationMaster = null;
-		/*applicationMaster = loanApplicationRepository.findOne(aplicationId);
+		/* LoanApplicationMaster applicationMaster = null;
+		applicationMaster = loanApplicationRepository.findOne(aplicationId);
 		LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -377,11 +377,7 @@ public class IrrServiceImpl implements IrrService{
 			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
 			if(operatingStatementDetails != null) {
 				
-				log.info("App Id::"+aplicationId);
-				log.info("currentYear-1::"+(currentYear-1));
-				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
-
-
+				log.info(MSG_APP_ID + aplicationId + MSG_CURRENT_YEAR_1 + (currentYear-1) + OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION+operatingStatementDetails.getDepreciation());
 
 				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 					operatingStatementDetails = new OperatingStatementDetails();
@@ -476,10 +472,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			
-			log.error("error while calculate first year financial data OS");
-			e.printStackTrace();
-			
+			log.error("error while calculate first year financial data OS : ",e);
 		}
 		
 
@@ -706,10 +699,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-				
-			log.error("error while getting first year asset details");
-			e.printStackTrace();
-			
+			log.error("error while getting first year asset details : ",e);
 		}
 		
 		
@@ -722,9 +712,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			if(operatingStatementDetails != null) {
 				
-				log.info("App Id::"+aplicationId);
-				log.info("currentYear-1::"+(currentYear-1));
-				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+				log.info(MSG_APP_ID+aplicationId + MSG_CURRENT_YEAR_1+(currentYear-1) + OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION+operatingStatementDetails.getDepreciation() );
 				
 				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 					operatingStatementDetails = new OperatingStatementDetails();
@@ -820,8 +808,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-				log.error("error while fetching second year operating data");
-				e.printStackTrace();
+				log.error("error while fetching second year operating data : ",e);
 		}
 		
 		
@@ -937,8 +924,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-			log.error("error while fetching 2nd year liability data ");
-			e.printStackTrace();
+			log.error("error while fetching 2nd year liability data : ",e);
 		}
 		
 		
@@ -1037,18 +1023,19 @@ public class IrrServiceImpl implements IrrService{
 				financialInputRequest.setOtherIncomeNeedTocCheckAssetSy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
 				// -----CONTIGENT LIABILITIES
 				if(corporateFinalInfoRequest == null)
+				{
 					financialInputRequest.setContingentLiablitiesSy(null);
-				else
-				financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
-				
+				}
+				else {
+					financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
+				}
 				
 			}else {
 				log.error("2nd year asset data is null");
 			}
 			
 		} catch (Exception e) {
-			log.error("error while fetching 2nd year data asset");
-			e.printStackTrace();
+			log.error("error while fetching 2nd year data asset : ",e);
 		}
 		
 		
@@ -1065,10 +1052,9 @@ public class IrrServiceImpl implements IrrService{
 			
 			if(operatingStatementDetails != null) {
 				
-				log.info("App Id::"+aplicationId);
-				log.info("currentYear-1::"+(currentYear-1));
+				log.info(MSG_APP_ID+ aplicationId + MSG_CURRENT_YEAR_1 +(currentYear-1));
 				if(operatingStatementDetails!=null) {
-				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+				log.info(OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION+operatingStatementDetails.getDepreciation());
 				}else {
 					log.info("operatingStatementDetails is:: NULL");
 				}
@@ -1170,8 +1156,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			log.error("error while fetching os data");
-			e.printStackTrace();
+			log.error("error while fetching os data : ",e);
 		}
 		
 		
@@ -1284,8 +1269,7 @@ public class IrrServiceImpl implements IrrService{
 					}
 					
 				} catch (Exception e) {
-					log.error("error while fetching liability data");
-					e.printStackTrace();
+					log.error("error while fetching liability data : ",e);
 				}
 				
 				
@@ -1395,8 +1379,7 @@ public class IrrServiceImpl implements IrrService{
 					}
 					
 				} catch (Exception e) {
-					log.error("error while fetching asset data");
-					e.printStackTrace();
+					log.error("error while fetching asset data : ",e);
 				}
 				
 				
@@ -1419,22 +1402,19 @@ public class IrrServiceImpl implements IrrService{
 		log.info("financialInputRequest.getPowerAndFuelCostSy()::"+financialInputRequest.getPowerAndFuelCostSy());
 		log.info("financialInputRequest.getPowerAndFuelCostTy()::"+financialInputRequest.getPowerAndFuelCostTy());
 
-		log.info("");
-
 		return financialInputRequest;
 	}
 
 	@Override
-	public FinancialInputRequest coActIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws Exception {
-		// TODO Auto-generated method stub
+	public FinancialInputRequest coActIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws LoansException {
+
 		//JSONObject jSONObject = new JSONObject();
-		IrrRequest irrRequest = new IrrRequest();
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
-		ProfitibilityStatementDetail profitibilityStatementDetail = new ProfitibilityStatementDetail();
-		BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
+		ProfitibilityStatementDetail profitibilityStatementDetail;
+		BalanceSheetDetail balanceSheetDetail;
 		int currentYear = scoringService.getFinYear(aplicationId);
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
-		CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId, aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
@@ -2244,9 +2224,8 @@ public class IrrServiceImpl implements IrrService{
 	
 	@Override
 	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom)
-			throws Exception {
-		// TODO Auto-generated method stub
-		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
+			throws LoansException {
+
 
 		return setQualitativeInputManu(aplicationId,productId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
@@ -2265,7 +2244,7 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Integer productId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws Exception{
+	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Integer productId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws LoansException{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
 
 		CorporateMcqDetail corporateMcqDetail = null;
@@ -2294,7 +2273,7 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setSensititivityAnalysis(corporateMcqDetail.getSensititivityAnalysis().longValue());
 		qualitativeInputSheetManuRequest.setInfrastructureAvailability(corporateMcqDetail.getInfrastructureAvailability().longValue());
 		qualitativeInputSheetManuRequest.setConstructionContract(corporateMcqDetail.getConstructionContract().longValue());
-		System.out.println("corporateMcqDetail.getConstructionContract():::::::::::::::::::::"+corporateMcqDetail.getConstructionContract());
+		log.info("corporateMcqDetail.getConstructionContract():::::::::::::::::::::"+corporateMcqDetail.getConstructionContract());
 		qualitativeInputSheetManuRequest.setDesignTechnologyRisk(corporateMcqDetail.getTechnologyRiskId().longValue());
 		qualitativeInputSheetManuRequest.setNumberCheckReturned(corporateMcqDetail.getNumberOfCheques().longValue());
 		qualitativeInputSheetManuRequest.setNumberTimesDpLimits(corporateMcqDetail.getNumberOfTimesDp().longValue());
@@ -2307,11 +2286,11 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setNumberOfLcBgIssuedInFavor(corporateMcqDetail.getNumberOfLc().longValue());
 
 		//---Contigent Liabilities set
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		CorporateFinalInfoRequest  corporateFinalInfoRequest;
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
-			AssetsDetails assetsDetails = new AssetsDetails();
+			AssetsDetails assetsDetails;
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);//-----formula based
@@ -2341,6 +2320,8 @@ public class IrrServiceImpl implements IrrService{
 				else
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
 
+				break;
+
 			}
 			case  WCTL_LOAN:
 			{
@@ -2357,11 +2338,16 @@ public class IrrServiceImpl implements IrrService{
 					qualitativeInputSheetManuRequest.setProjectSize(totalCostEstimate/totalAsset);//----- formula based
 				else
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+
+				break;
 			}
 			case  WORKING_CAPITAL:
 			{
 				qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+				break;
 			}
+
+			default : break;
 		}
 
 		return qualitativeInputSheetManuRequest;
@@ -2566,9 +2552,7 @@ public class IrrServiceImpl implements IrrService{
 	
 	@Override
 	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId,Long userId , Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom)
-			throws Exception {
-		// TODO Auto-generated method stub
-		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+			throws LoansException {
 
 		return setServiceQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
@@ -2582,7 +2566,7 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetServRequest setServiceQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom) throws Exception{
+	public QualitativeInputSheetServRequest setServiceQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom) throws LoansException{
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
 
 		CorporateMcqDetail corporateMcqDetail = null;
@@ -2614,11 +2598,11 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(corporateMcqDetail.getNumberOfLc().longValue());
 		
 		//---Contigent Liabilities set
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		CorporateFinalInfoRequest  corporateFinalInfoRequest;
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
-			AssetsDetails assetsDetails = new AssetsDetails();
+			AssetsDetails assetsDetails;
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetServRequest.setContingentLiabilities(0.0);//-----formula based
@@ -2728,9 +2712,7 @@ public class IrrServiceImpl implements IrrService{
 	
 	@Override
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom)
-			throws Exception {
-		// TODO Auto-generated method stub
-		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+			throws LoansException {
 
 		return setTradingQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
@@ -2744,7 +2726,7 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetTradRequest setTradingQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom) throws Exception{
+	public QualitativeInputSheetTradRequest setTradingQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom) throws LoansException{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
 		
 		CorporateMcqDetail corporateMcqDetail = null;
@@ -2776,11 +2758,11 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(corporateMcqDetail.getNumberOfLc().longValue());
 		
 		//---Contigent Liabilities set
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		CorporateFinalInfoRequest  corporateFinalInfoRequest;
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
-			AssetsDetails assetsDetails = new AssetsDetails();
+			AssetsDetails assetsDetails;
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);//-----formula based

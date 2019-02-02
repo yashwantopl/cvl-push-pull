@@ -3,7 +3,9 @@ package com.capitaworld.service.loans.service.teaser.finalview.impl;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
@@ -16,7 +18,6 @@ import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryV
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.PropertyUsedSubType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 	private RetailFinalCommonApplicantService finalCommonService;
 	
 	@Override
-	public HomeLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws Exception {
+	public HomeLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		HomeLoanFinalViewResponse homeLoanFinalViewResponse = new HomeLoanFinalViewResponse();
 		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
@@ -75,18 +76,19 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 			
 			//co-applicant final common details
 			try {
-				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
+				List<RetailFinalViewCommonResponse> retailFinalViewCommonResponses = coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
+				if (retailFinalViewCommonResponses != null && !retailFinalViewCommonResponses.isEmpty()) {
+					finalViewResponse.setCoApplicantCommonDetails(retailFinalViewCommonResponses);
+				}
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting CoApplicant final details");
+				logger.error("error while getting CoApplicant final details : ",e);
 			}
 			
 			//guarantor final common details
 			try {
 				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting Guarantor final details");
+				logger.error("error while getting Guarantor final details : ",e);
 			}
 			
 			homeLoanFinalViewResponse.setFinalViewResponse(finalViewResponse);
@@ -96,8 +98,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 			try { 
 				homeLoanFinalViewResponse.setHomeLoanPrimaryViewResponse(homeLoanPrimaryViewService.getHomeLoanPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting HL primary details");
+				logger.error("error while getting HL primary details : ",e);
 			}
 			
 			//Home Loan final details
@@ -123,7 +124,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     	homeLoanFinalViewResponse.setPropCity("-");
                     }
                 } catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -142,7 +143,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     	homeLoanFinalViewResponse.setPropCountry("-");
                     }
                 } catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentState = new ArrayList<Long>(1);
@@ -161,7 +162,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     	homeLoanFinalViewResponse.setPropState("-");
                     }
                 } catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
                 }
 				
 				homeLoanFinalViewResponse.setBuiltUpArea(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getBuiltUpArea()) ? finalHomeLoanDetails.getBuiltUpArea().toString() : null);
@@ -188,7 +189,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     	homeLoanFinalViewResponse.setSellerCity("-");
                     }
                 } catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
                 }
 				try {
                     List<Long> permanentState = new ArrayList<Long>(1);
@@ -207,7 +208,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     	homeLoanFinalViewResponse.setSellerState("-");
                     }
                 } catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
                 }
 				
 				try {
@@ -227,12 +228,11 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     	homeLoanFinalViewResponse.setSellerCountry("-");
                     }
                 } catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
                 }
 				
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting HL final details");
+				logger.error("error while getting HL final details : ",e);
 			}
 		}
 		return homeLoanFinalViewResponse;

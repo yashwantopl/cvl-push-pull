@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -40,7 +41,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	
 	@Override
-	public boolean saveOrUpdate(PrimaryCarLoanDetailRequest carLoanDetailRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryCarLoanDetailRequest carLoanDetailRequest, Long userId) throws LoansException {
 		// ID must not be null
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getClientId()) ? userId : carLoanDetailRequest.getClientId());
@@ -50,7 +51,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 				throw new NullPointerException("PrimaryCarLoanDetail not exist in DB with ID=>"
 						+ carLoanDetailRequest.getId() + " and User Id ==>" + userId);
 			}
-			BeanUtils.copyProperties(carLoanDetailRequest, primaryCarLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(carLoanDetailRequest, primaryCarLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			primaryCarLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getTenure()) ? null : (carLoanDetailRequest.getTenure() * 12));
 			primaryCarLoanDetail.setModifiedBy(userId);
 			primaryCarLoanDetail.setModifiedDate(new Date());
@@ -63,14 +64,13 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			saveNegativeList(primaryCarLoanDetail.getApplicationId().getId(), carLoanDetailRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while saving PrimaryCarLoan Details");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while saving PrimaryCarLoan Details : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
+
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -88,7 +88,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 	}
 	
 	@Override
-	public PrimaryCarLoanDetailRequest get(Long id, Long userId) throws Exception {
+	public PrimaryCarLoanDetailRequest get(Long id, Long userId) throws LoansException {
 		try {
 			PrimaryCarLoanDetail loanDetail = primaryCarLoanDetailRepository.getByApplicationAndUserId(id, userId);
 			if (loanDetail == null) {
@@ -104,9 +104,8 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			carLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return carLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Primary CarLoan Details");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Primary CarLoan Details : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

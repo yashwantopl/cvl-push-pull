@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -35,10 +36,10 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws Exception  {
+	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws LoansException {
 		if(CommonUtils.isObjectNullOrEmpty(appIncomeReq.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(appIncomeReq.getYear())) {
 			logger.info("ApplicationId or Year Null Or Empty !! ");
-			throw new Exception("ApplicationId or Year Null Or Empty");
+			throw new LoansException("ApplicationId or Year Null Or Empty");
 		}
 		try {
 			RetailApplicantIncomeDetail appIncomeDetail = null;
@@ -50,7 +51,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 						appIncomeReq.getYear(), true);
 			}
 			
-			if(CommonUtils.isObjectNullOrEmpty(appIncomeDetail)) {
+			if(appIncomeDetail == null || CommonUtils.isObjectNullOrEmpty(appIncomeDetail)) {
 				appIncomeDetail = new RetailApplicantIncomeDetail();
 				appIncomeDetail.setCreatedBy(appIncomeReq.getUserId());
 				appIncomeDetail.setCreatedDate(new Date());
@@ -72,15 +73,14 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeRepository.save(appIncomeDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("THROW EXCEPTION WHILE SAVE RETAIL APPLICANT INCOME DETAILS");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("THROW EXCEPTION WHILE SAVE RETAIL APPLICANT INCOME DETAILS : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
 	
 	@Override
-	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList) throws Exception{
+	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList) throws LoansException{
 		for(RetailApplicantIncomeRequest appIncomeReq : appIncomeReqList) {
 			if(!CommonUtils.isObjectNullOrEmpty(appIncomeReq)) {
 				save(appIncomeReq);
@@ -118,7 +118,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 
 
 	@Override
-	public Boolean saveOrUpdateIncomeDetailForGrossIncome(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdateIncomeDetailForGrossIncome(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				RetailApplicantIncomeRequest retailApplicantIncomeRequest = (RetailApplicantIncomeRequest) MultipleJSONObjectHelper
@@ -139,9 +139,8 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save Gross Income Detail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save Gross Income Detail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

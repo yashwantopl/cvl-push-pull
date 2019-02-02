@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.hibernate.annotations.ColumnTransformer;
+
 
 @Entity
 @Table(name = "bank_cw_audit_trail")
@@ -30,6 +32,7 @@ public class BankCWAuditTrailDomain implements Serializable {
 	private Long applicationId;
 
 	@Column(name = "bank_request")
+	@ColumnTransformer(read = "UNCOMPRESS(bank_request)", write = "COMPRESS(?)")
 	private String bankRequest;
 
 	@Column(name = "cw_response")

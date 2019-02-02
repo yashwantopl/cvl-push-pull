@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -44,6 +45,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	private static final Logger logger = LoggerFactory.getLogger(RetailApplicantServiceImpl.class.getName());
 
+	private static final String ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG = "Error while Saving Retail Profile :- ";
+
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
 	
@@ -72,7 +75,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 
 	@Override
-	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
+	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws LoansException {
 
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
@@ -90,7 +93,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailFinal());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
 					&& applicantRequest.getYear() != null) {
@@ -107,6 +110,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setBusinessStartDate(businessStartDate);
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
+
+			if (applicantDetail != null){
+				logger.info("applicantDetail is saved successfully");
+			}
+
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
 			}
@@ -125,14 +133,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
 	@Override
-	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws Exception {
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(), true);
 			if (applicantDetail != null) {
@@ -145,7 +152,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.RETAIL_FINAL_WITH_ID);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.getRetailFinalWithId());
 			applicantDetail.setEmail(applicantRequest.getEmail());
 			applicantDetail.setMobile(applicantRequest.getLanLineNo());
 			Address address = applicantRequest.getFirstAddress();
@@ -162,19 +169,22 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantDetail.setBirthDate(applicantRequest.getDob());
 			applicantDetail = applicantRepository.save(applicantDetail);
 
+			if (applicantDetail != null){
+				logger.info("applicantDetail is saved successfully");
+			}
+
 			//SAVE INCOME DETAILS 
 			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			List<Long> coAppIds = coApplicantService.getCoAppIds(userId, applicationId);
 			List<Long> guarantorIds = guarantorService.getGuarantorIds(userId, applicationId);
@@ -183,14 +193,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			obj.put("guarantorIds", guarantorIds);
 			return obj;
 		} catch (Exception e) {
-			logger.error("Error while getCoapAndGuarIds:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getCoapAndGuarIds:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public RetailApplicantRequest get(Long applicationId) throws Exception {
+	public RetailApplicantRequest get(Long applicationId) throws LoansException {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
 			/*if (applicantDetail == null) {
@@ -222,14 +231,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while Getting Retail applicant details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Getting Retail applicant details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequestOld getFinal(Long id, Long applicationId) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long id, Long applicationId) throws LoansException {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(id, applicationId);
 			if (applicantDetail == null) {
@@ -237,19 +245,18 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 						+ id + "  ApplicationId==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(applicantDetail.getCurrencyId()));
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException {
 		try {
 			if (applicantRequest.getApplicationId() == null) {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
@@ -266,7 +273,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailProfile());
 			applicantRepository.save(applicantDetail);
 			// Updating Final Flag
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
@@ -276,36 +283,33 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 					applicantRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
-		// TODO Auto-generated method stub
+	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws LoansException {
 		return coApplicantService.getList(applicationId, userId);
 	}
 
 	@Override
-	public Integer getCurrency(Long applicationId, Long userId) throws Exception {
+	public Integer getCurrency(Long applicationId, Long userId) throws LoansException {
 		try {
 			return applicantRepository.getCurrency(userId, applicationId);
 		} catch (Exception e) {
-			logger.error("Error while Getting Currency:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Getting Currency:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws Exception {
+	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws LoansException {
 		return guarantorService.getList(applicationId, userId);
 	}
 
 	@Override
-	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
+	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws LoansException {
 		try {
 			logger.info("start getProfile() method");
 			RetailApplicantDetail applicantDetail = null;
@@ -362,21 +366,20 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
 			}
 			// Email ID
-//			UserResponse userResponse = usersClient.getEmailMobile(userId);
-//			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
-//				@SuppressWarnings("unchecked")
-//				UsersRequest request = MultipleJSONObjectHelper
-//						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+/*			UserResponse userResponse = usersClient.getEmailMobile(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				@SuppressWarnings("unchecked")
+				UsersRequest request = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class); */
 				cibilFullFillOfferRequest.setEmail(applicantDetail.getEmail());
 				cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getMobile());
 //			}
 			logger.info("End getProfile() method with Success Execution");
 			return cibilFullFillOfferRequest;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while getting Basic profile for CIBIL.");
+			logger.error("Error while getting Basic profile for CIBIL : ",e);
 			logger.info("End getProfile() method with FAILURE Execution");
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

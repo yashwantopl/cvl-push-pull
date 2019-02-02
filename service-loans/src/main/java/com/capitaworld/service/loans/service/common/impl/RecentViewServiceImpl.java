@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +37,6 @@ import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.model.SysNotifyResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
@@ -45,6 +47,12 @@ import com.capitaworld.service.users.model.UserResponse;
  */
 @Service
 public class RecentViewServiceImpl implements RecentViewService{
+
+	private static final Logger logger = LoggerFactory.getLogger(RecentViewServiceImpl.class);
+
+	private static final String EARLIER_LITERAL = "earlier";
+	private static final String THIS_MONTH = "thisMonth";
+	private static final String THIS_WEEK = "thisWeek";
 	
 	@Autowired
 	private NotificationClient notificationClient;
@@ -69,7 +77,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 	@Override
 	public RecentProfileViewDetailResponse getRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException {
-		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setApplicationId(applicationId);
 		request.setClientRefId(userId.toString());
@@ -77,13 +84,12 @@ public class RecentViewServiceImpl implements RecentViewService{
 		try {
 			notificationResponse =  notificationClient.getAllRecentViewNotificationByAppId(request);
 		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		Map<String, List<SysNotifyResponse>> a = notificationResponse.getRecentViewResponse();
-		List<SysNotifyResponse> thisWeek = a.get("thisWeek");
-		List<SysNotifyResponse> thisMonth = a.get("thisMonth");
-		List<SysNotifyResponse> earlier = a.get("earlier");
+		List<SysNotifyResponse> thisWeek = a.get(THIS_WEEK);
+		List<SysNotifyResponse> thisMonth = a.get(THIS_MONTH);
+		List<SysNotifyResponse> earlier = a.get(EARLIER_LITERAL);
 		
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
 		Map<String, List<RecentProfileViewResponse>> map = new HashMap<String, List<RecentProfileViewResponse>>();
@@ -123,14 +129,13 @@ public class RecentViewServiceImpl implements RecentViewService{
 			thisWeekResp.setUserId(response.getUserId());
 			listThisWeek.add(thisWeekResp);
 		}
-		map.put("thisWeek", listThisWeek);
+		map.put(THIS_WEEK, listThisWeek);
 		//END CODE FOR THIS WEEK RECENT VIEW
 		
 		//BEGIN CODE FOR THIS MONTH RECENT VIEW
 		List<RecentProfileViewResponse> listThisMonth = new ArrayList<RecentProfileViewResponse>();
 		for(SysNotifyResponse response  : thisMonth){
 			RecentProfileViewResponse thisMonthResp = new RecentProfileViewResponse();
-			Long fpProductId = response.getProductId();
 			//CALLING DMS FOR FP PROFILE PIC IMAGE PATH
 			DocumentRequest documentRequest = new DocumentRequest();
 			documentRequest.setUserId(response.getUserId());
@@ -162,14 +167,13 @@ public class RecentViewServiceImpl implements RecentViewService{
 			thisMonthResp.setUserId(response.getUserId());
 			listThisMonth.add(thisMonthResp);
 		}
-		map.put("thisMonth", listThisMonth);
+		map.put(THIS_MONTH, listThisMonth);
 		//END CODE FOR THIS MONTH RECENT VIEW
 		
 		//BEGIN CODE FOR EARLIER RECENT VIEW
 		List<RecentProfileViewResponse> listEarlier = new ArrayList<RecentProfileViewResponse>();
 		for(SysNotifyResponse response  : earlier){
 			RecentProfileViewResponse earlierResp = new RecentProfileViewResponse();
-			Long fpProductId = response.getProductId();
 			//CALLING DMS FOR FP PROFILE PIC IMAGE PATH
 			DocumentRequest documentRequest = new DocumentRequest();
 			documentRequest.setUserId(response.getUserId());
@@ -203,7 +207,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			listEarlier.add(earlierResp);
 			
 		}
-		map.put("earlier", listEarlier);
+		map.put(EARLIER_LITERAL, listEarlier);
 		//END CODE FOR EARLIER RECENT VIEW
 		detailResponse.setRecentProfileMap(map);
 		return detailResponse;
@@ -211,8 +215,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 	@Override
 	public RecentProfileViewDetailResponse getRecentViewDetailListByProdId(Long productId, Long userId)
-			throws Exception {
-		// TODO Auto-generated method stub
+			throws DocumentException, IOException, LoansException {
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
 		request.setClientRefId(userId.toString());
@@ -220,13 +223,12 @@ public class RecentViewServiceImpl implements RecentViewService{
 		try {
 			notificationResponse =  notificationClient.getAllRecentViewNotificationByProdId(request);
 		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		Map<String, List<SysNotifyResponse>> a = notificationResponse.getRecentViewResponse();
-		List<SysNotifyResponse> thisWeek = a.get("thisWeek");
-		List<SysNotifyResponse> thisMonth = a.get("thisMonth");
-		List<SysNotifyResponse> earlier = a.get("earlier");
+		List<SysNotifyResponse> thisWeek = a.get(THIS_WEEK);
+		List<SysNotifyResponse> thisMonth = a.get(THIS_MONTH);
+		List<SysNotifyResponse> earlier = a.get(EARLIER_LITERAL);
 		
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
 		Map<String, List<RecentProfileViewResponse>> map = new HashMap<String, List<RecentProfileViewResponse>>();
@@ -302,7 +304,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				Long fpProductId=response.getProductId();
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
@@ -364,7 +365,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				listMonthWeek.add(thisWeekResp);
 			}
 		}
-		map.put("thisWeek", listMonthWeek);
+		map.put(THIS_WEEK, listMonthWeek);
 		//END CODE FOR THIS WEEK RECENT VIEW
 		
 		//BEGIN CODE FOR THIS MONTH RECENT VIEW
@@ -437,7 +438,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				Long fpProductId=response.getProductId();
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
@@ -499,7 +499,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				listThisMonth.add(thisMonthResp);
 			}
 		}
-		map.put("thisMonth", listThisMonth);
+		map.put(THIS_MONTH, listThisMonth);
 		//END CODE FOR THIS MONTH RECENT VIEW
 		
 		//BEGIN CODE FOR EARLIER RECENT VIEW
@@ -572,7 +572,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				Long fpProductId=response.getProductId();
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
@@ -634,7 +633,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				listEarlier.add(earlierResp);
 			}
 		}
-		map.put("earlier", listEarlier);
+		map.put(EARLIER_LITERAL, listEarlier);
 		//END CODE FOR EARLIER RECENT VIEW
 		detailResponse.setRecentProfileMap(map);
 		return detailResponse;
@@ -649,8 +648,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		try {
 			notificationResponse =  notificationClient.getAllLatestRecentViewNotificationByAppId(request);
 		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		List<SysNotifyResponse> recentView = notificationResponse.getSysNotification();
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
@@ -658,7 +656,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 		List<RecentProfileViewResponse> listRecentView = new ArrayList<RecentProfileViewResponse>();
 		for(SysNotifyResponse response  : recentView){
 			RecentProfileViewResponse thisWeekResp = new RecentProfileViewResponse();
-			Long fpProductId = response.getProductId();
 			//CALLING DMS FOR FP PROFILE PIC IMAGE PATH
 			DocumentRequest documentRequest = new DocumentRequest();
 			documentRequest.setUserId(response.getUserId());
@@ -697,158 +694,162 @@ public class RecentViewServiceImpl implements RecentViewService{
 	}
 
 	@Override
-	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long productId, Long userId) throws Exception {
-		NotificationRequest request = new NotificationRequest();
-		request.setProductId(productId);
-		if(userId != null) {
-			request.setClientRefId(userId.toString());			
-		}
-		NotificationResponse notificationResponse = null;
+	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long productId, Long userId) throws LoansException {
 		try {
-			notificationResponse =  notificationClient.getAllLatestRecentViewNotificationByProdId(request);
-		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		List<SysNotifyResponse> thisWeek = notificationResponse.getSysNotification();
-		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
-		Map<String, List<RecentProfileViewResponse>> map = new HashMap<String, List<RecentProfileViewResponse>>();
-		List<RecentProfileViewResponse> listMonthWeek = new ArrayList<RecentProfileViewResponse>();
-		if(!CommonUtils.isListNullOrEmpty(thisWeek)) {
-			for(SysNotifyResponse response  : thisWeek){
-				RecentProfileViewResponse thisWeekResp = new RecentProfileViewResponse();
-				//FOR CORPORATE USER
-				Long applicationId = response.getApplicationId();
-				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-				if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(loanApplicationMaster.getProductId()))
-				{
-					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-					if(corporateApplicantDetail == null)
-						continue;
-					//GET ADDRESS, CITY, STATE, COUNTRY
-					String address="";
-					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+			NotificationRequest request = new NotificationRequest();
+			request.setProductId(productId);
+			if(userId != null) {
+				request.setClientRefId(userId.toString());
+			}
+			NotificationResponse notificationResponse = null;
+			try {
+				notificationResponse =  notificationClient.getAllLatestRecentViewNotificationByProdId(request);
+			} catch (NotificationException e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+			List<SysNotifyResponse> thisWeek = notificationResponse.getSysNotification();
+			RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
+			Map<String, List<RecentProfileViewResponse>> map = new HashMap<String, List<RecentProfileViewResponse>>();
+			List<RecentProfileViewResponse> listMonthWeek = new ArrayList<RecentProfileViewResponse>();
+			if(!CommonUtils.isListNullOrEmpty(thisWeek)) {
+				for(SysNotifyResponse response  : thisWeek){
+					RecentProfileViewResponse thisWeekResp = new RecentProfileViewResponse();
+					//FOR CORPORATE USER
+					Long applicationId = response.getApplicationId();
+					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+					if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(loanApplicationMaster.getProductId()))
 					{
-						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient)+ ",";
-					}
-					else
-					{
-						address+="NA ,";
-					}
-					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-					{
-						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient)+ ",";
-					}
-					else
-					{
-						address+="NA ,";
-					}
-					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-					{
-						address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
-					}
-					else
-					{
-						address+="NA";
-					}
-					//GET ORGANIZATION NAME
-					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
-						thisWeekResp.setName("NA");
-					else
-						thisWeekResp.setName(corporateApplicantDetail.getOrganisationName());
-					//CALLING DMS FOR FS PROFILE IMAGE PATH
-					DocumentRequest documentRequest = new DocumentRequest();
-					documentRequest.setApplicationId(applicationId);
-					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-					documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-					DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
-					String imagePath = null;
-					if (documentResponse != null && documentResponse.getStatus() == 200) {
-						List<Map<String, Object>> list = documentResponse.getDataList();
-						if (!CommonUtils.isListNullOrEmpty(list)) {
-							StorageDetailsResponse storageResponse = null;
-							storageResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
-							if(!CommonUtils.isObjectNullOrEmpty(storageResponse.getFilePath()))
-								imagePath = storageResponse.getFilePath();
-							else
-								imagePath=null;
+						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+						if(corporateApplicantDetail == null)
+							continue;
+						//GET ADDRESS, CITY, STATE, COUNTRY
+						String address="";
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+						{
+							address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient)+ ",";
 						}
-					}
-					thisWeekResp.setProfilePic(imagePath);
-					thisWeekResp.setAddress(address);
-					thisWeekResp.setApplicationId(response.getApplicationId());
-					thisWeekResp.setProductId(response.getProductId());
-					thisWeekResp.setUserId(response.getUserId());
-					listMonthWeek.add(thisWeekResp);
-				}	
-				else{
-					//FOR RETAIL USER
-					Long fpProductId=response.getProductId();
-					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-					if(retailApplicantDetail == null)
-						continue;
-					//GET ADDRESS, CITY, STATE, COUNTRY
-					String address="";
-					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
-					{
-						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient)+ ",";
-					}
-					else
-					{
-						address+="NA ,";
-					}
-					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
-					{
-						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient)+ ",";
-					}
-					else
-					{
-						address+="NA ,";
-					}
-					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
-					{
-						address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
-					}
-					else
-					{
-						address+="NA";
-					}
-					//GET FUND SEEKER NAME
-					String name="";
-					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
-						name+="NA";
-					else name+=retailApplicantDetail.getFirstName();
-					//CALLING DMS FOR FS PROFILE PIC
-					DocumentRequest documentRequest = new DocumentRequest();
-					documentRequest.setApplicationId(applicationId);
-					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-					documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-					DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
-					String imagePath = null;
-					if (documentResponse != null && documentResponse.getStatus() == 200) {
-						List<Map<String, Object>> list = documentResponse.getDataList();
-						if (!CommonUtils.isListNullOrEmpty(list)) {
-							StorageDetailsResponse StorsgeResponse = null;
-							StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
-							if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
-								imagePath = StorsgeResponse.getFilePath();
-							else
-								imagePath=null;
+						else
+						{
+							address+="NA ,";
 						}
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+						{
+							address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient)+ ",";
+						}
+						else
+						{
+							address+="NA ,";
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+						{
+							address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
+						}
+						else
+						{
+							address+="NA";
+						}
+						//GET ORGANIZATION NAME
+						if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+							thisWeekResp.setName("NA");
+						else
+							thisWeekResp.setName(corporateApplicantDetail.getOrganisationName());
+						//CALLING DMS FOR FS PROFILE IMAGE PATH
+						DocumentRequest documentRequest = new DocumentRequest();
+						documentRequest.setApplicationId(applicationId);
+						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+						documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+						DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+						String imagePath = null;
+						if (documentResponse != null && documentResponse.getStatus() == 200) {
+							List<Map<String, Object>> list = documentResponse.getDataList();
+							if (!CommonUtils.isListNullOrEmpty(list)) {
+								StorageDetailsResponse storageResponse = null;
+								storageResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
+								if(!CommonUtils.isObjectNullOrEmpty(storageResponse.getFilePath()))
+									imagePath = storageResponse.getFilePath();
+								else
+									imagePath=null;
+							}
+						}
+						thisWeekResp.setProfilePic(imagePath);
+						thisWeekResp.setAddress(address);
+						thisWeekResp.setApplicationId(response.getApplicationId());
+						thisWeekResp.setProductId(response.getProductId());
+						thisWeekResp.setUserId(response.getUserId());
+						listMonthWeek.add(thisWeekResp);
 					}
-					thisWeekResp.setProfilePic(imagePath);
-					thisWeekResp.setName(name);
-					thisWeekResp.setAddress(address);
-					thisWeekResp.setApplicationId(response.getApplicationId());
-					thisWeekResp.setProductId(response.getProductId());
-					thisWeekResp.setUserId(response.getUserId());
-					listMonthWeek.add(thisWeekResp);
+					else{
+						//FOR RETAIL USER
+						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+						if(retailApplicantDetail == null)
+							continue;
+						//GET ADDRESS, CITY, STATE, COUNTRY
+						String address="";
+						if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
+						{
+							address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient)+ ",";
+						}
+						else
+						{
+							address+="NA ,";
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
+						{
+							address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient)+ ",";
+						}
+						else
+						{
+							address+="NA ,";
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
+						{
+							address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
+						}
+						else
+						{
+							address+="NA";
+						}
+						//GET FUND SEEKER NAME
+						String name="";
+						if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
+							name+="NA";
+						else name+=retailApplicantDetail.getFirstName();
+						//CALLING DMS FOR FS PROFILE PIC
+						DocumentRequest documentRequest = new DocumentRequest();
+						documentRequest.setApplicationId(applicationId);
+						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+						documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+						DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+						String imagePath = null;
+						if (documentResponse != null && documentResponse.getStatus() == 200) {
+							List<Map<String, Object>> list = documentResponse.getDataList();
+							if (!CommonUtils.isListNullOrEmpty(list)) {
+								StorageDetailsResponse StorsgeResponse = null;
+								StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
+								if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
+									imagePath = StorsgeResponse.getFilePath();
+								else
+									imagePath=null;
+							}
+						}
+						thisWeekResp.setProfilePic(imagePath);
+						thisWeekResp.setName(name);
+						thisWeekResp.setAddress(address);
+						thisWeekResp.setApplicationId(response.getApplicationId());
+						thisWeekResp.setProductId(response.getProductId());
+						thisWeekResp.setUserId(response.getUserId());
+						listMonthWeek.add(thisWeekResp);
+					}
 				}
 			}
+			map.put("recentView",listMonthWeek );
+			detailResponse.setRecentProfileMap(map);
+			return detailResponse;
 		}
-		map.put("recentView",listMonthWeek );
-		detailResponse.setRecentProfileMap(map);
-		return detailResponse;
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
 	}
 
 }

@@ -76,6 +76,7 @@ public class FixedDepositsDetail implements Serializable {
 	private Double rate;
 
 	public FixedDepositsDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

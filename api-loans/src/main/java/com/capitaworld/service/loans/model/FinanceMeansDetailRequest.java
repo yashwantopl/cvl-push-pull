@@ -28,6 +28,7 @@ public class FinanceMeansDetailRequest implements Serializable {
 	private Boolean isActive = true;
 
 	public FinanceMeansDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

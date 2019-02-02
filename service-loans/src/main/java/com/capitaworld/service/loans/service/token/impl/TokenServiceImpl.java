@@ -43,8 +43,7 @@ public class TokenServiceImpl implements TokenService{
 	public void saveToken(GenerateTokenRequest generateTokenRequest ) {
 		logger.info("=================Enter in saveToken() {} ======================");
 		tokenRepository.inActive(generateTokenRequest.getApplicationId());
-		TokenDetail tokenDetail =new TokenDetail();
-		tokenDetail = new  TokenDetail();
+		TokenDetail tokenDetail = new TokenDetail();
 		tokenDetail.setApplicationId(generateTokenRequest.getApplicationId() );
 		tokenDetail.setCreatedDate(new Date());
 		tokenDetail.setIsExpired(false); 
@@ -58,7 +57,7 @@ public class TokenServiceImpl implements TokenService{
 	@Override
 	public String checkTokenExpiration(String tokenString) {
 		logger.info("=================Enter in checkTokenExpiration() {} ====================== ");
-		System.out.println(tokenExpireTime);
+		logger.info(""+tokenExpireTime);
 		TokenDetail tokenDetail = tokenRepository.getTokenByApplicationId(tokenString);
 		if (tokenDetail == null) {
 			logger.info("No Token Details FOund FOr token=====>{}",tokenString);

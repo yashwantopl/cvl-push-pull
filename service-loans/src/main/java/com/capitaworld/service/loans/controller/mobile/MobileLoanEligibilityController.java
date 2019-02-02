@@ -27,14 +27,14 @@ public class MobileLoanEligibilityController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MobileLoanEligibilityController.class);
 
+	private static final String MSG_REQUEST_OBJECT = "Request Object ==>";
+	private static final String SUCCESSFULLY_CALCULATED = "successfully calculated";
+	private static final String GET_ELIGIBLE_TENURE = "getEligibleTenure";
+	private static final String GET_ELIGIBLE_TENURE_PL = "getEligibleTenurePL";
+	private static final String GET_ELIGIBLE_TENURE_LAP = "getEligibleTenureLAP";
+
 	@Autowired
 	private LoanEligibilityCalculatorService loanEligibilityCalculatorService;
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
 
 	// Home Loan Calculation Starts
 	@RequestMapping(value = "${hl}/calc_min_max", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,58 +43,56 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isHomeLoanRequestIsValid(homeLoanRequest, false);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService.getMinMaxBySalarySlab(homeLoanRequest);
 			if (minMaxBySalarySlab == null) {
-				response.setMessage("Invalid Age");
-				response.setData("You are not eligible for Home Loan");
+				response.setMessage(CommonUtils.INVALID_AGE);
+				response.setData(CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN);
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else if (minMaxBySalarySlab.isEmpty()) {
 				response.setMessage("Invalid");
-				response.setData("You are not eligible for Home Loan");
+				response.setData(CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN);
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response.setData(minMaxBySalarySlab);
 				response.setStatus(HttpStatus.OK.value());
 			}
 			CommonDocumentUtils.endHook(logger, "calcMinMax");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Home Loans");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			logger.error("Error while calculating Loan eligibility for Home Loans : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 
 	@RequestMapping(value = "${hl}/get_eligible_tenure", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getEligibleTenure(@RequestBody HomeLoanEligibilityRequest homeLoanRequest) {
-		CommonDocumentUtils.startHook(logger, "getEligibleTenure");
+		CommonDocumentUtils.startHook(logger, GET_ELIGIBLE_TENURE);
 		try {
 			LoansResponse response = isHomeLoanRequestIsValid(homeLoanRequest, false);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
-			CommonDocumentUtils.endHook(logger, "getEligibleTenure");
+			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE);
 			Integer tenure = loanEligibilityCalculatorService.calculateTenure(homeLoanRequest,
 					CommonUtils.LoanType.HOME_LOAN.getValue());
 			if (tenure == null) {
-				response.setMessage("Invalid Age");
-				response.setData("You are not eligible for Home Loan");
+				response.setMessage(CommonUtils.INVALID_AGE);
+				response.setData(CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN);
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response.setData(tenure);
 				response.setStatus(HttpStatus.OK.value());
 			}
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 
 		} catch (Exception e) {
-			CommonDocumentUtils.endHook(logger, "getEligibleTenure");
-			logger.error("Error while calculating Eligible Tenure for Home Loans");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE);
+			logger.error("Error while calculating Eligible Tenure for Home Loans : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 
@@ -104,24 +102,23 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isHomeLoanRequestIsValid(homeLoanRequest, true);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject jsonObject = loanEligibilityCalculatorService.calcHomeLoanAmount(homeLoanRequest);
 			if (jsonObject == null) {
-				response.setMessage("Invalid Age");
-				response.setData("You are not eligible for Home Loan");
+				response.setMessage(CommonUtils.INVALID_AGE);
+				response.setData(CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN);
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response.setData(jsonObject);
 				response.setStatus(HttpStatus.OK.value());
 			}
 			CommonDocumentUtils.endHook(logger, "calcHomeLoanAmount");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Home Loans");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			logger.error("Error while calculating Loan eligibility for Home Loans : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	// Home Loan Calculation Ends
@@ -130,31 +127,30 @@ public class MobileLoanEligibilityController {
 	@RequestMapping(value = "${pl}/get_eligible_tenure", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getEligibleTenurePL(
 			@RequestBody PersonalLoanEligibilityRequest eligibilityRequest) {
-		CommonDocumentUtils.startHook(logger, "getEligibleTenurePL");
+		CommonDocumentUtils.startHook(logger, GET_ELIGIBLE_TENURE_PL);
 		try {
 			LoansResponse response = isPersonalLoanRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
-			CommonDocumentUtils.endHook(logger, "getEligibleTenurePL");
+			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE_PL);
 			Integer tenure = loanEligibilityCalculatorService.calculateTenure(eligibilityRequest,
 					CommonUtils.LoanType.PERSONAL_LOAN.getValue());
 			if (tenure == null) {
-				response.setMessage("Invalid Age");
-				response.setData("You are not eligible for Personal Loan");
+				response.setMessage(CommonUtils.INVALID_AGE);
+				response.setData(CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_PERSONAL_LOAN);
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response.setData(tenure);
 				response.setStatus(HttpStatus.OK.value());
 			}
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 
 		} catch (Exception e) {
-			CommonDocumentUtils.endHook(logger, "getEligibleTenurePL");
-			logger.error("Error while calculating Eligible Tenure for Personal Loans");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE_PL);
+			logger.error("Error while calculating Eligible Tenure for Personal Loans : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 
@@ -164,26 +160,25 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isPersonalLoanRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService
 					.calcMinMaxForPersonalLoan(eligibilityRequest);
 			if (minMaxBySalarySlab == null) {
-				response = new LoansResponse("Invalid Age");
-				response.setData("You are not eligible for Personal Loan");
+				response = new LoansResponse(CommonUtils.INVALID_AGE);
+				response.setData(CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_PERSONAL_LOAN);
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
-				response = new LoansResponse("Success");
+				response = new LoansResponse(CommonUtils.SUCCESS);
 				response.setData(minMaxBySalarySlab);
 				response.setStatus(HttpStatus.OK.value());
 			}
 			CommonDocumentUtils.endHook(logger, "calcMinMaxPL");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Personal Loans");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			logger.error("Error while calculating Loan eligibility for Personal Loans : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 
@@ -192,32 +187,31 @@ public class MobileLoanEligibilityController {
 	// LAP Calculation Starts
 	@RequestMapping(value = "${lap}/get_eligible_tenure", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getEligibleTenureLAP(@RequestBody LAPEligibilityRequest eligibilityRequest) {
-		CommonDocumentUtils.startHook(logger, "getEligibleTenureLAP");
+		CommonDocumentUtils.startHook(logger, GET_ELIGIBLE_TENURE_LAP);
 		try {
 			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
-			CommonDocumentUtils.endHook(logger, "getEligibleTenureLAP");
+			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE_LAP);
 			Integer tenure = loanEligibilityCalculatorService.calculateTenure(eligibilityRequest,
 					CommonUtils.LoanType.LAP_LOAN.getValue());
 			if (tenure == null) {
-				response = new LoansResponse("Invalid Age");
+				response = new LoansResponse(CommonUtils.INVALID_AGE);
 				response.setData("You are not eligible for Loan Against Properties.");
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
-				response = new LoansResponse("Success");
+				response = new LoansResponse(CommonUtils.SUCCESS);
 				response.setData(tenure);
 				response.setStatus(HttpStatus.OK.value());
 			}
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 
 		} catch (Exception e) {
-			CommonDocumentUtils.endHook(logger, "getEligibleTenureLAP");
-			logger.error("Error while calculating Eligible Tenure for Loan Against Properties.");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE_LAP);
+			logger.error("Error while calculating Eligible Tenure for Loan Against Properties : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 
@@ -227,25 +221,24 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService.calcMinMaxForLAP(eligibilityRequest);
 			if (minMaxBySalarySlab == null) {
-				response = new LoansResponse("Invalid Age");
+				response = new LoansResponse(CommonUtils.INVALID_AGE);
 				response.setData("You are not eligible for Loan Against Properties.");
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
-				response = new LoansResponse("Success");
+				response = new LoansResponse(CommonUtils.SUCCESS);
 				response.setData(minMaxBySalarySlab);
 				response.setStatus(HttpStatus.OK.value());
 			}
 			CommonDocumentUtils.endHook(logger, "calcMinMaxLAP");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for LAP");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			logger.error("Error while calculating Loan eligibility for LAP : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 
@@ -255,24 +248,23 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			JSONObject jsonObject = loanEligibilityCalculatorService.calcLAPAmount(eligibilityRequest);
 			if (jsonObject == null) {
-				response = new LoansResponse("Invalid Age");
+				response = new LoansResponse(CommonUtils.INVALID_AGE);
 				response.setData("You are not eligible for Loan Against Property");
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
-				response = new LoansResponse("Success");
+				response = new LoansResponse(CommonUtils.SUCCESS);
 				response.setData(jsonObject);
 				response.setStatus(HttpStatus.OK.value());
 			}
 			CommonDocumentUtils.endHook(logger, "calcLAP");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_CALCULATED),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for LAP");
-			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			logger.error("Error while calculating Loan eligibility for LAP : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 
@@ -290,26 +282,24 @@ public class MobileLoanEligibilityController {
 	}
 
 	private static LoansResponse isHomeLoanRequestIsValid(HomeLoanEligibilityRequest homeLoanRequest, boolean isMVSV) {
-		final String MSG = "You are not eligible for Home Loan";
+		final String MSG = CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN;
 		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest)) {
-			logger.info("Request Object ==>" + homeLoanRequest.toString());
+			logger.info(MSG_REQUEST_OBJECT + homeLoanRequest.toString());
 		}
 
 		LoansResponse response = null;
 		boolean isNull = CommonUtils.isObjectListNull(homeLoanRequest.getEmploymentType(), homeLoanRequest.getIncome(),
 				homeLoanRequest.getDateOfBirth());
 		if (isNull) {
-			response = new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value());
+			response = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 			return response;
 		}
 
-		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) {
-			if (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) {
-				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+		if ((!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) && (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) ) {
+				response = new LoansResponse(CommonUtils.OBLIGATION_MUST_BE_LESS_THAN_INCOME, HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
-			}
 		}
 
 		if (homeLoanRequest.getIncome() < 9000) {
@@ -331,13 +321,13 @@ public class MobileLoanEligibilityController {
 				return response;
 			}
 		}
-		return new LoansResponse("Success", HttpStatus.OK.value());
+		return new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 	}
 
 	private static LoansResponse isPersonalLoanRequestIsValid(PersonalLoanEligibilityRequest eligibilityRequest) {
-		final String MSG = "You are not eligible for Personal Loan";
+		final String MSG = CommonUtils.YOU_ARE_NOT_ELIGIBLE_FOR_PERSONAL_LOAN;
 		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest)) {
-			logger.info("Request Object ==>" + eligibilityRequest.toString());
+			logger.info(MSG_REQUEST_OBJECT + eligibilityRequest.toString());
 		}
 
 		LoansResponse response = null;
@@ -345,7 +335,7 @@ public class MobileLoanEligibilityController {
 				eligibilityRequest.getIncome(), eligibilityRequest.getConstitution(),
 				eligibilityRequest.getReceiptMode());
 		if (isNull) {
-			response = new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value());
+			response = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 			return response;
 		}
@@ -363,25 +353,23 @@ public class MobileLoanEligibilityController {
 			return response;
 		}
 
-		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
-			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
-				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+		if ((!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) && (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) ) {
+				response = new LoansResponse(CommonUtils.OBLIGATION_MUST_BE_LESS_THAN_INCOME, HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
-			}
 		}
 		if (eligibilityRequest.getIncome() < 10000) {
 			response = new LoansResponse("Minimum Salary should be 10000", HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 			return response;
 		}
-		return new LoansResponse("Success", HttpStatus.OK.value());
+		return new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 	}
 
 	private static LoansResponse isLAPRequestIsValid(LAPEligibilityRequest eligibilityRequest) {
 		final String MSG = "You are not eligible for Loan Against Property";
 		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest)) {
-			logger.info("Request Object ==>" + eligibilityRequest.toString());
+			logger.info(MSG_REQUEST_OBJECT + eligibilityRequest.toString());
 		}
 
 		LoansResponse response = null;
@@ -389,7 +377,7 @@ public class MobileLoanEligibilityController {
 				eligibilityRequest.getIncome(), eligibilityRequest.getEmploymentType(),
 				eligibilityRequest.getPropertyType());
 		if (isNull) {
-			response = new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value());
+			response = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 			return response;
 		}
@@ -398,12 +386,10 @@ public class MobileLoanEligibilityController {
 			response = new LoansResponse("Invalid PropertyType", HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 		}
-		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
-			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
-				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+		if ((!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) && (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) ) {
+				response = new LoansResponse(CommonUtils.OBLIGATION_MUST_BE_LESS_THAN_INCOME, HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
-			}
 		}
 
 		if (eligibilityRequest.getPropertyType().intValue() == CommonUtils.PropertyType.RESIDENTIAL
@@ -421,7 +407,7 @@ public class MobileLoanEligibilityController {
 			}
 		}
 
-		return new LoansResponse("Success", HttpStatus.OK.value());
+		return new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 	}
 	// LAP Calculation Ends
 

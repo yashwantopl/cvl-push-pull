@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.ExcelException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -22,67 +23,71 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class AssetsDetailsExcelReader
 {
+    private AssetsDetailsExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
 	public static final Logger log = LoggerFactory.getLogger(AssetsDetailsExcelReader.class);
-    public static List<String> assetsMappingList = new ArrayList<String>();
+    private static final List<String> ASSETS_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) {
-        assetsMappingList.clear();
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws ExcelException {
+        ASSETS_MAPPING_LIST.clear();
         
-        assetsMappingList.add("9");
-        assetsMappingList.add("11");
-        assetsMappingList.add("13");
-        assetsMappingList.add("15");
-        assetsMappingList.add("16");
-        assetsMappingList.add("18");
-        assetsMappingList.add("20");
-        assetsMappingList.add("22");
-        assetsMappingList.add("24");
-        assetsMappingList.add("26");
-        assetsMappingList.add("27");
-        assetsMappingList.add("29");
-        assetsMappingList.add("31");
-        assetsMappingList.add("33");
-        assetsMappingList.add("34");
-        assetsMappingList.add("35");
-        assetsMappingList.add("37");
-        assetsMappingList.add("39");
-        assetsMappingList.add("41");
-        assetsMappingList.add("43");
-        assetsMappingList.add("45");      
-        assetsMappingList.add("46");
-        assetsMappingList.add("47");
-        assetsMappingList.add("48");
-        assetsMappingList.add("49");
-        assetsMappingList.add("50");
-        assetsMappingList.add("52");
-        assetsMappingList.add("54");
-        assetsMappingList.add("56");
-        assetsMappingList.add("60");
-        assetsMappingList.add("62");
-        assetsMappingList.add("64");
-        assetsMappingList.add("65");
-        assetsMappingList.add("67");
-        assetsMappingList.add("69");
-        assetsMappingList.add("71");
-        assetsMappingList.add("72");
-        assetsMappingList.add("73");
-        assetsMappingList.add("74");
-        assetsMappingList.add("76");
-        assetsMappingList.add("78");
-        assetsMappingList.add("80");
-        assetsMappingList.add("82");
-        assetsMappingList.add("83");
-        assetsMappingList.add("84");
-        assetsMappingList.add("85");
-        assetsMappingList.add("86");
-        assetsMappingList.add("87");
-        assetsMappingList.add("88");
-        assetsMappingList.add("89");
-        assetsMappingList.add("91");
-        assetsMappingList.add("93");
-        assetsMappingList.add("95");
-        assetsMappingList.add("97");
-        assetsMappingList.add("99");
+        ASSETS_MAPPING_LIST.add("9");
+        ASSETS_MAPPING_LIST.add("11");
+        ASSETS_MAPPING_LIST.add("13");
+        ASSETS_MAPPING_LIST.add("15");
+        ASSETS_MAPPING_LIST.add("16");
+        ASSETS_MAPPING_LIST.add("18");
+        ASSETS_MAPPING_LIST.add("20");
+        ASSETS_MAPPING_LIST.add("22");
+        ASSETS_MAPPING_LIST.add("24");
+        ASSETS_MAPPING_LIST.add("26");
+        ASSETS_MAPPING_LIST.add("27");
+        ASSETS_MAPPING_LIST.add("29");
+        ASSETS_MAPPING_LIST.add("31");
+        ASSETS_MAPPING_LIST.add("33");
+        ASSETS_MAPPING_LIST.add("34");
+        ASSETS_MAPPING_LIST.add("35");
+        ASSETS_MAPPING_LIST.add("37");
+        ASSETS_MAPPING_LIST.add("39");
+        ASSETS_MAPPING_LIST.add("41");
+        ASSETS_MAPPING_LIST.add("43");
+        ASSETS_MAPPING_LIST.add("45");
+        ASSETS_MAPPING_LIST.add("46");
+        ASSETS_MAPPING_LIST.add("47");
+        ASSETS_MAPPING_LIST.add("48");
+        ASSETS_MAPPING_LIST.add("49");
+        ASSETS_MAPPING_LIST.add("50");
+        ASSETS_MAPPING_LIST.add("52");
+        ASSETS_MAPPING_LIST.add("54");
+        ASSETS_MAPPING_LIST.add("56");
+        ASSETS_MAPPING_LIST.add("60");
+        ASSETS_MAPPING_LIST.add("62");
+        ASSETS_MAPPING_LIST.add("64");
+        ASSETS_MAPPING_LIST.add("65");
+        ASSETS_MAPPING_LIST.add("67");
+        ASSETS_MAPPING_LIST.add("69");
+        ASSETS_MAPPING_LIST.add("71");
+        ASSETS_MAPPING_LIST.add("72");
+        ASSETS_MAPPING_LIST.add("73");
+        ASSETS_MAPPING_LIST.add("74");
+        ASSETS_MAPPING_LIST.add("76");
+        ASSETS_MAPPING_LIST.add("78");
+        ASSETS_MAPPING_LIST.add("80");
+        ASSETS_MAPPING_LIST.add("82");
+        ASSETS_MAPPING_LIST.add("83");
+        ASSETS_MAPPING_LIST.add("84");
+        ASSETS_MAPPING_LIST.add("85");
+        ASSETS_MAPPING_LIST.add("86");
+        ASSETS_MAPPING_LIST.add("87");
+        ASSETS_MAPPING_LIST.add("88");
+        ASSETS_MAPPING_LIST.add("89");
+        ASSETS_MAPPING_LIST.add("91");
+        ASSETS_MAPPING_LIST.add("93");
+        ASSETS_MAPPING_LIST.add("95");
+        ASSETS_MAPPING_LIST.add("97");
+        ASSETS_MAPPING_LIST.add("99");
         
             /*
               * this method extract data from excel associate column and row wise
@@ -90,16 +95,20 @@ public class AssetsDetailsExcelReader
              */
       
         log.info("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());   
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", assetsDetailsRepository);
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", assetsDetailsRepository);
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited", assetsDetailsRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", assetsDetailsRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", assetsDetailsRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited", assetsDetailsRepository);
        
         //j== 2 for NTB 
         int j = 2;
         if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
     
-        	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
-        	j=5;
+        	
+           	int updateRow = assetsDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
+           	log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
+
+           	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
+           	j=5;
       
         }
         
@@ -107,54 +116,58 @@ public class AssetsDetailsExcelReader
 
         	/*int j = 5;*/
         	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) { 
-        		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected",assetsDetailsRepository);
         		j++;
         	}
 
 
-        /*extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"J",String.valueOf(sheet.getRow(4).getCell(9).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"N",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"O",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"P",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"Q",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"R",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"S",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"T",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"U",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"V",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"W",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        /*extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"J",String.valueOf(sheet.getRow(4).getCell(9).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"N",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"O",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"P",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"Q",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"R",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"S",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"T",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"U",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"V",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"W",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
        */ }
 
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,
-    										XSSFSheet sheet,
-                                            LoanApplicationMaster loanApplicationMaster,
-                                            List<String> arrayList,
-                                            String column,
-                                            String year,
-                                            String financialYearlyStatement,
-                                            AssetsDetailsRepository assetsDetailsRepository)
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,AssetsDetailsRepository assetsDetailsRepository) throws ExcelException
     {
         int arrayListCounter = 0;
         int nullCounter=0;
-        for (int i = 0; i < assetsMappingList.size(); i++) {
-            if ((getNumericDataFromCell(sheet,column + assetsMappingList.get(i)))==0.0) {
+        for (int i = 0; i < ASSETS_MAPPING_LIST.size(); i++) {
+            if ((getNumericDataFromCell(sheet,column + ASSETS_MAPPING_LIST.get(i)))==0.0) {
                 ++nullCounter;
             }
         }
         
         if(!(nullCounter==54)) {
-            
-        	AssetsDetails cmaAssets = new AssetsDetails();
+        	
+        	Double yearFromSheet  = Double.valueOf(year) ; 
+        	AssetsDetails cmaAssets = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
+        	
+        	if(cmaAssets != null &&  "Audited".equalsIgnoreCase(cmaAssets.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(cmaAssets.getYear()) ) {
+           		
+           		throw new ExcelException("Invalid cma details");
+         
+           	}
+        	
+        	cmaAssets = new AssetsDetails();
+    		cmaAssets.setCreatedDate(new Date());
+    		cmaAssets.setModifiedDate(new Date());
         	log.info("calledd===============");
         	cmaAssets.setLoanApplicationMaster(loanApplicationMaster);
         	cmaAssets.setStorageDetailsId(storageDetailsId);
@@ -217,10 +230,10 @@ public class AssetsDetailsExcelReader
             cmaAssets.setTotalOutSideLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setTotalTermLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
-            
+            log.info("arrayListCounter : "+arrayListCounter);
+
             cmaAssets.setIsActive(true);
-            cmaAssets.setCreatedDate(new Date());
-            cmaAssets.setModifiedDate(new Date());
+            
 //          cmaAssets.setCreatedBy(createdBy);
 //          cmaAssets.setModifiedBy(modifiedBy);
             

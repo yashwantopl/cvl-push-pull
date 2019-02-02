@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.service.common;
 
-import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
@@ -8,9 +8,9 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 
 public interface MobileService {
 
-	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws Exception;
+	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws LoansException;
 	
-	public Long saveApplicantDetails(MRetailApplicantResponse mApplicantProfileResponse) throws Exception; 
+	public Long saveApplicantDetails(MRetailApplicantResponse mApplicantProfileResponse) throws LoansException;
 	
 	public MRetailCoAppGuarResponse getGuarantorDetails(MobileLoanRequest mobileUserRequest);
 	
@@ -20,6 +20,6 @@ public interface MobileService {
 	
 	public Long saveCoApplicantDetails(MRetailCoAppGuarResponse response);
 	
-	public Long saveLoanApplicationDetails(MobileFrameRequest request) throws Exception;
+	public Long saveLoanApplicationDetails(MobileFrameRequest request) throws LoansException;
 	
 }

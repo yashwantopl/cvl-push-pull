@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	
 	@Override
-	public boolean saveOrUpdate(PrimaryLapLoanDetailRequest lapLoanDetailRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryLapLoanDetailRequest lapLoanDetailRequest, Long userId) throws LoansException {
 		// ID must not be null
 		try {
 			PrimaryLapLoanDetail primaryLapLoanDetail = primaryLapLoanDetailRepository.getByApplicationAndUserId(
@@ -46,7 +47,7 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 				throw new NullPointerException("PrimaryLapLoanDetail not exist in DB with Application Id=>"
 						+ lapLoanDetailRequest.getId() + " and user Id ==>" + userId);
 			}
-			BeanUtils.copyProperties(lapLoanDetailRequest, primaryLapLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(lapLoanDetailRequest, primaryLapLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			primaryLapLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(lapLoanDetailRequest.getTenure()) ? null
 					: (lapLoanDetailRequest.getTenure() * 12));
 			primaryLapLoanDetail.setIsActive(true);
@@ -58,14 +59,12 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 			saveNegativeList(primaryLapLoanDetail.getApplicationId().getId(), lapLoanDetailRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while saving Primary Lap laon Details Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while saving Primary Lap laon Details Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -83,7 +82,7 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 	}
 	
 	@Override
-	public PrimaryLapLoanDetailRequest get(Long applicationId, Long userId) throws Exception {
+	public PrimaryLapLoanDetailRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			PrimaryLapLoanDetail loanDetail = primaryLapLoanDetailRepository.getByApplicationAndUserId(applicationId,
 					userId);
@@ -101,9 +100,8 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 			lapLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return lapLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Lap laon Details Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Primary Lap laon Details Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

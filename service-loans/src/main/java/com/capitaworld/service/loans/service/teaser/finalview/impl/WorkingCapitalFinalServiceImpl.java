@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -161,8 +160,8 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public WorkingCapitalFinalViewResponse getWorkingCapitalFinalViewDetails(Long toApplicationId) {
@@ -177,7 +176,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		try {
 			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		/*
 		* FINAL UPLOADS
@@ -186,145 +185,145 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		try{
 			response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setBankStatementList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
 			response.setItReturnForFYOfAllDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_IT_RETURN_DIRECTOR)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setFinSubsidiariesEntitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_FINANCIALS_OF_SUBSIDIARIES)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setAssessOrderForLastThreeYearsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_ASSESSMENT_ORDERS)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		/* KYC UPLOADS */
         try {
             response.setCertificateOfIncorpList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try{
             response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_DETAILED_LIST_OF_SHAREHOLDERS));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try{
             response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 		try{
 			response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
         try{
             response.setResidenceAddProofList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.WORKING_CAPITAL_DIRECTOR_ADDRESS));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setResolutionForAdditionOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_DIRECTOR_RESOLUTION)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         /* OTHERS UPLOADS */
         try {
             response.setMomAndAOAList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_MOM_AOA)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setDebtorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_DEBTORS_LIST)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setGstVATExciseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_GST_APPLIED)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setLetterOfIntentFromFPList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_LETTER_OF_INTENT)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setCopiesOfRelevantLicenseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_RELEVANT_LICENSE)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setSalesTaxReturnsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_SALES_TAX)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setLatestTaxPaidCoyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_LATEST_TAX)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setEncumbranceList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_ENCUMBRANCE)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setCopiesOfTrustDeedList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_COPIES_TRUST_DEEDS)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setMarketSurveyReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_MARKET_SURVEY_REPORT)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         try {
             response.setDetailsOfContLiabilitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CONTINGENT_LIABILITIES)));
         } catch (DocumentException e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
 
@@ -334,17 +333,17 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		try{
 			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CMA)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_COMPANY_ACT)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setFinancialModelList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WC_FINANCIAL_MODEL));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 
@@ -488,7 +487,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				response.setOverseasNetwork(overseasString);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set registered email address and registered contact number
@@ -501,7 +500,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				response.setRegisteredContactNumber(usersRequest.getMobile());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get details of CorporateApplicantDetail
@@ -532,13 +531,13 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 						response.setEstablishmentYear("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// set city
 			List<Long> cityList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-			cityList.add(corporateApplicantDetail.getRegisteredCityId());
+				cityList.add(corporateApplicantDetail.getRegisteredCityId());
 			if(!CommonUtils.isListNullOrEmpty(cityList))
 			{
 			try {
@@ -554,13 +553,13 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 					response.setCity("NA");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			}
 			
 			cityList.clear();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
-			cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+				cityList.add(corporateApplicantDetail.getAdministrativeCityId());
 			if(!CommonUtils.isListNullOrEmpty(cityList))
 			{
 			try {
@@ -576,7 +575,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 					response.setCity("NA");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			}
 			
@@ -584,7 +583,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			// set state
 			List<Long> stateList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-			stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+				stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
 			if(!CommonUtils.isListNullOrEmpty(stateList))
 			{
 			try {
@@ -600,16 +599,17 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 					response.setState("NA");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			}
 			
 			
 			stateList.clear();
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId())) {
 				stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-				if(!CommonUtils.isListNullOrEmpty(stateList))
-				{
+			}
+			if(!CommonUtils.isListNullOrEmpty(stateList))
+			{
 				try {
 					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
 					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
@@ -622,13 +622,13 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 						response.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
-				}
+			}
 			// set country
 			List<Long> countryList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-			countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+				countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
 			if(!CommonUtils.isListNullOrEmpty(countryList))
 			{
 			try {
@@ -644,15 +644,16 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 					response.setCountry("NA");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			}
 			
 			countryList.clear();
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId())) {
 				countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId()));
-				if(!CommonUtils.isListNullOrEmpty(countryList))
-				{
+			}
+			if(!CommonUtils.isListNullOrEmpty(countryList))
+			{
 				try {
 					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
 					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
@@ -665,14 +666,14 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 						response.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
-				}
+			}
 				
 				
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
-			keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+				keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
 			if(!CommonUtils.isListNullOrEmpty(keyVerticalFundingId))
 			{
 			try {
@@ -688,7 +689,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			}
 		}
@@ -705,7 +706,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 					.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
 			response.setIndustrySector(oneFormResponse.getListData());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get value of working capital data
@@ -715,12 +716,12 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			// set value to response
 			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, response);
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId()))
-			response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
+				response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
 							+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
 			response.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 			response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
-			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+				response.setDateOfProposal(simpleDateFormat.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
 			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
             response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
             response.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
@@ -801,7 +802,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				response.setShortTermRating(shortTermValueList);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set long term rating option
@@ -822,7 +823,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			}
 			response.setLongTermRating(longTermValueList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
         }
         
         try {
@@ -863,8 +864,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		try {
 			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		response.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
         

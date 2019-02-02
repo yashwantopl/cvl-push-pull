@@ -72,8 +72,7 @@ public class SpClientListing implements Serializable {
 		this.listData = listData;
 	}
 	public SpClientListing() {
-	
-		// TODO Auto-generated constructor stub
+		// Do nothing because of X and Y.
 	}
 	
 	

@@ -6,6 +6,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.PersonalLoanResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
@@ -72,7 +73,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 	private DocumentManagementService documentManagementService;
 	
 	@Override
-	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId) throws Exception {
+	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		RetailPrimaryViewResponse retailPrimaryViewResponse = new RetailPrimaryViewResponse();
 		PersonalLoanResponse personalLoanResponse = new PersonalLoanResponse();
@@ -88,6 +89,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				try {
 					profileViewPLResponse.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
 				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				profileViewPLResponse.setLastName(applicantDetail.getLastName());
 				profileViewPLResponse.setMaritalStatus(applicantDetail.getStatusId() != null ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : null);
@@ -110,7 +112,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
 					officeAddress.setCity(data.getValue());
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId())) {
@@ -121,8 +123,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						officeAddress.setCountry(dataCountry.getValue());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId())) {
@@ -133,7 +134,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						officeAddress.setState(dataState.getValue());
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
 				officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
@@ -150,7 +151,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
 					permanentAddress.setCity(dataCity.getValue());
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCountryId())) {
@@ -161,7 +162,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						permanentAddress.setCountry(dataCountry.getValue());
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
@@ -173,7 +174,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
 				permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
@@ -295,30 +296,30 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				try {
 					profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				//get list of Aadhar Card
 				try {
 					profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				//profile picture
 				try {
 					personalLoanResponse.setApplicantProfilePicture(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_PROFIEL_PICTURE));
 				}catch (DocumentException e){
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				retailPrimaryViewResponse.setPersonalProfileRespoonse(profileViewPLResponse);
 			} else {
-				throw new Exception("No Data found");
+				throw new LoansException("No Data found");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Problem Occured while Fetching Retail Details");
+			logger.error("Problem Occured while Fetching Retail Details : ",e);
+			throw new LoansException("Problem Occured while Fetching Retail Details");
 		}
 
 		//set up loan specific details
@@ -331,11 +332,15 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 		//setting co-application details
 		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, userId,applicationMaster.getProductId());
-		retailPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
+			retailPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		}
 
 		//setting guarantor details
 		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, userId,applicationMaster.getProductId());
-		retailPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		if (garantorResponse != null && !garantorResponse.isEmpty()) {
+			retailPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		}
 
 		//setting Personal Loan Specific Data
 		retailPrimaryViewResponse.setPersonalLoanResponse(personalLoanResponse);

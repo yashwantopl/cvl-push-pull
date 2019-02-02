@@ -64,7 +64,7 @@ public class LoanSanctionAndDisbursedRequest extends AuditActivityRequest implem
 	public String toString() {
 		return "LoanSanctionAndDisbursedRequest [loanSanctionRequest=" + loanSanctionRequest
 				+ ", loanDisbursementRequestsList=" + loanDisbursementRequestsList + ", applicationId=" + applicationId
-				+ ", userName=" + userName + ", password=" + password + "]";
+				+ ", userName=" + userName + "]";
 	}
 
 }

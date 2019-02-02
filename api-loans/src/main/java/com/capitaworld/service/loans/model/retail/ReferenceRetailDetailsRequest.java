@@ -1,9 +1,10 @@
 package com.capitaworld.service.loans.model.retail;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
 
 /**
  * @author Sanket
@@ -126,17 +127,23 @@ public class ReferenceRetailDetailsRequest implements Serializable{
 		this.referncesList = referncesList;
 	}
 
-	public static void printFields(Object obj) throws Exception {
-        Field[] fields = ReferenceRetailDetailsRequest.class.getDeclaredFields();
-        
-        for(Field field : fields) {
-            Object value = field.get(obj);
-            if(value instanceof String){
-             String a = value.toString().replaceAll("&", "&amp;");
-             value = a;
-             field.set(obj, value);
-            }
-        }
+	public static void printFields(Object obj) throws LoansException {
+		try {
+			Field[] fields = ReferenceRetailDetailsRequest.class.getDeclaredFields();
+
+			for(Field field : fields) {
+				Object value = field.get(obj);
+				if(value instanceof String){
+					String a = value.toString().replaceAll("&", "&amp;");
+					value = a;
+					field.set(obj, value);
+				}
+			}
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
     }
 	
 }

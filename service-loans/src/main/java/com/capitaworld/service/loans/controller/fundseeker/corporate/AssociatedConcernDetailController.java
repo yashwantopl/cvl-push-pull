@@ -43,12 +43,6 @@ public class AssociatedConcernDetailController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
@@ -91,7 +85,6 @@ public class AssociatedConcernDetailController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Associated Concerns Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -121,17 +114,11 @@ public class AssociatedConcernDetailController {
 				Integer currentYear = null;
 			if (!CommonUtils.isListNullOrEmpty(response)) {
 				currentYear = response.get(0).getCurrentYear();
-				if (currentYear != null) {
+				if (currentYear == null) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(new Date());
 					currentYear = calendar.get(Calendar.YEAR);
 				}
-				 else {
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTime(new Date());
-						currentYear = calendar.get(Calendar.YEAR);
-					}
-
 			} else {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(new Date());

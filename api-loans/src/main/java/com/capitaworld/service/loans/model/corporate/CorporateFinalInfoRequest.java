@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.corporate;
 import com.capitaworld.service.loans.model.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -54,6 +53,7 @@ public class CorporateFinalInfoRequest implements Serializable {
     private Integer constitutionId;
     private String panNo;
     private String landlineNo;
+    private String remarks;
 
     public Boolean getSameAs() {
         return sameAs;
@@ -263,4 +263,13 @@ public class CorporateFinalInfoRequest implements Serializable {
     public void setLandlineNo(String landlineNo) {
         this.landlineNo = landlineNo;
     }
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+    
 }

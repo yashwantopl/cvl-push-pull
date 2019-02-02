@@ -1,8 +1,8 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
-import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
-import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -38,7 +35,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	private FsNegativeFpListRepository fsNegativeFpListRepository; 
 
 	@Override
-	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws LoansException {
 		try {
 			PrimaryTermLoanDetail termLoanDetail = primaryTLRepository
 					.getByApplicationAndUserId(termLoanRequest.getId(),  (CommonUtils.isObjectNullOrEmpty(termLoanRequest.getClientId()) ? userId : termLoanRequest.getClientId()));
@@ -46,7 +43,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>"
 						+ termLoanRequest.getId() + " and UserId==>" + userId);
 			}
-			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			/*termLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(termLoanRequest.getTenure()) ? null
 					: (termLoanRequest.getTenure() * 12));*/
 			termLoanDetail.setModifiedBy(userId);
@@ -57,14 +54,12 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			saveNegativeList(termLoanDetail.getApplicationId().getId(), termLoanRequest.getNegativeList());*/
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Primary Term Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	/*private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -101,15 +96,14 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			termLoanRequest.setCurrencyValue(data);
 			return termLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Primary Term Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}*/
-	
+
 	@Override
-	public PrimaryTermLoanRequest get(Long id, Long userId) throws Exception {
+	public PrimaryTermLoanRequest get(Long id, Long userId) throws LoansException {
 		try {
 			PrimaryTermLoanDetail loanDetail = null;
 			if(userId != null) {
@@ -133,9 +127,8 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			termLoanRequest.setCurrencyValue(data);
 			return termLoanRequest ;
 		} catch (Exception e) {
-			logger.error("Error while Getting term Details Profile:-");
-			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			logger.error("Error while Getting term Details Profile:-",e);
+			throw new LoansException("Something went Wrong !");
 		}
 	}
 	

@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 	private LoanApplicationService loanApplicationService;
 
 	@Override
-	public boolean saveOrUpdate(FinalCarLoanDetailRequest finalCarLoanDetailRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FinalCarLoanDetailRequest finalCarLoanDetailRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(finalCarLoanDetailRequest.getClientId()) ? userId : finalCarLoanDetailRequest.getClientId());
 			FinalCarLoanDetail finalCarLoanDetail = finalCarLoanDetailRepository
@@ -56,10 +57,14 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 				finalCarLoanDetail.setModifiedBy(userId);
 				finalCarLoanDetail.setModifiedDate(new Date());
 			}
-			String[] corporate = new String[CommonUtils.IgnorableCopy.CORPORATE.length + 1];
-			corporate[CommonUtils.IgnorableCopy.CORPORATE.length] = CommonUtils.IgnorableCopy.ID; 
+			String[] corporate = new String[CommonUtils.IgnorableCopy.getCORPORATE().length + 1];
+			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
 			BeanUtils.copyProperties(finalCarLoanDetailRequest, finalCarLoanDetail,corporate);
 			finalCarLoanDetail = finalCarLoanDetailRepository.save(finalCarLoanDetail);
+
+			if (finalCarLoanDetail != null){
+				logger.info("finalCarLoanDetail is saved successfully");
+			}
 			
 			//setting Flag to DB
 			if(!CommonUtils.isObjectNullOrEmpty(finalCarLoanDetailRequest.getIsFinalInformationFilled())){
@@ -72,14 +77,13 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 			
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Car Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Saving Final Car Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalCarLoanDetailRequest get(Long applicationId, Long userId) throws Exception {
+	public FinalCarLoanDetailRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			FinalCarLoanDetail loanDetail = finalCarLoanDetailRepository.getByApplicationID(applicationId, userId);
 			FinalCarLoanDetailRequest finalCarLoanDetailRequest = new FinalCarLoanDetailRequest();
@@ -99,9 +103,8 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 			finalCarLoanDetailRequest.setFinalFilledCount(loanDetail.getApplicationId().getFinalFilledCount());
 			return finalCarLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Car Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Final Car Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

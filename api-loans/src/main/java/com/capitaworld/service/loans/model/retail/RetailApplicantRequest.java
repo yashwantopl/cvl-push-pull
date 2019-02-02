@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.Address;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * The persistent class for the fs_retail_applicant_details database table.
@@ -112,6 +111,7 @@ public class RetailApplicantRequest implements Serializable {
 	
 
 	public RetailApplicantRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	

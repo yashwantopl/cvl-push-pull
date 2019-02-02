@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -27,6 +27,8 @@ public class DashboardServiceImpl implements DashboardService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardServiceImpl.class);
 
+	private static final String GET_BASIC_PROFILE_INFO = "getBasicProfileInfo";
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
@@ -43,10 +45,9 @@ public class DashboardServiceImpl implements DashboardService {
 	private UsersClient usersClient;
 
 	@Override
-	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws Exception {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "getBasicProfileInfo");
-		
+	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws LoansException {
+		CommonDocumentUtils.startHook(logger, GET_BASIC_PROFILE_INFO);
+
 		Integer productId = null;
 		/*if(isSP){
 			productId = loanApplicationRepository.getProductIdByApplicationIdForSP(applicationId, userId);
@@ -67,12 +68,12 @@ public class DashboardServiceImpl implements DashboardService {
 						.getByApplicationAndUserIdForSP(userId, applicationId);
 			}else{
 				corporateApplicantDetail = corporateApplicantDetailRepository
-						.getByApplicationAndUserId(userId, applicationId);	
+						.getByApplicationAndUserId(userId, applicationId);
 			}
-			
+
 
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
+				CommonDocumentUtils.endHook(logger, GET_BASIC_PROFILE_INFO);
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setPan(corporateApplicantDetail.getPanNo());
@@ -110,11 +111,11 @@ public class DashboardServiceImpl implements DashboardService {
 						.getByApplicationAndUserIdForSP(userId, applicationId);
 			}else{
 				retailApplicantDetail = retailApplicantDetailRepository
-						.getByApplicationAndUserId(userId, applicationId);	
+						.getByApplicationAndUserId(userId, applicationId);
 			}
-			
+
 			if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
-				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
+				CommonDocumentUtils.endHook(logger, GET_BASIC_PROFILE_INFO);
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setPan(retailApplicantDetail.getPan());
@@ -145,12 +146,12 @@ public class DashboardServiceImpl implements DashboardService {
 			dashboardProfileResponse.setName(name);
 		}
 		dashboardProfileResponse.setAddress();
-		CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
+		CommonDocumentUtils.endHook(logger, GET_BASIC_PROFILE_INFO);
 		return dashboardProfileResponse;
 	}
 
 	@Override
-	public Integer getCount(int userType) throws Exception {
+	public Integer getCount(int userType) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "getCount");
 		try {
 			UserResponse response = usersClient.getActiveUserCount(userType);
@@ -160,22 +161,20 @@ public class DashboardServiceImpl implements DashboardService {
 			CommonDocumentUtils.endHook(logger, "getCount");
 			return 0;
 		} catch (Exception e) {
-			logger.error("Error while getting count for Dashbord");
-			e.printStackTrace();
-			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting count for Dashbord : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public UserResponse getFPBasicProfileInfo(Long userId) throws Exception {
+	public UserResponse getFPBasicProfileInfo(Long userId) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "getFPBasicProfileInfo");
 		try {
 			CommonDocumentUtils.endHook(logger, "getFPBasicProfileInfo");
 			return usersClient.getFPDashboardDetails(userId);
 		} catch (Exception e) {
-			logger.error("Error while getting FP Details on Dashbord");
-			e.printStackTrace();
-			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting FP Details on Dashbord : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

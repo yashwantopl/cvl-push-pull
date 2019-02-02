@@ -39,13 +39,7 @@ public class AchievmentDetailsController {
 	private CorporateApplicantService corporateApplicantService;
 	
 	@Autowired
-	private LoanApplicationService loanApplicationService; 
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
+	private LoanApplicationService loanApplicationService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
@@ -87,7 +81,6 @@ public class AchievmentDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Achievement Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -101,7 +94,7 @@ public class AchievmentDetailsController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getList");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{
@@ -123,7 +116,6 @@ public class AchievmentDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Achievement Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

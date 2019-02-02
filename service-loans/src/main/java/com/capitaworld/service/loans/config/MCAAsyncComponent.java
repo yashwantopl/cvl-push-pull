@@ -5,6 +5,8 @@ package com.capitaworld.service.loans.config;
 
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.impl.LoanApplicationServiceImpl;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.CompaniesHistoryPara;
@@ -44,7 +45,7 @@ public class MCAAsyncComponent {
 	 * @param userId
 	 */
 	
-	private void callMCA(String cin, Long applicationId, Long userId) throws Exception{
+	private void callMCA(String cin, Long applicationId, Long userId) throws LoansException {
 		try {
 		McaRequest request = new McaRequest();
 		
@@ -63,8 +64,7 @@ public class MCAAsyncComponent {
 		SearchCompaniesResponse a = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>)mcaClient.searchCompanies(request).getData(),SearchCompaniesResponse.class);
 		logger.info("End of MCA Search Call");
 		
-		if(a!=null) {
-				if (a.getCompanies() != null && a.getCompanies().length>0) {
+		if(a!=null && a.getCompanies() != null && a.getCompanies().length>0 ) {
 					String[] companyIds = { a.getCompanies()[0].getCompanyId() };
 					request = new McaRequest();
 					CompaniesHistoryRequest companiesHistoryRequest = new CompaniesHistoryRequest();
@@ -85,11 +85,10 @@ public class MCAAsyncComponent {
 					logger.info("Initiated MCA data save Call");
 					loanService.updateLoanApplication(loanRequest);
 					logger.info("End of MCA data save Call");
-				}
 			}
 		}
 		catch (Exception e) {
-			throw new Exception();
+			throw new LoansException(e);
 		}
 	}
 	
@@ -98,8 +97,7 @@ public class MCAAsyncComponent {
 		try {
 			callMCA(cin, applicationId, userId);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 

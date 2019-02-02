@@ -152,6 +152,7 @@ public class LapParameterRequest extends ProductMasterRequest implements Seriali
 
 
 	public LapParameterRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getFpProductId() {

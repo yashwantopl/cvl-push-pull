@@ -4,11 +4,12 @@ package com.capitaworld.service.loans.model;
  *
  */
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
+
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class AssociatedConcernDetailRequest implements Serializable{
 
@@ -28,6 +29,8 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private Boolean isActive =true;
 
 	private String name;
+	
+	private String pan;
 
 	private String natureActivity;
 
@@ -61,6 +64,10 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date dateOfIncorporation;
+	
+	private String financialInstitutionName;
+	
+	private Double limitAvailed;
 
 	public Long getId() {
 		return id;
@@ -239,17 +246,46 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.dateOfIncorporation = dateOfIncorporation;
 	}
 
-	public static void printFields(Object obj) throws Exception {
-        Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
-        
-        for(Field field : fields) {
-            Object value = field.get(obj);
-            if(value instanceof String){
-             String a = value.toString().replaceAll("&", "&amp;");
-             value = a;
-             field.set(obj, value);
-            }
-        }
+	public String getPan() {
+		return pan;
+	}
+
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+
+	public String getFinancialInstitutionName() {
+		return financialInstitutionName;
+	}
+
+	public void setFinancialInstitutionName(String financialInstitutionName) {
+		this.financialInstitutionName = financialInstitutionName;
+	}
+
+	public Double getLimitAvailed() {
+		return limitAvailed;
+	}
+
+	public void setLimitAvailed(Double limitAvailed) {
+		this.limitAvailed = limitAvailed;
+	}
+
+	public static void printFields(Object obj) throws LoansException {
+		try {
+			Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
+
+			for(Field field : fields) {
+				Object value = field.get(obj);
+				if(value instanceof String){
+					String a = value.toString().replaceAll("&", "&amp;");
+					value = a;
+					field.set(obj, value);
+				}
+			}
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
     }
 	
 	

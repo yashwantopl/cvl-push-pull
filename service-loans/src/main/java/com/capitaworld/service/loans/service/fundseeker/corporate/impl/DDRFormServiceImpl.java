@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.*;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ddr.*;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.*;
 import com.capitaworld.service.oneform.enums.*;
@@ -102,6 +103,15 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class DDRFormServiceImpl implements DDRFormService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DDRFormServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+	private static final String YEAR_2018 = "2018.0";
+	private static final String YEAR_2017 = "2017.0";
+	private static final String YEAR_2016 = "2016.0";
+	private static final String YEAR_2015 = "2015.0";
+	private static final String DDR_FORM_ID = "ddrFormId";
+	private static final String MODIFY_BY = "modifyBy";
+	private static final String MODIFY_DATE = "modifyDate";
 
 	@Autowired
 	private DDRFormDetailsRepository ddrFormDetailsRepository;
@@ -263,7 +273,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	}
 
 	@Override
-	public void saveMergeDDR(DDRRequest dDRRequest) throws Exception {
+	public void saveMergeDDR(DDRRequest dDRRequest) throws LoansException {
 		Long userId = dDRRequest.getUserId();
 		try {
 			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(dDRRequest.getApplicationId());
@@ -276,7 +286,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				dDRFormDetails.setCreatedDate(new Date());
 			} else {
 				logger.info("DDR ===============> DDR Form Updating ------------------------->" + dDRRequest.getId());
-				BeanUtils.copyProperties(dDRRequest, dDRFormDetails, "id", "applicationId", "userId", "isActive");
+				BeanUtils.copyProperties(dDRRequest, dDRFormDetails, "id", "applicationId", "userId", CommonUtils.IS_ACTIVE);
 				dDRFormDetails.setModifyBy(userId);
 				dDRFormDetails.setModifyDate(new Date());
 			}
@@ -318,7 +328,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 							proposedProductDetail = proposedProductDetailsRepository
 									.findByIdAndIsActive(proProduct.getId(), true);
 						}
-						if (CommonUtils.isObjectNullOrEmpty(proposedProductDetail)) {
+						if (proposedProductDetail == null || CommonUtils.isObjectNullOrEmpty(proposedProductDetail)) {
 							proposedProductDetail = new ProposedProductDetail();
 							proposedProductDetail.setCreatedBy(userId);
 							proposedProductDetail.setCreatedDate(new Date());
@@ -345,7 +355,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 								existingProductDetail = existingProductDetailsRepository
 										.findByIdAndIsActive(existingPro.getId(), true);
 							}
-							if (CommonUtils.isObjectNullOrEmpty(existingProductDetail)) {
+							if (existingProductDetail == null || CommonUtils.isObjectNullOrEmpty(existingProductDetail)) {
 								existingProductDetail = new ExistingProductDetail();
 								existingProductDetail.setCreatedBy(userId);
 								existingProductDetail.setCreatedDate(new Date());
@@ -374,7 +384,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(promBack)) {
+							if (promBack == null || CommonUtils.isObjectNullOrEmpty(promBack)) {
 								promBack = new PromotorBackgroundDetail();
 								promBack.setCreatedBy(userId);
 								promBack.setCreatedDate(new Date());
@@ -411,7 +421,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 											.findByIdAndIsActive(directorBackReq.getId(), true);
 								}
 
-								if (CommonUtils.isObjectNullOrEmpty(dirBack)) {
+								if (dirBack == null || CommonUtils.isObjectNullOrEmpty(dirBack)) {
 									dirBack = new DirectorBackgroundDetail();
 									dirBack.setCreatedBy(userId);
 									dirBack.setCreatedDate(new Date());
@@ -447,7 +457,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 								ownership = ownershipDetailsRepository.findByIdAndIsActive(ownershipReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(ownership)) {
+							if (ownership == null || CommonUtils.isObjectNullOrEmpty(ownership)) {
 								ownership = new OwnershipDetail();
 								ownership.setCreatedBy(userId);
 								ownership.setCreatedDate(new Date());
@@ -475,7 +485,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										.findByIdAndIsActive(assConcernDetailReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
+							if (assConcernDetail == null || CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
 								assConcernDetail = new AssociatedConcernDetail();
 								assConcernDetail.setCreatedBy(userId);
 								assConcernDetail.setCreatedDate(new Date());
@@ -514,7 +524,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										.findByIdAndIsActive(securityCorDetailReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(securityCorporateDetail)) {
+							if (securityCorporateDetail == null || CommonUtils.isObjectNullOrEmpty(securityCorporateDetail)) {
 								securityCorporateDetail = new SecurityCorporateDetail();
 								securityCorporateDetail.setCreatedBy(userId);
 								securityCorporateDetail.setCreatedDate(new Date());
@@ -558,9 +568,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 			logger.info("DDR ===============> DDR Form Saved Successfully in Service-----------------> "
 					+ dDRFormDetails.getId());
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception while saving ddr form");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("DDR ===============> Throw Exception while saving ddr form : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -637,8 +646,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting user org id", e);
+			logger.error("Error while getting user org id :- ", e);
 		}
 		// ORGANIZATION NAME :- LINENO:6
 		response.setNameOfBorrower(applicantDetail.getOrganisationName());
@@ -696,7 +704,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// GET PROFILE CONSTITUTION :- LINENO:13
@@ -721,8 +729,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					establishMentYear += " " + masterResponse.getValue();
 				}
 			} catch (Exception e) {
-				logger.info("Throw Exception while get establishment year in DDR OneForm");
-				e.printStackTrace();
+				logger.error("Throw Exception while get establishment year in DDR OneForm : ",e);
 			}
 		}
 		// GET PROFILE ESTABLISHMENT YEAR :- LINENO:14
@@ -739,8 +746,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			response.setPromoBackRespList(
 					promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, null));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Primary Promotor Background Details in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Primary Promotor Background Details in DDR OneForm :- ",e);
 		}
 
 		// OWNERSHIP DETAILS :- LINENO:12
@@ -758,8 +764,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			response.setOwnershipReqList(ownershipRespList);
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Primary Ownership Details in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Primary Ownership Details in DDR OneForm : ",e);
 		}
 
 		// SECURITY DETAIL :- LINENO:12
@@ -767,8 +772,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			response.setSecurityCorporateDetailList(
 					securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Primary Security Details in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Primary Security Details in DDR OneForm : ",e);
 		}
 
 		// -----------------PRODUCT DETAILS PROPOSED AND EXISTING (Description of
@@ -779,8 +783,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			response.setExistingProductDetailList(
 					existingProductDetailsService.getExistingProductDetailList(applicationId, userId));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Product Proposed and Existing details in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Product Proposed and Existing details in DDR OneForm : ",e);
 		}
 
 		// ASSOCIATES CONCERN :- LINENO:17
@@ -788,8 +791,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			response.setAssociatedConcernDetailList(
 					associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get associates concern in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get associates concern in DDR OneForm :- ",e);
 		}
 		response.setdDRCMACalculationList(getCMAandCOActDetails(applicationId));
 
@@ -806,8 +808,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 		 * referencesResponseList.add(referencesResponse); }
 		 * response.setReferencesResponseList(referencesResponseList); } catch
 		 * (Exception e) {
-		 * logger.info("Throw Exception While Get Reference Details in DDR OneForm");
-		 * e.printStackTrace(); }
+		 * logger.error("Throw Exception While Get Reference Details in DDR OneForm : ",e);
+		 *  }
 		 */
 		return response;
 	}
@@ -818,10 +820,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 	 * 
 	 * @throws Exception
 	 */
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
-	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws Exception {
+	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws LoansException {
 
 		Long userId = ddrFormDetailsRequest.getUserId();
 
@@ -839,7 +840,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				logger.info("DDR ===============> DDR Form Updating ------------------------->"
 						+ ddrFormDetailsRequest.getId());
 				BeanUtils.copyProperties(ddrFormDetailsRequest, dDRFormDetails, "id", "applicationId", "userId",
-						"isActive");
+						CommonUtils.IS_ACTIVE);
 				dDRFormDetails.setModifyBy(userId);
 				dDRFormDetails.setModifyDate(new Date());
 			}
@@ -868,9 +869,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 			logger.info("DDR ===============> DDR Form Saved Successfully in Service-----------------> "
 					+ dDRFormDetails.getId());
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception while saving ddr form");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("DDR Throw Exception while saving ddr form : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -977,8 +977,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Corporate Details");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Corporate Details : ",e);
 		}
 
 		Long ddrFormId = dDRFormDetails.getId();
@@ -1131,9 +1130,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception While Get Authorized Sign Details ------DDR FORM ID-->"
-					+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Authorized Sign Details ------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 
@@ -1148,27 +1145,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 					ddrAuthorizedSignDetails = authorizedSignDetailsRepository
 							.getByIdAndIsActive(dDRAuthSignDetails.getId());
 				}
-				if (CommonUtils.isObjectNullOrEmpty(ddrAuthorizedSignDetails)) {
+				if (ddrAuthorizedSignDetails == null || CommonUtils.isObjectNullOrEmpty(ddrAuthorizedSignDetails)) {
 					ddrAuthorizedSignDetails = new DDRAuthorizedSignDetails();
-					BeanUtils.copyProperties(dDRAuthSignDetails, ddrAuthorizedSignDetails, "id", "createdBy",
-							"createdDate", "modifyBy", "modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(dDRAuthSignDetails, ddrAuthorizedSignDetails, "id", CommonUtils.CREATED_BY,
+							CommonUtils.CREATED_DATE, MODIFY_BY, MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					ddrAuthorizedSignDetails.setCreatedBy(userId);
 					ddrAuthorizedSignDetails.setCreatedDate(new Date());
 					ddrAuthorizedSignDetails.setIsActive(true);
 					ddrAuthorizedSignDetails.setDdrFormId(ddrFormId);
 				} else {
-					BeanUtils.copyProperties(dDRAuthSignDetails, ddrAuthorizedSignDetails, "id", "createdBy",
-							"createdDate", "modifyBy", "modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(dDRAuthSignDetails, ddrAuthorizedSignDetails, "id", CommonUtils.CREATED_BY,
+							CommonUtils.CREATED_DATE, MODIFY_BY, MODIFY_DATE, DDR_FORM_ID);
 					ddrAuthorizedSignDetails.setModifyBy(userId);
 					ddrAuthorizedSignDetails.setModifyDate(new Date());
 				}
 				authorizedSignDetailsRepository.save(ddrAuthorizedSignDetails);
 			}
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Save Authorized Sign Details ------DDR FORM ID------->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error(
+					"DDR ===============> Throw Exception While Save Authorized Sign Details ------DDR FORM ID------->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 	}
 
@@ -1192,9 +1187,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception While Get Credit Card Details ------DDR FORM ID-->"
-					+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Credit Card Details ------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 	}
@@ -1206,26 +1199,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 				if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 					saveObj = cardDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRCreditCardDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				cardDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception While Save Credit Card Details ------DDR FORM ID-->"
-					+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Credit Card Details ------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 	}
 
@@ -1250,9 +1241,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception While Get Creaditors Details ------DDR FORM ID-->"
-					+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Creaditors Details ------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 	}
@@ -1264,26 +1253,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 				if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 					saveObj = creditorsDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRCreditorsDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				creditorsDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception While Save Creaditors Details ------DDR FORM ID-->"
-					+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Creaditors Details ------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 
 	}
@@ -1311,9 +1298,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception While Get Office Details--------officeType------"
-					+ officeType + "------DDR FORM ID-->" + ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Office Details--------officeType------" + officeType + "------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 	}
@@ -1327,27 +1312,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = ddrOfficeDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDROfficeDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setOfficeType(officeType);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				ddrOfficeDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception While Save Office Details --------officeType------"
-					+ officeType + "------DDR FORM ID-->" + ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Office Details --------officeType------" + officeType + "------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 	}
 
@@ -1371,10 +1354,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Get Other Bank Loan Details--------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Other Bank Loan Details--------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 
@@ -1389,27 +1369,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = bankLoanDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDROtherBankLoanDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				bankLoanDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Save Other Bank Loan Details -------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Other Bank Loan Details -------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 
 	}
@@ -1434,10 +1411,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Get Rel With DBS Details--------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Rel With DBS Details--------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 	}
@@ -1450,27 +1424,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = dbsDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRRelWithDbsDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				dbsDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Save Rel With DBS Details -------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Rel With DBS Details -------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 
 	}
@@ -1495,10 +1466,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Get Vehicles Owned Details--------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Vehicles Owned Details--------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 
@@ -1513,27 +1481,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = vehiclesOwnedDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRVehiclesOwnedDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				vehiclesOwnedDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Save Vehicles Owned Details -------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Vehicles Owned Details -------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 
 	}
@@ -1581,10 +1546,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Get Financial Summary Details--------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Financial Summary Details--------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 
@@ -1598,10 +1560,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = financialSummaryRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRFinancialSummary();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setPerticularName(
 							DDRFinancialSummaryToBeFields.getType(reqObj.getPerticularId()).getValue());
@@ -1609,8 +1571,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setPerticularName(
 							DDRFinancialSummaryToBeFields.getType(reqObj.getPerticularId()).getValue());
 					saveObj.setModifyBy(userId);
@@ -1619,10 +1581,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				financialSummaryRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Save Financial Summary Details -------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Financial Summary Details -------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 
 	}
@@ -1647,7 +1606,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 						try {
 							DDRFamilyDirectorsDetailsRequest.printFields(response);
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getBackgroundId())) {// SET DIRECTOR BACK DETAILS IN NEW DDR OBJECT FOR MERGE DDR
 							try {
@@ -1670,7 +1629,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 									response.setDirectorBackReq(dirRes);
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 						}
 						responseList.add(response);
@@ -1708,15 +1667,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 					responseList.add(response);
 				}
 			} catch (Exception e) {
-				logger.info("Throw Exception While Get Background Details");
-				e.printStackTrace();
+				logger.error("Throw Exception While Get Background Details : ",e);
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Get Family Directors Details--------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get Family Directors Details--------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 	}
@@ -1738,7 +1693,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 						try {
 							DDRExistingBankerDetailRequest.printFields(response);
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getFinancialArrangementId())) {
 							// SET FINANCIAL ARRANGEMENT DETAILS IN NEW DDR OBJECT FOR MERGE DDR
@@ -1754,7 +1709,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 									response.setFinArraRes(finArrRes);
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 						}
 						responseList.add(response);
@@ -1787,15 +1742,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 					responseList.add(response);
 				}
 			} catch (Exception e) {
-				logger.info("Throw Exception While Get DDRExistingBankerDetailRequest Details");
-				e.printStackTrace();
+				logger.error("Throw Exception While Get DDRExistingBankerDetailRequest Details : ",e);
 			}
 			return responseList;
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Get DDRExistingBankerDetailRequest--------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Get DDRExistingBankerDetailRequest--------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 		return Collections.emptyList();
 	}
@@ -1809,27 +1760,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = ddrExistingBankerDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRExistingBankerDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				ddrExistingBankerDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Save Existing Loan Details -------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Existing Loan Details -------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 
 	}
@@ -1843,27 +1791,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = familyDirectorsDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRFamilyDirectorsDetails();
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId", "isActive");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
 					saveObj.setDdrFormId(ddrFormId);
 					saveObj.setCreatedBy(userId);
 					saveObj.setCreatedDate(new Date());
 					saveObj.setIsActive(true);
 				} else {
-					BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifyBy",
-							"modifyDate", "ddrFormId");
+					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
+							MODIFY_DATE, DDR_FORM_ID);
 					saveObj.setModifyBy(userId);
 					saveObj.setModifyDate(new Date());
 				}
 				familyDirectorsDetailsRepository.save(saveObj);
 			}
 		} catch (Exception e) {
-			logger.info(
-					"DDR ===============> Throw Exception While Save Family Directors Details -------------DDR FORM ID-->"
-							+ ddrFormId);
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception While Save Family Directors Details -------------DDR FORM ID-->" + ddrFormId + CommonUtils.EXCEPTION + e);
 		}
 
 	}
@@ -1875,9 +1820,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			return CommonDocumentUtils.getCurrency(currencyId) + " in "
 					+ CommonDocumentUtils.getDenomination(denominationId);
 		} catch (Exception e) {
-			logger.error("DDR ====================> Throw Excetion While get Currency by application id----------->"
-					+ applicationId);
-			e.printStackTrace();
+			logger.error("DDR ====================> Throw Excetion While get Currency by application id----------->" + applicationId + CommonUtils.EXCEPTION + e);
 		}
 		return "";
 	}
@@ -1911,8 +1854,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				logger.info("No organization Id found");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting user org id", e);
+			logger.error("Error while getting user org id : ", e);
 		}
 		// ORGANIZATION NAME :- LINENO:6
 		response.setNameOfBorrower(applicantDetail.getOrganisationName());
@@ -1932,8 +1874,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPincode()) ? CommonUtils.printFields(applicantDetail.getRegisteredPincode(),null) : "";
 			response.setRegOfficeAddress(!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
 		}catch(Exception e) {
-			logger.info("Error while getting registered address details");
-			e.printStackTrace();
+			logger.error("Error while getting registered address details : ",e);
 		}
 		// GET ADMINISRATIVE (Corporate Office) ADDRESS :- LINENO:9
 		try {
@@ -1950,8 +1891,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePincode()) ? CommonUtils.printFields(applicantDetail.getAdministrativePincode(),null) : "";
 			response.setCorpOfficeAddress(!CommonUtils.isObjectNullOrEmpty(admntOfficeAdd) ? admntOfficeAdd : "NA");
 		}catch(Exception e) {
-			logger.info("Error while getting administrative address details");
-			e.printStackTrace();
+			logger.error("Error while getting administrative address details : ",e);
 		}
 		// GET RERGISTERED EMAIL ID AND CONTACT NUMBER :- LINENO:11
 		try {
@@ -1964,7 +1904,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//GET PROFILE CONSTITUTION AND ESTABLISHMENT YEAR:- LINENO:13
 		response.setConstitution(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getConstitutionId()) ? Constitution.getById(applicantDetail.getConstitutionId()).getValue() : "NA");
@@ -1978,8 +1918,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					establishMentYear += " " + masterResponse.getValue();
 				}
 			} catch (Exception e) {
-				logger.info("Throw Exception while get establishment year in DDR OneForm");
-				e.printStackTrace();
+				logger.error("Throw Exception while get establishment year in DDR OneForm : ",e);
 			}
 		}
 		response.setEstablishMentYear(!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? establishMentYear : "NA");
@@ -2005,7 +1944,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin())?decim.format(promotorBackgroundDetailRequest.getDin()).toString() : "");
 				promotorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(promotorBackgroundDetailRequest.getTotalExperience()));
 				promotorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(promotorBackgroundDetailRequest.getNetworth()));
-				promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
+				promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? simpleDateFormat.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
 				promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
 				promotorBackgroundDetailResponse.setDesignation(StringEscapeUtils.escapeXml(promotorBackgroundDetailRequest.getDesignation()));
 				promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
@@ -2013,8 +1952,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			response.setPromoBackRespList(promotorBackgroundDetailResponseList);
 		} catch (Exception e) {
-			logger.info("Error while getting promotors background details");
-			e.printStackTrace();
+			logger.error("Error while getting promotors background details : ",e);
 		}
 		//OWNERSHIP DETAILS :- LINENO:12
 		try {
@@ -2030,8 +1968,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			response.setOwnershipRespList(ownershipDetailResponseList);
 
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Primary Ownership Details in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Primary Ownership Details in DDR OneForm : ",e);
 	    }
 		//CURRENT FINANCIAL ARRANGEMENT DETAILS (Existing Banker(s) Details) :-
 		if (setExistingData) {
@@ -2041,8 +1978,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		try {
 			response.setSecurityCorporateDetailList(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Primary Security Details in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Primary Security Details in DDR OneForm : ",e);
 		}
 		//DIRECTOR BACKGROUND DETAILS
 		if (setExistingData) {
@@ -2053,15 +1989,13 @@ public class DDRFormServiceImpl implements DDRFormService {
 			response.setProposedProductDetailList(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId));
 			response.setExistingProductDetailList(existingProductDetailsService.getExistingProductDetailList(applicationId, userId));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Product Proposed and Existing details in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Product Proposed and Existing details in DDR OneForm : ",e);
 		}
 		//ASSOCIATES CONCERN :- LINENO:17
 		try {
 			response.setAssociatedConcernDetailList(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get associates concern in DDR OneForm");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get associates concern in DDR OneForm : ",e);
 		}
 		response.setdDRCMACalculationList(getCMAandCOActDetails(applicationId));
 		return response;
@@ -2081,7 +2015,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 						finArrDetailRes.setRelationshipSince(ddrExsBankerDetails.getRelationshipSince());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				if (CommonUtils.isObjectNullOrEmpty(finArrDetailRes.getRelationshipSince())) {
 					finArrDetailRes.setRelationshipSince(finArrDetailReq.getRelationshipSince());
@@ -2118,7 +2052,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					directorName += " " + directorBackgroundDetailRequest.getDirectorsName();
 				} else {
 					if (directorBackgroundDetailRequest.getTitle() != null)
-					directorName += " " + directorBackgroundDetailRequest.getTitle();
+						directorName += " " + directorBackgroundDetailRequest.getTitle();
 					directorName += " " + directorBackgroundDetailRequest.getFirstName();
 					directorName += " " + directorBackgroundDetailRequest.getMiddleName();
 					directorName += " " + directorBackgroundDetailRequest.getLastName();
@@ -2130,14 +2064,14 @@ public class DDRFormServiceImpl implements DDRFormService {
 				dirBackDetailRes.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 				dirBackDetailRes.setDin(directorBackgroundDetailRequest.getDin());
 				dirBackDetailRes.setMobile(directorBackgroundDetailRequest.getMobile());
-				dirBackDetailRes.setDob(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDob()) ? DATE_FORMAT.parse(DATE_FORMAT.format(directorBackgroundDetailRequest.getDob())) : null);
+				dirBackDetailRes.setDob(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDob()) ? simpleDateFormat.parse(simpleDateFormat.format(directorBackgroundDetailRequest.getDob())) : null);
 				dirBackDetailRes.setPincode(directorBackgroundDetailRequest.getPincode());
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
 						dirBackDetailRes.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				dirBackDetailRes.setStateCode(directorBackgroundDetailRequest.getStateCode());
 				dirBackDetailRes.setCity(directorBackgroundDetailRequest.getCity());
@@ -2168,8 +2102,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception while get city name by city Id in DDR Onform");
-			e.printStackTrace();
+			logger.error("Throw Exception while get city name by city Id in DDR Onform : ",e);
 		}
 		return null;
 	}
@@ -2190,8 +2123,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception while get city name by city Id in DDR Onform");
-			e.printStackTrace();
+			logger.error("Throw Exception while get city name by city Id in DDR Onform : ",e);
 		}
 		return null;
 	}
@@ -2212,8 +2144,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception while get country name by country Id in DDR Onform");
-			e.printStackTrace();
+			logger.error("Throw Exception while get country name by country Id in DDR Onform : ",e);
 		}
 		return null;
 	}
@@ -2234,9 +2165,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				}
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Total Sales From CMA or Company Act----- appId----->" + applicationId
-					+ "-----year-------" + year);
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Total Sales From CMA or Company Act----- appId----->" + applicationId + "-----year-------" + year + CommonUtils.EXCEPTION + e);
 		}
 		return 0.0;
 	}
@@ -2266,19 +2195,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 					return responseList;
 				}
 				coAct2018OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2018OSDetails)) {
 					coAct2018OSDetails = new ProfitibilityStatementDetail();
 				}
 				coAct2017OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2017OSDetails)) {
 					coAct2017OSDetails = new ProfitibilityStatementDetail();
 				}
 				coAct2016OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2016OSDetails)) {
 					coAct2016OSDetails = new ProfitibilityStatementDetail();
@@ -2286,19 +2215,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 			} else {
 				isCMAUpload = true;
 				cma2018OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018OSDetails)) {
 					cma2018OSDetails = new OperatingStatementDetails();
 				}
 				cma2017OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017OSDetails)) {
 					cma2017OSDetails = new OperatingStatementDetails();
 				}
 				cma2016OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016OSDetails)) {
 					cma2016OSDetails = new OperatingStatementDetails();
@@ -2313,25 +2242,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (isCMAUpload) {
 				cmaAssetsDetails = assetsDetailsRepository.getByApplicationId(applicationId);
 				cma2018AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018AssetDetails)) {
 					cma2018AssetDetails = new AssetsDetails();
 				}
 				cma2017AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017AssetDetails)) {
 					cma2017AssetDetails = new AssetsDetails();
 				}
 				cma2016AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016AssetDetails)) {
 					cma2016AssetDetails = new AssetsDetails();
 				}
 				cma2015AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2015".equals(a.getYear()) || "2015.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2015AssetDetails)) {
 					cma2015AssetDetails = new AssetsDetails();
@@ -2346,25 +2275,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (isCMAUpload) {
 				liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
 				cma2018Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018Liabilities)) {
 					cma2018Liabilities = new LiabilitiesDetails();
 				}
 				cma2017Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017Liabilities)) {
 					cma2017Liabilities = new LiabilitiesDetails();
 				}
 				cma2016Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016Liabilities)) {
 					cma2016Liabilities = new LiabilitiesDetails();
 				}
 				cma2015Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2015".equals(a.getYear()) || "2015.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2015Liabilities)) {
 					cma2015Liabilities = new LiabilitiesDetails();
@@ -2379,25 +2308,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (!isCMAUpload) {
 				balanceSheetDetailList = balanceSheetDetailRepository.getByApplicationId(applicationId);
 				coAct2018BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2018BalanceSheet)) {
 					coAct2018BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2017BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2017BalanceSheet)) {
 					coAct2017BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2016BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2016BalanceSheet)) {
 					coAct2016BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2015BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2015".equals(a.getYear()) || "2015.0".equals(a.getYear())).findFirst()
+						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2015BalanceSheet)) {
 					coAct2015BalanceSheet = new BalanceSheetDetail();
@@ -3241,10 +3170,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			DDRCMACalculationResponse.printFields(workingCapitalCycle);
 			responseList.add(workingCapitalCycle);
 		} catch (Exception e) {
-			logger.error(
-					"DDR ===================> Throw Exception While Get CO ACt and CMA Details -----application----->"
-							+ applicationId);
-			e.printStackTrace();
+			logger.error("DDR ===================> Throw Exception While Get CO ACt and CMA Details -----application----->" + applicationId + CommonUtils.EXCEPTION + e);
 		}
 		return responseList;
 
@@ -3253,15 +3179,12 @@ public class DDRFormServiceImpl implements DDRFormService {
 	private double calculateFinancialSummary(Double provisinalYear, Double lastYear) {
 		try {
 			DecimalFormat decimalFormat = new DecimalFormat("0.00");
-			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
-				if ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
+			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear) && ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0))) {
 					return Double.valueOf(decimalFormat.format(((provisinalYear - lastYear) / lastYear) * 100));
-				}
 			}
 			return 0.0;
 		} catch (Exception e) {
-			logger.info("DDR====================> Throw Excecption while calculateFinancialSummary");
-			e.printStackTrace();
+			logger.error("DDR====================> Throw Excecption while calculateFinancialSummary : ",e);
 		}
 		return 0.00;
 	}
@@ -3269,15 +3192,12 @@ public class DDRFormServiceImpl implements DDRFormService {
 	private String calculateFinancialSummaryString(Double provisinalYear, Double lastYear) {
 		try {
 			DecimalFormat decimalFormat = new DecimalFormat("0.00");
-			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
-				if ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
+			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear) && ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0))) {
 					return decimalFormat.format(((provisinalYear - lastYear) / lastYear) * 100);
-				}
 			}
 			return "0.00";
 		} catch (Exception e) {
-			logger.info("DDR====================> Throw Excecption while calculateFinancialSummaryString");
-			e.printStackTrace();
+			logger.error("DDR====================> Throw Excecption while calculateFinancialSummaryString : ",e);
 		}
 		return "0.00";
 	}
@@ -3309,7 +3229,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	}
 
 	@Override
-	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception {
+	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws LoansException {
 		// DDRFormDetailsRequest
 		try {
 			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
@@ -3491,8 +3411,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			ddrFormDetailsRepository.save(dDRFormDetails);
 			return 1L;
 		} catch (Exception e) {
-			logger.info("DDR==============> Throw Exception while save document flag");
-			e.printStackTrace();
+			logger.error("DDR==============> Throw Exception while save document flag : ",e);
 		}
 
 		return 0L;
@@ -3505,9 +3424,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 			json.put("id", ddrUploadRequest.getDocId());
 			DocumentResponse docResponse = dmsClient.deleteProductDocument(json.toJSONString());
 			if (!CommonUtils.isObjectNullOrEmpty(docResponse)
-					&& docResponse.getStatus().equals(HttpStatus.OK.value())) {
+					&& docResponse.getStatus().equals(HttpStatus.OK.value()) && ddrUploadRequest.getTotalDocs() < 1 ) {
 
-				if (ddrUploadRequest.getTotalDocs() < 1) {
 					DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
 							.getByAppIdAndIsActive(ddrUploadRequest.getApplicationId());
 
@@ -3583,12 +3501,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 						break;
 					}
 					ddrFormDetailsRepository.save(dDRFormDetails);
-				}
 			}
 			return true;
 		} catch (Exception e) {
-			logger.info("Error WHile Delete Documents");
-			e.printStackTrace();
+			logger.error("Error WHile Delete Documents : ",e);
 			return false;
 		}
 	}
@@ -3601,7 +3517,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	 * isDDRApproved(java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception {
+	public Boolean isDDRApproved(Long userId, Long applicationId) throws LoansException {
 		try {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
 					userId);
@@ -3612,8 +3528,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception();
+			logger.error(CommonUtils.EXCEPTION,e);
+			throw new LoansException(e);
 		}
 	}
 
@@ -3642,7 +3558,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return customerRequest;
 	}

@@ -1,12 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,9 +44,10 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
     private PincodeDateService pincodeDateService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
 	@Override
-	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws Exception {
+	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws LoansException {
 
 		try {
 			logger.info("Entering into saveOrUpdateDirectorIncomeDetails=======================>");
@@ -78,8 +76,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}	
 			return true;
 		} catch (Exception e) {
-			logger.info("Exception Occured in saveOrUpdateDirectorIncomeDetails=======================>");
-			e.printStackTrace();
+			logger.error("Exception Occured in saveOrUpdateDirectorIncomeDetails=======================>",e);
 		}
 		return false;
 		
@@ -87,7 +84,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 
 	@Override
 	public List<CorporateDirectorIncomeRequest> getDirectorIncomeDetails(Long applicationId)
-			throws Exception {
+			throws LoansException {
 		
 		try {
 			CorporateDirectorIncomeRequest incomeRequest = null;
@@ -115,17 +112,16 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}
 				
 		}
-		  return null;
+		  return Collections.emptyList();
 		} catch (Exception e) {
-			logger.info("Exception Occured in gettingDirectorIncomeDetails=======================>");
-			e.printStackTrace();
+			logger.error("Exception Occured in gettingDirectorIncomeDetails=======================>",e);
 		}
-		  return null;
+		  return Collections.emptyList();
 	}
 	
 	@Override
 	public List<CorporateDirectorIncomeRequest> getDirectorIncomeLatestYearDetails(Long applicationId)
-			throws Exception {
+			throws LoansException {
 		try {
 			CorporateDirectorIncomeRequest incomeRequest = null;
 			List<CorporateDirectorIncomeDetails> incomeDetails = null;
@@ -150,19 +146,18 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}
 				
 		}
-		  return null;
+		  return Collections.emptyList();
 		} catch (Exception e) {
-			logger.info("Exception Occured in gettingDirectorLatestYearIncomeDetails------------->");
-			e.printStackTrace();
+			logger.error("Exception Occured in gettingDirectorLatestYearIncomeDetails------------->",e);
 		}
-		  return null;
+		  return Collections.emptyList();
 	}
 	
 	
 	
 
 	@Override
-	public List<Map<String, Object>> getDirectorBackGroundDetails(Long applicationId) throws Exception {
+	public List<Map<String, Object>> getDirectorBackGroundDetails(Long applicationId) throws LoansException {
 		
 		try {
 			List<DirectorBackgroundDetail> backgroundDetailsList = null;			
@@ -172,7 +167,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			
 			if(!(CommonUtils.isObjectNullOrEmpty(applicationId))){
 				backgroundDetailsList = backgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-			    System.out.println("Directors List==============>"+backgroundDetailsList);
+			   logger.info("Directors List==============>"+backgroundDetailsList);
 				directorBackgroundlist = new ArrayList<Map<String, Object>>();
 				if(!CommonUtils.isObjectNullOrEmpty(backgroundDetailsList)){
 					for(DirectorBackgroundDetail corpObj:backgroundDetailsList) {
@@ -193,7 +188,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("designation", corpObj.getDesignation());
 							map.put("directorsName", corpObj.getDirectorsName());
 							map.put("totalExperience", corpObj.getTotalExperience());
-							map.put("dob", DATE_FORMAT.format(corpObj.getDob()));
+							map.put("dob", simpleDateFormat.format(corpObj.getDob()));
 							map.put("mobile", corpObj.getMobile());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
 								Gender byIdGndr = Gender.getById(corpObj.getGender());
@@ -285,7 +280,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 										
 									}
 								} catch (Exception e) {
-									e.printStackTrace();
+								 logger.error(CommonUtils.EXCEPTION,e);
 								}
 							 
 							directorBackgroundlist.add(map);
@@ -297,12 +292,11 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}
 				
 		}
-		  return null;
+		  return Collections.emptyList();
 		} catch (Exception e) {
-			logger.info("Exception Occured in getDirectorBackGroundAndEmployeeDetails=======================>");
-			e.printStackTrace();
+			logger.error("Exception Occured in getDirectorBackGroundAndEmployeeDetails=======================>",e);
 		}
-		  return null;
+		  return Collections.emptyList();
 	}
 
 }

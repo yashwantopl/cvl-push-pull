@@ -53,12 +53,6 @@ public class CreditCardsDetailController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -147,12 +141,12 @@ public class CreditCardsDetailController {
 				applicantIdById = guarantorService.getApplicantIdById(id);
 				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
 				break;
+			default : break;
 			}
 			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Creit Card Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

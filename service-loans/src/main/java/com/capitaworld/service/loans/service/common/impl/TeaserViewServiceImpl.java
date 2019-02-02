@@ -17,9 +17,8 @@ public class TeaserViewServiceImpl implements TeaserViewService {
 	
 	@Override
 	public Boolean checkPrimaryTeaserViewIsValid(Long applicationId, Long fpProductId, Long userType) {
-		// TODO Auto-generated method stub
 
-		Long count=(long) 0;
+		Long count;
 		
 		if(!(CommonUtils.UserType.FUND_PROVIDER == userType))
 		{
@@ -38,10 +37,9 @@ public class TeaserViewServiceImpl implements TeaserViewService {
 
 	@Override
 	public Boolean checkFinalTeaserViewIsValid(Long applicationId) {
-		// TODO Auto-generated method stub
 		
 		// check fund seeker has locked his final detailed
-		Long count= (long) 0;
+		Long count;
 		count= loanApplicationRepository.checkFinalDetailIsLocked(applicationId);
 		return count.intValue() > 0;
 	}

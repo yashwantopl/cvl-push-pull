@@ -6,6 +6,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanResponse;
@@ -23,7 +24,6 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 	protected static final String DMS_URL = "dmsURL";
 
 	@Override
-	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId) throws Exception {
+	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId) throws LoansException {
 		HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse = new HomeLoanPrimaryViewResponse();
 		HomeLoanResponse homeLoanResponse = new HomeLoanResponse();
 		// applicant
@@ -240,7 +240,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						officeAddress.setCity("-");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					List<Long> officeCountry = new ArrayList<Long>(1);
@@ -261,7 +261,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						officeAddress.setCountry("-");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 
 				}
 				try {
@@ -283,7 +283,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						officeAddress.setState("-");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				officeAddress.setLandMark(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeLandMark())?"-":applicantDetail.getOfficeLandMark());
 				officeAddress.setPincode(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficePincode())?"-":applicantDetail.getOfficePincode().toString());
@@ -311,7 +311,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						permanentAddress.setCity("-");
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -332,7 +332,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						permanentAddress.setCountry("-");
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					List<Long> permanentState = new ArrayList<Long>(1);
@@ -353,7 +353,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						permanentAddress.setCountry("-");
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				permanentAddress.setLandMark(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentLandMark())?"-":applicantDetail.getPermanentLandMark());
 				permanentAddress.setPincode(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())?"-":applicantDetail.getPermanentPincode().toString());
@@ -378,7 +378,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 					homeLoanResponse.setProfileImage(documentManagementService.getDocumentDetails(applicantId,
 							DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.HOME_LOAN_PROFIEL_PICTURE));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				// get list of Pan Card
@@ -387,7 +387,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT,
 									DocumentAlias.HOME_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				// get list of Aadhar Card
@@ -396,14 +396,15 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT,
 									DocumentAlias.HOME_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				homeLoanPrimaryViewResponse.setPersonalProfileRespoonse(profileViewHLResponse);
 			} else {
-				throw new Exception("No Data found");
+				throw new LoansException("No Data found");
 			}
 		} catch (Exception e) {
-			throw new Exception("Problem Occured while Fetching Retail Details");
+			logger.error("Exception while Fetching Retail Details : ",e);
+			throw new LoansException("Problem Occured while Fetching Retail Details");
 		}
 
 		// set up loan specific details
@@ -475,9 +476,11 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 			coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId,
 					applicationMaster.getUserId(), applicationMaster.getProductId());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		homeLoanPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
+			homeLoanPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		}
 
 		// setting guarantor details
 		List<RetailProfileViewResponse> garantorResponse = null;
@@ -485,9 +488,11 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 			garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId(),
 					applicationMaster.getProductId());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		homeLoanPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		if (garantorResponse != null && !garantorResponse.isEmpty()) {
+			homeLoanPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		}
 
 		return homeLoanPrimaryViewResponse;
 	}

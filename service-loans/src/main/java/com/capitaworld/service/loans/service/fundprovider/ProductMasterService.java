@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundprovider;
 import java.io.IOException;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
@@ -37,7 +38,7 @@ public interface ProductMasterService {
 
 	public ProductDetailsResponse getProductDetailsResponse(Long userId, Long userOrgId);
 
-	public FpProductDetails getProductDetails(Long productMappingId) throws Exception;
+	public FpProductDetails getProductDetails(Long productMappingId) throws LoansException;
 
 	public boolean isSelfView(Long fpProductId, Long userId);
 	
@@ -61,7 +62,7 @@ public interface ProductMasterService {
 	
 	public List<ProductMasterRequest> getProductByOrgId(Long orgd);
 
-	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception;
+	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws LoansException;
 
 	/**
 	 * @param corporateProduct

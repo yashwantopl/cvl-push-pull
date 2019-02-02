@@ -8,7 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -56,6 +59,8 @@ import com.capitaworld.service.users.model.UserResponse;
 @Transactional
 public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ServiceProviderFlowServiceImpl.class);
+
 	@Autowired
 	private Environment environmment;
 	
@@ -81,9 +86,11 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	private static final String USERS_BASE_URL_KEY = "userURL";
-	private static final String ONEFORM_BASE_URL_KEY = "oneForm";
+	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
+	private static final String ERROR_WHILE_GETTING_SP_CLIENT_COUNT = "Error while getting SP client count.";
+
 	@Override
-	public List<SpClientListing> spClientList(int pageIndex,int size,Long spId, String userTypeCode) throws Exception {
+	public List<SpClientListing> spClientList(int pageIndex,int size,Long spId, String userTypeCode) throws LoansException {
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		try {
 			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(pageIndex,size,spId, userTypeCode);
@@ -239,15 +246,13 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 								try {
 									response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									logger.error(CommonUtils.EXCEPTION,e);
 								}
 								fpImagePath = response.getFilePath();	
 							}
 						}
 					} catch (DocumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					spClientDetail.setClientImagePath(fpImagePath);
 					
@@ -314,7 +319,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					            	documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE);
 					            	break;
 					            default:
-									return null;
+									return Collections.emptyList();
 								}
 								// applicant image
 								DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
@@ -346,15 +351,14 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			}
 			return clientListings;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new LoansException(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 
 	}
 	
 	@Override
-	public JSONObject spClientCount(Long spId) throws Exception {
+	public JSONObject spClientCount(Long spId) throws LoansException {
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		try {
 			UserResponse response = usersClient.getSPClientCount(spId);
@@ -362,15 +366,14 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				return MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getData(), JSONObject.class);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			throw new Exception("Error while getting SP client count.");
+			logger.error(ERROR_WHILE_GETTING_SP_CLIENT_COUNT,e);
+			throw new LoansException(ERROR_WHILE_GETTING_SP_CLIENT_COUNT);
 		}
 		return null;
 	}
 
 	@Override
-	public List<SpSysNotifyResponse> spClientNotifications(Long spId) throws Exception {
+	public List<SpSysNotifyResponse> spClientNotifications(Long spId) throws LoansException {
 		String[] userTypeIds = {"fs","fp"};
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
@@ -384,7 +387,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				
 				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
 //							boolean applied = loanApplicationService.hasAlreadyApplied(clientResponse.getClientId(), applicationDetailsForSp.getId(),applicationDetailsForSp.getProductId());
@@ -451,16 +453,15 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			return spSysNotifResponse;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new LoansException(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 		
 	
 	}
 
 	@Override
-	public List<SpSysNotifyResponse> spClientAllNotifications(Long spId, NotificationPageRequest notificationPageRequest) throws Exception {
+	public List<SpSysNotifyResponse> spClientAllNotifications(Long spId, NotificationPageRequest notificationPageRequest) throws LoansException {
 		String[] userTypeIds = {"fs","fp"};
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
@@ -474,7 +475,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				
 				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
 							//code for sp fs notification
@@ -540,21 +540,20 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				}
 			}
 			}
-			List<SpSysNotifyResponse> spSysNotifResponses = new ArrayList<SpSysNotifyResponse>();
+			List<SpSysNotifyResponse> spSysNotifResponses;
 			spSysNotifResponses = getPages(spSysNotifResponse,notificationPageRequest.getPageIndex(), notificationPageRequest.getSize());
 			return spSysNotifResponses;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new LoansException(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 		
 	
 	}
 
 	@Override
-	public Long spClientAllNotificationsCount(Long spId, NotificationPageRequest notificationPageRequest) throws Exception{
+	public Long spClientAllNotificationsCount(Long spId, NotificationPageRequest notificationPageRequest) throws LoansException{
 		String[] userTypeIds = {"fs","fp"};
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		Long totalCount = 0L;
@@ -568,7 +567,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				
 				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
 							//code for sp fs notification
@@ -618,9 +616,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			return totalCount;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new LoansException(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 		
 	

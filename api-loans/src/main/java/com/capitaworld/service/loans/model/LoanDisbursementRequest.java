@@ -197,7 +197,7 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 				+ ", transactionNo=" + transactionNo + ", accountNo=" + accountNo + ", disbursedAmount="
 				+ disbursedAmount + ", disbursementDate=" + disbursementDate + ", disbursementAuthority="
 				+ disbursementAuthority + ", paymentMode=" + paymentMode + ", remark=" + remark + ", userName="
-				+ userName + ", password=" + password + ", actionBy=" + actionBy + ", isSaved=" + isSaved + ", reason="
+				+ userName + ", actionBy=" + actionBy + ", isSaved=" + isSaved + ", reason="
 				+ reason + ", statusCode=" + statusCode + "]";
 	}
 

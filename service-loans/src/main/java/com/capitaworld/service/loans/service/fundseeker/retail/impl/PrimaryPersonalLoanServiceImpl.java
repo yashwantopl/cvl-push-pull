@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	
 	@Override
-	public boolean saveOrUpdate(PrimaryPersonalLoanRequest personalLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryPersonalLoanRequest personalLoanRequest, Long userId) throws LoansException {
 		// ID must not be null
 		try {
 			PrimaryPersonalLoanDetail primaryPersonalLoanDetail = personalLoanDetailRepository
@@ -46,7 +47,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 						+ personalLoanRequest.getId() + " and User Id ==>" + userId);
 			}
 			BeanUtils.copyProperties(personalLoanRequest, primaryPersonalLoanDetail,
-					CommonUtils.IgnorableCopy.CORPORATE);
+					CommonUtils.IgnorableCopy.getCORPORATE());
 			primaryPersonalLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(personalLoanRequest.getTenure()) ? null : (personalLoanRequest.getTenure() * 12));
 			primaryPersonalLoanDetail.setIsActive(true);
 			primaryPersonalLoanDetail.setModifiedBy(userId);
@@ -57,14 +58,12 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			saveNegativeList(primaryPersonalLoanDetail.getApplicationId().getId(), personalLoanRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while saving PrimaryCarLoan Details");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while saving PrimaryCarLoan Details : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -82,7 +81,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 	}
 	
 	@Override
-	public PrimaryPersonalLoanRequest get(Long applicationId, Long userId) throws Exception {
+	public PrimaryPersonalLoanRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
@@ -98,9 +97,8 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			personalLoanRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return personalLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while saving PrimaryCarLoan Details");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while saving PrimaryCarLoan Details : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

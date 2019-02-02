@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -10,12 +11,20 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ScotAnalysisDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ScotAnalysisDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Dhaval on 25-Jan-16.
  */
 public class DprTenthSheetExcelReader
 {
+    private DprTenthSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(DprTenthSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster profile,ScotAnalysisDetailRepository scotAnalysisService) {
 
         saveScotAnalysisService(storageDetailsId,sheet,profile,scotAnalysisService);
@@ -73,7 +82,7 @@ public class DprTenthSheetExcelReader
                 scotAnalysis.setModifiedDate(new Date());
                 scotAnalysisService.save(scotAnalysis);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION);
             }
         }
     }

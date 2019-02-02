@@ -2,8 +2,8 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -27,8 +27,9 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+    
     @Override
-    public boolean saveOrUpdate(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws Exception {
+    public boolean saveOrUpdate(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws LoansException {
 
         try{
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
@@ -48,7 +49,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 applicantDetail.setApplicationId(new LoanApplicationMaster(corporateFinalInfoRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE_PROFILE); //--------------------put check for Ignore properties
+            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.getCorporateProfile()); //--------------------put check for Ignore properties
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
             copyAddressFromRequestToDomain(corporateFinalInfoRequest, applicantDetail); //--------------------put check for Ignore properties
@@ -64,9 +65,8 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return true;
 
         }catch (Exception e){
-            logger.error("Error while Saving Corporate Final Info:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while Saving Corporate Final Info:-",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
 
     }
@@ -110,52 +110,48 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 		}
     }
     @Override
-    public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws Exception {
+    public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws LoansException {
         try {
-            // TODO Auto-generated method stub
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
                     applicationId);
             if (applicantDetail == null) {
                 return null;
             }
             CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
-            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.CORPORATE_PROFILE);
+            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.getCorporateProfile());
             copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
 
             //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 
             return corporateFinalInfoRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Corporate Profile:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while getting Corporate Profile:-",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public CorporateFinalInfoRequest getNTBDetails(Long userId, Long applicationId) throws Exception {
+    public CorporateFinalInfoRequest getNTBDetails(Long userId, Long applicationId) throws LoansException {
         try {
-            // TODO Auto-generated method stub
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationIdAndIsAtive(applicationId);
             if (applicantDetail == null) {
                 return null;
             }
             CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
-            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.NTB_FINAL_EXCLUSION);
+            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.getNtbFinalExclusion());
             copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
 
             //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 
             return corporateFinalInfoRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Corporate Profile:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while getting Corporate Profile:-",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public boolean saveOrUpdateNTBDetails(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws Exception {
+    public boolean saveOrUpdateNTBDetails(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws LoansException {
         try{
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
                     : corporateFinalInfoRequest.getClientId());
@@ -174,7 +170,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 applicantDetail.setApplicationId(new LoanApplicationMaster(corporateFinalInfoRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.NTB_FINAL_EXCLUSION); //--------------------put check for Ignore properties
+            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.getNtbFinalExclusion()); //--------------------put check for Ignore properties
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
             copyAddressFromRequestToDomain(corporateFinalInfoRequest, applicantDetail); //--------------------put check for Ignore properties
@@ -190,9 +186,8 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return true;
 
         }catch (Exception e){
-            logger.error("Error while Saving Corporate Final Info:-");
-            e.printStackTrace();
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            logger.error("Error while Saving Corporate Final Info:-",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 

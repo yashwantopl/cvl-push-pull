@@ -127,6 +127,10 @@ public class ProductMasterTemp implements Serializable {
 	
 
 	public ProductMasterTemp() {
+		// Do nothing because of X and Y.
+	}
+	public ProductMasterTemp(Long id) {
+		this.id = id;
 	}
 
 	public Long getId() {

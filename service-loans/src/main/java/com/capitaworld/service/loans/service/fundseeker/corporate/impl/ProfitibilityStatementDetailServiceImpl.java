@@ -21,7 +21,6 @@ public class ProfitibilityStatementDetailServiceImpl implements ProfitibilitySta
 	
 	@Override
 	public void saveOrUpdate(ProfitibilityStatementDetail profitibilityStatementDetail) {
-		// TODO Auto-generated method stub
 		profitibilityStatementDetailRepository.save(profitibilityStatementDetail);
 		
 	}
@@ -29,13 +28,11 @@ public class ProfitibilityStatementDetailServiceImpl implements ProfitibilitySta
 	@Override
 	public void readProfitibilityStatementDetail(Long applicationId, Long storageDetailsId,
 			XSSFSheet sheet) {
-		// TODO Auto-generated method stub
 		ProfitabilityStatementExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId), profitibilityStatementDetailRepository);
 	}
 
 	@Override
 	public void inActiveProfitibilityStatementDetail(Long storageDetailsId) {
-		// TODO Auto-generated method stub
 		profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetail(storageDetailsId);
 		
 	}

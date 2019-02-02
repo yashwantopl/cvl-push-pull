@@ -39,6 +39,7 @@ public class OwnershipDetailRequest implements Serializable {
 	}
 
 	public OwnershipDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

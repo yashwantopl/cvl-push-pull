@@ -25,7 +25,7 @@ import com.zaxxer.hikari.HikariDataSource;
 public class PersistenceContext {
 
 	protected static final String PROPERTY_NAME_DATABASE_DRIVER = "capitaworld.loans.db.driver";
-	protected static final String PROPERTY_NAME_DATABASE_PASSWORD = "capitaworld.loans.db.password";
+	protected static final String PROPERTY_NAME_DATABASE_POSSWARD = "capitaworld.loans.db.password";
 	protected static final String PROPERTY_NAME_DATABASE_URL = "capitaworld.loans.db.url";
 	protected static final String PROPERTY_NAME_DATABASE_USERNAME = "capitaworld.loans.db.username";
 	protected static final String PROPERTY_NAME_DATABASE_MAX_CONNECTIONS = "capitaworld.loans.db.maxconnections";
@@ -53,13 +53,17 @@ public class PersistenceContext {
 		dataSource.setDriverClassName(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
 		dataSource.setJdbcUrl(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
 		dataSource.setUsername(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-		dataSource.setPassword(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+		dataSource.setPassword(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_POSSWARD));
 		dataSource.setConnectionTestQuery("SELECT 1");
 		dataSource
 				.setMaximumPoolSize(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));
 		dataSource.setMaxLifetime(Long.parseLong(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_LIFETIME)));
 		dataSource.setConnectionTimeout(
 				Long.parseLong(environment.getProperty(PROPERTY_NAME_DATABASE_CONNECTION_TIMEOUT)));
+		
+		//Added after suggested by Satyam Bhai
+		//dataSource.setMinimumIdle(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));
+		//dataSource.setIdleTimeout(Long.parseLong(environment.getProperty(PROPERTY_NAME_DATABASE_CONNECTION_TIMEOUT)));
 		return dataSource;
 	}
 

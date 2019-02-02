@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
     private static final Logger logger = LoggerFactory.getLogger(CarLoanPrimaryViewServiceImpl.class);
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
@@ -66,10 +68,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
     @Autowired
     private DocumentManagementService documentManagementService;
 
-
     protected static final String DMS_URL = "dmsURL";
-
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
     public CarLoanPrimaryViewResponse getCarLoanPrimaryViewDetails(Long toApplicationId) {
@@ -213,7 +212,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
                     officeAddress.setCity(data.getValue());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> officeCountry = new ArrayList<Long>(1);
@@ -227,7 +226,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         officeAddress.setCountry(dataCountry.getValue());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
 
                 }
                 try {
@@ -242,7 +241,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         officeAddress.setState(dataState.getValue());
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
                 officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
@@ -259,7 +258,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
                     permanentAddress.setCity(dataCity.getValue());
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -272,7 +271,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         permanentAddress.setCountry(dataCountry.getValue());
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentState = new ArrayList<Long>(1);
@@ -285,7 +284,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         permanentAddress.setState(dataState.getValue());
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
                 permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
@@ -297,29 +296,29 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 try {
                     profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
                 } catch (DocumentException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 //get list of Aadhar Card
                 try {
                     profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
                 } catch (DocumentException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 //get profile picture
                 try {
                     carLoanResponse.setApplicantProfilePicture(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_PROFIEL_PICTURE));
                 } catch (DocumentException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 carLoanPrimaryViewResponse.setApplicant(profileViewPLResponse);
             } else {
-                throw new Exception("No Data found");
+                throw new LoansException("No Data found");
             }
         } catch (Exception e) {
-           // throw new Exception("Problem Occured while Fetching Retail Details");
+            logger.error("Problem Occured while Fetching Retail Details : ",e);
         }
 
         //setting co-application details
@@ -327,18 +326,22 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         try {
             coApplicantResponse = coApplicantService.getCoApplicantPLResponse(toApplicationId, userId,applicationMaster.getProductId());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
-        carLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
+        if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
+            carLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
+        }
 
         //setting guarantor details
         List<RetailProfileViewResponse> guarantorResponse = null;
         try {
             guarantorResponse = guarantorService.getGuarantorServiceResponse(toApplicationId, userId,applicationMaster.getProductId());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
-        carLoanPrimaryViewResponse.setGuarantorList(guarantorResponse);
+        if (guarantorResponse != null && !guarantorResponse.isEmpty()) {
+            carLoanPrimaryViewResponse.setGuarantorList(guarantorResponse);
+        }
 
         //setting Personal Loan Specific Data
         try {
@@ -349,13 +352,13 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
              }
             //carLoanResponse.setOnRoadCarPrice(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getOnRoadCarPrice()) ? CommonUtils.CurrencyFormat(carLoanResponse.getOnRoadCarPrice().toString()) : null);
             //carLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getDownPayment()) ? CommonUtils.CurrencyFormat(carLoanResponse.getDownPayment().toString()) : null);
-            carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
-            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
-            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
+            carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? simpleDateFormat.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
+            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? simpleDateFormat.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
+            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? simpleDateFormat.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
             carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
             carLoanResponse.setNewCarPurchaseType(primaryCarLoanDetailRequest.getNewCarPurchaseType()!=null? CarPurchaseType.getById(primaryCarLoanDetailRequest.getNewCarPurchaseType()).getValue():null);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         carLoanPrimaryViewResponse.setCarLoanResponse(carLoanResponse);
         return carLoanPrimaryViewResponse;

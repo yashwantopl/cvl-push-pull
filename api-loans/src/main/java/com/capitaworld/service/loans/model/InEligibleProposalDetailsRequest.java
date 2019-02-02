@@ -19,6 +19,16 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     private Boolean isSanctioned;
     
     private Boolean isDisbursed;
+    
+    private Long userId;
+    
+    private Integer status;
+    
+    private String reason;
+    
+    private Integer businessTypeId;
+    
+    private Long ineligibleProposalId;
 
     public Long getApplicationId() {
         return applicationId;
@@ -67,6 +77,54 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 	public void setIsDisbursed(Boolean isDisbursed) {
 		this.isDisbursed = isDisbursed;
 	}
-    
-    
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	
+	public Long getIneligibleProposalId() {
+		return ineligibleProposalId;
+	}
+
+	public void setIneligibleProposalId(Long ineligibleProposalId) {
+		this.ineligibleProposalId = ineligibleProposalId;
+	}
+
+	@Override
+	public String toString() {
+		return "InEligibleProposalDetailsRequest [applicationId=" + applicationId + ", loanAmount=" + loanAmount
+				+ ", userOrgId=" + userOrgId + ", branchId=" + branchId + ", isSanctioned=" + isSanctioned
+				+ ", isDisbursed=" + isDisbursed + ", userId=" + userId + ", status=" + status + ", reason=" + reason
+				+ ", businessTypeId=" + businessTypeId + ", ineligibleProposalId=" + ineligibleProposalId + "]";
+	}
+
 }

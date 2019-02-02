@@ -42,12 +42,6 @@ public class CreditRatingOrganizationDetailsController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -92,7 +86,6 @@ public class CreditRatingOrganizationDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Credit Rating Organization Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

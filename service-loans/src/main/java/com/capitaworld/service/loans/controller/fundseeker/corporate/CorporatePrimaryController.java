@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,10 @@ public class CorporatePrimaryController {
     @Autowired
     private PrimaryCorporateService primaryCorporateService;
 
-    /*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-    public String getPing() {
-        logger.info("Ping success");
-        return "Ping Succeed";
-    }*/
-
     @RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> savePrimary(@RequestBody PrimaryCorporateRequest primaryCorporateRequest,
                                                      HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
-            throws Exception {
+            throws LoansException {
         try {
             CommonDocumentUtils.startHook(logger, "savePrimary");
             // request must not be null
@@ -67,7 +62,6 @@ public class CorporatePrimaryController {
 
         } catch (Exception e) {
             logger.error("Error while saving Primary Details==>", e);
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,7 +73,7 @@ public class CorporatePrimaryController {
                                                     HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
         try {
             CommonDocumentUtils.startHook(logger, "getPrimary");
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            Long userId;
             if (CommonDocumentUtils.isThisClientApplication(request)) {
                 userId = clientId;
             } else {
@@ -99,10 +93,26 @@ public class CorporatePrimaryController {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while getting Primary Corporate Details==>", e);
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "${primary}/get", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PrimaryCorporateRequest getPrimaryForClient(@RequestBody Long applicationId) {
+        try {
+            CommonDocumentUtils.startHook(logger, "getPrimaryForClient");
+
+            if (applicationId == null) {
+                logger.warn("ID and User Id Require to get Primary Working Details ==>" + applicationId);
+                return null;
+            }
+            CommonDocumentUtils.endHook(logger, "getPrimaryForClient");
+            return primaryCorporateService.get(applicationId);
+        } catch (Exception e) {
+            logger.error("Error while getting Primary Corporate Details==>{}", e);
+            return null;
         }
     }
 }

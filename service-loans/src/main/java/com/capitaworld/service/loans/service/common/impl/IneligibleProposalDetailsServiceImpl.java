@@ -5,24 +5,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalTransferHistory;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalTransferHistoryRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -31,8 +31,8 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -58,8 +58,16 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	private static final Logger logger = LoggerFactory.getLogger(IneligibleProposalDetailsServiceImpl.class);
 
+	private static final String BRANCH_NAME_PARAMETERS = "branch_name";
+	private static final String BRANCH_CODE_PARAMETERS = "branch_code";
+	private static final String BRANCH_ADDRESS_PARAMETERS = "branch_address";
+	private static final String BRANCH_CONTACT_PARAMETERS = "branch_contact";
+	private static final String IFSC_CODE_PARAMETERS = "ifsc_code";
+
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+	@Autowired
+	private IneligibleProposalTransferHistoryRepository historyRepository;
 
 	@Autowired
 	private UsersClient userClient;
@@ -68,13 +76,14 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	private OneFormClient oneFormClient;
 
 	@Autowired
-	LoanApplicationService loanApplicationService;
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private LoanRepository loanRepository;
 
 	@Autowired
 	private NotificationClient notificationClient;
 
-	@Autowired
-	private ProposalDetailsClient proposalDetailsClient;
 
 	@Autowired
 	DirectorBackgroundDetailsService directorBackgroundDetailsService;
@@ -88,22 +97,170 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
+	@Autowired
+	private ReportsClient reportsClient;
+
+	@Autowired
+	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
+
+	@Autowired
+	private Environment environment;
+
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
+	
 
 	@Override
-	public Boolean save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest) {
+	public Integer save(InEligibleProposalDetailsRequest inlPropReq) {
 		try {
-			IneligibleProposalDetails ineligibleProposalDetails = new IneligibleProposalDetails();
-			BeanUtils.copyProperties(inEligibleProposalDetailsRequest, ineligibleProposalDetails);
+			String gstin = loanRepository.getGSTINByAppId(inlPropReq.getApplicationId());
+			
+			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
+			boolean isCreateNew = false;
+			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
+				if(inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
+					// THIS APPLCATION IS ALREADY SANCTIONED
+					return 1;
+				}
+				//IF ALREADY FOUND DATA WITH THIS APPLICATION ID THEN NEED TO COMPARE BANK ID WITH ALREADY EXISTS DATA 
+				if(inlProposalDetails.getUserOrgId() != inlPropReq.getUserOrgId()) {
+					//IF NOT MATCHED WIH EXSTING BANK DATA THEN CURRENT OBJECT IS INACTIVE AND UPDATE STATUS 
+					inlProposalDetails.setIsActive(false);
+					inlProposalDetails.setModifiedBy(inlPropReq.getUserId());
+					inlProposalDetails.setModifiedDate(new Date());
+					inlProposalDetails.setStatus(InEligibleProposalStatus.OTHER_BANK);
+					ineligibleProposalDetailsRepository.save(inlProposalDetails);
+					isCreateNew = true;
+				} else if(inlProposalDetails.getBranchId() != inlPropReq.getBranchId()) {
+					//IF NOT MATCHED WIH EXSTING BRANCH DATA THEN CURRENT OBJECT IS INACTIVE 
+					inlProposalDetails.setIsActive(false);
+					inlProposalDetails.setModifiedBy(inlPropReq.getUserId());
+					inlProposalDetails.setModifiedDate(new Date());
+					inlProposalDetails.setStatus(InEligibleProposalStatus.OTHER_BRANCH);
+					ineligibleProposalDetailsRepository.save(inlProposalDetails);
+					isCreateNew = true;
+				}
+			} else {
+				isCreateNew = true;
+			}
+			
+			if(!CommonUtils.isObjectNullOrEmpty(gstin)) {
+				//UPDARE STATUS FOR SAME GSTIN OLD APPLICATIONS
+				List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
+				for(IneligibleProposalDetails inlProposal : inlProposalList) {
+					//CHECK IF SAME BANK PROPOSAL AVAILABLE FOR THIS GSTIN 
+					if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
+						// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
+						if(CommonUtils.isObjectNullOrEmpty(inlProposal.getIsSanctioned()) || !inlProposal.getIsSanctioned()) {
+							// CHECK 60 DAY IN-PRINCIPLE VALIDITY
+							long dateDiff = daysBetween(new Date(), inlProposal.getCreatedDate());
+							
+							String value = loanRepository.getCommonPropertiesValue(com.capitaworld.commons.lib.common.CommonUtils.COMMON_PROPERTIES.CONNECT_MSME_INPRINCIPLE_DATE_RANGE);
+							Integer DAY_DIFFERENCE_FOR_INPRINCIPLE = 0;
+							if(CommonUtils.isObjectNullOrEmpty(value)) {//IF NULL IN COMMON PROPERTIES THEN DEFAULT VALUE IS 60 DAYS
+								DAY_DIFFERENCE_FOR_INPRINCIPLE = 60;
+							} else {
+								DAY_DIFFERENCE_FOR_INPRINCIPLE = Integer.valueOf(value);
+							}
+							if (dateDiff < DAY_DIFFERENCE_FOR_INPRINCIPLE) {
+								inlProposal.setIsActive(false);
+								inlProposal.setModifiedBy(inlPropReq.getUserId());
+								inlProposal.setModifiedDate(new Date());
+								inlProposal.setStatus(InEligibleProposalStatus.OTHER_BANK);
+								ineligibleProposalDetailsRepository.save(inlProposal);
+							}
+						} else {
+							continue;
+						}
+					}	
+				}
+			}
+			
+			if(isCreateNew) {
+				inlProposalDetails = new IneligibleProposalDetails();
+				inlProposalDetails.setUserOrgId(inlPropReq.getUserOrgId());
+				inlProposalDetails.setBranchId(inlPropReq.getBranchId());
+				inlProposalDetails.setApplicationId(inlPropReq.getApplicationId());
+				inlProposalDetails.setCreatedDate(new Date());
+				inlProposalDetails.setCreatedBy(inlPropReq.getUserId());
+				inlProposalDetails.setStatus(InEligibleProposalStatus.PENDING);
+				inlProposalDetails.setBusinessTypeId(inlPropReq.getBusinessTypeId());
+				try {
+					//SET GSTIN 
+					inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));	
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				inlProposalDetails.setIsActive(true);	
+			} else {
+				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getUserOrgId())) {
+					inlProposalDetails.setUserOrgId(inlPropReq.getUserOrgId());	
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getBranchId())) {
+					inlProposalDetails.setBranchId(inlPropReq.getBranchId());	
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getStatus())) {
+					inlProposalDetails.setStatus(inlPropReq.getStatus());
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getIsDisbursed())) {
+					inlProposalDetails.setIsDisbursed(inlPropReq.getIsDisbursed());
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getIsSanctioned())) {
+					inlProposalDetails.setIsSanctioned(inlPropReq.getIsSanctioned());
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getBusinessTypeId())) {
+					inlProposalDetails.setBusinessTypeId(inlPropReq.getBusinessTypeId());
+				}
+				
+				try {
+					//SET GSTIN
+					if(CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getGstin())) {
+						inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));	
+					}	
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				inlProposalDetails.setModifiedDate(new Date());
+				inlProposalDetails.setModifiedBy(inlPropReq.getUserId());
+			}
 			// Set Created Date.
-			ineligibleProposalDetails.setCreatedDate(new Date());
-			ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
-			return true;
+			
+			ineligibleProposalDetailsRepository.save(inlProposalDetails);
+			return 2;
 		} catch (Exception e) {
-			logger.error("error while saving in eligible proposal");
-			e.printStackTrace();
+			logger.error("error while saving in eligible proposal : ",e);
 		}
-		return false;
+		return 0;
+	}
+	
+	private static long daysBetween(Date one, Date two) {
+		long difference = (one.getTime() - two.getTime()) / 86400000;
+		return Math.abs(difference);
+	}
+	
+	/**
+	 * UPDATE REJECTION STATUS
+	 * @param inEliProReq
+	 * @return
+	 */
+	@Override
+	public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq) {
+		IneligibleProposalDetails ineligibleProposalDetails = null;
+		try {
+			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndUserOrgIdAndIsActive(inEliProReq.getApplicationId(), inEliProReq.getUserOrgId(), true);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return false;
+		}
+		if(CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)) {
+			return false;	
+		}
+		ineligibleProposalDetails.setStatus(inEliProReq.getStatus());
+		ineligibleProposalDetails.setReason(inEliProReq.getReason());
+		ineligibleProposalDetails.setModifiedBy(inEliProReq.getUserId());
+		ineligibleProposalDetails.setModifiedDate(new Date());
+		ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
+		return true;
+		
 	}
 
 	@Override
@@ -111,15 +268,14 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		boolean isSent = false;
 		if (applicationId != null && branchId != null && userOrgId != null) {
 			try {
-				Map<String, Object> notificationParams = new HashMap<>();
+				Map<String, Object> notificationParams;
 				// Sending mail to FS who become Ineligible
 				// 1 Get Details of FS_NAME,Bank name, Branch name and Address based on application Id
 				LoanApplicationRequest applicationRequest = null;
 				try {
 					applicationRequest = loanApplicationService.getFromClient(applicationId);
 				} catch (Exception e1) {
-					logger.info("Exception in getting :" + e1);
-					e1.printStackTrace();
+					logger.error("Exception in getting :" + e1);
 				}
 				// For getting Fund Seeker's Name
 				if (applicationRequest != null) {
@@ -131,16 +287,14 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					try {
 						response = userClient.getEmailMobile(applicationRequest.getUserId());
 					} catch (Exception e) {
-						logger.info("Something went wrong while calling Users client from sending mail to fs===>{}");
-						e.printStackTrace();
+						logger.error("Something went wrong while calling Users client from sending mail to fs===>{}",e);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(response)) {
 						try {
 							signUpUser = MultipleJSONObjectHelper
 									.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
 						} catch (Exception e) {
-							logger.info("Exception getting signup user at Sending email to fs and bank branch");
-							e.printStackTrace();
+							logger.error("Exception getting signup user at Sending email to fs and bank branch : ",e);
 						}
 					}
 					// ==================For getting Organisation========Name
@@ -151,8 +305,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					try {
 						userResponse = userClient.getOrgNameByOrgId(Long.valueOf(userOrgId.toString()));
 					} catch (Exception e) {
-						logger.info("Exception occured while getting Organisation details by orgId");
-						e.printStackTrace();
+						logger.error("Exception occured while getting Organisation details by orgId : ",e);
 					}
 					try {
 						if (!CommonUtils.isObjectNullOrEmpty(userResponse)) {
@@ -162,37 +315,38 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							organisationName = organisationRequest.getOrganisationName();
 						}
 					} catch (Exception e) {
-						logger.info("Exception occured while getting Organisation details by orgId");
-						e.printStackTrace();
-
+						logger.error("Exception occured while getting Organisation details by orgId : ",e);
 					}
 
 					// ===FS=============================================================================
 					notificationParams.put("bank_name", organisationName);
  
-					String subject = "Manual Application :#appId= " + applicationId;
-					if (organisationName != null) {
-						notificationParams.put("isDynamic", true);
+
+					 String subject = "Manual Application";
+					 notificationParams.put("app_id", applicationId!=null?applicationId:"NA");
+	                    if (organisationName != null && applicationId!=null) {
+	                        notificationParams.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
+
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject);
+								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true,null);
 					}
 					// ===========================================================================================
 					// 2nd email Step2 Get Details of Bank branch --- Sending mail to Branch
 					// Checker/Maker/BO
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
-					subject = "Manual Application : #appId=" + applicationId;
-					mailParameters.put("fs_name",
-							notificationParams.get("fs_name") != null ? notificationParams.get("fs_name") : "NA");
+					subject = "Manual Application";
+					mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
+							notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) != null ? notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) : "NA");
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
-					mailParameters.put("address",
-							notificationParams.get("address") != null ? notificationParams.get("address") : "NA");
+					mailParameters.put(CommonUtils.PARAMETERS_ADDRESS,
+							notificationParams.get(CommonUtils.PARAMETERS_ADDRESS) != null ? notificationParams.get(CommonUtils.PARAMETERS_ADDRESS) : "NA");
 					if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
 							.getId()) {
 						//get loan amount and  loan type from loan applicationMaster
 //						get loan_amount from retail applicant details
-						mailParameters.put("loan_type", "Personal Loan");
-						mailParameters.put("loan_amount", notificationParams.get("loan_amount"));
+						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Personal Loan");
+						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
 					} else {
 						// Type ==For getting Loan=====For Existing and NTB====================
 						PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
@@ -202,20 +356,20 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId())
 										.getValue();
 								if ("Asset Acquisition".equals(loanType)) {
-									mailParameters.put("loan_type", "Term Loan");
+									mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Term Loan");
 								} else {
-									mailParameters.put("loan_type", loanType != null ? loanType : "NA");
+									mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, loanType != null ? loanType : "NA");
 								}
 							} else {
-								mailParameters.put("loan_type", "NA");
+								mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "NA");
 							}
-							mailParameters.put("loan_amount",
+							mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
 									primaryCorporateDetail.getLoanAmount() != null
 											? String.format("%.0f", primaryCorporateDetail.getLoanAmount())
 											: "NA");
 						} else {
-							mailParameters.put("loan_type", "NA");
-							mailParameters.put("loan_amount", "NA");
+							mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "NA");
+							mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, "NA");
 						}
 					}
 					// ======send email to maker bo checker===========================
@@ -230,11 +384,21 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
-								mailParameters.put("isDynamic", true);
+
+								 mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
+								 notificationParams.put("app_id", applicationId!=null?applicationId:"NA");
+
+
+								String[] bcc=null;
+								if(i==0)
+								{
+									bcc = new String[]{environment.getRequiredProperty("bccforcam")};
+								}
+
+
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc);
 							}
 						}
 
@@ -250,11 +414,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
-								mailParameters.put("isDynamic", true);
+								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null);
 							}
 						}
 
@@ -269,11 +432,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
-								mailParameters.put("isDynamic", true);
+								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null);
 							}
 						}
 
@@ -319,8 +481,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						BranchBasicDetailsRequest resp = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 								BranchBasicDetailsRequest.class);
 						if (!CommonUtils.isObjectNullOrEmpty(resp)) {
-							notificationParams.put("branch_name", resp.getName() != null ? resp.getName() : "-");
-							notificationParams.put("branch_code", resp.getCode() != null ? resp.getCode() : "-");
+							notificationParams.put(BRANCH_NAME_PARAMETERS, resp.getName() != null ? resp.getName() : "-");
+							notificationParams.put(BRANCH_CODE_PARAMETERS, resp.getCode() != null ? resp.getCode() : "-");
 
 							premiseNo = resp.getPremisesNo() != null ? resp.getPremisesNo() : " ";
 							streetName = resp.getStreetName() != null ? resp.getStreetName() : " ";
@@ -336,9 +498,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 									state = CommonDocumentUtils.getState(Long.valueOf(resp.getStateId().toString()),
 											oneFormClient);
 								} catch (Exception e) {
-									logger.info("Error while calling One form client for getting State");
+									logger.error("Error while calling One form client for getting State : ",e);
 									state = " ";
-									e.printStackTrace();
 								}
 								state = state != null ? state : " ";
 							} else {
@@ -349,45 +510,43 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 									city = CommonDocumentUtils.getCity(Long.valueOf(resp.getCityId().toString()),
 											oneFormClient);
 								} catch (Exception e) {
-									logger.info("Error while calling One form client for getting City");
+									logger.error("Error while calling One form client for getting City : ",e);
 									city = " ";
-									e.printStackTrace();
 								}
 								city = city != null ? city : " ";
 							} else {
 								city = " ";
 							}
-							address = premiseNo.toString() + ", " + streetName.toString() + ", " + landMark.toString()
-									+ ", " + state.toString() + ", " + city.toString();
+							address = premiseNo + ", " + streetName + ", " + landMark
+									+ ", " + state + ", " + city;
 							address = address + pinCode;
-							notificationParams.put("branch_address", address != null ? address : "-");
-							notificationParams.put("branch_contact",
+							notificationParams.put(BRANCH_ADDRESS_PARAMETERS, address != null ? address : "-");
+							notificationParams.put(BRANCH_CONTACT_PARAMETERS,
 									resp.getContactPersonNumber() != null ? resp.getContactPersonNumber() : "-");
 						} else {
-							notificationParams.put("branch_name", "-");
-							notificationParams.put("branch_code", "-");
-							notificationParams.put("ifsc_code", "-");
-							notificationParams.put("branch_address", "-");
-							notificationParams.put("branch_contact", "-");
+							notificationParams.put(BRANCH_NAME_PARAMETERS, "-");
+							notificationParams.put(BRANCH_CODE_PARAMETERS, "-");
+							notificationParams.put(IFSC_CODE_PARAMETERS, "-");
+							notificationParams.put(BRANCH_ADDRESS_PARAMETERS, "-");
+							notificationParams.put(BRANCH_CONTACT_PARAMETERS, "-");
 						}
 					}
 				}
 			} else {
-				notificationParams.put("branch_name", "-");
-				notificationParams.put("branch_code", "-");
-				notificationParams.put("ifsc_code", "-");
-				notificationParams.put("branch_address", "-");
-				notificationParams.put("branch_contact", "-");
+				notificationParams.put(BRANCH_NAME_PARAMETERS, "-");
+				notificationParams.put(BRANCH_CODE_PARAMETERS, "-");
+				notificationParams.put(IFSC_CODE_PARAMETERS, "-");
+				notificationParams.put(BRANCH_ADDRESS_PARAMETERS, "-");
+				notificationParams.put(BRANCH_CONTACT_PARAMETERS, "-");
 			}
 			return notificationParams;
 		} catch (Exception e) {
-			logger.info("Error while calling User's client for getting Branch Details");
-			notificationParams.put("branch_name", "-");
-			notificationParams.put("branch_code", "-");
-			notificationParams.put("ifsc_code", "-");
-			notificationParams.put("branch_address", "-");
-			notificationParams.put("branch_contact", "-");
-			e.printStackTrace();
+			logger.error("Error while calling User's client for getting Branch Details : ",e);
+			notificationParams.put(BRANCH_NAME_PARAMETERS, "-");
+			notificationParams.put(BRANCH_CODE_PARAMETERS, "-");
+			notificationParams.put(IFSC_CODE_PARAMETERS, "-");
+			notificationParams.put(BRANCH_ADDRESS_PARAMETERS, "-");
+			notificationParams.put(BRANCH_CONTACT_PARAMETERS, "-");
 			return notificationParams;
 		}
 	}
@@ -402,60 +561,74 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			try {
 				NTBResponse = directorBackgroundDetailsService.getDirectorBasicDetailsListForNTB(applicationId);
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Exception in  geting details of user in ntb:" + e);
+				logger.error("Exception in  geting details of user in ntb:" + e);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
 				int isMainDirector = 0;
 				for (DirectorBackgroundDetailRequest director : NTBResponse) {
 					if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
 						fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
-						notificationParams.put("fs_name", fsName);
-						notificationParams.put("address", director.getAddress() != null ? director.getAddress() : "NA");
+						notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName);
+						notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, director.getAddress() != null ? director.getAddress() : "NA");
 						isMainDirector = 1;
 					}
 				}
 				if (isMainDirector == 0) {
-					fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
+					fsName = NTBResponse == null ? "NA" : NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
 							: "NA";
-					notificationParams.put("fs_name", fsName != null ? fsName : "NA");
-					notificationParams.put("address",
-							NTBResponse.get(0).getAddress() != null ? NTBResponse.get(0).getAddress() : "NA");
+					notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS,
+							NTBResponse == null ? "NA" : NTBResponse.get(0).getAddress() != null ? NTBResponse.get(0).getAddress() : "NA");
 				}
 			} else {
-				notificationParams.put("fs_name", fsName != null ? fsName : "NA");
-				notificationParams.put("address", "NA");
+				notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+				notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, "NA");
 			}
 			return notificationParams;
 		} else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) {
 			try {
 				// for fs name and address only
 				RetailApplicantRequest plRequest = retailApplicantSercive.get(applicationId);
-				notificationParams.put("loan_amount", plRequest.getLoanAmountRequired()!=null?plRequest.getLoanAmountRequired():" - ");
+				notificationParams.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, plRequest.getLoanAmountRequired()!=null?plRequest.getLoanAmountRequired():" - ");
 				
 				if (plRequest != null) {
-					notificationParams.put("fs_name", plRequest.getFirstName());
+					notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, plRequest.getFirstName());
 					String primiseName = plRequest.getAddressPremiseName() != "" ? plRequest.getAddressPremiseName()
 							: "";
 					String streetName = plRequest.getAddressStreetName() != "" ? plRequest.getAddressStreetName() : "";
 					String landMark = plRequest.getAddressLandmark() != "" ? plRequest.getAddressLandmark() : "";
-					address = "";
-					if (primiseName != "" && primiseName != null)
+					address = null;
+					if (primiseName != "" && primiseName != null){
 						address = primiseName;
-					if (streetName != "" && streetName != null && primiseName != "")
-						address = address + "," + streetName;
-					else
-						address=streetName;
-					if (landMark != "" && landMark != null && streetName != "")
-						address = address + "," + landMark;
-					else
-						address = address + "," + landMark;	
+					}
+
+					if (streetName != "" && streetName != null)
+						if(address != null){
+							address = address + "," + streetName;
+						}else{
+							address = streetName;
+						}
+
+					if (landMark != "" && landMark != null){
+						if(address != null){
+							address = address + "," + landMark;
+						}else{
+							address = landMark;
+						}
+					}
+
 					String city = "";
 					try {
 						city = CommonDocumentUtils.getCity(Long.valueOf(plRequest.getAddressCity().toString()),
 								oneFormClient);
-						if (city != "")
-							address = address + "," + city;
+						if (city != ""){
+							if(address != null){
+								address = address + "," + city;
+							}else{
+								address = city;
+							}
+						}
+
 					} catch (Exception e) {
 						logger.error("Error in getting city from city id" + e);
 					}
@@ -470,7 +643,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					}
 					logger.info("address is:" + address);
 
-					notificationParams.put("address", address);
+					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, address);
 				}
 			} catch (Exception e) {
 				logger.error("Exception in Getting Fund seeker details for PL ineligible proposal details: " + e);
@@ -478,7 +651,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return notificationParams;
 		} else {
 			fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
-			notificationParams.put("fs_name", fsName);
+			notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName);
 			if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
 				CorporateApplicantRequest applicantRequest = corporateApplicantService
 						.getCorporateApplicant(applicationId);
@@ -497,9 +670,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					landMark = applicantRequest.getFirstAddress().getLandMark() != null
 							? applicantRequest.getFirstAddress().getLandMark()
 							: "";
-					address = premiseNumber.toString() + " " + streetName.toString() + " " + landMark.toString();
+					address = premiseNumber + " " + streetName + " " + landMark;
 
-					notificationParams.put("address", address != null ? address : "NA");
+					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
 				}
 			}
 			return notificationParams;
@@ -507,18 +680,18 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject) throws NotificationException {
+			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
 		
 		try{
-			notificationRequest.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+			notificationRequest.setIsDynamic(((Boolean) mailParameters.get(CommonUtils.PARAMETERS_IS_DYNAMIC)).booleanValue());
 		}catch (Exception e) {
 			notificationRequest.setIsDynamic(false);
 		}
 		
-		String to[] = { toNo };
+		String[] to = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setTemplateId(templateId);
@@ -527,7 +700,39 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notification.setType(NotificationType.EMAIL);
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
-		notification.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
+
+		// start attach CAM to Mail
+
+		if(!isFundSeeker)
+		{
+			Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("INELIGIBLECAMREPORT");
+			reportRequest.setType("INELIGIBLECAMREPORT");
+
+			try
+			{
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				notification.setFileName("CAM.pdf");
+				notification.setContentInBytes(byteArr);
+			}
+			catch (Exception e)
+			{
+				logger.error("error while attaching cam report : ",e);
+			}
+
+			if(!CommonUtils.isObjectNullOrEmpty(bcc))
+			{
+				notification.setBcc(bcc);
+				logger.info("BCC::"+bcc);
+			}
+
+		}
+
+		// end attach CAM to Mail
+
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
@@ -543,7 +748,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public List<ProposalDetailsAdminRequest> getOfflineProposals(Long userOrgId, Long userId,
 			ProposalDetailsAdminRequest request) {
 
-		List<Object[]> result = new ArrayList<Object[]>();
+		List<Object[]> result;
 
 		result = ineligibleProposalDetailsRepository.getOfflineProposalDetailsByOrgId(userOrgId, request.getFromDate(),
 				request.getToDate());
@@ -576,5 +781,32 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		}
 
 		return responseList;
+	}
+
+	@Override
+	public boolean updateTransferBranchDetail(InEligibleProposalDetailsRequest inEliProReq) {
+		try{
+			//find entity by Id and update branch transfer details
+			IneligibleProposalDetails proposalDetails = ineligibleProposalDetailsRepository.findOne(inEliProReq.getIneligibleProposalId());
+			Long branchId = proposalDetails.getBranchId();
+			proposalDetails.setBranchId(inEliProReq.getBranchId());
+			proposalDetails.setModifiedBy(inEliProReq.getUserId());
+			proposalDetails.setModifiedDate(new Date());
+			ineligibleProposalDetailsRepository.save(proposalDetails); 
+			// save updated branch history in Transfer history table
+			IneligibleProposalTransferHistory proposalTransferHistory = new IneligibleProposalTransferHistory();
+			proposalTransferHistory.setIneligibleProposalid(proposalDetails.getId());
+			proposalTransferHistory.setNewBranchId(inEliProReq.getBranchId());
+			proposalTransferHistory.setOldBranchId(branchId);
+			proposalTransferHistory.setReason(inEliProReq.getReason());
+			proposalTransferHistory.setCreatedBy(inEliProReq.getUserId());
+			proposalTransferHistory.setCreatedDate(new Date());
+			proposalTransferHistory.setApplicationId(proposalDetails.getApplicationId());
+			historyRepository.save(proposalTransferHistory);
+			return true;
+		} catch (Exception e) {
+			logger.error("error while update ineligible proposal : ",e);
+		}
+			return false;
 	}
 }

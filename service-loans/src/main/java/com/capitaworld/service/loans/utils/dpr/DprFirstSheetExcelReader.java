@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -13,6 +14,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.BoardOfDirector
 import com.capitaworld.service.loans.domain.fundseeker.corporate.StrategicAlliancesDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAlliancesDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,6 +23,13 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAl
  *
  */
 public class DprFirstSheetExcelReader {
+
+    private DprFirstSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(DprFirstSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,BoardOfDirectorsDetailRepository boardOfDirectorsDetailRepository,StrategicAlliancesDetailRepository strategicAlliancesDetailRepository){
 
         //save Boards Of Directors
@@ -75,7 +85,7 @@ public class DprFirstSheetExcelReader {
                 strategicAlliances.setModifiedDate(new Date());
                 strategicAlliancesDetailRepository.save(strategicAlliances);
             }catch (Exception e){
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
 
@@ -131,9 +141,8 @@ public class DprFirstSheetExcelReader {
                 boardOfDirectorsDetail.setIsActive(true);
                 boardOfDirectorsDetailRepository.save(boardOfDirectorsDetail);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
-            // System.out.println(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
         }
 
     }

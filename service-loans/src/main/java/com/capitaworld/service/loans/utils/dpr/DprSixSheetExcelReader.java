@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -13,6 +14,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.DriverForFuture
 import com.capitaworld.service.loans.domain.fundseeker.corporate.RevenueAndOrderBookDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DriverForFutureGrowthDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndOrderBookDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -21,6 +24,13 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndO
  */
 public class DprSixSheetExcelReader
 {
+
+    private DprSixSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(DprSixSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,RevenueAndOrderBookDetailRepository revenueAndOrderBookDetailRepository,DriverForFutureGrowthDetailRepository driverForFutureGrowthDetailRepository,DprUserDataDetail dprUserDataDetail) {
 
         saveRevenuesAndOrderBook(storageDetailsId,sheet,"11",loanApplicationMaster,revenueAndOrderBookDetailRepository);
@@ -38,25 +48,21 @@ public class DprSixSheetExcelReader
         //save question 790
         try {
             String question790Answer = getDataFromCell(sheet, "C4");
-            if (!(question790Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question790Answer.equals("Insert Text Here"))) {
+            if (!(question790Answer.isEmpty()) && !(question790Answer.equals("Insert Text Here")) ) {//if textbox is empty not insert record
                 	dprUserDataDetail.setMarketsCurrentlyServed(question790Answer);
-                }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 791
         try {
             String question791Answer = getDataFromCell(sheet, "C6");
-            if (!(question791Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question791Answer.equals("Insert Text Here"))) {
+            if (!(question791Answer.isEmpty()) && !(question791Answer.equals("Insert Text Here")) ) {//if textbox is empty not insert record
                 	dprUserDataDetail.setTargetMarketStrategy(question791Answer);
-                }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
     }
 
@@ -98,7 +104,7 @@ public class DprSixSheetExcelReader
                 driverForFutureGrowth.setStorageDetailsId(storageDetailsId);
                 driverForFutureGrowthDetailRepository.save(driverForFutureGrowth);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }
@@ -150,9 +156,8 @@ public class DprSixSheetExcelReader
                 revenueAndOrderBook.setStorageDetailsId(storageDetailsId);
                 revenueAndOrderBookDetailRepository.save(revenueAndOrderBook);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
-            // System.out.println(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
         }
     }
 

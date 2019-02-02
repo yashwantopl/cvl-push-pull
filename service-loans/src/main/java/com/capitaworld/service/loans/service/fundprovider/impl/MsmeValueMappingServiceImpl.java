@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
-import com.capitaworld.service.loans.model.corporate.MsmeValueMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingTempRepository;
 import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
@@ -13,7 +12,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,8 +59,7 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error While updating msme value mapping!");
-            e.printStackTrace();
+            logger.error("Error While updating msme value mapping!",e);
             return false;
         }
         logger.info("exit from updateMsmeValueMapping()");
@@ -93,15 +90,13 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
                 return false;
             }
         } catch (Exception e) {
-            logger.info("exit form updateMsmeValueMappingTemp() with FALSE");
-            e.printStackTrace();
+            logger.error("exit form updateMsmeValueMappingTemp() with FALSE : ",e);
             return false;
         }
     }
 
     @Override
     public List<Integer> getDataListFromFpProductId(int dataRequestType, Long fpProductId, Long userId) {
-        List<MsmeValueMappingRequest> requestList = new ArrayList<>();
         List<Integer> msmeFundingIds = new ArrayList<Integer>();
         if (dataRequestType == 1) {//pending
             List<MsmeValueMappingTemp> tempList = tempRepository.findByFpProductIdAndIsActive(fpProductId, true);

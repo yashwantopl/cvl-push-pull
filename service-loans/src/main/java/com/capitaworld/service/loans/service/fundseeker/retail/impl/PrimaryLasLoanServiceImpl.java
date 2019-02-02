@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +31,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Override
-	public boolean saveOrUpdate(PrimaryLasLoanDetailRequest lasLoanDetailRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryLasLoanDetailRequest lasLoanDetailRequest, Long userId) throws LoansException {
 		// ID must not be null
 		try {
 			PrimaryLasLoanDetail primaryLasLoanDetail = primaryLasLoanDetailRepository.getByApplicationAndUserId(
@@ -40,7 +41,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 				throw new NullPointerException("PrimaryLasLoanDetail not exist in DB with Application Id=>"
 						+ lasLoanDetailRequest.getId() + " and user Id ==>" + userId);
 			}
-			BeanUtils.copyProperties(lasLoanDetailRequest, primaryLasLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(lasLoanDetailRequest, primaryLasLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			primaryLasLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(lasLoanDetailRequest.getTenure()) ? null
 					: (lasLoanDetailRequest.getTenure() * 12));
 			primaryLasLoanDetail.setIsActive(true);
@@ -49,14 +50,13 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 			primaryLasLoanDetailRepository.save(primaryLasLoanDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while saving Primary LAS Loan Details Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while saving Primary LAS Loan Details Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public PrimaryLasLoanDetailRequest get(Long applicationId, Long userId) throws Exception {
+	public PrimaryLasLoanDetailRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			PrimaryLasLoanDetail loanDetail = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId,
 					userId);
@@ -72,9 +72,8 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 			lasLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return lasLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Primary LAS Loan Details Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Primary LAS Loan Details Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

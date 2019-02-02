@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.service.teaser.primaryview.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,12 +76,11 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	private LapFinalViewService lapFinalViewService;
 	@Override
 	public Boolean getPrimaryViewDetails(Long applicantId, LoansResponse loansResponse)
-			throws Exception {
+			throws LoansException {
 		logger.info("start getPrimaryViewDetails ");
-		// TODO Auto-generated method stub
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
-		return false;
+			return false;
 		
 		LoanType loanType = LoanType.getById(Integer.parseInt(applicationMaster.getProductId().toString()));
 		if (loanType == null)
@@ -128,12 +128,11 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		
 	}
 	@Override
-	public Boolean getFinalViewDetails(Long applicantId, LoansResponse loansResponse) throws Exception {
-		// TODO Auto-generated method stub
+	public Boolean getFinalViewDetails(Long applicantId, LoansResponse loansResponse) throws LoansException {
 		logger.info("start getFinalViewDetails ");
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
-		return false;
+			return false;
 		
 		LoanType loanType = LoanType.getById(Integer.parseInt(applicationMaster.getProductId().toString()));
 		if (loanType == null)

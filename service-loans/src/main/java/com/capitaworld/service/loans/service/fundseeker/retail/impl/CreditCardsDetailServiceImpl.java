@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -46,7 +47,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				CreditCardsDetailRequest creditCardsDetailRequest = (CreditCardsDetailRequest) MultipleJSONObjectHelper
@@ -71,7 +72,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 
 				crediCardsDetail.setModifiedBy(frameRequest.getUserId());
@@ -82,17 +83,16 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save crediCardsDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save crediCardsDetail  :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<CreditCardsDetailRequest> getCreditCardDetailList(Long id, int applicationType) throws Exception {
+	public List<CreditCardsDetailRequest> getCreditCardDetailList(Long id, int applicationType) throws LoansException {
 
-		List<CreditCardsDetail> creditCardsDetails = new ArrayList<CreditCardsDetail>();
+		List<CreditCardsDetail> creditCardsDetails;
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			creditCardsDetails = creditCardsDetailRepository.listCreditCardsFromAppId(id);
@@ -104,7 +104,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 			creditCardsDetails = creditCardsDetailRepository.listCreditCardsFromGarrId(id);
 			break;
 		default:
-			throw new Exception();
+			throw new LoansException("Applcation Type Not Found in getCreditCardDetailList ");
 		}
 
 		List<CreditCardsDetailRequest> creditCardsRequests = new ArrayList<CreditCardsDetailRequest>();
@@ -119,7 +119,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 
 	@Override
 	public Boolean saveOrUpdateFromCibil(List<CreditCardsDetailRequest> creditCardDetail, Long applicationId,
-			Long userId, int applicantType) throws Exception {
+			Long userId, int applicantType) throws LoansException {
 		try {
 			// Inactive Previous Loans Before Adding new
 			creditCardsDetailRepository.inactive(applicationId);
@@ -142,7 +142,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 					crediCardsDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(applicationId));
 					break;
 				default:
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 
 				crediCardsDetail.setModifiedBy(userId);
@@ -153,9 +153,8 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save CreditCard from CIBIL :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save CreditCard from CIBIL :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

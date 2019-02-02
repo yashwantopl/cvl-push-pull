@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -85,7 +86,7 @@ public class MobileLoanServiceImpl implements MobileService {
 
 	
 	@Override
-	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws Exception {
+	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws LoansException {
 		logger.info("Get Applicant Details From RetailApplicantDetail");
 		RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(mobileUserRequest.getUserId(), mobileUserRequest.getApplicationId());
 		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
@@ -119,53 +120,59 @@ public class MobileLoanServiceImpl implements MobileService {
 	}
 	
 	@Override
-	public Long saveApplicantDetails(MRetailApplicantResponse mRetailApplicantResponse) throws Exception {
-		logger.info("Save Applicant Details...");
-		RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
-		if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getId())) {
-			retailApplicantDetail = retailApplicantDetailRepository.findOne(mRetailApplicantResponse.getId());
-		} else {
-			retailApplicantDetail.setApplicationId(loanApplicationRepository.findOne(mRetailApplicantResponse.getApplicationId()));
-			retailApplicantDetail.setCreatedBy(mRetailApplicantResponse.getUserId());
-			retailApplicantDetail.setCreatedDate(new Date());
-			retailApplicantDetail.setIsActive(true);
-		}
-		BeanUtils.copyProperties(mRetailApplicantResponse, retailApplicantDetail,"applicationId","userId","data");
-		retailApplicantDetail.setModifiedDate(new Date());
-		retailApplicantDetail.setModifiedBy(mRetailApplicantResponse.getUserId());
-		retailApplicantDetail = retailApplicantDetailRepository.save(retailApplicantDetail);
-		if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getProductId()) && !CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getData())) {
-			LoanType loantype = CommonUtils.LoanType.getType(mRetailApplicantResponse.getProductId());
-			if(loantype.getValue() == LoanType.HOME_LOAN.getValue()) {
-				logger.info("Start Save Applicant Home Loan Primary Details...");
-				PrimaryHomeLoanDetailRequest homeLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(), PrimaryHomeLoanDetailRequest.class);
-				if(!CommonUtils.isObjectNullOrEmpty(homeLoanRequest)){
-					primaryHomeLoanService.saveOrUpdate(homeLoanRequest, mRetailApplicantResponse.getUserId());
-				}
-			} else if(loantype.getValue() == LoanType.PERSONAL_LOAN.getValue()) {
-				logger.info("Start Save Applicant Personal Loan Primary Details...");
-				PrimaryPersonalLoanRequest personalLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryPersonalLoanRequest.class);
-				if(!CommonUtils.isObjectNullOrEmpty(personalLoanRequest)){
-					primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mRetailApplicantResponse.getUserId());
-				}
-				
-			} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
-				logger.info("Start Save Applicant Car Loan Primary Details...");
-				PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryCarLoanDetailRequest.class);
-				if(!CommonUtils.isObjectNullOrEmpty(carLoanRequest)){
-					primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
-				}
-				
-			} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
-				logger.info("Start Save Applicant LAP Loan Primary Details...");
-				PrimaryLapLoanDetailRequest lapLoanDetailRequest =  MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryLapLoanDetailRequest.class);;
-				if(!CommonUtils.isObjectNullOrEmpty(lapLoanDetailRequest)){
-					primaryLapLoanService.saveOrUpdate(lapLoanDetailRequest, mRetailApplicantResponse.getUserId());
+	public Long saveApplicantDetails(MRetailApplicantResponse mRetailApplicantResponse) throws LoansException {
+		try {
+			logger.info("Save Applicant Details...");
+			RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
+			if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getId())) {
+				retailApplicantDetail = retailApplicantDetailRepository.findOne(mRetailApplicantResponse.getId());
+			} else {
+				retailApplicantDetail.setApplicationId(loanApplicationRepository.findOne(mRetailApplicantResponse.getApplicationId()));
+				retailApplicantDetail.setCreatedBy(mRetailApplicantResponse.getUserId());
+				retailApplicantDetail.setCreatedDate(new Date());
+				retailApplicantDetail.setIsActive(true);
+			}
+			BeanUtils.copyProperties(mRetailApplicantResponse, retailApplicantDetail,CommonUtils.APPLICATION_ID,CommonUtils.USER_ID,"data");
+			retailApplicantDetail.setModifiedDate(new Date());
+			retailApplicantDetail.setModifiedBy(mRetailApplicantResponse.getUserId());
+			retailApplicantDetail = retailApplicantDetailRepository.save(retailApplicantDetail);
+			if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getProductId()) && !CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getData())) {
+				LoanType loantype = CommonUtils.LoanType.getType(mRetailApplicantResponse.getProductId());
+				if(loantype.getValue() == LoanType.HOME_LOAN.getValue()) {
+					logger.info("Start Save Applicant Home Loan Primary Details...");
+					PrimaryHomeLoanDetailRequest homeLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(), PrimaryHomeLoanDetailRequest.class);
+					if(!CommonUtils.isObjectNullOrEmpty(homeLoanRequest)){
+						primaryHomeLoanService.saveOrUpdate(homeLoanRequest, mRetailApplicantResponse.getUserId());
+					}
+				} else if(loantype.getValue() == LoanType.PERSONAL_LOAN.getValue()) {
+					logger.info("Start Save Applicant Personal Loan Primary Details...");
+					PrimaryPersonalLoanRequest personalLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryPersonalLoanRequest.class);
+					if(!CommonUtils.isObjectNullOrEmpty(personalLoanRequest)){
+						primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mRetailApplicantResponse.getUserId());
+					}
+
+				} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
+					logger.info("Start Save Applicant Car Loan Primary Details...");
+					PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryCarLoanDetailRequest.class);
+					if(!CommonUtils.isObjectNullOrEmpty(carLoanRequest)){
+						primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
+					}
+
+				} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
+					logger.info("Start Save Applicant LAP Loan Primary Details...");
+					PrimaryLapLoanDetailRequest lapLoanDetailRequest =  MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryLapLoanDetailRequest.class);
+					if(!CommonUtils.isObjectNullOrEmpty(lapLoanDetailRequest)){
+						primaryLapLoanService.saveOrUpdate(lapLoanDetailRequest, mRetailApplicantResponse.getUserId());
+					}
 				}
 			}
+			logger.info("Saved Successfully All Profile And Primary Data For Mobile App...");
+			return retailApplicantDetail.getId();
 		}
-		logger.info("Saved Successfully All Profile And Primary Data For Mobile App...");
-		return retailApplicantDetail.getId();
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
 	}
 	
 	@Override
@@ -198,7 +205,7 @@ public class MobileLoanServiceImpl implements MobileService {
 			guaDetail.setIsActive(true);
 			guaDetail.setApplicationId(new LoanApplicationMaster(response.getApplicationId()));
 		}
-		BeanUtils.copyProperties(response, guaDetail,"id","userId","isActive","applicationId");
+		BeanUtils.copyProperties(response, guaDetail,"id",CommonUtils.USER_ID,"isActive",CommonUtils.APPLICATION_ID);
 		guaDetail.setBirthDate(response.getDateOfBirth());
 		guaDetail = guarantorDetailsRepository.save(guaDetail);
 		return guaDetail.getId();
@@ -235,7 +242,7 @@ public class MobileLoanServiceImpl implements MobileService {
 			coAppDetail.setApplicationId(new LoanApplicationMaster(response.getApplicationId()));			
 			coAppDetail.setRelationshipWithApplicant(response.getRelationshipWithApplicant());
 		}
-		BeanUtils.copyProperties(response, coAppDetail,"id","userId","isActive","applicationId");
+		BeanUtils.copyProperties(response, coAppDetail,"id",CommonUtils.USER_ID,"isActive",CommonUtils.APPLICATION_ID);
 		coAppDetail.setBirthDate(response.getDateOfBirth());
 		coAppDetail = coApplicantDetailRepository.save(coAppDetail);
 		return coAppDetail.getId();	
@@ -243,9 +250,10 @@ public class MobileLoanServiceImpl implements MobileService {
 	
 	
 	@Override
-	public Long saveLoanApplicationDetails(MobileFrameRequest commonRequest) throws Exception {
+	public Long saveLoanApplicationDetails(MobileFrameRequest commonRequest) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = null;
+			Long appId = null;
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
 				MobileFrameDetailsRequest loanApplicationRequest = (MobileFrameDetailsRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, MobileFrameDetailsRequest.class);
@@ -376,12 +384,13 @@ public class MobileLoanServiceImpl implements MobileService {
 				default:
 					continue;
 				}
+
+				appId = applicationMaster.getId();
 			}
-			return applicationMaster.getId();
+			return appId;
 		} catch (Exception e) {
-			logger.error("Error while Saving Loan Details:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Saving Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -414,8 +423,7 @@ public class MobileLoanServiceImpl implements MobileService {
 			retailApplicantDetailRepository.save(retailApplicantDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-");
-			e.printStackTrace();
+			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-",e);
 			return false;
 		}
 	}

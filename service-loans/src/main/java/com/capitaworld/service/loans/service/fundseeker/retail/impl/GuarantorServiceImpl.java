@@ -4,6 +4,7 @@ import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.retail.*;
@@ -31,10 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -84,7 +82,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	private OneFormClient oneFormClient;
 
 	@Override
-	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
+	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(guarantorRequest.getClientId()) ? userId
 					: guarantorRequest.getClientId());
@@ -136,12 +134,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 							guarantorRequest.getApplicationId(), finalUserId,
 							guarantorRequest.getIsGuarantor1DetailsFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(guarantorRequest.getIsGuarantor2DetailsFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(guarantorRequest.getIsGuarantor2DetailsFilled())) {
 					loanApplicationRepository.setIsGuarantorTwoProfileMandatoryFilled(
 							guarantorRequest.getApplicationId(), finalUserId,
 							guarantorRequest.getIsGuarantor2DetailsFilled());
-				}
 			}
 
 			// Updating Bowl Count
@@ -150,25 +146,23 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Guarantor Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Saving Guarantor Retail Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception {
+	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			return guarantorDetailsRepository.getGuarantorIds(applicationId, userId);
 		} catch (Exception e) {
-			logger.error("Error while Saving Guarantor Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while Saving Guarantor Retail Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public GuarantorRequest get(Long userId, Long applicationId, Long id) throws Exception {
+	public GuarantorRequest get(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			GuarantorDetails guarantorDetail = guarantorDetailsRepository.get(applicationId, userId, id);
 			if (guarantorDetail == null) {
@@ -197,32 +191,30 @@ public class GuarantorServiceImpl implements GuarantorService {
 			guaRequest.setDetailsFilledCount(guarantorDetail.getApplicationId().getDetailsFilledCount());
 			return guaRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Guarantor Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error while getting Guarantor Retail Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<GuarantorRequest> getList(Long applicationId, Long userId) throws Exception {
+	public List<GuarantorRequest> getList(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<GuarantorDetails> details = guarantorDetailsRepository.getList(applicationId, userId);
 			List<GuarantorRequest> requests = new ArrayList<>(details.size());
 			for (GuarantorDetails detail : details) {
 				GuarantorRequest request = new GuarantorRequest();
-				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.getRetailFinal());
 				requests.add(request);
 			}
 			return requests;
 		} catch (Exception e) {
-			logger.error("Error while getting list of Guarantor Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			logger.error("Error while getting list of Guarantor Retail Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -234,7 +226,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			}
 			guaDetails.setModifiedBy(userId);
 			guaDetails.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, guaDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantRequest, guaDetails, CommonUtils.IgnorableCopy.getRetailProfile());
 			guarantorDetailsRepository.save(guaDetails);
 
 			// setting Guarantor Details filled flag
@@ -246,11 +238,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 					loanApplicationRepository.setIsGuarantorOneFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsGuarantor1FinalFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsGuarantor2FinalFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsGuarantor2FinalFilled())) {
 					loanApplicationRepository.setIsGuarantorTwoFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsGuarantor2FinalFilled());
-				}
 			}
 
 			// Updating Final Count
@@ -260,14 +250,13 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving final Guarantor Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			logger.error("Error while Saving final Guarantor Retail Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			GuarantorDetails guaDetail = guarantorDetailsRepository.get(applicationId, userId, id);
 			if (guaDetail == null) {
@@ -275,15 +264,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 						+ userId + " and Application Id ==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			applicantRequest.setFinalFilledCount(guaDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting final Guarantor Retail Profile:-");
-			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			logger.error("Error while getting final Guarantor Retail Profile:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -373,7 +361,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 	@Override
 	public List<RetailProfileViewResponse> getGuarantorServiceResponse(Long applicantId, Long userId, int productId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
 			if (guarantorDetails != null && !guarantorDetails.isEmpty()) {
@@ -504,7 +492,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							officeAddress.setCity("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> officeCountry = new ArrayList<Long>(1);
@@ -525,7 +513,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							officeAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 
 					}
 					try {
@@ -547,7 +535,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							officeAddress.setState("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					officeAddress.setLandMark(guarantorDetail.getOfficeLandMark() != null ? guarantorDetail.getOfficeLandMark() :"");
 					officeAddress.setPincode(guarantorDetail.getOfficePincode() != null ? guarantorDetail.getOfficePincode().toString() : "");
@@ -575,7 +563,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							permanentAddress.setCity("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -596,7 +584,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							permanentAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> permanentState = new ArrayList<Long>(1);
@@ -617,7 +605,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							permanentAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					permanentAddress.setLandMark(guarantorDetail.getPermanentLandMark() !=null ? guarantorDetail.getPermanentLandMark() : "");
 					permanentAddress.setPincode(guarantorDetail.getPermanentPincode() != null ? guarantorDetail.getPermanentPincode().toString() :"");
@@ -693,22 +681,24 @@ public class GuarantorServiceImpl implements GuarantorService {
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
 						break;
+					default : break;
 					}
 
 					plResponses.add(profileViewPLResponse);
 				}
 				return plResponses;
 			} else {
-				return null;
+				return Collections.emptyList();
 			}
 		} catch (Exception e) {
-			return null;
+			logger.error(CommonUtils.EXCEPTION,e);
+			return Collections.emptyList();
 		}
 	}
 
 	@Override
 	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId,
-			int productId) throws Exception {
+			int productId) throws LoansException {
 		try {
 			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
 			if (guarantorDetails != null && !guarantorDetails.isEmpty()) {
@@ -741,8 +731,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 									? guarantorDetail.getFatherName() : null);
 					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMotherName())
 							? guarantorDetail.getMotherName() : null);
-					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getStatusId())) {
-						if (guarantorDetail.getStatusId() == 2) {
+					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getStatusId()) && guarantorDetail.getStatusId() == 2 ) {
 							finalViewResponse
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSpouseName())
 											? guarantorDetail.getSpouseName() : null);
@@ -752,7 +741,6 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoChildren())
 											? guarantorDetail.getNoChildren().toString() : null);
-						}
 					}
 					finalViewResponse
 							.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoDependent())
@@ -1004,7 +992,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.HOME_LOAN_GUARANTOR_ADDRESS_PROOF));
 						finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+								DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.HOME_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
@@ -1030,7 +1018,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
 						finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
@@ -1039,10 +1027,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					case 12:// CAR_LOAN
 						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
@@ -1068,7 +1056,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.CAR_LOAN_GUARANTOR_ADDRESS_PROOF));
 						finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+								DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.CAR_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
@@ -1106,7 +1094,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.LAP_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+								DocumentAlias.LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
 						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
@@ -1138,29 +1126,30 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.LAS_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
+								DocumentAlias.LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
+					default : break;
 					}
 					finalCommonresponseList.add(finalViewResponse);
 				}
 
 				return finalCommonresponseList;
 			} else {
-				throw new Exception("No Data found");
+				throw new LoansException("No Data found");
 			}
 		} catch (Exception e) {
-			throw new Exception("Error Fetching Guarantor Details");
+			logger.error("Error Fetching Guarantor Details : ",e);
+			throw new LoansException("Error Fetching Guarantor Details");
 		}
 	}
 
 	@Override
-	public Long getApplicantIdById(Long id) throws Exception {
+	public Long getApplicantIdById(Long id) throws LoansException {
 		try {
 			return guarantorDetailsRepository.getApplicantIdById(id);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error While getting Applicant Id by Guarantor ID");
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Error While getting Applicant Id by Guarantor ID : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

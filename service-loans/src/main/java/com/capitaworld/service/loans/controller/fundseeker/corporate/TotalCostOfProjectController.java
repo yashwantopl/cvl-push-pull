@@ -36,13 +36,7 @@ public class TotalCostOfProjectController {
 	private TotalCostOfProjectService totalCostOfProjectService;
 	
 	@Autowired
-	private LoanApplicationService loanApplicationService; 
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
+	private LoanApplicationService loanApplicationService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -86,7 +80,6 @@ public class TotalCostOfProjectController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Total Cost Of Project Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -124,7 +117,6 @@ public class TotalCostOfProjectController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Achievement Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

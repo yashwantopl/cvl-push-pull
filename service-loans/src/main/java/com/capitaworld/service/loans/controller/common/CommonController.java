@@ -63,7 +63,6 @@ public class CommonController {
 		}
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
@@ -86,8 +85,8 @@ public class CommonController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully saved", HttpStatus.OK.value()),
 						HttpStatus.OK);
 			} catch (Exception e) {
-				logger.warn("error while save fs long and lat, applicationId==>" + longLatrequest.getId());
-				e.printStackTrace();
+				logger.error("error while save fs long and lat, applicationId==>" + longLatrequest.getId());
+				logger.error(CommonUtils.EXCEPTION,e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -132,7 +131,6 @@ public class CommonController {
 		}
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
@@ -150,14 +148,14 @@ public class CommonController {
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
 				}
-				LoansResponse response = new LoansResponse("Successfully get data", HttpStatus.OK.value());
+				LoansResponse response = new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value());
 				response.setData(
 						corporateApplicantService.getLatLonByApplicationAndUserId(longLatrequest.getId(), finalUserId));
 				logger.warn("successfully get fs long and lat value");
 				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 			} catch (Exception e) {
-				logger.warn("error while get fs long and lat, applicationId==>" + longLatrequest.getId());
-				e.printStackTrace();
+				logger.error("error while get fs long and lat, applicationId==>" + longLatrequest.getId());
+				logger.error(CommonUtils.EXCEPTION,e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -170,7 +168,7 @@ public class CommonController {
 				userRequest.setUserType(longLatrequest.getUserType());
 				try {
 					UserResponse userResponse = usersClient.getLongLatValue(userRequest);
-					LoansResponse response = new LoansResponse("Successfully get data", HttpStatus.OK.value());
+					LoansResponse response = new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value());
 					response.setData(userResponse.getData());
 					logger.warn("successfully get fp and sp long and lat value");
 					return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
@@ -224,8 +222,7 @@ public class CommonController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error("user_verification, Invalid Request... Something went wrong : ",e);
 					return new ResponseEntity<UserResponse>(
 							new UserResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -260,8 +257,7 @@ public class CommonController {
 					
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.warn("Error While Get Last access application id");
+				logger.error("Error While Get Last access application id : ",e);
 				return new ResponseEntity<UserResponse>(
 						new UserResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -282,19 +278,16 @@ public class CommonController {
 			try {
 				logger.info("Call Users Module for check user email verfied or not");
 				UserResponse response = usersClient.checkEmailVerified(usersRequest);
-				if(!CommonUtils.isObjectNullOrEmpty(response)){
-					if(!CommonUtils.isObjectNullOrEmpty(response.getData())){
+				if(!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getData()) ){
 						obj.put("emailVerified", ((Boolean) response.getData()));
-					}
 				}
 			} catch(Exception e){
-				logger.info("Throw exception while check email verified or not");
-				e.printStackTrace();
+				logger.error("Throw exception while check email verified or not : ",e);
 			}
 		}
 		
 		CommonDocumentUtils.endHook(logger, "user_verification");
-		return new ResponseEntity<UserResponse>(new UserResponse(obj, "Successfully get data", HttpStatus.OK.value()),
+		return new ResponseEntity<UserResponse>(new UserResponse(obj, CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value()),
 				HttpStatus.OK);
 	}
 
@@ -315,7 +308,7 @@ public class CommonController {
 //					userId);
 			
 			CGTMSECalcDataResponse response = applicationService.getDataForCGTMSE(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -345,7 +338,7 @@ public class CommonController {
 //					userId);
 			
 			HunterRequestDataResponse response = applicationService.getDataForHunter(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			logger.info("End getDataForHunter with Application ID : "+applicationId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -376,7 +369,7 @@ public class CommonController {
 //					userId);
 			
 			HunterRequestDataResponse response = applicationService.getDataForHunterForNTB(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			logger.info("End getDataForHunterForNTB with Application ID : "+applicationId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

@@ -30,12 +30,6 @@ public class PersonalLoanController {
 	@Autowired
 	private PrimaryPersonalLoanService primaryPersonalLoanService;
 
-	/*@RequestMapping(value = "${primary}/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody PrimaryPersonalLoanRequest personalLoanRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
@@ -72,7 +66,7 @@ public class PersonalLoanController {
 	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("id") Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{

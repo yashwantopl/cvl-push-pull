@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +38,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				ExistingProductDetailRequest existingProductDetailRequest = (ExistingProductDetailRequest) MultipleJSONObjectHelper
@@ -58,14 +59,13 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save existingProductDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save existingProductDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws Exception {
+	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository
 					.listExistingProductFromAppId(applicationId);
@@ -79,9 +79,8 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 			}
 			return existingProductDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in save existingProductDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save existingProductDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

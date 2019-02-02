@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProjectImplementationScheduleDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 
 import java.util.List;
 

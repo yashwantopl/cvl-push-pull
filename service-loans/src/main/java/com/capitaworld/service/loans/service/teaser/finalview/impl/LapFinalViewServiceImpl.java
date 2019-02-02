@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.finalview.LapFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -17,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -43,7 +47,7 @@ public class LapFinalViewServiceImpl implements LapFinalViewService{
 	private LapPrimaryViewService lapPrimaryService;
 	
 	@Override
-	public LapFinalViewResponse getLapFinalViewDetails(Long applicantId) throws Exception {
+	public LapFinalViewResponse getLapFinalViewDetails(Long applicantId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		LapFinalViewResponse lapFinalViewResponse = new LapFinalViewResponse();
 		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
@@ -54,26 +58,26 @@ public class LapFinalViewServiceImpl implements LapFinalViewService{
 			
 			//co-applicant final common details
 			try {
-				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
+				List<RetailFinalViewCommonResponse> retailFinalViewCommonResponses = coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
+				if (retailFinalViewCommonResponses != null && !retailFinalViewCommonResponses.isEmpty()) {
+					finalViewResponse.setCoApplicantCommonDetails(retailFinalViewCommonResponses);
+				}
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting CoApplicant final details");
+				logger.error("error while getting CoApplicant final details : ",e);
 			}
 			
 			//guarantor final common details
 			try {
 				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting Guarantor final details");
+				logger.error("error while getting Guarantor final details : ",e);
 			}
 			lapFinalViewResponse.setFinalViewResponse(finalViewResponse);
 			//LAP Loan primary details
 			try { 
 				lapFinalViewResponse.setLapPrimaryViewResponse(lapPrimaryService.getLapPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting LAP primary details");
+				logger.error("error while getting LAP primary details : ",e);
 			}
 			
 			

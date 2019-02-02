@@ -35,12 +35,6 @@ public class HomeLoanController {
 	@Autowired
 	private FinalHomeLoanService finalHomeLoanService;
 
-	/*@RequestMapping(value = "${primary}/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
-
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(
 			@RequestBody PrimaryHomeLoanDetailRequest primaryHomeLoanDetailRequest, HttpServletRequest request,
@@ -103,7 +97,7 @@ public class HomeLoanController {
 
 			PrimaryHomeLoanDetailRequest response = primaryHomeLoanService.get(applicationId, userId);
 			if (response != null) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				loansResponse.setData(response);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
@@ -178,7 +172,7 @@ public class HomeLoanController {
 			}
 
 			FinalHomeLoanDetailRequest response = finalHomeLoanService.get(applicationId, userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -196,7 +190,7 @@ public class HomeLoanController {
 			try {
 				PrimaryHomeLoanDetailRequest response = primaryHomeLoanService.get(applicationId, userId);
 				if (response != null) {
-					LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+					LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 					loansResponse.setData(response);
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				} else {

@@ -27,6 +27,12 @@ public class CMADetailResponse implements Serializable{
 		private Double totalCurrentAssets ; //D43 Assets
 		private Double subTotalA;  // D15 Liabilities
 		private Double totalCurrentLiabilities; // D37 Liabilities
+
+		private Double totalOutsideLiabilities; // D63 Liabilities
+		private Double tangibleNetWorth ; // Assessts D91 same as Total Net-worth
+
+		private Double opProfitBeforeIntrest; 	// D60 operating stmt.
+
 		public Double getReceivableOtherThanDefferred() {
 			return receivableOtherThanDefferred;
 		}
@@ -128,6 +134,29 @@ public class CMADetailResponse implements Serializable{
 		public void setTotalCurrentLiabilities(Double totalCurrentLiabilities) {
 			this.totalCurrentLiabilities = totalCurrentLiabilities;
 		}
+
+		public Double getTotalOutsideLiabilities() {
+			return totalOutsideLiabilities;
+		}
+		public void setTotalOutsideLiabilities(Double totalOutsideLiabilities) {
+			this.totalOutsideLiabilities = totalOutsideLiabilities;
+		}
+		public Double getTangibleNetWorth() {
+			return tangibleNetWorth;
+		}
+		public void setTangibleNetWorth(Double tangibleNetWorth) {
+			this.tangibleNetWorth = tangibleNetWorth;
+		}
+
+		public Double getOpProfitBeforeIntrest() {
+			return opProfitBeforeIntrest;
+		}
+		public void setOpProfitBeforeIntrest(Double opProfitBeforeIntrest) {
+			this.opProfitBeforeIntrest = opProfitBeforeIntrest;
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
 		@Override
 		public String toString() {
 			return "CMADetailResponse [receivableOtherThanDefferred=" + receivableOtherThanDefferred
@@ -138,7 +167,9 @@ public class CMADetailResponse implements Serializable{
 					+ netProfitOrLoss + ", depreciation=" + depreciation + ", interest=" + interest
 					+ ", provisionForDeferredTax=" + provisionForDeferredTax + ", grossBlock=" + grossBlock
 					+ ", totalCurrentAssets=" + totalCurrentAssets + ", subTotalA=" + subTotalA
-					+ ", totalCurrentLiabilities=" + totalCurrentLiabilities + "]";
+					+ ", totalCurrentLiabilities=" + totalCurrentLiabilities + ", totalOutsideLiabilities="
+					+ totalOutsideLiabilities + ", tangibleNetWorth=" + tangibleNetWorth + ", opProfitBeforeIntrest="
+					+ opProfitBeforeIntrest + "]";
 		}
 		
 }

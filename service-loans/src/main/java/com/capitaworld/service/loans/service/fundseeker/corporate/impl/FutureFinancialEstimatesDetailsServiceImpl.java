@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +46,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FutureFinancialEstimatesDetailRequest futureFinancialEstimateDetailRequest = (FutureFinancialEstimatesDetailRequest) MultipleJSONObjectHelper
@@ -66,14 +67,13 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save futureFinancialEstimateDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save futureFinancialEstimateDetail :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id,Long userId) throws Exception {
+	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id,Long userId) throws LoansException {
 		try {
 			List<FutureFinancialEstimatesDetail> futureFinancialEstimateDetails = futureFinancialEstimateDetailsRepository
 					.listFutureFinancialEstimateDetailsFromAppId(id,userId);
@@ -88,31 +88,32 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save futureFinancialEstimateDetail  :-");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			logger.error("Exception  in save futureFinancialEstimateDetail  :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<FutureFinancialEstimatesDetailRequest> getFutureEstimateDetailsList(Long userId, Long applicationId)
-			throws Exception {
+			throws LoansException {
 		List<FutureFinancialEstimatesDetail> futureFinancialEstimateDetails = futureFinancialEstimateDetailsRepository
 				.listFutureFinancialEstimateDetailsFromAppId(applicationId,userId);
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		LoanType loanType = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		if (loanType == null) {
-			Collections.emptyList();
+			return Collections.emptyList();
 		}
-		switch (loanType) {
-		case WORKING_CAPITAL:
-			return calucateWCFinancialYear(futureFinancialEstimateDetails);
-		case TERM_LOAN:
-			return calucateTLFinancialYear(futureFinancialEstimateDetails, applicationMaster, applicationId, userId);
-		default:
-			break;
+		else {
+			switch (loanType) {
+				case WORKING_CAPITAL:
+					return calucateWCFinancialYear(futureFinancialEstimateDetails);
+				case TERM_LOAN:
+					return calucateTLFinancialYear(futureFinancialEstimateDetails, applicationMaster, applicationId, userId);
+				default:
+					break;
+			}
+			return Collections.emptyList();
 		}
-		return Collections.emptyList();
 	}
 
 	private List<FutureFinancialEstimatesDetailRequest> calucateWCFinancialYear(
@@ -147,7 +148,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 							(currentYearForBeforeDate + 2) + " - " + (currentYearForBeforeDate + 3)));
 				}
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error("Exception in calucateWCFinancialYear : ",e);
 			}
 			return yearList;
 		} else {
@@ -179,7 +180,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				if (todayDate.compareTo(comparisonDate) > 0) {
 					int currentYearForAfterDate = cal.get(Calendar.YEAR);
 					for (int i = 0; i < tenure; i++) {
-						System.out.println(Calendar.YEAR);
+						logger.info(""+Calendar.YEAR);
 						yearList.add(new FutureFinancialEstimatesDetailRequest(
 								currentYearForAfterDate + (i) + " - " + (currentYearForAfterDate + (i + 1))));
 					}
@@ -194,7 +195,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				}
 
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		} else {
@@ -213,7 +214,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 					return getRequestFromDomain(futureFinancialYears);
 				} else {
 					// add dynamic records to db
-					String recordYearsArray[] = futureFinancialYears.get((recordSize - 1)).getFinancialYear().split("-");
+					String[] recordYearsArray = futureFinancialYears.get((recordSize - 1)).getFinancialYear().split("-");
 					int lastYear = Integer.parseInt(recordYearsArray[1].trim());
 					int count = 0;
 					for (int i = recordSize; i < tenure; i++) {
@@ -234,7 +235,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception in calucateTLFinancialYear : ",e);
 			}
 		}
 		return Collections.emptyList();
@@ -243,6 +244,10 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 
 	private List<FutureFinancialEstimatesDetailRequest> getRequestFromDomain(
 			List<FutureFinancialEstimatesDetail> details) {
+		if(details == null || details.isEmpty()){
+			return Collections.emptyList();
+		}
+
 		List<FutureFinancialEstimatesDetailRequest> response = new ArrayList<FutureFinancialEstimatesDetailRequest>(
 				details.size());
 		for (FutureFinancialEstimatesDetail detail : details) {
