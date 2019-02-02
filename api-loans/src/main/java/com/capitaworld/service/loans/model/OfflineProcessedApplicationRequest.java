@@ -40,7 +40,9 @@ public class OfflineProcessedApplicationRequest {
 	private String accountNo;
 	private String transactionNo;
 	private Integer paymentMode;
-	
+	private String email;
+	private String mobile;
+	private Long userOrgId;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -240,6 +242,26 @@ public class OfflineProcessedApplicationRequest {
 	public void setPaymentMode(Integer paymentMode) {
 		this.paymentMode = paymentMode;
 	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+	
 	@Override
 	public String toString() {
 		return "OfflineProcessedApplicationRequest [applicationId=" + applicationId + ", fpProductId=" + fpProductId
