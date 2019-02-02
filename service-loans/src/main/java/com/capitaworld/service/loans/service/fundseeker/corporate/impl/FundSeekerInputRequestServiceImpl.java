@@ -488,12 +488,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
 				}
 				LocalDate now = LocalDate.now();
-				Period diff = Period.between(start, now);
-				Integer diffYear = diff.getYears();
+				if(start != null) {
+					Period diff = Period.between(start, now);
+					Integer diffYear = diff.getYears();
+					fundSeekerInputResponse.setEstYear(diffYear);
+				}
+				
 				/*if(diff.getMonths() > 6) {
 					diffYear = diffYear + 1;
 				}*/
-				fundSeekerInputResponse.setEstYear(diffYear);
 
 			}catch (Exception e) {
 				logger.error("error while find diff of establishment year : ",e);
