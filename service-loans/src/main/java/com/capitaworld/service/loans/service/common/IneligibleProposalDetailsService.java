@@ -18,5 +18,8 @@ public interface IneligibleProposalDetailsService {
 			ProposalDetailsAdminRequest request);
 	
 	public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq);
+	
+	//added by Jaimin Darji For transfer branch
+	public boolean updateTransferBranchDetail(InEligibleProposalDetailsRequest inEliProReq);
 
 }
