@@ -16,11 +16,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalTransferHistory;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalTransferHistoryRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -64,6 +66,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+	@Autowired
+	private IneligibleProposalTransferHistoryRepository historyRepository;
 
 	@Autowired
 	private UsersClient userClient;
@@ -777,5 +781,32 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		}
 
 		return responseList;
+	}
+
+	@Override
+	public boolean updateTransferBranchDetail(InEligibleProposalDetailsRequest inEliProReq) {
+		try{
+			//find entity by Id and update branch transfer details
+			IneligibleProposalDetails proposalDetails = ineligibleProposalDetailsRepository.findOne(inEliProReq.getIneligibleProposalId());
+			Long branchId = proposalDetails.getBranchId();
+			proposalDetails.setBranchId(inEliProReq.getBranchId());
+			proposalDetails.setModifiedBy(inEliProReq.getUserId());
+			proposalDetails.setModifiedDate(new Date());
+			ineligibleProposalDetailsRepository.save(proposalDetails); 
+			// save updated branch history in Transfer history table
+			IneligibleProposalTransferHistory proposalTransferHistory = new IneligibleProposalTransferHistory();
+			proposalTransferHistory.setIneligibleProposalid(proposalDetails.getId());
+			proposalTransferHistory.setNewBranchId(inEliProReq.getBranchId());
+			proposalTransferHistory.setOldBranchId(branchId);
+			proposalTransferHistory.setReason(inEliProReq.getReason());
+			proposalTransferHistory.setCreatedBy(inEliProReq.getUserId());
+			proposalTransferHistory.setCreatedDate(new Date());
+			proposalTransferHistory.setApplicationId(proposalDetails.getApplicationId());
+			historyRepository.save(proposalTransferHistory);
+			return true;
+		} catch (Exception e) {
+			logger.error("error while update ineligible proposal : ",e);
+		}
+			return false;
 	}
 }

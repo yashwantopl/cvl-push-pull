@@ -27,6 +27,8 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     private String reason;
     
     private Integer businessTypeId;
+    
+    private Long ineligibleProposalId;
 
     public Long getApplicationId() {
         return applicationId;
@@ -108,12 +110,21 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 		this.businessTypeId = businessTypeId;
 	}
 
+	
+	public Long getIneligibleProposalId() {
+		return ineligibleProposalId;
+	}
+
+	public void setIneligibleProposalId(Long ineligibleProposalId) {
+		this.ineligibleProposalId = ineligibleProposalId;
+	}
+
 	@Override
 	public String toString() {
 		return "InEligibleProposalDetailsRequest [applicationId=" + applicationId + ", loanAmount=" + loanAmount
 				+ ", userOrgId=" + userOrgId + ", branchId=" + branchId + ", isSanctioned=" + isSanctioned
 				+ ", isDisbursed=" + isDisbursed + ", userId=" + userId + ", status=" + status + ", reason=" + reason
-				+ ", businessTypeId=" + businessTypeId + "]";
+				+ ", businessTypeId=" + businessTypeId + ", ineligibleProposalId=" + ineligibleProposalId + "]";
 	}
-    
+
 }
