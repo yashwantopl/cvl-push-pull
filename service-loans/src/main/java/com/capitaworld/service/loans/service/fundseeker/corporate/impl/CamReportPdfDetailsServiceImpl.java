@@ -1180,7 +1180,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 /**********************************************FINAL DETAILS*****************************************************/
 		
-		if(isFinalView && loanApplicationMaster.getIsMcqSkipped() == false) {
+		if(isFinalView && (loanApplicationMaster.getIsMcqSkipped() == null || loanApplicationMaster.getIsMcqSkipped() == false)) {
 			//FITCH DATA
 			try {
 				//proposalMappingRequestString.getId()
