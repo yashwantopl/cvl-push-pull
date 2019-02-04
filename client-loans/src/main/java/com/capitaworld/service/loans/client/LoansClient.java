@@ -246,7 +246,7 @@ public class LoansClient {
     private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
     private static final String GET_COMMON_PROPERTIES ="/loan_application/getCommonPropValue";
     private static final String AND_FOR_APPLICATION_ID = " and For Application Id====>";
-    private static final String GET_PRIMARY_DETAILS_CAM = "/getPrimaryDataInByteArray";
+    private static final String GET_PRIMARY_DETAILS_CAM = "/cam/getPrimaryDataInByteArray";
 
     private static final String REQ_AUTH = "req_auth";
     
