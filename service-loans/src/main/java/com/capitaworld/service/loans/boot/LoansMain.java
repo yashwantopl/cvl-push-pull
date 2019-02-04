@@ -115,12 +115,22 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.itr.url}")
 	private String itrUrl;
+	
+	@Value("${capitaworld.service.gateway.url}")
+	private String gatewayUrl;
 
 	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
 
+	@Bean
+	public GatewayClient gatewayClient() {
+		GatewayClient gatewayClient = new GatewayClient(gatewayUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
+		return gatewayClient;
+	}
+	
 	@Bean
 	public DMSClient dmsMasterClient() {
 		DMSClient dmsClient = new DMSClient(dmsUrl);
@@ -175,13 +185,6 @@ public class LoansMain {
 		RatingClient ratingClient = new RatingClient(ratingUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingClient);
 		return ratingClient;
-	}
-
-	@Bean
-	public GatewayClient gatewayClient() {
-		GatewayClient gatewayClient = new GatewayClient(gatewayBaseUrl);
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
-		return gatewayClient;
 	}
 
 	@Bean
