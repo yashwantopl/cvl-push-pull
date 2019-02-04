@@ -28,7 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.gateway.model.GatewayRequest;
+import com.capitaworld.api.payment.gateway.model.GatewayRequest;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -123,6 +124,12 @@ public class LoanApplicationController {
 
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private GatewayClient gatewayClient;
+	
+	@Autowired
+	private GatewayRequest gatewayRequest;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,
@@ -1667,7 +1674,7 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			GatewayRequest paymentStatus = loanApplicationService.getPaymentStatus(paymentRequest, userId, clientId);
+			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
 			logger.info(RESPONSE_MSG, paymentStatus);
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 			response.setData(paymentStatus);
