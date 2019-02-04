@@ -928,7 +928,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				String applicationStatus = null;
 				if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
 					if (request
-							.getPaymentStatus() == com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS) {
+							.getPaymentStatus() == CommonUtils.PaymentStatus.SUCCESS) {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
 					} else {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
@@ -4253,7 +4253,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		 * LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		 * BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 		 */
-		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+		loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 
 		// UPDATE CONNECT POST PAYMENT
@@ -4322,7 +4322,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-			loanApplicationMaster.setPaymentStatus(com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 			loanApplicationRepository.save(loanApplicationMaster);
 
 			// UPDATE CONNECT POST PAYMENT
@@ -4463,7 +4463,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-			loanApplicationMaster.setPaymentStatus(com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 			loanApplicationRepository.save(loanApplicationMaster);
 
 			// UPDATE CONNECT POST PAYMENT
@@ -4810,7 +4810,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			GatewayRequest gatewayRequest = new GatewayRequest();
 			gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
-			gatewayRequest.setStatus(com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+			gatewayRequest.setStatus(CommonUtils.PaymentStatus.SUCCESS);
 			gatewayRequest.setUserId(userId);
 			gatewayRequest.setClientId(ClientId);
 			logger.info("End getPaymentStatus() with success");
