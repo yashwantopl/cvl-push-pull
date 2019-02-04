@@ -2439,7 +2439,7 @@ public class LoansClient {
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
-			logger.error("Exception in getCommonPropValue : ",e);
+			logger.error("Exception in getCamReportPrimaryData : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}

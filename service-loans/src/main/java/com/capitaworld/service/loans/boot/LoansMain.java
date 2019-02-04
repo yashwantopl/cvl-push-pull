@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
@@ -20,7 +21,6 @@ import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
-import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
