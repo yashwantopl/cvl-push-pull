@@ -137,8 +137,13 @@
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.capitaworld.service.gateway</groupId>
-			<artifactId>client-gateway</artifactId>
+			<groupId>com.capitaworld.service.payment.gateway</groupId>
+			<artifactId>client-payment-gateway</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.service.payment.gateway</groupId>
+			<artifactId>service-payment-gateway</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>

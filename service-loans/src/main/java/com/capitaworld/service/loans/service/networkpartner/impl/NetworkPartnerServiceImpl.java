@@ -6,9 +6,12 @@ import java.util.*;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.api.payment.gateway.exception.GatewayException;
+import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -37,9 +40,6 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.gateway.client.GatewayClient;
-import com.capitaworld.service.gateway.exception.GatewayException;
-import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusAudit;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -151,9 +151,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			if(!CommonUtils.isObjectListNull(npOrgId) && npOrgId != CommonUtils.NP_NHBS){
 				applicationMastersList = getApplicationListToAssignedCheckerFromBoFp(userId,CommonUtils.ApplicationStatus.OPEN,true,request.getPageIndex(),request.getSize());
 			}else if(!CommonUtils.isObjectListNull(npOrgId)){
-				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 			}else{
-				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 			}
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
             if(!CommonUtils.isObjectListNull(npOrgId)){
@@ -498,9 +498,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					newPropsalCount = applicationMastersList.size();
 			}else{
 				if(!CommonUtils.isObjectListNull(npOrgId)){
-					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 				}else{
-					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN,com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 				}
 				/*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 				List<Long> receivedAppIdList = new ArrayList<>();
@@ -698,10 +698,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			//List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
 			if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.OPEN){
 				if(environment.getRequiredProperty(isPaymentBypass).equals("true")) {
-					applicationIdList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS,branchId);
+					applicationIdList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.BYPASS,branchId);
 				}
 				else {
-					applicationIdList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS,branchId);
+					applicationIdList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS,branchId);
 				}
 			}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED){
 				applicationIdList = loanApplicationRepository.getFPAssignedTabPropsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED,CommonUtils.ApplicationStatus.REVERTED,CommonUtils.ApplicationStatus.SUBMITTED,userId,branchId);
@@ -1324,10 +1324,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			//List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
 			List<BigInteger> newApplicationIdList = null;
 			if(environment.getRequiredProperty(isPaymentBypass).equals("true")) {
-				newApplicationIdList = loanApplicationRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS,branchId);
+				newApplicationIdList = loanApplicationRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.BYPASS,branchId);
 			}
 			else {
-				newApplicationIdList = loanApplicationRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS,branchId);
+				newApplicationIdList = loanApplicationRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.payment.gateway.utils.CommonUtils.PaymentStatus.SUCCESS,branchId);
 			}
 			//newApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("newProposalCount", newApplicationIdList.size());
