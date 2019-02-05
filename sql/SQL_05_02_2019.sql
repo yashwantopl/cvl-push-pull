@@ -1,0 +1,1 @@
+ALTER TABLE loan_application.fs_retail_applicant_details ADD COLUMN spouse_employment INT NULL AFTER ddo_website, ADD COLUMN no_of_dependent INT NULL AFTER spouse_employment, ADD COLUMN designation INT NULL AFTER no_of_dependent, ADD COLUMN residence_since_year INT NULL AFTER designation, ADD COLUMN residence_since_month INT NULL AFTER residence_since_year; 

@@ -506,6 +506,22 @@ public class RetailApplicantDetail implements Serializable {
 
     @Column(name="ddo_organization_type")
     private Integer ddoOrganizationType;
+    
+    @Column(name="spouse_employment")
+    private Integer spouseEmployment;
+    
+    @Column(name="no_of_dependent")
+    private Integer noOfDependent;
+    
+    @Column(name="designation")
+    private Integer designation;
+    
+    @Column(name="residence_since_year")
+    private Integer residenceSinceYear;
+    
+    @Column(name="residence_since_month")
+    private Integer residenceSinceMonth;
+    
 
 	public RetailApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1766,4 +1782,47 @@ public class RetailApplicantDetail implements Serializable {
 	public void setDdoOrganizationType(Integer ddoOrganizationType) {
 		this.ddoOrganizationType = ddoOrganizationType;
 	}
+
+	public Integer getResidenceSinceYear() {
+		return residenceSinceYear;
+	}
+
+	public Integer getResidenceSinceMonth() {
+		return residenceSinceMonth;
+	}
+
+	public void setResidenceSinceYear(Integer residenceSinceYear) {
+		this.residenceSinceYear = residenceSinceYear;
+	}
+
+	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+		this.residenceSinceMonth = residenceSinceMonth;
+	}
+
+	public Integer getSpouseEmployment() {
+		return spouseEmployment;
+	}
+
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public Integer getDesignation() {
+		return designation;
+	}
+
+	public void setSpouseEmployment(Integer spouseEmployment) {
+		this.spouseEmployment = spouseEmployment;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	public void setDesignation(Integer designation) {
+		this.designation = designation;
+	}
+	
+	
+	
 }
