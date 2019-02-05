@@ -426,9 +426,6 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="is_wc_req_check")
 	private Boolean wcReqCheck = false;
 
-	@Column(name="is_wc_req_check")
-	private Boolean wcReqCheck = false;
-
 	/**
 	 * @return the jobId
 	 */
