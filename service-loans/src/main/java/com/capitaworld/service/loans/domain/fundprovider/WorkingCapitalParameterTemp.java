@@ -397,6 +397,9 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	@Column(name="kotak_sub_parameter")
 	private Integer kotakSubParameter ;
 	
+	@Column(name="is_wc_req_check")
+	private Boolean wcReqCheck = false;
+	
 	@Column(name="is_new_dscr_check")
 	private Boolean isNewDscrCheck;
 	
@@ -1420,6 +1423,15 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}
