@@ -219,6 +219,33 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	 
 	@Column(name ="job_id")
 	private Long jobId;
+	
+	@Column(name="is_banking_relation_mandatory")
+	private Boolean isBankingRelationMandatory;
+
+	@Column(name="is_banking_relation_display")
+	private Boolean isBankingRelationDisplay;
+	
+	@Column(name="min_bank_relation")
+	private Double minBankRelation;
+
+	@Column(name="max_bank_relation")
+	private Double maxBankRelation;
+	
+	@Column(name="is_salary_mode_display")
+	private Boolean isSalaryModeDisplay;
+
+	@Column(name="is_salary_mode_mandatory")
+	private Boolean isSalaryModeMandatory;
+	
+	@Column(name="is_salary_ac_type_display")
+	private Boolean isSalaryAcTypeDisplay;
+
+	@Column(name="is_salary_ac_type_mandatory")
+	private Boolean isSalaryAcTypeMandatory;
+	
+	@Column(name="salary_ac_type")
+	private Integer salaryAcType;
 
 	public ProductMaster getFpProductId() {
 		return fpProductId;
@@ -676,6 +703,81 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 		this.userCreditRating = userCreditRating;
 	}
 
+	public Boolean getIsBankingRelationMandatory() {
+		return isBankingRelationMandatory;
+	}
+
+	public void setIsBankingRelationMandatory(Boolean isBankingRelationMandatory) {
+		this.isBankingRelationMandatory = isBankingRelationMandatory;
+	}
+
+	public Boolean getIsBankingRelationDisplay() {
+		return isBankingRelationDisplay;
+	}
+
+	public void setIsBankingRelationDisplay(Boolean isBankingRelationDisplay) {
+		this.isBankingRelationDisplay = isBankingRelationDisplay;
+	}
+
+	public Double getMinBankRelation() {
+		return minBankRelation;
+	}
+
+	public void setMinBankRelation(Double minBankRelation) {
+		this.minBankRelation = minBankRelation;
+	}
+
+	public Double getMaxBankRelation() {
+		return maxBankRelation;
+	}
+
+	public void setMaxBankRelation(Double maxBankRelation) {
+		this.maxBankRelation = maxBankRelation;
+	}
+
+	public Boolean getIsSalaryModeDisplay() {
+		return isSalaryModeDisplay;
+	}
+
+	public void setIsSalaryModeDisplay(Boolean isSalaryModeDisplay) {
+		this.isSalaryModeDisplay = isSalaryModeDisplay;
+	}
+
+	public Boolean getIsSalaryModeMandatory() {
+		return isSalaryModeMandatory;
+	}
+
+	public void setIsSalaryModeMandatory(Boolean isSalaryModeMandatory) {
+		this.isSalaryModeMandatory = isSalaryModeMandatory;
+	}
+
+	public Boolean getIsSalaryAcTypeDisplay() {
+		return isSalaryAcTypeDisplay;
+	}
+
+	public void setIsSalaryAcTypeDisplay(Boolean isSalaryAcTypeDisplay) {
+		this.isSalaryAcTypeDisplay = isSalaryAcTypeDisplay;
+	}
+
+	public Boolean getIsSalaryAcTypeMandatory() {
+		return isSalaryAcTypeMandatory;
+	}
+
+	public void setIsSalaryAcTypeMandatory(Boolean isSalaryAcTypeMandatory) {
+		this.isSalaryAcTypeMandatory = isSalaryAcTypeMandatory;
+	}
+
+	public Integer getSalaryAcType() {
+		return salaryAcType;
+	}
+
+	public void setSalaryAcType(Integer salaryAcType) {
+		this.salaryAcType = salaryAcType;
+	}
+
+
+	
+	
 
 	
 	

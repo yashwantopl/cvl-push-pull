@@ -34,6 +34,8 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.SalaryModeDetail;
+import com.capitaworld.service.loans.domain.fundprovider.SalaryModeDetailTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.retail.CreditRatingPlParameter;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
@@ -43,6 +45,8 @@ import com.capitaworld.service.loans.repository.fundprovider.FpEmpWithRepository
 import com.capitaworld.service.loans.repository.fundprovider.FpEmpWithTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpRatingAgencyRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpRatingAgencyTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpSalaryModeRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpSalaryModeTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
@@ -99,6 +103,12 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 	
 	@Autowired
 	private FpEmpStatusTempRepository fpEmpStatusTempRepository;
+	
+	@Autowired
+	private FpSalaryModeRepository fpSalaryModeRepository;
+	
+	@Autowired
+	private FpSalaryModeTempRepository fpSalaryModeTempRepository;
 	
 	@Autowired
 	private FpEmpWithRepository fpEmpWithRepository;
@@ -177,6 +187,9 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		fpEmpStatusRepository.inActiveEmpStatusByFpProductId(personalLoanParameterRequest.getId());
 		saveEmpStatusMaster(personalLoanParameterRequest);
 		
+		//save salary mode
+		fpSalaryModeRepository.inActiveSalaryModeByFpProductId(personalLoanParameterRequest.getId());
+		saveSalaryModeMaster(personalLoanParameterRequest);
 		//save rating info
 		fpRatingAgencyRepository.inActiveEmpWithByFpProductId(personalLoanParameterRequest.getId());
 		saveRatingAgencyInfoMaster(personalLoanParameterRequest);
@@ -188,6 +201,29 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 
 		logger.info("end saveOrUpdate");
 		return true;
+	}
+
+	private void saveSalaryModeMaster(PersonalLoanParameterRequest personalLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("save saveSalaryModeMaster");
+		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getSalaryModeIds()))
+		{
+		SalaryModeDetail salaryModeDetail = null;
+		for (Integer dataRequest : personalLoanParameterRequest.getSalaryModeIds()) {
+			salaryModeDetail = new SalaryModeDetail();
+			salaryModeDetail.setSalaryModeId(dataRequest);
+			salaryModeDetail.setFpProductId(personalLoanParameterRequest.getId());
+			salaryModeDetail.setCreatedBy(personalLoanParameterRequest.getUserId());
+			salaryModeDetail.setModifiedBy(personalLoanParameterRequest.getUserId());
+			salaryModeDetail.setCreatedDate(new Date());
+			salaryModeDetail.setModifiedDate(new Date());
+			salaryModeDetail.setActive(true);
+			// create by and update
+			fpSalaryModeRepository.save(salaryModeDetail);
+		}
+		}
+		logger.info("end saveSalaryModeMaster");
+		
 	}
 
 	@Override
@@ -255,6 +291,14 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 				if (!empStatusIds.isEmpty()) {
 									
 						personalLoanParameterRequest.setEmpStatusIds(empStatusIds);
+				}
+
+		//get salary mode
+				List<Integer> salaryModeIds = fpSalaryModeRepository
+						.getSalaryModeByFpProductId(personalLoanParameterRequest.getId());
+				if (!salaryModeIds.isEmpty()) {
+									
+						personalLoanParameterRequest.setSalaryModeIds(salaryModeIds);
 				}
 				
 				
@@ -456,6 +500,13 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 				personalLoanParameterRequest.setEmpStatusIds(empStatusIds);
 		}
 		
+		//get salry mode list
+		List<Integer> salaryModeIds = fpSalaryModeTempRepository
+				.getSalaryModeByFpProductId(personalLoanParameterRequest.getId());
+		if (!salaryModeIds.isEmpty()) {
+							
+				personalLoanParameterRequest.setSalaryModeIds(salaryModeIds);
+		}
 		
 		//get emp with
 		
@@ -599,6 +650,10 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		fpEmpStatusTempRepository.inActiveEmpStatusTempByFpProductId(personalLoanParameterTemp.getId());
 		saveEmpStatus(personalLoanParameterRequest);
 		
+		//save salaryModeIds
+		fpSalaryModeTempRepository.inActiveSalaryModeByFpProductId(personalLoanParameterTemp.getId());
+		saveSalaryMode(personalLoanParameterRequest);
+		
 		//save rating info
 		fpRatingAgencyTempRepository.inActiveEmpWithByFpProductId(personalLoanParameterTemp.getId());
 		saveRatingAgencyInfo(personalLoanParameterRequest);
@@ -609,6 +664,29 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		logger.info("updated = {}",isUpdate);*/
 		logger.info("end saveOrUpdateTemp");
 		return true;
+	}
+
+	private void saveSalaryMode(PersonalLoanParameterRequest personalLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("save saveSalaryMode");
+		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getSalaryModeIds()))
+		{
+		SalaryModeDetailTemp salaryModeDetailTemp = null;
+		for (Integer dataRequest : personalLoanParameterRequest.getSalaryModeIds()) {
+			salaryModeDetailTemp = new SalaryModeDetailTemp();
+			salaryModeDetailTemp.setSalaryModeId(dataRequest);
+			salaryModeDetailTemp.setFpProductId(personalLoanParameterRequest.getId());
+			salaryModeDetailTemp.setCreatedBy(personalLoanParameterRequest.getUserId());
+			salaryModeDetailTemp.setModifiedBy(personalLoanParameterRequest.getUserId());
+			salaryModeDetailTemp.setCreatedDate(new Date());
+			salaryModeDetailTemp.setModifiedDate(new Date());
+			salaryModeDetailTemp.setActive(true);
+			// create by and update
+			fpSalaryModeTempRepository.save(salaryModeDetailTemp);
+		}
+		}
+		logger.info("end saveSalaryMode");
+		
 	}
 
 	private void saveRatingAgencyInfo(PersonalLoanParameterRequest personalLoanParameterRequest) {
