@@ -261,6 +261,7 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 
 	private Integer kotakSubParameter ;
 	
+	private Boolean wcReqCheck = false;
 	private Boolean isNewDscrCheck;
 	
 	private BigDecimal newDscrCheck;
@@ -1307,6 +1308,15 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}

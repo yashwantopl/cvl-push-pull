@@ -481,7 +481,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 						matchRequest.setApplicationId(applicationId);
 						matchRequest.setProductId(fpProductId);
 					/*	matchRequest.setProductId(productId);*/
-						List<MatchDisplayObject> matchesResponse = matchEngineClient.getMatchesResponse(matchRequest);
+						List<MatchDisplayObject> matchesResponse = null;
 						if(matchesResponse != null && !matchesResponse.isEmpty()) {
 							map.put("matchesResponse", matchesResponse);
 						}else {

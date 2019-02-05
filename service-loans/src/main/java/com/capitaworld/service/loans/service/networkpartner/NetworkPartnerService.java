@@ -2,11 +2,11 @@ package com.capitaworld.service.loans.service.networkpartner;
 
 import java.util.List;
 
+import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import org.json.simple.JSONObject;
 
-import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
 
