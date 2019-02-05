@@ -123,6 +123,13 @@ public class CommonUtils {
 	public static final String IS_ACTIVE = "isActive";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	
+	public static final class PaymentStatus{
+		public static final String SUCCESS = "Success";
+		public static final String PENDING = "Pending";
+		public static final String FAILED = "Failed";
+		public static final String BYPASS = "ByPass";
+	}
 
 	public static final class UsersRoles {
 		private UsersRoles(){
