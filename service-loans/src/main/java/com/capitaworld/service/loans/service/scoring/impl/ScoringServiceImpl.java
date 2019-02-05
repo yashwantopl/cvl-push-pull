@@ -990,6 +990,15 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 break;
                             }
+                            case ScoreParameter.Retail.NO_OF_YEAR_CURRENT_LOCAITON_PL:
+                                try {
+                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(10.0);
+                                    scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting NO_OF_YEAR_CURRENT_LOCAITON_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(false);
+                                }
+                                break;
                             default:
                                 break;
 
