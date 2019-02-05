@@ -268,9 +268,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		boolean isSent = false;
 		if (applicationId != null && branchId != null && userOrgId != null) {
 			try {
-				Map<String, Object> notificationParams;
+				Map<String, Object> notificationParams = new HashMap<>();
+				notificationParams.put("app_id", applicationId !=null ?applicationId : "NA");
 				// Sending mail to FS who become Ineligible
 				// 1 Get Details of FS_NAME,Bank name, Branch name and Address based on application Id
+				
 				LoanApplicationRequest applicationRequest = null;
 				try {
 					applicationRequest = loanApplicationService.getFromClient(applicationId);
@@ -323,7 +325,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
  
 
 					 String subject = "Manual Application";
-					 notificationParams.put("app_id", applicationId!=null?applicationId:"NA");
 	                    if (organisationName != null && applicationId!=null) {
 	                        notificationParams.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 
