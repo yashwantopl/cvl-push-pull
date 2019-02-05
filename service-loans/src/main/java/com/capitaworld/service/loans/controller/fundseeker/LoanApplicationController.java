@@ -17,6 +17,7 @@ import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -127,9 +128,6 @@ public class LoanApplicationController {
 	
 	@Autowired
 	private GatewayClient gatewayClient;
-	
-	@Autowired
-	private GatewayRequest gatewayRequest;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,
@@ -1674,6 +1672,8 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
+			GatewayRequest gatewayRequest = new GatewayRequest();
+			BeanUtils.copyProperties(paymentRequest, gatewayRequest);
 			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
 			logger.info(RESPONSE_MSG, paymentStatus);
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());

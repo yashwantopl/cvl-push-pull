@@ -141,11 +141,7 @@
 			<artifactId>client-payment-gateway</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.service.payment.gateway</groupId>
-			<artifactId>service-payment-gateway</artifactId>
-			<version>0.0.1</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
