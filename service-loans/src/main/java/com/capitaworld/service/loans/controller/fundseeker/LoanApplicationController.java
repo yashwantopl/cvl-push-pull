@@ -17,6 +17,7 @@ import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,7 +29,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.gateway.model.GatewayRequest;
+import com.capitaworld.api.payment.gateway.model.GatewayRequest;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -123,6 +125,9 @@ public class LoanApplicationController {
 
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private GatewayClient gatewayClient;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,
@@ -1667,7 +1672,9 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			GatewayRequest paymentStatus = loanApplicationService.getPaymentStatus(paymentRequest, userId, clientId);
+			GatewayRequest gatewayRequest = new GatewayRequest();
+			BeanUtils.copyProperties(paymentRequest, gatewayRequest);
+			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
 			logger.info(RESPONSE_MSG, paymentStatus);
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 			response.setData(paymentStatus);
