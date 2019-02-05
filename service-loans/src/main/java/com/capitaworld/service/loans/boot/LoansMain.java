@@ -80,9 +80,6 @@ public class LoansMain {
 	@Value("${capitaworld.service.cibil.url}")
 	private String cibilUrl;
 
-	@Value("${capitaworld.service.gateway.url}")
-	private String gatewayBaseUrl;
-
 	@Value("${capitaworld.service.reports.url}")
 	private String reportsBaseUrl;
 
