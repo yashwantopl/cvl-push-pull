@@ -15,6 +15,7 @@ public class ScoreParameterRetailRequest {
     private Boolean isDPD_p = false;
     private Boolean isNetAnnualIncome_p = false;
     private Boolean isEmiNmi_p = false;
+    private Boolean isNoOfYearCurrentLocation_p = false;
 
     private Double workingExperience;
     private Double cibilScore;
@@ -29,7 +30,7 @@ public class ScoreParameterRetailRequest {
     private Double dpd;
     private Double netAnnualIncome;
     private Double eminmi;
-
+    private Double noOfYearCurrentLocation;
 
     @Override
     public String toString() {
@@ -47,6 +48,7 @@ public class ScoreParameterRetailRequest {
                 ", isDPD_p=" + isDPD_p +
                 ", isNetAnnualIncome_p=" + isNetAnnualIncome_p +
                 ", isEmiNmi_p=" + isEmiNmi_p +
+                ", isNoOfYearCurrentLocation_p=" + isNoOfYearCurrentLocation_p +
                 ", workingExperience=" + workingExperience +
                 ", cibilScore=" + cibilScore +
                 ", age=" + age +
@@ -60,6 +62,7 @@ public class ScoreParameterRetailRequest {
                 ", dpd=" + dpd +
                 ", netAnnualIncome=" + netAnnualIncome +
                 ", eminmi=" + eminmi +
+                ", noOfYearCurrentLocation=" + noOfYearCurrentLocation +
                 '}';
     }
 
@@ -269,5 +272,21 @@ public class ScoreParameterRetailRequest {
 
     public void setEminmi(Double eminmi) {
         this.eminmi = eminmi;
+    }
+
+    public Boolean getIsNoOfYearCurrentLocation_p() {
+        return isNoOfYearCurrentLocation_p;
+    }
+
+    public void setIsNoOfYearCurrentLocation_p(Boolean noOfYearCurrentLocation_p) {
+        isNoOfYearCurrentLocation_p = noOfYearCurrentLocation_p;
+    }
+
+    public Double getNoOfYearCurrentLocation() {
+        return noOfYearCurrentLocation;
+    }
+
+    public void setNoOfYearCurrentLocation(Double noOfYearCurrentLocation) {
+        this.noOfYearCurrentLocation = noOfYearCurrentLocation;
     }
 }
