@@ -238,6 +238,10 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer kotakSubParameter ;
 	
+<<<<<<< HEAD
+=======
+	private Boolean wcReqCheck = false;
+>>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -1344,6 +1348,15 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}

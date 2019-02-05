@@ -405,6 +405,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="new_dscr_check")
 	private BigDecimal newDscrCheck;
 
+<<<<<<< HEAD
 	// projected sales
 	@Column(name = "is_new_historic_sales")
 	private Boolean isNewHistoricSales = false;
@@ -421,6 +422,10 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	/* ends here */
 
 	
+=======
+	@Column(name="is_wc_req_check")
+	private Boolean wcReqCheck = false;
+>>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
 	/**
 	 * @return the jobId
 	 */
@@ -1449,6 +1454,15 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}
