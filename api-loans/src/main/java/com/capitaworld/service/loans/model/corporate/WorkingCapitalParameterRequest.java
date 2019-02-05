@@ -238,10 +238,11 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer kotakSubParameter ;
 	
-<<<<<<< HEAD
-=======
+
 	private Boolean wcReqCheck = false;
->>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
+
+	
+
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}

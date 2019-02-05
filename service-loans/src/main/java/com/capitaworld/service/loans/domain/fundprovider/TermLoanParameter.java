@@ -405,7 +405,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="new_dscr_check")
 	private BigDecimal newDscrCheck;
 
-<<<<<<< HEAD
+
 	// projected sales
 	@Column(name = "is_new_historic_sales")
 	private Boolean isNewHistoricSales = false;
@@ -422,10 +422,13 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	/* ends here */
 
 	
-=======
+
 	@Column(name="is_wc_req_check")
 	private Boolean wcReqCheck = false;
->>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
+
+	@Column(name="is_wc_req_check")
+	private Boolean wcReqCheck = false;
+
 	/**
 	 * @return the jobId
 	 */
