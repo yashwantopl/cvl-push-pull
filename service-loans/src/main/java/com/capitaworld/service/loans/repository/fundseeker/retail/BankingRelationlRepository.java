@@ -16,11 +16,11 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.OtherCurrentAssetD
  */
 public interface BankingRelationlRepository extends JpaRepository<BankingRelation, Long> {
 
-	@Query("select o from BankingRelation o where o.applicantId.id = :id and o.isActive = true")
+	@Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true")
 	public List<BankingRelation> listOtherCurrentAssetFromAppId(@Param("id")Long id);
 
 	@Modifying
-	@Query("update BankingRelation pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicantId.id =:applicationId and pm.isActive = true")
+	@Query("update BankingRelation pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
 }
