@@ -28,8 +28,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -43,8 +45,6 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.gateway.client.GatewayClient;
-import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.config.AuditComponent;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
@@ -928,7 +928,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				String applicationStatus = null;
 				if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
 					if (request
-							.getPaymentStatus() == com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS) {
+							.getPaymentStatus() ==CommonUtils.PaymentStatus.SUCCESS) {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
 					} else {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
@@ -4183,10 +4183,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 					// gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
-					Object values = gatewayClient.payout(gatewayRequest);
+				/**	Object values = gatewayClient.payout(gatewayRequest);
 					logger.info("Response for gateway is:- " + values);
 					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in NHBS");
-					return values;
+					return values;*/
 				} catch (Exception e) {
 					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE : ",e);
 					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
@@ -4224,11 +4224,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				gatewayRequest.setRequestType(paymentRequest.getRequestType());
 				gatewayRequest.setBusinessTypeId(paymentRequest.getBusinessTypeId());
 
-				Object values = gatewayClient.payout(gatewayRequest);
+				/**Object values = gatewayClient.payout(gatewayRequest);
 
 				logger.info("Response for gateway is:- " + values);
 				logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
-				return values;
+				return values;*/
+				return null;
 			}
 		} catch (Exception e) {
 			logger.error("Error while Saving payment information in Loan : ",e);
@@ -4252,7 +4253,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		 * LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		 * BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 		 */
-		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+		loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 
 		// UPDATE CONNECT POST PAYMENT
@@ -4321,7 +4322,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-			loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 			loanApplicationRepository.save(loanApplicationMaster);
 
 			// UPDATE CONNECT POST PAYMENT
@@ -4462,7 +4463,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-			loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 			loanApplicationRepository.save(loanApplicationMaster);
 
 			// UPDATE CONNECT POST PAYMENT
@@ -4614,7 +4615,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			}
 			try {
-				updatePayment = gatewayClient.updatePayment(gatewayRequest);
+				/**updatePayment = gatewayClient.updatePayment(gatewayRequest);*/
 			} catch (Exception e) {
 				logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT : ",e);
 			}
@@ -4809,7 +4810,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			GatewayRequest gatewayRequest = new GatewayRequest();
 			gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
-			gatewayRequest.setStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+			gatewayRequest.setStatus(CommonUtils.PaymentStatus.SUCCESS);
 			gatewayRequest.setUserId(userId);
 			gatewayRequest.setClientId(ClientId);
 			logger.info("End getPaymentStatus() with success");
