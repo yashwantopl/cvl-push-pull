@@ -521,6 +521,12 @@ public class RetailApplicantDetail implements Serializable {
     
     @Column(name="residence_since_month")
     private Integer residenceSinceMonth;
+
+    @Column(name="salary_mode")
+    private Integer salaryMode;
+    
+    @Column(name="salary_bank_name")
+    private String salaryBankName;
     
 
 	public RetailApplicantDetail() {
@@ -1822,6 +1828,24 @@ public class RetailApplicantDetail implements Serializable {
 	public void setDesignation(Integer designation) {
 		this.designation = designation;
 	}
+
+	public Integer getSalaryMode() {
+		return salaryMode;
+	}
+
+	public void setSalaryMode(Integer salaryMode) {
+		this.salaryMode = salaryMode;
+	}
+
+	public String getSalaryBankName() {
+		return salaryBankName;
+	}
+
+	public void setSalaryBankName(String salaryBankName) {
+		this.salaryBankName = salaryBankName;
+	}
+	
+	
 	
 	
 	
