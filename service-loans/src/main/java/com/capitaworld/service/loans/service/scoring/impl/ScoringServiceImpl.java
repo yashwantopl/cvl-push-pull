@@ -621,9 +621,6 @@ public class ScoringServiceImpl implements ScoringService {
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
 
-        logger.info("======================================*************************=====================================");
-        logger.info("scoringRequestLoansList",scoringRequestLoansList);
-        logger.info("======================================*************************=====================================");
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
@@ -1048,7 +1045,6 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.LOAN_TO_INCOME_RATIO_PL: {
 
                                 try {
-                                    logger.error("IN SIDE LOAN_TO_INCOME_RATIO_PL MONTLY INCOME => " + retailApplicantDetail.getMonthlyIncome() + " LOAN AMT => " + retailApplicantDetail.getLoanAmountRequired());
                                     if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
                                         Double netMontlyIncome = (retailApplicantDetail.getMonthlyIncome() * 12);
                                         Double proposedLoanAmout = retailApplicantDetail.getLoanAmountRequired();
