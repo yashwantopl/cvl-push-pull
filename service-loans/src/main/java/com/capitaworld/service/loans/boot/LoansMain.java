@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
@@ -20,7 +21,6 @@ import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
-import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
@@ -80,9 +80,6 @@ public class LoansMain {
 	@Value("${capitaworld.service.cibil.url}")
 	private String cibilUrl;
 
-	@Value("${capitaworld.service.gateway.url}")
-	private String gatewayBaseUrl;
-
 	@Value("${capitaworld.service.reports.url}")
 	private String reportsBaseUrl;
 
@@ -116,11 +113,20 @@ public class LoansMain {
 	@Value("${capitaworld.service.itr.url}")
 	private String itrUrl;
 
+	@Value("${capitaworld.service.gateway.url}")
+	private String gatewayUrl;
 	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
 
+	@Bean
+	public GatewayClient gatewayClient() {
+		GatewayClient gatewayClient = new GatewayClient(gatewayUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
+		return gatewayClient;
+	}
+	
 	@Bean
 	public DMSClient dmsMasterClient() {
 		DMSClient dmsClient = new DMSClient(dmsUrl);
@@ -175,13 +181,6 @@ public class LoansMain {
 		RatingClient ratingClient = new RatingClient(ratingUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingClient);
 		return ratingClient;
-	}
-
-	@Bean
-	public GatewayClient gatewayClient() {
-		GatewayClient gatewayClient = new GatewayClient(gatewayBaseUrl);
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
-		return gatewayClient;
 	}
 
 	@Bean
