@@ -620,8 +620,10 @@ public class ScoringServiceImpl implements ScoringService {
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
 
+        logger.info("======================================*************************=====================================");
+        logger.info("scoringRequestLoansList",scoringRequestLoansList);
+        logger.info("======================================*************************=====================================");
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
-
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
 
@@ -735,6 +737,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 Double cibil_score = null;
                                 try {
 
+                                    scoreParameterRetailRequest.setCibilScore_p(false);
                                     CibilRequest cibilRequest = new CibilRequest();
                                     cibilRequest.setPan(retailApplicantDetail.getPan());
                                     cibilRequest.setApplicationId(applicationId);
@@ -885,11 +888,13 @@ public class ScoringServiceImpl implements ScoringService {
                                             else
                                                 employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
                                         }
+                                        logger.info("==============employmentWithPlValue: ============ "+employmentWithPlValue + " " +retailApplicantDetail.getEmploymentWith() );
                                         scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
                                         scoreParameterRetailRequest.setCategoryInfo_p(true);
                                     } else {
                                         scoreParameterRetailRequest.setCategoryInfo_p(false);
                                     }
+
                                 } catch (Exception e) {
                                     logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
@@ -1002,6 +1007,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Double month = retailApplicantDetail.getResidingMonth();
                                     scoreParameterRetailRequest.setNoOfYearCurrentLocation(year);
                                     scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
+                                    logger.info("==============NO_OF_YEAR_CURRENT_LOCAITON_PL: ============ "+year);
                                 } catch (Exception e) {
                                     logger.error("error while getting NO_OF_YEAR_CURRENT_LOCAITON_PL parameter : ",e);
                                     scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(false);
@@ -1012,6 +1018,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Integer spouseEmployment = retailApplicantDetail.getSpouseEmployment();
                                     scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
                                     scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
+                                    logger.info("==============SPOUSE_EMPLOYMENT_DETAILS_PL: ============ "+spouseEmployment);
                                 } catch (Exception e) {
                                     logger.error("error while getting SPOUSE_EMPLOYMENT_DETAILS_PL parameter : ",e);
                                     scoreParameterRetailRequest.setSpouseEmploymentDetails_p(false);
@@ -1022,6 +1029,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Integer noOfDependent = retailApplicantDetail.getNoDependent();
                                     scoreParameterRetailRequest.setNumberOfDependents(noOfDependent);
                                     scoreParameterRetailRequest.setNumberOfDependents_p(true);
+                                    logger.info("==============NUMBER_OF_DEPENDENTS_PL: ============ "+noOfDependent);
                                 } catch (Exception e) {
                                     logger.error("error while getting NUMBER_OF_DEPENDENTS_PL parameter : ",e);
                                     scoreParameterRetailRequest.setNumberOfDependents_p(false);
@@ -1032,6 +1040,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Integer designation = retailApplicantDetail.getDesignation();
                                     scoreParameterRetailRequest.setDesignation(designation);
                                     scoreParameterRetailRequest.setDesignation_p(true);
+                                    logger.info("==============DESIGNATION_PL: ============ "+designation);
                                 } catch (Exception e) {
                                     logger.error("error while getting DESIGNATION_PL parameter : ",e);
                                     scoreParameterRetailRequest.setDesignation_p(false);
@@ -1040,10 +1049,13 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.LOAN_TO_INCOME_RATIO_PL: {
 
                                 try {
+                                    logger.info("retailApplicantDetail.getLoanAmountRequired()=======> " + retailApplicantDetail.getLoanAmountRequired());
+                                    logger.info("retailApplicantDetail.getMonthlyIncome()=======> " + retailApplicantDetail.getMonthlyIncome());
                                     if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLoanAmountRequired()) && !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
                                         Double netMontlyIncome = (retailApplicantDetail.getMonthlyIncome() * 12);
                                         Double proposedLoanAmout = retailApplicantDetail.getLoanAmountRequired();
                                         Double loanToIncomeRatio = ((proposedLoanAmout/netMontlyIncome)*100);
+                                        logger.info("==============LOAN_TO_INCOME_RATIO_PL: ============ \n =============== netMontlyIncome==> "+netMontlyIncome +" \n proposedLoanAmout ========> " + proposedLoanAmout +" \nloanToIncomeRatio======>"+ loanToIncomeRatio) ;
                                         scoreParameterRetailRequest.setLoanToIncomeRatio(loanToIncomeRatio);
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
                                     } else {
