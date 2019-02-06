@@ -1048,7 +1048,8 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.LOAN_TO_INCOME_RATIO_PL: {
 
                                 try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLoanAmountRequired()) && !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+                                    logger.error("IN SIDE LOAN_TO_INCOME_RATIO_PL MONTLY INCOME => " + retailApplicantDetail.getMonthlyIncome() + " LOAN AMT => " + retailApplicantDetail.getLoanAmountRequired());
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
                                         Double netMontlyIncome = (retailApplicantDetail.getMonthlyIncome() * 12);
                                         Double proposedLoanAmout = retailApplicantDetail.getLoanAmountRequired();
                                         Double loanToIncomeRatio = ((proposedLoanAmout/netMontlyIncome)*100);
