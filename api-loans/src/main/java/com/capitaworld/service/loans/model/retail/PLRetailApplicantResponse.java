@@ -66,6 +66,11 @@ public class PLRetailApplicantResponse implements Serializable {
     //FOR PL CAM REPORT
     private String loanAmountRequiredString;
     private String monthlyIncomeString;
+    private String spouseEmployment;
+    private Integer noOfDependent;
+    private String designation;
+    private String residenceSinceMonthYear;
+    
 
     /*
     * Final
@@ -452,6 +457,44 @@ public class PLRetailApplicantResponse implements Serializable {
 	public void setEducationQualificationString(String educationQualificationString) {
 		this.educationQualificationString = educationQualificationString;
 	}
+
+	
+
+	public String getSpouseEmployment() {
+		return spouseEmployment;
+	}
+
+	public void setSpouseEmployment(String spouseEmployment) {
+		this.spouseEmployment = spouseEmployment;
+	}
+
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	public String getResidenceSinceMonthYear() {
+		return residenceSinceMonthYear;
+	}
+
+	public void setResidenceSinceMonthYear(String residenceSinceMonthYear) {
+		this.residenceSinceMonthYear = residenceSinceMonthYear;
+	}
+
+	
     
 	
 }

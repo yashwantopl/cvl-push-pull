@@ -1876,7 +1876,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                             // start get projected sales from GST client
 
-                            projctedSales = gstCalculation.getProjectedSales()/12;
+                            projctedSales = gstCalculation.getHistoricalSales()/12;
 
                             // end get projected sales from GST client
 
@@ -2955,7 +2955,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 // start get projected sales from GST client
 
-                                projctedSales = gstCalculation.getProjectedSales();
+                                projctedSales = gstCalculation.getHistoricalSales();
 
                                 // end get projected sales from GST client
 
