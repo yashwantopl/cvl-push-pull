@@ -528,6 +528,12 @@ public class RetailApplicantDetail implements Serializable {
     @Column(name="salary_bank_name")
     private String salaryBankName;
     
+    @Column(name="salary_bank_month")
+    private Integer salaryBankMonth;
+    
+    @Column(name="salary_bank_year")
+    private Integer salaryBankYear;
+    
 
 	public RetailApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1844,6 +1850,24 @@ public class RetailApplicantDetail implements Serializable {
 	public void setSalaryBankName(String salaryBankName) {
 		this.salaryBankName = salaryBankName;
 	}
+
+	public Integer getSalaryBankMonth() {
+		return salaryBankMonth;
+	}
+
+	public void setSalaryBankMonth(Integer salaryBankMonth) {
+		this.salaryBankMonth = salaryBankMonth;
+	}
+
+	public Integer getSalaryBankYear() {
+		return salaryBankYear;
+	}
+
+	public void setSalaryBankYear(Integer salaryBankYear) {
+		this.salaryBankYear = salaryBankYear;
+	}
+	
+	
 	
 	
 	
