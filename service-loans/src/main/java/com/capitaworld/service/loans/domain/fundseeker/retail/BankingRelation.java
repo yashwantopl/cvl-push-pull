@@ -39,11 +39,11 @@ public class BankingRelation implements Serializable {
 	@Column(name="since_month")
 	private Integer sinceMonth;
 	
-	@Column(name="from")
+	@Column(name="from_source")
 	private Integer from;
 
-	@JoinColumn(name="applicant_id")
-	private Long applicantId;
+	@Column(name="application_id")
+	private Long applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -66,89 +66,90 @@ public class BankingRelation implements Serializable {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getBank() {
 		return bank;
-	}
-
-	public void setBank(String bank) {
-		this.bank = bank;
 	}
 
 	public Integer getSinceYear() {
 		return sinceYear;
 	}
 
-	public void setSinceYear(Integer sinceYear) {
-		this.sinceYear = sinceYear;
-	}
-
 	public Integer getSinceMonth() {
 		return sinceMonth;
-	}
-
-	public void setSinceMonth(Integer sinceMonth) {
-		this.sinceMonth = sinceMonth;
 	}
 
 	public Integer getFrom() {
 		return from;
 	}
 
-	public void setFrom(Integer from) {
-		this.from = from;
-	}
-
-	public Long getApplicantId() {
-		return applicantId;
-	}
-
-	public void setApplicantId(Long applicantId) {
-		this.applicantId = applicantId;
+	public Long getApplicationId() {
+		return applicationId;
 	}
 
 	public Long getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(Long createdBy) {
-		this.createdBy = createdBy;
-	}
-
 	public Date getCreatedDate() {
 		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
 	}
 
 	public Boolean getIsActive() {
 		return isActive;
 	}
 
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
 	public Long getModifiedBy() {
 		return modifiedBy;
-	}
-
-	public void setModifiedBy(Long modifiedBy) {
-		this.modifiedBy = modifiedBy;
 	}
 
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setBank(String bank) {
+		this.bank = bank;
+	}
+
+	public void setSinceYear(Integer sinceYear) {
+		this.sinceYear = sinceYear;
+	}
+
+	public void setSinceMonth(Integer sinceMonth) {
+		this.sinceMonth = sinceMonth;
+	}
+
+	public void setFrom(Integer from) {
+		this.from = from;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 
+	
 	
 }
