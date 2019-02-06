@@ -1003,9 +1003,19 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.Retail.NO_OF_YEAR_CURRENT_LOCAITON_PL:
                                 try {
-                                    Double year = retailApplicantDetail.getResidingYear();
-                                    Double month = retailApplicantDetail.getResidingMonth();
-                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(year);
+                                    Integer year = retailApplicantDetail.getResidenceSinceYear();
+                                    Integer month = retailApplicantDetail.getResidenceSinceMonth();
+                                    Date now = new Date();
+                                    Calendar calendar = Calendar.getInstance();
+                                    calendar.setTime(now);
+                                    Integer currentYear = calendar.get(Calendar.YEAR);
+                                    Integer currentMonth  = calendar.get(Calendar.MONTH);
+                                    Integer yearDiff = currentYear - year;
+                                    Integer monthDiff = currentMonth - month;
+                                    logger.info("==============YEAR : ============ "+year + " Current Year " + currentYear + " MONTH " + month + " Current Month " + currentMonth + " DIff year " + yearDiff + " Month diff " + monthDiff + " ==============================");
+                                    if(month >= 6)
+                                        year+=1;
+                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(year.doubleValue());
                                     scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
                                     logger.info("==============NO_OF_YEAR_CURRENT_LOCAITON_PL: ============ "+year);
                                 } catch (Exception e) {
@@ -1026,7 +1036,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.Retail.NUMBER_OF_DEPENDENTS_PL:
                                 try {
-                                    Integer noOfDependent = retailApplicantDetail.getNoDependent();
+                                    Integer noOfDependent = retailApplicantDetail.getNoOfDependent();
                                     scoreParameterRetailRequest.setNumberOfDependents(noOfDependent);
                                     scoreParameterRetailRequest.setNumberOfDependents_p(true);
                                     logger.info("==============NUMBER_OF_DEPENDENTS_PL: ============ "+noOfDependent);
