@@ -266,6 +266,14 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	
 	private BigDecimal newDscrCheck;
 
+	// projected sales
+	private Boolean isNewHistoricSales = false;
+	private BigDecimal newHistoricSales;
+
+	private Boolean isHistoricGrowth = false;
+	private BigDecimal newHistoricGrowth;
+	
+
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -1325,5 +1333,38 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.newDscrCheck = newDscrCheck;
 	}
 
+	public Boolean getIsNewHistoricSales() {
+		return isNewHistoricSales;
+	}
+
+	public void setIsNewHistoricSales(Boolean isNewHistoricSales) {
+		this.isNewHistoricSales = isNewHistoricSales;
+	}
+
+	public BigDecimal getNewHistoricSales() {
+		return newHistoricSales;
+	}
+
+	public void setNewHistoricSales(BigDecimal newHistoricSales) {
+		this.newHistoricSales = newHistoricSales;
+	}
+
+	public Boolean getIsHistoricGrowth() {
+		return isHistoricGrowth;
+	}
+
+	public void setIsHistoricGrowth(Boolean isHistoricGrowth) {
+		this.isHistoricGrowth = isHistoricGrowth;
+	}
+
+	public BigDecimal getNewHistoricGrowth() {
+		return newHistoricGrowth;
+	}
+
+	public void setNewHistoricGrowth(BigDecimal newHistoricGrowth) {
+		this.newHistoricGrowth = newHistoricGrowth;
+	}
+	
+	
 	
 }

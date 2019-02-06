@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -316,6 +318,16 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isNewDscrCheck=false;
 	
 	private BigDecimal newDscrCheck;
+	
+	// projected sales
+	private Boolean isNewHistoricSales = false;
+
+	private BigDecimal newHistoricSales;
+
+	private Boolean isHistoricGrowth = false;
+
+	private BigDecimal newHistoricGrowth;
+	// ends
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1638,13 +1650,36 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.newDscrCheck = newDscrCheck;
 	}
 
+	public Boolean getIsNewHistoricSales() {
+		return isNewHistoricSales;
+	}
 
+	public void setIsNewHistoricSales(Boolean isNewHistoricSales) {
+		this.isNewHistoricSales = isNewHistoricSales;
+	}
 
+	public BigDecimal getNewHistoricSales() {
+		return newHistoricSales;
+	}
 
+	public void setNewHistoricSales(BigDecimal newHistoricSales) {
+		this.newHistoricSales = newHistoricSales;
+	}
 
+	public Boolean getIsHistoricGrowth() {
+		return isHistoricGrowth;
+	}
 
+	public void setIsHistoricGrowth(Boolean isHistoricGrowth) {
+		this.isHistoricGrowth = isHistoricGrowth;
+	}
 
+	public BigDecimal getNewHistoricGrowth() {
+		return newHistoricGrowth;
+	}
 
-	
+	public void setNewHistoricGrowth(BigDecimal newHistoricGrowth) {
+		this.newHistoricGrowth = newHistoricGrowth;
+	}
 	
 }
