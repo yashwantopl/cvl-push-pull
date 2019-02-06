@@ -879,6 +879,12 @@ public class ScoringServiceImpl implements ScoringService {
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
                                         }
+                                        else if(EmploymentWithPL.QUASI_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith()){
+                                            if(true==salaryWithBank)
+                                                employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
+                                        }
                                         scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
                                         scoreParameterRetailRequest.setCategoryInfo_p(true);
                                     } else {
@@ -992,13 +998,63 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.Retail.NO_OF_YEAR_CURRENT_LOCAITON_PL:
                                 try {
-                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(10.0);
+                                    Double year = retailApplicantDetail.getResidingYear();
+                                    Double month = retailApplicantDetail.getResidingMonth();
+                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(year);
                                     scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
                                 } catch (Exception e) {
                                     logger.error("error while getting NO_OF_YEAR_CURRENT_LOCAITON_PL parameter : ",e);
                                     scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(false);
                                 }
                                 break;
+                            case ScoreParameter.Retail.SPOUSE_EMPLOYMENT_DETAILS_PL:
+                                try {
+                                    Integer spouseEmployment = retailApplicantDetail.getSpouseEmployment();
+                                    scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
+                                    scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting SPOUSE_EMPLOYMENT_DETAILS_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setSpouseEmploymentDetails_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.NUMBER_OF_DEPENDENTS_PL:
+                                try {
+                                    Integer noOfDependent = retailApplicantDetail.getNoDependent();
+                                    scoreParameterRetailRequest.setNumberOfDependents(noOfDependent);
+                                    scoreParameterRetailRequest.setNumberOfDependents_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting NUMBER_OF_DEPENDENTS_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setNumberOfDependents_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.DESIGNATION_PL:
+                                try {
+                                    Integer designation = retailApplicantDetail.getDesignation();
+                                    scoreParameterRetailRequest.setDesignation(designation);
+                                    scoreParameterRetailRequest.setDesignation_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting DESIGNATION_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setDesignation_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.LOAN_TO_INCOME_RATIO_PL: {
+
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLoanAmountRequired()) && !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+                                        Double netMontlyIncome = (retailApplicantDetail.getMonthlyIncome() * 12);
+                                        Double proposedLoanAmout = retailApplicantDetail.getLoanAmountRequired();
+                                        Double loanToIncomeRatio = ((proposedLoanAmout/netMontlyIncome)*100);
+                                        scoreParameterRetailRequest.setLoanToIncomeRatio(loanToIncomeRatio);
+                                        scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting LOAN_TO_INCOME_RATIO_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                }
+                                break;
+                            }
                             default:
                                 break;
 
