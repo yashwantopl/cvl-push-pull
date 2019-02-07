@@ -1,10 +1,13 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -161,6 +164,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private ScoringRequestDetailRepository scoringRequestDetailRepository;
+
+    @Autowired
+    private EligibilityClient eligibilityClient;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
@@ -980,8 +986,17 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL: {
 
                                 try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
-                                        scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome() * 12);
+                                    Double monthlyIncome = 0d;
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                                        List monthlyIncomeList = (List) eligibilityResponse.getData();
+                                        if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                            monthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
+                                        }
+                                    }
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(monthlyIncome)) {
+                                        scoreParameterRetailRequest.setNetAnnualIncome(monthlyIncome * 12);
                                         scoreParameterRetailRequest.setNetAnnualIncome_p(true);
                                     } else {
                                         scoreParameterRetailRequest.setNetAnnualIncome_p(false);
