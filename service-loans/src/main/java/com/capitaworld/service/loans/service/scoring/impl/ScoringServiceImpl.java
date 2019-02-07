@@ -1060,18 +1060,17 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.LOAN_TO_INCOME_RATIO_PL: {
 
                                 try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
-                                        Double netMontlyIncome = (retailApplicantDetail.getMonthlyIncome() * 12);
-                                        Double proposedLoanAmout = retailApplicantDetail.getLoanAmountRequired();
-                                        Double loanToIncomeRatio = ((proposedLoanAmout/netMontlyIncome)*100);
-                                        scoreParameterRetailRequest.setLoanToIncomeRatio(loanToIncomeRatio);
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome()) && !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLoanAmountRequired())) {
+
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
+                                        scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome() * 12);
+                                        scoreParameterRetailRequest.setLoanAmtProposed(retailApplicantDetail.getLoanAmountRequired());
                                     } else {
-                                        scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                        scoreParameterRetailRequest.setLoanToIncomeRatio_p(false);
                                     }
                                 } catch (Exception e) {
                                     logger.error("error while getting LOAN_TO_INCOME_RATIO_PL parameter : ",e);
-                                    scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                    scoreParameterRetailRequest.setLoanToIncomeRatio_p(false);
                                 }
                                 break;
                             }
