@@ -60,6 +60,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Double monthlyIncome;
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
     private List<CreditCardsDetailRequest> creditCardsDetailRequestList;
+    private List<BankRelationshipRequest> bankingRelationshipList;
 
     private Boolean isApplicantDetailsFilled;
     
@@ -80,6 +81,11 @@ public class PLRetailApplicantRequest implements Serializable {
     private Integer designation;
     private Integer residenceSinceYear;
     private Integer residenceSinceMonth;
+    private Integer salaryMode;
+    private String salaryBankName;
+    private Integer salaryBankMonth;
+    private Integer salaryBankYear;
+    private Boolean isOtherSalaryBank;
     
 
     public PLRetailApplicantRequest() {
@@ -519,6 +525,55 @@ public class PLRetailApplicantRequest implements Serializable {
 	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
 		this.residenceSinceMonth = residenceSinceMonth;
 	}
+
+	public Integer getSalaryMode() {
+		return salaryMode;
+	}
+
+	public String getSalaryBankName() {
+		return salaryBankName;
+	}
+
+	public Integer getSalaryBankMonth() {
+		return salaryBankMonth;
+	}
+
+	public Integer getSalaryBankYear() {
+		return salaryBankYear;
+	}
+
+	public void setSalaryMode(Integer salaryMode) {
+		this.salaryMode = salaryMode;
+	}
+
+	public void setSalaryBankName(String salaryBankName) {
+		this.salaryBankName = salaryBankName;
+	}
+
+	public void setSalaryBankMonth(Integer salaryBankMonth) {
+		this.salaryBankMonth = salaryBankMonth;
+	}
+
+	public void setSalaryBankYear(Integer salaryBankYear) {
+		this.salaryBankYear = salaryBankYear;
+	}
+
+	public List<BankRelationshipRequest> getBankingRelationshipList() {
+		return bankingRelationshipList;
+	}
+
+	public void setBankingRelationshipList(List<BankRelationshipRequest> bankingRelationshipList) {
+		this.bankingRelationshipList = bankingRelationshipList;
+	}
+
+	public Boolean getIsOtherSalaryBank() {
+		return isOtherSalaryBank;
+	}
+
+	public void setIsOtherSalaryBank(Boolean isOtherSalaryBank) {
+		this.isOtherSalaryBank = isOtherSalaryBank;
+	}
+	
     
     
 }
