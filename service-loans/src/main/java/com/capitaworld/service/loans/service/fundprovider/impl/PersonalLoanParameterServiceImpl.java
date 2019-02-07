@@ -243,14 +243,19 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(personalLoanParameterRequest.getId());
 		if(!countryList.isEmpty())
 		{
-		try {
-			OneFormResponse formResponse =oneFormClient.getCountryByCountryListId(countryList);
-			personalLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_PERSONAL_LOAN_PARAMETER_REQUEST_MSG,e);
-		}
+			try {
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				personalLoanParameterRequest.setCountryList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 		}
 		
 		
@@ -259,28 +264,38 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(personalLoanParameterRequest.getId());
 		if(!stateList.isEmpty())
 		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			personalLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_PERSONAL_LOAN_PARAMETER_REQUEST_MSG,e);
-		}
+			try {
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				personalLoanParameterRequest.setStateList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 		}
 		
 		
 		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(personalLoanParameterRequest.getId());
 		if(!cityList.isEmpty())
 		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			personalLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_PERSONAL_LOAN_PARAMETER_REQUEST_MSG,e);
-		}
+			try {
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				personalLoanParameterRequest.setCityList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 		}
 		
 		
