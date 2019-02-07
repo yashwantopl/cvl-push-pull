@@ -47,7 +47,6 @@ import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantResponse;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
-import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
@@ -72,9 +71,7 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.DesignationList;
-import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
@@ -83,9 +80,8 @@ import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
-import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
-import com.capitaworld.service.oneform.enums.ResidentialStatus;
+import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -252,6 +248,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setDesignation(plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
 				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
+				
+				/*salary account details*/
+				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
+				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
+				plRetailApplicantResponse.setSalaryAccountBankSince((plRetailApplicantRequest.getSalaryBankYear() !=null ? (plRetailApplicantRequest.getSalaryBankYear()+" year") : "") + " " +(plRetailApplicantRequest.getSalaryBankMonth()!= null ? (plRetailApplicantRequest.getSalaryBankMonth()+" months") :  "" ));
+				
 				
 				//citetailApplicantResponse.setry,State,country
 				
@@ -280,6 +283,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setPresentAdd( (plRetailApplicantRequest.getContactAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getPremiseNumber())) :"") + (plRetailApplicantRequest.getContactAddress().getStreetName() != null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getStreetName())) : "") + (plRetailApplicantRequest.getContactAddress().getLandMark() != null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPresentAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPresentAddDist())) :"")+ (plTeaserViewResponse.getPresentAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPresentAddTaluko())) : "") + (plRetailApplicantRequest.getContactAddress().getPincode() != null ? (plRetailApplicantRequest.getContactAddress().getPincode()) : ""));
 				}
 				
+				/*banking relationship details*/
 				
 				
 				// loan Details 
@@ -304,6 +308,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plRetailApplicantResponse.setCreditCardsDetailRequestList(plRetailApplicantRequest.getCreditCardsDetailRequestList());	
 				}else {
 					logger.warn("CreditCardDetails is null...");
+				}
+				
+
+				if(plRetailApplicantRequest.getBankingRelationshipList() != null) {
+					plRetailApplicantResponse.setBankRelationShipList(plRetailApplicantRequest.getBankingRelationshipList());	
+				}else {
+					logger.warn("bankRelationship  is null...");
 				}
 				
 				//KEY VERTICAL FUNDING
@@ -517,7 +528,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		// pl final view details filled from here
 		if (isFinal) {
 			
-			try {
+			/*try {
 				
 				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinal(userId, toApplicationId);
 				
@@ -585,7 +596,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 			} catch (Exception e) {
 				logger.error("Error while fetching RetailFinalData : ",e);
-			}
+			}*/
 			
 			
 			//BANK ACCOUNT HELD DETAILS
