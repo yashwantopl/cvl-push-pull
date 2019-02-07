@@ -191,7 +191,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			} catch (Exception e) {
 				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============",e);
 			}
-            
+             
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
             List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
             BankRelationshipRequest bankRelationshipRequest = null;
