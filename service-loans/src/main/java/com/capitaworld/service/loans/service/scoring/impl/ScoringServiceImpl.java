@@ -1859,7 +1859,13 @@ public class ScoringServiceImpl implements ScoringService {
 
                             // start get projected sales from GST client
 
-                            projctedSales = gstCalculation.getHistoricalSales()/12;
+                            if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                projctedSales = gstCalculation.getHistoricalSales()/12;
+                            }
+                            else
+                            {
+                                projctedSales = gstCalculation.getProjectedSales()/12;
+                            }
 
                             // end get projected sales from GST client
 
@@ -2938,7 +2944,13 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 // start get projected sales from GST client
 
-                                projctedSales = gstCalculation.getHistoricalSales();
+                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                    projctedSales = gstCalculation.getHistoricalSales();
+                                }
+                                else
+                                {
+                                    projctedSales = gstCalculation.getProjectedSales();
+                                }
 
                                 // end get projected sales from GST client
 
