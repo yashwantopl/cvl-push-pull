@@ -180,7 +180,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     for(CreditCardsDetail creditCard :creditCardDetails) {
                     	creditCardDetailReq= new CreditCardsDetailRequest();
                     	BeanUtils.copyProperties(creditCard, creditCardDetailReq);
-                    	creditCardDetailReq.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCard.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCard.getCreditCardTypesId()).getValue() : "");
+                    	if(creditCard.getCreditCardTypesId() != 0) {
+                    		creditCardDetailReq.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCard.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCard.getCreditCardTypesId()).getValue() : "");
+                    	}
                     	creditCardDetailReq.setOutstandingBalanceString(!CommonUtils.isObjectNullOrEmpty(creditCard.getOutstandingBalance()) ? CommonUtils.convertValue(creditCard.getOutstandingBalance()) : "");
                     	creditCardDetailsRequest.add(creditCardDetailReq);
                     }
@@ -225,9 +227,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	bankingRelation = new BankingRelation();
             	BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
             	bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
-            	bankingRelation.setCreatedBy(userId);
-            	bankingRelation.setCreatedDate(new Date());
-            	bankingRelation.setIsActive(true);
+            	if(bankRelationshipRequest.getId() == null) {
+            		bankingRelation.setCreatedBy(userId);
+                	bankingRelation.setCreatedDate(new Date());
+                	bankingRelation.setIsActive(true);
+            	}
+            	bankingRelation.setModifiedBy(userId);
+        		bankingRelation.setModifiedDate(new Date());
             	bankingRelations.add(bankingRelation);
             }
             bankingRelationlRepository.save(bankingRelations);

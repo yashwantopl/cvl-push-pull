@@ -7,6 +7,8 @@ public class BankRelationshipRequest {
 	private Integer sinceYear;
 	private Integer sinceMonth;
 	private Integer from;
+	private Boolean isActive;
+	
 	public Long getId() {
 		return id;
 	}
@@ -36,6 +38,12 @@ public class BankRelationshipRequest {
 	}
 	public void setFrom(Integer from) {
 		this.from = from;
+	}
+	public Boolean getIsActive() {
+		return isActive;
+	}
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
 	
 	
