@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
@@ -994,7 +995,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 try {
                                     Double monthlyIncome = 0d;
                                     EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
-                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
+                                            && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                                         List monthlyIncomeList = (List) eligibilityResponse.getData();
                                         if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
                                             monthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
@@ -1071,10 +1073,18 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.LOAN_TO_INCOME_RATIO_PL: {
 
                                 try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome()) && !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLoanAmountRequired())) {
+                                    Double monthlyIncome = 0d;
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                                        List monthlyIncomeList = (List) eligibilityResponse.getData();
+                                        if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                            monthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
+                                        }
+                                    }
 
+                                    if (!CommonUtils.isObjectNullOrEmpty(monthlyIncome)) {
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
-                                        scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome() * 12);
+                                        scoreParameterRetailRequest.setNetAnnualIncome(monthlyIncome * 12);
                                         scoreParameterRetailRequest.setLoanAmtProposed(retailApplicantDetail.getLoanAmountRequired());
                                     } else {
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(false);
@@ -1089,6 +1099,20 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
 
                         }
+                    }
+
+                    Double grossAnnualIncome =0d;
+                    try {
+                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                        if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                            List monthlyIncomeList = (List) eligibilityResponse.getData();
+                            if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                grossAnnualIncome = Double.valueOf(monthlyIncomeList.get(8).toString());
+                                scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome*12);
+                            }
+                        }
+                    } catch (EligibilityExceptions eligibilityExceptions) {
+                        logger.error("error while getting GROSS ANNUAL INCOME FROM ELIGIBILITY  : ",eligibilityExceptions);
                     }
 
                     logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
