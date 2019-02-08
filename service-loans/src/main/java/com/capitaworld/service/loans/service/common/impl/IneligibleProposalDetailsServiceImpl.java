@@ -63,6 +63,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	private static final String BRANCH_ADDRESS_PARAMETERS = "branch_address";
 	private static final String BRANCH_CONTACT_PARAMETERS = "branch_contact";
 	private static final String IFSC_CODE_PARAMETERS = "ifsc_code";
+	private static final int PENDING_STATUS = 1;
 
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
@@ -788,7 +789,16 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public boolean updateTransferBranchDetail(InEligibleProposalDetailsRequest inEliProReq) {
 		try{
 			//find entity by Id and update branch transfer details
-			IneligibleProposalDetails proposalDetails = ineligibleProposalDetailsRepository.findOne(inEliProReq.getIneligibleProposalId());
+			IneligibleProposalDetails proposalDetails = null;
+			try {
+				proposalDetails = ineligibleProposalDetailsRepository.findOne(inEliProReq.getIneligibleProposalId());
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return false;
+			}
+			if(CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+				return false;	
+			}
 			Long branchId = proposalDetails.getBranchId();
 			proposalDetails.setBranchId(inEliProReq.getBranchId());
 			proposalDetails.setModifiedBy(inEliProReq.getUserId());
@@ -809,5 +819,27 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			logger.error("error while update ineligible proposal : ",e);
 		}
 			return false;
+	}
+	
+	@Override
+	public boolean updateReOpenProposalDetail(InEligibleProposalDetailsRequest inEliProReq) {
+			//find entity by Id for update details of reopen status 
+			IneligibleProposalDetails proposalDetails = null;
+			try {
+				proposalDetails = ineligibleProposalDetailsRepository.findOne(inEliProReq.getIneligibleProposalId());
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return false;
+			}
+			if(CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+				return false;	
+			}
+			//reopen should be changed as pending status
+			proposalDetails.setStatus(PENDING_STATUS);
+			proposalDetails.setReopenReason(inEliProReq.getReOpenReason());
+			proposalDetails.setModifiedBy(inEliProReq.getUserId());
+			proposalDetails.setModifiedDate(new Date());
+			ineligibleProposalDetailsRepository.save(proposalDetails); 
+			return true;
 	}
 }
