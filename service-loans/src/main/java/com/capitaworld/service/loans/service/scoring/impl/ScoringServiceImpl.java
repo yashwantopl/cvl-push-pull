@@ -1036,6 +1036,11 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.SPOUSE_EMPLOYMENT_DETAILS_PL:
                                 try {
                                     Long spouseEmployment = retailApplicantDetail.getSpouseEmployment().longValue();
+
+                                    if(CommonUtils.isObjectNullOrEmpty(spouseEmployment))
+                                    {
+                                        spouseEmployment=3l; // No Spouse
+                                    }
                                     scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
                                     scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                                 } catch (Exception e) {
