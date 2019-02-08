@@ -487,10 +487,14 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             Double totalIncomeLastYear = 0.0;
                             try {
-                                totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
+
+                                Integer maxYear=retailApplicantIncomeRepository.getMaxYearByApplicationId(applicationId);
+                                totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeByApplicationIdAndYear(applicationId,maxYear);
+
                                 if (CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear)) {
                                     totalIncomeLastYear = 0.0;
                                 }
+
                             } catch (Exception e) {
                                 logger.error("error while getting total income from retail applicant income detail : ",e);
                             }
@@ -914,7 +918,9 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 Double totalIncomeLastYear = 0.0;
                                 try {
-                                    totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
+                                    Integer maxYear=retailApplicantIncomeRepository.getMaxYearByApplicationId(applicationId);
+                                    totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeByApplicationIdAndYear(applicationId,maxYear);
+
                                     if (CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear)) {
                                         totalIncomeLastYear = 0.0;
                                     }
@@ -1030,6 +1036,11 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.SPOUSE_EMPLOYMENT_DETAILS_PL:
                                 try {
                                     Long spouseEmployment = retailApplicantDetail.getSpouseEmployment().longValue();
+
+                                    if(CommonUtils.isObjectNullOrEmpty(spouseEmployment))
+                                    {
+                                        spouseEmployment=3l; // No Spouse
+                                    }
                                     scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
                                     scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                                 } catch (Exception e) {
