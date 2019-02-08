@@ -21,5 +21,9 @@ public interface IneligibleProposalDetailsService {
 	
 	//added by Jaimin Darji For transfer branch
 	public boolean updateTransferBranchDetail(InEligibleProposalDetailsRequest inEliProReq);
+	
+	//added by Jaimin Darji For Reopen Proposal
+	public boolean updateReOpenProposalDetail(InEligibleProposalDetailsRequest inEliProReq);
+	
 
 }
