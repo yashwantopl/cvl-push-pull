@@ -116,6 +116,8 @@ public class LoansMain {
 	@Value("${capitaworld.service.gateway.url}")
 	private String gatewayUrl;
 
+	@Value("${capitaworld.service.gateway.url}")
+	private String gatewayUrl;
 	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
