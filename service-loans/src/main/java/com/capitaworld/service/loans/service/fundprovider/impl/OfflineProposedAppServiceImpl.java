@@ -353,6 +353,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			request.setFpProductId(CommonUtils.convertLong(obj[16]));
 			request.setMobile(CommonUtils.convertString(obj[17]));
 			request.setEmail(CommonUtils.convertString(obj[18]));
+			request.setProposalId(CommonUtils.convertLong(obj[19]));
 			applicationRequests.add(request);
 		}
 		return applicationRequests;
