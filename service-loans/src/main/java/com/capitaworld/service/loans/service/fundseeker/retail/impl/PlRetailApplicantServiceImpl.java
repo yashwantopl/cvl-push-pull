@@ -19,17 +19,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantIncomeDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
@@ -62,6 +65,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private CreditCardsDetailRepository creditCardsDetailRepository;
+    
+    @Autowired
+    private BankingRelationlRepository bankingRelationlRepository;
 
     @Override
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
@@ -174,7 +180,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     for(CreditCardsDetail creditCard :creditCardDetails) {
                     	creditCardDetailReq= new CreditCardsDetailRequest();
                     	BeanUtils.copyProperties(creditCard, creditCardDetailReq);
-                    	creditCardDetailReq.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCard.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCard.getCreditCardTypesId()).getValue() : "");
+                    	if(creditCard.getCreditCardTypesId() != 0) {
+                    		creditCardDetailReq.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCard.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCard.getCreditCardTypesId()).getValue() : "");
+                    	}
                     	creditCardDetailReq.setOutstandingBalanceString(!CommonUtils.isObjectNullOrEmpty(creditCard.getOutstandingBalance()) ? CommonUtils.convertValue(creditCard.getOutstandingBalance()) : "");
                     	creditCardDetailsRequest.add(creditCardDetailReq);
                     }
@@ -185,6 +193,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			} catch (Exception e) {
 				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============",e);
 			}
+             
+            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            BankRelationshipRequest bankRelationshipRequest = null;
+            for(BankingRelation bankingRelation : bankingRelations) {
+            	bankRelationshipRequest = new BankRelationshipRequest();
+            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	bankRelationshipRequests.add(bankRelationshipRequest);
+            }
+            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
             
             
 
@@ -212,7 +230,24 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
 
             BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailProfile());
-
+            
+            List<BankingRelation> bankingRelations = new ArrayList<>();
+            BankingRelation bankingRelation = null;
+            for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
+            	bankingRelation = new BankingRelation();
+            	BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
+            	bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
+            	if(bankRelationshipRequest.getId() == null) {
+            		bankingRelation.setCreatedBy(userId);
+                	bankingRelation.setCreatedDate(new Date());
+                	bankingRelation.setIsActive(true);
+            	}
+            	bankingRelation.setModifiedBy(userId);
+        		bankingRelation.setModifiedDate(new Date());
+            	bankingRelations.add(bankingRelation);
+            }
+            bankingRelationlRepository.save(bankingRelations);
+            
             applicantRepository.save(applicantDetail);
 
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
@@ -305,7 +340,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
-
+            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            System.out.println("bankingRelations :"+bankingRelations.size());
+            
             FinancialArrangementsDetailRequest financialRequest = null;
             for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
                 financialRequest = new FinancialArrangementsDetailRequest();
@@ -314,7 +352,15 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             applicantRequest.setFinancialArrangementsDetailRequestsList(financialArrangementsDetailRequestList);
 
-
+            BankRelationshipRequest bankRelationshipRequest = null;
+            for(BankingRelation bankingRelation : bankingRelations) {
+            	bankRelationshipRequest = new BankRelationshipRequest();
+            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	bankRelationshipRequests.add(bankRelationshipRequest);
+            }
+            System.out.println("bankRelationshipRequests :"+bankRelationshipRequests.size());
+            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
+            
             List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
             List<CreditCardsDetailRequest> creditCardsDetailRequestList= new ArrayList<CreditCardsDetailRequest>(creditCardsDetailList.size());
 

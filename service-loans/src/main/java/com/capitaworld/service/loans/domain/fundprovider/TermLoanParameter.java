@@ -405,6 +405,27 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="new_dscr_check")
 	private BigDecimal newDscrCheck;
 
+
+	// projected sales
+	@Column(name = "is_new_historic_sales")
+	private Boolean isNewHistoricSales = false;
+
+	@Column(name = "new_historic_sales")
+	private BigDecimal newHistoricSales;
+
+	@Column(name = "is_historic_growth")
+	private Boolean isHistoricGrowth = false;
+
+	@Column(name = "new_historic_growth")
+	private BigDecimal newHistoricGrowth;
+
+	/* ends here */
+
+	
+
+	@Column(name="is_wc_req_check")
+	private Boolean wcReqCheck = false;
+
 	/**
 	 * @return the jobId
 	 */
@@ -1433,6 +1454,15 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.kotakSubParameter = kotakSubParameter;
 	}
 
+	public Boolean getWcReqCheck() {
+		return wcReqCheck;
+	}
+
+	public void setWcReqCheck(Boolean wcReqCheck) {
+		this.wcReqCheck = wcReqCheck;
+	}
+
+	
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}
@@ -1449,9 +1479,37 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.newDscrCheck = newDscrCheck;
 	}
 
+	public Boolean getIsNewHistoricSales() {
+		return isNewHistoricSales;
+	}
 
+	public void setIsNewHistoricSales(Boolean isNewHistoricSales) {
+		this.isNewHistoricSales = isNewHistoricSales;
+	}
+
+	public BigDecimal getNewHistoricSales() {
+		return newHistoricSales;
+	}
+
+	public void setNewHistoricSales(BigDecimal newHistoricSales) {
+		this.newHistoricSales = newHistoricSales;
+	}
+
+	public Boolean getIsHistoricGrowth() {
+		return isHistoricGrowth;
+	}
+
+	public void setIsHistoricGrowth(Boolean isHistoricGrowth) {
+		this.isHistoricGrowth = isHistoricGrowth;
+	}
+
+	public BigDecimal getNewHistoricGrowth() {
+		return newHistoricGrowth;
+	}
+
+	public void setNewHistoricGrowth(BigDecimal newHistoricGrowth) {
+		this.newHistoricGrowth = newHistoricGrowth;
+	}
 
 	
-	
-
 }

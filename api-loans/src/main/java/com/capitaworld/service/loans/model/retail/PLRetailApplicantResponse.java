@@ -1,11 +1,11 @@
 package com.capitaworld.service.loans.model.retail;
 
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 
 public class PLRetailApplicantResponse implements Serializable {
     // Common Fields
@@ -60,12 +60,21 @@ public class PLRetailApplicantResponse implements Serializable {
     private Double monthlyIncome;
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
     private List<CreditCardsDetailRequest> creditCardsDetailRequestList;
-
+    private List<BankRelationshipRequest> bankRelationShipList;
+    	
     private Boolean isApplicantDetailsFilled;
     
     //FOR PL CAM REPORT
     private String loanAmountRequiredString;
     private String monthlyIncomeString;
+    private String spouseEmployment;
+    private Integer noOfDependent;
+    private String designation;
+    private String residenceSinceMonthYear;
+    private String salaryMode;
+    private String salaryAccountBankName;
+    private String salaryAccountBankSince;
+    private Boolean isOtherSalaryAccBank;
 
     /*
     * Final
@@ -452,6 +461,84 @@ public class PLRetailApplicantResponse implements Serializable {
 	public void setEducationQualificationString(String educationQualificationString) {
 		this.educationQualificationString = educationQualificationString;
 	}
+
+	
+
+	public String getSpouseEmployment() {
+		return spouseEmployment;
+	}
+
+	public void setSpouseEmployment(String spouseEmployment) {
+		this.spouseEmployment = spouseEmployment;
+	}
+
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	public String getResidenceSinceMonthYear() {
+		return residenceSinceMonthYear;
+	}
+
+	public void setResidenceSinceMonthYear(String residenceSinceMonthYear) {
+		this.residenceSinceMonthYear = residenceSinceMonthYear;
+	}
+
+	public String getSalaryMode() {
+		return salaryMode;
+	}
+
+	public void setSalaryMode(String salaryMode) {
+		this.salaryMode = salaryMode;
+	}
+
+	public String getSalaryAccountBankName() {
+		return salaryAccountBankName;
+	}
+
+	public void setSalaryAccountBankName(String salaryAccountBankName) {
+		this.salaryAccountBankName = salaryAccountBankName;
+	}
+
+	public String getSalaryAccountBankSince() {
+		return salaryAccountBankSince;
+	}
+
+	public void setSalaryAccountBankSince(String salaryAccountBankSince) {
+		this.salaryAccountBankSince = salaryAccountBankSince;
+	}
+
+	public Boolean getIsOtherSalaryAccBank() {
+		return isOtherSalaryAccBank;
+	}
+
+	public void setIsOtherSalaryAccBank(Boolean isOtherSalaryAccBank) {
+		this.isOtherSalaryAccBank = isOtherSalaryAccBank;
+	}
+
+	public List<BankRelationshipRequest> getBankRelationShipList() {
+		return bankRelationShipList;
+	}
+
+	public void setBankRelationShipList(List<BankRelationshipRequest> bankRelationShipList) {
+		this.bankRelationShipList = bankRelationShipList;
+	}
+
+	
     
 	
 }

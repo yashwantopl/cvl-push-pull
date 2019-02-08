@@ -102,15 +102,16 @@ public class CamReportPdfDetailsController {
 	 * @return  byte[]
 	 * */
 	@RequestMapping(value = "/getPrimaryDataInByteArray/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
+	public ResponseEntity<LoansResponse> getPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId)  {
+		
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
 
- 		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
 				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
 
- 			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,false);
+			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
@@ -128,7 +129,8 @@ public class CamReportPdfDetailsController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
- 	}
+	}
+
 	
 	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {

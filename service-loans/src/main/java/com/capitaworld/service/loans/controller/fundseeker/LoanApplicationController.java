@@ -1,14 +1,7 @@
 
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.model.*;
@@ -45,13 +38,11 @@ import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.service.token.TokenService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -1499,7 +1490,7 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/save_payment_info", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	/**@RequestMapping(value = "/save_payment_info", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePaymentInfor(@RequestBody PaymentRequest paymentRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
@@ -1659,7 +1650,7 @@ public class LoanApplicationController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
-	}
+	}*/
 
 	@RequestMapping(value = "/get_payment_status", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPaymentStatus(@RequestBody PaymentRequest paymentRequest,
@@ -1672,8 +1663,10 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			
+
 			GatewayRequest gatewayRequest = new GatewayRequest();
+			gatewayRequest.setUserId(userId);
+
 			BeanUtils.copyProperties(paymentRequest, gatewayRequest);
 			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
 			logger.info(RESPONSE_MSG, paymentStatus);
@@ -2228,7 +2221,7 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/update_skip_payment_status/{appId}/{orgId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	/**@RequestMapping(value = "/update_skip_payment_status/{appId}/{orgId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateSkipPaymentStatus(@PathVariable("appId") Long appId,
 			@PathVariable("orgId") Long orgId, @PathVariable("fpProductId") Long fprProductId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -2297,7 +2290,7 @@ public class LoanApplicationController {
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
-
+*/
 	@RequestMapping(value = "/getProposalDataFromAppId/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getProposalDataFromAppId(@PathVariable("appId") Long appId) {
 		try {
@@ -2447,7 +2440,7 @@ public class LoanApplicationController {
 	// For Payment Gateway response through Mobile API
 	// ===========================================================================================================================
 
-	@RequestMapping(value = "mobile/successUrl", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	/**@RequestMapping(value = "mobile/successUrl", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public void payUMoneyResponse(@RequestBody String response) {
 
 		try {
@@ -2667,7 +2660,7 @@ public class LoanApplicationController {
 		}
 
 	}
-
+*/
 	@RequestMapping(value = "/getToken", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getToken(@RequestBody String encryptedString) {
 		GenerateTokenRequest generateTokenRequest = null;

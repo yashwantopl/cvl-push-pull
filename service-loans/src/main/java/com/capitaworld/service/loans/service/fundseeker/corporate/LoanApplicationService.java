@@ -10,14 +10,13 @@ import com.capitaworld.service.loans.model.common.*;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 
+
 import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.PaymentRequest;
-
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -135,7 +134,7 @@ public interface LoanApplicationService {
 	
 	public void updateFlow(Long applicationId,Long clientId,Long userId) throws LoansException ;
 	
-	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws LoansException;
+/**	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws LoansException;
 	
 	public void updateSkipPayment(Long userId, Long applicationId, Long orgId,Long fprProductId) throws LoansException;
 	
@@ -145,7 +144,7 @@ public interface LoanApplicationService {
 	
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws LoansException;
 	
-	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws LoansException;
+	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws LoansException;*/
 	
 	public Long getDDRStatusId(Long applicationId);
 	
@@ -191,10 +190,9 @@ public interface LoanApplicationService {
 	
 	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException;
 	
-	/*//Update Payment Status after redirection through Gateway for Mobile
+	//Update Payment Status after redirection through Gateway for Mobile
 	
-	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);
-*/
+	/**public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);*/
 	
 	public String getMCACompanyIdById(Long applicationId);
 

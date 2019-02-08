@@ -112,6 +112,9 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.itr.url}")
 	private String itrUrl;
+	
+	@Value("${capitaworld.service.gateway.url}")
+	private String gatewayUrl;
 
 	@Value("${capitaworld.service.gateway.url}")
 	private String gatewayUrl;

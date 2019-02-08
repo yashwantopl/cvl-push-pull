@@ -135,6 +135,28 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	
 	private Integer userCreditRating;
 	
+	private Boolean isBankingRelationMandatory;
+
+	private Boolean isBankingRelationDisplay;
+	
+	private Double minBankRelation;
+
+	private Double maxBankRelation;
+	
+	private List<Integer> salaryModeIds;
+	
+	private Boolean isSalaryModeDisplay;
+
+	private Boolean isSalaryModeMandatory;
+	
+	private Boolean isSalaryAcTypeDisplay;
+
+	private Boolean isSalaryAcTypeMandatory;
+	
+	private Integer salaryAcType;
+
+
+	
 	/*//FP NEW REQUIREMENT
 	private Integer employmentId;
 	
@@ -644,6 +666,86 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.userCreditRating = userCreditRating;
 	}
 
+	public Boolean getIsBankingRelationMandatory() {
+		return isBankingRelationMandatory;
+	}
+
+	public void setIsBankingRelationMandatory(Boolean isBankingRelationMandatory) {
+		this.isBankingRelationMandatory = isBankingRelationMandatory;
+	}
+
+	public Boolean getIsBankingRelationDisplay() {
+		return isBankingRelationDisplay;
+	}
+
+	public void setIsBankingRelationDisplay(Boolean isBankingRelationDisplay) {
+		this.isBankingRelationDisplay = isBankingRelationDisplay;
+	}
+
+	public Double getMinBankRelation() {
+		return minBankRelation;
+	}
+
+	public void setMinBankRelation(Double minBankRelation) {
+		this.minBankRelation = minBankRelation;
+	}
+
+	public Double getMaxBankRelation() {
+		return maxBankRelation;
+	}
+
+	public void setMaxBankRelation(Double maxBankRelation) {
+		this.maxBankRelation = maxBankRelation;
+	}
+
+	public List<Integer> getSalaryModeIds() {
+		return salaryModeIds;
+	}
+
+	public void setSalaryModeIds(List<Integer> salaryModeIds) {
+		this.salaryModeIds = salaryModeIds;
+	}
+
+	public Boolean getIsSalaryModeDisplay() {
+		return isSalaryModeDisplay;
+	}
+
+	public void setIsSalaryModeDisplay(Boolean isSalaryModeDisplay) {
+		this.isSalaryModeDisplay = isSalaryModeDisplay;
+	}
+
+	public Boolean getIsSalaryModeMandatory() {
+		return isSalaryModeMandatory;
+	}
+
+	public void setIsSalaryModeMandatory(Boolean isSalaryModeMandatory) {
+		this.isSalaryModeMandatory = isSalaryModeMandatory;
+	}
+
+	public Boolean getIsSalaryAcTypeDisplay() {
+		return isSalaryAcTypeDisplay;
+	}
+
+	public void setIsSalaryAcTypeDisplay(Boolean isSalaryAcTypeDisplay) {
+		this.isSalaryAcTypeDisplay = isSalaryAcTypeDisplay;
+	}
+
+	public Boolean getIsSalaryAcTypeMandatory() {
+		return isSalaryAcTypeMandatory;
+	}
+
+	public void setIsSalaryAcTypeMandatory(Boolean isSalaryAcTypeMandatory) {
+		this.isSalaryAcTypeMandatory = isSalaryAcTypeMandatory;
+	}
+
+	public Integer getSalaryAcType() {
+		return salaryAcType;
+	}
+
+	public void setSalaryAcType(Integer salaryAcType) {
+		this.salaryAcType = salaryAcType;
+	}
+
 	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
@@ -772,6 +874,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
 	}*/
 
+
+	
 	
 
 	
