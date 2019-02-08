@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
@@ -1098,6 +1099,20 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
 
                         }
+                    }
+
+                    Double grossAnnualIncome =0d;
+                    try {
+                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                        if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                            List monthlyIncomeList = (List) eligibilityResponse.getData();
+                            if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                grossAnnualIncome = Double.valueOf(monthlyIncomeList.get(8).toString());
+                                scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome*12);
+                            }
+                        }
+                    } catch (EligibilityExceptions eligibilityExceptions) {
+                        logger.error("error while getting GROSS ANNUAL INCOME FROM ELIGIBILITY  : ",eligibilityExceptions);
                     }
 
                     logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
