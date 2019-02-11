@@ -4,6 +4,9 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -76,6 +79,7 @@ import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.LoanPurposePL;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
@@ -253,8 +257,18 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
-				plRetailApplicantResponse.setSalaryAccountBankSince((plRetailApplicantRequest.getSalaryBankYear() !=null ? (plRetailApplicantRequest.getSalaryBankYear()+" year") : "") + " " +(plRetailApplicantRequest.getSalaryBankMonth()!= null ? (plRetailApplicantRequest.getSalaryBankMonth()+" months") :  "" ));
 				
+				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
+					        
+					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
+			        LocalDate today = LocalDate.now();
+			        
+			        Period age = Period.between(since, today);
+			        int years = age.getYears();
+			        int months = age.getMonths();
+			        
+					plRetailApplicantResponse.setSalaryAccountBankSince(years+" year "+months+" months");
+				}
 				
 				//citetailApplicantResponse.setry,State,country
 				
@@ -289,7 +303,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				// loan Details 
 				
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
-				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? PersonalLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
+				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
 				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
