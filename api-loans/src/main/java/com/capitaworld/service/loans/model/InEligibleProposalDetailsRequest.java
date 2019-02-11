@@ -26,6 +26,8 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     
     private String reason;
     
+    private String reOpenReason;
+    
     private Integer businessTypeId;
     
     private Long ineligibleProposalId;
@@ -117,6 +119,14 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 
 	public void setIneligibleProposalId(Long ineligibleProposalId) {
 		this.ineligibleProposalId = ineligibleProposalId;
+	}
+
+	public String getReOpenReason() {
+		return reOpenReason;
+	}
+
+	public void setReOpenReason(String reOpenReason) {
+		this.reOpenReason = reOpenReason;
 	}
 
 	@Override

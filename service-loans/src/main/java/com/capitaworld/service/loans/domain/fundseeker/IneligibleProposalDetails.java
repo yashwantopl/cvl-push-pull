@@ -74,6 +74,9 @@ public class IneligibleProposalDetails implements Serializable{
     @Column(name = "business_type_id")
 	private Integer businessTypeId;
     
+    @Column(name="reopen_reason")
+    private String reopenReason;
+    
 
     public Long getId() {
         return id;
@@ -201,6 +204,14 @@ public class IneligibleProposalDetails implements Serializable{
 
 	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
+	}
+
+	public String getReopenReason() {
+		return reopenReason;
+	}
+
+	public void setReopenReason(String reopenReason) {
+		this.reopenReason = reopenReason;
 	}
 	
 }

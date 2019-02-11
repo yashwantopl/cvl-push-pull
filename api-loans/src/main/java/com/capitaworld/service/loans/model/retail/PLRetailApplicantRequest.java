@@ -60,6 +60,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Double monthlyIncome;
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
     private List<CreditCardsDetailRequest> creditCardsDetailRequestList;
+    private List<BankRelationshipRequest> bankingRelationshipList;
 
     private Boolean isApplicantDetailsFilled;
     
@@ -74,6 +75,18 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long addressCity;
     private Long addressCountry;
     private Long addressState;
+    
+    private Integer spouseEmployment;
+    private Integer noOfDependent;
+    private Integer designation;
+    private Integer residenceSinceYear;
+    private Integer residenceSinceMonth;
+    private Integer salaryMode;
+    private String salaryBankName;
+    private Integer salaryBankMonth;
+    private Integer salaryBankYear;
+    private Boolean isOtherSalaryBank;
+    
 
     public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
@@ -472,6 +485,95 @@ public class PLRetailApplicantRequest implements Serializable {
 	public void setAddressState(Long addressState) {
 		this.addressState = addressState;
 	}
+
+	public Integer getSpouseEmployment() {
+		return spouseEmployment;
+	}
+
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public Integer getDesignation() {
+		return designation;
+	}
+
+	public Integer getResidenceSinceYear() {
+		return residenceSinceYear;
+	}
+
+	public Integer getResidenceSinceMonth() {
+		return residenceSinceMonth;
+	}
+
+	public void setSpouseEmployment(Integer spouseEmployment) {
+		this.spouseEmployment = spouseEmployment;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	public void setDesignation(Integer designation) {
+		this.designation = designation;
+	}
+
+	public void setResidenceSinceYear(Integer residenceSinceYear) {
+		this.residenceSinceYear = residenceSinceYear;
+	}
+
+	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+		this.residenceSinceMonth = residenceSinceMonth;
+	}
+
+	public Integer getSalaryMode() {
+		return salaryMode;
+	}
+
+	public String getSalaryBankName() {
+		return salaryBankName;
+	}
+
+	public Integer getSalaryBankMonth() {
+		return salaryBankMonth;
+	}
+
+	public Integer getSalaryBankYear() {
+		return salaryBankYear;
+	}
+
+	public void setSalaryMode(Integer salaryMode) {
+		this.salaryMode = salaryMode;
+	}
+
+	public void setSalaryBankName(String salaryBankName) {
+		this.salaryBankName = salaryBankName;
+	}
+
+	public void setSalaryBankMonth(Integer salaryBankMonth) {
+		this.salaryBankMonth = salaryBankMonth;
+	}
+
+	public void setSalaryBankYear(Integer salaryBankYear) {
+		this.salaryBankYear = salaryBankYear;
+	}
+
+	public List<BankRelationshipRequest> getBankingRelationshipList() {
+		return bankingRelationshipList;
+	}
+
+	public void setBankingRelationshipList(List<BankRelationshipRequest> bankingRelationshipList) {
+		this.bankingRelationshipList = bankingRelationshipList;
+	}
+
+	public Boolean getIsOtherSalaryBank() {
+		return isOtherSalaryBank;
+	}
+
+	public void setIsOtherSalaryBank(Boolean isOtherSalaryBank) {
+		this.isOtherSalaryBank = isOtherSalaryBank;
+	}
+	
     
     
 }

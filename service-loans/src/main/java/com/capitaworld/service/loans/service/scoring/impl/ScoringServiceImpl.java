@@ -1,10 +1,14 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -71,6 +75,7 @@ import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -160,6 +165,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private ScoringRequestDetailRepository scoringRequestDetailRepository;
+
+    @Autowired
+    private EligibilityClient eligibilityClient;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
@@ -480,10 +488,14 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             Double totalIncomeLastYear = 0.0;
                             try {
-                                totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
+
+                                Integer maxYear=retailApplicantIncomeRepository.getMaxYearByApplicationId(applicationId);
+                                totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeByApplicationIdAndYear(applicationId,maxYear);
+
                                 if (CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear)) {
                                     totalIncomeLastYear = 0.0;
                                 }
+
                             } catch (Exception e) {
                                 logger.error("error while getting total income from retail applicant income detail : ",e);
                             }
@@ -621,7 +633,6 @@ public class ScoringServiceImpl implements ScoringService {
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
 
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
-
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
 
@@ -735,6 +746,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 Double cibil_score = null;
                                 try {
 
+                                    scoreParameterRetailRequest.setCibilScore_p(false);
                                     CibilRequest cibilRequest = new CibilRequest();
                                     cibilRequest.setPan(retailApplicantDetail.getPan());
                                     cibilRequest.setApplicationId(applicationId);
@@ -879,11 +891,19 @@ public class ScoringServiceImpl implements ScoringService {
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
                                         }
+                                        else if(EmploymentWithPL.QUASI_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith()){
+                                            if(true==salaryWithBank)
+                                                employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
+                                        }
+                                        logger.info("==============employmentWithPlValue: ============ "+employmentWithPlValue + " " +retailApplicantDetail.getEmploymentWith() );
                                         scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
                                         scoreParameterRetailRequest.setCategoryInfo_p(true);
                                     } else {
                                         scoreParameterRetailRequest.setCategoryInfo_p(false);
                                     }
+
                                 } catch (Exception e) {
                                     logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
@@ -899,7 +919,9 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 Double totalIncomeLastYear = 0.0;
                                 try {
-                                    totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
+                                    Integer maxYear=retailApplicantIncomeRepository.getMaxYearByApplicationId(applicationId);
+                                    totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeByApplicationIdAndYear(applicationId,maxYear);
+
                                     if (CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear)) {
                                         totalIncomeLastYear = 0.0;
                                     }
@@ -971,8 +993,18 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL: {
 
                                 try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
-                                        scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome() * 12);
+                                    Double monthlyIncome = 0d;
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
+                                            && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                                        List monthlyIncomeList = (List) eligibilityResponse.getData();
+                                        if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                            monthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
+                                        }
+                                    }
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(monthlyIncome)) {
+                                        scoreParameterRetailRequest.setNetAnnualIncome(monthlyIncome * 12);
                                         scoreParameterRetailRequest.setNetAnnualIncome_p(true);
                                     } else {
                                         scoreParameterRetailRequest.setNetAnnualIncome_p(false);
@@ -990,10 +1022,101 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 break;
                             }
+                            case ScoreParameter.Retail.NO_OF_YEAR_CURRENT_LOCATION_PL:
+                                try {
+                                    Integer year = retailApplicantDetail.getResidenceSinceYear();
+                                    Integer month = retailApplicantDetail.getResidenceSinceMonth();
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
+                                    String s = "01/" + month + "/" + year;
+                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(Math.ceil(CommonUtils.getAgeFromBirthDate(simpleDateFormat.parse(s)).doubleValue()));
+                                    scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting NO_OF_YEAR_CURRENT_LOCAITON_PL parameter : ", e);
+                                    scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.SPOUSE_EMPLOYMENT_DETAILS_PL:
+                                try {
+
+                                    Long spouseEmployment =null;
+
+                                    if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getSpouseEmployment()))
+                                        spouseEmployment = retailApplicantDetail.getSpouseEmployment().longValue();
+
+                                    if(CommonUtils.isObjectNullOrEmpty(spouseEmployment))
+                                    {
+                                        spouseEmployment=3l; // No Spouse
+                                    }
+                                    scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
+                                    scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting SPOUSE_EMPLOYMENT_DETAILS_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setSpouseEmploymentDetails_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.NUMBER_OF_DEPENDENTS_PL:
+                                try {
+                                    Integer noOfDependent = retailApplicantDetail.getNoOfDependent();
+                                    scoreParameterRetailRequest.setNumberOfDependents(noOfDependent);
+                                    scoreParameterRetailRequest.setNumberOfDependents_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting NUMBER_OF_DEPENDENTS_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setNumberOfDependents_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.DESIGNATION_PL:
+                                try {
+                                    Long designation = retailApplicantDetail.getDesignation().longValue();
+                                    scoreParameterRetailRequest.setDesignation(designation);
+                                    scoreParameterRetailRequest.setDesignation_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting DESIGNATION_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setDesignation_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.LOAN_TO_INCOME_RATIO_PL: {
+
+                                try {
+                                    Double monthlyIncome = 0d;
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                                        List monthlyIncomeList = (List) eligibilityResponse.getData();
+                                        if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                            monthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
+                                        }
+                                    }
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(monthlyIncome)) {
+                                        scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
+                                        scoreParameterRetailRequest.setNetAnnualIncome(monthlyIncome * 12);
+                                        scoreParameterRetailRequest.setLoanAmtProposed(retailApplicantDetail.getLoanAmountRequired());
+                                    } else {
+                                        scoreParameterRetailRequest.setLoanToIncomeRatio_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting LOAN_TO_INCOME_RATIO_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setLoanToIncomeRatio_p(false);
+                                }
+                                break;
+                            }
                             default:
                                 break;
 
                         }
+                    }
+
+                    Double grossAnnualIncome =0d;
+                    try {
+                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                        if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                            List monthlyIncomeList = (List) eligibilityResponse.getData();
+                            if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                grossAnnualIncome = Double.valueOf(monthlyIncomeList.get(8).toString());
+                                scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome*12);
+                            }
+                        }
+                    } catch (EligibilityExceptions eligibilityExceptions) {
+                        logger.error("error while getting GROSS ANNUAL INCOME FROM ELIGIBILITY  : ",eligibilityExceptions);
                     }
 
                     logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
@@ -1789,7 +1912,13 @@ public class ScoringServiceImpl implements ScoringService {
 
                             // start get projected sales from GST client
 
-                            projctedSales = gstCalculation.getProjectedSales()/12;
+                            if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                projctedSales = gstCalculation.getHistoricalSales()/12;
+                            }
+                            else
+                            {
+                                projctedSales = gstCalculation.getProjectedSales()/12;
+                            }
 
                             // end get projected sales from GST client
 
@@ -2868,7 +2997,13 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 // start get projected sales from GST client
 
-                                projctedSales = gstCalculation.getProjectedSales();
+                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                    projctedSales = gstCalculation.getHistoricalSales();
+                                }
+                                else
+                                {
+                                    projctedSales = gstCalculation.getProjectedSales();
+                                }
 
                                 // end get projected sales from GST client
 

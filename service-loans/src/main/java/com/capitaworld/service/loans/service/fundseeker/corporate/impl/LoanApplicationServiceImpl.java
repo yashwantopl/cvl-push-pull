@@ -202,6 +202,7 @@ import com.capitaworld.sidbi.integration.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 
 @Service
 @Transactional
@@ -4115,7 +4116,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return null;
 	}
 
-	@Override
+	/**@Override
 	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws LoansException {
 		logger.info("Start updateLoanApplicationMaster()");
 		try {
@@ -4183,10 +4184,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 					// gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
-				/**	Object values = gatewayClient.payout(gatewayRequest);
+					Object values = gatewayClient.payout(gatewayRequest);
 					logger.info("Response for gateway is:- " + values);
 					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in NHBS");
-					return values;*/
+					return values;
 				} catch (Exception e) {
 					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE : ",e);
 					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
@@ -4224,11 +4225,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				gatewayRequest.setRequestType(paymentRequest.getRequestType());
 				gatewayRequest.setBusinessTypeId(paymentRequest.getBusinessTypeId());
 
-				/**Object values = gatewayClient.payout(gatewayRequest);
+				Object values = gatewayClient.payout(gatewayRequest);
 
 				logger.info("Response for gateway is:- " + values);
 				logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
-				return values;*/
+				return values;
 				return null;
 			}
 		} catch (Exception e) {
@@ -4249,10 +4250,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (loanApplicationMaster == null) {
 			throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + applicationId);
 		}
-		/*
+		
 		 * LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		 * BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-		 */
 		loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 
@@ -4264,7 +4264,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
 				logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
-				/*if (orgId == 10L) {
+				if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
@@ -4272,7 +4272,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
-				}*/
+				}
 
 				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
@@ -4333,7 +4333,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (!CommonUtils.isObjectListNull(connectResponse)) {
 					logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
 					logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
-				/*if (orgId == 10L) {
+				if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
@@ -4341,7 +4341,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
-				}*/
+				}
 
 					if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
@@ -4383,7 +4383,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setBusinessTypeId(businessTypeId);
 
 			Boolean status = null;
-			status = gatewayClient.skipPayment(gatewayRequest);
+			status =null;
 			logger.info("In-Principle send for WhiteLabel Status=====>" + status);
 
 			// ====================================================================
@@ -4475,12 +4475,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
 					logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
 					// if(orgId==10L) {
-					/*
+					
 					 * logger.info("Start Saving Phase 1 sidbi API -------------------->" +
 					 * loanApplicationMaster.getId()); Long fpMappingId = null; try {
 					 * savePhese1DataToSidbi(loanApplicationMaster.getId(),
 					 * userId,orgId,fpProductId); }catch(Exception e) { logger.error(CommonUtils.EXCEPTION,e); }
-					 */
+					 
 					// }
 
 					if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
@@ -4523,7 +4523,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setBusinessTypeId(businessTypeId);
 
 			Boolean status = null;
-			status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
+			status = null;
 			logger.info("In-Principle send for Personal Loan Status=====>" + status);
 			// ====================================================================
 
@@ -4615,7 +4615,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			}
 			try {
-				/**updatePayment = gatewayClient.updatePayment(gatewayRequest);*/
+			updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			} catch (Exception e) {
 				logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT : ",e);
 			}
@@ -4657,12 +4657,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->"
 									+ loanApplicationMaster.getId());
-							/*try {
+							try {
 								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 							} catch (Exception e) {
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}", orgId);
 								logger.error(CommonUtils.EXCEPTION,e);
-							}*/
+							}
 //						}
 							logger.info("connectResponse.getProceed()==============>>>" + connectResponse.getProceed());
 							if (connectResponse.getProceed()) {
@@ -4820,7 +4820,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-
+*/
 	@Override
 	public Integer getIndustryIrrByApplication(Long applicationId) {
 		IrrRequest irrIndustryRequest = new IrrRequest();
@@ -6556,7 +6556,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-	/*
+	/**
 	 * @Override public Boolean updatePaymentStatusForMobile(PaymentRequest
 	 * paymentRequest) {
 	 * 
