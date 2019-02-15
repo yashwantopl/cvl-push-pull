@@ -1316,6 +1316,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_MSME_CONSUMER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporatePrimaryViewResponse.setCibilConsumerReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
