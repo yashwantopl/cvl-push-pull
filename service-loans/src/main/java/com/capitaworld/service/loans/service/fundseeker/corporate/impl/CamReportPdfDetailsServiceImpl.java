@@ -49,7 +49,9 @@ import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -434,9 +436,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
+			CAMGSTData resp =null;
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
-			if(!CommonUtils.isObjectNullOrEmpty(response)) {
-				map.put("gstDetailedResp",response.getData());
+			Double totalSales =0.0d;
+			if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				resp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(),CAMGSTData.class);
+				List<MomSales> momSalesResp = resp.getMomSales();
+				 for (MomSales sales : momSalesResp) {
+				    	totalSales += Double.valueOf(sales.getValue());
+				}
+				map.put("totalMomSales", totalSales);
+				map.put("gstDetailedResp", response.getData());
 			}
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
