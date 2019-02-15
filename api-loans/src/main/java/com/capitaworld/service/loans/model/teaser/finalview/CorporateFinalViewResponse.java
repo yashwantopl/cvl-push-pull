@@ -234,6 +234,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private String scoringModelName;
     private String eligibilityFinancialYear;
     private Double loanObligation;
+    private Object cibilConsumerReport;
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2178,6 +2179,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setLoanObligation(Double loanObligation) {
 		this.loanObligation = loanObligation;
+	}
+
+	public Object getCibilConsumerReport() {
+		return cibilConsumerReport;
+	}
+
+	public void setCibilConsumerReport(Object cibilConsumerReport) {
+		this.cibilConsumerReport = cibilConsumerReport;
 	}
 
 
