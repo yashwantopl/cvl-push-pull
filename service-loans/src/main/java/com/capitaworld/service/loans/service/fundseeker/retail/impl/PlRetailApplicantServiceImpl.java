@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -200,6 +202,19 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
             	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	
+            	if(bankingRelation.getSinceYear() !=null && bankingRelation.getSinceMonth() != null) {
+			        
+					LocalDate since = LocalDate.of(bankingRelation.getSinceYear(), bankingRelation.getSinceMonth(), 1);
+			        LocalDate today = LocalDate.now();
+			        
+			        Period age = Period.between(since, today);
+			        int years = age.getYears();
+			        int months = age.getMonths();
+			        
+			        bankRelationshipRequest.setSinceYear(years);
+			        bankRelationshipRequest.setSinceMonth(months);
+				}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
             applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
