@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.common.*;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
@@ -237,6 +238,8 @@ public interface LoanApplicationService {
 	public Integer getLoanWCRenewalType(Long applicationId);
 
 	public Long getProposalId(Long applicationId, Long userOrgId);
+
+
 }
 
 

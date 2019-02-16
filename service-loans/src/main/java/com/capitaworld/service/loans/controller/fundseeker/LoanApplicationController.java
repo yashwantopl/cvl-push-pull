@@ -105,8 +105,8 @@ public class LoanApplicationController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	@Autowired
-	private AsyncComponent asyncComponent;
+//	@Autowired
+//	private AsyncComponent asyncComponent;
 
 	@Autowired
 	private UsersClient usersClient;
@@ -504,7 +504,7 @@ public class LoanApplicationController {
 			}
 			loanApplicationService.lockPrimary(applicationId, userId, true);
 			if (CommonUtils.UserType.FUND_SEEKER == userType) {
-				asyncComponent.sentMailWhenUserLogoutWithoutFillingFinalData(userId, applicationId);
+//				asyncComponent.sentMailWhenUserLogoutWithoutFillingFinalData(userId, applicationId);
 			}
 			CommonDocumentUtils.endHook(logger, "lockPrimary");
 			return new ResponseEntity<LoansResponse>(new LoansResponse(SUCCESSFULLY_UPDATED, HttpStatus.OK.value()),
@@ -537,10 +537,10 @@ public class LoanApplicationController {
 			LoanApplicationRequest loanApplicationRequest = loanApplicationService.lockFinal(applicationId, userId,
 					true);
 			if (loanApplicationRequest.getIsMailSent()) {
-				asyncComponent.sendEmailWhenMakerLockFinalDetails(loanApplicationRequest.getNpAssigneeId(),
-						loanApplicationRequest.getNpUserId(), loanApplicationRequest.getApplicationCode(),
-						loanApplicationRequest.getProductId(), loanApplicationRequest.getName(),
-						loanApplicationRequest.getId());
+//				asyncComponent.sendEmailWhenMakerLockFinalDetails(loanApplicationRequest.getNpAssigneeId(),
+//						loanApplicationRequest.getNpUserId(), loanApplicationRequest.getApplicationCode(),
+//						loanApplicationRequest.getProductId(), loanApplicationRequest.getName(),
+//						loanApplicationRequest.getId());
 			}
 			CommonDocumentUtils.endHook(logger, "lockFinal");
 			return new ResponseEntity<LoansResponse>(new LoansResponse(SUCCESSFULLY_UPDATED, HttpStatus.OK.value()),
@@ -574,10 +574,10 @@ public class LoanApplicationController {
             LoanApplicationRequest loanApplicationRequest = loanApplicationService.lockFinalByProposalId(applicationId, proposalId,userId,
                     true);
             if (loanApplicationRequest.getIsMailSent()) {
-                asyncComponent.sendEmailWhenMakerLockFinalDetails(loanApplicationRequest.getNpAssigneeId(),
-                        loanApplicationRequest.getNpUserId(), loanApplicationRequest.getApplicationCode(),
-                        loanApplicationRequest.getProductId(), loanApplicationRequest.getName(),
-                        loanApplicationRequest.getId());
+//                asyncComponent.sendEmailWhenMakerLockFinalDetails(loanApplicationRequest.getNpAssigneeId(),
+//                        loanApplicationRequest.getNpUserId(), loanApplicationRequest.getApplicationCode(),
+//                        loanApplicationRequest.getProductId(), loanApplicationRequest.getName(),
+//                        loanApplicationRequest.getId());
             }
             CommonDocumentUtils.endHook(logger, "lockFinal");
             return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
@@ -775,7 +775,7 @@ public class LoanApplicationController {
 				loansResponse.setMessage("Requested User has not filled Final Details");
 				if (CommonUtils.UserType.FUND_PROVIDER == userType) {
 					logger.info("Start Sending Mail To Fs for Fill Final Details When FP Click View More Details");
-					asyncComponent.sendMailWhenUserNotCompleteFinalDetails(userId, applicationId);
+//					asyncComponent.sendMailWhenUserNotCompleteFinalDetails(userId, applicationId);
 				}
 				CommonDocumentUtils.endHook(logger, IS_FINAL_LOCKED);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -1447,7 +1447,7 @@ public class LoanApplicationController {
 			if (CommonUtils.UserType.FUND_SEEKER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
 				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				asyncComponent.sendMailWhenUserHasNoApplication(userId);
+//				asyncComponent.sendMailWhenUserHasNoApplication(userId);
 			}
 			LoansResponse loansResponse = new LoansResponse("Successfully recieved", HttpStatus.OK.value());
 			CommonDocumentUtils.endHook(logger, CHECK_USER_HAS_ANY_APPLICATION);
@@ -1494,7 +1494,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			asyncComponent.sendMailForFirstTimeUserViewMatches(applicationId, userId);
+//			asyncComponent.sendMailForFirstTimeUserViewMatches(applicationId, userId);
 			logger.info("Mail sent successfully while fs go in matches pages first time");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Sent Mail Successfully", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -1669,20 +1669,20 @@ public class LoanApplicationController {
 				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())
 						&& paymentRequest.getPurposeCode().equals("NHBS_FEES")) {
 					logger.info("Start Sent Mail When FS select Online Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
-							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);
+//					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+//							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);
 					logger.info("End Sent Mail When FS select Online Payment");
 				} else if (CommonUtils.PaymentMode.CASH.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 					logger.info("Start Sent Mail When FS select CASH Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
-							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
-							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+//					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+//							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+//							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 					logger.info("End Sent Mail When FS select CASH Payment");
 				} else if (CommonUtils.PaymentMode.CHEQUE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 					logger.info("Start Sent Mail When FS select CHEQUE Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
-							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
-							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+//					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+//							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+//							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 					logger.info("End Sent Mail When FS select CHEQUE Payment");
 				}
 			} catch (Exception e) {
@@ -1722,20 +1722,20 @@ public class LoanApplicationController {
 				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())
 						&& paymentRequest.getPurposeCode().equals("NHBS_FEES")) {
 					logger.info("Start Sent Mail When FS select Online Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
-							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);
+//					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+//							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);
 					logger.info("End Sent Mail When FS select Online Payment");
 				} else if (CommonUtils.PaymentMode.CASH.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 					logger.info("Start Sent Mail When FS select CASH Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
-							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
-							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+//					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+//							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+//							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 					logger.info("End Sent Mail When FS select CASH Payment");
 				} else if (CommonUtils.PaymentMode.CHEQUE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 					logger.info("Start Sent Mail When FS select CHEQUE Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
-							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
-							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+//					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+//							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+//							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 					logger.info("End Sent Mail When FS select CHEQUE Payment");
 				}
 			} catch (Exception e) {
