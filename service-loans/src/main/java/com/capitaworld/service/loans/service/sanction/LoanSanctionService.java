@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.sanction;
 
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 
@@ -21,4 +22,6 @@ public interface LoanSanctionService {
 	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws Exception ;
 
 	public String getToken(String url , GenerateTokenRequest generateTokenRequest , Integer langCode  )throws Exception ;
+
+	public Boolean  sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId,LoanSanctionDomain loanSanctionDomainOld );
 }
