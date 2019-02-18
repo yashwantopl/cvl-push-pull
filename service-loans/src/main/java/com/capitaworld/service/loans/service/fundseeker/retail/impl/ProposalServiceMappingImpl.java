@@ -169,7 +169,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private static final String ROLE_ID_MSG = "-- Role Id -->";
 	private static final String BRANCH_ID_CAN_NOT_BE_FOUND_MSG = "Branch Id Can not be found";
 	private static final String THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG = "Throw Exception While Get Branch Id from UserId : ";
-	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG = "You do not have rights to take action for this proposal.";
+	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_IS_ALREADY_ASSIGNED_TO_ANOTHER_CHECKER_MSG = "The said proposal is already assigned to other Checker, hence you can not take any action on the same.";
+	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_ASSIGN_PROPOAL_TO_UPPER_LEVEL_CHECKER_MSG = "You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.";
 	private static final String USER_URL = "userURL";
 
 	private String getMainDirectorName(Long appId) {
@@ -1734,23 +1735,24 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
 		LoansResponse loansResponse = new LoansResponse();
 
-		try {
-			// "+userRequest.getApplicationId() + "userRequest.getId() :
-			// "+userRequest.getId()+" getLoanAmount() :
-			// "+userRequest.getLoanAmount());
+		try
+		{
 			loansResponse.setFlag(true);
 
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-					.findOne(userRequest.getApplicationId());
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(userRequest.getApplicationId());
+			UserResponse userResponse = null;
+			userRequest.setProductIdString(CommonUtility.encode("" + loanApplicationMaster.getProductId()));
 
-			if (loanApplicationMaster != null) {
-				// Check If Requested Application is assigned to Currunt Fp
-				// Cheker or not
-				UserResponse userResponse = null;
-				userRequest.setProductIdString(CommonUtility.encode("" + loanApplicationMaster.getProductId()));
-				if (loanApplicationMaster.getNpUserId() == null || (loanApplicationMaster.getNpUserId()).equals(userRequest.getId()) ) {
-					userResponse = usersClient.getMinMaxAmount(userRequest);
-				}
+
+			// check proposal is assigned and current user have not permission to access this proposal
+			if (loanApplicationMaster.getNpUserId() != null && !(loanApplicationMaster.getNpUserId()).equals(userRequest.getId()) )
+			{
+				loansResponse.setFlag(false);
+				loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_IS_ALREADY_ASSIGNED_TO_ANOTHER_CHECKER_MSG);
+			}
+			else //  check proposal is not assigned or current user has limit for this proposal or not
+			{
+				userResponse = usersClient.getMinMaxAmount(userRequest);
 
 				CheckerDetailRequest checkerDetailRequest = null;
 				if (userResponse != null && !CommonUtils.isObjectListNull(userResponse)
@@ -1765,28 +1767,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					if (userRequest.getLoanAmount() != null && checkerDetailRequest != null && checkerDetailRequest.getMinAmount() != null
 							&& checkerDetailRequest.getMaxAmount() != null
 							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
-									&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
+							&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
 						loansResponse.setFlag(false);
-						loansResponse.setMessage(
-								"You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
+						loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_ASSIGN_PROPOAL_TO_UPPER_LEVEL_CHECKER_MSG);
 					}
 				} else {
 					// You dont have Authorised for this Action
 					loansResponse.setFlag(false);
-					loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG);
+					loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_ASSIGN_PROPOAL_TO_UPPER_LEVEL_CHECKER_MSG);
 				}
 
-			} else {
-				// You dont have Authorised for this Action
-				logger.error("Not getting min max loan amount for this user");
-				loansResponse.setFlag(false);
-				loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG);
 			}
 		} catch (Exception e) {
 
 			logger.error("Error while Getting Min Max Loan Amount : ",e);
 			loansResponse.setFlag(false);
-			loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG);
+			loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return loansResponse;
 	}
