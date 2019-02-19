@@ -15,6 +15,8 @@ public class ScoringRequestLoans {
 
 	private Integer financialTypeIdProduct;
 
+	private Double emi;
+
 	private Long userId;
 
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
@@ -97,6 +99,15 @@ public class ScoringRequestLoans {
 	public void setScoreParameterNTBRequest(ScoreParameterNTBRequest scoreParameterNTBRequest) {
 		this.scoreParameterNTBRequest = scoreParameterNTBRequest;
 	}
+
+	public Double getEmi() {
+		return emi;
+	}
+
+	public void setEmi(Double emi) {
+		this.emi = emi;
+	}
+
 	@Override
 	public String toString() {
 		return "ScoringRequestLoans{" +
@@ -105,6 +116,7 @@ public class ScoringRequestLoans {
 				", scoringModelId=" + scoringModelId +
 				", applicationId=" + applicationId +
 				", financialTypeIdProduct=" + financialTypeIdProduct +
+				", emi=" + emi +
 				", userId=" + userId +
 				", scoreParameterRequestLoans=" + scoreParameterRequestLoans +
 				", scoreParameterNTBRequest=" + scoreParameterNTBRequest +
@@ -112,5 +124,4 @@ public class ScoringRequestLoans {
 				", eligibleLoanAmountCircular=" + eligibleLoanAmountCircular +
 				'}';
 	}
-
 }

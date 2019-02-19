@@ -29,7 +29,7 @@ public class ScoreParameterRetailRequest {
     private Double chequeBounce;
     private Double dpd;
     private Double netAnnualIncome;
-    private Double eminmi;
+    private Double nmi;
     private Double noOfYearCurrentLocation;
 
     @Override
@@ -61,7 +61,7 @@ public class ScoreParameterRetailRequest {
                 ", chequeBounce=" + chequeBounce +
                 ", dpd=" + dpd +
                 ", netAnnualIncome=" + netAnnualIncome +
-                ", eminmi=" + eminmi +
+                ", nmi=" + nmi +
                 ", noOfYearCurrentLocation=" + noOfYearCurrentLocation +
                 '}';
     }
@@ -264,14 +264,6 @@ public class ScoreParameterRetailRequest {
 
     public void setNetAnnualIncome(Double netAnnualIncome) {
         this.netAnnualIncome = netAnnualIncome;
-    }
-
-    public Double getEminmi() {
-        return eminmi;
-    }
-
-    public void setEminmi(Double eminmi) {
-        this.eminmi = eminmi;
     }
 
     public Boolean getIsNoOfYearCurrentLocation_p() {
