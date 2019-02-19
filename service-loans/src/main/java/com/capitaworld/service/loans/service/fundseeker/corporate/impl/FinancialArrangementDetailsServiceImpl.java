@@ -180,7 +180,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 
 	@Override
 	public Double getTotalEmiOfAllDirByApplicationId(Long applicationId) {
-		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card"};
+		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card","credit merchant card","credit premium card","credit retail card",
+				"credit secured card","credit single - limited purpose card","corporate credit card","credit card - fleet",
+				"credit stored-value smart card","credit co-branded credit card","credit affinity credit card","credit charge card","credit commercial card","credit line - open"};
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiOfAllDirByApplicationId(applicationId,Arrays.asList(creditCards));
 		logger.info("getTotalEmiOfAllDirByApplicationId {} For Application Id = {}", totalEmi ,applicationId);
 		return totalEmi;
