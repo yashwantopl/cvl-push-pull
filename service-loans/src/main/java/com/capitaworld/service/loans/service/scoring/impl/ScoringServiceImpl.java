@@ -661,6 +661,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setApplicationId(applicationId);
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN);
+            scoringRequest.setEmi(scoringRequestLoans.getEmi());
 
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
