@@ -1,13 +1,13 @@
 package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 
 /**
  * The persistent class for the fp_personal_loan_details database table.
@@ -21,25 +21,25 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	private Integer currency;
 
-	private Boolean isAgeDisplay=false;
+	private Boolean isAgeDisplay = false;
 
-	private Boolean isAgeMandatory=false;
+	private Boolean isAgeMandatory = false;
 
-	private Boolean isGeographicalDisplay=false;
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isGeographicalMandatory=false;
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isLoanAmountDisplay=false;
+	private Boolean isLoanAmountDisplay = false;
 
-	private Boolean isLoanAmountMandatory=false;
+	private Boolean isLoanAmountMandatory = false;
 
-	private Boolean isTenureDisplay=false;
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isTenureMandatory=false;
+	private Boolean isTenureMandatory = false;
 
-	private Boolean isYearlyIncomeRangeDisplay=false;
+	private Boolean isYearlyIncomeRangeDisplay = false;
 
-	private Boolean isYearlyIncomeRangeMandatory=false;
+	private Boolean isYearlyIncomeRangeMandatory = false;
 
 	private Double maxAge;
 
@@ -56,13 +56,13 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Double minTenure;
 
 	private Double minYearlyIncomeRange;
-	
+
 	private List<DataRequest> countryList = Collections.emptyList();
 
 	private List<DataRequest> stateList = Collections.emptyList();
 
 	private List<DataRequest> cityList = Collections.emptyList();
-	
+
 	private Double minMonthlyIncomeRange;
 
 	private Double maxMonthlyIncomeRange;
@@ -96,11 +96,11 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isRiskScoreRetailMandatory;
 
 	private List<Integer> empWithIds;
-	
+
 	private Boolean isEmpWithDisplay;
 
 	private Boolean isEmpWithMandatory;
-	
+
 	private Boolean isEmpRatingDisplay;
 
 	private Boolean isEmpRatingMandatory;
@@ -112,7 +112,7 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isTotalJobExpDisplay;
 
 	private Boolean isTotalJobExpMandatory;
-	
+
 	private Double minTotalCurrentJobExp;
 
 	private Double maxTotalCurrentJobExp;
@@ -120,75 +120,86 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isTotalCurrentJobExpDisplay;
 
 	private Boolean isTotalCurrentJobExpMandatory;
-	
+
 	private List<Integer> empStatusIds;
-	
+
 	private Boolean isEmpStatusDisplay;
 
 	private Boolean isEmpStatusMandatory;
-	
+
 	private List<CreditRatingPlParameter> creditRatingSelectedList;
-	
+
 	private Object workflowData;
-	
+
 	private Long userOrgId;
-	
+
 	private Integer userCreditRating;
-	
+
 	private Boolean isBankingRelationMandatory;
 
 	private Boolean isBankingRelationDisplay;
-	
+
 	private Double minBankRelation;
 
 	private Double maxBankRelation;
-	
+
 	private List<Integer> salaryModeIds;
-	
+
 	private Boolean isSalaryModeDisplay;
 
 	private Boolean isSalaryModeMandatory;
-	
+
 	private Boolean isSalaryAcTypeDisplay;
 
 	private Boolean isSalaryAcTypeMandatory;
-	
+
 	private Integer salaryAcType;
 
+	private Integer assessmentMethodId;
 
-	
-	/*//FP NEW REQUIREMENT
-	private Integer employmentId;
-	
-	private Integer employmentPlaceId;
-	
-	private Integer homeLoanTypeId;
-	
-	private Integer mincurrentJobExperience;
-	
-	private Integer maxCurrentJobExperience;
-	
-	private Integer minTotalJobExperience;
-	
-	private Integer maxTotalJobExperience;
-	
-	private Double foir;
-	
-	private Boolean isEmploymentTypeDisplay=false;
+	private Boolean isBasedOnIncome = false;
 
-	private Boolean isEmploymentTypeMandatory=false;
-	
-	private Boolean isEmploymentPlaceDisplay=false;
+	private Boolean isMultiplierOfIncomeCheck = false;
 
-	private Boolean isEmploymentPlaceMandatory=false;
-	
-	private Boolean isCurrentJobExperienceDisplay=false;
+	private Integer multiplierOfIncomeCheck;
 
-	private Boolean isCurrentJobExperienceMandatory=false;
-	
-	private Boolean isTotalJobExperienceDisplay=false;
+	private Boolean isEmiNmiCheck = false;
 
-	private Boolean isTotalJobExperienceMandatory=false;*/
+	private BigDecimal emiNmiCheck;
+
+	/*
+	 * //FP NEW REQUIREMENT private Integer employmentId;
+	 * 
+	 * private Integer employmentPlaceId;
+	 * 
+	 * private Integer homeLoanTypeId;
+	 * 
+	 * private Integer mincurrentJobExperience;
+	 * 
+	 * private Integer maxCurrentJobExperience;
+	 * 
+	 * private Integer minTotalJobExperience;
+	 * 
+	 * private Integer maxTotalJobExperience;
+	 * 
+	 * private Double foir;
+	 * 
+	 * private Boolean isEmploymentTypeDisplay=false;
+	 * 
+	 * private Boolean isEmploymentTypeMandatory=false;
+	 * 
+	 * private Boolean isEmploymentPlaceDisplay=false;
+	 * 
+	 * private Boolean isEmploymentPlaceMandatory=false;
+	 * 
+	 * private Boolean isCurrentJobExperienceDisplay=false;
+	 * 
+	 * private Boolean isCurrentJobExperienceMandatory=false;
+	 * 
+	 * private Boolean isTotalJobExperienceDisplay=false;
+	 * 
+	 * private Boolean isTotalJobExperienceMandatory=false;
+	 */
 
 	public PersonalLoanParameterRequest() {
 		// Do nothing because of X and Y.
@@ -746,140 +757,153 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.salaryAcType = salaryAcType;
 	}
 
-	/*public Integer getEmploymentId() {
-		return employmentId;
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
 	}
 
-	public void setEmploymentId(Integer employmentId) {
-		this.employmentId = employmentId;
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
 	}
 
-	public Integer getEmploymentPlaceId() {
-		return employmentPlaceId;
+	public Boolean getIsBasedOnIncome() {
+		return isBasedOnIncome;
 	}
 
-	public void setEmploymentPlaceId(Integer employmentPlaceId) {
-		this.employmentPlaceId = employmentPlaceId;
+	public void setIsBasedOnIncome(Boolean isBasedOnIncome) {
+		this.isBasedOnIncome = isBasedOnIncome;
 	}
 
-	public Integer getHomeLoanTypeId() {
-		return homeLoanTypeId;
+	public Boolean getIsMultiplierOfIncomeCheck() {
+		return isMultiplierOfIncomeCheck;
 	}
 
-	public void setHomeLoanTypeId(Integer homeLoanTypeId) {
-		this.homeLoanTypeId = homeLoanTypeId;
+	public void setIsMultiplierOfIncomeCheck(Boolean isMultiplierOfIncomeCheck) {
+		this.isMultiplierOfIncomeCheck = isMultiplierOfIncomeCheck;
 	}
 
-	public Integer getMincurrentJobExperience() {
-		return mincurrentJobExperience;
+	public Integer getMultiplierOfIncomeCheck() {
+		return multiplierOfIncomeCheck;
 	}
 
-	public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
-		this.mincurrentJobExperience = mincurrentJobExperience;
+	public void setMultiplierOfIncomeCheck(Integer multiplierOfIncomeCheck) {
+		this.multiplierOfIncomeCheck = multiplierOfIncomeCheck;
 	}
 
-	public Integer getMaxCurrentJobExperience() {
-		return maxCurrentJobExperience;
+	public Boolean getIsEmiNmiCheck() {
+		return isEmiNmiCheck;
 	}
 
-	public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
-		this.maxCurrentJobExperience = maxCurrentJobExperience;
+	public void setIsEmiNmiCheck(Boolean isEmiNmiCheck) {
+		this.isEmiNmiCheck = isEmiNmiCheck;
 	}
 
-	public Integer getMinTotalJobExperience() {
-		return minTotalJobExperience;
+	public BigDecimal getEmiNmiCheck() {
+		return emiNmiCheck;
 	}
 
-	public void setMinTotalJobExperience(Integer minTotalJobExperience) {
-		this.minTotalJobExperience = minTotalJobExperience;
+	public void setEmiNmiCheck(BigDecimal emiNmiCheck) {
+		this.emiNmiCheck = emiNmiCheck;
 	}
 
-	public Integer getMaxTotalJobExperience() {
-		return maxTotalJobExperience;
-	}
-
-	public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
-		this.maxTotalJobExperience = maxTotalJobExperience;
-	}
-
-	public Double getFoir() {
-		return foir;
-	}
-
-	public void setFoir(Double foir) {
-		this.foir = foir;
-	}
-
-	public Boolean getIsEmploymentTypeDisplay() {
-		return isEmploymentTypeDisplay;
-	}
-
-	public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
-		this.isEmploymentTypeDisplay = isEmploymentTypeDisplay;
-	}
-
-	public Boolean getIsEmploymentTypeMandatory() {
-		return isEmploymentTypeMandatory;
-	}
-
-	public void setIsEmploymentTypeMandatory(Boolean isEmploymentTypeMandatory) {
-		this.isEmploymentTypeMandatory = isEmploymentTypeMandatory;
-	}
-
-	public Boolean getIsEmploymentPlaceDisplay() {
-		return isEmploymentPlaceDisplay;
-	}
-
-	public void setIsEmploymentPlaceDisplay(Boolean isEmploymentPlaceDisplay) {
-		this.isEmploymentPlaceDisplay = isEmploymentPlaceDisplay;
-	}
-
-	public Boolean getIsEmploymentPlaceMandatory() {
-		return isEmploymentPlaceMandatory;
-	}
-
-	public void setIsEmploymentPlaceMandatory(Boolean isEmploymentPlaceMandatory) {
-		this.isEmploymentPlaceMandatory = isEmploymentPlaceMandatory;
-	}
-
-	public Boolean getIsCurrentJobExperienceDisplay() {
-		return isCurrentJobExperienceDisplay;
-	}
-
-	public void setIsCurrentJobExperienceDisplay(Boolean isCurrentJobExperienceDisplay) {
-		this.isCurrentJobExperienceDisplay = isCurrentJobExperienceDisplay;
-	}
-
-	public Boolean getIsCurrentJobExperienceMandatory() {
-		return isCurrentJobExperienceMandatory;
-	}
-
-	public void setIsCurrentJobExperienceMandatory(Boolean isCurrentJobExperienceMandatory) {
-		this.isCurrentJobExperienceMandatory = isCurrentJobExperienceMandatory;
-	}
-
-	public Boolean getIsTotalJobExperienceDisplay() {
-		return isTotalJobExperienceDisplay;
-	}
-
-	public void setIsTotalJobExperienceDisplay(Boolean isTotalJobExperienceDisplay) {
-		this.isTotalJobExperienceDisplay = isTotalJobExperienceDisplay;
-	}
-
-	public Boolean getIsTotalJobExperienceMandatory() {
-		return isTotalJobExperienceMandatory;
-	}
-
-	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
-		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
-	}*/
-
-
+	/*
+	 * public Integer getEmploymentId() { return employmentId; }
+	 * 
+	 * public void setEmploymentId(Integer employmentId) { this.employmentId =
+	 * employmentId; }
+	 * 
+	 * public Integer getEmploymentPlaceId() { return employmentPlaceId; }
+	 * 
+	 * public void setEmploymentPlaceId(Integer employmentPlaceId) {
+	 * this.employmentPlaceId = employmentPlaceId; }
+	 * 
+	 * public Integer getHomeLoanTypeId() { return homeLoanTypeId; }
+	 * 
+	 * public void setHomeLoanTypeId(Integer homeLoanTypeId) {
+	 * this.homeLoanTypeId = homeLoanTypeId; }
+	 * 
+	 * public Integer getMincurrentJobExperience() { return
+	 * mincurrentJobExperience; }
+	 * 
+	 * public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
+	 * this.mincurrentJobExperience = mincurrentJobExperience; }
+	 * 
+	 * public Integer getMaxCurrentJobExperience() { return
+	 * maxCurrentJobExperience; }
+	 * 
+	 * public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
+	 * this.maxCurrentJobExperience = maxCurrentJobExperience; }
+	 * 
+	 * public Integer getMinTotalJobExperience() { return minTotalJobExperience;
+	 * }
+	 * 
+	 * public void setMinTotalJobExperience(Integer minTotalJobExperience) {
+	 * this.minTotalJobExperience = minTotalJobExperience; }
+	 * 
+	 * public Integer getMaxTotalJobExperience() { return maxTotalJobExperience;
+	 * }
+	 * 
+	 * public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
+	 * this.maxTotalJobExperience = maxTotalJobExperience; }
+	 * 
+	 * public Double getFoir() { return foir; }
+	 * 
+	 * public void setFoir(Double foir) { this.foir = foir; }
+	 * 
+	 * public Boolean getIsEmploymentTypeDisplay() { return
+	 * isEmploymentTypeDisplay; }
+	 * 
+	 * public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
+	 * this.isEmploymentTypeDisplay = isEmploymentTypeDisplay; }
+	 * 
+	 * public Boolean getIsEmploymentTypeMandatory() { return
+	 * isEmploymentTypeMandatory; }
+	 * 
+	 * public void setIsEmploymentTypeMandatory(Boolean
+	 * isEmploymentTypeMandatory) { this.isEmploymentTypeMandatory =
+	 * isEmploymentTypeMandatory; }
+	 * 
+	 * public Boolean getIsEmploymentPlaceDisplay() { return
+	 * isEmploymentPlaceDisplay; }
+	 * 
+	 * public void setIsEmploymentPlaceDisplay(Boolean isEmploymentPlaceDisplay)
+	 * { this.isEmploymentPlaceDisplay = isEmploymentPlaceDisplay; }
+	 * 
+	 * public Boolean getIsEmploymentPlaceMandatory() { return
+	 * isEmploymentPlaceMandatory; }
+	 * 
+	 * public void setIsEmploymentPlaceMandatory(Boolean
+	 * isEmploymentPlaceMandatory) { this.isEmploymentPlaceMandatory =
+	 * isEmploymentPlaceMandatory; }
+	 * 
+	 * public Boolean getIsCurrentJobExperienceDisplay() { return
+	 * isCurrentJobExperienceDisplay; }
+	 * 
+	 * public void setIsCurrentJobExperienceDisplay(Boolean
+	 * isCurrentJobExperienceDisplay) { this.isCurrentJobExperienceDisplay =
+	 * isCurrentJobExperienceDisplay; }
+	 * 
+	 * public Boolean getIsCurrentJobExperienceMandatory() { return
+	 * isCurrentJobExperienceMandatory; }
+	 * 
+	 * public void setIsCurrentJobExperienceMandatory(Boolean
+	 * isCurrentJobExperienceMandatory) { this.isCurrentJobExperienceMandatory =
+	 * isCurrentJobExperienceMandatory; }
+	 * 
+	 * public Boolean getIsTotalJobExperienceDisplay() { return
+	 * isTotalJobExperienceDisplay; }
+	 * 
+	 * public void setIsTotalJobExperienceDisplay(Boolean
+	 * isTotalJobExperienceDisplay) { this.isTotalJobExperienceDisplay =
+	 * isTotalJobExperienceDisplay; }
+	 * 
+	 * public Boolean getIsTotalJobExperienceMandatory() { return
+	 * isTotalJobExperienceMandatory; }
+	 * 
+	 * public void setIsTotalJobExperienceMandatory(Boolean
+	 * isTotalJobExperienceMandatory) { this.isTotalJobExperienceMandatory =
+	 * isTotalJobExperienceMandatory; }
+	 */
 	
 	
 
-	
-	
-	
-	
 }
