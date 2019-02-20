@@ -1021,7 +1021,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     try {
                                         Double netMonthlyIncome = 0d;
-                                        Double emi = scoringRequestLoans.getEmi();
+                                        //Double emi = scoringRequestLoans.getEmi();
                                         EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
                                         if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
                                                 && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
@@ -1034,10 +1034,10 @@ public class ScoringServiceImpl implements ScoringService {
                                         if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && !CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getEmi())) {
                                             scoreParameterRetailRequest.setEmiNmi_p(true);
                                             scoreParameterRetailRequest.setNmi(netMonthlyIncome);
-                                            scoreParameterRetailRequest.setEmi(emi);
+                                            //scoreParameterRetailRequest.setEmi(emi);
                                         } else {
                                             scoreParameterRetailRequest.setEmiNmi_p(false);
-                                            logger.error("Monthly income from Eligibility:: " + netMonthlyIncome + " Emi from matches:: " + emi);
+                                            logger.error("Monthly income from Eligibility:: " + netMonthlyIncome);
                                         }
                                     } catch (Exception e) {
                                         logger.error("error while getting EMI_NMI_PL parameter : ",e);
