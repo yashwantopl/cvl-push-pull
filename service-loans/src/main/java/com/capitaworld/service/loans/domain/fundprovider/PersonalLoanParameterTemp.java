@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.domain.fundprovider;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -243,6 +244,24 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	
 	@Column(name="salary_ac_type")
 	private Integer salaryAcType;
+	
+	@Column(name = "assessment_method_id")
+	private Integer assessmentMethodId;
+	
+	@Column(name = "is_based_on_income")
+	private Boolean isBasedOnIncome = false;
+	
+	@Column(name = "is_multiplier_income_check")
+	private Boolean isMultiplierOfIncomeCheck = false;
+
+	@Column(name = "multiplier_income_check")
+	private Integer multiplierOfIncomeCheck;
+	
+	@Column(name = "is_emi_nmi_check")
+	private Boolean isEmiNmiCheck = false;
+
+	@Column(name = "emi_nmi_check")
+	private BigDecimal emiNmiCheck;
 
 
 	public PersonalLoanParameterTemp() {
@@ -918,6 +937,79 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	}
 
 
+
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
+	}
+
+
+
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
+	}
+
+
+
+	public Boolean getIsBasedOnIncome() {
+		return isBasedOnIncome;
+	}
+
+
+
+	public void setIsBasedOnIncome(Boolean isBasedOnIncome) {
+		this.isBasedOnIncome = isBasedOnIncome;
+	}
+
+
+
+	public Boolean getIsMultiplierOfIncomeCheck() {
+		return isMultiplierOfIncomeCheck;
+	}
+
+
+
+	public void setIsMultiplierOfIncomeCheck(Boolean isMultiplierOfIncomeCheck) {
+		this.isMultiplierOfIncomeCheck = isMultiplierOfIncomeCheck;
+	}
+
+
+
+	public Integer getMultiplierOfIncomeCheck() {
+		return multiplierOfIncomeCheck;
+	}
+
+
+
+	public void setMultiplierOfIncomeCheck(Integer multiplierOfIncomeCheck) {
+		this.multiplierOfIncomeCheck = multiplierOfIncomeCheck;
+	}
+
+
+
+	public Boolean getIsEmiNmiCheck() {
+		return isEmiNmiCheck;
+	}
+
+
+
+	public void setIsEmiNmiCheck(Boolean isEmiNmiCheck) {
+		this.isEmiNmiCheck = isEmiNmiCheck;
+	}
+
+
+
+	public BigDecimal getEmiNmiCheck() {
+		return emiNmiCheck;
+	}
+
+
+
+	public void setEmiNmiCheck(BigDecimal emiNmiCheck) {
+		this.emiNmiCheck = emiNmiCheck;
+	}
+
+
+	
 	
 
 	
