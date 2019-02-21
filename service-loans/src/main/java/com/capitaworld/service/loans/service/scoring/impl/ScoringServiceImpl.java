@@ -1063,7 +1063,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Long spouseEmployment =null;
 
-                                    if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getSpouseEmployment()))
+                                    if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getSpouseEmployment()))
                                         spouseEmployment = retailApplicantDetail.getSpouseEmployment().longValue();
 
                                     if(CommonUtils.isObjectNullOrEmpty(spouseEmployment))
