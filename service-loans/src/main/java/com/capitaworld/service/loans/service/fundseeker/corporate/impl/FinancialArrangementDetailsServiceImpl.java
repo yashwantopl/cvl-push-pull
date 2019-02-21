@@ -150,7 +150,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
 		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
-		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft"});
+		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft","loan - commercial cash credit"});
 		Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
 		logger.info("existingLimits=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
