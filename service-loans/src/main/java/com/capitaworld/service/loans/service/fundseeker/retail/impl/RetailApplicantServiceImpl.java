@@ -154,7 +154,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.getRetailFinalWithId());
 			applicantDetail.setEmail(applicantRequest.getEmail());
-			applicantDetail.setContactNo(applicantRequest.getLanLineNo());
+			applicantDetail.setMobile(applicantRequest.getLanLineNo());
 			Address address = applicantRequest.getFirstAddress();
 			if(!CommonUtils.isObjectNullOrEmpty(address)) {
 				applicantDetail.setAddressPremiseName(address.getPremiseNumber());
