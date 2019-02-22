@@ -1765,6 +1765,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_MSME_CONSUMER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setCibilConsumerReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 		if (primaryCorporateDetail.getProductId() == 1) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
 			try {

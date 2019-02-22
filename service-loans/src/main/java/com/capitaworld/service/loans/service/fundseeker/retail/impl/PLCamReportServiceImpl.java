@@ -23,6 +23,10 @@ import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -65,9 +69,9 @@ import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.LoanPurposePL;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
-import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
@@ -114,6 +118,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	
 	@Autowired
 	private ScoringClient scoringClient;
+	
+	@Autowired
+	private AnalyzerClient analyzerClient;
 	
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
@@ -181,10 +188,10 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getStatusId()) ? MaritalStatusMst.getById(plRetailApplicantRequest.getStatusId()).getValue() : "");
 			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "");
 			map.put("spouseEmployment", plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
-			map.put("designation", plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
+			map.put("designation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getDesignation())? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 			map.put("noOfDependent", plRetailApplicantRequest.getNoOfDependent());
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
-			
+			map.put("eligibleLoanAmount", loanApplicationMaster.getAmount() != null ? loanApplicationMaster.getAmount() : "-");
 			
 			
 			//KEY VERTICAL FUNDING
@@ -285,7 +292,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimary(userId, applicationId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? PersonalLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
 			logger.error("Error while getting primary Details : ",e);
@@ -358,6 +365,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("totalRiskMaxWeight", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight()).intValue());
 				
 				map.put("interpretation", StringEscapeUtils.escapeXml(proposalScoreResponse.getInterpretation()));
+				map.put("weightConsider", proposalScoreResponse.getWeightConsider() != null ? proposalScoreResponse.getWeightConsider() : false);
+				map.put("isProposnate", proposalScoreResponse.getIsProportionateScoreConsider() != null ? proposalScoreResponse.getIsProportionateScoreConsider() : false);
 			}
 			//Filter Parameters
 			List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
@@ -442,6 +451,53 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}catch (Exception e) {
 				logger.error("Error while getting scoring data : ",e);
 			}
+		
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+				ReportRequest reportRequest = new ReportRequest();
+				reportRequest.setApplicationId(applicationId);
+				reportRequest.setUserId(userId);
+				
+				List<Data> datas = new ArrayList<>();
+//				List<Object> bankStatement = new ArrayList<Object>();
+				List<Object> monthlyDetails = new ArrayList<Object>();
+				List<Object> top5FundReceived = new ArrayList<Object>();
+				List<Object> top5FundTransfered = new ArrayList<Object>();
+				List<Object> bouncedChequeList = new ArrayList<Object>();
+				List<Object> customerInfo = new ArrayList<Object>();
+				List<Object> summaryInfo = new ArrayList<Object>();
+				
+				try {
+					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+					List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+					
+					if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+						for (HashMap<String, Object> rec : hashMap) {
+							Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+							datas.add(data);
+							
+							//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+							monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+							top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+							top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+							bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+							customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+							summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+							
+						}
+
+						//map.put("bankStatement", bankStatement);
+						map.put("monthlyDetails", monthlyDetails);
+						map.put("top5FundReceived", top5FundReceived);
+						map.put("top5FundTransfered", top5FundTransfered);
+						map.put("bouncedChequeList", bouncedChequeList);
+						map.put("customerInfo", customerInfo);
+						map.put("summaryInfo", summaryInfo);
+						map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+						
+					}
+				} catch (Exception e) {
+					logger.error("Error while getting perfios data : ",e);
+				}
 		
 			//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 			try{

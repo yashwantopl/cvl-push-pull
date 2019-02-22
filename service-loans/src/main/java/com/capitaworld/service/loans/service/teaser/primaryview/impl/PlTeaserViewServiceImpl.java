@@ -6,7 +6,6 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -50,6 +49,7 @@ import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantResponse;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
@@ -74,7 +74,9 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.DesignationList;
+import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
@@ -83,8 +85,9 @@ import com.capitaworld.service.oneform.enums.LoanPurposePL;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -537,12 +540,19 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				} catch (DocumentException e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_XML);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setIrtXMLReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
 		
 
 		// pl final view details filled from here
 		if (isFinal) {
 			
-			/*try {
+			try {
 				
 				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinal(userId, toApplicationId);
 				
@@ -557,7 +567,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					//permanent address
 					
 					try {
-						if(retailFinalInfo.getPermanentAddress() != null) {
+						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {
 							
 							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId());
 							plTeaserViewResponse.setPermAddDist(pindata.getDistrictName());
@@ -579,7 +589,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					//Office address
 					
 					try {
-						if(retailFinalInfo.getOfficeAddress() != null) {
+						if(retailFinalInfo != null && retailFinalInfo.getOfficeAddress().getDistrictMappingId() !=null) {
 							
 							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId());
 							plTeaserViewResponse.setOffAddDist(pindata.getDistrictName());
@@ -610,7 +620,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 			} catch (Exception e) {
 				logger.error("Error while fetching RetailFinalData : ",e);
-			}*/
+			}
 			
 			
 			//BANK ACCOUNT HELD DETAILS

@@ -150,7 +150,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
 		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
-		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft"});
+		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft","loan - commercial cash credit"});
 		Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
 		logger.info("existingLimits=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
@@ -180,7 +180,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 
 	@Override
 	public Double getTotalEmiOfAllDirByApplicationId(Long applicationId) {
-		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card"};
+		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card","credit merchant card","credit premium card","credit retail card",
+				"credit secured card","credit single - limited purpose card","corporate credit card","credit card - fleet",
+				"credit stored-value smart card","credit co-branded credit card","credit affinity credit card","credit charge card","credit commercial card","credit line - open"};
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiOfAllDirByApplicationId(applicationId,Arrays.asList(creditCards));
 		logger.info("getTotalEmiOfAllDirByApplicationId {} For Application Id = {}", totalEmi ,applicationId);
 		return totalEmi;
