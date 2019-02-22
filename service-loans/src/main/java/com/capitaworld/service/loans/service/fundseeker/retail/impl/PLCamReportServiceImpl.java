@@ -192,6 +192,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("noOfDependent", plRetailApplicantRequest.getNoOfDependent());
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 			map.put("eligibleLoanAmount", loanApplicationMaster.getAmount() != null ? loanApplicationMaster.getAmount() : "-");
+			map.put("eligibleTenure", loanApplicationMaster.getTenure() != null ? loanApplicationMaster.getTenure(): "-");
 			
 			
 			//KEY VERTICAL FUNDING
@@ -367,6 +368,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("interpretation", StringEscapeUtils.escapeXml(proposalScoreResponse.getInterpretation()));
 				map.put("weightConsider", proposalScoreResponse.getWeightConsider() != null ? proposalScoreResponse.getWeightConsider() : false);
 				map.put("isProposnate", proposalScoreResponse.getIsProportionateScoreConsider() != null ? proposalScoreResponse.getIsProportionateScoreConsider() : false);
+				map.put("proposnateScoreFs", proposalScoreResponse.getProportionateScoreFS() != null ? proposalScoreResponse.getProportionateScoreFS() : false);
+				map.put("proposnateScore", proposalScoreResponse.getProportionateScore() != null ? proposalScoreResponse.getProportionateScore() : false);
 			}
 			//Filter Parameters
 			List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
