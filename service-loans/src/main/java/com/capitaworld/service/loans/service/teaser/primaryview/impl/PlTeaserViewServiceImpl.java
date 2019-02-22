@@ -540,6 +540,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				} catch (DocumentException e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_XML);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setIrtXMLReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
 		
 
 		// pl final view details filled from here
