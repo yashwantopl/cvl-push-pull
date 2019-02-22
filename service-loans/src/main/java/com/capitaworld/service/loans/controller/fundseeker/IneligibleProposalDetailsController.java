@@ -157,10 +157,9 @@ public class IneligibleProposalDetailsController {
 	 * @return
 	 */
 	@PostMapping(value = "/update/ineligible/reOpenProposalDetail", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> updateReOpenProposalDetail( @RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> updateReOpenProposalDetail(@RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest, HttpServletRequest request) {
 		if (CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest) || CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getReOpenReason())
-				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getIneligibleProposalId()) ||
-				CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getReason())) {
+				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getIneligibleProposalId())) {
 			logger.warn("Requested data can not be empty.Invalid Request. ");
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}

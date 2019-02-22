@@ -661,6 +661,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setApplicationId(applicationId);
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN);
+            scoringRequest.setEmi(scoringRequestLoans.getEmi());
 
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
@@ -1017,9 +1018,31 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.Retail.EMI_NMI_PL: {
-                        /*scoreParameterRetailRequest.setEminmi();
-                        scoreParameterRetailRequest.setEmiNmi_p();*/
 
+                                    try {
+                                        Double netMonthlyIncome = 0d;
+                                        //Double emi = scoringRequestLoans.getEmi();
+                                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                        if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
+                                                && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                                            List monthlyIncomeList = (List) eligibilityResponse.getData();
+                                            if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+                                                netMonthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
+                                            }
+                                        }
+
+                                        if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && !CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getEmi())) {
+                                            scoreParameterRetailRequest.setEmiNmi_p(true);
+                                            scoreParameterRetailRequest.setNmi(netMonthlyIncome);
+                                            //scoreParameterRetailRequest.setEmi(emi);
+                                        } else {
+                                            scoreParameterRetailRequest.setEmiNmi_p(false);
+                                            logger.error("Monthly income from Eligibility:: " + netMonthlyIncome);
+                                        }
+                                    } catch (Exception e) {
+                                        logger.error("error while getting EMI_NMI_PL parameter : ",e);
+                                        scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                    }
                                 break;
                             }
                             case ScoreParameter.Retail.NO_OF_YEAR_CURRENT_LOCATION_PL:
@@ -1040,7 +1063,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Long spouseEmployment =null;
 
-                                    if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getSpouseEmployment()))
+                                    if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getSpouseEmployment()))
                                         spouseEmployment = retailApplicantDetail.getSpouseEmployment().longValue();
 
                                     if(CommonUtils.isObjectNullOrEmpty(spouseEmployment))

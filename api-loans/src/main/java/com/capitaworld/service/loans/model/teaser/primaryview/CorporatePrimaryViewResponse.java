@@ -90,6 +90,7 @@ public class CorporatePrimaryViewResponse {
     private Object promotersContributionPer;
     private Object mcaData;
     private Object hufReport;
+    private Object cibilConsumerReport;
     private Object nameAsPerItr;
     private Object gstData;
     private Object mcaCheckStatus;
@@ -1216,6 +1217,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setLoanObligation(Double loanObligation) {
 		this.loanObligation = loanObligation;
+	}
+	public Object getCibilConsumerReport() {
+		return cibilConsumerReport;
+	}
+	public void setCibilConsumerReport(Object cibilConsumerReport) {
+		this.cibilConsumerReport = cibilConsumerReport;
 	}
 	
 	

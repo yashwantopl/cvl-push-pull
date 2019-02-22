@@ -1,7 +1,10 @@
 package com.capitaworld.service.loans.model.retail;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+
+import javax.persistence.Column;
 
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
@@ -151,6 +154,20 @@ public class RetailProduct extends ProductMasterRequest {
 	private Boolean isSalaryAcTypeMandatory;
 	
 	private Integer salaryAcType;
+	
+	private Integer assessmentMethodId;
+	
+	
+	
+	private Boolean isBasedOnIncome = false;
+	
+	private Boolean isMultiplierOfIncomeCheck = false;
+
+	private Integer multiplierOfIncomeCheck;
+	
+	private Boolean isEmiNmiCheck = false;
+
+	private BigDecimal emiNmiCheck;
 
 	public Long getFpProductId() {
 		return fpProductId;
@@ -728,8 +745,59 @@ public class RetailProduct extends ProductMasterRequest {
 		this.salaryAcType = salaryAcType;
 	}
 
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
+	}
+
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
+	}
+
+	public Boolean getIsBasedOnIncome() {
+		return isBasedOnIncome;
+	}
+
+	public void setIsBasedOnIncome(Boolean isBasedOnIncome) {
+		this.isBasedOnIncome = isBasedOnIncome;
+	}
+
+	public Boolean getIsMultiplierOfIncomeCheck() {
+		return isMultiplierOfIncomeCheck;
+	}
+
+	public void setIsMultiplierOfIncomeCheck(Boolean isMultiplierOfIncomeCheck) {
+		this.isMultiplierOfIncomeCheck = isMultiplierOfIncomeCheck;
+	}
+
+	public Integer getMultiplierOfIncomeCheck() {
+		return multiplierOfIncomeCheck;
+	}
+
+	public void setMultiplierOfIncomeCheck(Integer multiplierOfIncomeCheck) {
+		this.multiplierOfIncomeCheck = multiplierOfIncomeCheck;
+	}
+
+	public Boolean getIsEmiNmiCheck() {
+		return isEmiNmiCheck;
+	}
+
+	public void setIsEmiNmiCheck(Boolean isEmiNmiCheck) {
+		this.isEmiNmiCheck = isEmiNmiCheck;
+	}
+
+	public BigDecimal getEmiNmiCheck() {
+		return emiNmiCheck;
+	}
+
+	public void setEmiNmiCheck(BigDecimal emiNmiCheck) {
+		this.emiNmiCheck = emiNmiCheck;
+	}
+
+
+	
 	
 
+	
 	
 	
 	
