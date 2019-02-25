@@ -438,14 +438,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}try {
 			CAMGSTData resp =null;
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
+			
 			Double totalSales =0.0d;
 			if (!CommonUtils.isObjectNullOrEmpty(response)) {
 				resp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(),CAMGSTData.class);
-				List<MomSales> momSalesResp = resp.getMomSales();
-				 for (MomSales sales : momSalesResp) {
-				    	totalSales += Double.valueOf(sales.getValue());
+				if(resp.getMomSales() != null) {
+					List<MomSales> momSalesResp = resp.getMomSales();
+					 for (MomSales sales : momSalesResp) {
+					    	totalSales += Double.valueOf(sales.getValue());
+					}
+					map.put("totalMomSales", totalSales);	
 				}
-				map.put("totalMomSales", totalSales);
+				
 				map.put("gstDetailedResp", response.getData());
 			}
 		}catch(Exception e) {
