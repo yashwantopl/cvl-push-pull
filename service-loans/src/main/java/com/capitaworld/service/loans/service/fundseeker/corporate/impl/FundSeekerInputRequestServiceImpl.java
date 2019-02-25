@@ -350,6 +350,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj.setDirectorPersonalDetail(directorPersonalDetailTemp);
 					}else{
 						saveDirObj.setDirectorPersonalDetail(null);
+						saveDirObj.setIsMainDirector(false);
 					}
 					directorBackgroundDetailsRepository.save(saveDirObj);
 				}
