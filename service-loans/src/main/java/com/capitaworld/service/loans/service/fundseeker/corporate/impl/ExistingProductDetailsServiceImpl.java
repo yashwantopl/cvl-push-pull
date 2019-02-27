@@ -59,12 +59,12 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 		}
 		catch (Exception e) {
 			logger.error("Exception  in save existingProductDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<ExistingProductDetailRequest> getExistingProductDetailListByProposalId(Long proposalId, Long userId) throws Exception {
+	public List<ExistingProductDetailRequest> getExistingProductDetailListByProposalId(Long proposalId, Long userId) throws LoansException {
 		try {
 			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository.listExistingProductFromProposalId(proposalId);
 			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<>();

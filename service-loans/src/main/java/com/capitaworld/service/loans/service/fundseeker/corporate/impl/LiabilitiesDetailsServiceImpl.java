@@ -34,11 +34,14 @@ public class LiabilitiesDetailsServiceImpl implements LiabilitiesDetailsService 
 	}
 
 	@Override
-	public void  readLiabilitiesDetails(Long applicationId,Long storageDetailsId, XSSFSheet sheet) {
-		// TODO Auto-generated method stub
-		  
-		LiabilitiesDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId), liabilitiesDetailsRepository);
-	
+	public void  readLiabilitiesDetails(Long applicationId,Long storageDetailsId, XSSFSheet sheet) throws ExcelException {
+
+		try {
+			LiabilitiesDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId), liabilitiesDetailsRepository);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -47,7 +50,11 @@ public class LiabilitiesDetailsServiceImpl implements LiabilitiesDetailsService 
 		// TODO Auto-generated method stub
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 		ApplicationProposalMapping  applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMappingId);
-		LiabilitiesDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping, liabilitiesDetailsRepository);
+		try {
+			LiabilitiesDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping, liabilitiesDetailsRepository);
+		} catch (ExcelException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

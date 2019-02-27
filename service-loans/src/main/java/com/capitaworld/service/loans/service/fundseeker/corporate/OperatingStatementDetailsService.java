@@ -9,9 +9,9 @@ public interface OperatingStatementDetailsService {
 
 	public void saveOrUpdate(OperatingStatementDetails operatingStatementDetails);
 	
-	public void readOperatingStatementDetails(Long applicationId,Long storageDetailsId,XSSFSheet sheet)  throws ExcelException;
+	public void readOperatingStatementDetails(Long applicationId,Long storageDetailsId,XSSFSheet sheet) throws ExcelException;
 
-	public void readOperatingStatementDetails(Long applicationId,Long proposalMappingId,Long storageDetailsId,XSSFSheet sheet);
+	public void readOperatingStatementDetails(Long applicationId,Long proposalMappingId,Long storageDetailsId,XSSFSheet sheet) throws ExcelException;
 
 	public void inActiveAssetsDetails(Long storageDetailsId);
 }

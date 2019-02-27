@@ -211,7 +211,6 @@ import com.capitaworld.sidbi.integration.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
-import com.capitaworld.client.payment.gateway.GatewayClient;
 
 @Service
 @Transactional
@@ -305,9 +304,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ProposalService proposalService;
-
-	@Autowired
-	private GatewayClient gatewayClient;
 
 	@Autowired
 	private MatchEngineClient matchEngineClient;
@@ -847,14 +843,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
 
-				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment())
+				/*if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment())
 						&& applicationRequest.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)) {
 					GatewayRequest gatewayRequest = networkPartnerService
 							.getPaymentStatuOfApplication(applicationRequest.getId());
 					if (!CommonUtils.isObjectNullOrEmpty(gatewayRequest)) {
 							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
 					}
-				}
+				}*/
 			} else {
 				applicationRequest.setLoanTypeMain(CommonUtils.RETAIL);
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationMaster.getId());
@@ -1074,7 +1070,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Locking Profile and Primary Information : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -1552,7 +1548,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isPrimaryLocked ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -4981,7 +4977,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	/**
 	 * This method no longer used
 	 * */
-	@Override
+	/*@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)
 			throws LoansException {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
@@ -5051,12 +5047,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->"
 									+ loanApplicationMaster.getId());
-							/*try {
+							*//*try {
 								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 							} catch (Exception e) {
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}", orgId);
 								logger.error(CommonUtils.EXCEPTION,e);
-							}*/
+							}*//*
 //						}
 							logger.info("connectResponse.getProceed()==============>>>" + connectResponse.getProceed());
 							if (connectResponse.getProceed()) {
@@ -5195,9 +5191,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws LoansException {
 		logger.info("start getPaymentStatus()");
 		try {

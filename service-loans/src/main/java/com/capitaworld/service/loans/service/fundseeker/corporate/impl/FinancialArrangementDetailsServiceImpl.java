@@ -98,19 +98,6 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 	}
 
-
-
-	@Override
-	public List<FinancialArrangementsDetailRequest> getManuallyAddedFinancialArrangementDetailsList(Long applicationId) {
-		try {
-			return prepareObject(financialArrangementDetailsRepository.getManuallyAddedFinancialDetail(applicationId));
-		}
-		catch (Exception e) {
-			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
-			return Collections.emptyList();
-		}
-	}
-
 	@Override
 	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> finArrDetailRequest,
 			Long applicationId, Long userId) {

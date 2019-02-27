@@ -330,7 +330,7 @@ public class CommonUtils {
 			return FP_PRODUCT_TEMP;
 		}
 
-		private static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
+		public static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
 			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName","firstAddress",
 			"websiteAddress","landlineNo","keyVerticalSector","keyVerticalSubsector","gstIn","email"
 		};
@@ -347,7 +347,7 @@ public class CommonUtils {
 			return CORPORATE_FINAL;
 		}
 
-		private static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
+		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
@@ -371,7 +371,7 @@ public class CommonUtils {
 			return NTB_FINAL_EXCLUSION;
 		}
 
-		private static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
@@ -714,7 +714,7 @@ public class CommonUtils {
 		return getBowlCount(profileCount, null) + getBowlCount(primaryCount, null) + getBowlCount(finalCount, null);
 	}
 
-	private static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
+	public static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
 
 	public static List<String> getUrlsBrforeLogin() {
 		return URLS_BRFORE_LOGIN;

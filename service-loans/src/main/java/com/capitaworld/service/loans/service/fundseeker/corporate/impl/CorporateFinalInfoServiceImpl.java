@@ -141,7 +141,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
     }
 
     @Override
-    public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws Exception {
+    public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws LoansException {
         try {
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
                     applicationId);
@@ -157,7 +157,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return corporateFinalInfoRequest;
         } catch (Exception e) {
             logger.error("Error while getting Corporate Profile:-",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 

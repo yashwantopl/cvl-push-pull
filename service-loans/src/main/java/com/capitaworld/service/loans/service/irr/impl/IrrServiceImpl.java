@@ -233,26 +233,26 @@ public class IrrServiceImpl implements IrrService{
 
 			if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
 				// ---- Manufacturing
-				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, user_id,
+				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, userId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, industryRiskScore, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
 				// ---- Service
-				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, user_id,
+				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
 				// ---- Trading
-				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, user_id,
+				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			}
 
 			// if CMA filled
 			if(isCmaUploaded) {
-				irrRequest.setFinancialInputRequest(cmaIrrMappingService(user_id, appId, industry, denom));
+				irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId, appId, industry, denom,proposalId));
 			}
 
 			/*// if coAct filled
 			if(isCoActUploaded)
-			irrRequest.setFinancialInputRequest(coActIrrMappingService(user_id,appId,industry,denom));*/
+			irrRequest.setFinancialInputRequest(coActIrrMappingService(userId,appId,industry,denom));*/
 			
 			
 			
@@ -338,10 +338,14 @@ public class IrrServiceImpl implements IrrService{
 		OperatingStatementDetails operatingStatementDetails;
 		LiabilitiesDetails liabilitiesDetails;
 		AssetsDetails assetsDetails;
-		CorporateFinalInfoRequest  corporateFinalInfoRequest;
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
 
 		//corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId); // PREVIOUS
-		corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId ,proposalId); // // NEW BASED ON PROPOSAL MAPPING ID
+		try {
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId ,proposalId); // // NEW BASED ON PROPOSAL MAPPING ID
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		//log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest);
 		log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest.getSharePriceFace());

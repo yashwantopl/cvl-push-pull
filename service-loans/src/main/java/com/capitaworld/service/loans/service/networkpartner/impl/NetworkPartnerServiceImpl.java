@@ -1,66 +1,41 @@
 package com.capitaworld.service.loans.service.networkpartner.impl;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.*;
-
-import javax.transaction.Transactional;
-
-import com.capitaworld.api.payment.gateway.exception.GatewayException;
-import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
-import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
-import com.capitaworld.service.auth.model.UserRequest;
-import com.capitaworld.service.gateway.model.GatewayResponse;
-import com.capitaworld.service.gateway.model.PaymentTypeRequest;
-import com.capitaworld.service.loans.config.FPAsyncComponent;
-import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
-import com.capitaworld.service.loans.model.FpNpMappingRequest;
-import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
-import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.utils.CommonUtility;
-import com.capitaworld.service.users.model.*;
-import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusAudit;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
+import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ApplicationStatusAuditRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
+import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -76,6 +51,20 @@ import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.*;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.*;
 
 @Service
 @Transactional
@@ -115,9 +104,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private OneFormClient  oneFormClient;
-	
-	@Autowired
-	private GatewayClient gatewayClient;
 
 	@Autowired
 	private FpNpMappingService fpNpMappingService;
@@ -139,9 +125,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
-	
-	@Autowired
-	private ProposalDetailsRepository proposalDetailsRepository;
 
 	@Autowired
 	private McaClient mcaClient;
@@ -578,7 +561,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		return countObj;
 	}
 
-	@Override
+	/*@Override
 	public GatewayRequest getPaymentStatuOfApplication(Long applicationId) {
 		logger.info("entry in getPaymentStatuOfApplication()");
 		GatewayRequest gatewayRequest = new GatewayRequest();
@@ -591,7 +574,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			logger.error("error while calling gateway client for payment status : ",e);
 		}
 		return null;
-	}
+	}*/
 
 	@Override
 	public boolean sendSMSNotificationWhenCheckerAssignMaker(Long applicationId, Long assignedUserId) {
@@ -736,7 +719,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		if(!CommonUtils.isListNullOrEmpty(proposalIdList)){
 			for (BigInteger proposalId : proposalIdList) {
 				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId.longValue());
-				Long fpProductId = proposalDetailsRepository.getFpProductIdByApplicationId(applicationId.longValue());
+				Long fpProductId = proposalDetailsRepository.getFpProductIdByApplicationId(applicationProposalMapping.getApplicationId());
 				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
 				nhbsApplicationsResponse.setUserId(applicationProposalMapping.getUserId());
 				nhbsApplicationsResponse.setProposalId(applicationProposalMapping.getProposalId());
@@ -745,7 +728,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 				nhbsApplicationsResponse.setApplicationCode(applicationProposalMapping.getApplicationCode());
 				nhbsApplicationsResponse.setFpProductId(fpProductId);
-				nhbsApplicationsResponse.setIsFinalLocked(loanApplicationMaster.getIsFinalLocked());
+				nhbsApplicationsResponse.setIsFinalLocked(applicationProposalMapping.getIsFinalLocked());
 
 				if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getNpUserId())){
 					UsersRequest usersRequest = new UsersRequest();

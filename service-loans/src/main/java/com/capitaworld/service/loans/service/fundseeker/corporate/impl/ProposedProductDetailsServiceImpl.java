@@ -67,14 +67,14 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 
 		catch (Exception e) {
 			logger.error("Exception  in save proposedProductDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 
 	@Override
-	public List<ProposedProductDetailRequest> getProposedProductDetailListFromProposalId(Long proposalId,Long userId) throws Exception {
+	public List<ProposedProductDetailRequest> getProposedProductDetailListFromProposalId(Long proposalId,Long userId) throws LoansException {
 		try {
 			List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
 					.findByProposalId(proposalId);

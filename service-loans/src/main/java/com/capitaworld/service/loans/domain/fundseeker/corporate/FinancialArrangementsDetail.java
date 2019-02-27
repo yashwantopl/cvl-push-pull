@@ -102,9 +102,6 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name = "is_manually_added")
 	private Boolean isManuallyAdded;
 
-	@Column(name = "is_manually_added")
-	private Boolean isManuallyAdded;
-
 	public FinancialArrangementsDetail() {
 		// Do nothing because of X and Y.
 	}

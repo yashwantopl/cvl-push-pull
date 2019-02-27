@@ -328,7 +328,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		Long userId = applicationProposalMapping.getUserId();
 		Long toApplicationId = applicationProposalMapping.getApplicationId();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
-		Long userId = loanApplicationMaster.getUserId();
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());

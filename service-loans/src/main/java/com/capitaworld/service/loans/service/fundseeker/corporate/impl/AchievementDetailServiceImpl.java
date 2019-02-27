@@ -77,7 +77,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 			return achievementDetailRequests;
 		} catch (Exception e) {
 			logger.error("Exception getting achievementDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	/*multiple bank*/

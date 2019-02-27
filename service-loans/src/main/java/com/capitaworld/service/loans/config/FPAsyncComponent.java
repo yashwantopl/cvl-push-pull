@@ -147,18 +147,6 @@ public class FPAsyncComponent {
 	@Autowired
 	private Environment environment;
 
-	@Autowired
-	private ReportsClient reportsClient;
-
-	@Autowired
-	private CamReportPdfDetailsService camReportPdfDetailsService;
-
-	@Autowired
-	private ProposalDetailsRepository proposalDetailsRepository;
-
-	@Autowired
-	private Environment environment;
-
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	private static final String PSB_URL= "https://www.psbloansin59minutes.com";
@@ -3367,7 +3355,7 @@ public class FPAsyncComponent {
 			}
 
 			// ==================================================================================
-            }
+
 		} catch (Exception e) {
 			logger.error("An exception getting while sending mail to FS when Checker sanction loan=============>{}",e);
 		}
@@ -3401,7 +3389,7 @@ public class FPAsyncComponent {
 		logger.info("Outside send notification===>{}" + toNo);
 	}
 
-
+/*
 	private void createNotificationForEmailForFundProvider(String toNo, String userId, Map<String, Object> mailParameters,
 														   Long templateId, String emailSubject,Long applicationId,Map<String, Object> proposalresp,String[] bcc) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
@@ -3431,7 +3419,7 @@ if(!CommonUtils.isObjectNullOrEmpty(bcc))
 		// start attach CAM to Mail
 
 		Long fpProductId = Long.parseLong(proposalresp.get("fp_product_id").toString());
-		Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,fpProductId,false);
+		Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,fpProductId,null,false);
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setParams(response);
 		reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
@@ -3455,7 +3443,7 @@ if(!CommonUtils.isObjectNullOrEmpty(bcc))
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
-	}
+	}*/
 
 
 

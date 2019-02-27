@@ -37,8 +37,12 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 
 	@Override
 	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException{
-		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
-				assetsDetailsRepository);
+		try {
+			AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
+					assetsDetailsRepository);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -46,8 +50,12 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 		// TODO Auto-generated method stub
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMappingId);
-		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping,
-				assetsDetailsRepository);
+		try {
+			AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping,
+					assetsDetailsRepository);
+		} catch (ExcelException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

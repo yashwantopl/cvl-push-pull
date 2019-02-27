@@ -100,14 +100,6 @@ public class DDRFormServiceImpl implements DDRFormService {
 	private static final String MODIFY_BY = "modifyBy";
 	private static final String MODIFY_DATE = "modifyDate";
 
-	private static final String YEAR_2018 = "2018.0";
-	private static final String YEAR_2017 = "2017.0";
-	private static final String YEAR_2016 = "2016.0";
-	private static final String YEAR_2015 = "2015.0";
-	private static final String DDR_FORM_ID = "ddrFormId";
-	private static final String MODIFY_BY = "modifyBy";
-	private static final String MODIFY_DATE = "modifyDate";
-
 	@Autowired
 	private DDRFormDetailsRepository ddrFormDetailsRepository;
 

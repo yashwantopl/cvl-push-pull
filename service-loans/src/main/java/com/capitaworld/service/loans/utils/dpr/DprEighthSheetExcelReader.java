@@ -29,8 +29,6 @@ public class DprEighthSheetExcelReader
 
     private static final Logger logger = LoggerFactory.getLogger(DprEighthSheetExcelReader.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(DprEighthSheetExcelReader.class);
-
 	public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository,DprUserDataDetail dprUserDataDetail) {
         saveProjectImplementationSchedule(storageDetailsId,sheet,"11",loanApplicationMaster,projectImplementationScheduleDetailRepository);
         saveProjectImplementationSchedule(storageDetailsId,sheet,"12",loanApplicationMaster,projectImplementationScheduleDetailRepository);

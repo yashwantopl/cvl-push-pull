@@ -314,7 +314,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private ProductMasterRepository productMasterRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
 	private static final String ASSESSMENT_ID = "assessmentId";
 	private static final String FITCH_RESPONSE = "fitchResponse";
 	private static final String FITCH_TITLE = "fitchTitle";
@@ -329,7 +330,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         // CHANGES FOR NEW MULTIPLE BANKS----->
         ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
         logger.info("======================>"+applicationProposalMapping.getApplicationId()+"======app"+applicationProposalMapping.getProposalId());
-        map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
+        map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? simpleDateFormat.format(applicationProposalMapping.getApprovedDate()):"-");
 
         Long toApplicationId = applicationProposalMapping.getApplicationId();
         Long userId     =  applicationProposalMapping.getUserId();

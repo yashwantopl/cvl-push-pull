@@ -34,12 +34,16 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 
 	@Override
 	public void readOperatingStatementDetails(Long applicationId,Long proposalMappingId, Long storageDetailsId,
-											  XSSFSheet sheet) {
+											  XSSFSheet sheet) throws ExcelException  {
 
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 		ApplicationProposalMapping applicationProposalMapping  = applicationProposalMappingRepository.findOne(proposalMappingId);
-		OperatingStatementDetailsExcelReader.run(storageDetailsId, sheet,
-				loanApplicationMaster,applicationProposalMapping, operatingStatementDetailsRepository);
+		try {
+			OperatingStatementDetailsExcelReader.run(storageDetailsId, sheet,
+					loanApplicationMaster,applicationProposalMapping, operatingStatementDetailsRepository);
+		} catch (ExcelException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -47,8 +51,12 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 	public void readOperatingStatementDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet sheet) throws ExcelException {
 
-		OperatingStatementDetailsExcelReader.run(storageDetailsId, sheet,
-				loanApplicationRepository.findOne(applicationId), operatingStatementDetailsRepository);
+		try {
+			OperatingStatementDetailsExcelReader.run(storageDetailsId, sheet,
+					loanApplicationRepository.findOne(applicationId), operatingStatementDetailsRepository);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 

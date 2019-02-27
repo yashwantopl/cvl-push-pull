@@ -33,7 +33,7 @@ public class AssetsDetailsExcelReader
     private static final List<String> ASSETS_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    public static void run(Long storageDetailsId, XSSFSheet sheet, LoanApplicationMaster loanApplicationMaster, ApplicationProposalMapping applicationProposalMapping, AssetsDetailsRepository assetsDetailsRepository) {
+    public static void run(Long storageDetailsId, XSSFSheet sheet, LoanApplicationMaster loanApplicationMaster, ApplicationProposalMapping applicationProposalMapping, AssetsDetailsRepository assetsDetailsRepository)throws ExcelException  {
         ASSETS_MAPPING_LIST.clear();
 
         String[] numbers = new String[]{"9","11","13","15","16",
@@ -193,7 +193,7 @@ public class AssetsDetailsExcelReader
                                             String column,
                                             String year,
                                             String financialYearlyStatement,
-                                            AssetsDetailsRepository assetsDetailsRepository)
+                                            AssetsDetailsRepository assetsDetailsRepository) throws ExcelException
     {
         int arrayListCounter = 0;
         int nullCounter=0;

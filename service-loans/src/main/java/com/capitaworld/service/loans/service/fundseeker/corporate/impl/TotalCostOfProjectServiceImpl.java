@@ -62,7 +62,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 
 		catch (Exception e) {
 			logger.error("Exception in save totalCostOfProject :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

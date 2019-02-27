@@ -78,7 +78,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	@Autowired 
 	private ProposalDetailsRepository proposalDetailsRepository;
 	
-
+	@Autowired
+	private UsersClient userClient;
 	
 	@Value("${capitaworld.sidbi.integration.is_production}")
 	private String isProduction; 

@@ -219,13 +219,6 @@ public class CorporateApplicantDetail implements Serializable {
     @Column(name="business_since_month")
     private Integer businessSinceMonth;
 
-
-    @Column(name = "is_gst_completed")
-    private Boolean isGstCompleted;
-
-    @Column(name = "is_itr_completed")
-    private Boolean isItrCompleted;
-
 	public CorporateApplicantDetail() {
 		// Do nothing because of X and Y.
 	}

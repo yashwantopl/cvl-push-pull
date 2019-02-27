@@ -273,14 +273,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
 					Object[] loanDeatils = loanApplicationService
 							.getApplicationDetailsByProposalId(proposalrequest.getApplicationId(),proposalrequest.getId());
-					logger.info("user id based on application Id:" + Arrays.toString(loanDeatils));
+					logger.info("user id based on application Id:" + loanDeatils.toString());
+					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
 
 					try {
-						// step 2 get branch details by branch id available in
-						// proposalDetails BRANCH-MASTER
+//						step 2	get branch details by branch id available in proposalDetails	BRANCH-MASTER
 						if (proposalrequest.getBranchId() != null) {
-							// getlocation id available in branch then find city
-							// state location name based on location id
+//						getlocation id available in branch then find city state location name based on location id
 							UserResponse userResponse = usersClient.getBranchDetailById(proposalrequest.getBranchId());
 							basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 									(LinkedHashMap<String, Object>) userResponse.getData(),
@@ -376,8 +375,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(applicationProposalMapping.getProductId()));
-					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
-					corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
+					//corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
+					//corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
@@ -2365,8 +2364,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 			}
 			DateTimeComparator comparator = DateTimeComparator.getDateOnlyInstance();
-			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
-
 			//Comparing Date only
 			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0) {
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
@@ -2447,7 +2444,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),ProposalMappingRequest.class);
-				if(proposalrequest.getProposalStatusId()== MatchConstant.ProposalStatus.ACCEPT || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.HOLD || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.DECLINE || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.CANCElED){
+				if(proposalrequest.getProposalStatusId()== MatchConstant.ProposalStatus.ACCEPT || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.HOLD || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.DECLINE || proposalrequest.getProposalStatusId()== ProposalStatus.CANCELED){
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 					BeanUtils.copyProperties(proposalrequest,proposalMappingRequest);
 					inActivityProposalList.add(proposalMappingRequest);

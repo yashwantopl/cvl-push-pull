@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -203,20 +204,20 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				}
 				catch (Exception e) {
 					logger.error("Error while saving Upload FLag : ",e);
-					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+					throw new LoansException(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
 				}
 			}
 			return response;
-		} catch (DocumentException e) {
+		} catch (DocumentException | IOException e) {
 			logger.error("Error while uploading Corporate Other Documents");
 			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public DocumentResponse getOtherDocByProposalId(DocumentRequest documentRequest) throws Exception {
+	public DocumentResponse getOtherDocByProposalId(DocumentRequest documentRequest) throws LoansException {
 		try {
 			return dmsClient.listProductDocumentByProposalId(documentRequest);
 		} catch (DocumentException e) {
@@ -377,7 +378,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	@Override
 	public void updateLoanApplicationFlagByProposalId(Long proposalId,Long applicantId, Long userId, int tabType, Boolean isFilled,
-										  String filledCount) throws Exception {
+										  String filledCount) throws LoansException {
 		logger.info("In updateLoanApplicationFlag service method");
 		logger.info("appId----------->" + applicantId + "-----------Proposal Id---------->"+ proposalId + "------userId------->" + userId +
 				"---------tabtype------->"+tabType + "--------isFilled------->" + isFilled +
@@ -402,7 +403,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("Error while updating Flag to loan_application_master for upload");
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

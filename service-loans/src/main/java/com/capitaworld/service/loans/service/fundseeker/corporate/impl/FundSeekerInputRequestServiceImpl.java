@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +57,6 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -109,7 +103,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
-	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;

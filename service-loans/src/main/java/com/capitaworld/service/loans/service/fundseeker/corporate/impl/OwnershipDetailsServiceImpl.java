@@ -82,7 +82,7 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 
 		catch (Exception e) {
 			logger.error("Exception  in get ownershipDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

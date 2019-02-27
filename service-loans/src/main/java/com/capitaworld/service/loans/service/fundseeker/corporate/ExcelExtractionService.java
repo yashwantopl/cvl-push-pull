@@ -7,7 +7,7 @@ public interface ExcelExtractionService {
 	
 	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws Exception;
 
-	public Boolean readCMA(Long applicationId,Long proposalMappingId,Long storageDetailsId,MultipartFile multipartFile);
+	public Boolean readCMA(Long applicationId,Long proposalMappingId,Long storageDetailsId,MultipartFile multipartFile) throws ExcelException;
 
 	public Boolean readDPR(Long applicationId, Long storageDetailsId, MultipartFile multipartFile);
 	

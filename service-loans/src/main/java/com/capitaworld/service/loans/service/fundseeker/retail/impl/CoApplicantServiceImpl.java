@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.*;
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	private OneFormClient oneFormClient;
 
 	@Override
-	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
+	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws LoansException {
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId();
@@ -151,22 +152,22 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception {
+	public List<Long> getCoAppIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			return coApplicantDetailRepository.getCoAppIds(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while getCoAppIds :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception {
+	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
@@ -195,13 +196,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws Exception {
+	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<CoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId, userId);
 			List<CoApplicantRequest> requests = new ArrayList<>(details.size());
@@ -223,12 +224,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while getting List of CoApplicant Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -265,12 +266,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Final CoApplicant Retail Profile :- ",e);
-			throw new Exception("Something went Wrong !");
+			throw new LoansException("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
@@ -285,7 +286,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final CoApplicant Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -374,7 +375,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId, int productId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
 			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
@@ -706,13 +707,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("Error Occured while fetching CoApplicant Details");
+			throw new LoansException("Error Occured while fetching CoApplicant Details");
 		}
 	}
 
 	@Override
 	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId, int productId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
 			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
@@ -1162,17 +1163,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("Error Occured while fetching CoApplicant Final Details");
+			throw new LoansException("Error Occured while fetching CoApplicant Final Details");
 		}
 	}
 
 	@Override
-	public Long getApplicantIdById(Long id) throws Exception {
+	public Long getApplicantIdById(Long id) throws LoansException {
 		try {
 			return coApplicantDetailRepository.getApplicantIdById(id);
 		} catch (Exception e) {
 			logger.error("Error While getting Applicant Id by CoApplicant ID : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

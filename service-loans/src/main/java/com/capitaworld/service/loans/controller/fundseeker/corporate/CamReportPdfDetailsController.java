@@ -111,7 +111,7 @@ public class CamReportPdfDetailsController {
 		}
 		try {
 
-			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,false);
+			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,productId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
