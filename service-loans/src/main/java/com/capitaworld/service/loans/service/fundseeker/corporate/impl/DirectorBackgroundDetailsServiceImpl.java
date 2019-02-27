@@ -60,7 +60,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				DirectorBackgroundDetailRequest directorBackgroundDetailRequest= (DirectorBackgroundDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, DirectorBackgroundDetailRequest.class);
-				saveDirectorInfo(directorBackgroundDetailRequest, frameRequest.getApplicationId(), frameRequest.getUserId());	
+				saveDirectorInfo(directorBackgroundDetailRequest, frameRequest.getApplicationId(), frameRequest.getUserId());
 			}
 			return true;
 		}
@@ -70,11 +70,11 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
-	
+
+
 	@Override
 	public boolean saveDirectorInfo(DirectorBackgroundDetailRequest backgroundDetailRequest,Long applicationId,Long userId){
-		
+
 		DirectorBackgroundDetail  directorBackgroundDetail= null;
 		if (backgroundDetailRequest.getId() != null) {
 			directorBackgroundDetail = directorBackgroundDetailsRepository.findOne(backgroundDetailRequest.getId());
@@ -242,7 +242,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		int inActive = directorBackgroundDetailsRepository.inActive(userId, applicationId);
 		return inActive > 0;
 	}
-	
+
 	
 
 }

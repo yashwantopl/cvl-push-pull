@@ -84,8 +84,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
-	
+
+
 
 	@Override
 	public List<FinancialArrangementsDetailRequest> getManuallyAddedFinancialArrangementDetailsList(Long applicationId) {
@@ -113,7 +113,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 		return true;
 	}
-	
+
 	@Override
 	public Boolean saveOrUpdateManuallyAddedLoans(List<FinancialArrangementsDetailRequest> finArrDetailRequest,Long applicationId,Long userId) {
 		for (FinancialArrangementsDetailRequest req : finArrDetailRequest) {
@@ -158,7 +158,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		arrangementsDetailRequest.setEmi(totalEmi);
 		return arrangementsDetailRequest;
 	}
-	
+
 	@Override
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdForUniformProduct(applicationId);
@@ -201,7 +201,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	private List<FinancialArrangementsDetailRequest> prepareObject(List<FinancialArrangementsDetail> financialArrangementDetails){
 		List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementDetails.size());
 
@@ -209,7 +209,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
 			BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
 			if(!CommonUtils.isObjectNullOrEmpty(detail.getDirectorBackgroundDetail())) {
-				financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail().getId());					
+				financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail().getId());
 			}
 			financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
 		}

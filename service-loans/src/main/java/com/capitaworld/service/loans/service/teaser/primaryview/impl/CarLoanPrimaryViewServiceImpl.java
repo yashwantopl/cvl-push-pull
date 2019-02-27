@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,6 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
     private static final Logger logger = LoggerFactory.getLogger(CarLoanPrimaryViewServiceImpl.class);
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
@@ -315,10 +313,11 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
                 carLoanPrimaryViewResponse.setApplicant(profileViewPLResponse);
             } else {
-                throw new LoansException("No Data found");
+                throw new Exception("No Data found");
             }
         } catch (Exception e) {
             logger.error("Problem Occured while Fetching Retail Details : ",e);
+           // throw new Exception("Problem Occured while Fetching Retail Details");
         }
 
         //setting co-application details
@@ -328,9 +327,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
         }
-        if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
-            carLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
-        }
+        carLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
 
         //setting guarantor details
         List<RetailProfileViewResponse> guarantorResponse = null;
@@ -339,9 +336,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
         }
-        if (guarantorResponse != null && !guarantorResponse.isEmpty()) {
-            carLoanPrimaryViewResponse.setGuarantorList(guarantorResponse);
-        }
+        carLoanPrimaryViewResponse.setGuarantorList(guarantorResponse);
 
         //setting Personal Loan Specific Data
         try {
@@ -352,9 +347,9 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
              }
             //carLoanResponse.setOnRoadCarPrice(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getOnRoadCarPrice()) ? CommonUtils.CurrencyFormat(carLoanResponse.getOnRoadCarPrice().toString()) : null);
             //carLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getDownPayment()) ? CommonUtils.CurrencyFormat(carLoanResponse.getDownPayment().toString()) : null);
-            carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? simpleDateFormat.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
-            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? simpleDateFormat.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
-            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? simpleDateFormat.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
+            carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
+            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
+            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
             carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
             carLoanResponse.setNewCarPurchaseType(primaryCarLoanDetailRequest.getNewCarPurchaseType()!=null? CarPurchaseType.getById(primaryCarLoanDetailRequest.getNewCarPurchaseType()).getValue():null);
         } catch (Exception e) {

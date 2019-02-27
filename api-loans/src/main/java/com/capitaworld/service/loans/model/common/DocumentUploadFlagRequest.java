@@ -18,7 +18,9 @@ public class DocumentUploadFlagRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private Long applicationId;
-	
+
+	private Long proposalMappingId;
+
 	private Long DocumentMappingId;
 	
 	private Long userId;
@@ -46,7 +48,12 @@ public class DocumentUploadFlagRequest implements Serializable{
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	
-	
 
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
 }

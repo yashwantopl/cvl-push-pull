@@ -33,6 +33,12 @@ public class CoApplicantController {
 	@Autowired
 	private CoApplicantService coApplicantService;
 
+	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
+	public String getPing() {
+		logger.info("Ping success");
+		return "Ping Succeed";
+	}*/
+
 	// Primary Portion
 	@RequestMapping(value = "${profile}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody CoApplicantRequest applicantRequest,
@@ -143,7 +149,7 @@ public class CoApplicantController {
 			@PathVariable("applicationId") Long applicationId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId;
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{

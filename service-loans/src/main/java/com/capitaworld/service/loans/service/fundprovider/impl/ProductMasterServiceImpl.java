@@ -699,7 +699,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
 		List<ProductMasterRequest> activeProducts= new ArrayList<>();
 		List<ProductMasterRequest> inActiveProducts= new ArrayList<>();
-		
+
 		Long matchCount = productMasterRepository.countByUserIdAndIsMatched(userId, true);
 		
 		for (ProductMaster master : results) {
@@ -726,15 +726,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
 			}
 			request.setProposalCount(count);
-			
+
 			if(request.getIsActive() == true) {
 				activeProducts.add(request);
 			}else {
 				inActiveProducts.add(request);
 			}
-			
+
 		}
-		
+
 		requests.addAll(activeProducts);
 		requests.addAll(inActiveProducts);
 		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
@@ -905,6 +905,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
 				if (!CommonUtils.isObjectNullOrEmpty(master) && !productMasterRequest.getProductId().toString()
 						.equals(productDetailsForSps.get(0).getProductId().toString())) {
+					// if(master.getId())
 						CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 						return true;
 				}

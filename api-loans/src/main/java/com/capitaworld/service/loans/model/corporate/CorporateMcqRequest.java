@@ -13,6 +13,7 @@ public class CorporateMcqRequest implements Serializable {
     private Long id;
     private Long clientId;
     private Long applicationId;
+    private Long proposalMappingId;
  //   private Integer accountingSystemsId;
 //    private Integer brandAmbassadorId;
 //   private Integer competenceId;
@@ -75,7 +76,7 @@ public class CorporateMcqRequest implements Serializable {
     private String finalFilledCount;
     private Long userId;
     private Boolean isFinalMcqFilled;
-    
+
     private Boolean isMcqSkipped;
 //    private Boolean whetherTechnologyIsTied;
 //    private List<Integer> overseasNetworkIds = Collections.emptyList();
@@ -612,6 +613,14 @@ public class CorporateMcqRequest implements Serializable {
 	public void setIsMcqSkipped(Boolean isMcqSkipped) {
 		this.isMcqSkipped = isMcqSkipped;
 	}
-    
-    
+
+
+
+    public Long getProposalMappingId() {
+        return proposalMappingId;
+    }
+
+    public void setProposalMappingId(Long proposalId) {
+        this.proposalMappingId = proposalId;
+    }
 }

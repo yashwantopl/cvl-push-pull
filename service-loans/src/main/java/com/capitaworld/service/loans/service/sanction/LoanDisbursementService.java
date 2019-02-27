@@ -16,5 +16,6 @@ public interface LoanDisbursementService {
 
 	public List<LoanDisbursementRequest> getDisbursedList(Long applicationId) throws LoansException;
 	
+	public Boolean saveLoanDisbursementDetailbyId(Long orgId, LoanDisbursementRequest loanDisbursementRequest) throws IOException ;
 	
 }

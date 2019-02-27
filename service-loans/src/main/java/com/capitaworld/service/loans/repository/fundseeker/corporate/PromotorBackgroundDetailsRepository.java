@@ -20,6 +20,9 @@ public interface PromotorBackgroundDetailsRepository extends JpaRepository<Promo
 	
 	@Query("from PromotorBackgroundDetail o where o.applicationId.id = :id and isActive = true")
 	public List<PromotorBackgroundDetail> listPromotorBackgroundFromAppId(@Param("id") Long id);
+
+	@Query("from PromotorBackgroundDetail o where o.proposalMapping.proposalId = :proposalId and o.applicationId.id =:applicationId and isActive = true")
+	public List<PromotorBackgroundDetail> listPromotorBackgroundFromApplicationIdAndProposalId(@Param("applicationId") Long applicationId,@Param("proposalId") Long proposalId);
 	
 	public PromotorBackgroundDetail findByIdAndIsActive(Long id, Boolean isActive);
 

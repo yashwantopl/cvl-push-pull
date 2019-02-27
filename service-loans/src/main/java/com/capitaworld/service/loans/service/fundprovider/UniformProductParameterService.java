@@ -14,7 +14,7 @@ public interface UniformProductParameterService {
 	 * @return
 	 */
 	public UniformProductParamter saveOrUpdate(UniformProductParamterRequest productParamterRequest);
-	
+
 	/**
 	 * Get Uniform Product
 	 * @param userId
@@ -22,7 +22,7 @@ public interface UniformProductParameterService {
 	 * @return
 	 */
 	public UniformProductParamterRequest get(Long userId,Long orgId);
-	
+
 	/**
 	 * Saving Uniform Product Parameter
 	 * @param productParamterRequest
@@ -30,7 +30,7 @@ public interface UniformProductParameterService {
 	 * @return
 	 */
 	public Boolean saveOrUpdateTemp(UniformProductParamterRequest productParamterRequest);
-	
+
 	/**
 	 * Get Uniform Product
 	 * @param userId

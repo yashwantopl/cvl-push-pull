@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
@@ -36,6 +37,11 @@ public class CreditRatingOrganizationDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+
+
+	@ManyToOne
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping proposalId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -202,7 +208,12 @@ public class CreditRatingOrganizationDetail implements Serializable {
 	public void setRatingDate(Date ratingDate) {
 		this.ratingDate = ratingDate;
 	}
-	
-	
 
+	public ApplicationProposalMapping getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(ApplicationProposalMapping proposalId) {
+		this.proposalId = proposalId;
+	}
 }

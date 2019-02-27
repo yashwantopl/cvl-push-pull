@@ -26,7 +26,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Long cityId;
     private Double proposedCost;
     private Double enhancementAmount;
-    
+
     /*
      * SBI MSME Integration related fields
      * By Ravina
@@ -43,21 +43,21 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double totalAmtPercentage;
     /*For Eligibility Hybrid-payback method*/
     private Double incrementalMargin;
-    
-    
+
+
     //Start By Akshay for OnePager Eligibility
     private Double turnOverPrevFinYear;
-    
+
     private Double turnOverCurrFinYearTillMonth;
-    
+
     private Double projectedTurnOverCurrFinYear;
-    
+
     private Double profitCurrFinYear;
-    
+
     private Double projectedProfitCurrFinYear;
-    
+
     private Double grossSales;
-    
+
   //End By Akshay for OnePager Eligibility
 
 
@@ -280,6 +280,6 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 	public void setEnhancementAmount(Double enhancementAmount) {
 		this.enhancementAmount = enhancementAmount;
 	}
-	
-	
+
+
 }

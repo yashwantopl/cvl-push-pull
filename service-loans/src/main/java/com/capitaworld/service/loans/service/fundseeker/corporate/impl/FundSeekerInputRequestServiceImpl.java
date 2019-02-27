@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,14 +57,6 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -105,36 +98,36 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
   
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
-	
+
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
-	
+
 	@Autowired
-	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository; 
+	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
-	
+
 	@Autowired
-	private DirectorBackgroundDetailsService directorBackgroundDetailsService; 
-	
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+
 	@Autowired
-	private AssociatedConcernDetailService associatedConcernDetailService; 
-	
+	private AssociatedConcernDetailService associatedConcernDetailService;
+
 	@Autowired
-	private AssociatedConcernDetailRepository associatedConcernDetailRepository; 
+	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
 
 	@Autowired
 	private ConnectClient connectClient;
 
 	@Autowired
 	private AnalyzerClient analyzerClient;
-	
+
 	@Autowired
-	private GstClient gstClient; 
-	
+	private GstClient gstClient;
+
 	@Autowired
-	private DMSClient dMSClient; 
+	private DMSClient dMSClient;
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
@@ -153,7 +146,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private Environment environment;
-	
+
 	@Autowired
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
 	
@@ -201,18 +194,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					"getting primaryCorporateDetail from applicationId::" + fundSeekerInputRequest.getApplicationId());
 			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
 					.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-			
+
 			Double requiredLoanAmount = fundSeekerInputRequest.getLoanAmount();
 			if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				logger.info("primaryCorporateDetail is null created new object");
 				primaryCorporateDetail = new PrimaryCorporateDetail();
 			}
 			BeanUtils.copyProperties(fundSeekerInputRequest, primaryCorporateDetail);
-			
+
 			if(fundSeekerInputRequest.getEnhancementAmount() != null) {
 				requiredLoanAmount = requiredLoanAmount + fundSeekerInputRequest.getEnhancementAmount();
 			}
-			
+
 			primaryCorporateDetail.setLoanAmount(requiredLoanAmount);
 			primaryCorporateDetail.setEnhancementAmount(fundSeekerInputRequest.getEnhancementAmount());
 			primaryCorporateDetail.setIsApplicantDetailsFilled(true);
@@ -300,7 +293,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setModifiedDate(new Date());
 			}
-			
+
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 			copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
@@ -478,7 +471,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
 			}
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
-			
+
 			try {
 				LocalDate start = null;
 				if(corporateApplicantDetail.getConstitutionId() == 7) {
@@ -494,17 +487,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					Integer diffYear = diff.getYears();
 					fundSeekerInputResponse.setEstYear(diffYear);
 				}
-				
+
 				/*if(diff.getMonths() > 6) {
 					diffYear = diffYear + 1;
 				}*/
-				
+
 
 			}catch (Exception e) {
 				logger.error("error while find diff of establishment year : ",e);
 			}
-			
-			
+
+
 			logger.info("director detail successfully fetched");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Director detail successfully fetched",
 					HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
@@ -663,12 +656,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			return null;
 		}
 	}
-	
+
 	@Override
 	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest){
 		String msg = "Oneform Uniform Detail Successfully Saved";
 		try{
-			
+
 		logger.info("Enter in saveOrUpdateForOnePagerEligibility ---------------------------------------->"
 				+ fundSeekerInputRequest.getApplicationId());
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -683,12 +676,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
     		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
     	} */
-		
-		
+
+
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
 		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 		corporateApplicantDetail.setModifiedDate(new Date());
-		
+
 		if(Constitution.SOLE_PROPRIETORSHIP.getId().equals(fundSeekerInputRequest.getConstitutionId())){
 			corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
 		}
@@ -697,7 +690,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 		logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
 		corporateApplicantDetailRepository.save(corporateApplicantDetail);
-		
+
 		logger.info("getting primaryCorporateDetail from applicationId::" + fundSeekerInputRequest.getApplicationId());
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
 		if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
@@ -748,7 +741,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 	}
 }
-	
+
 	@Override
 	public LoansResponse getDataForOnePagerOneForm(Long applicationId) {
 
@@ -762,7 +755,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.info("Data not found for given applicationid from Primary Corporate Details");
 				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
 			}
-			
+
 			// === Applicant Address
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
@@ -778,8 +771,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
 			fundSeekerInputResponse.setAssociatedConcernDetailRequestsList(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, null));
-			
-			
+
+
 			fundSeekerInputResponse.setTurnOverPrevFinYear(primaryCorporateDetail.getTurnOverPrevFinYear());
 			fundSeekerInputResponse.setProfitCurrFinYear(primaryCorporateDetail.getProfitCurrFinYear());
 			fundSeekerInputResponse.setProjectedProfitCurrFinYear(primaryCorporateDetail.getProjectedProfitCurrFinYear());
@@ -788,9 +781,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getLoanAmount())){
 				fundSeekerInputResponse.setLoanAmount(primaryCorporateDetail.getAmount());
 			}else{
-				fundSeekerInputResponse.setLoanAmount(primaryCorporateDetail.getLoanAmount());				
+				fundSeekerInputResponse.setLoanAmount(primaryCorporateDetail.getLoanAmount());
 			}
-			
+
 			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value(), fundSeekerInputResponse);
 			//Getting Uploaded Documents of GST
 			DocumentRequest documentRequest = new DocumentRequest();
@@ -800,21 +793,21 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			try{
 					DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
 					if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
-						loansResponse.setListData(listProductDocument.getDataList());					
+						loansResponse.setListData(listProductDocument.getDataList());
 					}else{
 						logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 					}
 			}catch(DocumentException documentException){
 				logger.error(ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG,documentException);
 			}
-			
-			
+
+
 			//Getting Uploaded Documents of ITR
 			try{
 				documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
 				DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
 				if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
-					loansResponse.getListData().addAll(listProductDocument.getDataList());					
+					loansResponse.getListData().addAll(listProductDocument.getDataList());
 				}else{
 					logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 				}
@@ -825,13 +818,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			return loansResponse;
 
 		} catch (Exception e) {
-			String msg = "Error while fetching Details for Uniform OneForm"; 
+			String msg = "Error while fetching Details for Uniform OneForm";
 			logger.error(msg + " : "  ,e);
 			return new LoansResponse(msg, HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 	}
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFiles) {
@@ -852,8 +845,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}catch(Exception e){
 			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
 		}
-		
-		
+
+
 		boolean isDocumentUploaded = false;
 		try{
 			for (MultipartFile uploadedFile : uploadedFiles) {
@@ -874,7 +867,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}catch(Exception e){
 			logger.error("Error while Upllading GST Reveipt to S3 : {}",e);
 		}
-		
+
 		try {
 			GSTR1Request request = new GSTR1Request();
 			request.setApplicationId(applicationId);
@@ -892,7 +885,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, false);
 				logger.info("GST Updated Count of FALSE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
 			}
-			
+
 			//Getting Address Details from GST
 			CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
@@ -913,19 +906,19 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			LoansResponse loansResponse = new LoansResponse("Done",HttpStatus.OK.value(),response);
 			try{
 				logger.info("Uploaded Document Result for Application Id===>{}",isDocumentUploaded);
-				
+
 				if(isDocumentUploaded){
 					DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
 					if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
-						loansResponse.setListData(listProductDocument.getDataList());					
+						loansResponse.setListData(listProductDocument.getDataList());
 					}else{
 						logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 					}
-				}	
+				}
 			}catch(DocumentException documentException){
 				logger.error(ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG,documentException);
 			}
-			
+
 			return loansResponse;
 		} catch (Exception e) {
 			logger.error("error while Verifying GST Number : {}",e);
@@ -942,7 +935,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		if(flagType == CommonUtils.APIFlags.ITR.getId()){
 			count = corporateApplicantDetailRepository.updateITRFlag(applicationId, flag);
 			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
-			logger.info("ITR Flag Change Count==>{}",count);			
+			logger.info("ITR Flag Change Count==>{}",count);
 		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
 			count = corporateApplicantDetailRepository.updateGSTFlagWithoutGstin(applicationId, flag);
 			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
@@ -958,10 +951,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			try{
 				DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
 				if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
-					loansResponse.setListData(listProductDocument.getDataList());					
+					loansResponse.setListData(listProductDocument.getDataList());
 				}else{
 					logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
-				}	
+				}
 			}catch(DocumentException exception){
 				logger.error("error Updating Flags and Getting Document : {}",exception);
 			}
@@ -977,7 +970,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		jsonObject.put("projectedProfitCurrFinYear", primaryCorporateDetail.getProjectedProfitCurrFinYear());
 		jsonObject.put("turnOverCurrFinYearTillMonth", primaryCorporateDetail.getTurnOverCurrFinYearTillMonth());
 		jsonObject.put("projectedTurnOverCurrFinYear", primaryCorporateDetail.getProjectedTurnOverCurrFinYear());
-		
+
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 			jsonObject.put("premiseNumber", corporateApplicantDetail.getRegisteredPremiseNumber());
@@ -989,7 +982,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			jsonObject.put("countryId", corporateApplicantDetail.getRegisteredCountryId());
 			jsonObject.put("districtMappingId", corporateApplicantDetail.getRegisteredDistMappingId());
 		}
-		
+
 		try {
 			jsonObject.put("direcorsList",directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 		} catch (Exception e) {
@@ -997,11 +990,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		loansResponse.setData(jsonObject);
 		return loansResponse;
-	}	
-	
+	}
+
 	@SuppressWarnings("unchecked")
 	public LoansResponse deleteDocument(Long applicationId,List<Long> docIds,Long mappingId){
-		
+
 		for(Long id : docIds){
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("id", id);
@@ -1011,10 +1004,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					logger.warn("Delete/Inactive Document status is ===>{}======>for ApplicationId==={} for Doc Id=====>{}",inactiveFile.getStatus(),applicationId,id);
 				}else{
 					logger.warn("Something goes wrong while deleting/inactivating Document. The status is NULL for ApplicationId==={} for Doc Id=====>{}",applicationId,id);
-				}	
+				}
 			}catch(DocumentException exception){
 				logger.error("error while Deleting/Inactivating Document for Document Id : {} : and Exceptions are : {}",id,exception);
-			}			
+			}
 		}
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(applicationId);
@@ -1025,16 +1018,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try{
 			DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
 			if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
-				loansResponse.setListData(listProductDocument.getDataList());					
+				loansResponse.setListData(listProductDocument.getDataList());
 			}else{
 				logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
-			}	
+			}
 		}catch(DocumentException exception){
 			logger.error("error Updating Flags and Getting Document : {}",exception);
 		}
 		return loansResponse;
 	}
-	
+
 	@Override
 	public LoansResponse resetUniformApplication(ConnectResponse connectResponse){
 		financialArrangementDetailsRepository.inActiveManuallyAddedLoans(connectResponse.getUserId(), connectResponse.getApplicationId());
@@ -1059,7 +1052,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}catch(Exception e){
 			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
 		}
-		
+
 		try{
 			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
 			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));

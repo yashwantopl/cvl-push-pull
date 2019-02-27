@@ -42,14 +42,14 @@ public class IneligibleProposalDetails implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="created_date")
     private Date createdDate;
-    
+
     @Column(name="created_by")
     private Long createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="modified_date")
     private Date modifiedDate;
-    
+
     @Column(name="modified_by")
     private Long modifiedBy;
 
@@ -61,22 +61,22 @@ public class IneligibleProposalDetails implements Serializable{
     
     @Column(name="is_Disbursed")
     private Boolean isDisbursed;
-    
+
     @Column(name="status")
     private Integer status;
-    
+
     @Column(name="reason")
     private String reason;
-    
+
     @Column(name="gstin")
     private String gstin;
-    
+
     @Column(name = "business_type_id")
 	private Integer businessTypeId;
-    
+
     @Column(name="reopen_reason")
     private String reopenReason;
-    
+
 
     public Long getId() {
         return id;
@@ -213,5 +213,5 @@ public class IneligibleProposalDetails implements Serializable{
 	public void setReopenReason(String reopenReason) {
 		this.reopenReason = reopenReason;
 	}
-	
+
 }

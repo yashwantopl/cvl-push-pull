@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 /**
@@ -51,6 +52,10 @@ public class FinancialArrangementsDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
+
+	@ManyToOne
+	@JoinColumn(name = "proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -93,7 +98,7 @@ public class FinancialArrangementsDetail implements Serializable {
 	
 	@Column(name = "others_bank_name")
 	private String othersBankName;
-	
+
 	@Column(name = "is_manually_added")
 	private Boolean isManuallyAdded;
 
@@ -275,6 +280,13 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	public void setIsManuallyAdded(Boolean isManuallyAdded) {
 		this.isManuallyAdded = isManuallyAdded;
+	}
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
 	}
 }
 

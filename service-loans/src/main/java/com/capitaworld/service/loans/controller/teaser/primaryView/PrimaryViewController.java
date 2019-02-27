@@ -627,11 +627,11 @@ public class PrimaryViewController {
 	}
 
 	// -----------corporate Common
-	@GetMapping(value = "/Corporate/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(
-			@PathVariable(value = "toApplicationId") Long toApplicationId,
+	@GetMapping(value = "/Corporate/{applicationId}/{proposalId}")    // @GetMapping(value = "/Corporate/{toApplicationId}")
+	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "applicationId") Long applicationId,
+			@PathVariable(value = "proposalId") Long proposalId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
-		logger.info("into /Corporate/{toApplicationId} and toApplicationId is" + toApplicationId);
+		logger.info("into /Corporate/{proposalId} and proposalId is" + proposalId);
 		LoansResponse loansResponse = new LoansResponse();
 
 		// get user id from http servlet request
@@ -683,17 +683,16 @@ public class PrimaryViewController {
 			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
-		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
-			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
+		if (CommonUtils.isObjectNullOrEmpty(proposalId)) {
+            logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, proposalId);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
 			try {
-				logger.info("toApplicationId,userType,userId is" + toApplicationId + userType + userId);
-				corporatePrimaryViewResponse = corporatePrimaryViewService
-						.getCorporatePrimaryViewDetails(toApplicationId, userType, userId);
+				logger.info("proposalId,userType,userId is" + proposalId + userType + userId);
+				corporatePrimaryViewResponse = corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicationId,proposalId,userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(corporatePrimaryViewResponse)) {
 					logger.info("response is" + corporatePrimaryViewResponse.toString());
 					loansResponse.setData(corporatePrimaryViewResponse);
@@ -795,7 +794,9 @@ public class PrimaryViewController {
 		}
 	}
 
-	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/* CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
+	 *
+	 * @RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws LoansException {
@@ -815,6 +816,8 @@ public class PrimaryViewController {
 		}
 		Long applicationId = request.getApplicationId();
 		Long fpProductId = request.getFpProductId();
+		Long proposalId  =null;
+
 		String toUserId = null;
 		Long notificationId;
 
@@ -823,22 +826,27 @@ public class PrimaryViewController {
 			Object[] o = productMasterService.getUserDetailsByPrductId(fpProductId);
 			toUserId = o[0].toString();
 		} else {
-			Object[] o = loanApplicationService.getApplicationDetailsById(applicationId);
+			Object[] o = loanApplicationService.getApplicationDetailsById(4479l); // PREVIOUS
+			logger.info("THIS IS THE APPLICATION iD =====>"+applicationId);
+			//Object[] o = loanApplicationService.getApplicationDetailsByProposalId(applicationId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID =={} PENDING
 			toUserId = o[0].toString();
+			logger.info("=============>"+toUserId);
 			notificationId = NotificationAlias.SYS_FP_VIEW;
 		}
 
 		try {
 
 			notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
-					applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
+				applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
 
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-	}
+	}*/
 
-	@RequestMapping(value = "/sendFinalTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
+	 *
+	 * @RequestMapping(value = "/sendFinalTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void finalTeaserViewNotification(@RequestBody ProposalMappingRequest request, HttpServletRequest httpRequest,
 			@RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws LoansException {
@@ -880,9 +888,11 @@ public class PrimaryViewController {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-	}
+	}*/
 
-	@RequestMapping(value = "/finalTeaserReqViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
+	 *
+	 * @RequestMapping(value = "/finalTeaserReqViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void finalTeaserReqViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws LoansException {
@@ -924,7 +934,7 @@ public class PrimaryViewController {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-	}
+	}*/
 
 	// PL PRIMARY VIEW
 	@GetMapping(value = "/PlTeaserView/{toApplicationId}/{productMappingId}/{isFinalView}")

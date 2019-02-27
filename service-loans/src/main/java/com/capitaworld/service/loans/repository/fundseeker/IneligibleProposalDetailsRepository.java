@@ -26,16 +26,16 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
 			"			LEFT JOIN `loan_application`.`fs_loan_application_master` lam ON lam.application_id = ipd.application_id\n" + 
 			"			WHERE pd.user_org_id = :userOrgId AND usr.user_id = cl.user_id AND usr.user_type_id = 1 AND org.user_org_id = :userOrgId and (ipd.created_date BETWEEN :fromDate and :toDate) GROUP BY ipd.application_id ORDER BY ipd.id DESC", nativeQuery = true)
     public List<Object[]> getOfflineProposalDetailsByOrgId(@Param("userOrgId")Long userOrgId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
-    
+
     public IneligibleProposalDetails findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
-    
+
     public IneligibleProposalDetails findByApplicationIdAndUserOrgIdAndIsActive(Long applicationId,Long userOrgId,Boolean isActive);
-    
+
     public List<IneligibleProposalDetails> findByGstinAndIsActive(String gstin,Boolean isActive);
-    
+
     @Query(value = "SELECT * FROM loan_application.`ineligible_proposal_details` inl WHERE SUBSTR(inl.gstin,3,10) =:gstin AND inl.`is_active` = TRUE", nativeQuery = true)
     public List<IneligibleProposalDetails> findByGstinPan(@Param("gstin")String gstin);
-    
+
     public IneligibleProposalDetails findByGstinAndUserOrgIdAndIsActive(String gstin,Long userOrgId,Boolean isActive);
 
 }

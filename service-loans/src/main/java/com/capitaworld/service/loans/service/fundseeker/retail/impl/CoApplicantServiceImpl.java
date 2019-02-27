@@ -1,7 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.*;
@@ -110,7 +113,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coDetails.setCreatedDate(new Date());
 				coDetails.setApplicationId(new LoanApplicationMaster(applicationId));
 			}
-			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.getRetailFinal());
+			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromRequestToDomain(applicantRequest, coDetails);
 			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
 					&& applicantRequest.getYear() != null) {
@@ -135,9 +138,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp1DetailsFilled());
 				}
-			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
+			} else if (index == 1) {
+				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
 					loanApplicationRepository.setIsCoAppTwoProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp2DetailsFilled());
+				}
 			}
 
 			// Updating Bowl Count
@@ -170,7 +175,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						+ " and ApplicationId==>" + applicationId + " userId ==>" + userId);
 			}
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailFinal());
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
@@ -203,7 +208,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			List<CoApplicantRequest> requests = new ArrayList<>(details.size());
 			for (CoApplicantDetail detail : details) {
 				CoApplicantRequest request = new CoApplicantRequest();
-				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.getRetailFinal());
+				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 				if(!CommonUtils.isObjectNullOrEmpty(detail.getBirthDate())) {
 					logger.info("Birthdate==>" + detail.getBirthDate().toString());					
 				}
@@ -236,7 +241,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			coDetails.setModifiedBy(userId);
 			coDetails.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.getRetailProfile());
+			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			coApplicantDetailRepository.save(coDetails);
 
 			List<Long> coAppIds = coApplicantDetailRepository.getCoAppIds(applicantRequest.getApplicationId(),
@@ -247,9 +252,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp1FinalFilled());
 				}
-			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
+			} else if (index == 1) {
+				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
 					loanApplicationRepository.setIsCoAppTwoFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp2FinalFilled());
+				}
 			}
 			// Updating Final Count
 			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finalUserId,
@@ -272,7 +279,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						+ userId + " and Application Id ==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
@@ -697,7 +704,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 				return plResponses;
 			} else {
-				return Collections.emptyList();
+				return null;
 			}
 		} catch (Exception e) {
 			throw new LoansException("Error Occured while fetching CoApplicant Details");
@@ -1153,7 +1160,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 				return finalCommonresponseList;
 			} else {
-				return Collections.emptyList();
+				return null;
 			}
 		} catch (Exception e) {
 			throw new LoansException("Error Occured while fetching CoApplicant Final Details");

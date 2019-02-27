@@ -172,7 +172,6 @@ public class MobileLoanServiceImpl implements MobileService {
 		catch (Exception e){
 			throw new LoansException(e);
 		}
-
 	}
 	
 	@Override

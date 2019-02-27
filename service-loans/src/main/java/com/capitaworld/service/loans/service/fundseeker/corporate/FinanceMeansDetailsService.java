@@ -12,6 +12,7 @@ public interface FinanceMeansDetailsService {
 	
 	
 	public List<FinanceMeansDetailRequest> getMeansOfFinanceList(Long applicationId,Long userId) throws LoansException;
-	
+
+	public List<FinanceMeansDetailRequest> getMeansOfFinanceListByProposalId(Long proposalId,Long userId) throws Exception;
 	
 }

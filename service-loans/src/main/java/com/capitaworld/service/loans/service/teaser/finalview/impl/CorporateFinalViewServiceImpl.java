@@ -37,6 +37,7 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -63,6 +64,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProductMasterReposi
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -309,21 +311,29 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@Override
-	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toApplicationId, Integer userType,
-			Long fundProviderUserId) {
+	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toapplicationId,Long proposalMapId, Integer userType,Long fundProviderUserId) {
+
 
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
+
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMapId);
+
+		Long userId = applicationProposalMapping.getUserId();
+		Long toApplicationId = applicationProposalMapping.getApplicationId();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
-		Long userId = loanApplicationMaster.getUserId();
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		corporateFinalViewResponse.setIsMcqSkipped(loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
+		corporateFinalViewResponse.setProductId(applicationProposalMapping.getProductId());
 		// ===================== MATCHES DATA ======================//
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
 			    // TEASER VIEW FROM FP
@@ -347,8 +357,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				}
 		}
 		// GET CORPORATE APPLICANT DETAILS
+/*		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.getByApplicationAndUserId(userId, toApplicationId);*/ //PREVIOUS
+
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-				.getByApplicationAndUserId(userId, toApplicationId);
+				.getByApplicationAndProposalIdAndUserId(userId, toApplicationId,proposalMapId); // NEW BASED ON PROPOSAL MAP ID
+
 		// SET VALUE TO RESPONSE
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporateFinalViewResponse);
@@ -572,12 +586,20 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setCurrencyDenomination(Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue()
 								+ " in " + Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
 			}
-			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
+/*			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
 					? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
-					: null);
-			corporateFinalViewResponse.setLoanAmount(
+					: null);*/
+			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
+					? LoanType.getById(applicationProposalMapping.getProductId()).getValue()
+					: null); // NEW
+
+/*			corporateFinalViewResponse.setLoanAmount(
 					primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
-							: null);
+							: null);*/
+			corporateFinalViewResponse.setLoanAmount(
+					primaryCorporateDetail.getAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
+							: null); // NEW
+
 			corporateFinalViewResponse.setGstIn(
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
 							: null);
@@ -799,7 +821,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
-					denomination);
+					denomination,proposalMapId);
 
 			logger.info("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
 			// Profit & Loss Statement
@@ -1013,7 +1035,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.error("Error while getting irr mapping data : ",e);
 		}
-		
+
 		Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(toApplicationId);
 		corporateFinalViewResponse.setLoanObligation(loanObligation!= null ? loanObligation : 0);
 
@@ -1021,8 +1043,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// DETAILS=============================================//
 
 		try {
-			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId,
-					toApplicationId);
+			/*CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId,
+					toApplicationId);*/  //  PREVIOUS
+			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,
+					proposalMapId); // BASED ON NEW PROPOSAL ID
+
 			corporateFinalViewResponse
 					.setAboutUs(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getAboutUs())
 							? corporateFinalInfoRequest.getAboutUs()
@@ -1054,15 +1079,19 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// ACHIEVMENTS DETAILS
 		try {
+			/*corporateFinalViewResponse.setAchievementDetailList(
+					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));*/ // PREVIOUS API
 			corporateFinalViewResponse.setAchievementDetailList(
-					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
+					achievmentDetailsService.getAchievementDetailListForMultipleBank(proposalMapId)); // NEW BASED ON PROPOSAL  MAPPING ID
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Achievement Details {}", e);
 		}
 		// CREDIT RATING TABLE
 		try {
+/*			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
+					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);*/
 			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
-					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
+					.getCreditRatingOrganizationDetailsListFromProposalId(proposalMapId, userId);
 			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
 			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
 				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
@@ -1120,31 +1149,42 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// EXISTING PRODUCT DETAILS
 		try {
+			/*corporateFinalViewResponse.setExistingProductDetailRequestList(
+					existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setExistingProductDetailRequestList(
-					existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
+					existingProductDetailsService.getExistingProductDetailListByProposalId(proposalMapId, userId)); // NEW
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Existing Product {}", e);
 		}
 		// PROPOSED PRODUCT DETAILS
 		try {
+			/*corporateFinalViewResponse.setProposedProductDetailRequestList(
+					proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setProposedProductDetailRequestList(
-					proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));
+					proposedProductDetailsService.getProposedProductDetailListFromProposalId(proposalMapId, userId)); // new
+
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Proposed Product {}", e);
 		}
 
 		// ASSOCIATED CONCERNS
 		try {
+			/*corporateFinalViewResponse.setAssociatedConcernDetailRequests(
+					associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setAssociatedConcernDetailRequests(
-					associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));
+					associatedConcernDetailService.getAssociatedConcernsDetailListByProposalId(proposalMapId,userId));
+
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Associated Concerns {}", e);
 		}
 
 		// PROMOTOR BACKGROUND DETAILS
 		try {
+/*			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService
+					.getPromotorBackgroundDetailList(toApplicationId, userId);*/
 			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService
-					.getPromotorBackgroundDetailList(toApplicationId, userId);
+					.getPromotorBackgroundDetailListByProposalId(toApplicationId, proposalMapId,userId); // NEW BASED ON PROPOSAL MAPID
+
 			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
@@ -1187,7 +1227,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		}
 
 		try {
-			CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(userId, toApplicationId);
+			//CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(toApplicationId);
+			CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(proposalMapId);
 
 			corporateFinalViewResponse.setTechnologyRiskId(corporateMcqRequest.getTechnologyRiskId() != null
 					? TechnologyRisk.getById(corporateMcqRequest.getTechnologyRiskId()).getValue()
@@ -1321,7 +1362,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// OwnerShipDetails
 		try {
 			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownerShipDetailsService
-					.getOwnershipDetailList(toApplicationId, userId);
+					.getOwnershipDetailList(toApplicationId, userId,proposalMapId);
 			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
 			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
 				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
@@ -1339,8 +1380,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// cost of project
 		try {
+		/*	List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
+					.getCostOfProjectDetailList(toApplicationId, userId);*/
+
 			List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
-					.getCostOfProjectDetailList(toApplicationId, userId);
+					.getCostOfProjectDetailListByProposalId(proposalMapId, userId);
 			List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
 			for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
 				TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
@@ -1358,8 +1402,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Means of finance
 
 		try {
+			/*List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
+					.getMeansOfFinanceList(toApplicationId, userId);*/
 			List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
-					.getMeansOfFinanceList(toApplicationId, userId);
+					.getMeansOfFinanceListByProposalId(proposalMapId, userId);
 			List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
 			for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
 				FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
@@ -1379,8 +1425,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Security
 
 		try {
+	/*		corporateFinalViewResponse.setSecurityCorporateDetailRequestList(
+					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setSecurityCorporateDetailRequestList(
-					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+					securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(proposalMapId, userId));
+
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Security Details {}", e);
 		}
@@ -1391,8 +1440,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// get data of Details of Guarantors
 		try {
+/*			corporateFinalViewResponse.setGuarantorsCorporateDetailRequestList(
+					guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));*/
 			corporateFinalViewResponse.setGuarantorsCorporateDetailRequestList(
-					guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
+					guarantorsCorporateDetailService.getGuarantorsCorporateDetailListByProposalId(proposalMapId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Details of Guarantor {}", e);
 		}
@@ -1503,14 +1554,14 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (ScoringException | IOException e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
-		
-		
+
+
 		// Product Name
-		
+
 				if(fpProductMappingId != null) {
 					String productName = productMasterRepository.getFpProductName(fpProductMappingId);
 					if(productName != null) {
-						corporateFinalViewResponse.setFpProductName(productName);	
+						corporateFinalViewResponse.setFpProductName(productName);
 					}else {
 						logger.info("product name is null..");
 					}
@@ -1521,7 +1572,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// Eligibility Data
 
-		int loanId = primaryCorporateDetail.getProductId();
+		//int loanId = primaryCorporateDetail.getProductId(); //previous
+		int loanId = applicationProposalMapping.getProductId(); // NEW BASED ON PROPOAL MAPPING PRODUCT ID
 
 		switch (loanId) {
 
@@ -1614,14 +1666,14 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
-				
+
 				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporateFinalViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
 				}*/
-				
+
 			} else {
 				logger.warn("Mca Company Id is Null");
 
@@ -1650,7 +1702,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Name as per Gst
 
 		try {
-			
+
 			if(corporateApplicantDetail.getGstIn()!= null) {
 				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
 				if (response != null) {
@@ -1663,7 +1715,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}
-			
+
 
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);
@@ -1689,7 +1741,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
-			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+	/*		corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);*/
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId); // NEW BASED ON PROPOSAL ID--->
 			//ADMIN OFFICE ADDRESS
 			try {
 				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
@@ -1715,7 +1768,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		
 		try {
-			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			/*corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);*/
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId);
 			//Reg OFFICE ADDRESS
 			try {
 				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {

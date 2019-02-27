@@ -135,7 +135,7 @@ public class CorporatePrimaryViewResponse {
     private Object regPinData;
     private String regAddDist;
     private String regAddTaluko;
-    
+
     private String applicationType;
     private String fpProductName;
     private String scoringModelName;

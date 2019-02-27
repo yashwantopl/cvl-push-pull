@@ -223,19 +223,19 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object regPinData;
     private String regAddDist;
     private String regAddTaluko;
-    
+
     private String applicationType;
     private String fpProductName;
     
     private Object mcaFinancialAndDetailsResponse;
-    
+
     private Boolean isMcqSkipped;
     private String companyId;
     private String scoringModelName;
     private String eligibilityFinancialYear;
     private Double loanObligation;
     private Object cibilConsumerReport;
-    
+
 	public List<?> getMatchesList() {
 		return matchesList;
 	}

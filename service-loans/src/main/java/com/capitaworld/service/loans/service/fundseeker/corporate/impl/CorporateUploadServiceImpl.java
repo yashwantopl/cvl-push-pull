@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +56,9 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
+	@Autowired
 	CoApplicantService coApplicantService;
 	
 	@Autowired
@@ -94,6 +100,34 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	}
 
 	@Override
+	public DocumentResponse getProfilePicByProposalId(Long proposalId,Long applicantId, Long mappingId, String userType) throws Exception {
+		try {
+			DocumentRequest docRequest = new DocumentRequest();
+			if (CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)) {
+				docRequest.setApplicationId(applicantId);
+			} else if (CommonUtils.UploadUserType.UERT_TYPE_CO_APPLICANT.equalsIgnoreCase(userType)) {
+				// here we have set same applicant variable because when
+				// requested user is co-applicant then it "coApplicantId" will
+				// be considered and same as for "guarantors".
+				docRequest.setCoApplicantId(applicantId);
+			} else if (CommonUtils.UploadUserType.UERT_TYPE_GUARANTOR.equalsIgnoreCase(userType)) {
+				// here we have set same applicant variable because when
+				// requested user is co-applicant then it "coApplicantId" will
+				// be considered and same as for "guarantors".
+				docRequest.setGuarantorId(applicantId);
+			}
+			docRequest.setProductDocumentMappingId(mappingId);
+			docRequest.setUserType(userType);
+			docRequest.setProposalMappingId(proposalId);
+			return dmsClient.listProductDocumentByProposalId(docRequest);
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while getting Profile Document");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public DocumentResponse getProfilePic(Long applicantId, Long mappingId, String userType) throws LoansException {
 		try {
 			DocumentRequest docRequest = new DocumentRequest();
@@ -120,28 +154,26 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	}
 
 	@Override
-	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles, Long userId)
+	public DocumentResponse uploadOtherDocByProposalId(String documentRequestString, MultipartFile multipartFiles, Long userId)
 			throws LoansException {
-		
-		
+
 		try {
-			DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+			DocumentResponse response = dmsClient.uploadFileByProposalId(documentRequestString, multipartFiles);
 			if(!CommonUtils.isObjectNullOrEmpty(response) && response.getStatus() == HttpStatus.OK.value()) {
 				DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
 				request.setUserId(userId);
 				try{
 					logger.info("saving Upload FLag");
-				Long resp = saveDocumentFLag( request);
-				if(resp == 0L){
-					logger.error(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
-					throw new LoansException(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
-				}
-				
+					Long resp = saveDocumentFLagByProposalId( request);
+					if(resp == 0L){
+						logger.error(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+						throw new LoansException(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+					}
 				}
 				catch (Exception e) {
 					logger.error("Error while saving Upload FLag : ",e);
 					throw new LoansException(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
-				}	
+				}
 			}
 			return response;
 		} catch (Exception e) {
@@ -152,12 +184,56 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	}
 
 	@Override
-	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws LoansException {
+	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles, Long userId)
+			throws LoansException {
+
+
+		try {
+			DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+			if(!CommonUtils.isObjectNullOrEmpty(response) && response.getStatus() == HttpStatus.OK.value()) {
+				DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
+				request.setUserId(userId);
+				try{
+					logger.info("saving Upload FLag");
+				Long resp = saveDocumentFLag( request);
+				if(resp == 0L){
+					logger.error(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+				}
+
+				}
+				catch (Exception e) {
+					logger.error("Error while saving Upload FLag : ",e);
+					throw new LoansException(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+				}
+			}
+			return response;
+		} catch (DocumentException | IOException e) {
+			logger.error("Error while uploading Corporate Other Documents");
+			e.printStackTrace();
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
+	public DocumentResponse getOtherDocByProposalId(DocumentRequest documentRequest) throws LoansException {
+		try {
+			return dmsClient.listProductDocumentByProposalId(documentRequest);
+		} catch (DocumentException e) {
+			logger.error("Error while getting Corporate Other Documents : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
+	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception {
 		try {
 			return dmsClient.listProductDocument(documentRequest);
 		} catch (DocumentException e) {
 			logger.error("Error while getting Corporate Other Documents : ",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -299,7 +375,38 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 		}
 		// end New UBI Requirement
-		
+
+	@Override
+	public void updateLoanApplicationFlagByProposalId(Long proposalId,Long applicantId, Long userId, int tabType, Boolean isFilled,
+										  String filledCount) throws LoansException {
+		logger.info("In updateLoanApplicationFlag service method");
+		logger.info("appId----------->" + applicantId + "-----------Proposal Id---------->"+ proposalId + "------userId------->" + userId +
+				"---------tabtype------->"+tabType + "--------isFilled------->" + isFilled +
+				"----------FileCount----------"+filledCount);
+		try {
+			switch (tabType) {
+				case CommonUtils.TabType.PRIMARY_UPLOAD:
+					loanApplicationRepository.setIsPrimaryUploadMandatoryFilled(applicantId, userId, isFilled);
+					loanApplicationRepository.setPrimaryFilledCount(applicantId, userId, filledCount);
+					break;
+				case CommonUtils.TabType.FINAL_UPLOAD:
+					logger.info("Before setIsFinalUploadMandatoryFilled");
+					applicationProposalMappingRepository.setIsFinalUploadMandatoryFilled(proposalId,applicantId,isFilled);
+					logger.info("After setIsFinalUploadMandatoryFilled");
+					break;
+				case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+					applicationProposalMappingRepository.setIsFinalDprMandatoryFilled(proposalId,applicantId,isFilled);
+					break;
+				default:
+					break;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while updating Flag to loan_application_master for upload");
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
 	@Override
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled,
 			String filledCount) throws LoansException {
@@ -333,11 +440,197 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+	public Long saveDocumentFLagByProposalId(DocumentRequest documentUploadFlagRequest) throws Exception {
+//		DDRFormDetailsRequest
+		try{
+			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(documentUploadFlagRequest.getProposalMappingId(),documentUploadFlagRequest.getApplicationId());
+			if(CommonUtils.isObjectNullOrEmpty(dDRFormDetails)){
+				dDRFormDetails = new DDRFormDetails();
+				dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());
+				dDRFormDetails.setProposalMappingId(documentUploadFlagRequest.getProposalMappingId());
+				dDRFormDetails.setUserId(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setCreatedBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setCreatedDate(new Date());
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				dDRFormDetails.setIsActive(true);
+			}
+
+			final int switchCase = documentUploadFlagRequest.getProductDocumentMappingId().intValue();
+			switch (switchCase) {
+				// Working Capital
+
+				case 501:// WC
+				case 502:// TL
+				case 503:// USL
+				case 504:// WCTL
+					dDRFormDetails.setFieldAuditReport("Yes");
+					break;
+
+				case 9:// WC
+				case 36:// TL
+				case 276:// USL
+				case 375:// WCTL
+					dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
+					break;
+
+				case 280:// WC
+				case 13:// TL
+				case 40:// USL
+				case 379:// WCTL
+					dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
+					break;
+
+				case 11:// WC
+				case 38:// TL
+				case 278:// USL
+				case 377:// WCTL
+					dDRFormDetails.setItrForLast3years("Yes");
+					break;
+
+				case 10:// WC
+				case 37:// TL
+				case 277:// USL
+				case 376:// WCTL
+					dDRFormDetails.setSanctionLetter("Yes");
+					break;
+
+				case 505:// WC
+				case 506:// TL
+				case 507:// USL
+				case 508:// WCTL
+					dDRFormDetails.setBankStatementOfLast12months("Yes");
+					break;
+
+				case 308:// WC
+				case 309:// TL
+				case 310:// USL
+				case 399:// WCTL
+					dDRFormDetails.setDebtorsList("Yes");
+					break;
+
+				case 509:// WC
+				case 510:// TL
+				case 511:// USL
+				case 512:// WCTL
+					dDRFormDetails.setFinancialFigures("Yes");
+					break;
+
+				case 18:// WC
+				case 45:// TL
+				case 311:// USL
+				case 384:// WCTL
+					dDRFormDetails.setMoaOfTheCompany("Yes");
+					break;
+
+				case 3:// WC
+				case 30:// TL
+				case 283:// USL
+				case 369:// WCTL
+					dDRFormDetails.setPanCardOfTheCompany("Yes");
+					break;
+
+				case 305:// WC
+				case 306:// TL
+				case 307:// USL
+				case 398:// WCTL
+					dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("Yes");
+					break;
+
+				case 513:// WC
+				case 514:// TL
+				case 515:// USL
+				case 516:// WCTL
+					dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
+					break;
+
+				case 517:// WC
+				case 518:// TL
+				case 519:// USL
+				case 520:// WCTL
+					dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
+					break;
+
+				case 521:// WC
+				case 522:// TL
+				case 523:// USL
+				case 524:// WCTL
+					dDRFormDetails.setVatRegistrationOfCompany("Yes");
+					break;
+
+				case 315:// WC
+				case 316:// TL
+				case 317:// USL
+				case 401:// WCTL
+					dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
+					break;
+
+				case 14:// WC
+				case 41:// TL
+				case 284:// USL
+				case 397:// WCTL
+					dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
+					break;
+
+				case 12:// WC
+				case 39:// TL
+				case 279:// USL
+				case 378:// WCTL
+					dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
+					break;
+
+				case 297:// WC
+				case 298:// TL
+				case 299:// USL
+				case 396:// WCTL
+					dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
+					break;
+
+				case 525:// WC
+				case 526:// TL
+				case 527:// USL
+				case 528:// WCTL
+					dDRFormDetails.setListOfDirectors("Yes");
+					break;
+
+				case 15:// WC
+				case 42:// TL
+				case 285:// USL
+				case 381:// WCTL
+					dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
+					break;
+
+				case 535:// WC
+				case 536:// TL
+				case 537:// USL
+				case 538:// WCTL
+					dDRFormDetails.setProfilePicCompany("Yes");
+					break;
+
+				case 539:// WC
+				case 540:// TL
+				case 541:// USL
+				case 542:// WCTL
+					dDRFormDetails.setSiteOrPromotorsPhotos("Yes");
+					break;
+
+				default:
+					break;
+			}
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			ddrFormDetailsRepository.save(dDRFormDetails);
+			return 1L;
+		}
+		catch (Exception e) {
+			return 0L;
+		}
+	}
+
 	public Long saveDocumentFLag(DocumentRequest documentUploadFlagRequest) throws Exception {
 //		DDRFormDetailsRequest
 		try{
-		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(documentUploadFlagRequest.getApplicationId());
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(documentUploadFlagRequest.getProposalMappingId(),documentUploadFlagRequest.getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(dDRFormDetails)){
 			dDRFormDetails = new DDRFormDetails();
 			dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());

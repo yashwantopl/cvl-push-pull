@@ -53,10 +53,10 @@ public class NhbsApplicationsResponse implements Serializable{
 	private String mcaStatus;
 	
 	private Long fpProductId;
-	
+
 	private Boolean isFinalLocked;
-	
-	
+
+
 	public int getDdrStatusId() {
 		return ddrStatusId;
 	}
@@ -79,7 +79,20 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	private Integer businessTypeId;
 
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+
 	private Long clientId;
+
+	private Long proposalId;
+
+	boolean isSanction;
+
 	public Date getAssignedToCheckerDate() {
 		return assignedToCheckerDate;
 	}
@@ -321,6 +334,13 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.fpProductId = fpProductId;
 	}
 
-	
 
+
+	public boolean isSanction() {
+		return isSanction;
+	}
+
+	public void setSanction(boolean sanction) {
+		isSanction = sanction;
+	}
 }

@@ -485,6 +485,39 @@ public class CorporateApplicantController {
 
 	}
 
+	@RequestMapping(value = "/getConstitutionByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getConstitutionByProposalId(@PathVariable("proposalId") Long proposalId,
+																		HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "getPrimary");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (proposalId == null || userId == null) {
+				logger.warn("ID and User Id Require to get Primary Working Details ==>" + proposalId + "User ID ==>"
+						+ userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			CorporateApplicantRequest response = applicantService.getCorporateApplicantByProposalId(userId, proposalId);
+
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response.getConstitutionId());
+			CommonDocumentUtils.endHook(logger, "getPrimary");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Primary Term Loan Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
 	@RequestMapping(value = "/getConstitutionByApplicationId/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getConstitutionByApplicationId(@PathVariable("applicationId") Long applicationId,
 													HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {

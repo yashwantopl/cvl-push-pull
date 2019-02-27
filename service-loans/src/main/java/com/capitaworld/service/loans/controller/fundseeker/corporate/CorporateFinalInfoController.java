@@ -87,7 +87,7 @@ public class CorporateFinalInfoController {
             // Checking Profile is Locked
            /* Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
                     : corporateFinalInfoRequest.getClientId());
-            Boolean finalLocked = loanApplicationService.isFinalLocked(corporateFinalInfoRequest.getApplicationId(),
+            Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(corporateFinalInfoRequest.getProposalMappingId(),
                     finalUserId);
             if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
                 return new ResponseEntity<LoansResponse>(
@@ -106,6 +106,40 @@ public class CorporateFinalInfoController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+
+    @RequestMapping(value = "/getByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getByProposalId(@PathVariable("proposalId") Long proposalId,
+                                             HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+        // request must not be null
+        try {
+            CommonDocumentUtils.startHook(logger, "get");
+            Long id = null;
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                id = clientId;
+            } else {
+                id = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+
+            if (proposalId == null) {
+                logger.warn(
+                        "ApplicationId Require to get Corporate Final Info Details. Application Id ==>" + proposalId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            CorporateFinalInfoRequest response = corporateFinalInfoService.getByProposalId(id, proposalId);
+            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            loansResponse.setData(response);
+            CommonDocumentUtils.endHook(logger, "get");
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting Final Applicant Info Details==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

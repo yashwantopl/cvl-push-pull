@@ -19,10 +19,15 @@ public interface DDRFormService {
 	
 	public DDRRequest getMergeDDR(Long appId,Long userId) ;
 	
+	public DDRRequest getMergeDDRByProposalId(Long appId, Long userId, Long orgId);
+
 	public void saveMergeDDR(DDRRequest dDRRequest) throws LoansException;
 	
+	public void saveMergeDDRByProposalId(DDRRequest dDRRequest) throws Exception;
+
 	public DDRFormDetailsRequest get(Long id,Long userId);
-	
+	public DDRFormDetailsRequest get(Long id,Long userId,Long proposalId);
+
 	public List<JSONObject> getFinancialSummaryFieldsList();
 	
 	public List<JSONObject> getFinancialSummaryToBeFieldsList();
@@ -31,12 +36,15 @@ public interface DDRFormService {
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws LoansException;
 	
-	public Boolean isDDRApproved(Long userId, Long applicationId) throws LoansException;
+	public Boolean isDDRApproved(Long userId, Long applicationId) throws LoansException; // PREVIOUS
+	public Boolean isDDRApprovedByProposaId(Long proposalId) throws Exception; // NEW BASED ON PROPOSAL ID
 	
 	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
 	
 	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest);
-	
+
+	public boolean deleteDocumentByProposalId(DDRUploadRequest ddrUploadRequest);
+
 	public DDRCustomerRequest checkCustomerDetailFilled(Long applicationId);
 	
 	public Boolean saveCustomerDetailFilled(DDRCustomerRequest customerRequest);

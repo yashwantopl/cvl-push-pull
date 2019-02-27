@@ -3,10 +3,13 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 import java.util.List;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -36,7 +39,7 @@ public interface FundSeekerInputRequestService {
 	 * @throws Exception 
 	 */
 	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws LoansException;
-	
+
 	/**
 	 * Verify GST whether the GSTIN is Registered or Not.
 	 * @param gstin
@@ -47,15 +50,15 @@ public interface FundSeekerInputRequestService {
 	 */
 	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFile);
 
-	
+
 	/**
 	 * Getting Data for Uniform Product OneForm
 	 * @param applicationId
 	 * @return
 	 */
 	public LoansResponse getDataForOnePagerOneForm(Long applicationId);
-	
-	
+
+
 	/**
 	 * Update ITR Flag whether its is completed or not
 	 * @param applicationId
@@ -64,14 +67,14 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public LoansResponse updateFlag(Long applicationId,Boolean flag,Integer flagType);
-	
+
 	/**
 	 * Saving OneForm for Uniform Product
 	 * @param fundSeekerInputRequest
 	 * @return
 	 */
 	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest);
-	
+
 	/**
 	 * Deleting Document and Return the remaining list of Document for the givem mapping Id
 	 * @param applicationId
@@ -80,7 +83,7 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public LoansResponse deleteDocument(Long applicationId,List<Long> docIds,Long mappingId);
-	
+
 	/**
 	 * Inactive all the information for given applicationId for Uniform Product.
 	 * @param connectResponse
