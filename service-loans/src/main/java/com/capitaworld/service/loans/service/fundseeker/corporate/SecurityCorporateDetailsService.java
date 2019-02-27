@@ -16,4 +16,6 @@ public interface SecurityCorporateDetailsService {
 
 	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id,Long userId) throws LoansException;
 
+	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailsListFromProposalId(Long proposalId,Long userId) throws Exception;
+
 }

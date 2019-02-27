@@ -26,7 +26,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 
 	private static final String MARKET_PLACE = "Market Place";
 	private static final String BANK_SPECIFIC  = "Bank Specific";
-	
+
 	@Autowired
 	private OfflineProcessedAppRepository offlineProcessedAppRepository;
 	
@@ -34,7 +34,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	private UsersClient usersClient; 
 	
 	/**
-	 * FETCH ALL PENDING OFFLINE PROPOSALS BASED ON USERID 
+	 * FETCH ALL PENDING OFFLINE PROPOSALS BASED ON USERID
 	 * RETURN DATA BASED ON ROLE ID
 	 */
 	@Override
@@ -72,7 +72,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 		}
 		return applicationRequests;
 	}
-	
+
 	/**
 	 * author Harshit
 	 * Rejection List By Organization Id
@@ -113,7 +113,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 		}
 		return applicationRequests;
 	}
-	
+
 	@Override
 	public List<OfflineProcessedApplicationRequest> getOtherProposalList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getOtherProposalsList(userId);
@@ -251,14 +251,14 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			request.setBranchId(CommonUtils.convertLong(obj[11]));
 			request.setRoi(CommonUtils.convertDouble(obj[12]));
 			request.setProcessingFee(CommonUtils.convertDouble(obj[13]));
-			request.setFpProductId(CommonUtils.convertLong(obj[14]));	
+			request.setFpProductId(CommonUtils.convertLong(obj[14]));
 			request.setMobile(CommonUtils.convertString(obj[15]));
 			request.setEmail(CommonUtils.convertString(obj[16]));
 			applicationRequests.add(request);
 		}
 		return applicationRequests;
 	}
-	
+
 	@Override
 	public List<OfflineProcessedApplicationRequest> getUniformSanctionedApplicationList(Long userId) {
 		List<Object []> lst = offlineProcessedAppRepository.getUniformSanctionedApplicationList(userId);
@@ -398,5 +398,5 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 		}
 		return applicationRequests;
 	}
-	
+
 }

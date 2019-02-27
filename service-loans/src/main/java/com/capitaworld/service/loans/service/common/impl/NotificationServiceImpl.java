@@ -39,7 +39,7 @@ public class NotificationServiceImpl implements NotificationService{
 
 	private static final String FP_PNAME_PARAMETERS = "fp_pname";
 	private static final String SEND_VIEW_NOTIFICATION = "sendViewNotification";
-	
+
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 	
@@ -140,7 +140,7 @@ public class NotificationServiceImpl implements NotificationService{
 					String fsName = loanApplicationService.getFsApplicantName(applicationId);
 					parameters.put("fs_name", fsName != null ? fsName : "NA");
 					parameters.put("application_id", fsName != null ? applicationId : "NA");
-					
+
 				} catch (Exception e) {
 					logger.error("Exception in getting name of fs : ",e);
 					parameters.put("fs_name", "NA");

@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.sanction;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 
 public interface LoanSanctionService {
@@ -16,4 +17,11 @@ public interface LoanSanctionService {
 
 	public Integer saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws LoansException;
 
+	public Boolean saveSanctionAndDisbursementDetailsFromBank() throws Exception ;
+
+	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws Exception ;
+
+	public String getToken(String url , GenerateTokenRequest generateTokenRequest , Integer langCode  )throws Exception ;
+
+	public Boolean  sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId,LoanSanctionDomain loanSanctionDomainOld );
 }

@@ -14,6 +14,9 @@ public class LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
+
+	private Long proposalMappingId;
+
 	private Long clientId;
 
 	private Double amount;
@@ -120,13 +123,22 @@ public class LoanApplicationRequest implements Serializable {
 	private String emiForPaymentayment;
 	private String  feesForPayment;
     private String  fpNameForPayment;
-    
+    private Long proposalId;
     private Integer businessTypeId;
 
     private String applicationStatus;
     private Integer wcRenewalStatus;
-    
+
     private Boolean isMcqSkipped;
+
+
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
 
 	public String getApplicationStatus() {
 		return applicationStatus;
@@ -627,7 +639,7 @@ public class LoanApplicationRequest implements Serializable {
 		this.wcRenewalStatus = wcRenewalStatus;
 	}
 
-	
+
 	public Boolean getIsMcqSkipped() {
 		return isMcqSkipped;
 	}
@@ -635,8 +647,8 @@ public class LoanApplicationRequest implements Serializable {
 	public void setIsMcqSkipped(Boolean isMcqSkipped) {
 		this.isMcqSkipped = isMcqSkipped;
 	}
-	
-	
+
+
 
 	public Long getDdrStatusId() {
 		return ddrStatusId;
@@ -646,32 +658,39 @@ public class LoanApplicationRequest implements Serializable {
 		this.ddrStatusId = ddrStatusId;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
+
 	@Override
 	public String toString() {
-		return "LoanApplicationRequest [id=" + id + ", clientId=" + clientId + ", amount=" + amount + ", categoryCode="
-				+ categoryCode + ", name=" + name + ", productId=" + productId + ", tenure=" + tenure + ", typeOfLoan="
-				+ typeOfLoan + ", loanAmount=" + loanAmount + ", interestRate=" + interestRate + ", emiAmount="
-				+ emiAmount + ", nameOfEntity=" + nameOfEntity + ", fundProvider=" + fundProvider + ", userId=" + userId
-				+ ", fpProductId=" + fpProductId + ", currencyId=" + currencyId + ", denominationId=" + denominationId
-				+ ", createdDate=" + createdDate + ", hasAlreadyApplied=" + hasAlreadyApplied + ", loanTypeMain="
-				+ loanTypeMain + ", loanTypeSub=" + loanTypeSub + ", currencyValue=" + currencyValue
-				+ ", isApplicantDetailsFilled=" + isApplicantDetailsFilled + ", isApplicantPrimaryFilled="
-				+ isApplicantPrimaryFilled + ", isApplicantFinalFilled=" + isApplicantFinalFilled + ", applicationCode="
-				+ applicationCode + ", status=" + status + ", primaryFilledCount=" + primaryFilledCount
-				+ ", profilePrimaryLocked=" + profilePrimaryLocked + ", finalLocked=" + finalLocked + ", mcaCompanyId="
-				+ mcaCompanyId + ", isMca=" + isMca + ", npUserId=" + npUserId + ", npAssigneeId=" + npAssigneeId
-				+ ", fpMakerId=" + fpMakerId + ", email=" + email + ", mobile=" + mobile + ", userName=" + userName
-				+ ", providerName=" + providerName + ", paymentStatus=" + paymentStatus + ", typeOfPayment="
-				+ typeOfPayment + ", appointmentDate=" + appointmentDate + ", appointmentTime=" + appointmentTime
-				+ ", address=" + address + ", isMailSent=" + isMailSent + ", isNhbsApplication=" + isNhbsApplication
-				+ ", ddrStatusId=" + ddrStatusId + ", gstIn=" + gstIn + ", npOrgId=" + npOrgId
-				+ ", onlinePaymentSuccess=" + onlinePaymentSuccess + ", fsNameForPayment=" + fsNameForPayment
-				+ ", amountForPayment=" + amountForPayment + ", roiForPayment=" + roiForPayment + ", tenureForPayment="
-				+ tenureForPayment + ", emiForPaymentayment=" + emiForPaymentayment + ", feesForPayment="
-				+ feesForPayment + ", fpNameForPayment=" + fpNameForPayment + ", businessTypeId=" + businessTypeId
+		return "LoanApplicationRequest [id=" + id + ", proposalMappingId=" + proposalMappingId + ", clientId="
+				+ clientId + ", amount=" + amount + ", categoryCode=" + categoryCode + ", name=" + name + ", productId="
+				+ productId + ", tenure=" + tenure + ", typeOfLoan=" + typeOfLoan + ", loanAmount=" + loanAmount
+				+ ", interestRate=" + interestRate + ", emiAmount=" + emiAmount + ", nameOfEntity=" + nameOfEntity
+				+ ", fundProvider=" + fundProvider + ", userId=" + userId + ", fpProductId=" + fpProductId
+				+ ", currencyId=" + currencyId + ", denominationId=" + denominationId + ", createdDate=" + createdDate
+				+ ", hasAlreadyApplied=" + hasAlreadyApplied + ", loanTypeMain=" + loanTypeMain + ", loanTypeSub="
+				+ loanTypeSub + ", currencyValue=" + currencyValue + ", isApplicantDetailsFilled="
+				+ isApplicantDetailsFilled + ", isApplicantPrimaryFilled=" + isApplicantPrimaryFilled
+				+ ", isApplicantFinalFilled=" + isApplicantFinalFilled + ", applicationCode=" + applicationCode
+				+ ", status=" + status + ", primaryFilledCount=" + primaryFilledCount + ", profilePrimaryLocked="
+				+ profilePrimaryLocked + ", finalLocked=" + finalLocked + ", mcaCompanyId=" + mcaCompanyId + ", isMca="
+				+ isMca + ", npUserId=" + npUserId + ", npAssigneeId=" + npAssigneeId + ", fpMakerId=" + fpMakerId
+				+ ", email=" + email + ", mobile=" + mobile + ", userName=" + userName + ", providerName="
+				+ providerName + ", paymentStatus=" + paymentStatus + ", typeOfPayment=" + typeOfPayment
+				+ ", appointmentDate=" + appointmentDate + ", appointmentTime=" + appointmentTime + ", address="
+				+ address + ", isMailSent=" + isMailSent + ", isNhbsApplication=" + isNhbsApplication + ", ddrStatusId="
+				+ ddrStatusId + ", gstIn=" + gstIn + ", npOrgId=" + npOrgId + ", onlinePaymentSuccess="
+				+ onlinePaymentSuccess + ", fsNameForPayment=" + fsNameForPayment + ", amountForPayment="
+				+ amountForPayment + ", roiForPayment=" + roiForPayment + ", tenureForPayment=" + tenureForPayment
+				+ ", emiForPaymentayment=" + emiForPaymentayment + ", feesForPayment=" + feesForPayment
+				+ ", fpNameForPayment=" + fpNameForPayment + ", proposalId=" + proposalId + ", businessTypeId="
+				+ businessTypeId + ", applicationStatus=" + applicationStatus + ", wcRenewalStatus=" + wcRenewalStatus
 				+ "]";
 	}
 	

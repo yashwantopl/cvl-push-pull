@@ -26,7 +26,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
-	
+
 	public Object[] getRoleIdAndBranchIdByUserId(Long userId) {
 		try {
 			return  (Object[]) entityManager
@@ -38,7 +38,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
-	
+
 	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -49,7 +49,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	public List<Object[]> searchProposalForCheckerAndMaker(Long orgId,String searchString,Long branchId,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndBranchAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -62,7 +62,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndUserIdAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -75,14 +75,14 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	public Object[] fpDashBoardCountByOrgId(Long orgId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
-	
+
 	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndBranchId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -91,7 +91,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
-	
+
 	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndUserId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -100,13 +100,13 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
-	
+
 	public String getGSTINByAppId(Long applicationId) {
 		return  (String) entityManager
 				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId")
 						.setParameter("applicationId", applicationId).getSingleResult();
 	}
-	
+
 	public String getCommonPropertiesValue(String key) {
 		try {
 			return (String) entityManager
@@ -117,5 +117,5 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
-	
+
 }

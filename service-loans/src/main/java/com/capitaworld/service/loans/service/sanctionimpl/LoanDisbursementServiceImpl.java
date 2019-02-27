@@ -215,6 +215,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	@Override
 	public List<LoanDisbursementRequest> bankRequestValidationAndSave(Long sanctionPrimaryId ,List<LoanDisbursementRequest> loanDisbursementRequestsList,Long orgId , Integer apiType) throws IOException {
 		String status = null;
+		String status = null;
 		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
 			
 			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findFirstByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActiveOrderByIdDesc(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId() , true))){
@@ -247,16 +248,16 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
 					}
 				}/*else if(saveLoanDisbursementDetailbyId(orgId , loanDisbursementRequest)) {
-					
-					status= loanDisbursementRequest.getReason(); 
+
+					status= loanDisbursementRequest.getReason();
 					try {
 						rowUpdated = proposalDetailsRepository.updateSanctionStatus(11l, loanDisbursementRequest.getApplicationId());
 						status +=" proposal detail rowUpdated ==> "+rowUpdated ;
 					}catch (Exception e) {
-						auditComponentBankToCW.saveBankToCWReqRes(null , loanDisbursementRequest.getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT   , null, "Exception while updating the proposal detail table sanction status= > MSG "+e.getMessage() , orgId, null);	
+						auditComponentBankToCW.saveBankToCWReqRes(null , loanDisbursementRequest.getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT   , null, "Exception while updating the proposal detail table sanction status= > MSG "+e.getMessage() , orgId, null);
 					}
 					//auditComponentBankToCW.saveBankToCWReqRes(null, loanDisbursementRequest.getApplicationId(), null, null , "updating the proposal detail table sanction status ", orgId, null);
-					
+
 					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason() +"  -------updating the proposal detail table detail status rowUpdated ---------" +rowUpdated) ;
 					loanDisbursementRequest.setIsSaved(true);
 				}*/
@@ -264,9 +265,9 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
 					auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , status , null , orgId ,loanDisbursementRequest.getId());
 				}catch (Exception e) {
-					auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanDisbursementRequest.getApplicationId() , apiType , status, "Exception while converting the object in String = > MSG "+e.getMessage() , orgId, null);	
+					auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanDisbursementRequest.getApplicationId() , apiType , status, "Exception while converting the object in String = > MSG "+e.getMessage() , orgId, null);
 				}
-				
+
 			}else {
 				jsonString =MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
 				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, status , loanDisbursementRequest.getReason(), orgId ,loanDisbursementRequest.getId());
@@ -274,5 +275,37 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}
 		return loanDisbursementRequestsList;
 	}
+	//its save , disbursement request by there primary key 'id' and isSavedFromBank
+	@Override
+	public Boolean saveLoanDisbursementDetailbyId(Long orgId , LoanDisbursementRequest loanDisbursementRequest ) throws IOException {
+		logger.info("Enter in saveLoanDisbursementDetail() ----------------------->  LoanDisbursementRequest "+ loanDisbursementRequest);
+		try {
+			LoanDisbursementDomain loanDisbursementDomain =  loanDisbursementRepository.findByBankDisbursementPrimaryKeyAndApplicationIdAndIsActive(loanDisbursementRequest.getId() , loanDisbursementRequest.getApplicationId() ,    true);
+			if(CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain)) {
+				loanDisbursementDomain = new LoanDisbursementDomain();
+				loanDisbursementDomain.setIsActive(true);
+				loanDisbursementDomain.setCreatedBy(loanDisbursementRequest.getActionBy());
+				loanDisbursementDomain.setCreatedDate(new Date());
+				BeanUtils.copyProperties(loanDisbursementRequest, loanDisbursementDomain , "id","createdBy" , "createdDate" , "isActive" , "modifiedBy" , "modifiedDate");
+				loanDisbursementDomain.setBankDisbursementPrimaryKey(loanDisbursementRequest.getId());
+				loanDisbursementDomain.setApplicationId(loanDisbursementRequest.getApplicationId());
+				loanDisbursementDomain.setOrgId(orgId);
+				return loanDisbursementRepository.save(loanDisbursementDomain) != null;
+			}/*else {
+				loanDisbursementDomain.setModifiedBy(loanDisbursementRequest.getActionBy());
+				loanDisbursementDomain.setModifiedDate(new Date());
+				logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
+			}*/
+			/*BeanUtils.copyProperties(loanDisbursementRequest, loanDisbursementDomain , "id","createdBy" , "createdDate" , "isActive" , "modifiedBy" , "modifiedDate");
+			loanDisbursementDomain.setBankDisbursementPrimaryKey(loanDisbursementRequest.getId());
+
+			return loanDisbursementRepository.save(loanDisbursementDomain) != null;*/
+			return true;
+		} catch (Exception e) {
+			logger.error("Error/Exception in saveLoanDisbursementDetail() -----------------------> Message : ",e);
+			throw e;
+		}
+	}
+
 	
 }

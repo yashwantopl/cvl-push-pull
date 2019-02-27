@@ -101,7 +101,7 @@ public class LoansClient {
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_UNIFORM = "/financial_arrangement_details/get_total_emi_sanction_amount_uniform";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS = "/financial_arrangement_details/getTotalEmiFromForAllDir";
-	
+
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
 	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
@@ -249,11 +249,13 @@ public class LoansClient {
     private static final String GET_PRIMARY_DETAILS_CAM = "/cam/getPrimaryDataInByteArray";
 
     private static final String REQ_AUTH = "req_auth";
-    
+    private static final String GET_LOAN_APPLICATION_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
+    private static final String GET_CORPORATE_BY_PROPOSAL_ID="/final_info/getByProposalId";
+
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
-	
+
 	private RestTemplate restTemplate = null;
 
 	public LoansClient(String loansBaseUrl) {
@@ -270,7 +272,7 @@ public class LoansClient {
 			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
-	
+
 	public PrimaryCorporateRequest getPrimaryCorporateDetails(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(PRIMARY_INFORMATION);
 		logger.info("URL in getPrimaryCorporateDetails : {}",url);
@@ -855,7 +857,7 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	
+
 	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmountUniform(Long applicationId) throws LoansException{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_UNIFORM).concat("/" + applicationId);
 		logger.info("url for Getting TotalEMI From Client FOr Uniform Product=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
@@ -885,7 +887,7 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	
+
 	//Akshay
 	public LoansResponse getTotalEMIOfAllDir(Long applicationId) throws LoansException{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS);
@@ -901,8 +903,8 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	
-	
+
+
 
 	public LoansResponse saveFutureFinancialEstimatesDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(FUTURE_FINANCIAL_ESTIMATE_DETAILS);
@@ -2406,11 +2408,26 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	
+
+	public LoansResponse getLoanApplicationByProposalId(Long proposalId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_APPLICATION_BY_PROPOSAL_ID).concat("/" + proposalId);
+		try {
+			logger.info("Enter in GET_LOAN_PROPOSAL_BY_PROPOSAL_ID ---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in saveIneligibleProposal : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+
 	/**
-	 * 
+	 *
 	 * @param keyName
-	 * @return  in data key 
+	 * @return  in data key
 	 * @throws LoansException
 	 */
 	public LoansResponse getCommonPropValue(String keyName) throws LoansException {
@@ -2426,7 +2443,7 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	
+
 	/**
 	 * Client for cam report primary data uses in gateway
 	 * */
@@ -2444,6 +2461,20 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getCorporateApplicantByProposalId(Long proposalId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_CORPORATE_BY_PROPOSAL_ID).concat("/" + proposalId);
+		try {
+			logger.info("Enter in GET_LOAN_PROPOSAL_BY_PROPOSAL_ID ---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available While Get responce from /GET_LOAN_PROPOSAL_BY_PROPOSAL_ID");
+		}
+	}
 }
 
 

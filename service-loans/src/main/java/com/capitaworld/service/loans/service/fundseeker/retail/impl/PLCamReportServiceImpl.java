@@ -102,7 +102,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	
 	@Autowired 
 	private PincodeDateService pincodeDateService;
-	
+
 	
 	@Autowired
 	private MatchEngineClient matchEngineClient;
@@ -121,7 +121,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	
 	@Autowired
 	private AnalyzerClient analyzerClient;
-	
+
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
 	
@@ -193,8 +193,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 			map.put("eligibleLoanAmount", loanApplicationMaster.getAmount() != null ? loanApplicationMaster.getAmount() : "-");
 			map.put("eligibleTenure", loanApplicationMaster.getTenure() != null ? loanApplicationMaster.getTenure(): "-");
-			
-			
+
+
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
@@ -254,7 +254,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		} catch (Exception e2) {
 			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
 		}*/
-		
+
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
 			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
@@ -265,7 +265,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		// ENDS HERE===================>
-		
+
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();
@@ -454,12 +454,12 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}catch (Exception e) {
 				logger.error("Error while getting scoring data : ",e);
 			}
-		
+
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(applicationId);
 				reportRequest.setUserId(userId);
-				
+
 				List<Data> datas = new ArrayList<>();
 //				List<Object> bankStatement = new ArrayList<Object>();
 				List<Object> monthlyDetails = new ArrayList<Object>();
@@ -468,16 +468,16 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				List<Object> bouncedChequeList = new ArrayList<Object>();
 				List<Object> customerInfo = new ArrayList<Object>();
 				List<Object> summaryInfo = new ArrayList<Object>();
-				
+
 				try {
 					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
 					List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
-					
+
 					if (!CommonUtils.isListNullOrEmpty(hashMap)) {
 						for (HashMap<String, Object> rec : hashMap) {
 							Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 							datas.add(data);
-							
+
 							//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
 							monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
 							top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
@@ -485,7 +485,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 							bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
 							customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
 							summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
-							
+
 						}
 
 						//map.put("bankStatement", bankStatement);
@@ -496,12 +496,12 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 						map.put("customerInfo", customerInfo);
 						map.put("summaryInfo", summaryInfo);
 						map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
-						
+
 					}
 				} catch (Exception e) {
 					logger.error("Error while getting perfios data : ",e);
 				}
-		
+
 			//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 			try{
 				EligibililityRequest eligibilityReq=new EligibililityRequest();

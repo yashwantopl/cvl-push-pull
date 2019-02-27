@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.loans.model.NTBRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,7 +192,7 @@ public class FinancialArrangementDetailsController {
 	
 	@RequestMapping(value = "/save_for_one_pager_eligibility", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveForOnePagerEligibility(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest httpServletRequest ) {
-		
+
 		// application id and user id must not be null
 		if (fundSeekerInputRequestResponse.getApplicationId() == null) {
 			logger.warn("application id must not be null ==>");
@@ -206,7 +208,7 @@ public class FinancialArrangementDetailsController {
 			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
 				return new ResponseEntity<>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 			}
-			financialArrangementDetailsService.saveOrUpdate(fundSeekerInputRequestResponse.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());	
+			financialArrangementDetailsService.saveOrUpdate(fundSeekerInputRequestResponse.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());
 			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -214,7 +216,7 @@ public class FinancialArrangementDetailsController {
 			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/get_total_emi_sanction_amount/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionedAmount(@PathVariable("applicationId") Long applicationId) {
 		if (applicationId == null) {
@@ -229,7 +231,7 @@ public class FinancialArrangementDetailsController {
 			return null;
 		}
 	}
-	
+
 	@RequestMapping(value = "/get_total_emi_sanction_amount_uniform/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionedAmountUniform(@PathVariable("applicationId") Long applicationId) {
 		if (applicationId == null) {

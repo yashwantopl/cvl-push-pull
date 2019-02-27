@@ -35,11 +35,11 @@ public class FundSeekerInputRequestResponse {
     private Address firstAddress;
 
     private String organisationName;
-    
+
     private String gstIn;
-    
+
     private String pan;
-    
+
     private String aadhar;
 
     private String msmeRegistrationNumber;
@@ -50,9 +50,9 @@ public class FundSeekerInputRequestResponse {
     private Integer purposeOfLoanId;
 
     private Boolean haveCollateralSecurity;
-    
+
     private Boolean isGstCompleted;
-    
+
     private Boolean isItrCompleted;
 
     private Double collateralSecurityAmount;
@@ -60,9 +60,9 @@ public class FundSeekerInputRequestResponse {
     private Integer constitutionId;
 
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = Collections.emptyList();
-    
+
     private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList = Collections.emptyList();
-    
+
     private List<AssociatedConcernDetailRequest> associatedConcernDetailRequestsList = Collections.emptyList();
 
 
@@ -75,18 +75,18 @@ public class FundSeekerInputRequestResponse {
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
-    
+
     //Sales Variables by Akshay
-    
-  
+
+
     /*
     * added for machinery equipment finance
     * */
     private Integer assessmentId;
-    
+
     private Integer sinceYear;
     private Integer sinceMonth;
-    
+
     private Integer estYear;
 
     //-------------For NTB
@@ -125,19 +125,19 @@ public class FundSeekerInputRequestResponse {
     private Double incrementalMargin;
 
     private Long environmentalImpactId;
-    
+
     private Integer actionId;
-    
+
     private Double turnOverPrevFinYear;
-    
+
     private Double turnOverCurrFinYearTillMonth;
-    
+
     private Double projectedTurnOverCurrFinYear;
-    
+
     private Double profitCurrFinYear;
-    
+
     private Double projectedProfitCurrFinYear;
-    
+
     private Double enhancementAmount;
 
     public Long getUserId() {
@@ -575,7 +575,7 @@ public class FundSeekerInputRequestResponse {
 	public void setAssociatedConcernDetailRequestsList(List<AssociatedConcernDetailRequest> associatedConcernDetailRequestsList) {
 		this.associatedConcernDetailRequestsList = associatedConcernDetailRequestsList;
 	}
-	
+
 	public Double getEnhancementAmount() {
 		return enhancementAmount;
 	}
@@ -583,7 +583,7 @@ public class FundSeekerInputRequestResponse {
 	public void setEnhancementAmount(Double enhancementAmount) {
 		this.enhancementAmount = enhancementAmount;
 	}
-	
+
 	public Integer getSinceYear() {
 		return sinceYear;
 	}
@@ -599,7 +599,7 @@ public class FundSeekerInputRequestResponse {
 	public void setSinceMonth(Integer sinceMonth) {
 		this.sinceMonth = sinceMonth;
 	}
-	
+
 
 	public Integer getEstYear() {
 		return estYear;

@@ -19,73 +19,73 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 	private Double minCibilScore;
 	private Integer minCmr;
 	private Integer maxCmr;
-	
+
 	private Integer currency;
 
 	private Boolean isEdited;
-	
+
 	private Integer dpd;
-	
+
 	private Integer denomination;
-	
+
 	private Integer assessmentMethod;
-	
+
 	private Integer version;
-	
+
 	private Double promotorContribution;
-	
+
 	private Double wcRequirement;
-	
+
 	private Double maxGrowth;
-	
+
 	private Object workflowData;
-	
-	private WorkflowData workflowRequest; 
-	
+
+	private WorkflowData workflowRequest;
+
 	private List<Long> roleIds;
-	
-	
+
+
 	//Audit Fields
 	private String minAmountAudit;
-	
+
 	private String maxAmountAudit;
 
 	private String roiAudit;
-	
+
 	private String pfAudit;
-	
+
 	private String minCibilScoreAudit;
 
 	private String minCmrAudit;
-	
+
 	private String maxCmrAudit;
-	
+
 	private String currencyAudit;
 
 	private String denominationAudit;
-	
+
 	private String assessmentMethodAudit;
-	
+
 	private String promotorContributionAudit;
-	
+
 	private String wcRequirementAudit;
-	
+
 	private String maxGrowthAudit;
-	
+
 	private String versionAudit;
-	
+
 	private String isActiveAudit;
-	
+
 	private String dpdAudit;
-	
+
 	private Date createdDate;
-	
+
 	private Date modifiedDate;
 
 	public UniformProductParamterRequest(){
 		super();
 	}
-	
+
 	public UniformProductParamterRequest(Long id){
 		super(id);
 	}

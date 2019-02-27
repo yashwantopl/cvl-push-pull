@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
@@ -34,6 +35,10 @@ public class OwnershipDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+
+	@ManyToOne
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping proposalMapping;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -145,4 +150,11 @@ public class OwnershipDetail implements Serializable {
 		this.stackPercentage = stackPercentage;
 	}
 
+	public ApplicationProposalMapping getProposalMapping() {
+		return proposalMapping;
+	}
+
+	public void setProposalMapping(ApplicationProposalMapping proposalMapping) {
+		this.proposalMapping = proposalMapping;
+	}
 }

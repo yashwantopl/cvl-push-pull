@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -51,6 +52,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 				
 				BeanUtils.copyProperties(totalCostOfProjectRequest, totalCostOfProject);
 				totalCostOfProject.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				totalCostOfProject.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				totalCostOfProject.setModifiedBy(frameRequest.getUserId());
 				totalCostOfProject.setModifiedDate(new Date());
 				totalCostOfProjectRepository.save(totalCostOfProject);
@@ -60,9 +62,31 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 
 		catch (Exception e) {
 			logger.error("Exception in save totalCostOfProject :-",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
+	}
+
+	@Override
+	public List<TotalCostOfProjectRequest> getCostOfProjectDetailListByProposalId(Long proposalId, Long userId)
+			throws Exception {
+		try {
+			List<TotalCostOfProject> totalCostOfProjectRequest = totalCostOfProjectRepository
+					.listCostOfProjectFromProposalId(proposalId);
+			List<TotalCostOfProjectRequest> totalCostOfProjectRequests = new ArrayList<TotalCostOfProjectRequest>(
+					totalCostOfProjectRequest.size());
+
+			for (TotalCostOfProject detail : totalCostOfProjectRequest) {
+				TotalCostOfProjectRequest totalCostofProjectRequest = new TotalCostOfProjectRequest();
+				BeanUtils.copyProperties(detail, totalCostofProjectRequest);
+				totalCostOfProjectRequests.add(totalCostofProjectRequest);
+			}
+			return totalCostOfProjectRequests;
+		} catch (Exception e) {
+			logger.info("Exception getting TotalCostOfProjects  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	@Override

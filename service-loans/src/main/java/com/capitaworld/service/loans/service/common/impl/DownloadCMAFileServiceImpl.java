@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,12 +29,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDet
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
@@ -65,7 +60,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
-	
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
+
 	private FormulaEvaluator evaluator;
 
 	private static final Logger logger = LoggerFactory.getLogger(DownloadCMAFileServiceImpl.class);
@@ -74,29 +72,29 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	
 	private static final String BALANCE_SHEET ="BS"; */
 	@Override
-	public Workbook cmaFileGenerator(Long applicationId , Long productDocumentMappingId) {
+	public Workbook cmaFileGeneratorByProposalId(Long applicationId,Long proposalId , Long productDocumentMappingId) {
 		logger.info("Enter in cmaFileGenerator()  Forming Excel Data");
 		DocumentResponse documentResponse = null;
 		Workbook wb = null;
 		try {
-            //EXISTING WCTL_CMA OR TL 
-            String EXCEL_FILE_LOCATION  = "cw.mca.cwtlwctlcmafile.location";
- 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
- 			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
- 			logger.info("Busyness Type ID=====>" + businessTypeId);
- 			Double tenure = 1.0;
- 			
- 			if(productDocumentMappingId == DocumentAlias.WCTL_CMA || productDocumentMappingId == DocumentAlias.TL_CMA  ){
-					
-				tenure = loanApplicationRepository.getTenure(applicationId);
-				tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
-					
-			}
- 			
- 			if(BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId) {
+			//EXISTING WCTL_CMA OR TL
+			String EXCEL_FILE_LOCATION  = "cw.mca.cwtlwctlcmafile.location";
+			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
+			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+			logger.info("Busyness Type ID=====>" + businessTypeId);
+			Double tenure = 1.0;
 
- 				EXCEL_FILE_LOCATION =	"cw.mca.ntbtlcmafile.location"; //NTB TL
- 				//NTB WC
+			if(productDocumentMappingId == DocumentAlias.WCTL_CMA || productDocumentMappingId == DocumentAlias.TL_CMA  ){
+
+				tenure =  applicationProposalMappingRepository.getTenure(proposalId);
+				tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
+
+			}
+
+			if(BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId) {
+
+				EXCEL_FILE_LOCATION =	"cw.mca.ntbtlcmafile.location"; //NTB TL
+				//NTB WC
  				/*if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
  		      		 EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.usl.location";
  		      		 total_Column=0.0;
@@ -105,15 +103,15 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
  				
  				/*EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location"; //EXISTING WCTL_CMA OR TL */
  				if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) { //EXISTING WC
- 					
+
  					EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.location";
- 					
- 					
+
+
  				}else if(productDocumentMappingId==(long)DocumentAlias.USL_CMA) { //EXISTING USL
- 					
+
  					EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.usl.location";
- 					
- 					
+
+
  				}
  			}
  			logger.warn("tenure==>>"+tenure);
@@ -148,17 +146,17 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					operatingStatementDetails = new OperatingStatementDetails();
 					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-1));
 					operatingStatementDetailsList.add(operatingStatementDetails);
-					
+
 					operatingStatementDetails = new OperatingStatementDetails();
 					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-2));
 					operatingStatementDetailsList.add(operatingStatementDetails);
 				}
 				Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
 			}
-			
+
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
-		
-		
+
+
 			int j = 1;
 			Double temp=0.0;
 			
@@ -291,7 +289,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			temp = 0.0 ;
 
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
-			
+
 			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
 			List<Integer> libYearList = new ArrayList<>(liabilitiesDetailsList.size());
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
@@ -311,7 +309,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					liabilitiesDetails = new LiabilitiesDetails();
 					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-1));
 					liabilitiesDetailsList.add(liabilitiesDetails);
-					
+
 					liabilitiesDetails = new LiabilitiesDetails();
 					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-2));
 					liabilitiesDetailsList.add(liabilitiesDetails);
@@ -438,20 +436,20 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					assetsDetails = new AssetsDetails();
 					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-1));
 					assetsDetailsList.add(assetsDetails);
-					
+
 					assetsDetails = new AssetsDetails();
 					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-2));
 					assetsDetailsList.add(assetsDetails);
 				}
 				Collections.sort(assetsDetailsList, new AssetComparator());
 			}
-			
+
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 
 			j = 1;
 
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
-				
+
 				temp=Double.parseDouble(assetsDetails.getYear());
 				// save in excel
 				sheet3.getRow(4).getCell(j).setCellValue(temp);
@@ -583,6 +581,394 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		} catch ( IllegalStateException | IOException | InvalidFormatException e) {
 			logger.error("Exception in cmaFileGenerator : ",e);
 		}
+		return wb;
+
+	}
+
+	@Override
+	public Workbook coCMAFileGeneratorByProposalId(Long applicationId, Long proposalId,Long productDocumentMappingId) {
+		logger.info("================== Enter in  coCMAFileGenerator() Forming Excel Data=====================");
+
+		Workbook wb = null;
+		try {
+			Double total_Column=12.0;
+			String EXCEL_FILE_LOCATION = "cw.mca.cocmafile.location";
+			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+			if(productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT) {
+				EXCEL_FILE_LOCATION =	"cw.mca.cocmafile.usl.location";
+				total_Column=0.0;
+			}
+
+			wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(EXCEL_FILE_LOCATION)));
+
+			Sheet sheet1 = wb.getSheetAt(0);
+
+			Sheet sheet2 = wb.getSheetAt(1);
+
+			evaluator = wb.getCreationHelper().createFormulaEvaluator();
+
+			List<ProfitibilityStatementDetail> profitibilityStatementDetailsList = profitibilityStatementDetailRepository.getByProposalId(proposalId);
+			int j = 2;
+
+			Double temp =0.0;
+
+			for (ProfitibilityStatementDetail profitibilityStatementDetails : profitibilityStatementDetailsList) {
+				// save in excel
+				temp=Double.parseDouble(profitibilityStatementDetails.getYear());
+				sheet1.getRow(3).getCell(j).setCellValue(temp);
+
+				//sheet1.getRow(6).getCell(j).setCellValue(profitibilityStatementDetails.getSales());
+
+				sheet1.getRow(7).getCell(j).setCellValue(profitibilityStatementDetails.getSalesExport());
+				sheet1.getRow(8).getCell(j).setCellValue(profitibilityStatementDetails.getSalesDomestic());
+				sheet1.getRow(9).getCell(j).setCellValue(profitibilityStatementDetails.getLessExciseDutyOrVatOrServiceTax());
+
+				//sheet1.getRow(10).getCell(j).setCellValue(profitibilityStatementDetails.getLessAnyOtherItem());
+
+				sheet1.getRow(11).getCell(j).setCellValue(profitibilityStatementDetails.getLessItem1());
+				sheet1.getRow(12).getCell(j).setCellValue(profitibilityStatementDetails.getLessItem2());
+				sheet1.getRow(13).getCell(j).setCellValue(profitibilityStatementDetails.getLessItem3());
+				sheet1.getRow(14).getCell(j).setCellValue(profitibilityStatementDetails.getLessItem4());
+				sheet1.getRow(15).getCell(j).setCellValue(profitibilityStatementDetails.getLessItem5());
+
+				//sheet1.getRow(16).getCell(j).setCellValue(profitibilityStatementDetails.getNetSales());
+
+
+				//sheet1.getRow(17).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue());
+
+				sheet1.getRow(18).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue1());
+				sheet1.getRow(19).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue2());
+				sheet1.getRow(20).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue3());
+				sheet1.getRow(21).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue4());
+				sheet1.getRow(22).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue5());
+
+				//sheet1.getRow(23).getCell(j).setCellValue(profitibilityStatementDetails.getGrossOperatingRevenue());
+
+
+				//sheet1.getRow(25).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingExpenses());
+
+
+				//sheet1.getRow(26).getCell(j).setCellValue(profitibilityStatementDetails.getCostRawMaterialConsumed());
+
+				sheet1.getRow(27).getCell(j).setCellValue(profitibilityStatementDetails.getRawMaterialImported());
+				sheet1.getRow(28).getCell(j).setCellValue(profitibilityStatementDetails.getRawMaterialIndigenous());
+				sheet1.getRow(29).getCell(j).setCellValue(profitibilityStatementDetails.getPurchasesStockTnTrade());
+
+				//sheet1.getRow(30).getCell(j).setCellValue(profitibilityStatementDetails.getIncreaseOrDecreaseInInventoryFg());
+
+				sheet1.getRow(31).getCell(j).setCellValue(profitibilityStatementDetails.getClosingStockFg());
+				sheet1.getRow(32).getCell(j).setCellValue(profitibilityStatementDetails.getOpeningStockOfFg());
+
+				//sheet1.getRow(33).getCell(j).setCellValue(profitibilityStatementDetails.getIncreaseOrDecreaseInInventoryWip());
+
+				sheet1.getRow(34).getCell(j).setCellValue(profitibilityStatementDetails.getClosingStockWip());
+				sheet1.getRow(35).getCell(j).setCellValue(profitibilityStatementDetails.getOpeningStockWip());
+
+				//sheet1.getRow(36).getCell(j).setCellValue(profitibilityStatementDetails.getEmployeeBenefitExpenses());
+
+				sheet1.getRow(37).getCell(j).setCellValue(profitibilityStatementDetails.getFactoryWages());
+				sheet1.getRow(38).getCell(j).setCellValue(profitibilityStatementDetails.getPersonnelCost());
+
+				//sheet1.getRow(39).getCell(j).setCellValue(profitibilityStatementDetails.getOtherExpenses());
+
+				sheet1.getRow(40).getCell(j).setCellValue(profitibilityStatementDetails.getPowerAndFuel());
+
+				//sheet1.getRow(41).getCell(j).setCellValue(profitibilityStatementDetails.getStoreAndSpares());
+
+				sheet1.getRow(42).getCell(j).setCellValue(profitibilityStatementDetails.getStoreAndSparesImported());
+				sheet1.getRow(43).getCell(j).setCellValue(profitibilityStatementDetails.getStoreAndSparesIndeigenous());
+				sheet1.getRow(44).getCell(j).setCellValue(profitibilityStatementDetails.getGeneralAdminExpenses());
+				sheet1.getRow(45).getCell(j).setCellValue(profitibilityStatementDetails.getSellingDistributionExpenses());
+
+				//sheet1.getRow(46).getCell(j).setCellValue(profitibilityStatementDetails.getOtherPlsSpecify());
+
+				sheet1.getRow(47).getCell(j).setCellValue(profitibilityStatementDetails.getExpensesCapitalised());
+				sheet1.getRow(48).getCell(j).setCellValue(profitibilityStatementDetails.getExpenseCapitalized1());
+				sheet1.getRow(49).getCell(j).setCellValue(profitibilityStatementDetails.getExpenseCapitalized2());
+				sheet1.getRow(50).getCell(j).setCellValue(profitibilityStatementDetails.getExpenseCapitalized3());
+				sheet1.getRow(51).getCell(j).setCellValue(profitibilityStatementDetails.getExpenseCapitalized4());
+
+				//sheet1.getRow(52).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeDepreciation());
+
+				//sheet1.getRow(54).getCell(j).setCellValue(profitibilityStatementDetails.getDepreciationAndAmortisation());
+
+				sheet1.getRow(55).getCell(j).setCellValue(profitibilityStatementDetails.getDepreciation());
+				sheet1.getRow(56).getCell(j).setCellValue(profitibilityStatementDetails.getAmortisation());
+
+				//sheet1.getRow(58).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeInterestAndTax());
+
+				sheet1.getRow(60).getCell(j).setCellValue(profitibilityStatementDetails.getFinanceCost());
+
+				//sheet1.getRow(62).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeTax());
+
+				sheet1.getRow(64).getCell(j).setCellValue(profitibilityStatementDetails.getNonOperatingIncome());
+				sheet1.getRow(65).getCell(j).setCellValue(profitibilityStatementDetails.getNonOperatingExpenses());
+
+				//sheet1.getRow(66).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems());
+
+				sheet1.getRow(67).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems1());
+				sheet1.getRow(68).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems2());
+				sheet1.getRow(69).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems3());
+				sheet1.getRow(70).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems4());
+				sheet1.getRow(71).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems5());
+
+				//sheet1.getRow(72).getCell(j).setCellValue(profitibilityStatementDetails.getProfitBeforeTax());
+
+				//sheet1.getRow(74).getCell(j).setCellValue(profitibilityStatementDetails.getProvisionForTax());
+
+				sheet1.getRow(75).getCell(j).setCellValue(profitibilityStatementDetails.getCurrentTax());
+
+				sheet1.getRow(76).getCell(j).setCellValue(profitibilityStatementDetails.getDeferredTax());
+
+				//sheet1.getRow(78).getCell(j).setCellValue(profitibilityStatementDetails.getProfitAfterTax());
+
+				//sheet1.getRow(80).getCell(j).setCellValue(profitibilityStatementDetails.getDividend());
+
+				sheet1.getRow(81).getCell(j).setCellValue(profitibilityStatementDetails.getAlreadyPaid());
+				sheet1.getRow(82).getCell(j).setCellValue(profitibilityStatementDetails.getBsProvision());
+
+				//sheet1.getRow(84).getCell(j).setCellValue(profitibilityStatementDetails.getRetainedProfit());
+
+				sheet1.getRow(6).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(6).getCell(j)));
+				sheet1.getRow(10).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(10).getCell(j)));
+				sheet1.getRow(16).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(16).getCell(j)));
+				sheet1.getRow(17).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(17).getCell(j)));
+				sheet1.getRow(23).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(23).getCell(j)));
+				sheet1.getRow(25).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(25).getCell(j)));
+				sheet1.getRow(26).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(26).getCell(j)));
+				sheet1.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(30).getCell(j)));
+				sheet1.getRow(33).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(33).getCell(j)));
+				sheet1.getRow(36).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(36).getCell(j)));
+				sheet1.getRow(39).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(39).getCell(j)));
+				sheet1.getRow(41).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(41).getCell(j)));
+				sheet1.getRow(46).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(46).getCell(j)));
+				sheet1.getRow(52).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(52).getCell(j)));
+				sheet1.getRow(54).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(54).getCell(j)));
+				sheet1.getRow(58).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(58).getCell(j)));
+				sheet1.getRow(62).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(62).getCell(j)));
+				sheet1.getRow(66).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(66).getCell(j)));
+				sheet1.getRow(72).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(72).getCell(j)));
+				sheet1.getRow(74).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(74).getCell(j)));
+				sheet1.getRow(78).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(78).getCell(j)));
+				sheet1.getRow(80).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(80).getCell(j)));
+				sheet1.getRow(84).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(84).getCell(j)));
+
+				j++;
+
+			}
+			setyear(sheet1, temp, profitibilityStatementDetailsList.size() ,total_Column, false , businessTypeId);
+
+			List<BalanceSheetDetail>	balanceSheetDetailsList = balanceSheetDetailRepository.getByProposalId(proposalId);
+			j = 2;
+			for (BalanceSheetDetail balanceSheetDetail : balanceSheetDetailsList) {
+
+				temp=Double.parseDouble(balanceSheetDetail.getYear());
+				// save in excel
+				sheet2.getRow(4).getCell(j).setCellValue(temp);
+
+				sheet2.getRow(7).getCell(j).setCellValue(balanceSheetDetail.getOrdinaryShareCapital());
+				sheet2.getRow(8).getCell(j).setCellValue(balanceSheetDetail.getPreferenceShareCapital());
+				sheet2.getRow(9).getCell(j).setCellValue(balanceSheetDetail.getMoneyReceivedAgainstShareWarrants());
+				sheet2.getRow(10).getCell(j).setCellValue(balanceSheetDetail.getShareApplicationPendingAllotment());
+				sheet2.getRow(11).getCell(j).setCellValue(balanceSheetDetail.getMinorityInterest());
+
+				//sheet2.getRow(13).getCell(j).setCellValue(balanceSheetDetail.getReservesAndSurplus());
+
+				sheet2.getRow(14).getCell(j).setCellValue(balanceSheetDetail.getCapitalReserve());
+				sheet2.getRow(15).getCell(j).setCellValue(balanceSheetDetail.getCapitalRedemptionReserve());
+				sheet2.getRow(16).getCell(j).setCellValue(balanceSheetDetail.getSecuritiesPremiumAccount());
+				sheet2.getRow(17).getCell(j).setCellValue(balanceSheetDetail.getDebentureRedemptionReserve());
+				sheet2.getRow(18).getCell(j).setCellValue(balanceSheetDetail.getRevaluationReserve());
+				sheet2.getRow(19).getCell(j).setCellValue(balanceSheetDetail.getContingencyReserve());
+				sheet2.getRow(20).getCell(j).setCellValue(balanceSheetDetail.getForeignCurrencyTranslationReserve());
+				sheet2.getRow(21).getCell(j).setCellValue(balanceSheetDetail.getHedgingReserve());
+				sheet2.getRow(22).getCell(j).setCellValue(balanceSheetDetail.getGeneralReserve());
+				sheet2.getRow(23).getCell(j).setCellValue(balanceSheetDetail.getSurplusInProfitAndLossAccount());
+
+				//sheet2.getRow(24).getCell(j).setCellValue(balanceSheetDetail.getOthers());
+
+				sheet2.getRow(25).getCell(j).setCellValue(balanceSheetDetail.getOthers1());
+				sheet2.getRow(26).getCell(j).setCellValue(balanceSheetDetail.getOthers2());
+				sheet2.getRow(27).getCell(j).setCellValue(balanceSheetDetail.getOthers3());
+				sheet2.getRow(28).getCell(j).setCellValue(balanceSheetDetail.getOthers4());
+				sheet2.getRow(29).getCell(j).setCellValue(balanceSheetDetail.getOthers5());
+
+				//sheet2.getRow(30).getCell(j).setCellValue(balanceSheetDetail.getOtherNonCurrentLiability());
+
+
+				//sheet2.getRow(31).getCell(j).setCellValue(balanceSheetDetail.getLongTermBorrowing());
+
+				sheet2.getRow(32).getCell(j).setCellValue(balanceSheetDetail.getDebentures());
+
+				//sheet2.getRow(33).getCell(j).setCellValue(balanceSheetDetail.getTermLoans());
+
+				sheet2.getRow(34).getCell(j).setCellValue(balanceSheetDetail.getTermLoansSecured());
+				sheet2.getRow(35).getCell(j).setCellValue(balanceSheetDetail.getTermLoansUnsecured());
+				sheet2.getRow(36).getCell(j).setCellValue(balanceSheetDetail.getUnsecuredLoansFromPromoters());
+				sheet2.getRow(37).getCell(j).setCellValue(balanceSheetDetail.getDeferredPaymentCredits());
+				sheet2.getRow(38).getCell(j).setCellValue(balanceSheetDetail.getLongTermProvisions());
+				sheet2.getRow(39).getCell(j).setCellValue(balanceSheetDetail.getTermDeposits());
+				sheet2.getRow(40).getCell(j).setCellValue(balanceSheetDetail.getDeferredTaxLiability());
+
+				//sheet2.getRow(41).getCell(j).setCellValue(balanceSheetDetail.getOthersPlsSpecify());
+
+				sheet2.getRow(42).getCell(j).setCellValue(balanceSheetDetail.getUnsecuredLoansFromOthers());
+				sheet2.getRow(43).getCell(j).setCellValue(balanceSheetDetail.getOtherTermLiability());
+				sheet2.getRow(44).getCell(j).setCellValue(balanceSheetDetail.getOthersLiabilities1());
+				sheet2.getRow(45).getCell(j).setCellValue(balanceSheetDetail.getOthersLiabilities2());
+				sheet2.getRow(46).getCell(j).setCellValue(balanceSheetDetail.getOthersLiabilities3() );
+
+				//sheet2.getRow(47).getCell(j).setCellValue(balanceSheetDetail.getOthersCurrentLiability());
+
+
+				//sheet2.getRow(48).getCell(j).setCellValue(balanceSheetDetail.getShortTermBorrowings());
+
+				sheet2.getRow(49).getCell(j).setCellValue(balanceSheetDetail.getCurrentLiabilitiesSecured());
+				sheet2.getRow(50).getCell(j).setCellValue(balanceSheetDetail.getCurrentLiabilitiesUnsecured());
+				sheet2.getRow(51).getCell(j).setCellValue(balanceSheetDetail.getTradePayables());
+				sheet2.getRow(52).getCell(j).setCellValue(balanceSheetDetail.getAdvanceFromCustomers());
+				sheet2.getRow(53).getCell(j).setCellValue(balanceSheetDetail.getProvisionForTax());
+				sheet2.getRow(54).getCell(j).setCellValue(balanceSheetDetail.getDividendPayable());
+				sheet2.getRow(55).getCell(j).setCellValue(balanceSheetDetail.getStatutoryLiabilityDues());
+				sheet2.getRow(56).getCell(j).setCellValue(balanceSheetDetail.getDepositsAndInstallments());
+
+				//sheet2.getRow(57).getCell(j).setCellValue(balanceSheetDetail.getOthersTotals());
+
+				sheet2.getRow(58).getCell(j).setCellValue(balanceSheetDetail.getOthersTotals1());
+				sheet2.getRow(59).getCell(j).setCellValue(balanceSheetDetail.getOthersTotals2());
+				sheet2.getRow(60).getCell(j).setCellValue(balanceSheetDetail.getOthersTotals3());
+				sheet2.getRow(61).getCell(j).setCellValue(balanceSheetDetail.getOthersTotals4());
+				sheet2.getRow(62).getCell(j).setCellValue(balanceSheetDetail.getOthersTotals5());
+
+				//sheet2.getRow(63).getCell(j).setCellValue(balanceSheetDetail.getTotalCurrentAndNonCurrentLiability());
+
+				sheet2.getRow(65).getCell(j).setCellValue(balanceSheetDetail.getOthersNonCurrentAssets());
+
+				//sheet2.getRow(66).getCell(j).setCellValue(balanceSheetDetail.getFixedAssets());
+
+				sheet2.getRow(67).getCell(j).setCellValue(balanceSheetDetail.getGrossFixedAssets());
+				sheet2.getRow(68).getCell(j).setCellValue(balanceSheetDetail.getDepreciationToDate());
+				sheet2.getRow(69).getCell(j).setCellValue(balanceSheetDetail.getImpairmentsOfAssests());
+
+				//sheet2.getRow(70).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets());
+
+				sheet2.getRow(71).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets1());
+				sheet2.getRow(72).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets2());
+				sheet2.getRow(73).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets3());
+				sheet2.getRow(74).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets4());
+				sheet2.getRow(75).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets5());
+				sheet2.getRow(76).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets6());
+				sheet2.getRow(77).getCell(j).setCellValue(balanceSheetDetail.getCapitalWorkInProgress());
+				sheet2.getRow(78).getCell(j).setCellValue(balanceSheetDetail.getCapitalAdvance());
+
+				//sheet2.getRow(79).getCell(j).setCellValue(balanceSheetDetail.getNonCurrentInvestments());
+
+				sheet2.getRow(80).getCell(j).setCellValue(balanceSheetDetail.getInvestmentInSubsidiaries());
+				sheet2.getRow(81).getCell(j).setCellValue(balanceSheetDetail.getInvestmentInAssociates());
+				sheet2.getRow(82).getCell(j).setCellValue(balanceSheetDetail.getInvestmentInQuoted());
+				sheet2.getRow(83).getCell(j).setCellValue(balanceSheetDetail.getLongTermLoansAndAdvance());
+
+				//sheet2.getRow(84).getCell(j).setCellValue(balanceSheetDetail.getOthersAssetsTransit());
+
+				sheet2.getRow(85).getCell(j).setCellValue(balanceSheetDetail.getPreOperativeExpensesPending());
+				sheet2.getRow(86).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit());
+				sheet2.getRow(87).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit1());
+				sheet2.getRow(88).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit2());
+				sheet2.getRow(89).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit3());
+				sheet2.getRow(90).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit4());
+
+				//sheet2.getRow(91).getCell(j).setCellValue(balanceSheetDetail.getOthersCurrentAssets());
+
+				//sheet2.getRow(92).getCell(j).setCellValue(balanceSheetDetail.getCurrentInvestments());
+
+				sheet2.getRow(93).getCell(j).setCellValue(balanceSheetDetail.getGovernmentAndOtherTrustee());
+				sheet2.getRow(94).getCell(j).setCellValue(balanceSheetDetail.getFixedDepositsWithBanks());
+
+				//sheet2.getRow(95).getCell(j).setCellValue(balanceSheetDetail.getOtherInvestments());
+
+				sheet2.getRow(96).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment1());
+				sheet2.getRow(97).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment2());
+				sheet2.getRow(98).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment3());
+				sheet2.getRow(99).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment4());
+				//sheet2.getRow(100).getCell(j).setCellValue(balanceSheetDetail.getOthersInvestment5());
+
+				//sheet2.getRow(100).getCell(j).setCellValue(balanceSheetDetail.getInventory());
+
+				//sheet2.getRow(101).getCell(j).setCellValue(balanceSheetDetail.getRawMaterial());
+
+				sheet2.getRow(102).getCell(j).setCellValue(balanceSheetDetail.getRawMaterialImported());
+				sheet2.getRow(103).getCell(j).setCellValue(balanceSheetDetail.getRawMaterialIndegenous());
+				sheet2.getRow(104).getCell(j).setCellValue(balanceSheetDetail.getStockInProcess());
+				sheet2.getRow(105).getCell(j).setCellValue(balanceSheetDetail.getFinishedGoods());
+
+				//sheet2.getRow(106).getCell(j).setCellValue(balanceSheetDetail.getOtherConsumablesSpares());
+
+				sheet2.getRow(107).getCell(j).setCellValue(balanceSheetDetail.getOtherConsumablesSparesImported());
+				sheet2.getRow(108).getCell(j).setCellValue(balanceSheetDetail.getOtherConsumablesSparesIndegenous());
+
+				//sheet2.getRow(109).getCell(j).setCellValue(balanceSheetDetail.getTradeReceivables());
+
+				sheet2.getRow(110).getCell(j).setCellValue(balanceSheetDetail.getExports());
+				sheet2.getRow(111).getCell(j).setCellValue(balanceSheetDetail.getOtherThanExports());
+				sheet2.getRow(112).getCell(j).setCellValue(balanceSheetDetail.getCashAndCashEquivalents());
+
+				//sheet2.getRow(113).getCell(j).setCellValue(balanceSheetDetail.getShortTermLoansAndAdvances());
+
+				sheet2.getRow(114).getCell(j).setCellValue(balanceSheetDetail.getShortTerm1());
+				sheet2.getRow(115).getCell(j).setCellValue(balanceSheetDetail.getShortTerm2());
+				sheet2.getRow(116).getCell(j).setCellValue(balanceSheetDetail.getShortTerm3());
+				sheet2.getRow(117).getCell(j).setCellValue(balanceSheetDetail.getShortTerm4());
+
+				//sheet2.getRow(118).getCell(j).setCellValue(balanceSheetDetail.getOtherDetails());
+
+				sheet2.getRow(119).getCell(j).setCellValue(balanceSheetDetail.getOtherDetails1());
+				sheet2.getRow(120).getCell(j).setCellValue(balanceSheetDetail.getOtherDetails2());
+				sheet2.getRow(121).getCell(j).setCellValue(balanceSheetDetail.getOtherDetails3());
+				sheet2.getRow(122).getCell(j).setCellValue(balanceSheetDetail.getOtherDetails4());
+				sheet2.getRow(123).getCell(j).setCellValue(balanceSheetDetail.getOtherDetails5());
+
+				sheet2.getRow(124).getCell(j).setCellValue(balanceSheetDetail.getDeferredTaxAsset());
+				sheet2.getRow(125).getCell(j).setCellValue(balanceSheetDetail.getMiscExpences());
+
+				//sheet2.getRow(127).getCell(j).setCellValue(balanceSheetDetail.getGrandTotal());
+
+
+				sheet2.getRow(13).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(13).getCell(j)));
+				sheet2.getRow(24).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(24).getCell(j)));
+				sheet2.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(30).getCell(j)));
+				sheet2.getRow(31).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(31).getCell(j)));
+				sheet2.getRow(33).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(33).getCell(j)));
+				sheet2.getRow(41).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(41).getCell(j)));
+				sheet2.getRow(47).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(47).getCell(j)));
+				sheet2.getRow(48).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(48).getCell(j)));
+				sheet2.getRow(57).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(57).getCell(j)));
+				sheet2.getRow(63).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(63).getCell(j)));
+				sheet2.getRow(66).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(66).getCell(j)));
+				sheet2.getRow(70).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(70).getCell(j)));
+				sheet2.getRow(79).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(79).getCell(j)));
+				sheet2.getRow(84).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(84).getCell(j)));
+				sheet2.getRow(91).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(91).getCell(j)));
+				sheet2.getRow(92).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(92).getCell(j)));
+				sheet2.getRow(95).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(95).getCell(j)));
+				sheet2.getRow(100).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(100).getCell(j)));
+				sheet2.getRow(101).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(101).getCell(j)));
+				sheet2.getRow(106).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(106).getCell(j)));
+				sheet2.getRow(109).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(109).getCell(j)));
+				sheet2.getRow(113).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(113).getCell(j)));
+				sheet2.getRow(118).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(118).getCell(j)));
+				sheet2.getRow(127).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(127).getCell(j)));
+
+				j++;
+
+			}			// Asset Ends
+
+			setyear(sheet2, temp, balanceSheetDetailsList.size(),total_Column, true , businessTypeId);
+			logger.info("Exit with cmaFileGenerator() {} ");
+
+		} catch ( IllegalStateException | IOException | InvalidFormatException e) {
+			logger.error("Exception in cmaFileGenerator : ",e);
+		}
+
 		return wb;
 
 	}
@@ -985,7 +1371,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
  			totalYear = temp+total_Column-j+1;
  		}*/
 		++temp ;
-		//j = 1 ; 
+		//j = 1 ;
 		/*if(j==0 && BusinessType.EXISTING_BUSINESS.getId() == businessTypeId ) {
 			temp=tillYear-3;
 			totalYear=temp+total_Column-1;  
@@ -1007,9 +1393,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			}
 		}
 		for(  ; sheet.getRow(4).getCell(i) != null   ;  i++) {
-			 
+
 			sheet.setColumnHidden(i, true ) ;
-			
+
 		}
 		
 	}

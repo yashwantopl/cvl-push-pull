@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +54,7 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 				ownershipDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				ownershipDetail.setModifiedBy(frameRequest.getUserId());
 				ownershipDetail.setModifiedDate(new Date());
+				ownershipDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				ownershipDetailsRepository.save(ownershipDetail);
 			}
 			return true;
@@ -80,7 +82,27 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 
 		catch (Exception e) {
 			logger.error("Exception  in get ownershipDetail  :-",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId ,Long proposalId) throws Exception {
+		try {
+			List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppIdAndProposalId(applicationId,proposalId); // new
+			List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
+
+			for (OwnershipDetail detail : ownershipDetails) {
+				OwnershipDetailRequest ownershipDetailRequest = new OwnershipDetailRequest();
+				BeanUtils.copyProperties(detail, ownershipDetailRequest);
+				ownershipDetailRequests.add(ownershipDetailRequest);
+			}
+			return ownershipDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception  in get ownershipDetail  :-",e);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

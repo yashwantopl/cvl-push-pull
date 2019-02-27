@@ -173,7 +173,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				logger.info("applicantDetail is saved successfully");
 			}
 
-			//SAVE INCOME DETAILS 
+			//SAVE INCOME DETAILS
 			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
 			return true;
 		} catch (Exception e) {

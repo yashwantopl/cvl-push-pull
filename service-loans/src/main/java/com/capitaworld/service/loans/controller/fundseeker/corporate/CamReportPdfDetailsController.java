@@ -37,16 +37,16 @@ public class CamReportPdfDetailsController {
 	
 	@Autowired
 	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
-	
-	@Autowired 
+
+	@Autowired
 	private UniformProductCamReportService uniformProductCamReport;
-	
+
 	@Autowired
 	private ReportsClient reportsClient;
 	
 	@Autowired
 	private DMSClient dmsClient;
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsController.class);
 
 	private static final String SUCCESS_LITERAL = "success";
@@ -56,17 +56,18 @@ public class CamReportPdfDetailsController {
 	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
 	private static final String INELIGIBLE_CAM_REPORT = "INELIGIBLECAMREPORT";
 	private static final String UNIFORM_CAM_REPORT = "UNIFORMCAMREPORT";
-	
-	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
+
+	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId,
+			@PathVariable(value ="proposalId") Long proposalId,	HttpServletRequest request)  {
 		
-		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
-				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId);
+		if (CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectNullOrEmpty(proposalId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, + productId + proposalId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
 
-			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,false);
+			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
@@ -79,7 +80,7 @@ public class CamReportPdfDetailsController {
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 355L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBIPRIMARY"+applicationId+".pdf");
+				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBIPRIMARY"+proposalId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
@@ -96,14 +97,14 @@ public class CamReportPdfDetailsController {
 		}
 
 	}
-	
+
 	/**
 	 * cam generate for gateway
 	 * @return  byte[]
 	 * */
 	@RequestMapping(value = "/getPrimaryDataInByteArray/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId)  {
-		
+
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
 				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -130,16 +131,17 @@ public class CamReportPdfDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
+	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId,
+			@PathVariable(value ="proposalId") Long proposalId,HttpServletRequest request)  {
 		
-		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
-				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId);
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectNullOrEmpty(proposalId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId+proposalId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
 
-			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,true);
+			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId,true);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTFINALSIDBI");
@@ -210,7 +212,7 @@ public class CamReportPdfDetailsController {
 	
 	@RequestMapping(value = "/getInEligiblePrimaryDataMap/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId)  {
-		
+
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -223,15 +225,15 @@ public class CamReportPdfDetailsController {
 			reportRequest.setTemplate(INELIGIBLE_CAM_REPORT);
 			reportRequest.setType(INELIGIBLE_CAM_REPORT);
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+			MultipartFile multipartFile = new DDRMultipart(byteArr);
 			  JSONObject jsonObj = new JSONObject();
-			  
+
 
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 570L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, INELIGIBLE_CAM_REPORT+applicationId+".pdf");
-				
+
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				logger.info(""+documentResponse);
@@ -247,8 +249,8 @@ public class CamReportPdfDetailsController {
 		}
 
 	}
-	
-	
+
+
 	@RequestMapping(value = "/getUniformProductCam/{applicationId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUniformProductDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "fpProductId") Long fpProductId)  {
 		logger.info("In Uniform Product Cam Report..ApplicationId====>>"+applicationId+"....and fpProductId is==>>"+fpProductId);
@@ -264,15 +266,15 @@ public class CamReportPdfDetailsController {
 			reportRequest.setTemplate(UNIFORM_CAM_REPORT);
 			reportRequest.setType(UNIFORM_CAM_REPORT);
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+			MultipartFile multipartFile = new DDRMultipart(byteArr);
 			  JSONObject jsonObj = new JSONObject();
-			  
+
 
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 574L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, UNIFORM_CAM_REPORT+applicationId+".pdf");
-				
+
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				logger.info(""+documentResponse);
@@ -289,6 +291,6 @@ public class CamReportPdfDetailsController {
 		}
 
 	}
-	
-	
+
+
 }

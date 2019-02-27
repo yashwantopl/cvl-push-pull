@@ -65,7 +65,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			if (finalHomeLoanDetail != null){
 				logger.info("finalHomeLoanDetail is saved successfully");
 			}
-			
+
 			//setting Flag to DB
 			if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getIsFinalInformationFilled())){
 //				we are reusing this method and also same column in loanApplication master. it is actually using Corporate. 

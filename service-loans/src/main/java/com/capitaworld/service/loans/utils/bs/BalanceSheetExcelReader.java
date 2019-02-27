@@ -25,7 +25,7 @@ public class BalanceSheetExcelReader
 
     private static final Logger logger = LoggerFactory.getLogger(BalanceSheetExcelReader.class);
 
-    private static final ArrayList<String> BALANCE_SHEET_MAPPING_LIST = new ArrayList<String>();
+    public static final ArrayList<String> BALANCE_SHEET_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,BalanceSheetDetailRepository balanceSheetDetailRepository) {
@@ -318,8 +318,7 @@ public class BalanceSheetExcelReader
             bsBalanceSheet.setDeferredTaxAsset(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             bsBalanceSheet.setMiscExpences(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             bsBalanceSheet.setGrandTotal(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
-
-            logger.info("arrayListCounter : "+arrayListCounter);
+           
             
             bsBalanceSheet.setIsActive(true);
             bsBalanceSheet.setCreatedDate(new Date());

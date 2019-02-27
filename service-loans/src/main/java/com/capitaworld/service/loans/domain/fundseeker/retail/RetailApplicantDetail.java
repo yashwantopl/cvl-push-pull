@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 /**
@@ -506,37 +507,37 @@ public class RetailApplicantDetail implements Serializable {
 
     @Column(name="ddo_organization_type")
     private Integer ddoOrganizationType;
-    
+
     @Column(name="spouse_employment")
     private Integer spouseEmployment;
-    
+
     @Column(name="no_of_dependent")
     private Integer noOfDependent;
-    
+
     @Column(name="designation")
     private Integer designation;
-    
+
     @Column(name="residence_since_year")
     private Integer residenceSinceYear;
-    
+
     @Column(name="residence_since_month")
     private Integer residenceSinceMonth;
 
     @Column(name="salary_mode")
     private Integer salaryMode;
-    
+
     @Column(name="salary_bank_name")
     private String salaryBankName;
-    
+
     @Column(name="salary_bank_month")
     private Integer salaryBankMonth;
-    
+
     @Column(name="salary_bank_year")
     private Integer salaryBankYear;
-    
+
     @Column(name="is_other_salary_bank")
     private Boolean isOtherSalaryBank;
-    
+
 
 	public RetailApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1849,8 +1850,8 @@ public class RetailApplicantDetail implements Serializable {
 	public String getSalaryBankName() {
 		return salaryBankName;
 	}
-	
-	
+
+
 
 	public Boolean getIsOtherSalaryBank() {
 		return isOtherSalaryBank;
@@ -1879,11 +1880,11 @@ public class RetailApplicantDetail implements Serializable {
 	public void setSalaryBankYear(Integer salaryBankYear) {
 		this.salaryBankYear = salaryBankYear;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 }

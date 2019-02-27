@@ -86,6 +86,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	private static final String USERS_BASE_URL_KEY = "userURL";
+	private static final String ONEFORM_BASE_URL_KEY = "oneForm";
 	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
 	private static final String ERROR_WHILE_GETTING_SP_CLIENT_COUNT = "Error while getting SP client count.";
 

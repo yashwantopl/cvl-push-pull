@@ -36,6 +36,8 @@ public interface NetworkPartnerService {
 
 	public boolean setFPChecker(NhbsApplicationRequest request);
 
+	public boolean setFPCheckerByProposalId(NhbsApplicationRequest request);
+
     public List<NhbsApplicationsResponse> getListOfCheckerProposalsFP(NhbsApplicationRequest request);
 
 	public JSONObject getFPProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId);

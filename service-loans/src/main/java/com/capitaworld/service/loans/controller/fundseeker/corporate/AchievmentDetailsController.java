@@ -39,7 +39,7 @@ public class AchievmentDetailsController {
 	private CorporateApplicantService corporateApplicantService;
 	
 	@Autowired
-	private LoanApplicationService loanApplicationService;
+	private LoanApplicationService loanApplicationService; 
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
@@ -68,7 +68,7 @@ public class AchievmentDetailsController {
 			
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean finalLocked = loanApplicationService.isFinalLocked(frameRequest.getApplicationId(), finalUserId);
+			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalMappingId(), finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
@@ -88,8 +88,8 @@ public class AchievmentDetailsController {
 
 	}
 
-	@RequestMapping(value = "/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable("applicationId") Long applicationId,
+	@RequestMapping(value = "/getListByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable("proposalId") Long proposalId,
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
@@ -100,20 +100,16 @@ public class AchievmentDetailsController {
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			if (applicationId == null) {
-				logger.warn("ID Require to get Achievement Details ==>" + applicationId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			if (proposalId == null) {
+				logger.warn("ID Require to get Achievement Details ==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-
-			List<AchievementDetailRequest> response = achievmentDetailsService.getAchievementDetailList(applicationId,
-					userId);
+			List<AchievementDetailRequest> response = achievmentDetailsService.getAchievementDetailListForMultipleBank(proposalId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			loansResponse.setData(corporateApplicantService.getCorporateEstablishmentYear(applicationId, userId));
+			loansResponse.setData(corporateApplicantService.getCorporateEstablishmentYearFromProposalId(proposalId));
 			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-
 		} catch (Exception e) {
 			logger.error("Error while getting Achievement Details==>", e);
 			return new ResponseEntity<LoansResponse>(

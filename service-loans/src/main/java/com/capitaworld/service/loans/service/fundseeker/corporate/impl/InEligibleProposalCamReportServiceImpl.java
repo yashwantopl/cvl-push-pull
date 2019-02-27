@@ -29,6 +29,8 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -192,7 +194,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserIdForInEligibleCam(applicationId, userId);
 		if(loanApplicationMaster!= null) {
 		
-			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? simpleDateFormat.format(loanApplicationMaster.getApprovedDate()):"-");
+			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
 			
 		}
 		
@@ -252,7 +254,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		//TIMELINE DATES
 		if(loanApplicationMaster != null && loanApplicationMaster.getCreatedDate() != null)
 		{
-			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
+			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
 			
 		}
 		
@@ -488,7 +490,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			/*get loan obligation of dir*/
 			Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
 			map.put("loanObligation", loanObligation != null ? CommonUtils.CurrencyFormat(loanObligation.toString()) : 0);
-			
+
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? CommonUtils.convertValueWithoutDecimal(primaryCorporateRequest.getAmount()) : " ");
@@ -596,7 +598,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				   logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
 				   logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 
-				
+
 				map.put("bankStatement", bankStatement); */
 				map.put("monthlyDetails", monthlyDetails);
 				map.put("top5FundReceived", top5FundReceived);

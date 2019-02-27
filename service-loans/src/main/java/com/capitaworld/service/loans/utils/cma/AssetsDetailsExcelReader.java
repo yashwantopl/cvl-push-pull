@@ -3,10 +3,12 @@ package com.capitaworld.service.loans.utils.cma;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -30,9 +32,47 @@ public class AssetsDetailsExcelReader
 	public static final Logger log = LoggerFactory.getLogger(AssetsDetailsExcelReader.class);
     private static final List<String> ASSETS_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws ExcelException {
+
+    public static void run(Long storageDetailsId, XSSFSheet sheet, LoanApplicationMaster loanApplicationMaster, ApplicationProposalMapping applicationProposalMapping, AssetsDetailsRepository assetsDetailsRepository) {
         ASSETS_MAPPING_LIST.clear();
-        
+
+        String[] numbers = new String[]{"9","11","13","15","16",
+                "18","20","22","24","26",
+                "27","29","31","33","34",
+                "35","37","39","41","43",
+                "45","46","47","48","49",
+                "50","52","54","56","60",
+                "62","64","65","67","69",
+                "71","72","73","74","76",
+                "78","80","82","83","84",
+                "85","86","87","88","89",
+                "91","93","95","97","99"};
+
+        ASSETS_MAPPING_LIST.addAll(Arrays.asList(numbers));
+
+        log.info("OperatingStatementDetailsExcelReader -----------> " + sheet.getRow(4).getCell(1).getNumericCellValue());
+
+        int j = 2;
+        if (applicationProposalMapping.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+
+            extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping, ASSETS_MAPPING_LIST, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", assetsDetailsRepository);
+            j = 5;
+
+        }
+
+        if (applicationProposalMapping.getProductId() != 15 && applicationProposalMapping.getProductId() != 1) {
+
+            /*int j = 5;*/
+            for (int i = 0; i < applicationProposalMapping.getTenure(); i++) {
+                extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping, ASSETS_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()), String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()), "Projected", assetsDetailsRepository);
+                j++;
+            }
+        }
+    }
+
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws Exception{
+        ASSETS_MAPPING_LIST.clear();
+
         ASSETS_MAPPING_LIST.add("9");
         ASSETS_MAPPING_LIST.add("11");
         ASSETS_MAPPING_LIST.add("13");
@@ -103,13 +143,14 @@ public class AssetsDetailsExcelReader
         int j = 2;
         if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
     
-        	
+
            	int updateRow = assetsDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
            	log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
 
            	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
            	j=5;
-      
+
+
         }
         
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
@@ -144,7 +185,15 @@ public class AssetsDetailsExcelReader
 
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,AssetsDetailsRepository assetsDetailsRepository) throws ExcelException
+    public static void extractCellFromSheet(Long storageDetailsId,
+                                            XSSFSheet sheet,
+                                            LoanApplicationMaster loanApplicationMaster,
+                                            ApplicationProposalMapping applicationProposalMapping,
+                                            List<String> arrayList,
+                                            String column,
+                                            String year,
+                                            String financialYearlyStatement,
+                                            AssetsDetailsRepository assetsDetailsRepository)
     {
         int arrayListCounter = 0;
         int nullCounter=0;
@@ -155,23 +204,126 @@ public class AssetsDetailsExcelReader
         }
         
         if(!(nullCounter==54)) {
-        	
-        	Double yearFromSheet  = Double.valueOf(year) ; 
+
+        	Double yearFromSheet  = Double.valueOf(year) ;
         	AssetsDetails cmaAssets = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
-        	
+
         	if(cmaAssets != null &&  "Audited".equalsIgnoreCase(cmaAssets.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(cmaAssets.getYear()) ) {
-           		
+
            		throw new ExcelException("Invalid cma details");
-         
+
            	}
-        	
+
         	cmaAssets = new AssetsDetails();
     		cmaAssets.setCreatedDate(new Date());
     		cmaAssets.setModifiedDate(new Date());
         	log.info("calledd===============");
         	cmaAssets.setLoanApplicationMaster(loanApplicationMaster);
         	cmaAssets.setStorageDetailsId(storageDetailsId);
-        	
+
+            cmaAssets.setApplicationProposalMapping(applicationProposalMapping);
+
+            cmaAssets.setYear(CommonUtils.getCMAFilterYear(year));
+            cmaAssets.setFinancialYearlyStatement(financialYearlyStatement);
+            cmaAssets.setCashAndBankBalance(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setInvestments(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setGovernmentAndOtherTrustee(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setFixedDepositsWithBanks(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setReceivableOtherThanDefferred(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setExportReceivables(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setInstalmentsDeferred(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setInventory(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setRawMaterial(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setRawMaterialImported(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setRawMaterialIndegenous(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setStockInProcess(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setFinishedGoods(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherConsumableSpares(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherConsumableSparesImported(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherConsumableSparesIndegenous(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setAdvanceToSupplierRawMaterials(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setAdvancePaymentTaxes(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherCurrentAssets(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setTotalCurrentAssets((getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++))));
+            cmaAssets.setGrossBlock(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setLandBuilding(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setPlantMachines(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setGrossBlock1(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setGrossBlock2(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setGrossBlock3(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setDepreciationToDate(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setImpairmentAsset(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setNetBlock(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherNcaOtherCapitalWorkInprogress(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setInvestmentsOrBookDebts(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setInvestmentsInSubsidiary(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOthers(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setAdvanceToSuppliersCapitalGoods(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setDeferredReceviables(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setDeferredReceviablesOthers(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOthersPreOperativeExpensesPending(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOthersAssetsInTransit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOthersOther(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setNonConsumableStoreAndSpares(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherNonCurrentAssets(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setTotalOtherNonCurrentAssets(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setIntangibleAssets(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setPatents(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setGoodWill(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setPrelimExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setBadOrDoubtfulExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setAnyOther(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherIncomeNeedTocCheckAsset(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setTotalAssets(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setTangibleNetWorth(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setNetWorkingCapital(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setCurrentRatio(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setTotalOutSideLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setTotalTermLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+
+
+            cmaAssets.setIsActive(true);
+            cmaAssets.setCreatedDate(new Date());
+            cmaAssets.setModifiedDate(new Date());
+            assetsDetailsRepository.save(cmaAssets);
+        }
+    }
+
+    public static void extractCellFromSheet(Long storageDetailsId,
+    										XSSFSheet sheet,
+                                            LoanApplicationMaster loanApplicationMaster,
+                                            List<String> arrayList,
+                                            String column,
+                                            String year,
+                                            String financialYearlyStatement,
+                                            AssetsDetailsRepository assetsDetailsRepository) throws Exception
+    {
+        int arrayListCounter = 0;
+        int nullCounter=0;
+        for (int i = 0; i < ASSETS_MAPPING_LIST.size(); i++) {
+            if ((getNumericDataFromCell(sheet,column + ASSETS_MAPPING_LIST.get(i)))==0.0) {
+                ++nullCounter;
+            }
+        }
+
+        if(!(nullCounter==54)) {
+
+        	Double yearFromSheet  = Double.valueOf(year) ;
+        	AssetsDetails cmaAssets = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
+
+        	if(cmaAssets != null &&  "Audited".equalsIgnoreCase(cmaAssets.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(cmaAssets.getYear()) ) {
+
+           		throw new  Exception("Invalid cma details");
+
+           	}
+
+        	cmaAssets = new AssetsDetails();
+    		cmaAssets.setCreatedDate(new Date());
+    		cmaAssets.setModifiedDate(new Date());
+        	log.info("calledd===============");
+        	cmaAssets.setLoanApplicationMaster(loanApplicationMaster);
+        	cmaAssets.setStorageDetailsId(storageDetailsId);
+
         	cmaAssets.setYear(CommonUtils.getCMAFilterYear(year));
         	cmaAssets.setFinancialYearlyStatement(financialYearlyStatement);
             cmaAssets.setCashAndBankBalance(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
@@ -230,10 +382,9 @@ public class AssetsDetailsExcelReader
             cmaAssets.setTotalOutSideLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setTotalTermLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
-            log.info("arrayListCounter : "+arrayListCounter);
 
             cmaAssets.setIsActive(true);
-            
+
 //          cmaAssets.setCreatedBy(createdBy);
 //          cmaAssets.setModifiedBy(modifiedBy);
             

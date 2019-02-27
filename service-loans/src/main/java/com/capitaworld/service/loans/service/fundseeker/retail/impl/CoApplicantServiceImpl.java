@@ -1,9 +1,11 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.*;
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
@@ -90,7 +92,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	private OneFormClient oneFormClient;
 
 	@Override
-	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws LoansException {
+	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId();
@@ -110,7 +112,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coDetails.setCreatedDate(new Date());
 				coDetails.setApplicationId(new LoanApplicationMaster(applicationId));
 			}
-			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.getRetailFinal());
+			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromRequestToDomain(applicantRequest, coDetails);
 			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
 					&& applicantRequest.getYear() != null) {
@@ -135,9 +137,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp1DetailsFilled());
 				}
-			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
+			} else if (index == 1) {
+				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
 					loanApplicationRepository.setIsCoAppTwoProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp2DetailsFilled());
+				}
 			}
 
 			// Updating Bowl Count
@@ -147,22 +151,22 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile :- ",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<Long> getCoAppIds(Long userId, Long applicationId) throws LoansException {
+	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception {
 		try {
 			return coApplicantDetailRepository.getCoAppIds(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while getCoAppIds :- ",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws LoansException {
+	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
@@ -170,7 +174,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						+ " and ApplicationId==>" + applicationId + " userId ==>" + userId);
 			}
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailFinal());
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
@@ -191,19 +195,19 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile :- ",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException {
+	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws Exception {
 		try {
 			List<CoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId, userId);
 			List<CoApplicantRequest> requests = new ArrayList<>(details.size());
 			for (CoApplicantDetail detail : details) {
 				CoApplicantRequest request = new CoApplicantRequest();
-				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.getRetailFinal());
+				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 				if(!CommonUtils.isObjectNullOrEmpty(detail.getBirthDate())) {
 					logger.info("Birthdate==>" + detail.getBirthDate().toString());					
 				}
@@ -219,12 +223,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while getting List of CoApplicant Retail Profile :- ",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -236,7 +240,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			coDetails.setModifiedBy(userId);
 			coDetails.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.getRetailProfile());
+			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			coApplicantDetailRepository.save(coDetails);
 
 			List<Long> coAppIds = coApplicantDetailRepository.getCoAppIds(applicantRequest.getApplicationId(),
@@ -247,9 +251,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp1FinalFilled());
 				}
-			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
+			} else if (index == 1) {
+				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
 					loanApplicationRepository.setIsCoAppTwoFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp2FinalFilled());
+				}
 			}
 			// Updating Final Count
 			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finalUserId,
@@ -259,12 +265,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Final CoApplicant Retail Profile :- ",e);
-			throw new LoansException("Something went Wrong !");
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws LoansException {
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
@@ -272,14 +278,14 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						+ userId + " and Application Id ==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final CoApplicant Retail Profile :- ",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -368,7 +374,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId, int productId)
-			throws LoansException {
+			throws Exception {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
 			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
@@ -697,16 +703,16 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 				return plResponses;
 			} else {
-				return Collections.emptyList();
+				return null;
 			}
 		} catch (Exception e) {
-			throw new LoansException("Error Occured while fetching CoApplicant Details");
+			throw new Exception("Error Occured while fetching CoApplicant Details");
 		}
 	}
 
 	@Override
 	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId, int productId)
-			throws LoansException {
+			throws Exception {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
 			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
@@ -1153,20 +1159,20 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 				return finalCommonresponseList;
 			} else {
-				return Collections.emptyList();
+				return null;
 			}
 		} catch (Exception e) {
-			throw new LoansException("Error Occured while fetching CoApplicant Final Details");
+			throw new Exception("Error Occured while fetching CoApplicant Final Details");
 		}
 	}
 
 	@Override
-	public Long getApplicantIdById(Long id) throws LoansException {
+	public Long getApplicantIdById(Long id) throws Exception {
 		try {
 			return coApplicantDetailRepository.getApplicantIdById(id);
 		} catch (Exception e) {
 			logger.error("Error While getting Applicant Id by CoApplicant ID : ",e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

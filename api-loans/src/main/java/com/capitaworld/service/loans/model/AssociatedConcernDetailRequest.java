@@ -29,7 +29,7 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private Boolean isActive =true;
 
 	private String name;
-	
+
 	private String pan;
 
 	private String natureActivity;
@@ -64,9 +64,9 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date dateOfIncorporation;
-	
+
 	private String financialInstitutionName;
-	
+
 	private Double limitAvailed;
 
 	public Long getId() {
@@ -270,22 +270,22 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.limitAvailed = limitAvailed;
 	}
 
-	public static void printFields(Object obj) throws LoansException {
-		try {
-			Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
+    public static void printFields(Object obj) throws LoansException {
+        try {
+            Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
 
-			for(Field field : fields) {
-				Object value = field.get(obj);
-				if(value instanceof String){
-					String a = value.toString().replaceAll("&", "&amp;");
-					value = a;
-					field.set(obj, value);
-				}
-			}
-		}
-		catch (Exception e){
-			throw new LoansException(e);
-		}
+            for(Field field : fields) {
+                Object value = field.get(obj);
+                if(value instanceof String){
+                    String a = value.toString().replaceAll("&", "&amp;");
+                    value = a;
+                    field.set(obj, value);
+                }
+            }
+        }
+        catch (Exception e){
+            throw new LoansException(e);
+        }
     }
 	
 	

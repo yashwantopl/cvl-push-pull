@@ -13,6 +13,7 @@ public class DDRCustomerRequest implements Serializable{
 	private String customerName;
 	private Boolean isFilled;
 	private Long applicationId;
+	private Long proposalMappingId;
 	private Long ddrFormId;
 	private Long userId;
 	public String getCustomerId() {
@@ -52,6 +53,15 @@ public class DDRCustomerRequest implements Serializable{
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
+
 	@Override
 	public String toString() {
 		return "DDRCustomerRequest [customerId=" + customerId + ", customerName=" + customerName + ", isFilled="

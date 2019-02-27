@@ -9,6 +9,9 @@ public interface CorporateFinalInfoService {
 
     public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws LoansException;
 
+    public CorporateFinalInfoRequest getByProposalId(Long userId, Long proposalId) throws Exception;
+
     public CorporateFinalInfoRequest getNTBDetails(Long userId, Long applicationId) throws LoansException;
+
     public boolean saveOrUpdateNTBDetails(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws LoansException;
 }

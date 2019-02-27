@@ -9,9 +9,10 @@ import com.capitaworld.service.loans.model.FrameRequest;
 public interface AchievmentDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest  frameRequest) throws LoansException;
-	
-	
+
+
 	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId,Long userId) throws LoansException;
-	
-	
+
+	/*multiple bank*/
+	public List<AchievementDetailRequest> getAchievementDetailListForMultipleBank(Long proposalId) throws Exception;
 }

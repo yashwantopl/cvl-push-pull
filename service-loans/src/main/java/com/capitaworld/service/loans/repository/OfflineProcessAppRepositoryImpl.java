@@ -42,7 +42,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		}
 		return null;
 	}
-	
+
 	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spUpdateOfflineSanctionedFlag");
 		storedProcedureQuery.registerStoredProcedureParameter(APP_ID,Long.class, ParameterMode.IN);
@@ -57,7 +57,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.execute();
 		return (Boolean) storedProcedureQuery.getOutputParameterValue(RESULT);
 	}
-	
+
 	public Integer checkBeforeOfflineSanctioned(Long appId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spCheckBeforeOfflineSanctioned");
 		storedProcedureQuery.registerStoredProcedureParameter(APP_ID,Long.class, ParameterMode.IN);
@@ -84,7 +84,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getRejectProposalsList(Long userId) {
@@ -102,13 +102,13 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 
 	@SuppressWarnings("unchecked")
 	@Override 
 	public List<Object[]> getHomeCounterDetail(){
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spGetHomeCounter");
-		return  (List<Object[]>) storedProcedureQuery.getResultList() ; 
+		return  (List<Object[]>) storedProcedureQuery.getResultList() ;
 	 }
 
 	@SuppressWarnings("unchecked")
@@ -119,7 +119,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getUniformSanctionedApplicationList(Long userId) {
