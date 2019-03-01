@@ -1783,179 +1783,314 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private JSONObject corporateValidating(ApplicationProposalMapping proposalMapping, Integer toTabType) throws Exception {
+	private JSONObject corporateValidating(ApplicationProposalMapping proposalMapping, Integer toTabType,
+			Long coAppllicantOrGuarantorId) throws Exception {
 
+		List<Long> coAppIds = null;
+
+		Long coAppCount;
+
+		Boolean isFinalMcqFilled = proposalMapping.getIsFinalMcqFilled() != null ? proposalMapping.getIsFinalMcqFilled() : false;
+		Boolean isMcqSkipped = proposalMapping.getIsMcqSkipped() != null ? proposalMapping.getIsMcqSkipped() : false;
+
+		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
-		response.put("message", "NA");
-		response.put("result", true);
+		response.put(MESSAGE_LITERAL, "NA");
+		response.put(RESULT_LITERAL, true);
 
 		switch (toTabType) {
 
-			case CommonUtils.TabType.PROFILE_CO_APPLICANT:
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
-						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
-					response.put("message", "Please Fill PROFILE details to Move Next !");
-					response.put("result", false);
-					return response;
-				}
-				break;
+		case CommonUtils.TabType.PROFILE_CO_APPLICANT:
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
 
-			case CommonUtils.TabType.MATCHES:
-				boolean isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(),proposalMapping.getUserId());
-				if (!isPrimaryLocked) {
-					response.put("message", "Please LOCK PRIMARY DETAILS to See the matches !");
-					response.put("result", false);
-					return response;
-				}
-				break;
+			coAppIds = corporateCoApplicantService.getCoAppIds(proposalMapping.getApplicationId(),
+					proposalMapping.getUserId());
+			if (CommonUtils.isListNullOrEmpty(coAppIds)) {
+				response.put(MESSAGE_LITERAL, INVALID_MSG);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
 
-			case CommonUtils.TabType.CONNECTIONS:
-				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
-				if (!isPrimaryLocked) {
-					response.put("message", "Please LOCK PRIMARY DETAILS to See the connections !");
-					response.put("result", false);
-					return response;
-				}
-				break;
-			case CommonUtils.TabType.PRIMARY_INFORMATION:
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
-						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
-					response.put("message", "Please Fill PROFILE details to Move Next !");
-					response.put("result", false);
-					return response;
-				}
+			index = coAppIds.indexOf(coAppllicantOrGuarantorId);
+			if (index == -1) {
+				response.put(MESSAGE_LITERAL, INVALID_MSG);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
 
-				// Co-Applicant Profile Checking
-				break;
-			case CommonUtils.TabType.PRIMARY_UPLOAD:
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
-						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
-					response.put("message", "Please Fill PROFILE details to Move Next !");
-					response.put("result", false);
+			if (index == 1 && (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+					|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue())) {
+					response.put(MESSAGE_LITERAL, "Please CO-APPLICANT-1 details to Move Next !");
+					response.put(RESULT_LITERAL, false);
 					return response;
-				}
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
-						|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
-					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
-					response.put("result", false);
-					return response;
-				}
-				break;
-			case CommonUtils.TabType.FINAL_MCQ:
+			}
+			break;
 
-				// Co-Applicant Profile Checking
-				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
-				if (!isPrimaryLocked) {
-					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
-					response.put("result", false);
-					return response;
-				}
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
-						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
-					response.put("message", "Please Fill PROFILE details to Move Next !");
-					response.put("result", false);
-					return response;
-				}
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
-						|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
-					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
-					response.put("result", false);
-					return response;
-				}
-				/*
-				 * if
-				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-				 * response.put("message",
-				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
-				 * response.put("result", false); return response; }
-				 */
-				break;
-			case CommonUtils.TabType.FINAL_INFORMATION:
+		case CommonUtils.TabType.MATCHES:
+			boolean isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the matches !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
 
-				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
-				if (!isPrimaryLocked) {
+		case CommonUtils.TabType.CONNECTIONS:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the connections !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.PRIMARY_INFORMATION:
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
 
-					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
-					response.put("result", false);
-					return response;
+			// Co-Applicant Profile Checking
+
+			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(proposalMapping.getApplicationId(),
+					proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+						|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue())) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
 				}
 
-				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
-
-					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalMcqFilled())
-							|| !proposalMapping.getIsFinalMcqFilled().booleanValue()) {
-
-						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
-						response.put("result", false);
+				if (coAppCount == 2) {
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+							|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
 						return response;
 					}
-				}
-				break;
-			case CommonUtils.TabType.FINAL_DPR_UPLOAD:
-
-				isPrimaryLocked = isPrimaryLocked(proposalMapping.getProposalId(), proposalMapping.getUserId());
-
-				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
-
-					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalMcqFilled())
-							|| !proposalMapping.getIsFinalMcqFilled().booleanValue()) {
-
-						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
-						response.put("result", false);
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp2DetailsFilled())
+							|| !proposalMapping.getIsCoApp2DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
 						return response;
 					}
+
+				}
+			}
+
+			break;
+		case CommonUtils.TabType.PRIMARY_UPLOAD:
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
+					|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.FINAL_MCQ:
+
+			// Co-Applicant Profile Checking
+
+			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(proposalMapping.getApplicationId(),
+					proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+						|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue())) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
-						|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
-
-					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
-					response.put("result", false);
-					return response;
-				}
-				break;
-			case CommonUtils.TabType.FINAL_UPLOAD:
-
-				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
-
-				if (!isPrimaryLocked) {
-
-					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
-					response.put("result", false);
-					return response;
-				}
-
-				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
-
-					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalMcqFilled())
-							|| !proposalMapping.getIsFinalMcqFilled().booleanValue()) {
-
-						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
-						response.put("result", false);
+				if (coAppCount == 2) {
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+							|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
 						return response;
 					}
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp2DetailsFilled())
+							|| !proposalMapping.getIsCoApp2DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
+					}
+
 				}
-
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
-						|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
-
-					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
-					response.put("result", false);
+			}
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
+					|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			/*
+			 * if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			break;
+		case CommonUtils.TabType.FINAL_INFORMATION:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			/*
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; } if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantPrimaryFilled()) ||
+			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			// if
+			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			// || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			// response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next
+			// !");
+			// response.put(RESULT_LITERAL, false);
+			// return response;
+			// }
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
+					response.put(RESULT_LITERAL, false);
 					return response;
-				}
-
-				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalDprUploadFilled())
-						|| !proposalMapping.getIsFinalDprUploadFilled().booleanValue()) {
-
-					response.put("message", "Please Fill Financial Model details to Move Next !");
-					response.put("result", false);
+			}
+			break;
+		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			logger.info("isPrimaryLocked : "+isPrimaryLocked);
+			/*
+			 * if (!isPrimaryLocked) { response.put(MESSAGE_LITERAL,
+			 * PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT); response.put(RESULT_LITERAL, false);
+			 * return response; } if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			// if
+			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+			// || !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+			// response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next
+			// !");
+			// response.put(RESULT_LITERAL, false);
+			// return response;
+			// }
+			/*
+			 * if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
+					response.put(RESULT_LITERAL, false);
 					return response;
-				}
-				break;
-			default:
-				break;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
+					|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.FINAL_UPLOAD:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			/*
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; } if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantPrimaryFilled()) ||
+			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			/*
+			 * if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
+					response.put(RESULT_LITERAL, false);
+					return response;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
+					|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalDprUploadFilled())
+					|| !proposalMapping.getIsFinalDprUploadFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, "Please Fill Financial Model details to Move Next !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			/*
+			 * if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) { if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled(
+			 * )) || !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, "Please Fill DPR details to Move Next !");
+			 * response.put(RESULT_LITERAL, false); return response; } }
+			 */
+			break;
+		default:
+			break;
 		}
 		return response;
 	}
@@ -7250,7 +7385,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
 		int userMainType = CommonUtils.getUserMainType(applicationProposalMapping.getProductId());
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
-			return corporateValidating(applicationProposalMapping, nextTabType);
+			return corporateValidating(applicationProposalMapping, nextTabType, coAppllicantOrGuarantorId);
 		} else {
 			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
 		}
