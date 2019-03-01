@@ -118,8 +118,22 @@ public class ApplicationProposalMapping implements Serializable {
     @Column(name = "is_mcq_skipped")
 	private Boolean isMcqSkipped;
     
+    @Column(name = "is_co_app1_details_filled")
+	private Boolean isCoApp1DetailsFilled;
+    
+    @Column(name = "is_co_app2_details_filled")
+	private Boolean isCoApp2DetailsFilled;
+    
 
-    public Integer getBusinessTypeId() {
+    public Boolean getIsCoApp2DetailsFilled() {
+		return isCoApp2DetailsFilled;
+	}
+
+	public void setIsCoApp2DetailsFilled(Boolean isCoApp2DetailsFilled) {
+		this.isCoApp2DetailsFilled = isCoApp2DetailsFilled;
+	}
+
+	public Integer getBusinessTypeId() {
         return businessTypeId;
     }
 
@@ -413,6 +427,14 @@ public class ApplicationProposalMapping implements Serializable {
 
 	public void setIsMcqSkipped(Boolean isMcqSkipped) {
 		this.isMcqSkipped = isMcqSkipped;
+	}
+
+	public Boolean getIsCoApp1DetailsFilled() {
+		return isCoApp1DetailsFilled;
+	}
+
+	public void setIsCoApp1DetailsFilled(Boolean isCoApp1DetailsFilled) {
+		this.isCoApp1DetailsFilled = isCoApp1DetailsFilled;
 	}
     
 }
