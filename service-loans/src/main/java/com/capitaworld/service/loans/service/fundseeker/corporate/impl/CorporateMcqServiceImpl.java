@@ -114,8 +114,9 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
 	public boolean skipMcq(CorporateMcqRequest corporateMcqRequest, Long userId) throws LoansException {
         Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getClientId()) ? userId : corporateMcqRequest.getClientId());
 
-        loanApplicationRepository.setIsMcqSkipped(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getIsMcqSkipped()) ? false : corporateMcqRequest.getIsMcqSkipped());
-
+//        loanApplicationRepository.setIsMcqSkipped(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getIsMcqSkipped()) ? false : corporateMcqRequest.getIsMcqSkipped());
+        System.out.println("applicationID :"+corporateMcqRequest.getApplicationId()+" proposalID :"+corporateMcqRequest.getProposalMappingId()+" isSkipMcq :"+corporateMcqRequest.getIsMcqSkipped());
+        applicationProposalMappingRepository.setIsMcqSkipped(corporateMcqRequest.getApplicationId(), corporateMcqRequest.getProposalMappingId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getIsMcqSkipped()) ? false : corporateMcqRequest.getIsMcqSkipped());
         return true;
 	}
 }
