@@ -120,10 +120,10 @@ public class ApplicationProposalMapping implements Serializable {
     
     @Column(name = "is_co_app1_details_filled")
 	private Boolean isCoApp1DetailsFilled;
-    
+
     @Column(name = "is_co_app2_details_filled")
 	private Boolean isCoApp2DetailsFilled;
-    
+
 
     public Boolean getIsCoApp2DetailsFilled() {
 		return isCoApp2DetailsFilled;
@@ -132,6 +132,8 @@ public class ApplicationProposalMapping implements Serializable {
 	public void setIsCoApp2DetailsFilled(Boolean isCoApp2DetailsFilled) {
 		this.isCoApp2DetailsFilled = isCoApp2DetailsFilled;
 	}
+    @Column(name="denomination_id")
+    private Long denominationId;
 
 	public Integer getBusinessTypeId() {
         return businessTypeId;
@@ -436,5 +438,13 @@ public class ApplicationProposalMapping implements Serializable {
 	public void setIsCoApp1DetailsFilled(Boolean isCoApp1DetailsFilled) {
 		this.isCoApp1DetailsFilled = isCoApp1DetailsFilled;
 	}
-    
+
+
+    public Long getDenominationId() {
+        return denominationId;
+    }
+
+    public void setDenominationId(Long denominationId) {
+        this.denominationId = denominationId;
+    }
 }
