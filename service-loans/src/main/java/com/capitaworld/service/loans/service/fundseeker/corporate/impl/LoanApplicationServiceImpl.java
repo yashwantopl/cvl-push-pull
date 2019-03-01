@@ -7228,6 +7228,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public LoanApplicationRequest getAllFlagByProposalId(Long proposalId, Long userId) throws LoansException {
+
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId,true);
+		if (applicationProposalMapping != null) {
+			applicationRequest = new LoanApplicationRequest();
+			applicationRequest.setProfilePrimaryLocked(applicationProposalMapping.getIsPrimaryLocked() != null ? applicationProposalMapping.getIsPrimaryLocked() : false);
+			applicationRequest.setFinalLocked(applicationProposalMapping.getIsFinalLocked() != null ? applicationProposalMapping.getIsFinalLocked() : false);
+			applicationRequest.setIsMcqSkipped(applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
+			applicationRequest.setDdrStatusId(applicationProposalMapping.getDdrStatusId());
+		}
+
+		return applicationRequest;
+	}
+
+	@Override
 	public JSONObject isAllowToMoveAheadForMultiProposal(Long applicationId, Long proposalId, Long userId, Integer nextTabType,
 														 Long coAppllicantOrGuarantorId) throws Exception {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);

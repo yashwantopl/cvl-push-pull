@@ -234,6 +234,8 @@ public interface LoanApplicationService {
 
 	LoanApplicationRequest getAllFlag(Long id, Long userId) throws LoansException;
 
+	LoanApplicationRequest getAllFlagByProposalId(Long proposalId, Long userId) throws LoansException;
+
 	public Long getProposalId(Long applicationId, Long userOrgId);
 
 

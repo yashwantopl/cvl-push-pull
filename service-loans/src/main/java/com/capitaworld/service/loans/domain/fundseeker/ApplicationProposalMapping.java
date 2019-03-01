@@ -118,6 +118,8 @@ public class ApplicationProposalMapping implements Serializable {
     @Column(name = "is_mcq_skipped")
 	private Boolean isMcqSkipped;
     
+    @Column(name="denomination_id")
+    private Long denominationId;
 
     public Integer getBusinessTypeId() {
         return businessTypeId;
@@ -414,5 +416,12 @@ public class ApplicationProposalMapping implements Serializable {
 	public void setIsMcqSkipped(Boolean isMcqSkipped) {
 		this.isMcqSkipped = isMcqSkipped;
 	}
-    
+
+    public Long getDenominationId() {
+        return denominationId;
+    }
+
+    public void setDenominationId(Long denominationId) {
+        this.denominationId = denominationId;
+    }
 }
