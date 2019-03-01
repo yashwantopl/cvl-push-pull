@@ -375,8 +375,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(applicationProposalMapping.getProductId()));
-					//corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
-					//corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
+					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
+					corporateProposalDetails.setApplicationCode(applicationProposalMapping.getApplicationCode()!= null ?  applicationProposalMapping.getApplicationCode() : "-");
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
@@ -2126,8 +2127,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					Long applicationId = proposalrequest.getApplicationId();
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-					Integer bId = loanApplicationMaster.getBusinessTypeId();
-					if (!loanApplicationMaster.getIsActive()) {
+					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalrequest.getId());
+					if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+						logger.info("Proposal not in application_proposal_mapping table "+applicationProposalMapping.getProposalId());
+						continue;
+					}
+					Integer bId = applicationProposalMapping.getBusinessTypeId();
+					if (!applicationProposalMapping.getIsActive()) {
 						logger.info(
 								"Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 						continue;
@@ -2176,9 +2182,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 					corporateProposalDetails
-							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+							.setFsMainType(CommonUtils.getCorporateLoanType(applicationProposalMapping.getProductId()));
 					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
-					corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
+					corporateProposalDetails.setApplicationCode(applicationProposalMapping.getApplicationCode()!= null ?  applicationProposalMapping.getApplicationCode() : "-");
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
@@ -2260,15 +2266,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 					String amount = "";
-					if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getLoanAmount()))
 						amount += "NA";
 					else
-						amount += df.format(loanApplicationMaster.getAmount());
+						amount += df.format(applicationProposalMapping.getLoanAmount());
 
-					if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId()))
+					/*if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.get))
 						amount += " NA";
 					else
-						amount += " " + Denomination.getById(loanApplicationMaster.getDenominationId()).getValue();
+						amount += " " + Denomination.getById(loanApplicationMaster.getDenominationId()).getValue();*/
 
 					corporateProposalDetails.setAmount(amount);
 
@@ -2278,7 +2284,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					documentRequest.setApplicationId(applicationId);
 					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 					documentRequest.setProductDocumentMappingId(
-							CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+							CommonDocumentUtils.getProductDocumentId(applicationProposalMapping.getProductId()));
 
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 					String imagePath = null;
@@ -2301,7 +2307,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
-					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getModifiedDate());
+					corporateProposalDetails.setModifiedDate(applicationProposalMapping.getModifiedDate());
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
 
 					UsersRequest usersRequest = new UsersRequest();
