@@ -111,6 +111,13 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Column(name = "payment_status")
     private String paymentStatus;
+    
+    @Column(name = "business_type_id")
+    private Integer businessTypeId;
+    
+    @Column(name = "is_mcq_skipped")
+	private Boolean isMcqSkipped;
+    
 
     public Integer getBusinessTypeId() {
         return businessTypeId;
@@ -119,12 +126,6 @@ public class ApplicationProposalMapping implements Serializable {
     public void setBusinessTypeId(Integer businessTypeId) {
         this.businessTypeId = businessTypeId;
     }
-
-    @Column(name = "business_type_id")
-
-    private Integer businessTypeId;
-
-
 
     public String getPaymentStatus() {
         return paymentStatus;
@@ -405,4 +406,13 @@ public class ApplicationProposalMapping implements Serializable {
     public void setApplicationCode(String applicationCode) {
         this.applicationCode = applicationCode;
     }
+
+	public Boolean getIsMcqSkipped() {
+		return isMcqSkipped;
+	}
+
+	public void setIsMcqSkipped(Boolean isMcqSkipped) {
+		this.isMcqSkipped = isMcqSkipped;
+	}
+    
 }

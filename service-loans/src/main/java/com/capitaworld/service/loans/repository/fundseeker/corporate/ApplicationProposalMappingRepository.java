@@ -147,4 +147,8 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query(value = "select * from application_proposal_mapping apm where apm.application_id=:applicationId and apm.user_id=:userId and apm.is_active = true order by proposal_id desc limit 1",nativeQuery = true)
     public ApplicationProposalMapping getLastByApplicationIdAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
 
+    @Modifying
+	@Query("update ApplicationProposalMapping lm set lm.isMcqSkipped =:isMcqSkipped,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.proposalId =:proposalId and lm.applicationId =:applicationId and lm.userId =:userId and lm.isActive = true")
+	public int setIsMcqSkipped(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalMapId,@Param("userId") Long userId,
+			@Param("isMcqSkipped") Boolean isMcqSkipped);
 }
