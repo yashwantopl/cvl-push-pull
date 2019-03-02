@@ -793,28 +793,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
 			//applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked() != null ? applicationMaster.getIsPrimaryLocked() : false);
 			//applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked() != null ? applicationMaster.getIsFinalLocked() : false);
-			applicationRequest.setIsMcqSkipped(applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false);
-			applicationRequest.setDdrStatusId(applicationMaster.getDdrStatusId());
-
 
 			// start for multiple loan Hiren
 
             ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(id,userOrdId);
             if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(id);
-				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
-					throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
-				}else{
-					applicationMaster.setProductId(applicationProposalMapping.getProductId());
-					applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
-					applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
-					applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
-				}
+			}
+            
+            if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
 			}else{
 				applicationMaster.setProductId(applicationProposalMapping.getProductId());
 				applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
 				applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
 				applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
+				applicationRequest.setIsMcqSkipped(applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
+				applicationRequest.setDdrStatusId(applicationProposalMapping.getDdrStatusId());
 			}
 
             // end for multiple loan Hiren
