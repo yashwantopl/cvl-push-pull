@@ -344,7 +344,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         if(loanApplicationMaster != null) {
             map.put("applicationCode", loanApplicationMaster.getApplicationCode());
             map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? simpleDateFormat.format(loanApplicationMaster.getApprovedDate()):"-");
-            map.put("isMcqSkipped", loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
+            map.put("isMcqSkipped", applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
         }
         CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(toApplicationId);
         UserResponse userResponse = usersClient.getEmailMobile(userId);
@@ -521,9 +521,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
-					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 					directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
-					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+					if(directorBackgroundDetailRequest.getPanNo() != null) {
+						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+					}
+					
 					String directorName = "";
 					if (directorBackgroundDetailRequest.getSalutationId() != null){
 						directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
