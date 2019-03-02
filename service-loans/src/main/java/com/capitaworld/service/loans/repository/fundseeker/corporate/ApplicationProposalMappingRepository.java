@@ -22,8 +22,8 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query("select count(proposalId) from ApplicationProposalMapping apm where apm.proposalId =:proposalId and apm.isPrimaryLocked=1 and apm.isActive = true")
     Long checkPrimaryDetailIsLocked(@Param("proposalId") Long proposalId);
     
-    @Query("from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.orgId =:orgId and lm.isActive = true")
-	public ApplicationProposalMapping getByApplicationIdAndOrgId(@Param("applicationId") Long applicationId, @Param("orgId") Long orgId);
+    @Query("from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.proposalId =:proposalId and lm.orgId =:orgId and lm.isActive = true")
+	public ApplicationProposalMapping getByApplicationIdAndOrgId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId, @Param("orgId") Long orgId);
 
     @Modifying
     @Query("update ApplicationProposalMapping apm set apm.isFinalUploadFilled =:isFinalUploadFilled,apm.modifiedDate = NOW() where apm.proposalId=:proposalId AND apm.applicationId =:applicationId AND apm.isActive = true")
