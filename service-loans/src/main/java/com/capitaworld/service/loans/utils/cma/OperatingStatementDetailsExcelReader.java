@@ -65,7 +65,7 @@ public class OperatingStatementDetailsExcelReader {
         }
     }
 
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws Exception {
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws ExcelException {
             OPERATING_STATEMENT_MAPPING_LIST.clear();
             OPERATING_STATEMENT_MAPPING_LIST.add("8");
             OPERATING_STATEMENT_MAPPING_LIST.add("9");
@@ -264,7 +264,7 @@ public class OperatingStatementDetailsExcelReader {
         }
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository)  throws Exception
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository)  throws ExcelException
     {
         int arrayListCounter = 0;
         int nullCounter=0;
@@ -281,7 +281,7 @@ public class OperatingStatementDetailsExcelReader {
 
            	if(operatingStatementDetails != null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(operatingStatementDetails.getYear()) ) {
 
-           		throw new  Exception("Invalid cma details");
+           		throw new  ExcelException("Invalid cma details");
 
            	}
 

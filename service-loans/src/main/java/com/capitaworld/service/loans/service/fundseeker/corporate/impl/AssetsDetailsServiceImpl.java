@@ -37,24 +37,27 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 
 	@Override
 	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException{
+		logger.info("=========== Enter in readAssetsDetails()========= applicationId ==> {} ", applicationId );
 		try {
 			AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
 					assetsDetailsRepository);
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (ExcelException e) {
+			logger.error("Error/Exception while saving assets detail from excel to db MSG -->{} " , e);
+			throw e;
 		}
 	}
 
 	@Override
-	public void readAssetsDetails(Long applicationId,Long proposalMappingId, Long storageDetailsId, XSSFSheet sheet) {
-		// TODO Auto-generated method stub
+	public void readAssetsDetails(Long applicationId,Long proposalMappingId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException {
+		logger.info("=========== Enter in readAssetsDetails() =========== applicationId ==> {} proposalMappingId==> {} ", applicationId , proposalMappingId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMappingId);
 		try {
 			AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping,
 					assetsDetailsRepository);
 		} catch (ExcelException e) {
-			e.printStackTrace();
+			logger.error("Error/Exception while saving assets detail from excel to db MSG -->{} " , e);
+			throw e;
 		}
 	}
 
