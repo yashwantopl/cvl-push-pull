@@ -76,7 +76,7 @@ public class AssetsDetailsExcelReader
         }
     }
 
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws Exception{
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws ExcelException{
         ASSETS_MAPPING_LIST.clear();
 
         ASSETS_MAPPING_LIST.add("9");
@@ -304,7 +304,7 @@ public class AssetsDetailsExcelReader
                                             String column,
                                             String year,
                                             String financialYearlyStatement,
-                                            AssetsDetailsRepository assetsDetailsRepository) throws Exception
+                                            AssetsDetailsRepository assetsDetailsRepository) throws ExcelException
     {
         int arrayListCounter = 0;
         int nullCounter=0;
@@ -321,7 +321,7 @@ public class AssetsDetailsExcelReader
 
         	if(cmaAssets != null &&  "Audited".equalsIgnoreCase(cmaAssets.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(cmaAssets.getYear()) ) {
 
-           		throw new  Exception("Invalid cma details");
+           		throw new  ExcelException("Invalid cma details");
 
            	}
 
