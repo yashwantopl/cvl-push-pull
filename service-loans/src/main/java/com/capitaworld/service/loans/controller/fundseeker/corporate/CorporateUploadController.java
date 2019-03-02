@@ -452,7 +452,7 @@ public class CorporateUploadController {
 					// code for inactive CMA BS and DPR recored
 
 					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG,e);
-					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getCause().getMessage());
 					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
 
@@ -468,7 +468,7 @@ public class CorporateUploadController {
 					logger.info("inActivation start");
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
-					logger.info("excel file's storage id is====>>>>"+response.getStorageId());
+					logger.info("excel file's storage id is====>>>>{}", response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 
 					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
