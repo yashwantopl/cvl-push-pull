@@ -31,6 +31,7 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
@@ -443,7 +444,7 @@ public class CorporateUploadController {
 					default : break;
 					}
 
-				} catch (Exception e) {
+				} catch (ExcelException e) {
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());

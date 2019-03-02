@@ -387,13 +387,13 @@ public class LiabilitiesDetailsExcelReader
     	for(i = 1 ; i <=3 ; i++) {
 	    	if(!"Audited".equalsIgnoreCase(sheet.getRow(5).getCell(i).getStringCellValue()) &&  
 	    			sheet.getRow(4).getCell(i).getNumericCellValue() <= sheet.getRow(4).getCell(i+1).getNumericCellValue()) {
-	    		throw new ExcelException("Please enter valid years in cma file ");
+	    		throw new ExcelException("Please upload correct cma file as there is no audited information available for the year " + sheet.getRow(4).getCell(i).getNumericCellValue() );
 	   	 	}
     	}
     	if(!"Estimated".equalsIgnoreCase(sheet.getRow(5).getCell(4).getStringCellValue()) 
     			&&  (sheet.getRow(4).getCell(4).getNumericCellValue() <= sheet.getRow(4).getCell(3).getNumericCellValue())
     			&&  (sheet.getRow(4).getCell(5).getNumericCellValue() <= sheet.getRow(4).getCell(4).getNumericCellValue())) {
-    		throw new ExcelException("Please enter valid years in cma file");
+    		throw new ExcelException("Please upload correct cma file as there is no Estimated information available for the year " + sheet.getRow(4).getCell(4).getNumericCellValue() );
     	}
     	
     }
@@ -401,7 +401,7 @@ public class LiabilitiesDetailsExcelReader
     	log.info("------------XSSFSheet info compare with Projected----------- sheet ==> {} cellNumber ==> {} " , sheet.getRow(5).getCell(cellNumber).getStringCellValue() , cellNumber );
     	if( ! "Projected".equalsIgnoreCase(sheet.getRow(5).getCell(cellNumber).getStringCellValue()) 
     			&& sheet.getRow(4).getCell(cellNumber).getNumericCellValue() >=  sheet.getRow(4).getCell(cellNumber-1).getNumericCellValue()) {
-    		throw new ExcelException("Please enter valid years in cma file");
+    		throw new ExcelException("Please upload correct cma file as there is no Projected information available for the year " + sheet.getRow(4).getCell(cellNumber).getNumericCellValue() );
     	}
     	
     }
