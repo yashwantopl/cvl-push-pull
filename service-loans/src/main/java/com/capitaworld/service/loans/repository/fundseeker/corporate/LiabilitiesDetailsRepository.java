@@ -55,4 +55,11 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	@Transactional
 	@Query("update LiabilitiesDetails o set o.isActive = false where o.fsLoanApplicationMaster.id = :applicationId and o.financialYearlyStatement IN ('Estimated', 'Projected' ) and o.isActive = true")
 	public int inActiveByAppIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Transactional
+	@Query("update LiabilitiesDetails o set o.isActive = false where o.fsLoanApplicationMaster.id = :applicationId and o.financialYearlyStatement IN ('Estimated', 'Projected' ) and o.applicationProposalMapping.proposalId =:proposalId and o.isActive = true")
+	public int inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId , @Param("proposalId") Long  proposalId);
+	
+	public List<LiabilitiesDetails> findByFsLoanApplicationMasterIdAndYearAndIsActive(Long applicationId , String year , Boolean isActive);
 }

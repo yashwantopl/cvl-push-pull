@@ -55,4 +55,11 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	@Transactional
 	@Query("update AssetsDetails o set o.isActive = false where o.loanApplicationMaster.id = :applicationId and o.financialYearlyStatement IN ('Estimated', 'Projected' ) and o.isActive = true")
 	public int inActiveByAppIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Transactional
+	@Query("update AssetsDetails o set o.isActive = false where o.loanApplicationMaster.id = :applicationId and o.financialYearlyStatement IN ('Estimated', 'Projected' ) and o.applicationProposalMapping.proposalId =:proposalId and o.isActive = true")
+	public int inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId  , @Param("proposalId") Long proposalId);
+	
+	public List<AssetsDetails> findByLoanApplicationMasterIdAndYearAndIsActive(Long applicationId , String year , Boolean isActive);
 }
