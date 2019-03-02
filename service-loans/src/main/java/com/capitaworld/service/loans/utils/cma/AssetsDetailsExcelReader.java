@@ -50,11 +50,15 @@ public class AssetsDetailsExcelReader
 
         ASSETS_MAPPING_LIST.addAll(Arrays.asList(numbers));
 
-        log.info("OperatingStatementDetailsExcelReader -----------> " + sheet.getRow(4).getCell(1).getNumericCellValue());
+        log.info("OperatingStatementDetailsExcelReader -----------> {} " , sheet.getRow(4).getCell(1).getNumericCellValue());
 
         int j = 2;
         if (applicationProposalMapping.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
-
+        	
+        	cmaAuditedAndEstimatedValidation(sheet);
+        	int updateRow = assetsDetailsRepository.inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId() , applicationProposalMapping.getProposalId());
+       	 	log.info("---------------- inactive old estimate and project data ------- updated row ==> {}" , updateRow);
+       	 	
             extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping, ASSETS_MAPPING_LIST, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", assetsDetailsRepository);
             j = 5;
 
@@ -62,8 +66,10 @@ public class AssetsDetailsExcelReader
 
         if (applicationProposalMapping.getProductId() != 15 && applicationProposalMapping.getProductId() != 1) {
 
-            /*int j = 5;*/
+            
             for (int i = 0; i < applicationProposalMapping.getTenure(); i++) {
+            	
+            	cmaValidationProjection(sheet, j);
                 extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping, ASSETS_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()), String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()), "Projected", assetsDetailsRepository);
                 j++;
             }
@@ -134,7 +140,7 @@ public class AssetsDetailsExcelReader
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
       
-        log.info("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());   
+        log.info("OperatingStatementDetailsExcelReader -----------> {} " , sheet.getRow(4).getCell(1).getNumericCellValue());   
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", assetsDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", assetsDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited", assetsDetailsRepository);
@@ -145,7 +151,7 @@ public class AssetsDetailsExcelReader
     
 
            	int updateRow = assetsDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
-           	log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
+           	log.info("---------------- inactive old estimate and project data ------- updated row ==> {} " , updateRow);
 
            	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, ASSETS_MAPPING_LIST,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
            	j=5;
@@ -203,18 +209,20 @@ public class AssetsDetailsExcelReader
             }
         }
         
-        if(!(nullCounter==54)) {
+        if(nullCounter!=54) {
 
-        	Double yearFromSheet  = Double.valueOf(year) ;
+        	/*Double yearFromSheet  = Double.valueOf(year) ;
         	AssetsDetails cmaAssets = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
 
         	if(cmaAssets != null &&  "Audited".equalsIgnoreCase(cmaAssets.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(cmaAssets.getYear()) ) {
 
            		throw new ExcelException("Invalid cma details");
 
-           	}
-
-        	cmaAssets = new AssetsDetails();
+           	}*/
+        	
+        	cmaValidationFromDB(assetsDetailsRepository, loanApplicationMaster.getId(), applicationProposalMapping.getProposalId(), year);
+        	
+        	AssetsDetails cmaAssets = new AssetsDetails();
     		cmaAssets.setCreatedDate(new Date());
     		cmaAssets.setModifiedDate(new Date());
         	log.info("calledd===============");
@@ -395,7 +403,7 @@ public class AssetsDetailsExcelReader
     }
     public static double getNumericDataFromCell(XSSFSheet sheet,String cellNumber)
     {
-    	log.info("getNumericDataFromCell:"+cellNumber );
+    	log.info("getNumericDataFromCell:==>{} " ,cellNumber );
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
@@ -412,5 +420,51 @@ public class AssetsDetailsExcelReader
         return cell.getStringCellValue();
 
     }
+    
+    public static void cmaAuditedAndEstimatedValidation(XSSFSheet sheet ) throws ExcelException {
+    	int i = 0 ;
+    	for(i = 1 ; i <=3 ; i++) {
+	    	if(!"Audited".equalsIgnoreCase(sheet.getRow(5).getCell(i).getStringCellValue()) &&  
+	    			sheet.getRow(4).getCell(i).getNumericCellValue() <= sheet.getRow(4).getCell(i+1).getNumericCellValue()) {
+	    		throw new ExcelException("Please enter valid years in cma file ");
+	   	 	}
+    	}
+    	if(!"Estimated".equalsIgnoreCase(sheet.getRow(5).getCell(4).getStringCellValue()) 
+    			&&  (sheet.getRow(4).getCell(4).getNumericCellValue() <= sheet.getRow(4).getCell(3).getNumericCellValue())
+    			&&  (sheet.getRow(4).getCell(5).getNumericCellValue() <= sheet.getRow(4).getCell(4).getNumericCellValue())) {
+    		throw new ExcelException("Please enter valid years in cma file");
+    	}
+    	
+    }
+    public static void cmaValidationProjection(XSSFSheet sheet , int cellNumber ) throws ExcelException {
+    	log.info("------------XSSFSheet info compare with Projected----------- sheet ==> {} cellNumber ==> {} " , sheet.getRow(5).getCell(cellNumber).getStringCellValue() , cellNumber );
+    	if( ! "Projected".equalsIgnoreCase(sheet.getRow(5).getCell(cellNumber).getStringCellValue()) 
+    			&& sheet.getRow(4).getCell(cellNumber).getNumericCellValue() >=  sheet.getRow(4).getCell(cellNumber-1).getNumericCellValue()) {
+    		throw new ExcelException("Please enter valid years in cma file");
+    	}
+    	
+    }
+    
+    public static void cmaValidationFromDB(AssetsDetailsRepository assetsDetailsRepository,Long applicationId , Long proposalId ,  String year) throws ExcelException {
+    	log.info("============= Enter into cmaValidationFromDB() ============ applicationId ==> {} year ==> {}" , applicationId  , year);
+    	
+    	
+    	int rowUpdated = 0;
+    	List<AssetsDetails> assetsDetailsList  = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndIsActive(applicationId , year,  true);
+    	
+    	if(assetsDetailsList.stream().anyMatch(opsd -> "Audited".equalsIgnoreCase(opsd.getFinancialYearlyStatement()))) {
+    		throw new ExcelException("Invalid cma file");
+    	}else {
+    		if(proposalId == null  ) {
+    			rowUpdated = assetsDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(applicationId);
+    		}else {
+    			rowUpdated = assetsDetailsRepository.inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(applicationId, proposalId);
+    		}
+    		
+    		log.info("----------------- inactive the old Estimated and Projected FinancialYearlyStatement ------------ rowUpdated ==> {}" ,rowUpdated);
+    	}
+
+    	log.info("============= Exit from cmaValidationFromDB() ============ ");
+    } 
 }
 

@@ -43,16 +43,22 @@ public class OperatingStatementDetailsExcelReader {
 
         OPERATING_STATEMENT_MAPPING_LIST.clear();
         OPERATING_STATEMENT_MAPPING_LIST.addAll(Arrays.asList(numbers));
-        log.info("OperatingStatementDetailsExcelReader -----------> " + sheet.getRow(4).getCell(1).getNumericCellValue());
+        log.info("OperatingStatementDetailsExcelReader -----------> {} " , sheet.getRow(4).getCell(1).getNumericCellValue());
 
         int j = 2;
         if (applicationProposalMapping.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
-            extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, OPERATING_STATEMENT_MAPPING_LIST, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", operatingStatementDetailsRepository);
+        	
+        	cmaAuditedAndEstimatedValidation(sheet);
+        	int updateRow = operatingStatementDetailsRepository.inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId() , applicationProposalMapping.getProposalId());
+        	 log.info("---------------- inactive old estimate and project data ------- updated row ==> {}" , updateRow);
+
+        	 extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, OPERATING_STATEMENT_MAPPING_LIST, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", operatingStatementDetailsRepository);
             j = 5;
         }
 
         if (applicationProposalMapping.getProductId() != 15 && applicationProposalMapping.getProductId() != 1) {
             for (int i = 0; i < applicationProposalMapping.getTenure(); i++) {
+            	cmaValidationProjection(sheet, j);
                 extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, OPERATING_STATEMENT_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()), String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()), "Projected", operatingStatementDetailsRepository);
                 j++;
             }
@@ -117,7 +123,7 @@ public class OperatingStatementDetailsExcelReader {
              */
             
              
-            log.info("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
+            log.info("OperatingStatementDetailsExcelReader -----------> {}", sheet.getRow(4).getCell(1).getNumericCellValue());       
            
 
             //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
@@ -127,17 +133,18 @@ public class OperatingStatementDetailsExcelReader {
             int j = 2;
          if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
 
+        	 cmaAuditedAndEstimatedValidation(sheet);
         	 int updateRow = operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
-        	 log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
+        	 log.info("---------------- inactive old estimate and project data ------- updated row ==> {}" , updateRow);
 
         	 extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
         	 j=5;
           
         }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
-        	/*int j = 5;*/
 
         	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) {
+        		cmaValidationProjection(sheet, j); 
         		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
         		j++;
         	}
@@ -176,19 +183,20 @@ public class OperatingStatementDetailsExcelReader {
                 ++nullCounter;
             }
         }
-        log.info("nullCounter---" + nullCounter);
+        log.info("nullCounter---> {}" , nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
 
-        	Double yearFromSheet  = Double.valueOf(year) ;
+        	/*Double yearFromSheet  = Double.valueOf(year) ;
            	OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
 
            	if(operatingStatementDetails != null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(operatingStatementDetails.getYear()) ) {
 
            		throw new ExcelException("Invalid cma details");
 
-           	}
-
-           	operatingStatementDetails = new OperatingStatementDetails() ;
+           	}*/
+        	cmaValidationFromDB(operatingStatementDetailsRepository, loanApplicationMaster.getId() , applicationProposalMapping.getProposalId() ,  year);
+           	
+        	OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails() ;
            	operatingStatementDetails.setCreatedDate(new Date());
         	operatingStatementDetails.setModifiedDate(new Date());
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
@@ -265,7 +273,7 @@ public class OperatingStatementDetailsExcelReader {
                 ++nullCounter;
             }
         }
-        log.info("nullCounter---" + nullCounter);
+        log.info("nullCounter---> {} " , nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
 
         	Double yearFromSheet  = Double.valueOf(year) ;
@@ -345,7 +353,7 @@ public class OperatingStatementDetailsExcelReader {
     }
     public static double getNumericDataFromCell(XSSFSheet sheet,String cellNumber)
     {
-    	log.info("getNumericDataFromCell:"+cellNumber );
+    	log.info("getNumericDataFromCell:==>{} ", cellNumber );
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
@@ -362,5 +370,61 @@ public class OperatingStatementDetailsExcelReader {
         return cell.getStringCellValue();
 
     }
+    
+    public static void cmaAuditedAndEstimatedValidation(XSSFSheet sheet ) throws ExcelException {
+    	int i = 0 ;
+    	for(i = 1 ; i <=3 ; i++) {
+	    	if(!"Audited".equalsIgnoreCase(sheet.getRow(5).getCell(i).getStringCellValue()) &&  
+	    			sheet.getRow(4).getCell(i).getNumericCellValue() <= sheet.getRow(4).getCell(i+1).getNumericCellValue()) {
+	    		throw new ExcelException("Please enter valid years in cma file ");
+	   	 	}
+    	}
+    	if(!"Estimated".equalsIgnoreCase(sheet.getRow(5).getCell(4).getStringCellValue()) 
+    			&&  (sheet.getRow(4).getCell(4).getNumericCellValue() <= sheet.getRow(4).getCell(3).getNumericCellValue())
+    			&&  (sheet.getRow(4).getCell(5).getNumericCellValue() <= sheet.getRow(4).getCell(4).getNumericCellValue())) {
+    		throw new ExcelException("Please enter valid years in cma file");
+    	}
+    	
+    }
+    public static void cmaValidationProjection(XSSFSheet sheet , int cellNumber ) throws ExcelException {
+    	log.info("------------XSSFSheet info compare with Projected----------- sheet ==> {} cellNumber ==> {} " , sheet.getRow(5).getCell(cellNumber).getStringCellValue() , cellNumber );
+    	if( ! "Projected".equalsIgnoreCase(sheet.getRow(5).getCell(cellNumber).getStringCellValue()) 
+    			&& sheet.getRow(4).getCell(cellNumber).getNumericCellValue() >=  sheet.getRow(4).getCell(cellNumber-1).getNumericCellValue()) {
+    		throw new ExcelException("Please enter valid years in cma file");
+    	}
+    	
+    }
+    
+    public static void cmaValidationFromDB(OperatingStatementDetailsRepository operatingStatementDetailsRepository,Long applicationId ,Long proposalId , String year) throws ExcelException {
+    	log.info("============= Enter into cmaValidationFromDB() ============ applicationId ==> {} year ==> {}" , applicationId  , year);
+    	
+    	/**Boolean isValid = false ;*/
+    	int rowUpdated = 0;
+    	List<OperatingStatementDetails> operatingStatementDetailsList  = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndIsActive(applicationId , year,  true);
+    	/**if(operatingStatementDetailsList.stream().filter(opsd -> "Audited".equalsIgnoreCase(opsd.getFinancialYearlyStatement())).findAny().isPresent()) {*/
+    	if(operatingStatementDetailsList.stream().anyMatch(opsd -> "Audited".equalsIgnoreCase(opsd.getFinancialYearlyStatement()))) {
+    		throw new ExcelException("Invalid cma file");
+    	}else {
+    		if(proposalId == null ) {
+    			rowUpdated = operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(applicationId); 
+    		}else {
+    			rowUpdated = operatingStatementDetailsRepository.inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(applicationId, proposalId);
+    		}
+    		
+    		log.info("----------------- inactive the old Estimated and Projected FinancialYearlyStatement ------------ rowUpdated ==> {}" ,rowUpdated);
+    	}
+    	/**for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
+			if("Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement())  ){
+				
+				throw new ExcelException("Invalid cma file");
+			}else {
+				isValid = true ;
+			}
+		}
+    	if(isValid ) {
+    		operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(applicationId);
+    	}*/
+    	log.info("============= Exit from cmaValidationFromDB() ============ ");
+    } 
 }
 
