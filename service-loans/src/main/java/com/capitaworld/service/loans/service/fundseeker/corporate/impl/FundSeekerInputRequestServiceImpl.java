@@ -467,6 +467,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					BeanUtils.copyProperties(directorBackgroundDetail.getDirectorPersonalDetail(), directorPersonalDetailRequest);
 					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(directorPersonalDetailRequest);
 					dobOfProprietor = directorBackgroundDetail.getDob();
+				} else {
+					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(new DirectorPersonalDetailRequest());
 				}
 				directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
 			}
