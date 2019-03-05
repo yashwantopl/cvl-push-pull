@@ -133,7 +133,10 @@ public class ApplicationProposalMapping implements Serializable {
 		this.isCoApp2DetailsFilled = isCoApp2DetailsFilled;
 	}
     @Column(name="denomination_id")
-    private Long denominationId;
+    private Integer denominationId;
+
+    @Column(name="currency_id")
+    private Integer currencyId;
 
 	public Integer getBusinessTypeId() {
         return businessTypeId;
@@ -440,11 +443,19 @@ public class ApplicationProposalMapping implements Serializable {
 	}
 
 
-    public Long getDenominationId() {
+    public Integer getDenominationId() {
         return denominationId;
     }
 
-    public void setDenominationId(Long denominationId) {
+    public void setDenominationId(Integer denominationId) {
         this.denominationId = denominationId;
+    }
+
+    public Integer getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(Integer currencyId) {
+        this.currencyId = currencyId;
     }
 }

@@ -25,6 +25,9 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query("from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.orgId =:orgId and lm.isActive = true")
 	public ApplicationProposalMapping getByApplicationIdAndOrgId(@Param("applicationId") Long applicationId, @Param("orgId") Long orgId);
 
+    @Query("from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.proposalId =:proposalId and lm.orgId =:orgId and lm.isActive = true")
+	public ApplicationProposalMapping getByApplicationIdAndProposalId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId, @Param("orgId") Long orgId);
+    
     @Modifying
     @Query("update ApplicationProposalMapping apm set apm.isFinalUploadFilled =:isFinalUploadFilled,apm.modifiedDate = NOW() where apm.proposalId=:proposalId AND apm.applicationId =:applicationId AND apm.isActive = true")
     public int setIsFinalUploadMandatoryFilled(@Param("proposalId") Long proposalId,
@@ -151,4 +154,7 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 	@Query("update ApplicationProposalMapping lm set lm.isMcqSkipped =:isMcqSkipped,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.proposalId =:proposalId and lm.applicationId =:applicationId and lm.userId =:userId and lm.isActive = true")
 	public int setIsMcqSkipped(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalMapId,@Param("userId") Long userId,
 			@Param("isMcqSkipped") Boolean isMcqSkipped);
+
+    @Query("from ApplicationProposalMapping apm where apm.userId =:userId and apm.isActive = true order by apm.proposalId desc")
+    public List<ApplicationProposalMapping> getUserLoans(@Param("userId") Long userId);
 }

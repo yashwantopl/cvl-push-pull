@@ -329,10 +329,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		Long toApplicationId = applicationProposalMapping.getApplicationId();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
-
-		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
-		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
-		corporateFinalViewResponse.setIsMcqSkipped(loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
+		corporateFinalViewResponse.setIsMcqSkipped(applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
 		corporateFinalViewResponse.setProductId(applicationProposalMapping.getProductId());
 		// ===================== MATCHES DATA ======================//
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -579,7 +576,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				.getByApplicationAndUserId(toApplicationId, userId);
 		if (primaryCorporateDetail != null) {
 			// set value to response
-			BeanUtils.copyProperties(primaryCorporateDetail, corporateFinalViewResponse);
+			BeanUtils.copyProperties(primaryCorporateDetail, corporateFinalViewResponse, "isMcqSkipped");
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCurrencyId())
 					&& !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getDenominationId())) {
 				corporateFinalViewResponse
@@ -626,7 +623,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage() != null
 							? " (" + convertValue(primaryCorporateDetail.getTotalAmtPercentage()) + "%)"
 							: null);
-			corporateFinalViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
+			corporateFinalViewResponse.setNpOrgId(applicationProposalMapping.getOrgId());
 			// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
@@ -668,7 +665,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null
 								? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue()
 								: null) + " " + directorBackgroundDetailRequest.getDirectorsName());
-				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				if(directorBackgroundDetailRequest.getPanNo() != null) {
+					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				}
+				
 				String directorName = "";
 				if (directorBackgroundDetailRequest.getSalutationId() != null) {
 					directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();

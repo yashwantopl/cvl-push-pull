@@ -31,6 +31,7 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
@@ -443,7 +444,7 @@ public class CorporateUploadController {
 					default : break;
 					}
 
-				} catch (Exception e) {
+				} catch (ExcelException e) {
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
@@ -451,7 +452,7 @@ public class CorporateUploadController {
 					// code for inactive CMA BS and DPR recored
 
 					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG,e);
-					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getCause().getMessage());
 					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
 
@@ -467,7 +468,7 @@ public class CorporateUploadController {
 					logger.info("inActivation start");
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
-					logger.info("excel file's storage id is====>>>>"+response.getStorageId());
+					logger.info("excel file's storage id is====>>>>{}", response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 
 					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);

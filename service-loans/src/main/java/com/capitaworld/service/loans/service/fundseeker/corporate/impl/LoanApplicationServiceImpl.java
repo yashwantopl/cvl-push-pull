@@ -793,28 +793,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
 			//applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked() != null ? applicationMaster.getIsPrimaryLocked() : false);
 			//applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked() != null ? applicationMaster.getIsFinalLocked() : false);
-			applicationRequest.setIsMcqSkipped(applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false);
-			applicationRequest.setDdrStatusId(applicationMaster.getDdrStatusId());
-
 
 			// start for multiple loan Hiren
 
             ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(id,userOrdId);
             if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(id);
-				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
-					throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
-				}else{
-					applicationMaster.setProductId(applicationProposalMapping.getProductId());
-					applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
-					applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
-					applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
-				}
+			}
+            
+            if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
 			}else{
 				applicationMaster.setProductId(applicationProposalMapping.getProductId());
 				applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
 				applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
 				applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
+				applicationRequest.setIsMcqSkipped(applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
+				applicationRequest.setDdrStatusId(applicationProposalMapping.getDdrStatusId());
 			}
 
             // end for multiple loan Hiren
@@ -899,10 +894,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			
 			logger.info("In GetList");
-			List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
+			List<ApplicationProposalMapping> results = applicationProposalMappingRepository.getUserLoans(userId);
 			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
 			if("N".equals(IS_UNIT_TEST)) {
-			for (LoanApplicationMaster master : results) {
+			for (ApplicationProposalMapping master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
 				if (CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
@@ -912,7 +907,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					requests.add(request);
 					continue;
 				}
-				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
+				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getApplicationId(), master.getProductId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
@@ -922,7 +917,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						try {
 							currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
 							currencyAndDenomination = currencyAndDenomination
-									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
+									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId().intValue()));
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
 						}
@@ -931,7 +926,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				} else {
 					request.setLoanTypeMain(CommonUtils.RETAIL);
-					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getId());
+					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getApplicationId());
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 					request.setLoanTypeSub("DEBT");
 				}
@@ -944,7 +939,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						request.setDdrStatusId(master.getDdrStatusId());
 					} else {
 						ProposalMappingResponse response = proposalDetailsClient
-								.getFundSeekerApplicationStatus(master.getId());
+								.getFundSeekerApplicationStatus(master.getProposalId());
 						request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null
 								: (Integer) response.getData());
 						request.setIsNhbsApplication(false);
@@ -957,7 +952,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				long proposalStatusId = 0l;
 				try {
 					ProposalMappingResponse response = proposalDetailsClient
-							.getActiveProposalByApplicationID(master.getId());
+							.getActiveProposalByApplicationID(master.getProposalId());
 
 					if (!CommonUtils.isObjectNullOrEmpty(response)
 							&& !CommonUtils.isObjectNullOrEmpty(response.getData())) {
