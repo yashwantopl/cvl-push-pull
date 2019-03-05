@@ -12,8 +12,10 @@ import com.capitaworld.service.loans.model.FrameRequest;
  */
 public interface ExistingProductDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
+	Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 	
-	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws LoansException;
+	List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws LoansException;
+
+	List<ExistingProductDetailRequest> getExistingProductDetailListByProposalId(Long proposalId, Long userId) throws LoansException;
 
 }

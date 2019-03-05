@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.utils.EncryptionUtils;
 
@@ -35,6 +36,10 @@ public class CorporateApplicantDetail implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
+
+	@OneToOne
+	@JoinColumn(name = "proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 
 	@Lob
 	@Column(name = "about_us")
@@ -129,7 +134,7 @@ public class CorporateApplicantDetail implements Serializable {
 
 	@Convert(converter=EncryptionUtils.class)
 	@Column(name = "pan")
-	
+
 	private String panNo;
 
 	@Column(name = "gstin")
@@ -199,21 +204,20 @@ public class CorporateApplicantDetail implements Serializable {
 
 	@Column(name = "environmental_impact_id")
 	private Long environmentalImpactId;
-	
+
     @Column(name = "is_gst_completed")
     private Boolean isGstCompleted;
-    
+
     @Column(name = "is_itr_completed")
     private Boolean isItrCompleted;
-    
+
     private String remarks;
-    
+
     @Column(name="business_since_year")
     private Integer businessSinceYear;
-    
+
     @Column(name="business_since_month")
     private Integer businessSinceMonth;
-    
 
 	public CorporateApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -708,6 +712,11 @@ public class CorporateApplicantDetail implements Serializable {
 		this.businessSinceMonth = businessSinceMonth;
 	}
 
-	
-	
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
 }

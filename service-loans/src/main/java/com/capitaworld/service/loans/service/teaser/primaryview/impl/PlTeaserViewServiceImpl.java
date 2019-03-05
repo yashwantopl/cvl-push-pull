@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +113,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 	private static final String DISTRICT_ID_IS_NULL_MSG = "District id is null";
 
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -194,7 +197,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		plTeaserViewResponse.setTenure(((loanApplicationMaster.getTenure()).toString()) + " Years");
 		plTeaserViewResponse.setAppId(toApplicationId);
 		
-		
+
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
@@ -202,13 +205,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
-				plTeaserViewResponse.setDateOfProposal(obj);	
-				}	
+				plTeaserViewResponse.setDateOfProposal(obj);
+				}
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			// ENDS HERE===================>
-		
+
 
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -234,8 +237,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			plRetailApplicantResponse = new PLRetailApplicantResponse();
 			if(plRetailApplicantRequest != null) {
 				
-				/*-----  all primary details fetch from db (fs_retail_applicat_detail) and using enum ------*/ 	
-				
+				/*-----  all primary details fetch from db (fs_retail_applicat_detail) and using enum ------*/
+
 				plRetailApplicantResponse.setFullName((plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : ""));
 				plRetailApplicantResponse.setGender(plRetailApplicantRequest.getGenderId() != null ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setBirthDate(plRetailApplicantRequest.getBirthDate());
@@ -256,23 +259,23 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
 				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
-				
+
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
-				
+
 				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
-					        
+
 					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
 			        LocalDate today = LocalDate.now();
-			        
+
 			        Period age = Period.between(since, today);
 			        int years = age.getYears();
 			        int months = age.getMonths();
-			        
+
 					plRetailApplicantResponse.setSalaryAccountBankSince(years+" year "+months+" months");
 				}
-				
+
 				//citetailApplicantResponse.setry,State,country
 				
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
@@ -301,7 +304,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 				
 				/*banking relationship details*/
-				
+
 				
 				// loan Details 
 				
@@ -329,11 +332,11 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 
 				if(plRetailApplicantRequest.getBankingRelationshipList() != null) {
-					plRetailApplicantResponse.setBankRelationShipList(plRetailApplicantRequest.getBankingRelationshipList());	
+					plRetailApplicantResponse.setBankRelationShipList(plRetailApplicantRequest.getBankingRelationshipList());
 				}else {
 					logger.warn("bankRelationship  is null...");
 				}
-				
+
 				//KEY VERTICAL FUNDING
 				List<Long> keyVerticalFundingId = new ArrayList<>();
 				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
@@ -405,7 +408,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					}else {
 						logger.info("proposal data is null");
 					}
-					
+
 				}catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}

@@ -12,7 +12,8 @@ public interface TotalCostOfProjectService {
 	
 	
 	public List<TotalCostOfProjectRequest> getCostOfProjectDetailList(Long applicationId,Long userId) throws LoansException;
-	
+
+	public List<TotalCostOfProjectRequest> getCostOfProjectDetailListByProposalId(Long proposalId,Long userId) throws Exception;
 	public Double getCostOfProject(Long applicationId, Long userId);
 	
 	

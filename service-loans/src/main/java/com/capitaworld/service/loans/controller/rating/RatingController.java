@@ -41,7 +41,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
 
-		return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId);
+		return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId, proposalMappingRequest.getId());
 	}
 	
 	@RequestMapping(value = "/cma_irr_mapping_financial_input", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,7 +65,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 
 			Long denomination=1l;
 			logger.info("denomination:::"+denomination);
-			FinancialInputRequest financialInputRequest=irrService.cmaIrrMappingService(userId, proposalMappingRequest.getApplicationId(), null, denomination);
+			FinancialInputRequest financialInputRequest=irrService.cmaIrrMappingService(userId, proposalMappingRequest.getApplicationId(), null, denomination,proposalMappingRequest.getId());
 			return new ResponseEntity<RatingResponse>(new RatingResponse(financialInputRequest,"financial input fetched from cma", HttpStatus.OK.value()), HttpStatus.OK);
 			
 		} catch (Exception e) {

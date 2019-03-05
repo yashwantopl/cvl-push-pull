@@ -65,7 +65,7 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 			if (finalCarLoanDetail != null){
 				logger.info("finalCarLoanDetail is saved successfully");
 			}
-			
+
 			//setting Flag to DB
 			if(!CommonUtils.isObjectNullOrEmpty(finalCarLoanDetailRequest.getIsFinalInformationFilled())){
 //				we are reusing this method and also same column in loanApplication master. it is actually using Corporate. 

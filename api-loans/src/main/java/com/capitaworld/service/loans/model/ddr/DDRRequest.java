@@ -24,6 +24,7 @@ public class DDRRequest implements Serializable {
 
 	private Long id;
 	private Long applicationId;
+	private Long proposalMappingId;
 	private Long roleId;
 	private Long userId;
 	private String godownStockyard;
@@ -117,6 +118,8 @@ public class DDRRequest implements Serializable {
 	//FOR ONLY BOB BANK(21 Sep)
 	private String customerId;
 	private String customerName;
+	
+	private Long orgId;
 	
 	//AUTO FIELD
 	private List<PromotorBackgroundDetailRequest> promoBackRespList = new ArrayList<PromotorBackgroundDetailRequest>();
@@ -799,6 +802,18 @@ public class DDRRequest implements Serializable {
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
 	}
-	
-	
+	public Long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
 }

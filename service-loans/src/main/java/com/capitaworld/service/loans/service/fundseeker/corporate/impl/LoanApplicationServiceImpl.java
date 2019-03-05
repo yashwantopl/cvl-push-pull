@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.model.*;
+import javax.servlet.http.HttpSession;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +29,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
-import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
@@ -49,6 +51,8 @@ import com.capitaworld.service.loans.config.AuditComponent;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
@@ -87,13 +91,16 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -129,8 +136,11 @@ import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -201,7 +211,6 @@ import com.capitaworld.sidbi.integration.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
-import com.capitaworld.client.payment.gateway.GatewayClient;
 
 @Service
 @Transactional
@@ -211,9 +220,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response -->";
 	private static final String BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG = "Before Start Saving Phase 1 Sidbi API -->";
+	private static final String FP_PRODUCT_ID_MSG = "FpProductId ==>{}";
 	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response --> ";
 	private static final String PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG = "Proposal Mapping Response Null or Empty --> ";
+	private static final String EXCEPTION_IN_EDR_IN_SAVE_PHESE1_DATA_TO_SIDBI_MSG = "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() for ApplicationId ==>{} ";
 	private static final String FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG = "Fetched Director's background details for application Id : ";
+	private static final String INVALID_TOKEN_DETAILS_MSG = "Invalid Token Details";
 	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG = "Exception occured while Sending Mail to HO : ";
 	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG = "Exception occured while Sending Mail to All BO : ";
 	private static final String INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to HO after In-principle Approval";
@@ -225,10 +237,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG = "Something went wrong while call proposal client for ";
 	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG = "Something went wrong while call connect client for ";
 	private static final String CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG = "Connector Response null or empty";
+	private static final String ERROR_MSG = "----- Error Msg : ";
 	private static final String OTHER_LITERAL = "OTHER";
 	private static final String DIRECT_LITERAL = "Direct";
 	private static final String SIDBI_FEES = "SIDBI_FEES";
 	private static final String ORG_ID = "org_id";
+	private static final String MSG_LITERAL = " Msg : ";
+	private static final String PROPOSAL_ID="proposalId";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -241,6 +256,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -286,9 +304,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ProposalService proposalService;
-
-	@Autowired
-	private GatewayClient gatewayClient;
 
 	@Autowired
 	private MatchEngineClient matchEngineClient;
@@ -358,6 +373,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private PincodeDateService pincodeDateService;
+
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
@@ -439,10 +457,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
-	
+
 	@Autowired
 	private LoanRepository loanRepository;
 
+	@Autowired
+	private ApplicationProposalMappingService appPropMappService;
+
+	@Autowired
+	private CorporateFinalInfoService corporateFinalInfoService;
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	private static final String INVALID_LOAN_APPLICATION_ID =  "Invalid Loan Application ID==>";
@@ -465,6 +488,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String PLEASE_FILL_CO_APPLICANT_1_FINAL_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-1 FINAL details to Move Next !";
 	private static final String PLEASE_FILL_CO_APPLICANT_2_FINAL_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-2 FINAL details to Move Next !";
 	private static final String GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL = "GetLoanDetailsForAdminPanel, from and todate for admin panel --------> ";
+	private static final String DATE_FORMAT_YYYY_MM_DD_HH_MM_SS  = "yyyy/MM/dd hh:mm:ss";
 	private static final String DATE_FORMAT_DD_MM_YYYY = "dd-MM-yyyy";
 
     @Value("${cw.gst.unit.test}")
@@ -472,7 +496,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
     @Value("${cw.ismca.on}")
     private String IS_MCA_ON;
-    
+
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws LoansException {
 		try {
@@ -759,7 +783,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest get(Long id, Long userId) throws LoansException {
+	public LoanApplicationRequest get(Long id, Long userId,Long userOrdId) throws LoansException {
 		try {
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
@@ -767,15 +791,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User ID==>" + userId);
 			}
 			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
-			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked() != null ? applicationMaster.getIsPrimaryLocked() : false);
-			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked() != null ? applicationMaster.getIsFinalLocked() : false);
-			applicationRequest.setIsMcqSkipped(applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false);
-			applicationRequest.setDdrStatusId(applicationMaster.getDdrStatusId());
-			
+			//applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked() != null ? applicationMaster.getIsPrimaryLocked() : false);
+			//applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked() != null ? applicationMaster.getIsFinalLocked() : false);
+
+			// start for multiple loan Hiren
+
+            ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(id,userOrdId);
+            if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(id);
+			}
+            
+            if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
+			}else{
+				applicationMaster.setProductId(applicationProposalMapping.getProductId());
+				applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
+				applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
+				applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
+				applicationRequest.setIsMcqSkipped(applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
+				applicationRequest.setDdrStatusId(applicationProposalMapping.getDdrStatusId());
+			}
+
+            // end for multiple loan Hiren
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				return applicationRequest;
 			}
-			
+
 			applicationRequest.setHasAlreadyApplied(
 					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
 
@@ -796,14 +838,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
 
-				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment())
+				/*if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment())
 						&& applicationRequest.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)) {
 					GatewayRequest gatewayRequest = networkPartnerService
 							.getPaymentStatuOfApplication(applicationRequest.getId());
 					if (!CommonUtils.isObjectNullOrEmpty(gatewayRequest)) {
 							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
 					}
-				}
+				}*/
 			} else {
 				applicationRequest.setLoanTypeMain(CommonUtils.RETAIL);
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationMaster.getId());
@@ -811,7 +853,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setLoanTypeSub("DEBT");
 			}
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
-			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			try {
 				ProposalMappingResponse response = proposalDetailsClient
 						.getFundSeekerApplicationStatus(applicationMaster.getId());
@@ -853,6 +894,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			
 			logger.info("In GetList");
+			// List<ApplicationProposalMapping> results = applicationProposalMappingRepository.getUserLoans(userId);
 			List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
 			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
 			if("N".equals(IS_UNIT_TEST)) {
@@ -876,7 +918,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						try {
 							currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
 							currencyAndDenomination = currencyAndDenomination
-									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
+									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId().intValue()));
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
 						}
@@ -1027,6 +1069,112 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+
+    @Override
+    public LoanApplicationRequest lockFinalByProposalId(Long applicationId, Long proposalId,Long userId, boolean flag) throws Exception {
+        try {
+
+            LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
+            loanApplicationRequest.setIsMailSent(false);
+            LoanApplicationMaster applicationMaster1 = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+            ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
+            if (applicationProposalMapping == null) {
+                throw new Exception(
+                        "applicationProposalMapping object Must not be null while locking the Profile And Primary Details==>"
+                                + applicationProposalMapping);
+            }
+            applicationProposalMapping.setIsFinalLocked(flag);
+            applicationProposalMapping
+                    .setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+            applicationProposalMappingRepository.save(applicationProposalMapping);
+
+            // send FP notification
+            ProposalMappingRequest request = new ProposalMappingRequest();
+            request.setApplicationId(applicationId);
+            request.setProposalStatusId(MatchConstant.ProposalStatus.ACCEPT);
+            ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
+            NotificationRequest notificationRequest = new NotificationRequest();
+            notificationRequest.setClientRefId(userId.toString());
+            String fsName = getApplicantName(applicationId);
+            for (int i = 0; i < response.getDataList().size(); i++) {
+                ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+                        (LinkedHashMap<String, Object>) response.getDataList().get(i), ProposalMappingRequest.class);
+
+                ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
+                if (!master.getIsActive()) {
+                    logger.info("Product Id is InActive while get fundSeeker proposals=====>"
+                            + proposalrequest.getFpProductId());
+                    continue;
+                }
+                UsersRequest userRequest = new UsersRequest();
+                userRequest.setId(master.getUserId());
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                // calling USER for getting fp details
+                UserResponse userResponse = userClient.getFPDetails(userRequest);
+
+                try {
+                    if (CommonUtils.isObjectNullOrEmpty(fsName)) {
+                        parameters.put("fs_name", "NA");
+                    } else {
+                        parameters.put("fs_name", fsName);
+                    }
+
+                } catch (Exception e) {
+                    // TODO: handle exception
+                    parameters.put("fs_name", "NA");
+                }
+                String[] a = { master.getUserId().toString() };
+                notificationRequest
+                        .addNotification(createNotification(a, userId, 0L, NotificationAlias.SYS_FS_FINAL_LOCK,
+                                parameters, applicationId, proposalrequest.getFpProductId()));
+            }
+            logger.info("Before send mail-------------------------------------->");
+            int userMainType = CommonUtils.getUserMainType(applicationProposalMapping.getProductId());
+            if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+                logger.info("Current loan is corporate-------------------------------------->");
+                if (!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getNpAssigneeId())
+                        && !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getNpUserId())) {
+                    logger.info("Start sending mail when maker has lock primary details");
+
+                    loanApplicationRequest.setId(applicationProposalMapping.getApplicationId());
+                    loanApplicationRequest.setProposalMappingId(applicationProposalMapping.getProposalId());
+                    loanApplicationRequest.setNpAssigneeId(applicationProposalMapping.getNpAssigneeId());
+                    loanApplicationRequest.setNpUserId(applicationProposalMapping.getNpUserId());
+                    loanApplicationRequest.setApplicationCode(applicationProposalMapping.getApplicationCode());
+                    loanApplicationRequest.setProductId(applicationProposalMapping.getProductId());
+                    loanApplicationRequest.setName(fsName);
+                    loanApplicationRequest.setIsMailSent(true);
+
+                } else {
+                    logger.info("NP userId or assign id null or empty-------------------------------------->");
+                }
+
+            }
+            notificationClient.send(notificationRequest);
+            UsersRequest resp = getEmailMobile(applicationProposalMapping.getNpAssigneeId());
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("url", "https://bit.ly/2IGwvBF");
+            try {
+                String makerName = getNPName(applicationProposalMapping.getNpUserId());
+                if (makerName != null) {
+                    parameters.put("maker_name", getNPName(applicationProposalMapping.getNpUserId()));
+                    parameters.put("checker_name", getNPName(applicationProposalMapping.getNpAssigneeId()));
+                    sendSMSNotification(applicationProposalMapping.getNpAssigneeId().toString(), parameters,
+                            NotificationAlias.SMS_MAKER_LOCKS_ONEFORM, resp.getMobile());
+
+                    logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
+                }
+            } catch (Exception e) {
+                logger.info("maker name is null so sms is not sent");
+            }
+            return loanApplicationRequest;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error while Locking Final Information : ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+
+        }
+    }
 
 	@Override
 	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws LoansException {
@@ -1280,9 +1428,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId) {
+	public boolean hasAlreadyApplied(Long userId, Long applicationId,Integer productId) {
 		if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(productId)) {
-			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
+			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId,applicationId) > 0 ? true : false);
 		} else {
 			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
 		}
@@ -1291,7 +1439,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws LoansException {
 		try {
-			return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+			//return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+			return applicationProposalMappingRepository.getProductIdByApplicationId(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while getting Product Id by Application Id : ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
@@ -1302,6 +1451,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public Object[] getApplicationDetailsById(Long applicationId) {
 		List<Object[]> data = loanApplicationRepository.getUserDetailsByApplicationId(applicationId);
 		return (!CommonUtils.isListNullOrEmpty(data)) ? data.get(0) : null;
+	}
+
+	@Override
+	public Object[] getApplicationDetailsByProposalId(Long applicationId,Long proposalMappingId) {
+		List<Object[]> data = applicationProposalMappingRepository.getUserDetailsByApplicationIdAndPropsoalMappingId(applicationId,proposalMappingId);
+		return (!CommonUtils.isListNullOrEmpty(data)) ? data.toArray() : null;
 	}
 
 	@Override
@@ -1394,13 +1549,36 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Boolean isApplicationIdActive(Long applicationId) throws LoansException {
+	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception {
+		try {
+			Long count = applicationProposalMappingRepository.checkPrimaryDetailIsLocked(proposalId);
+			return (count != null ? count > 0 : false);
+		} catch (Exception e) {
+			logger.error("Error while getting isPrimaryLocked ?",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public Boolean isApplicationIdActive(Long applicationId) throws LoansException { // PREVIOUS
 		try {
 			Long count = loanApplicationRepository.checkApplicationIdActive(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isApplicationIdActive ?",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+
+	@Override
+	public Boolean getByProposalId(Long proposalId) throws Exception { // NEW BASED ON PROPOSAL ID
+		try {
+			Long count = applicationProposalMappingRepository.getByProposalId(proposalId);
+			return (count != null ? count > 0 : false);
+		} catch (Exception e) {
+			logger.error("Error while getting isApplicationIdActive ?",e);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -1499,6 +1677,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public Boolean isFinalLockedByProposalId(Long proposalId,Long userId) throws Exception {
+		try {
+			Long count = applicationProposalMappingRepository.checkFinalDetailIsLocked(proposalId);
+			return (count != null ? count > 0 : false);
+		} catch (Exception e) {
+			logger.error("Error while getting isFinalLocked ?");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public Boolean isFinalLocked(Long applicationId, Long userId) throws LoansException {
 		try {
 			Long count = loanApplicationRepository.checkFinalDetailIsLocked(applicationId);
@@ -1508,7 +1698,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	@Override
 	public Boolean isMcqSkipped(Long applicationId) throws LoansException {
 		Long count = loanApplicationRepository.checkMcqSkipped(applicationId);
@@ -1565,6 +1755,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
+	public JSONObject getBowlCountByProposalId(Long applicationId, Long propsoalId) {
+		ApplicationProposalMapping loanApplicationMaster = applicationProposalMappingRepository.getByProposalIdAndApplicationId(propsoalId,applicationId);
+		JSONObject response = new JSONObject();
+		if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+			response.put("primaryFilledCount", loanApplicationMaster.getPrimaryFilledCount());
+			response.put("profileFilledCount", loanApplicationMaster.getDetailsFilledCount());
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
 	public JSONObject getBowlCount(Long applicationId, Long userId) {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		JSONObject response = new JSONObject();
@@ -1577,15 +1779,328 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@SuppressWarnings("unchecked")
+	private JSONObject corporateValidating(ApplicationProposalMapping proposalMapping, Integer toTabType,
+			Long coAppllicantOrGuarantorId) throws Exception {
+
+		List<Long> coAppIds = null;
+
+		Long coAppCount;
+
+		Boolean isFinalMcqFilled = proposalMapping.getIsFinalMcqFilled() != null ? proposalMapping.getIsFinalMcqFilled() : false;
+		Boolean isMcqSkipped = proposalMapping.getIsMcqSkipped() != null ? proposalMapping.getIsMcqSkipped() : false;
+
+		int index = 0;
+		final String INVALID_MSG = "Requested data is Invalid.";
+		JSONObject response = new JSONObject();
+		response.put(MESSAGE_LITERAL, "NA");
+		response.put(RESULT_LITERAL, true);
+
+		switch (toTabType) {
+
+		case CommonUtils.TabType.PROFILE_CO_APPLICANT:
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			coAppIds = corporateCoApplicantService.getCoAppIds(proposalMapping.getApplicationId(),
+					proposalMapping.getUserId());
+			if (CommonUtils.isListNullOrEmpty(coAppIds)) {
+				response.put(MESSAGE_LITERAL, INVALID_MSG);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			index = coAppIds.indexOf(coAppllicantOrGuarantorId);
+			if (index == -1) {
+				response.put(MESSAGE_LITERAL, INVALID_MSG);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			if (index == 1 && (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+					|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue())) {
+					response.put(MESSAGE_LITERAL, "Please CO-APPLICANT-1 details to Move Next !");
+					response.put(RESULT_LITERAL, false);
+					return response;
+			}
+			break;
+
+		case CommonUtils.TabType.MATCHES:
+			boolean isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the matches !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+
+		case CommonUtils.TabType.CONNECTIONS:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the connections !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.PRIMARY_INFORMATION:
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			// Co-Applicant Profile Checking
+
+			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(proposalMapping.getApplicationId(),
+					proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+						|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue())) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
+				}
+
+				if (coAppCount == 2) {
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+							|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
+					}
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp2DetailsFilled())
+							|| !proposalMapping.getIsCoApp2DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
+					}
+
+				}
+			}
+
+			break;
+		case CommonUtils.TabType.PRIMARY_UPLOAD:
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
+					|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.FINAL_MCQ:
+
+			// Co-Applicant Profile Checking
+
+			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(proposalMapping.getApplicationId(),
+					proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+						|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue())) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
+				}
+
+				if (coAppCount == 2) {
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp1DetailsFilled())
+							|| !proposalMapping.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
+					}
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsCoApp2DetailsFilled())
+							|| !proposalMapping.getIsCoApp2DetailsFilled().booleanValue()) {
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
+						response.put(RESULT_LITERAL, false);
+						return response;
+					}
+
+				}
+			}
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+					|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
+					|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			/*
+			 * if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			break;
+		case CommonUtils.TabType.FINAL_INFORMATION:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			/*
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; } if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantPrimaryFilled()) ||
+			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			// if
+			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			// || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			// response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next
+			// !");
+			// response.put(RESULT_LITERAL, false);
+			// return response;
+			// }
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
+					response.put(RESULT_LITERAL, false);
+					return response;
+			}
+			break;
+		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			logger.info("isPrimaryLocked : "+isPrimaryLocked);
+			/*
+			 * if (!isPrimaryLocked) { response.put(MESSAGE_LITERAL,
+			 * PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT); response.put(RESULT_LITERAL, false);
+			 * return response; } if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			// if
+			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+			// || !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+			// response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next
+			// !");
+			// response.put(RESULT_LITERAL, false);
+			// return response;
+			// }
+			/*
+			 * if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
+					response.put(RESULT_LITERAL, false);
+					return response;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
+					|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.FINAL_UPLOAD:
+			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			/*
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; } if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantPrimaryFilled()) ||
+			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			/*
+			 * if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL,
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+			 * response.put(RESULT_LITERAL, false); return response; }
+			 */
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
+					response.put(RESULT_LITERAL, false);
+					return response;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
+					|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalDprUploadFilled())
+					|| !proposalMapping.getIsFinalDprUploadFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, "Please Fill Financial Model details to Move Next !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			/*
+			 * if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) { if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled(
+			 * )) || !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+			 * response.put(MESSAGE_LITERAL, "Please Fill DPR details to Move Next !");
+			 * response.put(RESULT_LITERAL, false); return response; } }
+			 */
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
 	private JSONObject corporateValidating(LoanApplicationMaster applicationMaster, Integer toTabType,
 			Long coAppllicantOrGuarantorId) throws LoansException {
 		List<Long> coAppIds = null;
 
 		Long coAppCount;
-		
-		Boolean isFinalMcqFilled = applicationMaster.getIsFinalMcqFilled() != null ? applicationMaster.getIsFinalMcqFilled() : false; 
-		Boolean isMcqSkipped = applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false; 
-		
+
+		Boolean isFinalMcqFilled = applicationMaster.getIsFinalMcqFilled() != null ? applicationMaster.getIsFinalMcqFilled() : false;
+		Boolean isMcqSkipped = applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false;
+
 		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
@@ -2711,36 +3226,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (applicationMaster.getProductId() != null && applicationMaster.getBusinessTypeId() != null) {
 			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
-				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
-						.listPromotorBackgroundFromAppId(applicationId);
+				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
 				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream()
 						.filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
 				if (directorBackgroundDetail != null) {
 					return directorBackgroundDetail.getDirectorsName();
 				}
-
 			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
 					.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findOneByApplicationIdId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 			}
-
 			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 							.findOneByApplicationIdId(applicationId);
 					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
-				} else if (CommonUtils
-						.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
-					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
-					return corporateApplicantDetail.getOrganisationName();
+				} else if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+					  CorporateApplicantDetail crApp = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
+
+					return crApp.getOrganisationName();
 				}
 			}
-
 		} else {
-
 			if (applicationMaster.getBusinessTypeId() != null && applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
 				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
@@ -2751,12 +3260,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return directorBackgroundDetail.getDirectorsName();
 				}
 			}
-
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-					.findOneByApplicationIdId(applicationId);
-			return corporateApplicantDetail.getOrganisationName();
+			  CorporateApplicantDetail crApp =corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
+			return crApp.getOrganisationName();
 		}
-
 		return null;
 	}
 
@@ -2916,6 +3422,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
 
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 
@@ -3098,7 +3605,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -3350,7 +3856,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			// code for got eligibility
 			if (loanApplicationMaster.getEligibleAmnt() != null && CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked()) ) {
@@ -3467,7 +3973,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -3619,7 +4125,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -3968,6 +4474,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public Long getApplicationIdByProposalId(Long proposalId) {
+		return applicationProposalMappingRepository.getApplicationIdByProposalId(proposalId);  // NEW
+	}
+
+	@Override
+	public Long getUserIdByProposalId(Long proposalId) {
+		return applicationProposalMappingRepository.getUserIdByProposalId(proposalId);  // NEW
+	}
+
+
+	@Override
 	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws LoansException {
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
@@ -4249,10 +4766,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (loanApplicationMaster == null) {
 			throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + applicationId);
 		}
-		
+
 		 * LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		 * BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-		 
+
 		loanApplicationMaster.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 
@@ -4346,33 +4863,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-					}
-				} else {
-					logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
-					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
+			} else {
+				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+		}
 
-			// TRUE MATCHES PROPOSAL
-			try {
-				ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
-						.activateProposalOnPayment(applicationId);
-				if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-					logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
-					if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-						throw new LoansException(proposalMappingResponse.getMessage());
-					}
-				} else {
-					logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
-					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+		// TRUE MATCHES PROPOSAL
+		try {
+			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
+					.activateProposalOnPayment(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
+				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+					throw new LoansException(proposalMappingResponse.getMessage());
 				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
+			} else {
+				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+		}
 
 			// Sending In-Principle for WhiteLabel
 			// ====================================================================
@@ -4386,7 +4903,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			status =null;
 			logger.info("In-Principle send for WhiteLabel Status=====>" + status);
 
-			// ====================================================================
+			// =======================changes made for multiple bank===================
 
 			ProposalMappingResponse response = null;
 			Map<String, Object> proposalresp = null;
@@ -4400,8 +4917,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} catch (Exception e) {
 				logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
 			}
-
-			LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+		Long prposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+			LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(prposalId);
 
 			PaymentRequest paymentRequest = new PaymentRequest();
 			paymentRequest.setApplicationId(applicationId);
@@ -4475,44 +4992,44 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
 					logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
 					// if(orgId==10L) {
-					
+
 					 * logger.info("Start Saving Phase 1 sidbi API -------------------->" +
 					 * loanApplicationMaster.getId()); Long fpMappingId = null; try {
 					 * savePhese1DataToSidbi(loanApplicationMaster.getId(),
 					 * userId,orgId,fpProductId); }catch(Exception e) { logger.error(CommonUtils.EXCEPTION,e); }
-					 
+
 					// }
 
 					if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-					}
-				} else {
-					logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
-					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
+			} else {
+				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+		}
 
-			// TRUE MATCHES PROPOSAL
-			try {
-				ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
-						.activateProposalOnPayment(applicationId);
-				if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-					logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
-					if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-						throw new LoansException(proposalMappingResponse.getMessage());
-					}
-				} else {
-					logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
-					throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+		// TRUE MATCHES PROPOSAL
+		try {
+			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
+					.activateProposalOnPayment(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
+				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+					throw new LoansException(proposalMappingResponse.getMessage());
 				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
+			} else {
+				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
 				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+		}
 
 			// Sending In-Principle for Personal Loan
 			// ====================================================================
@@ -4540,7 +5057,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
 			}
 
-			LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+			Long prposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(prposalId);
 
 			PaymentRequest paymentRequest = new PaymentRequest();
 			paymentRequest.setApplicationId(applicationId);
@@ -4587,7 +5105,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-	@Override
+	/**
+	 * This method no longer used
+	 * */
+	/*@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)
 			throws LoansException {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
@@ -4657,12 +5178,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->"
 									+ loanApplicationMaster.getId());
-							try {
+							*//*try {
 								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 							} catch (Exception e) {
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}", orgId);
 								logger.error(CommonUtils.EXCEPTION,e);
-							}
+							}*//*
 //						}
 							logger.info("connectResponse.getProceed()==============>>>" + connectResponse.getProceed());
 							if (connectResponse.getProceed()) {
@@ -4678,8 +5199,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
 						}
 
-						ProposalMappingResponse response = proposalDetailsClient
-								.getInPricipleById(paymentRequest.getApplicationId());
+						ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
 						if (response != null && response.getData() != null) {
 							logger.info("Inside Congratulations");
 
@@ -4802,9 +5322,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws LoansException {
 		logger.info("start getPaymentStatus()");
 		try {
@@ -4890,9 +5410,52 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public Boolean updateDDRStatusByProposalId(Long applicationId, Long userId, Long proposalId, Long statusId) throws Exception {
+		logger.info("start updateDDRStatusNew()");
+		try {
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
+
+			if (applicationProposalMapping == null) {
+				throw new Exception("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
+						+ applicationProposalMapping);
+			}
+
+			if (statusId.equals(CommonUtils.DdrStatus.APPROVED)) {
+				applicationProposalMapping.setApprovedDate(new Date());
+			}
+
+			Long appStatusId = null;
+			if (CommonUtils.DdrStatus.APPROVED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.APPROVED;
+			} else if (CommonUtils.DdrStatus.REVERTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.REVERTED;
+			} else if (CommonUtils.DdrStatus.SUBMITTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER;
+			} else if (CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.SUBMITTED_TO_APPROVER;
+			}
+			if (!CommonUtils.isObjectNullOrEmpty(appStatusId)) {
+				applicationProposalMapping.setApplicationStatusMaster(new ApplicationStatusMaster(appStatusId));
+			}
+
+			applicationProposalMapping.setDdrStatusId(statusId);
+			applicationProposalMapping.setModifiedBy(userId);
+			applicationProposalMapping.setModifiedDate(new Date());
+			applicationProposalMappingRepository.save(applicationProposalMapping);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Updating DDR Status");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
 	public LoanApplicationRequest getFromClient(Long id) throws LoansException {
 		try {
-			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
+			ApplicationProposalMapping applicationMaster = appPropMappService.getApplicationProposalMappingByProposalId(id);
+//			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
 			if (applicationMaster == null) {
 				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id);
 			}
@@ -4900,7 +5463,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			BeanUtils.copyProperties(applicationMaster, applicationRequest);
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
-			applicationRequest.setUserName(getFsApplicantName(id));
+			applicationRequest.setUserName(getFsApplicantName(applicationMaster.getApplicationId()));
 
 			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
 			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
@@ -4917,10 +5480,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
 				if (CommonUtils.UserMainType.CORPORATE == mainType) {
-					CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
-							.findOneByApplicationIdId(id);
+					CorporateApplicantDetail corpApplicantDetail =new CorporateApplicantDetail();
+					CorporateFinalInfoRequest applicantDetail = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(), applicationMaster.getProposalId());
+					BeanUtils.copyProperties(applicantDetail, corpApplicantDetail );
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-						address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
+						address = CommonDocumentUtils.getAdministrativeOfficeAddress(corpApplicantDetail, oneFormClient);
 					}
 				} else {
 					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository
@@ -4933,6 +5497,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else {
 				logger.info("No ProductId Found========>");
 			}
+
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-",e);
@@ -5210,61 +5775,114 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Loan master no found-------------------------------->" + loanApplicationRequest.getId());
 			return false;
 		}
-		loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
-		loanApplicationMaster.setTenure(loanApplicationRequest.getTenure());
-		loanApplicationMaster.setProductId(loanApplicationRequest.getProductId());
-		loanApplicationMaster.setIsApplicantDetailsFilled(true);
-		loanApplicationMaster.setIsApplicantPrimaryFilled(true);
-		loanApplicationMaster.setIsPrimaryLocked(true);
-		if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
-			loanApplicationMaster.setNpOrgId(loanApplicationRequest.getNpOrgId());
+		ProposalDetails proposalDetails = proposalDetailsRepository.getLastProposalByApplicationId(loanApplicationMaster.getId());
+		ProductMaster productDetails = null;
+		if(!CommonUtils.isObjectNullOrEmpty(proposalDetails)){
+			productDetails = productMasterRepository.findByIdAndIsActive(proposalDetails.getFpProductId(),true);
 		}
 
-		LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
-		if (!CommonUtils.isObjectNullOrEmpty(type)) {
-			loanApplicationMaster
-					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())+"-"+loanApplicationMaster.getId());
-		}
-		loanApplicationRepository.save(loanApplicationMaster);
+		if(!CommonUtils.isObjectNullOrEmpty(productDetails) &&
+				(LoanType.WORKING_CAPITAL.getValue() ==productDetails.getProductId() ||
+				LoanType.TERM_LOAN.getValue() ==productDetails.getProductId() ||
+				LoanType.WCTL_LOAN.getValue() ==productDetails.getProductId())){
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
+			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				applicationProposalMapping = new ApplicationProposalMapping();
+			}
+			applicationProposalMapping.setProposalId(proposalDetails.getId());
+			applicationProposalMapping.setApplicationId(proposalDetails.getApplicationId());
+			applicationProposalMapping.setLoanAmount(loanApplicationRequest.getAmount());
+			applicationProposalMapping.setTenure(loanApplicationRequest.getTenure());
+			applicationProposalMapping.setProductId(loanApplicationRequest.getProductId());
+			//set application stage
+			ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
+			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
+			applicationProposalMapping.setApplicationStatusMaster(applicationStatusMaster);
+			//set application ddr stage
+			applicationProposalMapping.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+			applicationProposalMapping.setApplicationCode(loanApplicationMaster.getApplicationCode());
+			applicationProposalMapping.setIsPrimaryUploadFilled(true);
+			applicationProposalMapping.setIsApplicantDetailsFilled(true);
+			applicationProposalMapping.setIsApplicantPrimaryFilled(true);
+			applicationProposalMapping.setIsPrimaryLocked(true);
+			applicationProposalMapping.setBusinessTypeId(CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
+				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
+			}
+			ApplicationProposalMapping existingDetails = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalDetails.getId(),proposalDetails.getApplicationId());//getByApplicationId(proposalDetails.getApplicationId());
+			if (!CommonUtils.isObjectNullOrEmpty(existingDetails) && !CommonUtils.isObjectNullOrEmpty(existingDetails.getApplicationCode())) {
+				applicationProposalMapping
+						.setApplicationCode(existingDetails.getApplicationCode());
+			}else {
+				LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
+				if (!CommonUtils.isObjectNullOrEmpty(type)) {
+					applicationProposalMapping
+							.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())+"-"+loanApplicationMaster.getId());
+				}
+			}
+			applicationProposalMapping.setUserId(loanApplicationMaster.getUserId());
+			applicationProposalMapping.setCreatedBy(proposalDetails.getApplicationId());
+			applicationProposalMapping.setCreatedDate(new Date());
+			applicationProposalMapping.setIsActive(true);
+			applicationProposalMappingRepository.save(applicationProposalMapping);
+		}else{
+			LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
+			loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
+			loanApplicationMaster.setTenure(loanApplicationRequest.getTenure());
+			loanApplicationMaster.setProductId(loanApplicationRequest.getProductId());
+			loanApplicationMaster.setIsApplicantDetailsFilled(true);
+			loanApplicationMaster.setIsApplicantPrimaryFilled(true);
+			loanApplicationMaster.setIsPrimaryLocked(true);
+			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
+				loanApplicationMaster.setNpOrgId(loanApplicationRequest.getNpOrgId());
+			}
 
-		if (CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
-			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository
-					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-			if (CommonUtils.isObjectNullOrEmpty(wcLoan)) {
-				wcLoan = new PrimaryWorkingCapitalLoanDetail();
-				wcLoan.setId(loanApplicationMaster.getId());
-				wcLoan.setApplicationId(loanApplicationMaster);
-				primaryWorkingCapitalLoanDetailRepository.save(wcLoan);
+
+			if (!CommonUtils.isObjectNullOrEmpty(type)) {
+				loanApplicationMaster
+						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())+"-"+loanApplicationMaster.getId());
 			}
-		} else if (CommonUtils.LoanType.TERM_LOAN.getValue() == loanApplicationRequest.getProductId()) {
-			PrimaryTermLoanDetail tlLoan = primaryTermLoanDetailRepository
-					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-			if (CommonUtils.isObjectNullOrEmpty(tlLoan)) {
-				tlLoan = new PrimaryTermLoanDetail();
-				tlLoan.setId(loanApplicationMaster.getId());
-				tlLoan.setApplicationId(loanApplicationMaster);
-				primaryTermLoanDetailRepository.save(tlLoan);
-			}
-		} else if (CommonUtils.LoanType.UNSECURED_LOAN.getValue() == loanApplicationRequest.getProductId()) {
-			PrimaryUnsecuredLoanDetail unsLoan = primaryUnsecuredLoanDetailRepository
-					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-			if (CommonUtils.isObjectNullOrEmpty(unsLoan)) {
-				unsLoan = new PrimaryUnsecuredLoanDetail();
-				unsLoan.setId(loanApplicationMaster.getId());
-				unsLoan.setApplicationId(loanApplicationMaster);
-				primaryUnsecuredLoanDetailRepository.save(unsLoan);
-			}
+			loanApplicationRepository.save(loanApplicationMaster);
+//			if (CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
+//				PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository
+//						.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+//				if (CommonUtils.isObjectNullOrEmpty(wcLoan)) {
+//					wcLoan = new PrimaryWorkingCapitalLoanDetail();
+//					wcLoan.setId(loanApplicationMaster.getId());
+//					wcLoan.setApplicationId(loanApplicationMaster);
+//					primaryWorkingCapitalLoanDetailRepository.save(wcLoan);
+//				}
+//			} else if (CommonUtils.LoanType.TERM_LOAN.getValue() == loanApplicationRequest.getProductId()) {
+//				PrimaryTermLoanDetail tlLoan = primaryTermLoanDetailRepository
+//						.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+//				if (CommonUtils.isObjectNullOrEmpty(tlLoan)) {
+//					tlLoan = new PrimaryTermLoanDetail();
+//					tlLoan.setId(loanApplicationMaster.getId());
+//					tlLoan.setApplicationId(loanApplicationMaster);
+//					primaryTermLoanDetailRepository.save(tlLoan);
+//				}
+//			} else if (CommonUtils.LoanType.UNSECURED_LOAN.getValue() == loanApplicationRequest.getProductId()) {
+//				PrimaryUnsecuredLoanDetail unsLoan = primaryUnsecuredLoanDetailRepository
+//						.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+//				if (CommonUtils.isObjectNullOrEmpty(unsLoan)) {
+//					unsLoan = new PrimaryUnsecuredLoanDetail();
+//					unsLoan.setId(loanApplicationMaster.getId());
+//					unsLoan.setApplicationId(loanApplicationMaster);
+//					primaryUnsecuredLoanDetailRepository.save(unsLoan);
+//				}
+//			}
 		}
+
 
 		try {
-			logger.info("Call Post Matche -------------------------------------->");
+			logger.info("Call Post Matches -------------------------------------->");
 			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(),
 					loanApplicationMaster.getUserId(),
 					!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId())
 							? loanApplicationMaster.getBusinessTypeId()
 							: CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if (!CommonUtils.isObjectNullOrEmpty(postMatches)) {
-				logger.info("Response form Connect lient ---------------->" + postMatches.toString());
+				logger.info("Response form Connect client ---------------->" + postMatches.toString());
 				logger.info("Successfully update loan data-------------------------------->"
 						+ loanApplicationRequest.getId());
 				return postMatches.getProceed();
@@ -5285,7 +5903,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Exit in inActiveApplication");
 		return 0;
 	}
-	
+
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws LoansException {
 		Map<String, Object> map = null;
 		try {
@@ -5516,8 +6134,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return null;
 	}
 
-	
-	
+
+
 
 	@Override
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws LoansException {
@@ -6669,7 +7287,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-	
+
 
 	@Override
 	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId, Integer businessTypeId) {
@@ -6696,7 +7314,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-	
+
 
 	@Override
 	public Boolean saveLoanWCRenewalType(Long applicationId, Integer wcRenewalType) {
@@ -6718,7 +7336,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
 		return null;
 	}
-	
+
 	@Override
 	public String getCommonPropertiesValue(String key) {
 		return loanRepository.getCommonPropertiesValue(key);
@@ -6736,8 +7354,373 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationRequest.setIsMcqSkipped(applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false);
 			applicationRequest.setDdrStatusId(applicationMaster.getDdrStatusId());
 		}
-		
+
 		return applicationRequest;
 	}
 
+	@Override
+	public LoanApplicationRequest getAllFlagByProposalId(Long proposalId, Long userId) throws LoansException {
+
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId,true);
+		if (applicationProposalMapping != null) {
+			applicationRequest = new LoanApplicationRequest();
+			applicationRequest.setProfilePrimaryLocked(applicationProposalMapping.getIsPrimaryLocked() != null ? applicationProposalMapping.getIsPrimaryLocked() : false);
+			applicationRequest.setFinalLocked(applicationProposalMapping.getIsFinalLocked() != null ? applicationProposalMapping.getIsFinalLocked() : false);
+			applicationRequest.setIsMcqSkipped(applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
+			applicationRequest.setDdrStatusId(applicationProposalMapping.getDdrStatusId());
+		}
+
+		return applicationRequest;
+	}
+
+	@Override
+	public JSONObject isAllowToMoveAheadForMultiProposal(Long applicationId, Long proposalId, Long userId, Integer nextTabType,
+														 Long coAppllicantOrGuarantorId) throws Exception {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
+		int userMainType = CommonUtils.getUserMainType(applicationProposalMapping.getProductId());
+		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
+			return corporateValidating(applicationProposalMapping, nextTabType, coAppllicantOrGuarantorId);
+		} else {
+			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject corporateValidatingForMultiProposal(LoanApplicationMaster applicationMaster, Integer toTabType,
+														   Long coAppllicantOrGuarantorId, Long proposalId) throws Exception {
+		List<Long> coAppIds = null;
+
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getOne(proposalId);
+
+		Long coAppCount;
+
+		int index = 0;
+		final String INVALID_MSG = "Requested data is Invalid.";
+		JSONObject response = new JSONObject();
+		response.put("message", "NA");
+		response.put("result", true);
+
+		switch (toTabType) {
+
+			case CommonUtils.TabType.PROFILE_CO_APPLICANT:
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				coAppIds = corporateCoApplicantService.getCoAppIds(applicationMaster.getId(),
+						applicationMaster.getUserId());
+				if (CommonUtils.isListNullOrEmpty(coAppIds)) {
+					response.put("message", INVALID_MSG);
+					response.put("result", false);
+					return response;
+				}
+
+				index = coAppIds.indexOf(coAppllicantOrGuarantorId);
+				if (index == -1) {
+					response.put("message", INVALID_MSG);
+					response.put("result", false);
+					return response;
+				}
+
+				if (index == 1) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put("message", "Please CO-APPLICANT-1 details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+				break;
+
+			case CommonUtils.TabType.MATCHES:
+				boolean isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to See the matches !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+
+			case CommonUtils.TabType.CONNECTIONS:
+				isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to See the connections !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.PRIMARY_INFORMATION:
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				// Co-Applicant Profile Checking
+
+				coAppCount = null;
+
+				coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
+						applicationMaster.getUserId());
+				if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+					if (coAppCount == 1) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+					}
+
+					if (coAppCount == 2) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
+								|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-2 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+
+					}
+				}
+
+				break;
+			case CommonUtils.TabType.PRIMARY_UPLOAD:
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+						|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.FINAL_MCQ:
+
+				// Co-Applicant Profile Checking
+				coAppCount = null;
+				coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
+						applicationMaster.getUserId());
+				if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+					if (coAppCount == 1) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+					}
+
+					if (coAppCount == 2) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
+								|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-2 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+
+					}
+				}
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalId, applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+						|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				/*
+				 * if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				break;
+			case CommonUtils.TabType.FINAL_INFORMATION:
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalId, applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+				/*
+				 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantDetailsFilled()) ||
+				 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+				 * response.put("message", "Please Fill PROFILE details to Move Next !");
+				 * response.put("result", false); return response; } if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantPrimaryFilled()) ||
+				 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				// if
+				// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+				// || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				// response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next
+				// !");
+				// response.put("result", false);
+				// return response;
+				// }
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+							|| !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) {
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+				break;
+			case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalId, applicationMaster.getUserId());
+				/*
+				 * if (!isPrimaryLocked) { response.put("message",
+				 * "Please LOCK PRIMARY DETAILS to Move next !"); response.put("result", false);
+				 * return response; } if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantDetailsFilled()) ||
+				 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+				 * response.put("message", "Please Fill PROFILE details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				// if
+				// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+				// || !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+				// response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next
+				// !");
+				// response.put("result", false);
+				// return response;
+				// }
+				/*
+				 * if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+							|| !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) {
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
+						|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.FINAL_UPLOAD:
+				isPrimaryLocked = isPrimaryLockedByProposalId(applicationMaster.getId(), applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+
+				/*
+				 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantDetailsFilled()) ||
+				 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+				 * response.put("message", "Please Fill PROFILE details to Move Next !");
+				 * response.put("result", false); return response; } if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantPrimaryFilled()) ||
+				 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				/*
+				 * if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+							|| !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) {
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
+						|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
+						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+					response.put("message", "Please Fill Financial Model details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				/*
+				 * if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) { if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled(
+				 * )) || !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+				 * response.put("message", "Please Fill DPR details to Move Next !");
+				 * response.put("result", false); return response; } }
+				 */
+				break;
+			default:
+				break;
+		}
+		return response;
+	}
+
+	@Override
+	public Long getProposalId(Long applicationId, Long userOrgId){
+
+		Long proposalId = proposalDetailsRepository.findByApplicationIdAndUserOrgId(userOrgId,applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(proposalId)) {
+			logger.error("Failed to get proposal id from application id and user org id" + applicationId);
+		}
+		return proposalId;
+	}
 }

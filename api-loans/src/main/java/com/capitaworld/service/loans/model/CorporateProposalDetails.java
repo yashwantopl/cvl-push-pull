@@ -31,7 +31,7 @@ public class CorporateProposalDetails {
 	private Date lastStatusActionDate;
 	
 	private Long proposalStatus;
-	
+
 	private Boolean isAssignedToBranch;
 	
 	private Date modifiedDate;
@@ -49,10 +49,12 @@ public class CorporateProposalDetails {
 	private String branchLocationName;
 	private String branchCity;
 	private String branchState;
-	
+
 	private String wcRenualNew;
-	
+
 	private String applicationCode;
+
+    private Boolean isSanction;
 
 	public String getBranchLocationName() {
 		return branchLocationName;
@@ -205,7 +207,7 @@ public class CorporateProposalDetails {
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
-	
+
 	public Long getProposalStatus() {
 		return proposalStatus;
 	}
@@ -327,6 +329,14 @@ public class CorporateProposalDetails {
 	public void setApplicationCode(String applicationCode) {
 		this.applicationCode = applicationCode;
 	}
+
+    public Boolean getIsSanction() {
+        return isSanction;
+    }
+
+    public void setIsSanction(Boolean sanction) {
+        isSanction = sanction;
+    }
 
 	/**
 	 * @return the pincode

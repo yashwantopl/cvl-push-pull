@@ -8,7 +8,7 @@ public interface PrimaryCorporateService {
     public boolean saveOrUpdate(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException;
 
     public PrimaryCorporateRequest get(Long applicationId, Long userId) throws LoansException;
-    
+
     /**
      * Getting PrimaryCorproateRequest by Application Id
      * @param applicationId

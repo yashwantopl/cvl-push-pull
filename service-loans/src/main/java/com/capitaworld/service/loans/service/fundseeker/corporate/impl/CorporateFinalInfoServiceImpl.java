@@ -1,10 +1,12 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -27,15 +29,17 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
-    
+
+    @Autowired
+    private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
     @Override
     public boolean saveOrUpdate(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws LoansException {
 
         try{
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
                     : corporateFinalInfoRequest.getClientId());
-            CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
-                    corporateFinalInfoRequest.getApplicationId());
+            CorporateApplicantDetail applicantDetail = applicantRepository.getByProposalId(corporateFinalInfoRequest.getProposalMappingId());
 
             if (applicantDetail != null) {
                 applicantDetail.setModifiedBy(userId);
@@ -47,18 +51,24 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 applicantDetail.setCreatedDate(new Date());
                 applicantDetail.setIsActive(true);
                 applicantDetail.setApplicationId(new LoanApplicationMaster(corporateFinalInfoRequest.getApplicationId()));
+                if (corporateFinalInfoRequest.getProposalMappingId() != null)
+                    applicantDetail.setApplicationProposalMapping(new ApplicationProposalMapping(corporateFinalInfoRequest.getProposalMappingId()));
             }
 
             BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.getCorporateProfile()); //--------------------put check for Ignore properties
             applicantDetail.setModifiedBy(userId);
-            applicantDetail.setModifiedDate(new Date());
+            applicantDetail.  setModifiedDate(new Date());
             copyAddressFromRequestToDomain(corporateFinalInfoRequest, applicantDetail); //--------------------put check for Ignore properties
             applicantDetail = applicantRepository.save(applicantDetail);
 
 
             // Setting Flag to applicantDetailFilled or not
            // loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantDetail.getApplicationId().getId(),finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
-            loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantDetail.getApplicationId().getId(),finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
+            if (corporateFinalInfoRequest.getProposalMappingId() == null) {
+                loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantDetail.getApplicationId().getId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
+            }else {
+                applicationProposalMappingRepository.setIsApplicantFinalMandatoryFilled(corporateFinalInfoRequest.getProposalMappingId(), applicantDetail.getApplicationId().getId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
+            }
             // Updating Profile Filled Count
            /* loanApplicationRepository.setProfileFilledCount(applicantDetail.getApplicationId().getId(), finalUserId,
                     corporateFinalInfoRequest.getDetailsFilledCount());*/
@@ -109,6 +119,27 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 			}
 		}
     }
+
+    @Override
+    public CorporateFinalInfoRequest getByProposalId(Long userId, Long proposalId) throws LoansException {
+        try {
+            CorporateApplicantDetail applicantDetail = applicantRepository.getByProposalId(proposalId);
+            if (applicantDetail == null) {
+                return null;
+            }
+            CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.getCorporateProfile());
+            copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
+            corporateFinalInfoRequest.setOrganisationName(corporateFinalInfoRequest.getOrganisationName());
+            //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+
+            return corporateFinalInfoRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Corporate Profile:-",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
+
     @Override
     public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws LoansException {
         try {
@@ -118,7 +149,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 return null;
             }
             CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
-            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.getCorporateProfile());
+            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.CORPORATE_PROFILE);
             copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
 
             //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());

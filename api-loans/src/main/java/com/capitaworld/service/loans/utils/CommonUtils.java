@@ -27,6 +27,7 @@ public class CommonUtils {
 	private static final Logger logger = LoggerFactory.getLogger(CommonUtils.class);
 
 	public static final String USER_ID = "userId";
+	public static final String PROPOSAL_MAPPING_ID = "proposalMappingId";
 	public static final String USER_TYPE = "userType";
 	public static final String USER_ORG_ID = "userOrgId";
 	public static final int USER_TYPE_SERVICEPROVIDER = 3;
@@ -47,7 +48,7 @@ public class CommonUtils {
 	public static final String GST_VALIDATION_ERROR_MSG = "Please Enter Valid GSTIN and Verify Before Moving ahead.";
 	public static final String ITR_VALIDATION_ERROR_MSG = "Please Upload Valid itr and Verify Before Moving ahead.";
 	public static final String GENERIC_ERROR_MSG = "The application has encountered an error from Server. Please try again after sometime!!!.";
-	
+
 	public static final String HUNTER_INELIGIBLE_MESSAGE= "You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks";
 
 	public static final Long RETAIL_APPLICANT = 1L;
@@ -123,7 +124,7 @@ public class CommonUtils {
 	public static final String IS_ACTIVE = "isActive";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-	
+
 	public static final class PaymentStatus{
 		public static final String SUCCESS = "Success";
 		public static final String PENDING = "Pending";
@@ -329,7 +330,7 @@ public class CommonUtils {
 			return FP_PRODUCT_TEMP;
 		}
 
-		private static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
+		public static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
 			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName","firstAddress",
 			"websiteAddress","landlineNo","keyVerticalSector","keyVerticalSubsector","gstIn","email"
 		};
@@ -346,7 +347,7 @@ public class CommonUtils {
 			return CORPORATE_FINAL;
 		}
 
-		private static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
+		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
@@ -370,7 +371,7 @@ public class CommonUtils {
 			return NTB_FINAL_EXCLUSION;
 		}
 
-		private static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
@@ -526,7 +527,7 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
 	}
-	
+
 	public static final class InEligibleProposalStatus {
 		private InEligibleProposalStatus() {}
 		public static final Integer PENDING = 1;
@@ -713,7 +714,7 @@ public class CommonUtils {
 		return getBowlCount(profileCount, null) + getBowlCount(primaryCount, null) + getBowlCount(finalCount, null);
 	}
 
-	private static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
+	public static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
 
 	public static List<String> getUrlsBrforeLogin() {
 		return URLS_BRFORE_LOGIN;
@@ -1446,11 +1447,11 @@ public enum APIFlags {
 	public static String convertValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value) : "0";
 	}
-	/*Return Round Value with CommaStyle*/ 
+	/*Return Round Value with CommaStyle*/
 	public static String convertValueRound(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(Long.valueOf(Math.round(value)))  : "0";
 	}
-	
+
 	public static String formatValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
 	}
@@ -1617,7 +1618,7 @@ public enum APIFlags {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
     			if(obj instanceof BigInteger) {
     				BigInteger value =  (BigInteger) obj;
-        			return value.longValue();	
+        			return value.longValue();
     			} else {
     				return (Long) obj;
     			}
@@ -1633,7 +1634,7 @@ public enum APIFlags {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
     			if(obj instanceof BigInteger) {
     				BigInteger value =  (BigInteger) obj;
-        			return value.intValue();	
+        			return value.intValue();
     			} else {
     				return (Integer) obj;
     			}
@@ -1689,7 +1690,7 @@ public enum APIFlags {
 	// commaReplace method teaser and final view...
 	
 	public static String commaReplace(String value) {
-		
+
 		if(value != null && !value.equals("") && value.charAt(value.length()-1) != ',') {
 			return value+", ";
 		}
@@ -1705,7 +1706,7 @@ public enum APIFlags {
 	}
 
 	/**
-	 * to get financial year by date 
+	 * to get financial year by date
 	 * @return String
 	 * @author nilay.darji
 	 */

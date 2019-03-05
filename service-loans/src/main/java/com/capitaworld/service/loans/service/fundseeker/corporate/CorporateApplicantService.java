@@ -18,7 +18,9 @@ public interface CorporateApplicantService {
 	public boolean save(CorporateApplicantRequest applicantRequest,Long userId) throws LoansException;
 
 	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws LoansException;
-	
+
+	public CorporateApplicantRequest getCorporateApplicantByProposalId(Long userId, Long proposalId) throws Exception;
+
 	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws LoansException;
 	
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list);
@@ -30,7 +32,9 @@ public interface CorporateApplicantService {
 	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId,Long userId) throws LoansException;
 	
 	public Integer getCorporateEstablishmentYear(Long applicationId,Long userId) throws LoansException;
-	
+
+	public Integer getCorporateEstablishmentYearFromProposalId(Long proposalId) throws Exception;
+
 	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws LoansException;
 //	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest)throws Exception;
 	

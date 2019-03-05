@@ -20,9 +20,11 @@ import com.capitaworld.service.users.model.UsersRequest;
 public interface ProposalService {
 
 	public List<?>  fundproviderProposal(ProposalMappingRequest request);
-	
+
 	public List<?>  basicInfoForSearch(ProposalMappingRequest request);
-	
+
+	public List<?>  fundproviderProposalByProposalId(ProposalMappingRequest request);
+
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request);
 	
 	public List<FundProviderProposalDetails>  fundseekerProposal(ProposalMappingRequest request,Long userId);
@@ -32,7 +34,9 @@ public interface ProposalService {
 	public ProposalCountResponse fundSeekerProposalCount(ProposalMappingRequest request);
 	
 	public ProposalMappingResponse get(ProposalMappingRequest request);
-	
+
+	public ProposalMappingResponse getSanctionProposalByApplicationId(Long applicationId,Long userOrgId);
+
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request);
 	
 	public ProposalMappingResponse sendRequest(ProposalMappingRequest request);
@@ -47,15 +51,17 @@ public interface ProposalService {
 
 	public ProposalMappingResponse saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
 
-	public LoansResponse checkMinMaxAmount(UsersRequest userRequest);
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest,Long userOrgId);
 	
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId);
 	
 	public Object getHomeCounterDetail();
-	
+
 	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest);
-	
+
 	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId);
-	
+
 	public Integer updateStatus(Long applicationId,Long fpProductId,Long status,String remarks);
+
+    public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId);
 }

@@ -16,15 +16,17 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.ExistingProduct
 public interface ExistingProductDetailsRepository extends JpaRepository<ExistingProductDetail, Long> {
 
 	@Query("from ExistingProductDetail  a where a.applicationId.id=:id and a.applicationId.userId =:userId AND a.isActive=true")
-	public List<ExistingProductDetail> listExistingProductFromAppId(@Param("id") Long id, @Param("userId") Long userId);
+	List<ExistingProductDetail> listExistingProductFromAppId(@Param("id") Long id, @Param("userId") Long userId);
 	
 	@Query("from ExistingProductDetail  a where a.applicationId.id=:id AND a.isActive=true")
-	public List<ExistingProductDetail> listExistingProductFromAppId(@Param("id") Long id);
+	List<ExistingProductDetail> listExistingProductFromAppId(@Param("id") Long id);
 
 	@Modifying
 	@Query("update ExistingProductDetail pm set pm.isActive = false , pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
-	public int inActive(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
+	int inActive(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
 	
-	public ExistingProductDetail findByIdAndIsActive(Long id, Boolean isActive);
+	ExistingProductDetail findByIdAndIsActive(Long id, Boolean isActive);
 
+	@Query("FROM ExistingProductDetail a WHERE a.applicationProposalMapping.proposalId=:proposalId AND a.isActive=TRUE")
+	List<ExistingProductDetail> listExistingProductFromProposalId(@Param("proposalId") Long proposalId);
 }

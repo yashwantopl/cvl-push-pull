@@ -28,7 +28,9 @@ public class IneligibleProposalDetailsController {
 
 	@Autowired
 	private IneligibleProposalDetailsService ineligibleProposalDetailsService;
-
+/**
+ * need to change the method sendMailToFsAndBankBranch of applicationId to proposalId
+ * */
 	@RequestMapping(value = "/save/ineligible/proposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(
 			@RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest,
@@ -41,12 +43,16 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 		}
-		
+
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			inEligibleProposalDetailsRequest.setUserId(userId);
+		}
+
 		Integer isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved == 2) {
 
@@ -80,14 +86,14 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
+
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
 		}
-		
+
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateStatus(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
@@ -97,7 +103,7 @@ public class IneligibleProposalDetailsController {
 					new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/getOfflineProposalByOrgId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getOfflineProposalByOrgId(@RequestBody ProposalDetailsAdminRequest request, HttpServletRequest httpServletRequest) {
 		
@@ -116,9 +122,9 @@ public class IneligibleProposalDetailsController {
 		
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
-	
+
 	/**
-	 * Transfer branch and reason 
+	 * Transfer branch and reason
 	 * @param inEligibleProposalDetailsRequest
 	 * @param request
 	 * @return
@@ -132,14 +138,14 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
+
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
 		}
-		
+
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateTransferBranchDetail(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
@@ -149,7 +155,7 @@ public class IneligibleProposalDetailsController {
 					new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
-	
+
 	/**
 	 * Re open proposal
 	 * @param inEligibleProposalDetailsRequest
@@ -163,14 +169,14 @@ public class IneligibleProposalDetailsController {
 			logger.warn("Requested data can not be empty.Invalid Request. ");
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
+
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
 		}
-		
+
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateReOpenProposalDetail(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data updated", HttpStatus.OK.value()),

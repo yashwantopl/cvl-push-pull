@@ -16,14 +16,14 @@ public interface IneligibleProposalDetailsService {
 
 	public List<ProposalDetailsAdminRequest> getOfflineProposals(Long userOrgId, Long userId,
 			ProposalDetailsAdminRequest request);
-	
+
 	public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq);
-	
+
 	//added by Jaimin Darji For transfer branch
 	public boolean updateTransferBranchDetail(InEligibleProposalDetailsRequest inEliProReq);
-	
+
 	//added by Jaimin Darji For Reopen Proposal
 	public boolean updateReOpenProposalDetail(InEligibleProposalDetailsRequest inEliProReq);
-	
+
 
 }

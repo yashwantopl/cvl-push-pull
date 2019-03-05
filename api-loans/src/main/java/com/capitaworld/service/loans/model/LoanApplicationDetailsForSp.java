@@ -146,5 +146,4 @@ public class LoanApplicationDetailsForSp {
 	public void setCurrencyValue(String currencyValue) {
 		this.currencyValue = currencyValue;
 	}
-	
 }

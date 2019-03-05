@@ -91,6 +91,40 @@ public class PromotorBackgroundDetailsController {
 
 	}
 
+	@RequestMapping(value = "/getListByProposalId/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long applicationId,@PathVariable Long proposalId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		CommonDocumentUtils.startHook(logger, "getList");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		// request must not be null
+		try {
+			if (applicationId == null) {
+				logger.warn("ID Require to get Promotor Background Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<PromotorBackgroundDetailRequest> response = promotorBackgroundDetailsService
+					.getPromotorBackgroundDetailListByProposalId(applicationId,proposalId,userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Promotor Background Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "getList");

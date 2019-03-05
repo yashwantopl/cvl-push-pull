@@ -25,7 +25,7 @@ public class ProductMasterRequest implements Serializable {
 	private Date endDate;
 
 	private Long userId;
-	
+
 	private Long userOrgId;
 
 	private String productCode;
@@ -60,7 +60,7 @@ public class ProductMasterRequest implements Serializable {
 	
 	private String actionFor;
 	
-	
+
 	public ProductMasterRequest() {
 		// Do nothing because of X and Y.
 	}
@@ -69,7 +69,7 @@ public class ProductMasterRequest implements Serializable {
 		this.id = id;
 	}
 
-	
+
 	/**
 	 * @return the jobId
 	 */
@@ -84,7 +84,7 @@ public class ProductMasterRequest implements Serializable {
 		this.jobId = jobId;
 	}
 
-	
+
 	public Long getId() {
 		return this.id;
 	}

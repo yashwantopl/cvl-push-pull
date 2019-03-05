@@ -30,12 +30,12 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 @Service
 public class UniformProductParameterServiceImpl implements UniformProductParameterService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(UniformProductParameterServiceImpl.class.getName());
 
 	@Autowired
 	private UniformProductParameterRepository uniformProductParameterRepository;
-	
+
 	@Autowired
 	private UniformProductParameterTempRepository uniformProductParameterTempRepository;
 
@@ -124,7 +124,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		uniformProductParameterTempRepository.save(uniformProductParamter);
 		return true;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
@@ -173,7 +173,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 			request.setJobId(paramterRequest.getJobId());
 			request.setUserId(paramterRequest.getUserId());
 			if(CommonUtils.isObjectNullOrEmpty(paramterRequest.getActionFor())){
-				request.setRemarks(workflowData.getActionFor());				
+				request.setRemarks(workflowData.getActionFor());
 			}else{
 				request.setRemarks(paramterRequest.getActionFor());
 			}
@@ -196,10 +196,10 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 					} else {
 						logger.warn("could not updated in Uniform Product Paramters temp for Approval ===> {}", workflowData.getJobId());
 						return;
-					}					
+					}
 				}else{
 					logger.warn("Something Went wrong while updating Master Information on Approval of uniform Product ===> {}", workflowData.getJobId());
-				}				
+				}
 			} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK) {
 				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 				if (workflowResponse.getStatus() == 200) {

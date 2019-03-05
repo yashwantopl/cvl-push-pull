@@ -66,6 +66,26 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 	}
 
 	@Override
+	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailListByProposalId(Long applicationId,Long proposalId,Long userId) throws Exception {
+		try {
+			List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
+					.listPromotorBackgroundFromApplicationIdAndProposalId(applicationId,proposalId);
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequests = new ArrayList<PromotorBackgroundDetailRequest>();
+
+			for (PromotorBackgroundDetail detail : promotorBackgroundDetails) {
+				PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = new PromotorBackgroundDetailRequest();
+				BeanUtils.copyProperties(detail, promotorBackgroundDetailRequest);
+				promotorBackgroundDetailRequests.add(promotorBackgroundDetailRequest);
+			}
+			return promotorBackgroundDetailRequests;
+		} catch (Exception e) {
+			logger.info("Exception  in getpromoterBackgroundDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws LoansException {
 		try {
 			List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
