@@ -2473,7 +2473,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							if(days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
 								return Boolean.TRUE;
 							}
-						}else if(inActivityProposalList.size()<3 && connectResponse.getDataList().size() > 1){
+						}else if(inActivityProposalList.size()<3 && (connectResponse.getDataList().size() > 1 && connectResponse.getDataList().size() < 3)){
 							ConnectRequest connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectResponse.getDataList().size()-1),ConnectRequest.class);
 							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 									new LocalDate(new Date())).getDays();
