@@ -2618,17 +2618,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					Boolean isMultiBankAllowed = checkMainLogicForMultiBankSelection(connectRequest.getApplicationId(),connectRequest.getBusinessTypeId(),filteredAppListList);
 					if(isMultiBankAllowed){
+						ConnectRequest connectRequest1 = filteredAppListList.get(filteredAppListList.size()-1);
 						SchedulerDataMultipleBankRequest schedulerDataMultipleBankRequest = new SchedulerDataMultipleBankRequest();
-						schedulerDataMultipleBankRequest.setUserId(connectRequest.getUserId());
-						schedulerDataMultipleBankRequest.setApplicationId(connectRequest.getApplicationId());
-						schedulerDataMultipleBankRequest.setProposalId(connectRequest.getProposalId());
-						schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest.getModifiedDate());
+						schedulerDataMultipleBankRequest.setUserId(connectRequest1.getUserId());
+						schedulerDataMultipleBankRequest.setApplicationId(connectRequest1.getApplicationId());
+						schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
+						schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 						schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
-						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest.getProposalId());
+						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest1.getProposalId());
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
 							schedulerDataMultipleBankRequest.setOrgId(userOrgId);
 						}
-						if(!schedulerDataMultipleBankRequestList.contains(schedulerDataMultipleBankRequest)){
+						boolean idExists = schedulerDataMultipleBankRequestList.stream()
+									.anyMatch(t -> t.getApplicationId().equals(connectRequest1.getApplicationId()));
+						logger.info("exist:"+idExists);
+						if(!idExists){
 							schedulerDataMultipleBankRequestList.add(schedulerDataMultipleBankRequest);
 						}
 					}
