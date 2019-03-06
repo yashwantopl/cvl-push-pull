@@ -46,6 +46,8 @@ public interface LoanApplicationService {
 
 	public List<LoanApplicationRequest> getList(Long userId) throws LoansException;
 
+	public List<LoanApplicationRequest> getApplicationList(Long userId) throws LoansException;
+
 	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId);
 
 	public boolean lockPrimary(Long applicationId, Long userId,boolean flag) throws LoansException;
@@ -55,7 +57,7 @@ public interface LoanApplicationService {
 	public LoanApplicationRequest lockFinalByProposalId(Long applicationId,Long proposalId ,Long userId,boolean flag) throws Exception;
 
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws LoansException;
-	
+
 	public Integer getProductIdByApplicationId(Long applicationId,Long userId) throws LoansException;
 
 	public Object[] getApplicationDetailsByProposalId(Long applicationId,Long proposalMappingId) throws Exception;
