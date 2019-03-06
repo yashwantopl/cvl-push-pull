@@ -51,6 +51,11 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("select count(cr.applicationId.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true and (cr.organisationName != NULL and cr.organisationName != '') and cr.applicationProposalMapping.proposalId =NULL")
 	public Long hasAlreadyApplied(@Param("userId") Long userId,
 								  @Param("applicationId") Long applicationId);
+
+	@Query("select count(cr.applicationId.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true and (cr.organisationName != NULL and cr.organisationName != '') and cr.applicationProposalMapping.proposalId =:proposalId")
+	public Long hasAlreadyApplied(@Param("userId") Long userId,
+								  @Param("applicationId") Long applicationId,
+								  @Param("proposalId") Long proposalId);
 	
 	@Modifying
 	@Query(value="update fs_corporate_applicant_details set latitude =:lat,longitude =:lon where application_id =:applicationId and is_active = 1",nativeQuery = true)
