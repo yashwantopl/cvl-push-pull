@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.exception.ConnectException;
@@ -2445,7 +2446,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Override
 	public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId) {
-		return checkMainLogicForMultiBankSelection(applicationId,businessTypeId);
+		return checkMainLogicForMultiBankSelection(applicationId,businessTypeId,null);
 		/*try {
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
 			//ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.getProposalsByApplicationId(applicationId);
@@ -2515,7 +2516,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId) {
+	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList) {
 		try {
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
@@ -2534,21 +2535,39 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				ConnectRequest connectRequest = new ConnectRequest();
 				connectRequest.setApplicationId(applicationId);
 				connectRequest.setBusinessTypeId(businessTypeId);
-				int days = 0;
-				ConnectResponse connectResponse = connectClient.getApplicationList(applicationId);
-				if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
-					ConnectRequest connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
+				int days = 0,connectListSize=0;
+				ConnectRequest connectRequest1 = new ConnectRequest();
+				ConnectResponse connectResponse = new ConnectResponse();
+				if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+					connectListSize = filteredAppListList.size();
+					connectRequest1 = filteredAppListList.get(0);
+				}else {
+					connectResponse = connectClient.getApplicationList(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+						connectListSize = connectResponse.getDataList().size();
+						connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
+					}
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(connectRequest1)){
+					//ConnectRequest connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
 					days = Days.daysBetween(new LocalDate(connectRequest1.getModifiedDate()),
 							new LocalDate(new Date())).getDays();
 					if(days> Integer.parseInt(mxaDays)){//take 22 from application.properties file
 						return Boolean.FALSE;
 					}else{
-						if(inActivityProposalList.size()<3 && connectResponse.getDataList().size() ==1) {
+						if(inActivityProposalList.size()<3 && connectListSize ==1) {
 							if(days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
 								return Boolean.TRUE;
 							}
-						}else if(inActivityProposalList.size()<3 && (connectResponse.getDataList().size() > 1 && connectResponse.getDataList().size() < 3)){
-							ConnectRequest connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectResponse.getDataList().size()-1),ConnectRequest.class);
+						}else if(inActivityProposalList.size()<3 && (connectListSize > 1 && connectListSize < 3)){
+							ConnectRequest connectReqObj = new ConnectRequest();
+							if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+								connectReqObj =	filteredAppListList.get(connectListSize-1);
+							}else {
+								if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+									connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+								}
+							}
 							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 									new LocalDate(new Date())).getDays();
 							if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
@@ -2581,11 +2600,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try {
 			//call connect client to get application list
 			ConnectResponse connectResponse = connectClient.getInPrincipleApplicationList();
-			List<SchedulerDataMultipleBankRequest> schedulerDataMultipleBankRequestList = new ArrayList<>();
+			List<ConnectRequest> connectRequestList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
-				for (int i=0; i<connectResponse.getDataList().size(); i++){
+				for (int i=0; i<connectResponse.getDataList().size(); i++) {
 					ConnectRequest connectRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(i), ConnectRequest.class);
-					Boolean isMultiBankAllowed = checkMainLogicForMultiBankSelection(connectRequest.getApplicationId(),connectRequest.getBusinessTypeId());
+					connectRequestList.add(connectRequest);
+				}
+			}
+			List<SchedulerDataMultipleBankRequest> schedulerDataMultipleBankRequestList = new ArrayList<>();
+			if(!CommonUtils.isListNullOrEmpty(connectRequestList)) {
+				for (int i=0; i<connectRequestList.size(); i++){
+					ConnectRequest connectRequest = connectRequestList.get(i); //MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(i), ConnectRequest.class);
+
+					List<ConnectRequest> filteredAppListList = connectRequestList.stream()
+							.filter(connectReq -> connectRequest.getApplicationId().equals(connectReq.getApplicationId()))
+							.collect(Collectors.toList());
+
+					Boolean isMultiBankAllowed = checkMainLogicForMultiBankSelection(connectRequest.getApplicationId(),connectRequest.getBusinessTypeId(),filteredAppListList);
 					if(isMultiBankAllowed){
 						SchedulerDataMultipleBankRequest schedulerDataMultipleBankRequest = new SchedulerDataMultipleBankRequest();
 						schedulerDataMultipleBankRequest.setUserId(connectRequest.getUserId());
@@ -2597,7 +2628,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
 							schedulerDataMultipleBankRequest.setOrgId(userOrgId);
 						}
-						schedulerDataMultipleBankRequestList.add(schedulerDataMultipleBankRequest);
+						if(!schedulerDataMultipleBankRequestList.contains(schedulerDataMultipleBankRequest)){
+							schedulerDataMultipleBankRequestList.add(schedulerDataMultipleBankRequest);
+						}
 					}
 				}
 			}
