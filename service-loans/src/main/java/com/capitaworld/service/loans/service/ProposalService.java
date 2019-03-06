@@ -15,6 +15,7 @@ import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
 import com.capitaworld.service.users.model.UsersRequest;
 
 public interface ProposalService {
@@ -64,4 +65,8 @@ public interface ProposalService {
 	public Integer updateStatus(Long applicationId,Long fpProductId,Long status,String remarks);
 
     public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId);
+
+	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId);
+
+	public List<SchedulerDataMultipleBankRequest> getApplicationListForMultipleBank();
 }

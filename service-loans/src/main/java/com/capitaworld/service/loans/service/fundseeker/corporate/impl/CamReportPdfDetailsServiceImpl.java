@@ -461,6 +461,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
 
 			Double totalSales =0.0d;
+			DecimalFormat df = new DecimalFormat(".##");
 			if (!CommonUtils.isObjectNullOrEmpty(response)) {
 				resp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(),CAMGSTData.class);
 				if(resp.getMomSales() != null) {
@@ -468,7 +469,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					 for (MomSales sales : momSalesResp) {
 					    	totalSales += Double.valueOf(sales.getValue());
 					}
-					map.put("totalMomSales", totalSales);
+					map.put("totalMomSales", df.format(totalSales));
 				}
 
 				map.put("gstDetailedResp", response.getData());
@@ -749,26 +750,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse)) {
 				map.put("managementRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskScore()) ? proposalScoreResponse.getManagementRiskScore().intValue(): "-");
 				map.put("managementRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalScore()) ?  proposalScoreResponse.getManagementRiskMaxTotalScore().intValue():"-");
-				map.put("managementRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getManagementRiskWeightOfScoring().intValue()) :"-");
-				map.put("managementRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeight()) ? df.format((proposalScoreResponse.getManagementRiskWeight())): "-");
-				map.put("managementRiskMaxTotalWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalWeight()) ? CommonUtils.convertValueRound(proposalScoreResponse.getManagementRiskMaxTotalWeight()): "-");
+				map.put("managementRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getManagementRiskWeightOfScoring()) :"-");
+				map.put("managementRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeight()) ? Math.round(proposalScoreResponse.getManagementRiskWeight()): "-");
+				map.put("managementRiskMaxTotalWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalWeight()) ? Math.round(proposalScoreResponse.getManagementRiskMaxTotalWeight()): "-");
 				
 				map.put("financialRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskScore()) ? proposalScoreResponse.getFinancialRiskScore().intValue() : "-");
 				map.put("financialRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskMaxTotalScore()) ? proposalScoreResponse.getFinancialRiskMaxTotalScore().intValue():"-");
-				map.put("financialRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getFinancialRiskWeightOfScoring().intValue()): "-");
-				map.put("financialRiskWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeight()) ? df.format((proposalScoreResponse.getFinancialRiskWeight())) : "-");
+				map.put("financialRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getFinancialRiskWeightOfScoring()): "-");
+				map.put("financialRiskWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeight()) ? Math.round(proposalScoreResponse.getFinancialRiskWeight()): "-");
 				map.put("financialRiskMaxTotalWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskMaxTotalWeight()) ? CommonUtils.convertValueRound(proposalScoreResponse.getFinancialRiskMaxTotalWeight()) : "-");
 				
 				map.put("businessRiskScore", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskScore()) ? proposalScoreResponse.getBusinessRiskScore().intValue():"-");
 				map.put("businessRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskMaxTotalScore()) ? proposalScoreResponse.getBusinessRiskMaxTotalScore().intValue():"-");
-				map.put("businessRiskWeightOfScoring", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getBusinessRiskWeightOfScoring().intValue()):"-");
-				map.put("businessRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeight()) ? df.format((proposalScoreResponse.getBusinessRiskWeight())):"-");
+				map.put("businessRiskWeightOfScoring", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getBusinessRiskWeightOfScoring()):"-");
+				map.put("businessRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeight()) ? Math.round(proposalScoreResponse.getBusinessRiskWeight()):"-");
 				map.put("businessRiskMaxTotalWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskMaxTotalWeight()) ? CommonUtils.convertValueRound(proposalScoreResponse.getBusinessRiskMaxTotalWeight()):"-");
 				
 				map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()).intValue());
 				map.put("totalOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalScore(), proposalScoreResponse.getFinancialRiskMaxTotalScore(), proposalScoreResponse.getBusinessRiskMaxTotalScore()).intValue());
 				map.put("totalWeight", df.format(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()).doubleValue()));
-				map.put("totalRiskWeight", df.format(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeight(), proposalScoreResponse.getFinancialRiskWeight(), proposalScoreResponse.getBusinessRiskWeight()).doubleValue()));
+				map.put("totalRiskWeight", Math.addExact(Math.addExact(Math.round(proposalScoreResponse.getManagementRiskWeight()), Math.round(proposalScoreResponse.getFinancialRiskWeight())), Math.round(proposalScoreResponse.getBusinessRiskWeight())));
 				map.put("totalRiskMaxWeight", Math.round(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight()).intValue()));
 				
 				map.put("interpretation", StringEscapeUtils.escapeXml(proposalScoreResponse.getInterpretation()));
