@@ -4,6 +4,7 @@ package com.capitaworld.service.loans.service;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -66,7 +67,7 @@ public interface ProposalService {
 
     public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId);
 
-	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId);
+	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList);
 
 	public List<SchedulerDataMultipleBankRequest> getApplicationListForMultipleBank();
 }
