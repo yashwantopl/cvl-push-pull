@@ -298,7 +298,6 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			userId = 636908L;
 			if (userId == null) {
 				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
