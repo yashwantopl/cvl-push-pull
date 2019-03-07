@@ -2482,7 +2482,8 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			return restTemplate.exchange(url, HttpMethod.POST, null, LoansResponse.class).getBody();
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveIneligibleProposal : ",e);
 			throw new LoansException(e.getCause().getMessage());
