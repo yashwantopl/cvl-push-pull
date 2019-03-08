@@ -1,195 +1,188 @@
-UPDATE `fs_corporate_final_mcq_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_sector_subsector_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `industry_sector_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_existing_product_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_associated_concern_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_security_corporate_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_credit_rating_organization_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_finance_means_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_project_cost_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_ddr_form_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `product_storage_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_cma_assets_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_cma_liabilities_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_cma_operating_statement_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_promotor_background_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_current_financial_arrangements_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_director_background_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_bs_profitibility_statement_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `application_status_audit` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_ownership_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_achievement_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_guarantors_corporate_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-UPDATE `fs_corporate_proposed_product_details` AS apm, `proposal_details` AS pd SET apm.proposal_mapping_id = pd.id WHERE apm.application_id = pd.application_id;
-INSERT INTO `loan_application`.`fs_corporate_applicant_details` (`application_id`,`organisation_name`,`group_name`,`pan`,`landline_no`,`constitution_id`,`establishment_year`,`establishment_month`,`website_address`,`registered_premise_number`,`registered_street_name`,`registered_land_mark`,`registered_city_id`,`registered_state_id`,`registered_country_id`,`registered_pincode`,`same_as`,`administrative_premise_number`,`administrative_street_name`,`administrative_land_mark`,`administrative_city_id`,`administrative_state_id`,`administrative_country_id`,`administrative_pincode`,`about_us`,`key_verical_funding`,`latitude`,`longitude`,`created_by`,`modified_by`,`created_date`,`modified_date`,`is_active`,`key_vertical_sector`,`key_vertical_subsector`,`gstin`,`email`,`aadhar`,`credit_rating_id`,`cont_liability_fy_amt`,`cont_liability_sy_amt`,`cont_liability_ty_amt`,`cont_liability_year`,`not_applicable`,`total_cost_of_estimate`,`total_means_of_finance`,`collateral_security_amt_total`,`share_price_face_value`,`share_price_market_value`,`msme_registration_number`,`administrative_dist_mapping_id`,`registered_dist_mapping_id`,`establishment_date`,`environmental_impact_id`,`is_gst_completed`,`is_itr_completed`,`proposal_mapping_id`,`business_since_year`,`business_since_month`)
-    SELECT fsad.`application_id`,fsad.`organisation_name`,fsad.`group_name`,fsad.`pan`,fsad.`landline_no`,
-    fsad.`constitution_id`,fsad.`establishment_year`,fsad.`establishment_month`,fsad.`website_address`,
-    fsad.`registered_premise_number`,fsad.`registered_street_name`,fsad.`registered_land_mark`,
-    fsad.`registered_city_id`,fsad.`registered_state_id`,fsad.`registered_country_id`,fsad.`registered_pincode`,
-    fsad.`same_as`,fsad.`administrative_premise_number`,fsad.`administrative_street_name`,fsad.`administrative_land_mark`,
-    fsad.`administrative_city_id`,fsad.`administrative_state_id`,fsad.`administrative_country_id`,fsad.`administrative_pincode`,
-    fsad.`about_us`,fsad.`key_verical_funding`,fsad.`latitude`,fsad.`longitude`,fsad.`created_by`,fsad.`modified_by`,fsad.`created_date`,
-    fsad.`modified_date`,fsad.`is_active`,fsad.`key_vertical_sector`,fsad.`key_vertical_subsector`,fsad.`gstin`,fsad.`email`,fsad.`aadhar`,
-    fsad.`credit_rating_id`,fsad.`cont_liability_fy_amt`,fsad.`cont_liability_sy_amt`,fsad.`cont_liability_ty_amt`,fsad.`cont_liability_year`,
-    fsad.`not_applicable`,fsad.`total_cost_of_estimate`,fsad.`total_means_of_finance`,fsad.`collateral_security_amt_total`,fsad.`share_price_face_value`,
-    fsad.`share_price_market_value`,fsad.`msme_registration_number`,fsad.`administrative_dist_mapping_id`,fsad.`registered_dist_mapping_id`,
-    fsad.`establishment_date`,fsad.`environmental_impact_id`,fsad.`is_gst_completed`,fsad.`is_itr_completed`,pd.id AS proposal_mapping_id,
-    fsad.`business_since_year`,fsad.`business_since_month` FROM `loan_application`.`fs_corporate_applicant_details` fsad
-    INNER JOIN `loan_application`.`proposal_details` pd ON fsad.`application_id` = pd.`application_id` WHERE fsad.`proposal_mapping_id` IS NULL
+UPDATE `loan_application`.`fs_corporate_final_mcq_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active=TRUE;
+UPDATE `loan_application`.`fs_sector_subsector_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`industry_sector_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_existing_product_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_associated_concern_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_security_corporate_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_credit_rating_organization_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_finance_means_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_project_cost_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_ddr_form_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_promotor_background_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_current_financial_arrangements_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_director_background_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_bs_profitibility_statement_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`application_status_audit` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_ownership_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_achievement_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_guarantors_corporate_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_proposed_product_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `connect`.`connect_log` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `document_management`.`product_storage_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_cma_assets_details` AS apm
+INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=apm.application_id
+SET apm.proposal_mapping_id = pd.id
+WHERE (apm.financial_yearly_statement='Projected' OR apm.financial_yearly_statement='Estimated') AND pd.is_active=TRUE;
 
 INSERT INTO `loan_application`.`fs_corporate_cma_assets_details`
-    	(
-    	`advance_payment_taxes`,
-    	`advance_to_supplier_raw_materials`,
-    	`advance_to_suppliers_capital_goods`,
-    	`any_other`,
-    	`bad_or_doubtful_expenses`,
-    	`cash_and_bank_balance`,
-    	`current_ratio`,
-    	`deferred_receviables`,
-    	`deferred_receviables_others`,
-    	`depreciation_to_date`,
-    	`export_receivables`,
-    	`finished_goods`,
-    	`fixed_deposits_with_banks`,
-    	`good_will`,
-    	`government_and_other_trustee`,
-    	`gross_block`,
-    	`instalments_deferred`,
-    	`inventory`,
-    	`investments`,
-    	`investments_in_subsidiary`,
-    	`investments_or_book_debts`,
-    	`net_block`,
-    	`net_working_capital`,
-    	`non_consumable_store_and_spares`,
-    	`other_consumable_spares`,
-    	`other_consumable_spares_imported`,
-    	`other_consumable_spares_indegenous`,
-    	`other_current_assets`,
-    	`other_non_current_assets`,
-    	`others`,
-    	`patents`,
-    	`prelim_expenses`,
-    	`raw_material`,
-    	`raw_material_imported`,
-    	`raw_material_indegenous`,
-    	`receivable_other_than_defferred`,
-    	`stock_in_process`,
-    	`tangible_net_worth`,
-    	`total_assets`,
-    	`total_current_assets`,
-    	`total_intangible_assets`,
-    	`total_other_non_current_assets`,
-    	`total_out_side_liability`,
-    	`total_term_liability`,
-    	`year`,
-    	`deferred_tax_assets`,
-    	`intangible_assets`,
-    	`storage_details_id`,
-    	`application_id`,
-    	`created_date`,
-    	`modified_date`,
-    	`created_by`,
-    	`modified_by`,
-    	`is_active`,
-    	`land_building`,
-    	`plant_machines`,
-    	`impairment_asset`,
-    	`others_pre_operative_expenses_pending`,
-    	`others_assets_in_transit`,
-    	`others_other`,
-    	`total_other_nca_patent`,
-    	`total_other_nca_goodwill`,
-    	`total_other_nca_prelimnary_expenses`,
-    	`total_other_nca_bad_expenses`,
-    	`total_other_nca_other`,
-    	`other_nca_other_capital_work_inprogress`,
-    	`gross_block_1`,
-    	`gross_block_2`,
-    	`gross_block_3`,
-    	`gross_block_4`,
-    	`financial_yearly_statement`,
-    	`other_income_need_to_chek_asset`,
-    	`proposal_mapping_id`
-    	)
-    	SELECT
-    		fccsd.`advance_payment_taxes`,
-    		fccsd.`advance_to_supplier_raw_materials`,
-    		fccsd.`advance_to_suppliers_capital_goods`,
-    		fccsd.`any_other`,
-    		fccsd.`bad_or_doubtful_expenses`,
-    		fccsd.`cash_and_bank_balance`,
-    		fccsd.`current_ratio`,
-    		fccsd.`deferred_receviables`,
-    		fccsd.`deferred_receviables_others`,
-    		fccsd.`depreciation_to_date`,
-    		fccsd.`export_receivables`,
-    		fccsd.`finished_goods`,
-    		fccsd.`fixed_deposits_with_banks`,
-    		fccsd.`good_will`,
-    		fccsd.`government_and_other_trustee`,
-    		fccsd.`gross_block`,
-    		fccsd.`instalments_deferred`,
-    		fccsd.`inventory`,
-    		fccsd.`investments`,
-    		fccsd.`investments_in_subsidiary`,
-    		fccsd.`investments_or_book_debts`,
-    		fccsd.`net_block`,
-    		fccsd.`net_working_capital`,
-    		fccsd.`non_consumable_store_and_spares`,
-    		fccsd.`other_consumable_spares`,
-    		fccsd.`other_consumable_spares_imported`,
-    		fccsd.`other_consumable_spares_indegenous`,
-    		fccsd.`other_current_assets`,
-    		fccsd.`other_non_current_assets`,
-    		fccsd.`others`,
-    		fccsd.`patents`,
-    		fccsd.`prelim_expenses`,
-    		fccsd.`raw_material`,
-    		fccsd.`raw_material_imported`,
-    		fccsd.`raw_material_indegenous`,
-    		fccsd.`receivable_other_than_defferred`,
-    		fccsd.`stock_in_process`,
-    		fccsd.`tangible_net_worth`,
-    		fccsd.`total_assets`,
-    		fccsd.`total_current_assets`,
-    		fccsd.`total_intangible_assets`,
-    		fccsd.`total_other_non_current_assets`,
-    		fccsd.`total_out_side_liability`,
-    		fccsd.`total_term_liability`,
-    		fccsd.`year`,
-    		fccsd.`deferred_tax_assets`,
-    		fccsd.`intangible_assets`,
-    		fccsd.`storage_details_id`,
-    		fccsd.`application_id`,
-    		fccsd.`created_date`,
-    		fccsd.`modified_date`,
-    		fccsd.`created_by`,
-    		fccsd.`modified_by`,
-    		fccsd.`is_active`,
-    		fccsd.`land_building`,
-    		fccsd.`plant_machines`,
-    		fccsd.`impairment_asset`,
-    		fccsd.`others_pre_operative_expenses_pending`,
-    		fccsd.`others_assets_in_transit`,
-    		fccsd.`others_other`,
-    		fccsd.`total_other_nca_patent`,
-    		fccsd.`total_other_nca_goodwill`,
-    		fccsd.`total_other_nca_prelimnary_expenses`,
-    		fccsd.`total_other_nca_bad_expenses`,
-    		fccsd.`total_other_nca_other`,
-    		fccsd.`other_nca_other_capital_work_inprogress`,
-    		fccsd.`gross_block_1`,
-    		fccsd.`gross_block_2`,
-    		fccsd.`gross_block_3`,
-    		fccsd.`gross_block_4`,
-    		fccsd.`financial_yearly_statement`,
-    		fccsd.`other_income_need_to_chek_asset`,
-    		pd.`id` AS proposal_mapping_id
-    		FROM  `loan_application`.`fs_corporate_cma_assets_details` fccsd
-    		INNER JOIN `loan_application`.`proposal_details` pd ON fccsd.application_id = pd.application_id
-    		WHERE fccsd.proposal_mapping_id IS NULL
+        (
+        `advance_payment_taxes`,
+        `advance_to_supplier_raw_materials`,
+        `advance_to_suppliers_capital_goods`,
+        `any_other`,
+        `bad_or_doubtful_expenses`,
+        `cash_and_bank_balance`,
+        `current_ratio`,
+        `deferred_receviables`,
+        `deferred_receviables_others`,
+        `depreciation_to_date`,
+        `export_receivables`,
+        `finished_goods`,
+        `fixed_deposits_with_banks`,
+        `good_will`,
+        `government_and_other_trustee`,
+        `gross_block`,
+        `instalments_deferred`,
+        `inventory`,
+        `investments`,
+        `investments_in_subsidiary`,
+        `investments_or_book_debts`,
+        `net_block`,
+        `net_working_capital`,
+        `non_consumable_store_and_spares`,
+        `other_consumable_spares`,
+        `other_consumable_spares_imported`,
+        `other_consumable_spares_indegenous`,
+        `other_current_assets`,
+        `other_non_current_assets`,
+        `others`,
+        `patents`,
+        `prelim_expenses`,
+        `raw_material`,
+        `raw_material_imported`,
+        `raw_material_indegenous`,
+        `receivable_other_than_defferred`,
+        `stock_in_process`,
+        `tangible_net_worth`,
+        `total_assets`,
+        `total_current_assets`,
+        `total_intangible_assets`,
+        `total_other_non_current_assets`,
+        `total_out_side_liability`,
+        `total_term_liability`,
+        `year`,
+        `deferred_tax_assets`,
+        `intangible_assets`,
+        `storage_details_id`,
+        `application_id`,
+        `created_date`,
+        -- `modified_date`,
+        `created_by`,
+        -- `modified_by`,
+        `is_active`,
+        `land_building`,
+        `plant_machines`,
+        `impairment_asset`,
+        `others_pre_operative_expenses_pending`,
+        `others_assets_in_transit`,
+        `others_other`,
+        `total_other_nca_patent`,
+        `total_other_nca_goodwill`,
+        `total_other_nca_prelimnary_expenses`,
+        `total_other_nca_bad_expenses`,
+        `total_other_nca_other`,
+        `other_nca_other_capital_work_inprogress`,
+        `gross_block_1`,
+        `gross_block_2`,
+        `gross_block_3`,
+        `gross_block_4`,
+        `financial_yearly_statement`,
+        `other_income_need_to_chek_asset`,
+        `proposal_mapping_id`
+        )
+        SELECT
+            fccsd.`advance_payment_taxes`,
+            fccsd.`advance_to_supplier_raw_materials`,
+            fccsd.`advance_to_suppliers_capital_goods`,
+            fccsd.`any_other`,
+            fccsd.`bad_or_doubtful_expenses`,
+            fccsd.`cash_and_bank_balance`,
+            fccsd.`current_ratio`,
+            fccsd.`deferred_receviables`,
+            fccsd.`deferred_receviables_others`,
+            fccsd.`depreciation_to_date`,
+            fccsd.`export_receivables`,
+            fccsd.`finished_goods`,
+            fccsd.`fixed_deposits_with_banks`,
+            fccsd.`good_will`,
+            fccsd.`government_and_other_trustee`,
+            fccsd.`gross_block`,
+            fccsd.`instalments_deferred`,
+            fccsd.`inventory`,
+            fccsd.`investments`,
+            fccsd.`investments_in_subsidiary`,
+            fccsd.`investments_or_book_debts`,
+            fccsd.`net_block`,
+            fccsd.`net_working_capital`,
+            fccsd.`non_consumable_store_and_spares`,
+            fccsd.`other_consumable_spares`,
+            fccsd.`other_consumable_spares_imported`,
+            fccsd.`other_consumable_spares_indegenous`,
+            fccsd.`other_current_assets`,
+            fccsd.`other_non_current_assets`,
+            fccsd.`others`,
+            fccsd.`patents`,
+            fccsd.`prelim_expenses`,
+            fccsd.`raw_material`,
+            fccsd.`raw_material_imported`,
+            fccsd.`raw_material_indegenous`,
+            fccsd.`receivable_other_than_defferred`,
+            fccsd.`stock_in_process`,
+            fccsd.`tangible_net_worth`,
+            fccsd.`total_assets`,
+            fccsd.`total_current_assets`,
+            fccsd.`total_intangible_assets`,
+            fccsd.`total_other_non_current_assets`,
+            fccsd.`total_out_side_liability`,
+            fccsd.`total_term_liability`,
+            fccsd.`year`,
+            fccsd.`deferred_tax_assets`,
+            fccsd.`intangible_assets`,
+            fccsd.`storage_details_id`,
+            fccsd.`application_id`,
+            NOW(),
+            -- fccsd.`modified_date`,
+            fccsd.`created_by`,
+            -- fccsd.`modified_by`,
+            fccsd.`is_active`,
+            fccsd.`land_building`,
+            fccsd.`plant_machines`,
+            fccsd.`impairment_asset`,
+            fccsd.`others_pre_operative_expenses_pending`,
+            fccsd.`others_assets_in_transit`,
+            fccsd.`others_other`,
+            fccsd.`total_other_nca_patent`,
+            fccsd.`total_other_nca_goodwill`,
+            fccsd.`total_other_nca_prelimnary_expenses`,
+            fccsd.`total_other_nca_bad_expenses`,
+            fccsd.`total_other_nca_other`,
+            fccsd.`other_nca_other_capital_work_inprogress`,
+            fccsd.`gross_block_1`,
+            fccsd.`gross_block_2`,
+            fccsd.`gross_block_3`,
+            fccsd.`gross_block_4`,
+            fccsd.`financial_yearly_statement`,
+            fccsd.`other_income_need_to_chek_asset`,
+            -- fccsd.proposal_mapping_id,
+            pd.`id` AS proposal_mapping_id
+            FROM  `loan_application`.`fs_corporate_cma_assets_details` fccsd
+            INNER JOIN `loan_application`.`proposal_details` pd ON fccsd.application_id = pd.application_id
+            WHERE fccsd.proposal_mapping_id IS NULL AND fccsd.financial_yearly_statement='Audited' AND pd.is_active=TRUE;
+
+UPDATE `loan_application`.`fs_corporate_cma_liabilities_details` apm
+INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=apm.application_id
+SET apm.proposal_mapping_id = pd.id
+WHERE (apm.financial_yearly_statement='Projected' OR apm.financial_yearly_statement='Estimated') AND pd.is_active=TRUE;
 
 INSERT INTO `loan_application`.`fs_corporate_cma_liabilities_details`
 	(
@@ -228,9 +221,9 @@ INSERT INTO `loan_application`.`fs_corporate_cma_liabilities_details`
 	`storage_details_id`,
 	`application_id`,
 	`created_date`,
-	`modified_date`,
+	-- `modified_date`,
 	`created_by`,
-	`modified_by`,
+	-- `modified_by`,
 	`is_active`,
 	`term_liabilities_secured`,
 	`term_liabilities_unsecured`,
@@ -280,10 +273,10 @@ INSERT INTO `loan_application`.`fs_corporate_cma_liabilities_details`
 	fccld.`year`,
 	fccld.`storage_details_id`,
 	fccld.`application_id`,
-	fccld.`created_date`,
-	fccld.`modified_date`,
+	NOW(),
+	-- fccld.`modified_date`,
 	fccld.`created_by`,
-	fccld.`modified_by`,
+	-- fccld.`modified_by`,
 	fccld.`is_active`,
 	fccld.`term_liabilities_secured`,
 	fccld.`term_liabilities_unsecured`,
@@ -299,7 +292,12 @@ INSERT INTO `loan_application`.`fs_corporate_cma_liabilities_details`
 	pd.`id` AS proposal_mapping_id
 	FROM `loan_application`.`fs_corporate_cma_liabilities_details` fccld
 	INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id = fccld.application_id
-	WHERE fccld.proposal_mapping_id IS NULL
+	WHERE fccld.proposal_mapping_id IS NULL AND fccld.financial_yearly_statement='Audited' AND pd.is_active=TRUE;
+
+UPDATE `loan_application`.`fs_corporate_cma_operating_statement_details` apm
+INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=apm.application_id
+SET apm.proposal_mapping_id = pd.id
+WHERE (apm.financial_yearly_statement='Projected' OR apm.financial_yearly_statement='Estimated') AND pd.is_active=TRUE;
 
 INSERT INTO `loan_application`.`fs_corporate_cma_operating_statement_details`
 	(
@@ -353,9 +351,9 @@ INSERT INTO `loan_application`.`fs_corporate_cma_operating_statement_details`
 	`storage_details_id`,
 	`application_id`,
 	`created_date`,
-	`modified_date`,
+	-- `modified_date`,
 	`created_by`,
-	`modified_by`,
+	-- `modified_by`,
 	`is_active`,
 	`selling_distribution_exp`,
 	`general_admin_exp`,
@@ -414,10 +412,10 @@ SELECT
 	fccosd.`year`,
 	fccosd.`storage_details_id`,
 	fccosd.`application_id`,
-	fccosd.`created_date`,
-	fccosd.`modified_date`,
+	NOW(),
+	-- fccosd.`modified_date`,
 	fccosd.`created_by`,
-	fccosd.`modified_by`,
+	-- fccosd.`modified_by`,
 	fccosd.`is_active`,
 	fccosd.`selling_distribution_exp`,
 	fccosd.`general_admin_exp`,
@@ -426,6 +424,49 @@ SELECT
 	pd.`id` AS proposal_mapping_id
 	FROM `loan_application`.`fs_corporate_cma_operating_statement_details` fccosd
 	INNER JOIN `loan_application`.`proposal_details` ON pd.application_id = fccosd.application_id
-	WHERE proposal_mapping_id IS NULL
+	WHERE proposal_mapping_id IS NULL AND fccosd.financial_yearly_statement='Audited' AND pd.is_active=TRUE;
+
+
+
+INSERT INTO `loan_application`.`fs_corporate_applicant_details`
+ (`application_id`,`organisation_name`,`group_name`,`pan`,`landline_no`,`constitution_id`,
+ `establishment_year`,`establishment_month`,`website_address`,`registered_premise_number`,
+ `registered_street_name`,`registered_land_mark`,`registered_city_id`,
+ `registered_state_id`,`registered_country_id`,`registered_pincode`,
+ `same_as`,`administrative_premise_number`,`administrative_street_name`,
+ `administrative_land_mark`,`administrative_city_id`,`administrative_state_id`,
+ `administrative_country_id`,`administrative_pincode`,`about_us`,`key_verical_funding`,
+ `latitude`,`longitude`,`created_by`,
+ -- `modified_by`,
+    `created_date`,
+    -- `modified_date`,
+    `is_active`,`key_vertical_sector`,`key_vertical_subsector`,
+    `gstin`,`email`,`aadhar`,`credit_rating_id`,`cont_liability_fy_amt`,
+    `cont_liability_sy_amt`,`cont_liability_ty_amt`,`cont_liability_year`,
+    `not_applicable`,`total_cost_of_estimate`,`total_means_of_finance`,
+    `collateral_security_amt_total`,`share_price_face_value`,`share_price_market_value`,
+    `msme_registration_number`,`administrative_dist_mapping_id`,`registered_dist_mapping_id`,
+    `establishment_date`,`environmental_impact_id`,`is_gst_completed`,`is_itr_completed`,
+    `proposal_mapping_id`,`business_since_year`,`business_since_month`)
+    SELECT fsad.`application_id`,fsad.`organisation_name`,fsad.`group_name`,fsad.`pan`,fsad.`landline_no`,
+    fsad.`constitution_id`,fsad.`establishment_year`,fsad.`establishment_month`,fsad.`website_address`,
+    fsad.`registered_premise_number`,fsad.`registered_street_name`,fsad.`registered_land_mark`,
+    fsad.`registered_city_id`,fsad.`registered_state_id`,fsad.`registered_country_id`,fsad.`registered_pincode`,
+    fsad.`same_as`,fsad.`administrative_premise_number`,fsad.`administrative_street_name`,fsad.`administrative_land_mark`,
+    fsad.`administrative_city_id`,fsad.`administrative_state_id`,fsad.`administrative_country_id`,fsad.`administrative_pincode`,
+    fsad.`about_us`,fsad.`key_verical_funding`,fsad.`latitude`,fsad.`longitude`,fsad.`created_by`,
+    -- fsad.`modified_by`,
+    NOW(),
+    -- fsad.`modified_date`,
+    fsad.`is_active`,fsad.`key_vertical_sector`,fsad.`key_vertical_subsector`,fsad.`gstin`,fsad.`email`,fsad.`aadhar`,
+    fsad.`credit_rating_id`,fsad.`cont_liability_fy_amt`,fsad.`cont_liability_sy_amt`,fsad.`cont_liability_ty_amt`,fsad.`cont_liability_year`,
+    fsad.`not_applicable`,fsad.`total_cost_of_estimate`,fsad.`total_means_of_finance`,fsad.`collateral_security_amt_total`,fsad.`share_price_face_value`,
+    fsad.`share_price_market_value`,fsad.`msme_registration_number`,fsad.`administrative_dist_mapping_id`,fsad.`registered_dist_mapping_id`,
+    fsad.`establishment_date`,fsad.`environmental_impact_id`,fsad.`is_gst_completed`,fsad.`is_itr_completed`,pd.id AS proposal_mapping_id,
+    fsad.`business_since_year`,fsad.`business_since_month` FROM `loan_application`.`fs_corporate_applicant_details` fsad
+    INNER JOIN `loan_application`.`proposal_details` pd ON fsad.`application_id` = pd.`application_id`
+    WHERE fsad.`proposal_mapping_id` IS NULL AND pd.is_active=TRUE;
+
+
 
 
