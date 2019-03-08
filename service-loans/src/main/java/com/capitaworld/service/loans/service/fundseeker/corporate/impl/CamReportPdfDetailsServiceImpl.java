@@ -331,7 +331,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
         logger.info("======================>"+applicationProposalMapping.getApplicationId()+"======app"+applicationProposalMapping.getProposalId());
         map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? simpleDateFormat.format(applicationProposalMapping.getApprovedDate()):"-");
-
+        map.put("applicationCode", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApplicationCode()));
+        
         Long toApplicationId = applicationProposalMapping.getApplicationId();
         Long userId     =  applicationProposalMapping.getUserId();
         logger.info("======================>"+userId);
@@ -343,8 +344,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(toApplicationId, userId);
         
         if(applicationProposalMapping != null) {
-            map.put("applicationCode", applicationProposalMapping.getApplicationCode());
-            map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? simpleDateFormat.format(applicationProposalMapping.getApprovedDate()):"-");
+           // map.put("applicationCode", applicationProposalMapping.getApplicationCode());
+            //map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? simpleDateFormat.format(applicationProposalMapping.getApprovedDate()):"-");
             map.put("isMcqSkipped", applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
         }
         CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(toApplicationId);
