@@ -1982,7 +1982,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			break;
 
 		case CommonUtils.TabType.CONNECTIONS:
-			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getProposalId()))
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+			else
+				isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
 			if (!isPrimaryLocked) {
 				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the connections !");
 				response.put(RESULT_LITERAL, false);
@@ -2103,7 +2106,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 */
 			break;
 		case CommonUtils.TabType.FINAL_INFORMATION:
-			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getProposalId()))
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+			else
+				isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
 			if (!isPrimaryLocked) {
 				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
@@ -2137,7 +2143,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
-			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getProposalId()))
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+			else
+				isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
 			logger.info("isPrimaryLocked : "+isPrimaryLocked);
 			/*
 			 * if (!isPrimaryLocked) { response.put(MESSAGE_LITERAL,
@@ -2178,7 +2187,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_UPLOAD:
-			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getProposalId()))
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+			else
+				isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
 			if (!isPrimaryLocked) {
 				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
