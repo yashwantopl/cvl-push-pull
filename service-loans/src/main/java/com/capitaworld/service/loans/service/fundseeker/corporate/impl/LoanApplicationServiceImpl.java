@@ -895,11 +895,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			
 			logger.info("In GetList");
-			// List<ApplicationProposalMapping> results = applicationProposalMappingRepository.getUserLoans(userId);
-			List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
+			List<ApplicationProposalMapping> results = applicationProposalMappingRepository.getUserLoans(userId);
+			//List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
 			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
 			if("N".equals(IS_UNIT_TEST)) {
-			for (LoanApplicationMaster master : results) {
+			for (ApplicationProposalMapping master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
 				if (CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
@@ -909,7 +909,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					requests.add(request);
 					continue;
 				}
-				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
+				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getApplicationId(), master.getProductId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
@@ -928,7 +928,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				} else {
 					request.setLoanTypeMain(CommonUtils.RETAIL);
-					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getId());
+					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getApplicationId());
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 					request.setLoanTypeSub("DEBT");
 				}
@@ -941,7 +941,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						request.setDdrStatusId(master.getDdrStatusId());
 					} else {
 						ProposalMappingResponse response = proposalDetailsClient
-								.getFundSeekerApplicationStatus(master.getId());
+								.getFundSeekerApplicationStatus(master.getApplicationId());
 						request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null
 								: (Integer) response.getData());
 						request.setIsNhbsApplication(false);
@@ -954,7 +954,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				long proposalStatusId = 0l;
 				try {
 					ProposalMappingResponse response = proposalDetailsClient
-							.getActiveProposalByApplicationID(master.getId());
+							.getActiveProposalByApplicationID(master.getApplicationId());
 
 					if (!CommonUtils.isObjectNullOrEmpty(response)
 							&& !CommonUtils.isObjectNullOrEmpty(response.getData())) {
