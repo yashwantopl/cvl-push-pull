@@ -505,7 +505,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
-					corporateProposalDetails.setModifiedDate(applicationProposalMapping.getModifiedDate());
+					corporateProposalDetails.setModifiedDate(applicationProposalMapping.getModifiedDate() != null ? applicationProposalMapping.getModifiedDate() : applicationProposalMapping.getCreatedDate());
 
 					corporateProposalDetails.setProposalStatus(proposalrequest.getProposalStatusId());
 					if(proposalrequest.getProposalStatusId() == ProposalStatus.HOLD || proposalrequest.getProposalStatusId() == ProposalStatus.DECLINE) {
