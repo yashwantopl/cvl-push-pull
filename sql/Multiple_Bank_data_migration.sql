@@ -8,7 +8,6 @@ UPDATE `loan_application`.`fs_corporate_credit_rating_organization_details` apm 
 UPDATE `loan_application`.`fs_corporate_finance_means_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
 UPDATE `loan_application`.`fs_corporate_project_cost_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
 UPDATE `loan_application`.`fs_ddr_form_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
-UPDATE `loan_application`.`product_storage_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
 UPDATE `loan_application`.`fs_corporate_promotor_background_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
 UPDATE `loan_application`.`fs_corporate_current_financial_arrangements_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
 UPDATE `loan_application`.`fs_corporate_director_background_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
@@ -18,30 +17,12 @@ UPDATE `loan_application`.`fs_corporate_ownership_details` apm INNER JOIN `loan_
 UPDATE `loan_application`.`fs_corporate_achievement_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
 UPDATE `loan_application`.`fs_corporate_guarantors_corporate_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
 UPDATE `loan_application`.`fs_corporate_proposed_product_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
-INSERT INTO `loan_application`.`fs_corporate_applicant_details` (`application_id`,`organisation_name`,`group_name`,`pan`,`landline_no`,`constitution_id`,`establishment_year`,`establishment_month`,`website_address`,`registered_premise_number`,`registered_street_name`,`registered_land_mark`,`registered_city_id`,`registered_state_id`,`registered_country_id`,`registered_pincode`,`same_as`,`administrative_premise_number`,`administrative_street_name`,`administrative_land_mark`,`administrative_city_id`,`administrative_state_id`,`administrative_country_id`,`administrative_pincode`,`about_us`,`key_verical_funding`,`latitude`,`longitude`,`created_by`,-- `modified_by`,
-    `created_date`,--`modified_date`,
-    `is_active`,`key_vertical_sector`,`key_vertical_subsector`,`gstin`,`email`,`aadhar`,`credit_rating_id`,`cont_liability_fy_amt`,`cont_liability_sy_amt`,`cont_liability_ty_amt`,`cont_liability_year`,`not_applicable`,`total_cost_of_estimate`,`total_means_of_finance`,`collateral_security_amt_total`,`share_price_face_value`,`share_price_market_value`,`msme_registration_number`,`administrative_dist_mapping_id`,`registered_dist_mapping_id`,`establishment_date`,`environmental_impact_id`,`is_gst_completed`,`is_itr_completed`,`proposal_mapping_id`,`business_since_year`,`business_since_month`)
-    SELECT fsad.`application_id`,fsad.`organisation_name`,fsad.`group_name`,fsad.`pan`,fsad.`landline_no`,
-    fsad.`constitution_id`,fsad.`establishment_year`,fsad.`establishment_month`,fsad.`website_address`,
-    fsad.`registered_premise_number`,fsad.`registered_street_name`,fsad.`registered_land_mark`,
-    fsad.`registered_city_id`,fsad.`registered_state_id`,fsad.`registered_country_id`,fsad.`registered_pincode`,
-    fsad.`same_as`,fsad.`administrative_premise_number`,fsad.`administrative_street_name`,fsad.`administrative_land_mark`,
-    fsad.`administrative_city_id`,fsad.`administrative_state_id`,fsad.`administrative_country_id`,fsad.`administrative_pincode`,
-    fsad.`about_us`,fsad.`key_verical_funding`,fsad.`latitude`,fsad.`longitude`,fsad.`created_by`,-- fsad.`modified_by`,
-    fsad.`created_date`,
-    -- fsad.`modified_date`,
-    fsad.`is_active`,fsad.`key_vertical_sector`,fsad.`key_vertical_subsector`,fsad.`gstin`,fsad.`email`,fsad.`aadhar`,
-    fsad.`credit_rating_id`,fsad.`cont_liability_fy_amt`,fsad.`cont_liability_sy_amt`,fsad.`cont_liability_ty_amt`,fsad.`cont_liability_year`,
-    fsad.`not_applicable`,fsad.`total_cost_of_estimate`,fsad.`total_means_of_finance`,fsad.`collateral_security_amt_total`,fsad.`share_price_face_value`,
-    fsad.`share_price_market_value`,fsad.`msme_registration_number`,fsad.`administrative_dist_mapping_id`,fsad.`registered_dist_mapping_id`,
-    fsad.`establishment_date`,fsad.`environmental_impact_id`,fsad.`is_gst_completed`,fsad.`is_itr_completed`,pd.id AS proposal_mapping_id,
-    fsad.`business_since_year`,fsad.`business_since_month` FROM `loan_application`.`fs_corporate_applicant_details` fsad
-    INNER JOIN `loan_application`.`proposal_details` pd ON fsad.`application_id` = pd.`application_id` WHERE fsad.`proposal_mapping_id` IS NULL AND pd.is_active=TRUE;
-
-UPDATE `loan_application`.`fs_corporate_applicant_details` AS apm
+UPDATE `connect`.`connect_log` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `document_management`.`product_storage_details` apm INNER JOIN `loan_application`.`proposal_details` pd ON apm.application_id=pd.application_id SET apm.proposal_mapping_id = pd.id WHERE pd.is_active = TRUE;
+UPDATE `loan_application`.`fs_corporate_cma_assets_details` AS apm
 INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=apm.application_id
 SET apm.proposal_mapping_id = pd.id
-WHERE pd.is_active=TRUE;
+WHERE (apm.financial_yearly_statement='Projected' OR apm.financial_yearly_statement='Estimated') AND pd.is_active=TRUE;
 
 INSERT INTO `loan_application`.`fs_corporate_cma_assets_details`
         (
@@ -198,7 +179,7 @@ INSERT INTO `loan_application`.`fs_corporate_cma_assets_details`
             INNER JOIN `loan_application`.`proposal_details` pd ON fccsd.application_id = pd.application_id
             WHERE fccsd.proposal_mapping_id IS NULL AND fccsd.financial_yearly_statement='Audited' AND pd.is_active=TRUE;
 
-UPDATE `loan_application`.`fs_corporate_cma_assets_details` AS apm
+UPDATE `loan_application`.`fs_corporate_cma_liabilities_details` apm
 INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=apm.application_id
 SET apm.proposal_mapping_id = pd.id
 WHERE (apm.financial_yearly_statement='Projected' OR apm.financial_yearly_statement='Estimated') AND pd.is_active=TRUE;
@@ -292,7 +273,7 @@ INSERT INTO `loan_application`.`fs_corporate_cma_liabilities_details`
 	fccld.`year`,
 	fccld.`storage_details_id`,
 	fccld.`application_id`,
-	fccld.`created_date`,
+	NOW(),
 	-- fccld.`modified_date`,
 	fccld.`created_by`,
 	-- fccld.`modified_by`,
@@ -313,8 +294,7 @@ INSERT INTO `loan_application`.`fs_corporate_cma_liabilities_details`
 	INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id = fccld.application_id
 	WHERE fccld.proposal_mapping_id IS NULL AND fccld.financial_yearly_statement='Audited' AND pd.is_active=TRUE;
 
-
-	UPDATE `loan_application`.`fs_corporate_cma_liabilities_details` apm
+UPDATE `loan_application`.`fs_corporate_cma_operating_statement_details` apm
 INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=apm.application_id
 SET apm.proposal_mapping_id = pd.id
 WHERE (apm.financial_yearly_statement='Projected' OR apm.financial_yearly_statement='Estimated') AND pd.is_active=TRUE;
@@ -432,7 +412,7 @@ SELECT
 	fccosd.`year`,
 	fccosd.`storage_details_id`,
 	fccosd.`application_id`,
-	fccosd.`created_date`,
+	NOW(),
 	-- fccosd.`modified_date`,
 	fccosd.`created_by`,
 	-- fccosd.`modified_by`,
@@ -444,11 +424,49 @@ SELECT
 	pd.`id` AS proposal_mapping_id
 	FROM `loan_application`.`fs_corporate_cma_operating_statement_details` fccosd
 	INNER JOIN `loan_application`.`proposal_details` ON pd.application_id = fccosd.application_id
-	WHERE proposal_mapping_id IS NULL AND fccosd.financial_yearly_statement='Audited' AND pd.is_active=TRUE
+	WHERE proposal_mapping_id IS NULL AND fccosd.financial_yearly_statement='Audited' AND pd.is_active=TRUE;
 
-	UPDATE `loan_application`.`fs_corporate_cma_operating_statement_details` apm
-INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=apm.application_id
-SET apm.proposal_mapping_id = pd.id
-WHERE (apm.financial_yearly_statement='Projected' OR apm.financial_yearly_statement='Estimated') AND pd.is_active=TRUE;
+
+
+INSERT INTO `loan_application`.`fs_corporate_applicant_details`
+ (`application_id`,`organisation_name`,`group_name`,`pan`,`landline_no`,`constitution_id`,
+ `establishment_year`,`establishment_month`,`website_address`,`registered_premise_number`,
+ `registered_street_name`,`registered_land_mark`,`registered_city_id`,
+ `registered_state_id`,`registered_country_id`,`registered_pincode`,
+ `same_as`,`administrative_premise_number`,`administrative_street_name`,
+ `administrative_land_mark`,`administrative_city_id`,`administrative_state_id`,
+ `administrative_country_id`,`administrative_pincode`,`about_us`,`key_verical_funding`,
+ `latitude`,`longitude`,`created_by`,
+ -- `modified_by`,
+    `created_date`,
+    -- `modified_date`,
+    `is_active`,`key_vertical_sector`,`key_vertical_subsector`,
+    `gstin`,`email`,`aadhar`,`credit_rating_id`,`cont_liability_fy_amt`,
+    `cont_liability_sy_amt`,`cont_liability_ty_amt`,`cont_liability_year`,
+    `not_applicable`,`total_cost_of_estimate`,`total_means_of_finance`,
+    `collateral_security_amt_total`,`share_price_face_value`,`share_price_market_value`,
+    `msme_registration_number`,`administrative_dist_mapping_id`,`registered_dist_mapping_id`,
+    `establishment_date`,`environmental_impact_id`,`is_gst_completed`,`is_itr_completed`,
+    `proposal_mapping_id`,`business_since_year`,`business_since_month`)
+    SELECT fsad.`application_id`,fsad.`organisation_name`,fsad.`group_name`,fsad.`pan`,fsad.`landline_no`,
+    fsad.`constitution_id`,fsad.`establishment_year`,fsad.`establishment_month`,fsad.`website_address`,
+    fsad.`registered_premise_number`,fsad.`registered_street_name`,fsad.`registered_land_mark`,
+    fsad.`registered_city_id`,fsad.`registered_state_id`,fsad.`registered_country_id`,fsad.`registered_pincode`,
+    fsad.`same_as`,fsad.`administrative_premise_number`,fsad.`administrative_street_name`,fsad.`administrative_land_mark`,
+    fsad.`administrative_city_id`,fsad.`administrative_state_id`,fsad.`administrative_country_id`,fsad.`administrative_pincode`,
+    fsad.`about_us`,fsad.`key_verical_funding`,fsad.`latitude`,fsad.`longitude`,fsad.`created_by`,
+    -- fsad.`modified_by`,
+    NOW(),
+    -- fsad.`modified_date`,
+    fsad.`is_active`,fsad.`key_vertical_sector`,fsad.`key_vertical_subsector`,fsad.`gstin`,fsad.`email`,fsad.`aadhar`,
+    fsad.`credit_rating_id`,fsad.`cont_liability_fy_amt`,fsad.`cont_liability_sy_amt`,fsad.`cont_liability_ty_amt`,fsad.`cont_liability_year`,
+    fsad.`not_applicable`,fsad.`total_cost_of_estimate`,fsad.`total_means_of_finance`,fsad.`collateral_security_amt_total`,fsad.`share_price_face_value`,
+    fsad.`share_price_market_value`,fsad.`msme_registration_number`,fsad.`administrative_dist_mapping_id`,fsad.`registered_dist_mapping_id`,
+    fsad.`establishment_date`,fsad.`environmental_impact_id`,fsad.`is_gst_completed`,fsad.`is_itr_completed`,pd.id AS proposal_mapping_id,
+    fsad.`business_since_year`,fsad.`business_since_month` FROM `loan_application`.`fs_corporate_applicant_details` fsad
+    INNER JOIN `loan_application`.`proposal_details` pd ON fsad.`application_id` = pd.`application_id`
+    WHERE fsad.`proposal_mapping_id` IS NULL AND pd.is_active=TRUE;
+
+
 
 
