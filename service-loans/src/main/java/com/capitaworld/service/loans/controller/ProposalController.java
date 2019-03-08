@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.PathParam;
 
+import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -469,8 +470,12 @@ public class ProposalController {
 	@RequestMapping(value = "/inprincipleDataMulipleBank", method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> multiplbankInprincipleRecord(HttpServletRequest httpServletRequest) {
 		try {
-			proposalService.getApplicationListForMultipleBank();
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),"Data Found"), HttpStatus.OK);
+			List<SchedulerDataMultipleBankRequest> schedulerDataMultipleBankRequestList = proposalService.getApplicationListForMultipleBank();
+
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setListData(schedulerDataMultipleBankRequestList);
+			loansResponse.setStatus(HttpStatus.OK.value());
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
