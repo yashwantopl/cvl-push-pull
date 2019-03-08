@@ -21,7 +21,7 @@ public class CorporateMcqDetail implements Serializable {
     private LoanApplicationMaster applicationId;
 
     @OneToOne
-    @JoinColumn(name = "proposal_id")
+    @JoinColumn(name = "proposal_mapping_id")
     private ApplicationProposalMapping applicationProposalMapping;
 
     @Column(name = "accounting_systems_id")
