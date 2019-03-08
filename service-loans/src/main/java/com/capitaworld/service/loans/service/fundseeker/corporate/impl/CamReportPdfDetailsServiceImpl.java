@@ -341,9 +341,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
         //CHANGES====>
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(toApplicationId, userId);
-        if(loanApplicationMaster != null) {
-            map.put("applicationCode", loanApplicationMaster.getApplicationCode());
-            map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? simpleDateFormat.format(loanApplicationMaster.getApprovedDate()):"-");
+        
+        if(applicationProposalMapping != null) {
+            map.put("applicationCode", applicationProposalMapping.getApplicationCode());
+            map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? simpleDateFormat.format(applicationProposalMapping.getApprovedDate()):"-");
             map.put("isMcqSkipped", applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
         }
         CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(toApplicationId);
@@ -684,7 +685,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			int currentYear = scoringService.getFinYear(toApplicationId);
 			map.put("currentYr",currentYear-1);
 			// PENDING
-			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
+			Long denominationValue = null;
+			if(applicationProposalMapping.getDenominationId() != null) {
+				denominationValue = Denomination.getById(applicationProposalMapping.getDenominationId().intValue()).getDigit();
+			}
+			
 			Integer[] years = {currentYear-3, currentYear-2, currentYear-1};
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
 			for(Integer year : years) {
@@ -1225,7 +1230,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 /**********************************************FINAL DETAILS*****************************************************/
 		
-		if(isFinalView && (loanApplicationMaster.getIsMcqSkipped() == null || loanApplicationMaster.getIsMcqSkipped() == false)) {
+		if(isFinalView && (applicationProposalMapping.getIsMcqSkipped() == null || applicationProposalMapping.getIsMcqSkipped() == false)) {
 			//FITCH DATA
 			try {
 			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
