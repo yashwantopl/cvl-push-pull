@@ -2071,7 +2071,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				}
 			}
-			isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getProposalId()))
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+			else
+				isPrimaryLocked = isPrimaryLocked(proposalMapping.getApplicationId(), proposalMapping.getUserId());
+
 			if (!isPrimaryLocked) {
 				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
