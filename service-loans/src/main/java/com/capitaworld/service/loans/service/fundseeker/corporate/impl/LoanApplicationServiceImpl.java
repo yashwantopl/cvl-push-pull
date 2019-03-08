@@ -901,6 +901,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if("N".equals(IS_UNIT_TEST)) {
 			for (ApplicationProposalMapping master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
+				request.setId(master.getApplicationId());
 				BeanUtils.copyProperties(master, request, "name");
 				if (CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
