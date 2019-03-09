@@ -685,7 +685,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			int currentYear = scoringService.getFinYear(toApplicationId);
 			map.put("currentYr",currentYear-1);
 			// PENDING
-			Long denominationValue = null;
+			Long denominationValue = 1l;
 			if(applicationProposalMapping.getDenominationId() != null) {
 				denominationValue = Denomination.getById(applicationProposalMapping.getDenominationId().intValue()).getDigit();
 			}
