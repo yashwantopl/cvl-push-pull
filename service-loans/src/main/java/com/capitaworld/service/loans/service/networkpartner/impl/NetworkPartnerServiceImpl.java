@@ -1139,6 +1139,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationCode(proposalMapping.getApplicationCode());
 				nhbsApplicationsResponse.setProposalId(proposalMapping.getProposalId());
 				nhbsApplicationsResponse.setBusinessTypeId(proposalMapping.getBusinessTypeId());
+				nhbsApplicationsResponse.setApprovalDate(proposalMapping.getApprovedDate());
 				if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getDdrStatusId())) {
 					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(proposalMapping.getDdrStatusId().intValue()));
 					nhbsApplicationsResponse.setDdrStatusId(proposalMapping.getDdrStatusId().intValue());
