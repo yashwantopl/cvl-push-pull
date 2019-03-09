@@ -2485,7 +2485,7 @@ public class LoansClient {
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
-			logger.error("Exception in saveIneligibleProposal : ",e);
+			logger.error("Exception in getInprincipleList  : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}

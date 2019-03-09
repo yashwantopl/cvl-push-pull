@@ -155,8 +155,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		}
 		//==================Sending Mail notification to Maker=============================
 		try{
-//			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-//			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 			
 			Boolean sanctionMailStatus = sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId(),loanSanctionDomainOld);
 			if(sanctionMailStatus) {
@@ -180,9 +180,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 
-		if(loanSanctionDomainOld!=null) {
-			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		}
 		try{
 			if (proposalDetailByApplicationId.get(1) != null){
 				//multiple bank emails
