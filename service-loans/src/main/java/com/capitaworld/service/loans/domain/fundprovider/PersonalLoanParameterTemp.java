@@ -219,10 +219,10 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	private Integer userCreditRating;
 	
 	@Column(name="is_banking_relation_mandatory")
-	private Boolean isBankingRelationMandatory;
+	private Boolean isBankingRelationMandatory= false;
 
 	@Column(name="is_banking_relation_display")
-	private Boolean isBankingRelationDisplay;
+	private Boolean isBankingRelationDisplay= false;
 	
 	@Column(name="min_bank_relation")
 	private Double minBankRelation;
@@ -231,16 +231,16 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	private Double maxBankRelation;
 	
 	@Column(name="is_salary_mode_display")
-	private Boolean isSalaryModeDisplay;
+	private Boolean isSalaryModeDisplay= false;
 
 	@Column(name="is_salary_mode_mandatory")
-	private Boolean isSalaryModeMandatory;
+	private Boolean isSalaryModeMandatory= false;
 	
 	@Column(name="is_salary_ac_type_display")
-	private Boolean isSalaryAcTypeDisplay;
+	private Boolean isSalaryAcTypeDisplay= false;
 
 	@Column(name="is_salary_ac_type_mandatory")
-	private Boolean isSalaryAcTypeMandatory;
+	private Boolean isSalaryAcTypeMandatory= false;
 	
 	@Column(name="salary_ac_type")
 	private Integer salaryAcType;
