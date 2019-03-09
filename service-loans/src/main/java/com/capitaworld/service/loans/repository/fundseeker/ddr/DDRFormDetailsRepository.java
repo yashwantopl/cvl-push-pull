@@ -21,7 +21,7 @@ public interface DDRFormDetailsRepository extends JpaRepository<DDRFormDetails, 
 	public DDRFormDetails getByIdAndProposaMappingIdAndApplicationId(@Param("id") Long id,@Param("proposalId") Long proposalId,@Param("applicationId") Long applicationId);
 
 	@Query("select ddr from DDRFormDetails ddr where ddr.proposalMappingId =:proposalId and ddr.applicationId=:applicationId and ddr.isActive = true")
-	public DDRFormDetails getByProposaMappingIdAndApplicationId(@Param("proposalId") Long proposalId,@Param("applicationId") Long applicationId);
+	public DDRFormDetails getByProposaMappingIdAndApplicationId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
 	
 	@Query("select ddr from DDRFormDetails ddr where ddr.applicationId =:appId and ddr.orgId =:orgId and ddr.isActive = true")
 	public DDRFormDetails getByAppIdAndOrgIdAndIsActive(@Param("appId") Long appId, @Param("orgId") Long orgId);
