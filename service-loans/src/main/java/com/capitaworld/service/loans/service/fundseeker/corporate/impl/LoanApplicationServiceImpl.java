@@ -910,6 +910,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					requests.add(request);
 					continue;
 				}
+				request.setAmount(master.getLoanAmount());
 				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getApplicationId(), master.getProductId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
