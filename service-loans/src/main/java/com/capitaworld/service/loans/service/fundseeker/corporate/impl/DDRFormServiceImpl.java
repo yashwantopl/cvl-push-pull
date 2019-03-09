@@ -778,14 +778,14 @@ public class DDRFormServiceImpl implements DDRFormService {
 		// PROMOTOR BACKGROUND DETAILS :- LINENO:12
 		try {
 			response.setPromoBackRespList(
-					promotorBackgroundDetailsService.getPromotorBackgroundDetailListByProposalId(applicationId,proposalId, null));
+					promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, null));
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get Primary Promotor Background Details in DDR OneForm :- ",e);
 		}
 
 		// OWNERSHIP DETAILS :- LINENO:12
 		try {
-			List<OwnershipDetail> ownershipList = ownershipDetailsRepository.listOwnershipFromAppIdAndProposalId(applicationId,proposalId);
+			List<OwnershipDetail> ownershipList = ownershipDetailsRepository.listOwnershipFromAppId(applicationId);
 			List<OwnershipDetailRequest> ownershipRespList = new ArrayList<>(ownershipList.size());
 			OwnershipDetailRequest ownershipReq = null;
 			for (OwnershipDetail ownership : ownershipList) {
@@ -804,7 +804,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		// SECURITY DETAIL :- LINENO:12
 		try {
 			response.setSecurityCorporateDetailList(
-					securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(proposalId,userId));
+					securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId,userId));
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get Primary Security Details in DDR OneForm : ",e);
 		}
@@ -813,9 +813,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 		// Products) :- LINENO:111
 		try {
 			response.setProposedProductDetailList(
-					proposedProductDetailsService.getProposedProductDetailListFromProposalId(proposalId, userId));
+					proposedProductDetailsService.getProposedProductDetailList(applicationId, userId));
 			response.setExistingProductDetailList(
-					existingProductDetailsService.getExistingProductDetailListByProposalId(proposalId, userId));
+					existingProductDetailsService.getExistingProductDetailList(applicationId, userId));
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get Product Proposed and Existing details in DDR OneForm : ",e);
 		}
@@ -823,7 +823,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		// ASSOCIATES CONCERN :- LINENO:17
 		try {
 			response.setAssociatedConcernDetailList(
-					associatedConcernDetailService.getAssociatedConcernsDetailListByProposalId(proposalId, userId));
+					associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId));
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get associates concern in DDR OneForm :- ",e);
 		}
