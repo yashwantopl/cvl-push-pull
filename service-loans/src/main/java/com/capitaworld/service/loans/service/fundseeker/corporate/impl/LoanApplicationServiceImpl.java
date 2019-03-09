@@ -5984,6 +5984,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			applicationProposalMapping.setUserId(loanApplicationMaster.getUserId());
 			applicationProposalMapping.setCreatedBy(proposalDetails.getApplicationId());
+			applicationProposalMapping.setCurrencyId(Currency.RUPEES.getId());
+			applicationProposalMapping.setDenominationId(Denomination.ABSOLUTE.getId());
 			applicationProposalMapping.setCreatedDate(new Date());
 			applicationProposalMapping.setIsActive(true);
 			applicationProposalMappingRepository.save(applicationProposalMapping);
