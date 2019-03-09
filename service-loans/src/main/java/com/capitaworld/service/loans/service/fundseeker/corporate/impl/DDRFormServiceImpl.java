@@ -2085,7 +2085,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 
 			try {
-				List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdAndProposalId(appId,proposalId);
+				List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(appId);
 				DDRExistingBankerDetailRequest response = null;
 				responseList = new ArrayList<>(financialArrangementsList.size());
 				FinancialArrangementDetailResponseString finArrRes = null;

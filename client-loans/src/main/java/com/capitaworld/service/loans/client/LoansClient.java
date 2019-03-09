@@ -251,6 +251,7 @@ public class LoansClient {
     private static final String REQ_AUTH = "req_auth";
     private static final String GET_LOAN_APPLICATION_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
     private static final String GET_CORPORATE_BY_PROPOSAL_ID="/final_info/getByProposalId";
+    private static final String GET_INPRINCIPLE_LIST_FOR_MULTIPLEBANNK="/proposal/inprincipleDataMulipleBank";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2473,6 +2474,19 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available While Get responce from /GET_LOAN_PROPOSAL_BY_PROPOSAL_ID");
+		}
+	}
+	public LoansResponse getInprincipleList() throws LoansException {
+		String url = loansBaseUrl.concat(GET_INPRINCIPLE_LIST_FOR_MULTIPLEBANNK);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getInprincipleList  : ",e);
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 }

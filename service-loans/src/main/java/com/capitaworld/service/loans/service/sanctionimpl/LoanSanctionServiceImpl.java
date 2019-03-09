@@ -156,7 +156,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		//==================Sending Mail notification to Maker=============================
 		try{
 			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+//			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			
+			Boolean sanctionMailStatus = sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId(),loanSanctionDomainOld);
+			if(sanctionMailStatus) {
+				logger.info("Sanction email has been sent"); 
+			}
 		}catch(Exception e){
 			logger.error("Exception : {}",e);
 		}
@@ -171,194 +176,198 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 
 	public Boolean sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId,LoanSanctionDomain loanSanctionDomainOld ){
+		logger.info("inside notification start for sanction");
 
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 
-		if(loanSanctionDomainOld!=null) {
+		/*if(loanSanctionDomainOld!=null) {
 			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		}
-	try{
-		if (proposalDetailByApplicationId.get(1) != null){
-			//multiple bank emails
-			for(Object[] arr : proposalDetailByApplicationId ){
-
-				Integer proposal_status = CommonUtils.convertInteger(arr[1]);
-				logger.info("Proposal_Status ====>"+proposal_status);
-				String proposal_code = CommonUtils.convertString(arr[2]);
-				Long branch_id = CommonUtils.convertLong(arr[3]);
-				logger.info("Branch_id ====>"+branch_id);
-
-
-				if (proposal_status == 5 && branch_id != null) {
-
-					UserResponse userResponse=  userClient.getBranchUsersListByBranchId(branch_id);
-
-					for (int i=0;i<userResponse.getListData().size();i++) {
-						try {
-							String to[] = null;
-							String smsTo = null;
-							Map<String, Object> parameters = new HashMap<>();
-							String mailTo = "";
-							String fpName = "";
-							String subject = "";
-							Boolean result = false;
-							String checkerName = "Checker";
-
-							try {
-								BranchUserResponse request = MultipleJSONObjectHelper.getObjectFromMap((Map) userResponse.getListData().get(i), BranchUserResponse.class);
-								logger.info("BranchUser=>"+request );
-								String user_id = request.getUserId();
-								fpName = request.getUserName();
-								String organizationName = loanApplicationService.getFsApplicantName(applicationId);
-
-								ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId);
-								String applicationCode = applicationProposalMapping.getApplicationCode();
-
-								parameters.put(USER_NAME, fpName);
-								if (request.getUserRole().equals(CHECKER)){
-									if(request.getUserName() != "" && request.getUserName() != null) {
-										checkerName = request.getUserName();
+		}*/
+		try{
+			if(proposalDetailByApplicationId != null) {
+				if (proposalDetailByApplicationId.get(1) != null){
+					//multiple bank emails
+					for(Object[] arr : proposalDetailByApplicationId ){
+		
+						Integer proposal_status = CommonUtils.convertInteger(arr[1]);
+						logger.info("Proposal_Status ====>"+proposal_status);
+						String proposal_code = CommonUtils.convertString(arr[2]);
+						Long branch_id = CommonUtils.convertLong(arr[3]);
+						logger.info("Branch_id ====>"+branch_id);
+		
+		
+						if (proposal_status == 5 && branch_id != null) {
+		
+							UserResponse userResponse=  userClient.getBranchUsersListByBranchId(branch_id);
+		
+							for (int i=0;i<userResponse.getListData().size();i++) {
+								try {
+									String to[] = null;
+									String smsTo = null;
+									Map<String, Object> parameters = new HashMap<>();
+									String mailTo = "";
+									String fpName = "";
+									String subject = "";
+									Boolean result = false;
+									String checkerName = "Checker";
+		
+									try {
+										BranchUserResponse request = MultipleJSONObjectHelper.getObjectFromMap((Map) userResponse.getListData().get(i), BranchUserResponse.class);
+										logger.info("BranchUser=>"+request );
+										String user_id = request.getUserId();
+										fpName = request.getUserName();
+										String organizationName = loanApplicationService.getFsApplicantName(applicationId);
+		
+										ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId);
+										String applicationCode = applicationProposalMapping.getApplicationCode();
+		
+										parameters.put(USER_NAME, fpName);
+										if (request.getUserRole().equals(CHECKER)){
+											if(request.getUserName() != "" && request.getUserName() != null) {
+												checkerName = request.getUserName();
+											}
+											logger.info("Checker Name =====>"+checkerName);
+										}
+										to = new String[]{request.getEmail()};
+										smsTo = request.getMobile();
+		
+										if (request.getUserRole().equals(HO)) {
+											fpName = request.getUserName();
+											subject = "Proposal of " + organizationName + " is sanctioned/disbursed and partially disbursed by other bank";
+											parameters.put(APPLICATION_ID, applicationCode);
+											parameters.put(NAME_OF_ENTITY, organizationName);
+											parameters.put(CHECKER_NAME, checkerName);
+											if (fpName != "" && fpName != null) {
+												parameters.put(HO_NAME, fpName);
+											}
+											else{
+												parameters.put(HO_NAME, "Sir/Madam");
+											}
+		
+											logger.info("Subject ====> " + subject);
+											logger.info("parameter fpName HO=====>"+parameters.get(HO_NAME));
+											logger.info("Email id ====>"+to[0]);
+											logger.info("Mobile No ====>"+smsTo);
+		
+											result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_HO_MULTIPLE_BANK,subject);
+											if(result) {
+												logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
+											}else{
+												logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
+											}
+		
+											Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_HO_MULTIPLE_BANK);
+											logger.info("SMS sending process complete STATUS is :" + smsStatus);
+		
+										}
+										else if (request.getUserRole().equals(BO)) {
+											fpName = request.getUserName();
+											subject = "Proposal of " + organizationName + " is sanctioned/disbursed and partially disbursed by other bank";
+											parameters.put(APPLICATION_ID, applicationCode);
+											parameters.put(NAME_OF_ENTITY, organizationName);
+											if (fpName != "" && fpName != null) {
+												parameters.put(BO_CHECKER, fpName);
+											}
+											else{
+												parameters.put(BO_CHECKER, "Sir/Madam");
+											}
+		
+											logger.info("Subject ====> " + subject);
+											logger.info("parameter fpName BO=====>"+parameters.get(BO_CHECKER));
+											logger.info("Email id ====>"+to[0]);
+											logger.info("Mobile No ====>"+smsTo);
+		
+											result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_BO_MULTIPLE_BANK,subject);
+											if(result) {
+												logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
+											}else{
+												logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
+											}
+		
+											Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_BO_MULTIPLE_BANK);
+											logger.info("SMS sending process complete STATUS is :" + smsStatus);
+										}
+										else if(request.getUserRole().equals(MAKER)) {
+											fpName = request.getUserName();
+											subject = "Proposal of "+organizationName+" is sanctioned/disbursed and partially disbursed by other bank";
+											parameters.put(APPLICATION_ID, applicationCode);
+											parameters.put(NAME_OF_ENTITY, organizationName);
+											if (fpName != "" && fpName != null) {
+												parameters.put(MAKER_NAME, fpName);
+											}
+											else{
+												parameters.put(MAKER_NAME, "Sir/Madam");
+											}
+											logger.info("Subject ====> "+subject);
+											logger.info("parameter fpName Maker=====>"+parameters.get(MAKER_NAME));
+											logger.info("Email id ====>"+to[0]);
+											logger.info("Mobile No ====>"+smsTo);
+		
+											result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_MAKER_MULTIPLE_BANK,subject);
+											if(result) {
+												logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
+											}else{
+												logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
+											}
+		
+											Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_MAKER_MULTIPLE_BANK);
+											logger.info("SMS sending process complete STATUS is :" + smsStatus);
+		
+										}
+										else if(request.getUserRole().equals(CHECKER)) {
+											fpName = request.getUserName();
+											subject = "Proposal of " + organizationName + " is sanctioned/disbursed and partially disbursed by other bank";
+											parameters.put(APPLICATION_ID, applicationCode);
+											parameters.put(NAME_OF_ENTITY, organizationName);
+											if (fpName != "" && fpName != null) {
+												parameters.put(CHECKER_NAME, fpName);
+											} else {
+												parameters.put(CHECKER_NAME, "Sir/Madam");
+											}
+		
+											logger.info("Subject ====> " + subject);
+											logger.info("parameter fpName Checker=====>"+parameters.get(CHECKER_NAME));
+											logger.info("Email id ====>"+to[0]);
+											logger.info("Mobile No ====>"+smsTo);
+		
+											result = sendEmail(to, user_id, parameters, NotificationAlias.EMAIL_CHECKER_MULTIPLE_BANK, subject);
+											if (result) {
+												logger.info("------Email send to " + to[0] + " and " + request.getUserRole() + " when Branch transfer-----");
+											} else {
+												logger.error("-----Error in sending email to " + to[0] + " and " + request.getUserRole() + " when Branch transfer------");
+											}
+		
+											Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_CHECKER_MULTIPLE_BANK);
+											logger.info("SMS sending process complete STATUS is :" + smsStatus);
+		
+										}
+		
+										logger.info(user_id+" ====>"+request.getUserRole() + " ===> " + request.getEmail() + " ====> " + fpName+" ====> "+organizationName+ " ====> "+request.getMobile());
+		
+		
+									} catch (IOException e) {
+										logger.error("Exception",e);
 									}
-									logger.info("Checker Name =====>"+checkerName);
+								} catch (Exception e) {
+									logger.error("Exception",e);
 								}
-								to = new String[]{request.getEmail()};
-								smsTo = request.getMobile();
-
-								if (request.getUserRole().equals(HO)) {
-									fpName = request.getUserName();
-									subject = "Proposal of " + organizationName + " is sanctioned/disbursed and partially disbursed by other bank";
-									parameters.put(APPLICATION_ID, applicationCode);
-									parameters.put(NAME_OF_ENTITY, organizationName);
-									parameters.put(CHECKER_NAME, checkerName);
-									if (fpName != "" && fpName != null) {
-										parameters.put(HO_NAME, fpName);
-									}
-									else{
-										parameters.put(HO_NAME, "Sir/Madam");
-									}
-
-									logger.info("Subject ====> " + subject);
-									logger.info("parameter fpName HO=====>"+parameters.get(HO_NAME));
-									logger.info("Email id ====>"+to[0]);
-									logger.info("Mobile No ====>"+smsTo);
-
-									result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_HO_MULTIPLE_BANK,subject);
-									if(result) {
-										logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
-									}else{
-										logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
-									}
-
-									Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_HO_MULTIPLE_BANK);
-									logger.info("SMS sending process complete STATUS is :" + smsStatus);
-
-								}
-								else if (request.getUserRole().equals(BO)) {
-									fpName = request.getUserName();
-									subject = "Proposal of " + organizationName + " is sanctioned/disbursed and partially disbursed by other bank";
-									parameters.put(APPLICATION_ID, applicationCode);
-									parameters.put(NAME_OF_ENTITY, organizationName);
-									if (fpName != "" && fpName != null) {
-										parameters.put(BO_CHECKER, fpName);
-									}
-									else{
-										parameters.put(BO_CHECKER, "Sir/Madam");
-									}
-
-									logger.info("Subject ====> " + subject);
-									logger.info("parameter fpName BO=====>"+parameters.get(BO_CHECKER));
-									logger.info("Email id ====>"+to[0]);
-									logger.info("Mobile No ====>"+smsTo);
-
-									result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_BO_MULTIPLE_BANK,subject);
-									if(result) {
-										logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
-									}else{
-										logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
-									}
-
-									Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_BO_MULTIPLE_BANK);
-									logger.info("SMS sending process complete STATUS is :" + smsStatus);
-								}
-								else if(request.getUserRole().equals(MAKER)) {
-									fpName = request.getUserName();
-									subject = "Proposal of "+organizationName+" is sanctioned/disbursed and partially disbursed by other bank";
-									parameters.put(APPLICATION_ID, applicationCode);
-									parameters.put(NAME_OF_ENTITY, organizationName);
-									if (fpName != "" && fpName != null) {
-										parameters.put(MAKER_NAME, fpName);
-									}
-									else{
-										parameters.put(MAKER_NAME, "Sir/Madam");
-									}
-									logger.info("Subject ====> "+subject);
-									logger.info("parameter fpName Maker=====>"+parameters.get(MAKER_NAME));
-									logger.info("Email id ====>"+to[0]);
-									logger.info("Mobile No ====>"+smsTo);
-
-									result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_MAKER_MULTIPLE_BANK,subject);
-									if(result) {
-										logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
-									}else{
-										logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
-									}
-
-									Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_MAKER_MULTIPLE_BANK);
-									logger.info("SMS sending process complete STATUS is :" + smsStatus);
-
-								}
-								else if(request.getUserRole().equals(CHECKER)) {
-									fpName = request.getUserName();
-									subject = "Proposal of " + organizationName + " is sanctioned/disbursed and partially disbursed by other bank";
-									parameters.put(APPLICATION_ID, applicationCode);
-									parameters.put(NAME_OF_ENTITY, organizationName);
-									if (fpName != "" && fpName != null) {
-										parameters.put(CHECKER_NAME, fpName);
-									} else {
-										parameters.put(CHECKER_NAME, "Sir/Madam");
-									}
-
-									logger.info("Subject ====> " + subject);
-									logger.info("parameter fpName Checker=====>"+parameters.get(CHECKER_NAME));
-									logger.info("Email id ====>"+to[0]);
-									logger.info("Mobile No ====>"+smsTo);
-
-									result = sendEmail(to, user_id, parameters, NotificationAlias.EMAIL_CHECKER_MULTIPLE_BANK, subject);
-									if (result) {
-										logger.info("------Email send to " + to[0] + " and " + request.getUserRole() + " when Branch transfer-----");
-									} else {
-										logger.error("-----Error in sending email to " + to[0] + " and " + request.getUserRole() + " when Branch transfer------");
-									}
-
-									Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_CHECKER_MULTIPLE_BANK);
-									logger.info("SMS sending process complete STATUS is :" + smsStatus);
-
-								}
-
-								logger.info(user_id+" ====>"+request.getUserRole() + " ===> " + request.getEmail() + " ====> " + fpName+" ====> "+organizationName+ " ====> "+request.getMobile());
-
-
-							} catch (IOException e) {
-								logger.error("Exception",e);
 							}
-						} catch (Exception e) {
-							logger.error("Exception",e);
 						}
+		
+					}
+				}else{
+					if(loanSanctionDomainOld!=null) {
+						fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 					}
 				}
-
 			}
-		}else{
-			if(loanSanctionDomainOld!=null) {
+		}catch (Exception e){
+			logger.info("Single proposal found: - "+e);
+			/*if(loanSanctionDomainOld!=null) {
 				fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			}
+			}*/
 		}
-	}catch (Exception e){
-		logger.info("Single proposal found: - "+e);
-		if(loanSanctionDomainOld!=null) {
-			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		}
-	}
+		logger.info("outside notification end for sanction");
 		return  true;
 	}
 
