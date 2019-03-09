@@ -155,8 +155,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		}
 		//==================Sending Mail notification to Maker=============================
 		try{
-//			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-//			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 			
 			Boolean sanctionMailStatus = sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId(),loanSanctionDomainOld);
 			if(sanctionMailStatus) {
@@ -180,9 +180,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 
-		if(loanSanctionDomainOld!=null) {
+		/*if(loanSanctionDomainOld!=null) {
 			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		}
+		}*/
 		try{
 			if (proposalDetailByApplicationId.get(1) != null){
 				//multiple bank emails
@@ -355,14 +355,14 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	
 				}
 			}else{
-				if(loanSanctionDomainOld!=null) {
+				/*if(loanSanctionDomainOld!=null) {
 					fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-				}
+				}*/
 			}
 		}catch (Exception e){
 			logger.info("Single proposal found: - "+e);
 			if(loanSanctionDomainOld!=null) {
-				fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+				//fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 			}
 		}
 		logger.info("outside notification end for sanction");
