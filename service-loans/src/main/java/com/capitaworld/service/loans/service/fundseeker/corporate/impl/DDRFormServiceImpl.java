@@ -2005,7 +2005,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 
 			try {
-				List<DirectorBackgroundDetail> drDetailsList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppIdAndProposalId(appId,proposalId);
+				List<DirectorBackgroundDetail> drDetailsList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(appId);
 				DDRFamilyDirectorsDetailsRequest response = null;
 				responseList = new ArrayList<>(drDetailsList.size());
 				DirectorBackgroundDetailRequest dirRes = null;
