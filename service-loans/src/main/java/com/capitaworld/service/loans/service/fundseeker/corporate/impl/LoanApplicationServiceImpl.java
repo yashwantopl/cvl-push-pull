@@ -799,12 +799,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
             ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(id,userOrdId);
             if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+            	// TODO should get application info from app_proposal_mapping table by proposalId
 				applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(id);
 			}
             
             if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
 			}else{
+				applicationRequest.setProposalMappingId(applicationProposalMapping.getProposalId());
 				applicationMaster.setProductId(applicationProposalMapping.getProductId());
 				applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
 				applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
@@ -5987,6 +5989,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationProposalMapping.setCurrencyId(Currency.RUPEES.getId());
 			applicationProposalMapping.setDenominationId(Denomination.ABSOLUTE.getId());
 			applicationProposalMapping.setCreatedDate(new Date());
+			applicationProposalMapping.setModifiedBy(proposalDetails.getApplicationId());
+			applicationProposalMapping.setModifiedDate(new Date());
 			applicationProposalMapping.setIsActive(true);
 			applicationProposalMappingRepository.save(applicationProposalMapping);
 		}else{
