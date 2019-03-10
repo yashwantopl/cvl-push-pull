@@ -20,7 +20,7 @@ public interface DDRFormDetailsRepository extends JpaRepository<DDRFormDetails, 
 	@Query("select ddr from DDRFormDetails ddr where ddr.id =:id and ddr.proposalMappingId =:proposalId and ddr.applicationId=:applicationId and ddr.isActive = true")
 	public DDRFormDetails getByIdAndProposaMappingIdAndApplicationId(@Param("id") Long id,@Param("proposalId") Long proposalId,@Param("applicationId") Long applicationId);
 
-	@Query("select ddr from DDRFormDetails ddr where ddr.proposalMappingId =:proposalId and ddr.applicationId=:applicationId and ddr.isActive = true")
+	@Query(value = "select * from fs_ddr_form_details ddr where ddr.proposal_mapping_id =:proposalId and ddr.application_id=:applicationId and ddr.is_active = true ORDER BY id DESC limit 1",nativeQuery = true)
 	public DDRFormDetails getByProposaMappingIdAndApplicationId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
 	
 	@Query("select ddr from DDRFormDetails ddr where ddr.applicationId =:appId and ddr.orgId =:orgId and ddr.isActive = true")
