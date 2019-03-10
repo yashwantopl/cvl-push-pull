@@ -271,7 +271,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			return dDRRequest;
 		}
 
-		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(proposalId,appId);
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(appId,proposalId);
 		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			Long ddrFormId = dDRFormDetails.getId();
 			BeanUtils.copyProperties(dDRFormDetails, dDRRequest);
@@ -5182,7 +5182,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	public void saveMergeDDRByProposalId(DDRRequest dDRRequest) throws Exception {
 		Long userId = dDRRequest.getUserId();
 		try {
-			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(dDRRequest.getProposalMappingId(), dDRRequest.getApplicationId());
+			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(dDRRequest.getApplicationId(), dDRRequest.getProposalMappingId());
 			if (CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 				logger.info("DDR ===============> New DDR Form Saving ------------------------->");
 				dDRFormDetails = new DDRFormDetails();
