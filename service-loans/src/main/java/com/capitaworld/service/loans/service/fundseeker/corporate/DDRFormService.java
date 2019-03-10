@@ -19,7 +19,7 @@ public interface DDRFormService {
 	
 	public DDRRequest getMergeDDR(Long appId,Long userId) ;
 	
-	public DDRRequest getMergeDDRByProposalId(Long appId, Long userId, Long orgId);
+	public DDRRequest getMergeDDRByProposalId(Long appId, Long userId, Long proposalId);
 
 	public void saveMergeDDR(DDRRequest dDRRequest) throws LoansException;
 	
