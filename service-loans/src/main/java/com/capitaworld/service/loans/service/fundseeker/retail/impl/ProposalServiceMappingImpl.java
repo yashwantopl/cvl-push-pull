@@ -1319,11 +1319,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						ProposalMappingRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
-				if (!master.getIsActive()) {
-					logger.info("Product Id is InActive while get fundSeeker proposals=====>"
-							+ proposalrequest.getFpProductId());
-					continue;
-				}
 				UsersRequest userRequest = new UsersRequest();
 				userRequest.setId(master.getUserId());
 
@@ -2550,8 +2545,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(connectRequest1)){
 					//ConnectRequest connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
-					days = Days.daysBetween(new LocalDate(connectRequest1.getModifiedDate()),
-							new LocalDate(new Date())).getDays();
+					if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
+						days = Days.daysBetween(new LocalDate(connectRequest1.getInPrincipleDate()),
+								new LocalDate(new Date())).getDays();
+					}else{
+						days = Days.daysBetween(new LocalDate(connectRequest1.getModifiedDate()),
+								new LocalDate(new Date())).getDays();
+					}
 					if(days> Integer.parseInt(mxaDays)){//take 22 from application.properties file
 						return Boolean.FALSE;
 					}else{
@@ -2568,8 +2568,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 									connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
 								}
 							}
-							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
-									new LocalDate(new Date())).getDays();
+							if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
+								days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
+										new LocalDate(new Date())).getDays();
+							}else{
+								days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+										new LocalDate(new Date())).getDays();
+							}
 							if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
 								return Boolean.TRUE;
 							}else {
@@ -2623,7 +2628,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						schedulerDataMultipleBankRequest.setUserId(connectRequest1.getUserId());
 						schedulerDataMultipleBankRequest.setApplicationId(connectRequest1.getApplicationId());
 						schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
-						schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
+						if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
+							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getInPrincipleDate());
+						}else{
+							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
+						}
 						schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
 						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest1.getProposalId());
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
