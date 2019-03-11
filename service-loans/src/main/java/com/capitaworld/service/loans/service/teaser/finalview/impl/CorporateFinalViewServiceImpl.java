@@ -1451,7 +1451,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// get data of Monthly Turnover
 		try {
 			corporateFinalViewResponse.setMonthlyTurnoverDetailRequestList(
-					monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId, userId));
+					monthlyTurnoverDetailService.getMonthlyTurnoverDetailListByProposalId(toApplicationId, userId,applicationProposalMapping.getProposalId()));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Monthly Turnover {}", e);
 		}

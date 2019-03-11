@@ -15,5 +15,8 @@ public interface MonthlyTurnoverDetailService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
 	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws LoansException;
+	
+	
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailListByProposalId(Long id,Long userId,Long proposalId) throws LoansException;
 
 }

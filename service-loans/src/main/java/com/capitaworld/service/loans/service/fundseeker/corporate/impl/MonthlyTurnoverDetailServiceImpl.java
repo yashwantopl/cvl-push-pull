@@ -72,6 +72,33 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 	}
 
 	@Override
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailListByProposalId(Long id,Long userId,Long proposalId) throws LoansException {
+		try {
+			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository
+					.listMonthlyTurnoverFromAppIdAndProposalId(id,proposalId);
+
+			if(CommonUtils.isListNullOrEmpty(monthlyTurnoverDetails)){
+				return getList();
+			}
+		
+			List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequests = new ArrayList<MonthlyTurnoverDetailRequest>();
+
+			for (MonthlyTurnoverDetail detail : monthlyTurnoverDetails) {
+				MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest = new MonthlyTurnoverDetailRequest();
+				monthlyTurnoverDetailRequest.setAmountString(CommonUtils.convertValue(detail.getAmount()));
+				BeanUtils.copyProperties(detail, monthlyTurnoverDetailRequest);
+				monthlyTurnoverDetailRequests.add(monthlyTurnoverDetailRequest);
+			}
+			return monthlyTurnoverDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in get List monthlyTurnoverDetail :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	@Override
 	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws LoansException {
 		try {
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository

@@ -1319,11 +1319,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						ProposalMappingRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
-				if (!master.getIsActive()) {
-					logger.info("Product Id is InActive while get fundSeeker proposals=====>"
-							+ proposalrequest.getFpProductId());
-					continue;
-				}
 				UsersRequest userRequest = new UsersRequest();
 				userRequest.setId(master.getUserId());
 

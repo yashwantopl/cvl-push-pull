@@ -4672,9 +4672,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 			return 0.0;
 		} catch (Exception e) {
-			logger.error("DDR====================> Throw Excecption while calculateFinancialSummary : ",e);
+		//	logger.error("DDR====================> Throw Excecption while calculateFinancialSummary : ",e);
+			return 0.0;
 		}
-		return 0.00;
 	}
 
 	private String calculateFinancialSummaryString(Double provisinalYear, Double lastYear) {
