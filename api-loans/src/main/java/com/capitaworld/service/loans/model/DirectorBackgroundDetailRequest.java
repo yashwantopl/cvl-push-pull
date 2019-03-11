@@ -634,60 +634,31 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	}
 
 
+	
+
 	@Override
 	public String toString() {
-		return "DirectorBackgroundDetailRequest{" +
-				"id=" + id +
-				", address='" + address + '\'' +
-				", networth=" + networth +
-				", applicationId=" + applicationId +
-				", salutationId=" + salutationId +
-				", din=" + din +
-				", appointmentDate=" + appointmentDate +
-				", designation='" + designation + '\'' +
-				", panNo='" + panNo + '\'' +
-				", directorsName='" + directorsName + '\'' +
-				", totalExperience=" + totalExperience +
-				", isActive=" + isActive +
-				", pincode='" + pincode + '\'' +
-				", stateCode='" + stateCode + '\'' +
-				", city='" + city + '\'' +
-				", dob=" + dob +
-				", mobile='" + mobile + '\'' +
-				", gender=" + gender +
-				", relationshipType=" + relationshipType +
-				", firstName='" + firstName + '\'' +
-				", lastName='" + lastName + '\'' +
-				", middleName='" + middleName + '\'' +
-				", title='" + title + '\'' +
-				", shareholding=" + shareholding +
-				", isItrCompleted=" + isItrCompleted +
-				", isCibilCompleted=" + isCibilCompleted +
-				", isBankStatementCompleted=" + isBankStatementCompleted +
-				", isOneFormCompleted=" + isOneFormCompleted +
-				", aadhar='" + aadhar + '\'' +
-				", maritalStatus=" + maritalStatus +
-				", noOfDependent=" + noOfDependent +
-				", residenceType=" + residenceType +
-				", residenceSinceMonth=" + residenceSinceMonth +
-				", residenceSinceYear=" + residenceSinceYear +
-				", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
-				", employmentDetailRequest=" + employmentDetailRequest +
-				", countryId=" + countryId +
-				", premiseNumber='" + premiseNumber + '\'' +
-				", streetName='" + streetName + '\'' +
-				", landmark='" + landmark + '\'' +
-				", isMainDirector=" + isMainDirector +
-				", qualificationId=" + qualificationId +
-				", amount='" + amount + '\'' +
-				", fatherName='" + fatherName + '\'' +
-				", educationalStatus=" + educationalStatus +
-				", nationality=" + nationality +
-				", visuallyImpaired=" + visuallyImpaired +
-				", residentStatus=" + residentStatus +
-				", isGuarantor=" + isGuarantor +
-				", directorPersonalDetailRequest=" + directorPersonalDetailRequest +
-				'}';
+		return "DirectorBackgroundDetailRequest [id=" + id + ", address=" + address + ", networth=" + networth
+				+ ", applicationId=" + applicationId + ", salutationId=" + salutationId + ", din=" + din
+				+ ", appointmentDate=" + appointmentDate + ", designation=" + designation + ", directorsName="
+				+ directorsName + ", totalExperience=" + totalExperience + ", isActive=" + isActive + ", pincode="
+				+ pincode + ", stateCode=" + stateCode + ", city=" + city + ", dob=" + dob + ", dobString=" + dobString
+				+ ", mobile=" + mobile + ", gender=" + gender + ", relationshipType=" + relationshipType
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", title="
+				+ title + ", shareholding=" + shareholding + ", isItrCompleted=" + isItrCompleted
+				+ ", isCibilCompleted=" + isCibilCompleted + ", isBankStatementCompleted=" + isBankStatementCompleted
+				+ ", isOneFormCompleted=" + isOneFormCompleted + ", aadhar=" + aadhar + ", maritalStatus="
+				+ maritalStatus + ", noOfDependent=" + noOfDependent + ", residenceType=" + residenceType
+				+ ", residenceSinceMonth=" + residenceSinceMonth + ", residenceSinceYear=" + residenceSinceYear
+				+ ", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness + ", employmentDetailRequest="
+				+ employmentDetailRequest + ", countryId=" + countryId + ", premiseNumber=" + premiseNumber
+				+ ", streetName=" + streetName + ", landmark=" + landmark + ", stateId=" + stateId + ", cityId="
+				+ cityId + ", isMainDirector=" + isMainDirector + ", qualificationId=" + qualificationId + ", amount="
+				+ amount + ", fatherName=" + fatherName + ", educationalStatus=" + educationalStatus + ", nationality="
+				+ nationality + ", visuallyImpaired=" + visuallyImpaired + ", residentStatus=" + residentStatus
+				+ ", isGuarantor=" + isGuarantor + ", directorPersonalDetailRequest=" + directorPersonalDetailRequest
+				+ ", district=" + district + ", subDistrict=" + subDistrict + ", village=" + village
+				+ ", districtMappingId=" + districtMappingId + ", personalId=" + personalId + "]";
 	}
 
 	public static void printFields(Object obj) throws LoansException {

@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-
 import java.util.Date;
 
 import com.capitaworld.service.loans.model.common.AuditActivityRequest;
@@ -247,16 +246,11 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	@Override
 	public String toString() {
-		return "LoanSanctionRequest [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
-				+ ", transactionNo=" + transactionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch="
-				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
-				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
-				+ ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
+		return "LoanSanctionRequest [id=" + id + ", branch=" + branch + ", applicationId=" + applicationId + ", remark="
+				+ remark + ", userName=" + userName + ", actionBy=" + actionBy + ", orgId="
 				+ orgId + ", proposalId=" + proposalId + ", proposalStatusId=" + proposalStatusId + ", isSaved="
 				+ isSaved + ", reason=" + reason + ", statusCode=" + statusCode + ", isIneligibleProposal="
-				+ isIneligibleProposal + ", isSanctionedFrom=" + isSanctionedFrom + "]";
+				+ isIneligibleProposal + ", isSanctionedFrom=" + isSanctionedFrom + ", isPartiallyDisbursedOffline="
+				+ isPartiallyDisbursedOffline + "]";
 	}
-
-	
-	
 }
