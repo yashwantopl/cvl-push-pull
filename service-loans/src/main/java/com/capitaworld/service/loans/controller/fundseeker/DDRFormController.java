@@ -267,7 +267,7 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId, null, true);
 			logger.info("DDR AutoFilled Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), oneFormDetails), HttpStatus.OK);
@@ -382,7 +382,7 @@ public class DDRFormController {
 			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);*/ // PREVIOUS
 
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(toApplicationId, toUserId,proposalId);
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(toUserId, toApplicationId,true); // BASED ON NEW APPLICATION ID
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(toUserId, toApplicationId, proposalId, true); // BASED ON NEW APPLICATION ID
 
 			DDRFormDetailsRequest.printFields(dDRFormDetailsRequest);
 			DDROneFormResponse.printFields(oneFormDetails);

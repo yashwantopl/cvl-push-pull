@@ -32,7 +32,7 @@ public interface DDRFormService {
 	
 	public List<JSONObject> getFinancialSummaryToBeFieldsList();
 	
-	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId,boolean setExistingData);
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId, Long proposalId, boolean setExistingData);
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws LoansException;
 	
