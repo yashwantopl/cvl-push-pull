@@ -1376,7 +1376,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		    //MONTHLY TURNOVER
 			try {
-				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId, userId),null));
+				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailListByProposalId(toApplicationId, userId,applicationProposalMapping.getProposalId()),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Monthly Turnover {}", e);
 			}
