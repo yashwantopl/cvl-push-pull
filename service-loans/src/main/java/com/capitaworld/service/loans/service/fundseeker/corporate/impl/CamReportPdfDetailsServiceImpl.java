@@ -434,16 +434,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
-		try {
-			
-			ConnectResponse connectResponse = connectClient.getApplicationList(toApplicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
-				ConnectRequest connectResp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
-				if(connectResp.getModifiedDate()!=null){
-				Date InPrincipleDate = connectResp.getModifiedDate();
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate):"-");
+		
+			  // FOR dateOfInPrincipalApproval  NEW FOR MULTIPLE BANK CONNECT MODIFIED DATE
+			try {
+				ConnectRequest response = null;
+				ConnectResponse connectResponse = connectClient.getApplicationList(toApplicationId);
+				if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
+					List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
+					for (LinkedHashMap<String, Object> mp : list) {
+						response = (ConnectRequest) MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
+						if (response.getProposalId().equals(proposalId)) {
+							Date InPrincipleDate = response.getModifiedDate();
+							map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate) : "-");
+						}
+					}
 				}
-			}
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION,e2);
+		}
+			
+			try {
 			// Currently Commented  dateOfInPrincipalApproval from 
 			//ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			/*Date InPrincipleDate=loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
