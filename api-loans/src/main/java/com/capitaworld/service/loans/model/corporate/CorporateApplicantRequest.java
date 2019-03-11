@@ -344,14 +344,13 @@ public class CorporateApplicantRequest implements Serializable {
 		return "CorporateApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
 				+ ", constitutionId=" + constitutionId + ", establishmentMonth=" + establishmentMonth
 				+ ", establishmentYear=" + establishmentYear + ", keyVericalFunding=" + keyVericalFunding
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", organisationName=" + organisationName
-				+ ", firstAddress=" + firstAddress + ", websiteAddress=" + websiteAddress + ", landlineNo=" + landlineNo
-				+ ", industrylist=" + industrylist + ", sectorlist=" + sectorlist + ", subsectors=" + subsectors
-				+ ", isApplicantDetailsFilled=" + isApplicantDetailsFilled + ", detailsFilledCount="
-				+ detailsFilledCount + ", userId=" + userId + ", keyVerticalSector=" + keyVerticalSector
-				+ ", keyVerticalSubsector=" + keyVerticalSubsector + ", email=" + email + ", companyCIN=" + companyCIN
-				+ ", environmentalImpactId=" + environmentalImpactId + ", turnOverPrevFinYear=" + turnOverPrevFinYear
-				+ ", turnOverCurrFinYearTillMonth=" + turnOverCurrFinYearTillMonth + ", profitCurrFinYear="
-				+ profitCurrFinYear + ", grossSales=" + grossSales + "]";
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", firstAddress=" + firstAddress
+				+ ", websiteAddress=" + websiteAddress + ", landlineNo=" + landlineNo + ", industrylist=" + industrylist
+				+ ", sectorlist=" + sectorlist + ", subsectors=" + subsectors + ", isApplicantDetailsFilled="
+				+ isApplicantDetailsFilled + ", detailsFilledCount=" + detailsFilledCount + ", userId=" + userId
+				+ ", keyVerticalSector=" + keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector
+				+ ", email=" + email + ", environmentalImpactId=" + environmentalImpactId + ", turnOverPrevFinYear="
+				+ turnOverPrevFinYear + ", turnOverCurrFinYearTillMonth=" + turnOverCurrFinYearTillMonth
+				+ ", profitCurrFinYear=" + profitCurrFinYear + ", grossSales=" + grossSales + "]";
 	}
 }
