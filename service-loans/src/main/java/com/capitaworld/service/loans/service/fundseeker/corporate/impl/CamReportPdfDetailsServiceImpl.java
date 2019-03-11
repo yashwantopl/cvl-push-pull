@@ -434,16 +434,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
-		try {
-			
-			ConnectResponse connectResponse = connectClient.getApplicationList(toApplicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
-				ConnectRequest connectResp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
-				if(connectResp.getModifiedDate()!=null){
-				Date InPrincipleDate = connectResp.getModifiedDate();
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate):"-");
+		
+			  // FOR dateOfInPrincipalApproval  NEW FOR MULTIPLE BANK CONNECT MODIFIED DATE
+			try {
+				ConnectRequest response = null;
+				ConnectResponse connectResponse = connectClient.getApplicationList(toApplicationId);
+				if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
+					List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
+					for (LinkedHashMap<String, Object> mp : list) {
+						response = (ConnectRequest) MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
+						if (response.getProposalId().equals(proposalId)) {
+							Date InPrincipleDate = response.getModifiedDate();
+							map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate) : "-");
+						}
+					}
 				}
-			}
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION,e2);
+		}
+			
+			try {
 			// Currently Commented  dateOfInPrincipalApproval from 
 			//ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			/*Date InPrincipleDate=loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
@@ -1250,7 +1260,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(proposalMappingRequestString.getId(), userId, proposalMappingRequestString.getId()).getBody().getData();// PREVIOUS
 				RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(toApplicationId, userId, applicationProposalMapping.getProposalId()).getBody().getData(); //NEW BASED ON PROPOSAL MAPPING ID
-			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
+			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse) && !CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
@@ -1376,7 +1386,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		    //MONTHLY TURNOVER
 			try {
-				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId, userId),null));
+				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailListByProposalId(toApplicationId, userId,applicationProposalMapping.getProposalId()),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Monthly Turnover {}", e);
 			}

@@ -21,6 +21,9 @@ public interface MonthlyTurnoverDetailRepository extends JpaRepository<MonthlyTu
 	@Query("select o from MonthlyTurnoverDetail o where o.applicationId.id = :id and o.isActive = true")
 	public List<MonthlyTurnoverDetail> listMonthlyTurnoverFromAppId(@Param("id")Long id);
 	
+	@Query("select o from MonthlyTurnoverDetail o where o.applicationId.id = :id and o.proposalMapping.proposalId=:proposalId and o.isActive = true")
+	public List<MonthlyTurnoverDetail> listMonthlyTurnoverFromAppIdAndProposalId(@Param("id")Long id,@Param("proposalId")Long proposalId);
+	
 	@Modifying
 	@Query("update MonthlyTurnoverDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
