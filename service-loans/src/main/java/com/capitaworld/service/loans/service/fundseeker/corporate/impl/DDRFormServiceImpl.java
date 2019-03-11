@@ -2072,6 +2072,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										finArrRes.setRelationshipSinceInYear(CommonUtils.isObjectNullOrEmpty(finArraDetails.getRelationshipSince()) ? null : finArraDetails.getRelationshipSince().toString());
 									}
 									finArrRes.setOutstandingAmount(convertDouble(finArraDetails.getOutstandingAmount()));
+									finArrRes.setAmount(convertDouble(finArraDetails.getAmount()));
 									response.setFinArraRes(finArrRes);
 								}
 							} catch (Exception e) {
