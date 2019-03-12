@@ -330,7 +330,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
         // CHANGES FOR NEW MULTIPLE BANKS----->
         ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
-        logger.info("======================>"+applicationProposalMapping.getApplicationId()+"======app"+applicationProposalMapping.getProposalId());
+        logger.info("======================>"+applicationId+"======app"+applicationProposalMapping.getProposalId());
         
         Long toApplicationId = applicationProposalMapping.getApplicationId();
         Long userId     =  applicationProposalMapping.getUserId();
@@ -339,6 +339,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         //Long userId = loanApplicationRepository.getUserIdByApplicationId(toApplicationId);  // PREVIOUS
         // ENDS HERE MULTIPLE BANK----->
 
+      //new loan type based on proposal mapping
+        map.put("loanType", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getProductId()) ? CommonUtils.LoanType.getType(applicationProposalMapping.getProductId()).getName() : " ");
+        
         //CHANGES====>
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(toApplicationId, userId);
         if(applicationProposalMapping != null) {
@@ -434,16 +437,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
-		try {
-			
-			ConnectResponse connectResponse = connectClient.getApplicationList(toApplicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
-				ConnectRequest connectResp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
-				if(connectResp.getModifiedDate()!=null){
-				Date InPrincipleDate = connectResp.getModifiedDate();
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate):"-");
+		
+			  // FOR dateOfInPrincipalApproval  NEW FOR MULTIPLE BANK CONNECT MODIFIED DATE
+			try {
+				ConnectRequest response = null;
+				ConnectResponse connectResponse = connectClient.getApplicationList(toApplicationId);
+				if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
+					List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
+					for (LinkedHashMap<String, Object> mp : list) {
+						response = (ConnectRequest) MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
+						if (response.getProposalId().equals(proposalId)) {
+							Date InPrincipleDate = response.getModifiedDate();
+							map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate) : "-");
+						}
+					}
 				}
-			}
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION,e2);
+		}
+			
+			try {
 			// Currently Commented  dateOfInPrincipalApproval from 
 			//ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			/*Date InPrincipleDate=loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
@@ -673,7 +686,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? CommonUtils.convertValueRound(primaryCorporateRequest.getLoanAmount()) : " ");
 			map.put("enhancementAmount", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getEnhancementAmount()) ? CommonUtils.convertValueRound(primaryCorporateRequest.getEnhancementAmount()) : " ");
-			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
+			//map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
 			map.put("promotorsContribution", CommonUtils.convertValueRound(primaryCorporateRequest.getPromoterContribution()));
 			map.put("totalAmtPer", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage()) ? " ("+CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage())+"%)" : null);
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {

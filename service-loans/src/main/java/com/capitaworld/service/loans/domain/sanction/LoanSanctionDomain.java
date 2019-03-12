@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.domain.sanction;
 
 import java.io.Serializable;
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -264,14 +263,11 @@ public class LoanSanctionDomain implements Serializable {
 
 	@Override
 	public String toString() {
-		return "LoanSanctionDomain [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
-				+ ", roi=" + roi + ", transactionNo=" + transactionNo + ", sanctionDate=" + sanctionDate + ", branch="
-				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
-				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", createdBy=" + createdBy
-				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
-				+ ", isActive=" + isActive + ", processingFee=" + processingFee + ", bankSanctionPrimaryKey="
-				+ bankSanctionPrimaryKey + ", isSanctionedFrom=" + isSanctionedFrom + "]";
+		return "LoanSanctionDomain [id=" + id + ", branch=" + branch + ", applicationId=" + applicationId + ", tenure="
+				+ tenure + ", remark=" + remark + ", createdBy=" + createdBy + ", createdDate=" + createdDate
+				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", isActive=" + isActive
+				+ ", bankSanctionPrimaryKey=" + bankSanctionPrimaryKey + ", isSanctionedFrom=" + isSanctionedFrom
+				+ ", orgId=" + orgId + ", isPartiallyDisbursedOffline=" + isPartiallyDisbursedOffline + "]";
 	}
-	
 
 }

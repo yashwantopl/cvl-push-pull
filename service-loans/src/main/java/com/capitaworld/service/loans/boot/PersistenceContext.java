@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.capitaworld.commons.lib.encryption.DataSourceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,9 +52,9 @@ public class PersistenceContext {
 	public DataSource dataSource() {
 		HikariDataSource dataSource = new HikariDataSource();
 		dataSource.setDriverClassName(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-		dataSource.setJdbcUrl(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-		dataSource.setUsername(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-		dataSource.setPassword(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_POSSWARD));
+        dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName()+environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+        dataSource.setUsername(DataSourceProvider.getUserName());
+        dataSource.setPassword(DataSourceProvider.getPassword());
 		dataSource.setConnectionTestQuery("SELECT 1");
 		dataSource
 				.setMaximumPoolSize(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));

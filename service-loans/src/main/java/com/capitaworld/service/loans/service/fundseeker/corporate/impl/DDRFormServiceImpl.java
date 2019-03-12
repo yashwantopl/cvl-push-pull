@@ -2072,6 +2072,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										finArrRes.setRelationshipSinceInYear(CommonUtils.isObjectNullOrEmpty(finArraDetails.getRelationshipSince()) ? null : finArraDetails.getRelationshipSince().toString());
 									}
 									finArrRes.setOutstandingAmount(convertDouble(finArraDetails.getOutstandingAmount()));
+									finArrRes.setAmount(convertDouble(finArraDetails.getAmount()));
 									response.setFinArraRes(finArrRes);
 								}
 							} catch (Exception e) {
@@ -2268,17 +2269,21 @@ public class DDRFormServiceImpl implements DDRFormService {
 	
 	/**************************************************************DDR(PDF) DOWNLOAD**************************************************************/
 	@SuppressWarnings("unchecked")
-	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId, boolean setExistingData) {
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId, Long toProposalId, boolean setExistingData) {
 		logger.info("Enter in get one form details service");
 		DDROneFormResponse response = new DDROneFormResponse();
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicationId);
+		ApplicationProposalMapping applicationProposalMapping = null;
+		if(toProposalId == null) {
+//			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicationId);
+			applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId);
+			toProposalId = applicationProposalMapping.getProposalId();
+		}else {
+			applicationProposalMapping = applicationProposalMappingRepository.findOne(toProposalId);
+		}
 
-		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId); //NEW BASED ON PROPOSAL MAPPING
-
-		Long toProposalId = applicationProposalMapping.getProposalId();
 		logger.info("this is getting proposalId By Application id===========>>>>>>"+toProposalId);
 
-		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+		if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)) {
 			logger.info("Data not found by this application id -------------------> " + applicationId);
 			return null;
 		}
@@ -2298,7 +2303,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		//GET ORGANIZATION TYPE (FOR DISPLAYING ORGANIZATION NAME AND LOGO IN DOWNLOADED DDR)
 		try {
-			Long orgId = loanApplicationMaster.getNpOrgId();
+			Long orgId = applicationProposalMapping.getOrgId();
 			if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 				String orgName = CommonUtils.getOrganizationName(orgId);
 				response.setOrgName(orgName);
@@ -2462,7 +2467,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	private List<FinancialArrangementDetailResponseString> setFinancialArrangDetails(Long applicationId,Long toProposalId) {
 		try {
 		/*	List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);*/
-			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId,toProposalId);//NEW
+			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdAndProposalId(applicationId,toProposalId);//NEW
 			List<FinancialArrangementDetailResponseString> finArrDetailResList = new ArrayList<>(financialArrangementsList.size());
 			FinancialArrangementDetailResponseString finArrDetailRes = null;
 			for (FinancialArrangementsDetail finArrDetailReq : financialArrangementsList) {
