@@ -24,7 +24,7 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	
 	@Modifying
 	@Transactional
-	@Query("update AssetsDetails a set a.isActive = false where a.loanApplicationMaster.id = :applicationId and a.isActive = true and l.applicationProposalMapping.proposalId IS NULL")
+	@Query("update AssetsDetails a set a.isActive = false where a.loanApplicationMaster.id = :applicationId and a.isActive = true and a.applicationProposalMapping.proposalId IS NULL")
 	public void inActiveByAppId(@Param("applicationId") Long applicationId);
 	
 	@Query("from AssetsDetails a where a.applicationProposalMapping.proposalId = :proposalId and a.year = :yr and a.isActive = true")
