@@ -2543,7 +2543,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
 					}
 				}
-				if(!CommonUtils.isObjectNullOrEmpty(connectRequest1)){
+				if(!CommonUtils.isObjectNullOrEmpty(connectRequest1) && CommonUtils.isObjectNullOrEmpty(connectRequest1.getOrgId())){
 					//ConnectRequest connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
 					if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
 						days = Days.daysBetween(new LocalDate(connectRequest1.getInPrincipleDate()),
