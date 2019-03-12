@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 				}
 				BeanUtils.copyProperties(monthlyTurnoverDetailRequest, monthlyTurnoverDetail);
 				monthlyTurnoverDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				monthlyTurnoverDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				monthlyTurnoverDetail.setModifiedBy(frameRequest.getUserId());
 				monthlyTurnoverDetail.setModifiedDate(new Date());
 				monthlyTurnoverDetailsRepository.save(monthlyTurnoverDetail);

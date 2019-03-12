@@ -61,6 +61,13 @@ public class MonthlyTurnoverDetailController {
 					HttpStatus.OK);
 		}
 
+		if (frameRequest.getProposalMappingId() == null) {
+			logger.warn("proposal id and user id must not be null ==>" + frameRequest);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
 		try {
 			frameRequest.setUserId(userId);
 			if(CommonDocumentUtils.isThisClientApplication(request)){
@@ -68,7 +75,7 @@ public class MonthlyTurnoverDetailController {
 			}
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean finalLocked = loanApplicationService.isFinalLocked(frameRequest.getApplicationId(), finalUserId);
+			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalMappingId(), finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
@@ -106,6 +113,44 @@ public class MonthlyTurnoverDetailController {
 			}
 
 			List<MonthlyTurnoverDetailRequest> response = monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(id,userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Monthly Turnover Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	@RequestMapping(value = "/getListByProposalId/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long applicationId,@PathVariable Long proposalId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "getList");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		try {
+			if (applicationId == null) {
+				logger.warn("ID Require to get Monthly Turnover Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			if (proposalId == null) {
+				logger.warn("proposal id Require to get Monthly Turnover Details ==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+
+			List<MonthlyTurnoverDetailRequest> response = monthlyTurnoverDetailService.getMonthlyTurnoverDetailListByProposalId(applicationId,userId,proposalId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
