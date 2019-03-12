@@ -128,4 +128,11 @@ public class MonthlyTurnoverDetail implements Serializable {
 		this.monthName = monthName;
 	}
 
+	public ApplicationProposalMapping getProposalMapping() {
+		return proposalMapping;
+	}
+
+	public void setProposalMapping(ApplicationProposalMapping proposalMapping) {
+		this.proposalMapping = proposalMapping;
+	}
 }
