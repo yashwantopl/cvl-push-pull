@@ -586,7 +586,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 /*			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
 					? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
 					: null);*/
-			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
+			corporateFinalViewResponse.setLoanType(applicationProposalMapping.getProductId() != null
 					? LoanType.getById(applicationProposalMapping.getProductId()).getValue()
 					: null); // NEW
 
@@ -594,7 +594,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
 							: null);*/
 			corporateFinalViewResponse.setLoanAmount(
-					primaryCorporateDetail.getAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
+					applicationProposalMapping.getLoanAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
 							: null); // NEW
 
 			corporateFinalViewResponse.setGstIn(
