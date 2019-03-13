@@ -24,6 +24,8 @@ public interface IneligibleProposalDetailsService {
 
 	//added by Jaimin Darji For Reopen Proposal
 	public boolean updateReOpenProposalDetail(InEligibleProposalDetailsRequest inEliProReq);
+	
+	public Boolean checkIsExistOfflineProposalByApplicationId(Long applicationId);
 
 
 }
