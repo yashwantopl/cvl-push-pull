@@ -797,6 +797,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 		return responseList;
 	}
+	
+	
+	@Override
+	public Boolean checkIsExistOfflineProposalByApplicationId(Long applicationId) {
+		return !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(applicationId, Boolean.TRUE));
+	}
 
 	@Override
 	public boolean updateTransferBranchDetail(InEligibleProposalDetailsRequest inEliProReq) {
