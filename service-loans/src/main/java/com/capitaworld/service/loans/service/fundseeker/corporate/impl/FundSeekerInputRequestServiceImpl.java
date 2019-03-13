@@ -294,15 +294,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				corporateApplicantDetail.setModifiedDate(new Date());
 			}
 
-			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
-			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 			copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
-			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
-			corporateApplicantDetailRepository.save(corporateApplicantDetail);
 			// ==== Director details
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
-
+			Date dobOfProprietor = null;
+			
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 					DirectorBackgroundDetail saveDirObj = null;
@@ -345,12 +342,43 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj.setDirectorPersonalDetail(null);
 						saveDirObj.setIsMainDirector(false);
 					}
+					dobOfProprietor = reqObj.getDob();
 					directorBackgroundDetailsRepository.save(saveDirObj);
 				}
 			} catch (Exception e) {
 				logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 			}
+			
+			try {
+				LocalDate start = null;
+				if(corporateApplicantDetail.getConstitutionId() == 7) {
+					if (dobOfProprietor != null) {
+						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					}
+				}else {
+					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
+				}
+				LocalDate now = LocalDate.now();
+				if(start != null) {
+					Period diff = Period.between(start, now);
+					Integer diffYear = diff.getYears();
+					if(fundSeekerInputRequest.getSinceYear() > diffYear) {
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Operating business since year not more than establishment year !!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					}
+				}
 
+				/*if(diff.getMonths() > 6) {
+					diffYear = diffYear + 1;
+				}*/
+			}catch (Exception e) {
+				logger.error("error while find diff of establishment year : ",e);
+			}
+
+			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
+			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
+			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
+			corporateApplicantDetailRepository.save(corporateApplicantDetail);
+			
 			LoansResponse res = new LoansResponse(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 			res.setFlag(true);
 			logger.info(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG);
@@ -466,10 +494,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					DirectorPersonalDetailRequest directorPersonalDetailRequest = new DirectorPersonalDetailRequest();
 					BeanUtils.copyProperties(directorBackgroundDetail.getDirectorPersonalDetail(), directorPersonalDetailRequest);
 					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(directorPersonalDetailRequest);
-					dobOfProprietor = directorBackgroundDetail.getDob();
 				} else {
 					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(new DirectorPersonalDetailRequest());
 				}
+				dobOfProprietor = directorBackgroundDetail.getDob();
 				directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
 			}
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
