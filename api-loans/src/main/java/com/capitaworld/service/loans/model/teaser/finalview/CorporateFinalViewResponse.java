@@ -235,6 +235,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private String eligibilityFinancialYear;
     private Double loanObligation;
     private Object cibilConsumerReport;
+    private List<Object> mcaCorpZipFile;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2187,6 +2188,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setCibilConsumerReport(Object cibilConsumerReport) {
 		this.cibilConsumerReport = cibilConsumerReport;
+	}
+
+	public List<Object> getMcaCorpZipFile() {
+		return mcaCorpZipFile;
+	}
+
+	public void setMcaCorpZipFile(List<Object> mcaCorpZipFile) {
+		this.mcaCorpZipFile = mcaCorpZipFile;
 	}
 
 
