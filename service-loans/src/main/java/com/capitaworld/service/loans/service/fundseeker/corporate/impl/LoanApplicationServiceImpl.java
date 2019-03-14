@@ -5872,13 +5872,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Inactivated Application Count of Users are ====== {} ", inActiveCount);
 		}
 		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
-		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId, businessTypeId);
-		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
-			logger.info("Corporate Application Id is Already Exists===>{}", corporateLoan.getId());
-			return corporateLoan.getId();
-		}
+//		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId, businessTypeId);
+//		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
+//			logger.info("Corporate Application Id is Already Exists===>{}", corporateLoan.getId());
+//			return corporateLoan.getId();
+//		}
 		logger.info("Successfully get result");
-		corporateLoan = new PrimaryCorporateDetail();
+		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		corporateLoan.setCreatedBy(userId);
