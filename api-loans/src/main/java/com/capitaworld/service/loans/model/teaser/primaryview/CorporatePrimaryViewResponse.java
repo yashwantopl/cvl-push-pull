@@ -61,6 +61,7 @@ public class CorporatePrimaryViewResponse {
     private List<Object> bankStatement;
     private List<Object> cibilReport;
     private List<Object> irtPdfReport;
+    private List<Object> mcaCorpZipFile;
     private Object monthlyDetailList;
     private Object top5FundReceivedList;
     private Object top5FundTransferedList;
@@ -1223,6 +1224,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setCibilConsumerReport(Object cibilConsumerReport) {
 		this.cibilConsumerReport = cibilConsumerReport;
+	}
+	public List<Object> getMcaCorpZipFile() {
+		return mcaCorpZipFile;
+	}
+	public void setMcaCorpZipFile(List<Object> mcaCorpZipFile) {
+		this.mcaCorpZipFile = mcaCorpZipFile;
 	}
 	
 	

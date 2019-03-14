@@ -1826,6 +1826,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		DocumentRequest documentRequestForMCAZip = new DocumentRequest();
+		documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
+		documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		documentRequestForMCAZip.setProductDocumentMappingId(DocumentAlias.MCA_CORP_ZIP);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestForMCAZip);
+			corporateFinalViewResponse.setMcaCorpZipFile(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 		if (primaryCorporateDetail.getProductId() == 1) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
 			try {
