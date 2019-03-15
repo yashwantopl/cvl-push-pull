@@ -3024,34 +3024,37 @@ public class FPAsyncComponent {
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 			}
-			// ===========================Email to Maker======================================
-			if (!CommonUtils.isObjectNullOrEmpty(maker) && !CommonUtils.isObjectNullOrEmpty(maker.getEmail())) {
-				String toIds = maker.getEmail();
-				logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
-
-				/*
-				 * // ====================== MAIL TO MAKER old code======================
-				 * createNotificationForEmail(toIds, workflowRequest.getUserId().toString(),
-				 * parameters, NotificationAlias.MAIL_MKR_DDR_APPROVE, NotificationType.EMAIL,
-				 * subjcet);
-				 */
-				// ====================== MAIL TO MAKER by new code ======================
-				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-				createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
-						NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject);
-
-			}
-			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
-				Map<String, Object> sysParameters = new HashMap<String, Object>();
-
-				sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-				sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-				sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-
-				sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
-						applicationRequest.getFpMakerId().toString(), sysParameters,
-						NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP,
-						applicationRequest.getFpMakerId().toString(), applicationRequest.getFpMakerId().toString());
+			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())){
+				// ===========================Email to Maker======================================
+				if (!CommonUtils.isObjectNullOrEmpty(maker) && !CommonUtils.isObjectNullOrEmpty(maker.getEmail())) {
+					String toIds = maker.getEmail();
+					logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
+	
+					/*
+					 * // ====================== MAIL TO MAKER old code======================
+					 * createNotificationForEmail(toIds, workflowRequest.getUserId().toString(),
+					 * parameters, NotificationAlias.MAIL_MKR_DDR_APPROVE, NotificationType.EMAIL,
+					 * subjcet);
+					 */
+					// ====================== MAIL TO MAKER by new code ======================
+					mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+					createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
+							NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject);
+	
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
+					Map<String, Object> sysParameters = new HashMap<String, Object>();
+	
+					sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
+					sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+					sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+	
+					sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
+							applicationRequest.getFpMakerId().toString(), sysParameters,
+							NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP,
+							applicationRequest.getFpMakerId().toString(), applicationRequest.getFpMakerId().toString());
+				}
+			
 			}
 			// ===========================Email to HO======================================
 			Long branchId = null;

@@ -288,31 +288,32 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											logger.info("SMS sending process complete STATUS is :" + smsStatus);
 										}
 										else if(request.getUserRole().equals(MAKER)) {
-											fpName = request.getUserName();
-											subject = "Proposal of "+organizationName+" is sanctioned/disbursed and partially disbursed by other bank";
-											parameters.put(APPLICATION_ID, applicationCode);
-											parameters.put(NAME_OF_ENTITY, organizationName);
-											if (fpName != "" && fpName != null) {
-												parameters.put(MAKER_NAME, fpName);
+											if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping) && !applicationProposalMapping.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
+												fpName = request.getUserName();
+												subject = "Proposal of "+organizationName+" is sanctioned/disbursed and partially disbursed by other bank";
+												parameters.put(APPLICATION_ID, applicationCode);
+												parameters.put(NAME_OF_ENTITY, organizationName);
+												if (fpName != "" && fpName != null) {
+													parameters.put(MAKER_NAME, fpName);
+												}
+												else{
+													parameters.put(MAKER_NAME, "Sir/Madam");
+												}
+												logger.info("Subject ====> "+subject);
+												logger.info("parameter fpName Maker=====>"+parameters.get(MAKER_NAME));
+												logger.info("Email id ====>"+to[0]);
+												logger.info("Mobile No ====>"+smsTo);
+			
+												result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_MAKER_MULTIPLE_BANK,subject);
+												if(result) {
+													logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
+												}else{
+													logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
+												}
+			
+												Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_MAKER_MULTIPLE_BANK);
+												logger.info("SMS sending process complete STATUS is :" + smsStatus);
 											}
-											else{
-												parameters.put(MAKER_NAME, "Sir/Madam");
-											}
-											logger.info("Subject ====> "+subject);
-											logger.info("parameter fpName Maker=====>"+parameters.get(MAKER_NAME));
-											logger.info("Email id ====>"+to[0]);
-											logger.info("Mobile No ====>"+smsTo);
-		
-											result = sendEmail(to,user_id,parameters, NotificationAlias.EMAIL_MAKER_MULTIPLE_BANK,subject);
-											if(result) {
-												logger.info("------Email send to "+to[0]+" and " + request.getUserRole()+" when Branch transfer-----");
-											}else{
-												logger.error("-----Error in sending email to "+to[0]+" and "+request.getUserRole()+" when Branch transfer------");
-											}
-		
-											Boolean smsStatus = createNotificationForSMS(smsTo,user_id,parameters,NotificationAlias.SMS_MAKER_MULTIPLE_BANK);
-											logger.info("SMS sending process complete STATUS is :" + smsStatus);
-		
 										}
 										else if(request.getUserRole().equals(CHECKER)) {
 											fpName = request.getUserName();
