@@ -157,4 +157,14 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 
     @Query("from ApplicationProposalMapping apm where apm.userId =:userId and apm.isActive = true order by apm.proposalId desc")
     public List<ApplicationProposalMapping> getUserLoans(@Param("userId") Long userId);
+    
+    @Modifying
+	@Query("update ApplicationProposalMapping lm set lm.isApplicantDetailsFilled =:isApplicantDetailsFilled,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.proposalId =:proposalId and lm.userId =:userId and lm.isActive = true")
+	public int setIsApplicantProfileMandatoryFilled(@Param("proposalId") Long proposalId, @Param("userId") Long userId,
+			@Param("isApplicantDetailsFilled") Boolean isApplicantDetailsFilled);
+    
+    @Modifying
+   	@Query("update ApplicationProposalMapping lm set lm.isPrimaryLocked =:isPrimaryLocked where lm.proposalId =:proposalId and lm.userId =:userId and lm.isActive = true")
+   	public int setIsPrimaryLocked(@Param("proposalId") Long proposalId, @Param("userId") Long userId,
+   			@Param("isPrimaryLocked") Boolean isPrimaryLocked);
 }
