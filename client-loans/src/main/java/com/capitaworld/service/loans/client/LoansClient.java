@@ -2448,8 +2448,8 @@ public class LoansClient {
 	/**
 	 * Client for cam report primary data uses in gateway
 	 * */
-	public LoansResponse getCamReportPrimaryData(Long applicationId,Long fpProductId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_PRIMARY_DETAILS_CAM+"/"+ applicationId+"/" +fpProductId);
+	public LoansResponse getCamReportPrimaryData(Long applicationId,Long fpProductId, Long proposalId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_PRIMARY_DETAILS_CAM+"/"+ applicationId+"/" +fpProductId + "/" +proposalId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
