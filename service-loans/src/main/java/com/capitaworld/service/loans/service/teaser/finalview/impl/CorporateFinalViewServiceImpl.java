@@ -586,7 +586,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 /*			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
 					? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
 					: null);*/
-			corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
+			corporateFinalViewResponse.setLoanType(applicationProposalMapping.getProductId() != null
 					? LoanType.getById(applicationProposalMapping.getProductId()).getValue()
 					: null); // NEW
 
@@ -594,7 +594,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
 							: null);*/
 			corporateFinalViewResponse.setLoanAmount(
-					primaryCorporateDetail.getAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
+					applicationProposalMapping.getLoanAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
 							: null); // NEW
 
 			corporateFinalViewResponse.setGstIn(
@@ -1823,6 +1823,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporateFinalViewResponse.setCibilConsumerReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		DocumentRequest documentRequestForMCAZip = new DocumentRequest();
+		documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
+		documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		documentRequestForMCAZip.setProductDocumentMappingId(DocumentAlias.MCA_CORP_ZIP);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestForMCAZip);
+			corporateFinalViewResponse.setMcaCorpZipFile(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
