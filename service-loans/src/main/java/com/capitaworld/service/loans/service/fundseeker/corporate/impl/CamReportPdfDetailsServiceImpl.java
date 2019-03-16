@@ -1576,7 +1576,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		//CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);// PREVIOUS
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalId);//NEW BASED ON PROPOSAL ID
-		logger.info("user id and application ID  fs corporate Applicatiion details======>"+corporateFinalInfoRequest.getSharePriceFace());
+		//logger.info("user id and application ID  fs corporate Applicatiion details======>"+corporateFinalInfoRequest.getSharePriceFace());
         //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;
 		// changes remaining---->
@@ -1870,8 +1870,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return new Object[] {osDetailsString, liabilitiesDetailsString, assetDetailsString , financialInputRequestString , financialInputRequestDbl };
 	}
 	
-	public void calculateRatioAnalysis(Map<Integer, Object[]>financials,Long applicationId) {
-		int currentYear = scoringService.getFinYear(applicationId);
+	public void calculateRatioAnalysis(Map<Integer, Object[]>financials,Long toapplicationId) {
+		int currentYear = scoringService.getFinYear(toapplicationId);
 		DecimalFormat decim = new DecimalFormat("###.##");
 		Object[] curFinYear = financials.get(currentYear - 1);
 		Object[] prevFinYear = financials.get(currentYear - 2);
@@ -1972,7 +1972,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		yrBeforePrevFinYearString.setQuickRatioX(CommonUtils.convertValue(CommonUtils.divideNumbers(yrBeforePrevFinYearDouble.getSundryDebtors(),yrBeforePrevFinYearDouble.getTradePayables())));
 		
 		try {
-			CGTMSECalcDataResponse response = loanApplicationService.getDataForCGTMSE(applicationId);
+			CGTMSECalcDataResponse response = loanApplicationService.getDataForCGTMSE(toapplicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
 				if(response.getSubSector() != null && response.getSubSector().equals("Manufacturer")) {
 					curFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getCashFromOperating(),curFinYearDouble.getInterestPaid())), curFinYearDouble.getInterestPaid())));
