@@ -348,24 +348,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			} catch (Exception e) {
 				logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 			}
-			
-			try {
-				LocalDate start = null;
-				if(corporateApplicantDetail.getConstitutionId() == 7) {
-					if (dobOfProprietor != null) {
-						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-					}
-				}else {
-					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
-				}
-				LocalDate now = LocalDate.now();
-				if(start != null) {
-					Period diff = Period.between(start, now);
-					Integer diffYear = diff.getYears();
-					if(fundSeekerInputRequest.getSinceYear() > diffYear) {
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Operating business since year not more than establishment year !!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-					}
-				}
 
 			try {
 				LocalDate start = null;
