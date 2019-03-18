@@ -5710,6 +5710,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				try {
 					// set fs details
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(disbursementRequest.getApplicationId());
+					ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndProposalId(disbursementRequest.getApplicationId(), disbursementRequest.getProposalId());
+					
 					disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
 					disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
 					// fs image
@@ -5717,7 +5719,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						DocumentRequest documentRequest = new DocumentRequest();
 						documentRequest.setApplicationId(disbursementRequest.getApplicationId());
 						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-						documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+						documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()==null?applicationProposalMapping.getProductId():loanApplicationMaster.getProductId()));
 						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 						String imagePath = null;
 						if (documentResponse != null && documentResponse.getStatus() == 200) {
@@ -5778,7 +5780,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							}
 						}
 						disbursementRequest.setFpAddress(fpAddress);
-						disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
+						disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()==null?applicationProposalMapping.getProductId():loanApplicationMaster.getProductId()).getName());
 						// set fp image
 						documentRequest.setUserId(productMaster.getUserId());
 						documentRequest.setUserType("user");
