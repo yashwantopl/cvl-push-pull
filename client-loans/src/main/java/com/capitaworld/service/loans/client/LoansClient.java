@@ -177,6 +177,7 @@ public class LoansClient {
 	private static final String GET_PINCODE_DATA = "/pincodeData/";
 
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
+	private static final String GET_BASIC_INFORMATION = "/loan_application/getBasicInformation";
 	
 	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
 	
@@ -244,6 +245,7 @@ public class LoansClient {
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
     private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
     private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
+    private static final String IS_EXIST_OFFLINE_PROPOSAL_BY_APPID ="/checkIsExistOfflineProposalByApplicationId";
     private static final String GET_COMMON_PROPERTIES ="/loan_application/getCommonPropValue";
     private static final String AND_FOR_APPLICATION_ID = " and For Application Id====>";
     private static final String GET_PRIMARY_DETAILS_CAM = "/cam/getPrimaryDataInByteArray";
@@ -1712,9 +1714,9 @@ public class LoansClient {
 	
 	
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
+		String url = loansBaseUrl.concat(GET_BASIC_INFORMATION).concat("/" + applicationId);
 		try {
-			logger.info("url====================>" + url);
+			logger.info("url====================>{}" , url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2406,6 +2408,20 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveIneligibleProposal : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse checkIsExistOfflineProposalByApplicationId(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(IS_EXIST_OFFLINE_PROPOSAL_BY_APPID).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in isExistOfflineProposalsByApplicationId : ", e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}

@@ -330,11 +330,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
         // CHANGES FOR NEW MULTIPLE BANKS----->
         ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
-        logger.info("======================>"+applicationId+"======app"+applicationProposalMapping.getProposalId());
-        
         Long toApplicationId = applicationProposalMapping.getApplicationId();
         Long userId     =  applicationProposalMapping.getUserId();
-        logger.info("======================>"+userId);
 
         //Long userId = loanApplicationRepository.getUserIdByApplicationId(toApplicationId);  // PREVIOUS
         // ENDS HERE MULTIPLE BANK----->
@@ -705,7 +702,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
+			//PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
 			int currentYear = scoringService.getFinYear(toApplicationId);
 			map.put("currentYr",currentYear-1);
 			// PENDING
