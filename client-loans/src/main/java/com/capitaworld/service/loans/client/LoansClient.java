@@ -177,6 +177,7 @@ public class LoansClient {
 	private static final String GET_PINCODE_DATA = "/pincodeData/";
 
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
+	private static final String GET_BASIC_INFORMATION = "/loan_application/getBasicInformation";
 	
 	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
 	
@@ -1713,9 +1714,9 @@ public class LoansClient {
 	
 	
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
+		String url = loansBaseUrl.concat(GET_BASIC_INFORMATION).concat("/" + applicationId);
 		try {
-			logger.info("url====================>" + url);
+			logger.info("url====================>{}" , url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
