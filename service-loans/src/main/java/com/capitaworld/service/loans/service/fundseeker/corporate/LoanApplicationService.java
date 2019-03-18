@@ -173,6 +173,8 @@ public interface LoanApplicationService {
 	public Boolean updateDDRStatusByProposalId(Long applicationId, Long userId , Long proposalId, Long statusId) throws Exception;
 
 	public LoanApplicationRequest getFromClient(Long id) throws LoansException;
+	
+	public LoanApplicationRequest getBasicInformation(Long id);
 
 	public Boolean isApplicationEligibleForIrr(Long applicationId) throws LoansException;
 	
