@@ -1716,7 +1716,7 @@ public class LoansClient {
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_BASIC_INFORMATION).concat("/" + applicationId);
 		try {
-			logger.info("url====================>" + url);
+			logger.info("url====================>{}" , url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
