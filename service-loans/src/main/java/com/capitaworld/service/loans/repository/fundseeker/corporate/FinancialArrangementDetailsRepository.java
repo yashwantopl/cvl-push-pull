@@ -39,16 +39,16 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true and pm.directorBackgroundDetail.id =:directorId")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId,@Param("directorId") Long directorId);
 	
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL")
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and o.applicationProposalMapping IS NULL")
 	public Double getTotalEmiByApplicationId(@Param("id")Long id);
 	
-	@Query("select sum(o.amount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and LOWER(o.loanType) IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
+	@Query("select sum(o.amount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and LOWER(o.loanType) IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.applicationProposalMapping IS NULL")
 	public Double getExistingLimits(@Param("id")Long id,@Param("loanType") List<String> loanType);
 
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and o.isManuallyAdded = true")
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and o.isManuallyAdded = true and o.applicationProposalMapping IS NULL")
 	public Double getTotalEmiByApplicationIdForUniformProduct(@Param("id")Long id);
 
-	@Query("select sum(o.amount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.isManuallyAdded = true")
+	@Query("select sum(o.amount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.isManuallyAdded = true and o.applicationProposalMapping IS NULL")
 	public Double getExistingLimitsForUniformProduct(@Param("id")Long id);
 
 	public FinancialArrangementsDetail findByIdAndIsActive(Long id,Boolean isActive);
@@ -64,9 +64,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	
 	public List<FinancialArrangementsDetail> findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(Long dirId,Long appId,Boolean isActive);
 
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail.id =:directorId and o.isActive = true ")
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail.id =:directorId and o.isActive = true and o.directorBackgroundDetail IS NULL")
 	public Double getTotalEmiByApplicationIdAndDirectorId(@Param("applicationId")Long applicationId,@Param("directorId")Long directorId);
 
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NOT NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 ")
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NOT NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.directorBackgroundDetail IS NULL")
 	public Double getTotalEmiOfAllDirByApplicationId(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType);
 }
