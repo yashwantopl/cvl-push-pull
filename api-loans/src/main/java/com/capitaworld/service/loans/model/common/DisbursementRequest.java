@@ -19,6 +19,7 @@ private String fsImage;
 private String fpImage;
 private String loanName;
 private String fpOrganisationName;
+private Long proposalId;
 
 private Double senctionedAmount;
 List<LoanDisbursementRequest> loanDisbursementRequestList;
@@ -144,5 +145,13 @@ public void setFpOrganisationName(String fpOrganisationName) {
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
 	}
+	public Long getProposalId() {
+		return proposalId;
+	}
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+	
+	
 	
 }
