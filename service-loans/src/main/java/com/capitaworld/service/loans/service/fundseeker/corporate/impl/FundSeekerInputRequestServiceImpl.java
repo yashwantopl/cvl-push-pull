@@ -367,18 +367,36 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					}
 				}
 
+			try {
+				LocalDate start = null;
+				if(corporateApplicantDetail.getConstitutionId() == 7) {
+					if (dobOfProprietor != null) {
+						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					}
+				}else {
+					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
+				}
+				LocalDate now = LocalDate.now();
+				if(start != null) {
+					Period diff = Period.between(start, now);
+					Integer diffYear = diff.getYears();
+					if(fundSeekerInputRequest.getSinceYear() > diffYear) {
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Operating business since year not more than establishment year !!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					}
+				}
+
 				/*if(diff.getMonths() > 6) {
 					diffYear = diffYear + 1;
 				}*/
 			}catch (Exception e) {
 				logger.error("error while find diff of establishment year : ",e);
 			}
-
+			
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
-			corporateApplicantDetailRepository.save(corporateApplicantDetail);
-			
+			corporateApplicantDetailRepository.save(corporateApplicantDetail);			
+
 			LoansResponse res = new LoansResponse(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 			res.setFlag(true);
 			logger.info(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG);
