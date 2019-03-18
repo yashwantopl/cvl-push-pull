@@ -7,19 +7,20 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.capitaworld.connect.api.ConnectLogRequest;
-import com.capitaworld.connect.api.ConnectRequest;
-import com.capitaworld.service.loans.model.*;
-import javax.servlet.http.HttpSession;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +31,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -84,6 +85,15 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -139,7 +149,6 @@ import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
@@ -212,6 +221,8 @@ import com.capitaworld.sidbi.integration.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
@@ -5669,6 +5680,37 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public LoanApplicationRequest getBasicInformation(Long id) {
+		try {
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
+			if (applicationMaster == null) {
+				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id);
+			}
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			BeanUtils.copyProperties(applicationMaster, applicationRequest);
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
+			applicationRequest.setUserName(getFsApplicantName(applicationMaster.getId()));
+			applicationRequest.setCreatedDate(applicationMaster.getCreatedDate());
+			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
+			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+				logger.warn(EMAIL_MOBILE_OR_DATA_IN_EMAIL_MOBILE_MUST_NOT_BE_NULL, emailMobile);
+				return applicationRequest;
+			} else {
+				UsersRequest userEmailMobile = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+				applicationRequest.setEmail(userEmailMobile.getEmail());
+				applicationRequest.setMobile(userEmailMobile.getMobile());
+			}
+			return applicationRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Individual Loan Details For Client:-  {}",e);
+			return null;
+		}
+	}
+
 	@Override
 	public Boolean isApplicationEligibleForIrr(Long applicationId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
@@ -5710,6 +5752,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				try {
 					// set fs details
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(disbursementRequest.getApplicationId());
+					ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndProposalId(disbursementRequest.getApplicationId(), disbursementRequest.getProposalId());
+					
 					disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
 					disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
 					// fs image
@@ -5717,7 +5761,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						DocumentRequest documentRequest = new DocumentRequest();
 						documentRequest.setApplicationId(disbursementRequest.getApplicationId());
 						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-						documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+						documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()==null?applicationProposalMapping.getProductId():loanApplicationMaster.getProductId()));
 						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 						String imagePath = null;
 						if (documentResponse != null && documentResponse.getStatus() == 200) {
@@ -5778,7 +5822,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							}
 						}
 						disbursementRequest.setFpAddress(fpAddress);
-						disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
+						disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()==null?applicationProposalMapping.getProductId():loanApplicationMaster.getProductId()).getName());
 						// set fp image
 						documentRequest.setUserId(productMaster.getUserId());
 						documentRequest.setUserType("user");
