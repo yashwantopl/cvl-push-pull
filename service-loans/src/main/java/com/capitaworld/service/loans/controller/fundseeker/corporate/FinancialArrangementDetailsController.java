@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,9 @@ public class FinancialArrangementDetailsController {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+
+	@Autowired
+	ApplicationProposalMappingService applicationProposalMappingService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
@@ -99,6 +103,54 @@ public class FinancialArrangementDetailsController {
 
 	}
 
+	@RequestMapping(value = "/saveByProposalId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveByProposalId(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "save");
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+		if (frameRequest == null) {
+			logger.warn("frameRequest can not be empty ==>" + frameRequest);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		// application id and user id must not be null
+		if (frameRequest.getApplicationId() == null) {
+			logger.warn("application id and user id must not be null ==>" + frameRequest);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+		try {
+			frameRequest.setUserId(userId);
+			if(CommonDocumentUtils.isThisClientApplication(request)){
+				frameRequest.setClientId(clientId);
+			}
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
+					: frameRequest.getClientId());
+			Boolean primaryLocked = loanApplicationService.isPrimaryLockedByProposalId(frameRequest.getProposalMappingId(),
+					finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			financialArrangementDetailsService.saveOrUpdateByProposalId(frameRequest);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Financial Arrangement Details==>", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable Long id , HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
@@ -120,6 +172,43 @@ public class FinancialArrangementDetailsController {
 					.getFinancialArrangementDetailsList(id,userId);
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			JSONObject result = loanApplicationService.getCurrencyAndDenomination(id,userId);
+			String data = result.get("currency").toString();
+			data = data.concat(" In "+ result.get("denomination").toString());
+			loansResponse.setData(data);
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Financial Arrangement Details==>", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	@RequestMapping(value = "/getListByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long proposalId , HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "getList");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		try {
+			if (proposalId == null) {
+				logger.warn("ID Require to get Financial Arrangement Details ==>" + proposalId);
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<FinancialArrangementsDetailRequest> response = financialArrangementDetailsService
+					.getFinancialArrangementDetailsListByProposalId(proposalId,userId);
+			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
+			JSONObject result =  applicationProposalMappingService.getCurrencyAndDenomination(proposalId);
 			String data = result.get("currency").toString();
 			data = data.concat(" In "+ result.get("denomination").toString());
 			loansResponse.setData(data);

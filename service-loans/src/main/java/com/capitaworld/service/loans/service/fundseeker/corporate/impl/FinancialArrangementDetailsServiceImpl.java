@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -73,6 +74,39 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
+	public Boolean saveOrUpdateByProposalId(FrameRequest frameRequest) throws LoansException {
+		try {
+			for (Map<String, Object> obj : frameRequest.getDataList()) {
+				FinancialArrangementsDetailRequest financialArrangementsDetailRequest = (FinancialArrangementsDetailRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, FinancialArrangementsDetailRequest.class);
+				FinancialArrangementsDetail financialArrangementsDetail = null;
+				if (financialArrangementsDetailRequest.getId() != null) {
+					financialArrangementsDetail = financialArrangementDetailsRepository
+							.findOne(financialArrangementsDetailRequest.getId());
+				} else {
+					financialArrangementsDetail = new FinancialArrangementsDetail();
+					financialArrangementsDetail.setCreatedBy(frameRequest.getUserId());
+					financialArrangementsDetail.setCreatedDate(new Date());
+				}
+				BeanUtils.copyProperties(financialArrangementsDetailRequest, financialArrangementsDetail);
+				financialArrangementsDetail
+						.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				financialArrangementsDetail
+						.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
+				financialArrangementsDetail.setModifiedBy(frameRequest.getUserId());
+				financialArrangementsDetail.setModifiedDate(new Date());
+				financialArrangementDetailsRepository.save(financialArrangementsDetail);
+			}
+			return true;
+		}
+
+		catch (Exception e) {
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id, Long userId)
 			throws LoansException {
 		try {
@@ -85,6 +119,18 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 	}
 
+	@Override
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListByProposalId(Long proposalId, Long userId)
+			throws LoansException {
+		try {
+			return prepareObject(financialArrangementDetailsRepository.listSecurityCorporateDetailFromProposalId(proposalId));
+		}
+
+		catch (Exception e) {
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 
 	@Override
@@ -128,7 +174,6 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		return true;
 	}
 	
-
 	@Override
 	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest, Long applicationId,
 			Long userId, Long directorId) {
