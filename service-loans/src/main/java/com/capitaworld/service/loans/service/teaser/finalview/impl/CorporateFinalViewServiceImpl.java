@@ -1835,7 +1835,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setMcaCorpZipFile(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-		} */
+
+		}*/
+
 		if (primaryCorporateDetail.getProductId() == 1) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
 			try {
