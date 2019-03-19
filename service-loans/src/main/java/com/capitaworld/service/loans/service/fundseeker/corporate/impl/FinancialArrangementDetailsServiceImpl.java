@@ -74,56 +74,10 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
-	public Boolean saveOrUpdateByProposalId(FrameRequest frameRequest) throws LoansException {
-		try {
-			for (Map<String, Object> obj : frameRequest.getDataList()) {
-				FinancialArrangementsDetailRequest financialArrangementsDetailRequest = (FinancialArrangementsDetailRequest) MultipleJSONObjectHelper
-						.getObjectFromMap(obj, FinancialArrangementsDetailRequest.class);
-				FinancialArrangementsDetail financialArrangementsDetail = null;
-				if (financialArrangementsDetailRequest.getId() != null) {
-					financialArrangementsDetail = financialArrangementDetailsRepository
-							.findOne(financialArrangementsDetailRequest.getId());
-				} else {
-					financialArrangementsDetail = new FinancialArrangementsDetail();
-					financialArrangementsDetail.setCreatedBy(frameRequest.getUserId());
-					financialArrangementsDetail.setCreatedDate(new Date());
-				}
-				BeanUtils.copyProperties(financialArrangementsDetailRequest, financialArrangementsDetail);
-				financialArrangementsDetail
-						.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				financialArrangementsDetail
-						.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
-				financialArrangementsDetail.setModifiedBy(frameRequest.getUserId());
-				financialArrangementsDetail.setModifiedDate(new Date());
-				financialArrangementDetailsRepository.save(financialArrangementsDetail);
-			}
-			return true;
-		}
-
-		catch (Exception e) {
-			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
-		}
-	}
-
-	@Override
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id, Long userId)
 			throws LoansException {
 		try {
 			return prepareObject(financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(id));
-		}
-
-		catch (Exception e) {
-			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
-		}
-	}
-
-	@Override
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListByProposalId(Long proposalId, Long userId)
-			throws LoansException {
-		try {
-			return prepareObject(financialArrangementDetailsRepository.listSecurityCorporateDetailFromProposalId(proposalId));
 		}
 
 		catch (Exception e) {
