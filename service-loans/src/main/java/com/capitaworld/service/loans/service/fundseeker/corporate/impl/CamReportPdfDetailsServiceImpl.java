@@ -1573,6 +1573,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		//CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);// PREVIOUS
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalId);//NEW BASED ON PROPOSAL ID
+		//logger.info("user id and application ID  fs corporate Applicatiion details======>"+corporateFinalInfoRequest.getSharePriceFace());
         //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;
 		// changes remaining---->
