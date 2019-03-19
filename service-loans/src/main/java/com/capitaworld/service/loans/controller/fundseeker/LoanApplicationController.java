@@ -830,8 +830,8 @@ public class LoanApplicationController {
 				json = new JSONObject();
 				json.put("isPrimaryLock", applicationRequest.getProfilePrimaryLocked());
 				json.put("isFinalLock", applicationRequest.getFinalLocked());
-				// json.put("isMcqSkipped", applicationRequest.getIsMcqSkipped());
-				json.put("isSkipMcq", applicationRequest.getIsMcqSkipped());
+				json.put("isMcqSkipped", applicationRequest.getIsMcqSkipped());
+				//json.put("isSkipMcq", applicationRequest.getIsMcqSkipped());
 				json.put("ddrStatusId", applicationRequest.getDdrStatusId());
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());

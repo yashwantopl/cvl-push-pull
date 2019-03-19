@@ -157,4 +157,17 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 
     @Query("from ApplicationProposalMapping apm where apm.userId =:userId and apm.isActive = true order by apm.proposalId desc")
     public List<ApplicationProposalMapping> getUserLoans(@Param("userId") Long userId);
+
+
+    @Query("select lm.currencyId from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.proposalId=:proposalId and lm.userId =:userId and lm.isActive = true")
+    public Integer getCurrencyId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId,@Param("userId") Long userId);
+
+    @Query("select lm.currencyId from ApplicationProposalMapping lm where lm.proposalId =:proposalId and lm.isActive = true")
+    public Integer getCurrencyId(@Param("proposalId") Long proposalId);
+
+    @Query("select lm.denominationId from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.proposalId=:proposalId and lm.userId =:userId and lm.isActive = true")
+    public Integer getDenominationId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId,@Param("userId") Long userId);
+
+    @Query("select lm.denominationId from ApplicationProposalMapping lm where lm.proposalId=:proposalId and lm.isActive = true")
+    public Integer getDenominationId(@Param("proposalId") Long proposalId);
 }
