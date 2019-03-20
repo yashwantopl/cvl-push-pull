@@ -99,14 +99,16 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
 	public List<ObligationDetailRequest> getObligationDetailsFromProposalId(Long proposalId, int applicationType)
 			throws LoansException {
 		List<ObligationDetail> otherCurrentAssetDetails;
-        switch (applicationType) {
-            case CommonUtils.ApplicantType.APPLICANT:
-                otherCurrentAssetDetails = obligationDetailRepository.listObligationDetailFromProposalId(proposalId);
-                break;
-
-            default:
-                throw new LoansException();
-        }
+		otherCurrentAssetDetails = obligationDetailRepository.listObligationDetailFromProposalId(proposalId);
+		
+//        switch (applicationType) {
+//            case CommonUtils.ApplicantType.APPLICANT:
+//                otherCurrentAssetDetails = obligationDetailRepository.listObligationDetailFromProposalId(proposalId);
+//                break;
+//
+//            default:
+//                throw new LoansException();
+//        }
 
         List<ObligationDetailRequest> obligationDetailRequests = new ArrayList<ObligationDetailRequest>();
 

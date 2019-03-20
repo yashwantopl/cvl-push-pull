@@ -663,7 +663,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfile(userId, applicationId);
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId, proposalId);
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
 			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress())) {
 				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getPremiseNumber(),null) + "," : "");
@@ -795,7 +795,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		}
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimary(userId, applicationId);
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
 			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
@@ -804,7 +804,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		
 		//INCOME DETAILS - NET INCOME
 		try {
-			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId,proposalId);
 			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
 				map.put("incomeDetails", retailApplicantIncomeDetail);
 			}
@@ -1046,7 +1046,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}
 			//RETAIL FINAL DETAILS
 			try {
-				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinal(userId, applicationId);
+				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinalByProposalId(userId, applicationId, proposalId);
 				if(!CommonUtils.isObjectNullOrEmpty(retailFinalInfo)) {
 					map.put("religion", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getReligion()) ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue() : "");
 					map.put("residentialStatus", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getResidentialStatus()) ? ResidentialStatus.getById(retailFinalInfo.getResidentialStatus()).getValue() : "");
@@ -1083,7 +1083,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//INCOME DETAILS - GROSS INCOME
 			try {
-				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
+				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
 				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
 					map.put("grossIncomeDetails", retailApplicantIncomeDetail);
 				}
@@ -1093,7 +1093,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//BANK ACCOUNT HELD DETAILS
 			try {
-				List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailsService.getExistingLoanDetailList(applicationId, 1);
+				List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailsService.getExistingLoanDetailListByProposalId(proposalId, 1);
 				if(!CommonUtils.isObjectNullOrEmpty(bankAccountHeldDetails)) {
 					map.put("bankAccountHeld", bankAccountHeldDetails);
 				}
@@ -1103,7 +1103,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//FIXED DEPOSITS DETAILS
 			try {
-				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailList(applicationId, 1);
+				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalId(proposalId, 1);
 				if(!CommonUtils.isObjectNullOrEmpty(fixedDepositeDetails)) {
 					map.put("fixedDepositeDetails", fixedDepositeDetails);
 				}
@@ -1113,7 +1113,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//OTHER CURRENT ASSEST DETAILS
 			try {
-				List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetails = otherCurrentAssetDetailsService.getOtherCurrentAssetDetailList(applicationId,1);
+				List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetails = otherCurrentAssetDetailsService.getOtherCurrentAssetDetailListByProposalId(proposalId,1);
 				if(!CommonUtils.isObjectNullOrEmpty(otherCurrentAssetDetails)) {
 					map.put("otherCurrentAssetDetails", otherCurrentAssetDetails);
 				}
@@ -1123,7 +1123,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//OBLIGATION DETAILS
 			try {
-				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailList(applicationId,1);
+				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailsFromProposalId(proposalId,1);
 				if(!CommonUtils.isObjectNullOrEmpty(obligationRequest)) {
 					map.put("obligationDetails", obligationRequest);
 				}
@@ -1133,7 +1133,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//REFERENCES DETAILS
 			try {
-				List<ReferenceRetailDetailsRequest> referenceDetails = referenceRetailDetailService.getReferenceRetailDetailList(applicationId,1);
+				List<ReferenceRetailDetailsRequest> referenceDetails = referenceRetailDetailService.getReferenceRetailDetailListByPropsalId(proposalId,1);
 				if(!CommonUtils.isObjectNullOrEmpty(referenceDetails)) {
 					map.put("referenceDetails", referenceDetails);
 				}
@@ -1148,23 +1148,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	}
 	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-			/*********************************************************CAM UTILS****************************************************************/
+	/*********************************************************CAM UTILS****************************************************************/
 	@SuppressWarnings("unchecked")
 	private String getCityName(Long cityId) {
 		try {
