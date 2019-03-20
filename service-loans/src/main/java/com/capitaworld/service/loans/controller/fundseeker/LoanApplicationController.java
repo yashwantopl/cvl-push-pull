@@ -831,6 +831,7 @@ public class LoanApplicationController {
 				json.put("isPrimaryLock", applicationRequest.getProfilePrimaryLocked());
 				json.put("isFinalLock", applicationRequest.getFinalLocked());
 				json.put("isMcqSkipped", applicationRequest.getIsMcqSkipped());
+				//json.put("isSkipMcq", applicationRequest.getIsMcqSkipped());
 				json.put("ddrStatusId", applicationRequest.getDdrStatusId());
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
@@ -910,7 +911,12 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
-			loansResponse.setData(loanApplicationService.getSelfViewAndPrimaryLocked(applicationId, userId));
+			if(proposalId != null) {
+				loansResponse.setData(appPropMappService.getSelfViewAndPrimaryLocked(proposalId, userId));
+			}else {
+				loansResponse.setData(loanApplicationService.getSelfViewAndPrimaryLocked(applicationId, userId));
+			}
+			
 			CommonDocumentUtils.endHook(logger, "getSelfViewAndPrimaryLocked");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -1265,6 +1271,26 @@ public class LoanApplicationController {
 			CommonDocumentUtils.startHook(logger, "getFpNegativeList");
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			List<FpProfileBasicDetailRequest> fpProfileBasicDetailRequests = loanApplicationService.getFpNegativeList(applicationId);
+			if (fpProfileBasicDetailRequests != null && !fpProfileBasicDetailRequests.isEmpty()) {
+				loansResponse.setListData(fpProfileBasicDetailRequests);
+			}
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getFpNegativeList==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getFpNegativeListByProposalId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFpNegativeListByProposalId(HttpServletRequest request,
+			@RequestBody Long proposalId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getFpNegativeList");
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			List<FpProfileBasicDetailRequest> fpProfileBasicDetailRequests = loanApplicationService.getFpNegativeListByProposalId(proposalId);
 			if (fpProfileBasicDetailRequests != null && !fpProfileBasicDetailRequests.isEmpty()) {
 				loansResponse.setListData(fpProfileBasicDetailRequests);
 			}
@@ -1993,6 +2019,23 @@ public class LoanApplicationController {
 			}
 			CommonDocumentUtils.endHook(logger, "get");
 			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getFromClient(proposalId), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details from Client==>", e);
+			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/getBasicInformation/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoanApplicationRequest> getBasicInformation(@PathVariable("applicationId") Long applicationId) {
+		// request must not be null
+		try {
+			if (applicationId == null) {
+				logger.warn("ID Require to get Loan Application Details. ID==>{}" , applicationId);
+				return null;
+			}
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getBasicInformation(applicationId), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details from Client==>", e);

@@ -130,7 +130,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
-				if(inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
+				if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getIsSanctioned()) && inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
 					// THIS APPLCATION IS ALREADY SANCTIONED
 					return 1;
 				}

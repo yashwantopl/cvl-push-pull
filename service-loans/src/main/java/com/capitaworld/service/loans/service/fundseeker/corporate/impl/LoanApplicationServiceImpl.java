@@ -1,4 +1,3 @@
-
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
@@ -34,6 +33,7 @@ import org.springframework.ui.ModelMap;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -84,6 +84,15 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -212,6 +221,8 @@ import com.capitaworld.sidbi.integration.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
@@ -5808,6 +5819,37 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public LoanApplicationRequest getBasicInformation(Long id) {
+		try {
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
+			if (applicationMaster == null) {
+				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id);
+			}
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			BeanUtils.copyProperties(applicationMaster, applicationRequest);
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
+			applicationRequest.setUserName(getFsApplicantName(applicationMaster.getId()));
+			applicationRequest.setCreatedDate(applicationMaster.getCreatedDate());
+			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
+			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+				logger.warn(EMAIL_MOBILE_OR_DATA_IN_EMAIL_MOBILE_MUST_NOT_BE_NULL, emailMobile);
+				return applicationRequest;
+			} else {
+				UsersRequest userEmailMobile = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+				applicationRequest.setEmail(userEmailMobile.getEmail());
+				applicationRequest.setMobile(userEmailMobile.getMobile());
+			}
+			return applicationRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Individual Loan Details For Client:-  {}",e);
+			return null;
+		}
+	}
+
 	@Override
 	public Boolean isApplicationEligibleForIrr(Long applicationId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
@@ -5849,6 +5891,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				try {
 					// set fs details
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(disbursementRequest.getApplicationId());
+					ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndProposalId(disbursementRequest.getApplicationId(), disbursementRequest.getProposalId());
+					
 					disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
 					disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
 					// fs image
@@ -5856,7 +5900,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						DocumentRequest documentRequest = new DocumentRequest();
 						documentRequest.setApplicationId(disbursementRequest.getApplicationId());
 						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-						documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+						documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()==null?applicationProposalMapping.getProductId():loanApplicationMaster.getProductId()));
 						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 						String imagePath = null;
 						if (documentResponse != null && documentResponse.getStatus() == 200) {
@@ -5917,7 +5961,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							}
 						}
 						disbursementRequest.setFpAddress(fpAddress);
-						disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
+						disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()==null?applicationProposalMapping.getProductId():loanApplicationMaster.getProductId()).getName());
 						// set fp image
 						documentRequest.setUserId(productMaster.getUserId());
 						documentRequest.setUserType("user");
@@ -8029,5 +8073,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.error("Failed to get proposal id from application id and user org id" + applicationId);
 		}
 		return proposalId;
+	}
+
+	@Override
+	public List<FpProfileBasicDetailRequest> getFpNegativeListByProposalId(Long proposalId) {
+		try {
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+			if (!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)) {
+				List<Long> fpUserIdList = productMasterRepository
+						.getUserIdListByProductId(applicationProposalMapping.getProductId());
+				if (!CommonUtils.isListNullOrEmpty(fpUserIdList)) {
+					// get fp name from user client
+
+					UserResponse userResponse = userClient.getFPNameListByUserId(fpUserIdList);
+					if (userResponse != null && userResponse.getData() != null) {
+						return  (List<FpProfileBasicDetailRequest>) userResponse.getData();
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return Collections.emptyList();
 	}
 }

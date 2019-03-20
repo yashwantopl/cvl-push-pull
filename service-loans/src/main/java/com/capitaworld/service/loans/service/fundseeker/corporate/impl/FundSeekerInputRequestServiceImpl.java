@@ -348,7 +348,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			} catch (Exception e) {
 				logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 			}
-			
+						
 			try {
 				LocalDate start = null;
 				if(corporateApplicantDetail.getConstitutionId() == 7) {
@@ -373,12 +373,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}catch (Exception e) {
 				logger.error("error while find diff of establishment year : ",e);
 			}
-
+			
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
-			corporateApplicantDetailRepository.save(corporateApplicantDetail);
-			
+			corporateApplicantDetailRepository.save(corporateApplicantDetail);			
+
 			LoansResponse res = new LoansResponse(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 			res.setFlag(true);
 			logger.info(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG);
