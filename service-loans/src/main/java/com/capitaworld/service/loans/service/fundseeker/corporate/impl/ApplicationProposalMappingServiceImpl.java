@@ -33,6 +33,36 @@ public class ApplicationProposalMappingServiceImpl implements ApplicationProposa
 		return repository.findByProposalIdAndIsActive(proposalId,true);
 	}
 
+	@Override
+	public Boolean isFinalLocked(Long proposalId) throws Exception {
+		Long count = repository.checkFinalDetailIsLocked(proposalId);
+		return (count != null ? count > 0 : false);
+	}
+
+	@Override
+	public JSONObject getSelfViewAndPrimaryLocked(Long proposalId, Long userId) throws Exception {
+		try {
+			JSONObject json = new JSONObject();
+			Long selfViewCount = repository.isSelfApplicantView(proposalId, userId);
+			json.put("isSelfView", (!CommonUtils.isObjectNullOrEmpty(selfViewCount) && selfViewCount > 0));
+			json.put("isPrimaryLocked", isPrimaryLockedByProposalId(proposalId, userId));
+			return json;
+		} catch (Exception e) {
+			logger.error("Error while getting isFinalLocked ?",e);
+			throw e;
+		}
+	}
+	
+	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception {
+		try {
+			Long count = repository.checkPrimaryDetailIsLocked(proposalId);
+			return (count != null ? count > 0 : false);
+		} catch (Exception e) {
+			logger.error("Error while getting isPrimaryLocked ?",e);
+			throw e;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getCurrencyAndDenomination(Long applicationId, Long proposalId, Long userId) throws LoansException {
@@ -64,4 +94,5 @@ public class ApplicationProposalMappingServiceImpl implements ApplicationProposa
 		}
 
 	}
+
 }

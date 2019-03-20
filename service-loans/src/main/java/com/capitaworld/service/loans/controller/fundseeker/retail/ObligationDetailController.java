@@ -126,5 +126,45 @@ public class ObligationDetailController {
         }
 
     }
+    
+    @RequestMapping(value = "/getList/{applicationType}/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType, @PathVariable Long proposalId,
+                                                 @RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+        // request must not be null
+        try {
+            Long userId = null;
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                userId = clientId;
+            } else {
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+            if (proposalId == null) {
+                logger.warn("ID Require to get Other Current Asset Details ==>" + proposalId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            List<ObligationDetailRequest> response = obligationDetailService.getObligationDetailsFromProposalId(proposalId, applicationType);
+            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            loansResponse.setListData(response);
+            Integer currencyId = null;
+            switch (applicationType) {
+                case CommonUtils.ApplicantType.APPLICANT:
+                    currencyId = retailApplicantService.getCurrency(id, userId);
+                    break;
+
+                default : break;
+
+            }
+            loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting Other Current Asset Details==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
 }

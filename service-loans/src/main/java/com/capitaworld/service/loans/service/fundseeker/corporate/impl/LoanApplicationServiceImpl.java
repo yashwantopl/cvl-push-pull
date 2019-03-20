@@ -1,5 +1,3 @@
-
-
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
@@ -8,20 +6,19 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.capitaworld.connect.api.ConnectLogRequest;
+import com.capitaworld.connect.api.ConnectRequest;
+import com.capitaworld.service.loans.model.*;
+import javax.servlet.http.HttpSession;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +29,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -150,6 +148,7 @@ import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
@@ -1154,6 +1153,145 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	
+	//Arun Code
+	public List<LoanApplicationRequest> getDetailsForSanctionPopup(Long userId) throws LoansException {
+
+		try {
+			logger.info("In GetDetail");
+			List<ApplicationProposalMapping> applicationListFromProposal = applicationProposalMappingRepository.getUserLoans(userId);
+			ConnectResponse connectResponse = connectClient.getApplicationListByUserId(userId);
+			ObjectMapper mapper = new ObjectMapper();
+			List<ConnectRequest> connectRequests = mapper.convertValue(connectResponse.getDataList(),new TypeReference<List<ConnectRequest>>(){});
+			List<ConnectRequest> incompletedApplications =  connectRequests.stream().filter(cr -> cr.getStageId() < 7).collect(Collectors.toList());
+			List<LoanApplicationRequest> requests = new ArrayList<>(applicationListFromProposal.size() + connectRequests.size());
+			if("N".equals(IS_UNIT_TEST)) {
+				for (ApplicationProposalMapping master : applicationListFromProposal) {
+					LoanApplicationRequest request = new LoanApplicationRequest();
+					request.setId(master.getApplicationId());
+					BeanUtils.copyProperties(master, request, "name");
+					if (CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
+						request.setLoanTypeMain(CommonUtils.CORPORATE);
+						request.setLoanTypeSub("DEBT");
+						request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue());
+						requests.add(request);
+						continue;
+					}
+					request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getApplicationId(), master.getProductId(),master.getProposalId()));
+					int userMainType = CommonUtils.getUserMainType(master.getProductId());
+					if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+						request.setLoanTypeMain(CommonUtils.CORPORATE);
+						String currencyAndDenomination = "NA";
+						if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())
+								&& !CommonUtils.isObjectNullOrEmpty(master.getDenominationId())) {
+							try {
+								currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
+								currencyAndDenomination = currencyAndDenomination
+										.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId().intValue()));
+							} catch (Exception e) {
+								logger.error(CommonUtils.EXCEPTION,e);
+							}
+						}
+						request.setCurrencyValue(currencyAndDenomination);
+						request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
+					} else {
+						request.setLoanTypeMain(CommonUtils.RETAIL);
+						Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getApplicationId());
+						request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+						request.setLoanTypeSub("DEBT");
+					}
+					request.setProfilePrimaryLocked(master.getIsPrimaryLocked());
+					request.setFinalLocked(master.getIsFinalLocked());
+					try {
+						if (!CommonUtils.isObjectNullOrEmpty(master.getApplicationStatusMaster())) {
+							request.setStatus(Integer.valueOf(master.getApplicationStatusMaster().getId().toString()));
+							request.setIsNhbsApplication(true);
+							request.setDdrStatusId(master.getDdrStatusId());
+						} else {
+							ProposalMappingResponse response = proposalDetailsClient
+									.getFundSeekerApplicationStatus(master.getApplicationId());
+							request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null
+									: (Integer) response.getData());
+							request.setIsNhbsApplication(false);
+						}
+						request.setName(LoanType.getType(master.getProductId()).getName());
+						requests.add(request);
+					} catch (Exception e) {
+						logger.error("Error while Getting Loan Status from Proposal Client or Proposal Service is not available:-",e);
+					}
+					long proposalStatusId = 0l;
+					try {
+						ProposalMappingResponse response = proposalDetailsClient
+								.getActiveProposalByApplicationID(master.getApplicationId());
+
+						if (!CommonUtils.isObjectNullOrEmpty(response)
+								&& !CommonUtils.isObjectNullOrEmpty(response.getData())) {
+							ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) response.getData(), ProposalMappingRequest.class);
+							proposalStatusId = proposalrequest.getProposalStatusId().longValue();
+						}
+					} catch (Exception e) {
+						logger.error("Error while calling getActiveProposalByApplicationID:-",e);
+					}
+
+					Integer status = request.getStatus();
+					Long ddrStatus = request.getDdrStatusId();
+					String applicationStatus = null;
+					if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
+						if (request
+								.getPaymentStatus() == CommonUtils.PaymentStatus.SUCCESS) {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+						} else {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
+						}
+					} else if (ddrStatus == CommonUtils.DdrStatus.APPROVED) {
+						if (proposalStatusId == MatchConstant.ProposalStatus.APPROVED) {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.SANCTIONED.getValue();
+						} else if (proposalStatusId == MatchConstant.ProposalStatus.HOLD) {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.HOLD.getValue();
+						} else if (proposalStatusId == MatchConstant.ProposalStatus.DECLINE) {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.REJECT.getValue();
+						} else if (proposalStatusId == MatchConstant.ProposalStatus.DISBURSED) {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.DISBURSED.getValue();
+						} else if (proposalStatusId == MatchConstant.ProposalStatus.ACCEPT) {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_APPROVED_BUT_NOT_SANCTIONED
+									.getValue();
+						} else {
+							applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+						}
+					} else {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+					}
+					request.setApplicationStatus(applicationStatus);
+				}
+			}
+			if("N".equals(IS_UNIT_TEST)) {
+				for (ConnectRequest master : incompletedApplications) {
+					LoanApplicationRequest request = new LoanApplicationRequest();
+					BeanUtils.copyProperties(master, request, "name");
+					request.setId(master.getApplicationId());
+					request.setLoanTypeMain(CommonUtils.CORPORATE);
+					request.setLoanTypeSub("DEBT");
+					request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue());
+					requests.add(request);
+				}
+			}
+
+			return requests;
+		} catch (Exception e) {
+			logger.error("Error while Getting Loan Details:-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 	@Override
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId) {
@@ -7935,5 +8073,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.error("Failed to get proposal id from application id and user org id" + applicationId);
 		}
 		return proposalId;
+	}
+
+	@Override
+	public List<FpProfileBasicDetailRequest> getFpNegativeListByProposalId(Long proposalId) {
+		try {
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+			if (!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)) {
+				List<Long> fpUserIdList = productMasterRepository
+						.getUserIdListByProductId(applicationProposalMapping.getProductId());
+				if (!CommonUtils.isListNullOrEmpty(fpUserIdList)) {
+					// get fp name from user client
+
+					UserResponse userResponse = userClient.getFPNameListByUserId(fpUserIdList);
+					if (userResponse != null && userResponse.getData() != null) {
+						return  (List<FpProfileBasicDetailRequest>) userResponse.getData();
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return Collections.emptyList();
 	}
 }

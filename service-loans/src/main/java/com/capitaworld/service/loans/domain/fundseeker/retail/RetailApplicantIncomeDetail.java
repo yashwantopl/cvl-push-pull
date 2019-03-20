@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 
 /**
@@ -19,7 +20,6 @@ import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 @Table(name = "fs_retail_applicant_income_details")
 public class RetailApplicantIncomeDetail extends AuditActivity implements Serializable {
 	
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -28,6 +28,9 @@ public class RetailApplicantIncomeDetail extends AuditActivity implements Serial
 	
 	@Column(name = "application_id")
 	private Long applicationId;
+	
+	@Column(name = "proposal_mapping_id")
+	private Long proposalId;
 	
 	@Column(name = "year")
 	private Integer year;
@@ -232,4 +235,13 @@ public class RetailApplicantIncomeDetail extends AuditActivity implements Serial
 	public void setOtherSourceMode(String otherSourceMode) {
 		this.otherSourceMode = otherSourceMode;
 	}
+
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+	
 }

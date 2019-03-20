@@ -1017,5 +1017,87 @@ public class PrimaryViewController {
 			}
 		}
 	}
+	
+	@GetMapping(value = "/PlTeaserView/{toApplicationId}/{productMappingId}/{isFinalView}/{proposalId}")
+	public @ResponseBody ResponseEntity<LoansResponse> plViewOfCorporateCommonByProposalId(
+			@PathVariable(value = "toApplicationId") Long toApplicationId,
+			@PathVariable(value = "productMappingId") Long productMappingId,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request,
+			@PathVariable(value = "isFinalView") Boolean isFinalView,
+			@PathVariable("proposalId") Long proposalId) {
+
+		logger.info("In PL View Ctrl of applicationId" + toApplicationId + "productMappingId" + productMappingId);
+
+		// GET USER ID AND USER TYPE
+		Long userId = null;
+		Integer userType = null;
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		}
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER) {
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if (response != null && response.getData() != null) {
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
+								HttpStatus.OK);
+					}
+				} catch (Exception e) {
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.OK);
+				}
+			} else {
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
+				}
+			}
+
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = 1;// ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
+		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		} else {
+			LoansResponse loansResponse = new LoansResponse();
+			PlTeaserViewResponse plPrimaryViewResponse = null;
+			try {
+				logger.info("GET PL PRIMARY TEASER VIEW OF USER OF APPLICATION ID" + toApplicationId
+						+ "PRODUCT MAPPING ID" + productMappingId + "USER TYPE" + userType + "USER ID" + userId);
+				plPrimaryViewResponse = plTeaserViewService.getPlPrimaryViewDetailsByProposalId(toApplicationId, userType, userId,
+						productMappingId, isFinalView, proposalId);
+				if (!CommonUtils.isObjectNullOrEmpty(plPrimaryViewResponse)) {
+					logger.info("Response of Teaser View" + plPrimaryViewResponse.toString());
+					loansResponse.setData(plPrimaryViewResponse);
+					loansResponse.setMessage("PL Primary Details");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				} else {
+					loansResponse.setMessage("No data found for Pl final view");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+				loansResponse.setData(plPrimaryViewResponse);
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		}
+	}
 
 }

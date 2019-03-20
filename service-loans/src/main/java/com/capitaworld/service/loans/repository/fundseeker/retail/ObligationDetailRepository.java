@@ -14,5 +14,8 @@ public interface ObligationDetailRepository extends JpaRepository<ObligationDeta
 
     @Query("select o from ObligationDetail o where o.applicationId.id = :id and o.isActive = true")
     public List<ObligationDetail> listObligationDetailFromAppId(@Param("id")Long id);
+    
+    @Query("select o from ObligationDetail o where o.applicationProposalMapping.proposalId = :proposalId and o.isActive = true")
+    public List<ObligationDetail> listObligationDetailFromProposalId(@Param("proposalId") Long proposalId);
 
 }

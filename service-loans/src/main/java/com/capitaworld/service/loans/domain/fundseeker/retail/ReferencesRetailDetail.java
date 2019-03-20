@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
@@ -38,6 +39,10 @@ public class ReferencesRetailDetail implements Serializable {
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
 
+	@ManyToOne
+    @JoinColumn(name = "proposal_mapping_id")
+    private ApplicationProposalMapping applicationProposalMapping;
+	
 	@ManyToOne
 	@JoinColumn(name="co_applicant_detail_id")
 	private CoApplicantDetail coApplicantDetailId;
@@ -218,4 +223,14 @@ public class ReferencesRetailDetail implements Serializable {
 	public void setPincode(Long pincode) {
 		this.pincode = pincode;
 	}
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
+	
+	
 }
