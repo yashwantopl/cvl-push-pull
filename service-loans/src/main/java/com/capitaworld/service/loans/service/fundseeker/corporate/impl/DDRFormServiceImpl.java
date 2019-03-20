@@ -662,7 +662,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 		logger.info("Before Call Corporate Profile UserId is :- " + userId);
 		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
 				.getByApplicationIdAndApplicationIdAndIsAtive(applicationId,proposalId);
-		if (CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+		CorporateApplicantDetail regAddress = corporateApplicantDetailRepository
+				.findByApplicationIdIdAndIsActive(applicationId,true);
+		if (CommonUtils.isObjectNullOrEmpty(regAddress)) {
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
 			return response;
 		}
@@ -682,24 +684,24 @@ public class DDRFormServiceImpl implements DDRFormService {
 			logger.error("Error while getting user org id :- ", e);
 		}
 		// ORGANIZATION NAME :- LINENO:6
-		response.setNameOfBorrower(applicantDetail.getOrganisationName());
+		response.setNameOfBorrower(regAddress.getOrganisationName());
 		response.setCurrency(getCurrency(applicationId, userId));
 		// GET REGISTERED ADDRESS :- LINENO:7
 		Address address = new Address();
-		address.setPremiseNumber(applicantDetail.getRegisteredPremiseNumber());
-		address.setStreetName(applicantDetail.getRegisteredStreetName());
-		address.setLandMark(applicantDetail.getRegisteredLandMark());
-		address.setCountryId(applicantDetail.getRegisteredCountryId());
-		address.setStateId(applicantDetail.getRegisteredStateId());
-		address.setCityId(applicantDetail.getRegisteredCityId());
-		address.setPincode(applicantDetail.getRegisteredPincode());
-		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredDistMappingId())) {
-			PincodeData pincodeData = pincodeDataRepository.findOne(applicantDetail.getRegisteredDistMappingId());
+		address.setPremiseNumber(regAddress.getRegisteredPremiseNumber());
+		address.setStreetName(regAddress.getRegisteredStreetName());
+		address.setLandMark(regAddress.getRegisteredLandMark());
+		address.setCountryId(regAddress.getRegisteredCountryId());
+		address.setStateId(regAddress.getRegisteredStateId());
+		address.setCityId(regAddress.getRegisteredCityId());
+		address.setPincode(regAddress.getRegisteredPincode());
+		if (!CommonUtils.isObjectNullOrEmpty(regAddress.getRegisteredDistMappingId())) {
+			PincodeData pincodeData = pincodeDataRepository.findOne(regAddress.getRegisteredDistMappingId());
 			if (!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
 				address.setVillage(pincodeData.getOfficeName());
 				address.setDistrict(pincodeData.getDistrictName());
 				address.setSubDistrict(pincodeData.getTaluka());
-				address.setDistrictMappingId(applicantDetail.getRegisteredDistMappingId());
+				address.setDistrictMappingId(regAddress.getRegisteredDistMappingId());
 			}
 		}
 		response.setRegOfficeAddress(address);
@@ -723,7 +725,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 		}
 		response.setCorpOfficeAddress(address);
-		response.setRegOfficeAddress(address);
+		//response.setRegOfficeAddress(address);
 
 		// GET RERGISTERED EMAIL ID :- LINENO:11
 		try {
