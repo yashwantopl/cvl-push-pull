@@ -20,4 +20,6 @@ public interface PlRetailApplicantService {
     public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws LoansException;
 
     public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException;
+
+    public RetailFinalInfoRequest getFinalByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException;
 }

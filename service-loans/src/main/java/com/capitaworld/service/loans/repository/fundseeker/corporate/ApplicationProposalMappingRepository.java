@@ -167,4 +167,7 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
    	@Query("update ApplicationProposalMapping lm set lm.isPrimaryLocked =:isPrimaryLocked where lm.proposalId =:proposalId and lm.userId =:userId and lm.isActive = true")
    	public int setIsPrimaryLocked(@Param("proposalId") Long proposalId, @Param("userId") Long userId,
    			@Param("isPrimaryLocked") Boolean isPrimaryLocked);
+    
+    @Query("select count(proposalId) from ApplicationProposalMapping lm where lm.proposalId =:proposalId and lm.userId =:userId and lm.isActive = true")
+	public Long isSelfApplicantView(@Param("proposalId") Long proposalId, @Param("userId") Long userId);
 }

@@ -556,8 +556,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
                     : applicantRequest.getClientId());
-            RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
-                    applicantRequest.getApplicationId());
+            
+            RetailApplicantDetail applicantDetail = null;
+            if(applicantRequest.getProposalId() != null) {
+            	applicantDetail = applicantRepository.findByProposalIdAndUserId(applicantRequest.getApplicationId(), 
+            			applicantRequest.getProposalId(), finaluserId);
+            }else {
+            	applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
+                        applicantRequest.getApplicationId());
+            }
+            
             if (applicantDetail == null) {
                 throw new NullPointerException(
                         "Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
@@ -570,8 +578,15 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
             applicantRepository.save(applicantDetail);
             // Updating Final Flag
-            loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
-                    finaluserId, applicantRequest.getIsApplicantFinalFilled());
+            
+            if(applicantRequest.getProposalId() != null) {
+            	applicationProposalMappingRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getProposalId(),
+            			applicantRequest.getApplicationId(), finaluserId, applicantRequest.getIsApplicantFinalFilled());
+            }else {
+            	loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
+                        finaluserId, applicantRequest.getIsApplicantFinalFilled());
+            }
+            
             // Updating Final Count
 
             return true;
@@ -749,6 +764,28 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Primary :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+	}
+
+	@Override
+	public RetailFinalInfoRequest getFinalByProposalId(Long userId, Long applicationId, Long proposalId)
+			throws LoansException {
+		
+		try {
+            RetailApplicantDetail applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
+            if (applicantDetail == null) {
+                throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
+                        + userId + "  ApplicationId==>" + applicationId+" proposalID ==> "+proposalId);
+            }
+            RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
+            BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailPlProfile());
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
+            return applicantRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Final :- ",e);
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
 	}

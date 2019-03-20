@@ -7891,4 +7891,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return proposalId;
 	}
+
+	@Override
+	public List<FpProfileBasicDetailRequest> getFpNegativeListByProposalId(Long proposalId) {
+		try {
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+			if (!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)) {
+				List<Long> fpUserIdList = productMasterRepository
+						.getUserIdListByProductId(applicationProposalMapping.getProductId());
+				if (!CommonUtils.isListNullOrEmpty(fpUserIdList)) {
+					// get fp name from user client
+
+					UserResponse userResponse = userClient.getFPNameListByUserId(fpUserIdList);
+					if (userResponse != null && userResponse.getData() != null) {
+						return  (List<FpProfileBasicDetailRequest>) userResponse.getData();
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return Collections.emptyList();
+	}
 }

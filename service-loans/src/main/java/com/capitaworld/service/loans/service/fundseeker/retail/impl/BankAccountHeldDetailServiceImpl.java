@@ -126,4 +126,41 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 		}
 	}
 
+	@Override
+	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailListByProposalId(Long proposalId,
+			int applicationType) throws LoansException {
+		try {
+			List<BankAccountHeldDetail> existingLoanDetails;
+//			switch (applicationType) {
+//			case CommonUtils.ApplicantType.APPLICANT:
+//				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromAppId(id);
+//				break;
+//			case CommonUtils.ApplicantType.COAPPLICANT:
+//				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromCoAppId(id);
+//				break;
+//			case CommonUtils.ApplicantType.GARRANTOR:
+//				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromGarrId(id);
+//				break;
+//			default:
+//				throw new LoansException();
+//			}
+
+			existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromProposalId(proposalId);
+			List<BankAccountHeldDetailsRequest> existingLoanDetailRequests = new ArrayList<BankAccountHeldDetailsRequest>();
+
+			for (BankAccountHeldDetail detail : existingLoanDetails) {
+				BankAccountHeldDetailsRequest existingLoanDetailRequest = new BankAccountHeldDetailsRequest();
+				existingLoanDetailRequest.setAccountTypeString(!CommonUtils.isObjectNullOrEmpty(detail.getAccountType()) ? AccountType.getById(detail.getAccountType()).getValue() : "");
+				BeanUtils.copyProperties(detail, existingLoanDetailRequest);
+				existingLoanDetailRequests.add(existingLoanDetailRequest);
+			}
+			return existingLoanDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in getting bankAccountHeldDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
 }

@@ -243,5 +243,35 @@ public class PlRetailApplicantController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @RequestMapping(value = "/final/get/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getFinalByProposalId(@PathVariable("applicationId") Long applicationId, @PathVariable("proposalId") Long proposalId,
+                                                  HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+        // request must not be null
+        try {
+            Long userId = null;
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                userId = clientId;
+            } else {
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+            if (applicationId == null || proposalId == null) {
+                logger.warn("Application ID Require to get Retail Final Profile Details. Application ID==>"
+                        + applicationId+" proposalID ==> "+proposalId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            RetailFinalInfoRequest response = plRetailApplicantService.getFinalByProposalId(userId, applicationId, proposalId);
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(response);
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Applicant Final  Details==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

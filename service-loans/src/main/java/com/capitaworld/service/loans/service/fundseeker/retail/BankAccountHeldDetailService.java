@@ -15,5 +15,7 @@ public interface BankAccountHeldDetailService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
 	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailList(Long id, int applicationType) throws LoansException;
+	
+	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailListByProposalId(Long proposalId, int applicationType) throws LoansException;
 
 }

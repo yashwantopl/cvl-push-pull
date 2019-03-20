@@ -120,6 +120,8 @@ public interface LoanApplicationService {
 	
 	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId);
 	
+	public List<FpProfileBasicDetailRequest> getFpNegativeListByProposalId(Long proposalId);
+	
 	public void saveSuggestionList(ProposalList  proposalList);	
 	
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);

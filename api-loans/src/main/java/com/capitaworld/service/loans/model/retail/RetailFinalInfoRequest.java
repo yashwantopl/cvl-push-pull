@@ -13,6 +13,7 @@ public class RetailFinalInfoRequest {
     private Long id;
     private Long clientId;
     private Long applicationId;
+    private Long proposalId;
 
     private Integer religion;
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
@@ -395,4 +396,14 @@ public class RetailFinalInfoRequest {
     public void setContactAddress(Address contactAddress) {
         this.contactAddress = contactAddress;
     }
+
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+    
+    
 }
