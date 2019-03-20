@@ -95,4 +95,32 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
         return obligationDetailRequests;
     }
 
+	@Override
+	public List<ObligationDetailRequest> getObligationDetailsFromProposalId(Long proposalId, int applicationType)
+			throws LoansException {
+		List<ObligationDetail> otherCurrentAssetDetails;
+        switch (applicationType) {
+            case CommonUtils.ApplicantType.APPLICANT:
+                otherCurrentAssetDetails = obligationDetailRepository.listObligationDetailFromProposalId(proposalId);
+                break;
+
+            default:
+                throw new LoansException();
+        }
+
+        List<ObligationDetailRequest> obligationDetailRequests = new ArrayList<ObligationDetailRequest>();
+
+        for (ObligationDetail detail : otherCurrentAssetDetails) {
+            ObligationDetailRequest obligationDetailRequest = new ObligationDetailRequest();
+            obligationDetailRequest.setGrossAmountString(CommonUtils.convertValue(detail.getGrossAmount()));
+            obligationDetailRequest.setNetAmountString(CommonUtils.convertValue(detail.getNetAmount()));
+            obligationDetailRequest.setPeriodicityString(CommonUtils.convertValue(detail.getPeriodicity()));
+            BeanUtils.copyProperties(detail, obligationDetailRequest);
+            obligationDetailRequests.add(obligationDetailRequest);
+        }
+        return obligationDetailRequests;
+    }
+    
+    
+
 }
