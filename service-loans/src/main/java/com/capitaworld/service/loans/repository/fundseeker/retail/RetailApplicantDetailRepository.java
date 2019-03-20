@@ -28,6 +28,12 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	
 	public RetailApplicantDetail findOneByApplicationIdId(Long applicationId);
 	
+	@Query("from RetailApplicantDetail rt where rt.applicationProposalMapping.proposalId =:proposalId and rt.applicationId.id =:applicationId and rt.isActive = true")
+	public RetailApplicantDetail findByProposalId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
+	
+	@Query("from RetailApplicantDetail rt where rt.applicationProposalMapping.proposalId =:proposalId and rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId and rt.isActive = true")
+	public RetailApplicantDetail findByProposalIdAndUserId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId, @Param("userId") Long userId);
+	
 	public RetailApplicantDetail findOneByApplicationIdIdAndIsActive(Long applicationId,Boolean isActive);
 
 	@Query("select count(rt.applicationId.id) from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId and rt.isActive = true and (rt.firstName != NULL and rt.firstName != '') ")

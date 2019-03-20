@@ -2901,5 +2901,51 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public Integer updateStatus(Long applicationId, Long fpProductId, Long status,String remarks) {
 		return proposalDetailRepository.updateStatus(status, applicationId, fpProductId,remarks);
 	}
+
+	@Override
+	public ProposalMappingResponse getProposalId(ProposalMappingRequest request) {
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		ProposalMappingRequest proposalMappingRequest=null;
+		try {
+			response = proposalDetailsClient.getProposal(request);
+
+			proposalMappingRequest = (ProposalMappingRequest) MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
+
+			ProposalDetails proposalDetails = proposalDetailRepository.getProposalId(request.getApplicationId(), request.getId());
+
+			Boolean isButtonDisplay=true;
+			String messageOfButton=null;
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				if(!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString()))
+				{
+					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Sanctioned by Other Bank.";
+					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Disbursed by Other Bank.";
+					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
+					isButtonDisplay=false;
+
+					proposalMappingRequest.setMessageOfButton(messageOfButton);
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+				else
+				{
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+			}
+			else
+			{
+				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			}
+			response.setData(proposalMappingRequest);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		return response;
+	}
 }
 

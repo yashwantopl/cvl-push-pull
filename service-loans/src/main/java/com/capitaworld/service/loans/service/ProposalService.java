@@ -42,6 +42,8 @@ public interface ProposalService {
 
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request);
 	
+	public ProposalMappingResponse getProposalId(ProposalMappingRequest reuqest);
+	
 	public ProposalMappingResponse sendRequest(ProposalMappingRequest request);
 	
 	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request);

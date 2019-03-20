@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
@@ -35,6 +36,10 @@ public class OtherCurrentAssetDetail implements Serializable {
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
 
+	@ManyToOne
+    @JoinColumn(name = "proposal_mapping_id")
+    private ApplicationProposalMapping applicationProposalMapping;
+	
 	@Lob
 	@Column(name="asset_description")
 	private String assetDescription;
@@ -191,4 +196,14 @@ public class OtherCurrentAssetDetail implements Serializable {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
+	
+	
 }

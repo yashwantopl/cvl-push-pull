@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,9 @@ public class SecurityCorporateDetailsController {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+
+	@Autowired
+	private ApplicationProposalMappingService applicationProposalMappingService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
@@ -110,7 +114,7 @@ public class SecurityCorporateDetailsController {
 			List<SecurityCorporateDetailRequest> response = securityCorporateDetailsService
 					.getSecurityCorporateDetailsListFromProposalId(proposalId,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			JSONObject result = loanApplicationService.getCurrencyAndDenomination(applicationId,userId);
+			JSONObject result = applicationProposalMappingService.getCurrencyAndDenomination(applicationId,proposalId,userId);
 			String data = result.get("currency").toString();
 			data = data.concat(" In "+ result.get("denomination").toString());
 			loansResponse.setData(data);

@@ -97,7 +97,7 @@ public class FPAsyncComponent {
 	private static final String MSG_MAKER_ID = "Maker ID:---";
 	private static final String MSG_CHECKER_ID = "Checker ID:---";
 
-	private static final String URL_WWW_BITLY_COM = "https://www.psbloansin59minutes.com";
+	private static final String URL_WWW_PSBLOANS_COM = "https://www.psbloansin59minutes.com";
 	private static final String DATE_FORMAT_DD_MM_YYYY = "dd/MM/yyyy";
 
     /*By Maaz*/
@@ -223,6 +223,8 @@ public class FPAsyncComponent {
 				Long propsalId = Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
 				LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(propsalId);
 				String address = null;
+				// This notification not sent on uniform product
+				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) && applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())){
 				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 1){
 					// CHANGES FOR  MULTPLE BANK PURPOSE NOTIFICATION- NEW CODE --->
@@ -340,7 +342,7 @@ public class FPAsyncComponent {
 							smsParameters.put(PARAMETERS_PRODUCT_TYPE,
 									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE) != null ? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
 											: "NA");
-							smsParameters.put("url", URL_WWW_BITLY_COM);
+							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 							sendSMSNotification(userId.toString(), smsParameters,
 									NotificationAlias.SMS_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, to);
@@ -360,6 +362,8 @@ public class FPAsyncComponent {
 				} else {
 					logger.info("No Maker found=================>");
 				}
+				
+			}
 			} catch (Exception e) {
 				logger.error("An exception getting while sending mail to all Makers=============>{}",e);
 			}
@@ -513,7 +517,7 @@ public class FPAsyncComponent {
 							smsParameters.put(PARAMETERS_PRODUCT_TYPE,
 									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE) != null ? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
 											: "NA");
-							smsParameters.put("url", URL_WWW_BITLY_COM);
+							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 							sendSMSNotification(userId.toString(), smsParameters,
 									NotificationAlias.SMS_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, to);
@@ -686,7 +690,7 @@ public class FPAsyncComponent {
 							smsParameters.put(PARAMETERS_PRODUCT_TYPE,
 									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE) != null ? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
 											: "NA");
-							smsParameters.put("url", URL_WWW_BITLY_COM);
+							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 							sendSMSNotification(userId.toString(), smsParameters,
 									NotificationAlias.SMS_HO_INPRINCIPLE_TO_FS, to);
@@ -864,7 +868,7 @@ public class FPAsyncComponent {
 							smsParameters.put(PARAMETERS_PRODUCT_TYPE,
 									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE) != null ? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
 											: "NA");
-							smsParameters.put("url", URL_WWW_BITLY_COM);
+							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 							sendSMSNotification(userId.toString(), smsParameters,
 									NotificationAlias.SMS_ALL_BO_INPRINCIPLE_TO_FS, to);
@@ -967,7 +971,7 @@ public class FPAsyncComponent {
 			// =========================================================================================================
 
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& applicationRequest.getBusinessTypeId() == 1){
+					&& applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())){
 				CorporateApplicantRequest applicantRequest = corporateapplicantService
 						.getCorporateApplicant(request.getApplicationId());
 				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
@@ -1013,7 +1017,7 @@ public class FPAsyncComponent {
 
 			//	when proposal belongs to PL
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()){
+					&& applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId())){
 				fsName=applicationRequest.getUserName();
 				address=applicationRequest.getAddress();
 				RetailApplicantRequest retailApplicantRequest = retailapplicantService.get(request.getApplicationId());
@@ -1050,7 +1054,7 @@ public class FPAsyncComponent {
 			corFinalByProposalId = corporateFinalInfoService.getByProposalId(request.getUserId(),proposalResponse.getId());
 
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& applicationRequest.getBusinessTypeId() == 1){
+					&& applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())){
 //				CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(request.getApplicationId());
 				if (!CommonUtils.isObjectNullOrEmpty(corFinalByProposalId)
 						&& !CommonUtils.isObjectNullOrEmpty(corFinalByProposalId.getFirstAddress())) {
@@ -1100,8 +1104,7 @@ public class FPAsyncComponent {
 				branchId = Long.valueOf(proposalresp.get(BRANCH_ID).toString());
 			}
 
-			// ===========Getting emailId and Name of Maker who accepted the
-			// Proposal================
+			// ===========Getting emailId and Name of Maker who accepted the Proposal================
 
 			UserResponse assignedMakerResponse = null;
 			try {
@@ -1178,49 +1181,54 @@ public class FPAsyncComponent {
 
 			// ====================Sending Mail to Maker who accepts Proposal=====================
 			String subject = "Intimation: Proposal #Accepted=" + assignedMakerName + "#ApplicationId="+ request.getApplicationId();
-
+//---------- no mail on uniform product
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker)) {
-				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
-
-					String toIds = assignedMaker.getEmail();
-					logger.info("Email Sending TO MAKER when Maker accepts Proposal===to==>{}" + toIds);
-					parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-					createNotificationForEmail(toIds, request.getUserId().toString(), parameters,
-							NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
-				}
-
-				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
-					Map<String, Object> smsParameters = new HashMap<String, Object>();
-					String to = "91" + assignedMaker.getMobile();
-					smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
-					smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-					if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
-						smsParameters.put(PARAMETERS_PRODUCT_TYPE,
-					proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
-										? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
-										: "NA");
-					} else {
-						smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId()) 
+						&& !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {	
+						if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
+		
+							String toIds = assignedMaker.getEmail();
+							logger.info("Email Sending TO MAKER when Maker accepts Proposal===to==>{}" + toIds);
+							parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+							createNotificationForEmail(toIds, request.getUserId().toString(), parameters,
+									NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
+						}
+					if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
+						Map<String, Object> smsParameters = new HashMap<String, Object>();
+						String to = "91" + assignedMaker.getMobile();
+						smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
+						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+						if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
+							smsParameters.put(PARAMETERS_PRODUCT_TYPE,
+						proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
+											? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
+											: "NA");
+						} else {
+							smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+						}
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
+	
+						sendSMSNotification(request.getUserId().toString(), smsParameters,
+								NotificationAlias.SMS_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
 					}
-					smsParameters.put("url", URL_WWW_BITLY_COM);
-
-					sendSMSNotification(request.getUserId().toString(), smsParameters,
-							NotificationAlias.SMS_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
-				}
-
-				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
-					Map<String, Object> sysParameters = new HashMap<String, Object>();
-					sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-
-					sendSYSNotification(request.getApplicationId(), request.getUserId().toString(), sysParameters,
-							NotificationAlias.SYS_MAKER_ACCEPT_PROPOSAL_OF_FS, request.getUserId().toString(),
-							request.getUserId().toString());
+	
+					if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
+						Map<String, Object> sysParameters = new HashMap<String, Object>();
+						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+	
+						sendSYSNotification(request.getApplicationId(), request.getUserId().toString(), sysParameters,
+								NotificationAlias.SYS_MAKER_ACCEPT_PROPOSAL_OF_FS, request.getUserId().toString(),
+								request.getUserId().toString());
+					}
 				}
 
 			}
 			// ==sending email to fs when maker accepted proposL==Email_FS_Accepted_By_MAKER==add mail for  Email_FS_Accepted_By_MAKER
 			sendMailToFsWhenMakerAcceptPorposal(fsName, proposalresp, assignedMakerName,applicationRequest,signUpUser,address,NotificationAliasId);
 			// ====================Sending Mail to other Makers that maker has accepted Proposal==============
+//---------- no sending mail on uniform product			
+			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId()) 
+					&& !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 			UserResponse makerResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER, branchId);
 			List<Map<String, Object>> makerRespList = (List<Map<String, Object>>) makerResponse.getListData();
@@ -1272,7 +1280,7 @@ public class FPAsyncComponent {
 						} else {
 							smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
 						}
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(makerObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_ALL_MAKERS_AFTER_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
@@ -1295,10 +1303,7 @@ public class FPAsyncComponent {
 				logger.info("No Maker found=================>");
 			}
 
-			// =======================================================================================================
-
-			// ====================Sending Mail to all Checkers of that branch that maker
-			// has accepted Proposal=====================
+// ====================Sending Mail to all Checkers of that branch that maker has accepted Proposal=====================
 
 			UserResponse checkerResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER, branchId);
@@ -1354,7 +1359,7 @@ public class FPAsyncComponent {
 						} else {
 							smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
 						}
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(checkerObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_ALL_CHECKERS_AFTER_MAKER_ACCEPT_PROPOSAL, to);
@@ -1387,170 +1392,166 @@ public class FPAsyncComponent {
 
 			// ====================Sending Mail to HO of that branch that maker has accepted
 			// Proposal=====================
-
-			UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
-			List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
-			if (!CommonUtils.isObjectNullOrEmpty(hoRespList)) {
-				for (int i = 0; i < hoRespList.size(); i++) {
-					UsersRequest hoObj = MultipleJSONObjectHelper.getObjectFromMap(hoRespList.get(i),
-							UsersRequest.class);
-
-					String name = null;
-
-					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME + hoObj);
-						UserResponse userResponseForName = userClient.getFPDetails(hoObj);
-						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
-								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
-										FundProviderDetailsRequest.class);
-						name = fundProviderDetailsRequest.getFirstName() + " "
-								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
-					} catch (Exception e) {
-						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
-						String to = hoObj.getEmail();
-						parameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
-						if (LITERAL_NULL.equals(name)) {
-							parameters.put(PARAMETERS_HO_NAME, PARAMETERS_SIR_MADAM);
-						} else {
-							parameters.put(PARAMETERS_HO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+				UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
+						com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
+				List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
+				if (!CommonUtils.isObjectNullOrEmpty(hoRespList)) {
+					for (int i = 0; i < hoRespList.size(); i++) {
+						UsersRequest hoObj = MultipleJSONObjectHelper.getObjectFromMap(hoRespList.get(i),
+								UsersRequest.class);
+	
+						String name = null;
+	
+						try {
+							logger.info(MSG_INTO_GETTING_FP_NAME + hoObj);
+							UserResponse userResponseForName = userClient.getFPDetails(hoObj);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+											FundProviderDetailsRequest.class);
+							name = fundProviderDetailsRequest.getFirstName() + " "
+									+ (fundProviderDetailsRequest.getLastName() == null ? ""
+									: fundProviderDetailsRequest.getLastName());
+						} catch (Exception e) {
+							logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 						}
-						parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-						createNotificationForEmail(to, hoObj.getId().toString(), parameters,
-								NotificationAlias.EMAIL_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
-						Map<String, Object> smsParameters = new HashMap<String, Object>();
-						String to = "91" + hoObj.getMobile();
-						smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
-						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
-							smsParameters.put(PARAMETERS_PRODUCT_TYPE,
-									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
-											? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
-											: "NA");
-						} else {
-							smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+	
+						if (!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
+							String to = hoObj.getEmail();
+							parameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
+							if (LITERAL_NULL.equals(name)) {
+								parameters.put(PARAMETERS_HO_NAME, PARAMETERS_SIR_MADAM);
+							} else {
+								parameters.put(PARAMETERS_HO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+							}
+							parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+							createNotificationForEmail(to, hoObj.getId().toString(), parameters,
+									NotificationAlias.EMAIL_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 						}
-						smsParameters.put("url", URL_WWW_BITLY_COM);
-
-						sendSMSNotification(hoObj.getId().toString(), smsParameters,
-								NotificationAlias.SMS_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
-						Map<String, Object> sysParameters = new HashMap<String, Object>();
-						sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
-						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
-							sysParameters.put(PARAMETERS_PRODUCT_TYPE,
-									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
-											? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
-											: "NA");
-						} else {
-							sysParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+	
+						if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
+							Map<String, Object> smsParameters = new HashMap<String, Object>();
+							String to = "91" + hoObj.getMobile();
+							smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
+							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+							if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
+								smsParameters.put(PARAMETERS_PRODUCT_TYPE,
+										proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
+												? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
+												: "NA");
+							} else {
+								smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+							}
+							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
+	
+							sendSMSNotification(hoObj.getId().toString(), smsParameters,
+									NotificationAlias.SMS_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
 						}
-						sendSYSNotification(request.getApplicationId(), hoObj.getId().toString(), sysParameters,
-								NotificationAlias.SYS_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, hoObj.getId().toString(),
-								hoObj.getId().toString());
+	
+						if (!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
+							Map<String, Object> sysParameters = new HashMap<String, Object>();
+							sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
+							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+							if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
+								sysParameters.put(PARAMETERS_PRODUCT_TYPE,
+										proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
+												? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
+												: "NA");
+							} else {
+								sysParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+							}
+							sendSYSNotification(request.getApplicationId(), hoObj.getId().toString(), sysParameters,
+									NotificationAlias.SYS_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, hoObj.getId().toString(),
+									hoObj.getId().toString());
+						}
+	
 					}
-
+	
+				} else {
+					logger.info(MSG_NO_HO_FOUND);
 				}
-
-			} else {
-				logger.info(MSG_NO_HO_FOUND);
-			}
-
 			// =======================================================================================================
 
 			// ====================Sending Mail to all BO of that branch that maker has
 			// accepted Proposal=====================
-
-			UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
-			List<Map<String, Object>> boRespList = (List<Map<String, Object>>) boResponse.getListData();
-			if (!CommonUtils.isObjectNullOrEmpty(boRespList)) {
-				for (int i = 0; i < boRespList.size(); i++) {
-					UsersRequest boObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),
-							UsersRequest.class);
-
-					String name = null;
-
-					try {
-						logger.error(MSG_INTO_GETTING_FP_NAME + boObj);
-						UserResponse userResponseForName = userClient.getFPDetails(boObj);
-						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
-								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
-										FundProviderDetailsRequest.class);
-						name = fundProviderDetailsRequest.getFirstName() + " "
-								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
-					} catch (Exception e) {
-						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
-						String to = boObj.getEmail();
-						parameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
-						if (LITERAL_NULL.equals(name)) {
-							parameters.put(PARAMETERS_BO_NAME, PARAMETERS_SIR_MADAM);
-						} else {
-							parameters.put(PARAMETERS_BO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+				UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
+						com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
+				List<Map<String, Object>> boRespList = (List<Map<String, Object>>) boResponse.getListData();
+				if (!CommonUtils.isObjectNullOrEmpty(boRespList)) {
+					for (int i = 0; i < boRespList.size(); i++) {
+						UsersRequest boObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),
+								UsersRequest.class);
+	
+						String name = null;
+	
+						try {
+							logger.error(MSG_INTO_GETTING_FP_NAME + boObj);
+							UserResponse userResponseForName = userClient.getFPDetails(boObj);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+											FundProviderDetailsRequest.class);
+							name = fundProviderDetailsRequest.getFirstName() + " "
+									+ (fundProviderDetailsRequest.getLastName() == null ? ""
+									: fundProviderDetailsRequest.getLastName());
+						} catch (Exception e) {
+							logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 						}
-						parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-						createNotificationForEmail(to, boObj.getId().toString(), parameters,
-								NotificationAlias.EMAIL_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
-						Map<String, Object> smsParameters = new HashMap<String, Object>();
-						String to = "91" + boObj.getMobile();
-						smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
-						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
-							smsParameters.put(PARAMETERS_PRODUCT_TYPE,
-									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
-											? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
-											: "NA");
-						} else {
-							smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+	
+						if (!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
+							String to = boObj.getEmail();
+							parameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
+							if (LITERAL_NULL.equals(name)) {
+								parameters.put(PARAMETERS_BO_NAME, PARAMETERS_SIR_MADAM);
+							} else {
+								parameters.put(PARAMETERS_BO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+							}
+							parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+							createNotificationForEmail(to, boObj.getId().toString(), parameters,
+									NotificationAlias.EMAIL_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 						}
-						smsParameters.put("url", URL_WWW_BITLY_COM);
-
-						sendSMSNotification(boObj.getId().toString(), smsParameters,
-								NotificationAlias.SMS_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
-						Map<String, Object> sysParameters = new HashMap<String, Object>();
-						sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
-						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
-							sysParameters.put(PARAMETERS_PRODUCT_TYPE,
-									proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
-											? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
-											: "NA");
-						} else {
-							sysParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+	
+						if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
+							Map<String, Object> smsParameters = new HashMap<String, Object>();
+							String to = "91" + boObj.getMobile();
+							smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
+							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+							if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
+								smsParameters.put(PARAMETERS_PRODUCT_TYPE,
+										proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
+												? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
+												: "NA");
+							} else {
+								smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+							}
+							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
+	
+							sendSMSNotification(boObj.getId().toString(), smsParameters,
+									NotificationAlias.SMS_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
 						}
-						sendSYSNotification(request.getApplicationId(), boObj.getId().toString(), sysParameters,
-								NotificationAlias.SYS_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, boObj.getId().toString(),
-								boObj.getId().toString());
+	
+						if (!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
+							Map<String, Object> sysParameters = new HashMap<String, Object>();
+							sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
+							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+							if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
+								sysParameters.put(PARAMETERS_PRODUCT_TYPE,
+										proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
+												? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
+												: "NA");
+							} else {
+								sysParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
+							}
+							sendSYSNotification(request.getApplicationId(), boObj.getId().toString(), sysParameters,
+									NotificationAlias.SYS_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, boObj.getId().toString(),
+									boObj.getId().toString());
+						}
+	
 					}
-
+	
+				} else {
+					logger.info(MSG_NO_BO_FOUND);
 				}
-
-			} else {
-				logger.info(MSG_NO_BO_FOUND);
-			}
-
 			// =======================================================================================================
-
+			}
 		}catch (Exception e) {
 			logger.error("Throw exception while sending mail to Maker and all Makers when Maker accepts Proposal : ",e);
 		}
@@ -1790,7 +1791,7 @@ public class FPAsyncComponent {
 				smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 				smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 
-				smsParameters.put("url", URL_WWW_BITLY_COM);
+				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 				sendSMSNotification(request.getNpUserId().toString(), smsParameters,
 						NotificationAlias.SMS_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, to);
@@ -1851,7 +1852,7 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(hoObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, to);
@@ -1925,7 +1926,7 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(boObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, to);
@@ -2149,7 +2150,7 @@ public class FPAsyncComponent {
 				} else {
 					smsParameters.put("date", "NA");
 				}
-				smsParameters.put("url", URL_WWW_BITLY_COM);
+				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 				sendSMSNotification(request.getNpUserId().toString(), smsParameters,
 						NotificationAlias.SMS_CHECKER_MAKER_REASSIGN_TO_CHECKER, to);
@@ -2212,7 +2213,7 @@ public class FPAsyncComponent {
 						} else {
 							smsParameters.put("date", "NA");
 						}
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(hoObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_HO_MAKER_REASSIGN_TO_CHECKER, to);
@@ -2284,7 +2285,7 @@ public class FPAsyncComponent {
 						} else {
 							smsParameters.put("date", "NA");
 						}
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(boObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_ALL_BO_MAKER_REASSIGN_TO_CHECKER, to);
@@ -2401,7 +2402,7 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_PRODUCT_NAME,
 								productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(userId.toString(), smsParameters,
 								NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, to);
@@ -2509,7 +2510,7 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_PRODUCT_NAME,
 								productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(userId.toString(), smsParameters,
 								NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, to);
@@ -2621,7 +2622,7 @@ public class FPAsyncComponent {
 				smsParameters.put(PARAMETERS_PRODUCT_NAME,
 						productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 				smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-				smsParameters.put("url", URL_WWW_BITLY_COM);
+				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 				sendSMSNotification(userId.toString(), smsParameters,
 						NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, to);
 			}
@@ -2795,7 +2796,7 @@ public class FPAsyncComponent {
 				smsParameters.put(PARAMETERS_PRODUCT_NAME,
 						productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 				smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-				smsParameters.put("url", URL_WWW_BITLY_COM);
+				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 				sendSMSNotification(userId.toString(), smsParameters,
 						NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, to);
@@ -3023,34 +3024,37 @@ public class FPAsyncComponent {
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 			}
-			// ===========================Email to Maker======================================
-			if (!CommonUtils.isObjectNullOrEmpty(maker) && !CommonUtils.isObjectNullOrEmpty(maker.getEmail())) {
-				String toIds = maker.getEmail();
-				logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
-
-				/*
-				 * // ====================== MAIL TO MAKER old code======================
-				 * createNotificationForEmail(toIds, workflowRequest.getUserId().toString(),
-				 * parameters, NotificationAlias.MAIL_MKR_DDR_APPROVE, NotificationType.EMAIL,
-				 * subjcet);
-				 */
-				// ====================== MAIL TO MAKER by new code ======================
-				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-				createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
-						NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject);
-
-			}
-			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
-				Map<String, Object> sysParameters = new HashMap<String, Object>();
-
-				sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-				sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-				sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-
-				sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
-						applicationRequest.getFpMakerId().toString(), sysParameters,
-						NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP,
-						applicationRequest.getFpMakerId().toString(), applicationRequest.getFpMakerId().toString());
+			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())){
+				// ===========================Email to Maker======================================
+				if (!CommonUtils.isObjectNullOrEmpty(maker) && !CommonUtils.isObjectNullOrEmpty(maker.getEmail())) {
+					String toIds = maker.getEmail();
+					logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
+	
+					/*
+					 * // ====================== MAIL TO MAKER old code======================
+					 * createNotificationForEmail(toIds, workflowRequest.getUserId().toString(),
+					 * parameters, NotificationAlias.MAIL_MKR_DDR_APPROVE, NotificationType.EMAIL,
+					 * subjcet);
+					 */
+					// ====================== MAIL TO MAKER by new code ======================
+					mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+					createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
+							NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject);
+	
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
+					Map<String, Object> sysParameters = new HashMap<String, Object>();
+	
+					sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
+					sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+					sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+	
+					sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
+							applicationRequest.getFpMakerId().toString(), sysParameters,
+							NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP,
+							applicationRequest.getFpMakerId().toString(), applicationRequest.getFpMakerId().toString());
+				}
+			
 			}
 			// ===========================Email to HO======================================
 			Long branchId = null;
@@ -3099,7 +3103,7 @@ public class FPAsyncComponent {
 						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(userObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_HO_CHECKER_SANCTIONED, to);
@@ -3164,7 +3168,7 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 
-						smsParameters.put("url", URL_WWW_BITLY_COM);
+						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 						sendSMSNotification(userObj.getId().toString(), smsParameters,
 								NotificationAlias.SMS_ALL_BO_CHECKER_SANCTIONED, to);
@@ -3337,7 +3341,7 @@ public class FPAsyncComponent {
 				smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : PARAMETERS_SIR_MADAM);
 				smsParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
 				smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
-				smsParameters.put("url", URL_WWW_BITLY_COM);
+				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 				sendSMSNotification(applicationRequest.getUserId().toString(), smsParameters,
 						NotificationAlias.SMS_FS_CHECKER_SANCTIONED, to);
