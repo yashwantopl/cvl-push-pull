@@ -14,5 +14,7 @@ public interface RetailApplicantIncomeService {
 	
 	public List<RetailApplicantIncomeRequest> getAll(Long applicationId);
 
+	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId);
+	
 	public Boolean saveOrUpdateIncomeDetailForGrossIncome(FrameRequest frameRequest) throws LoansException;
 }

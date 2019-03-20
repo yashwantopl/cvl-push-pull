@@ -118,4 +118,35 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 		return otherCurrentAssetRequests;
 	}
 
+	@Override
+	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailListByProposalId(Long proposalId,
+			int applicationType) throws LoansException {
+		List<OtherCurrentAssetDetail> otherCurrentAssetDetails;
+//		switch (applicationType) {
+//		case CommonUtils.ApplicantType.APPLICANT:
+//			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.COAPPLICANT:
+//			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromCoAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.GARRANTOR:
+//			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromGarrId(id);
+//			break;
+//		default:
+//			throw new LoansException();
+//		}
+		
+		otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromProposalId(proposalId);
+		List<OtherCurrentAssetDetailRequest> otherCurrentAssetRequests = new ArrayList<OtherCurrentAssetDetailRequest>();
+
+		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
+			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
+			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValue(detail.getAssetValue()));
+			otherCurrentAssetRequest.setAssetType(!CommonUtils.isObjectNullOrEmpty(detail.getAssetTypesId()) ? StringEscapeUtils.escapeXml(Assets.getById(detail.getAssetTypesId()).getValue()) : "");
+			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
+			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
+		}
+		return otherCurrentAssetRequests;
+	}
+
 }

@@ -12,7 +12,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long id;
     private Long clientId;
     private Long applicationId;
-
+    private Long proposalId;
+    
     /*
     * Profile Fields
     * */
@@ -572,6 +573,14 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setIsOtherSalaryBank(Boolean isOtherSalaryBank) {
 		this.isOtherSalaryBank = isOtherSalaryBank;
+	}
+
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
 	}
 	
     

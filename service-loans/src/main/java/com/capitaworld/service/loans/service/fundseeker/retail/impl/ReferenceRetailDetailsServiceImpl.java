@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
@@ -47,6 +48,9 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 	
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
+	
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -72,6 +76,10 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 					break;
 				default :
 					throw new LoansException();
+				}
+				
+				if(frameRequest.getProposalMappingId() != null) {
+					referencesRetailDetail.setApplicationProposalMapping(applicationProposalMappingRepository.findOne(frameRequest.getProposalMappingId()));
 				}
 				
 				referencesRetailDetail.setModifiedBy(frameRequest.getUserId());
@@ -106,6 +114,37 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 			throw new LoansException();
 		}
 		
+		List<ReferenceRetailDetailsRequest> referencesRetailRequests = new ArrayList<ReferenceRetailDetailsRequest>();
+
+		for (ReferencesRetailDetail detail : referencesRetailDetails) {
+			ReferenceRetailDetailsRequest referencesRetailRequest = new ReferenceRetailDetailsRequest();
+			referencesRetailRequest.setReferncesList(!CommonUtils.isObjectNullOrEmpty(detail.getReferencesListId()) ? StringEscapeUtils.escapeXml(ReferencesList.getById(detail.getReferencesListId()).getValue()) :"");
+			BeanUtils.copyProperties(detail, referencesRetailRequest);
+			referencesRetailRequests.add(referencesRetailRequest);
+		}
+		return referencesRetailRequests;
+	}
+
+	@Override
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailListByPropsalId(Long proposalId,
+			int applicationType) throws LoansException {
+		
+		List<ReferencesRetailDetail> referencesRetailDetails;
+//		switch (applicationType) {
+//		case CommonUtils.ApplicantType.APPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.COAPPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromCoAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.GARRANTOR:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromGarrId(id);
+//			break;
+//		default:
+//			throw new LoansException();
+//		}
+		
+		referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromPropsalId(proposalId);
 		List<ReferenceRetailDetailsRequest> referencesRetailRequests = new ArrayList<ReferenceRetailDetailsRequest>();
 
 		for (ReferencesRetailDetail detail : referencesRetailDetails) {

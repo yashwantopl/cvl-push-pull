@@ -15,5 +15,7 @@ public interface OtherCurrentAssetDetailService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
 	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailList(Long id, int applicationType) throws LoansException;
+	
+	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailListByProposalId(Long proposalId, int applicationType) throws LoansException;
 
 }

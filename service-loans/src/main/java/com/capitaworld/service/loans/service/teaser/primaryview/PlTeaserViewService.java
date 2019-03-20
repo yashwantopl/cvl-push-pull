@@ -12,5 +12,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewRespon
 public interface PlTeaserViewService {
 	
 	public PlTeaserViewResponse getPlPrimaryViewDetails(Long toApplicationId, Integer userType, Long userId, Long productMappingId, Boolean isFinal);
+	
+	public PlTeaserViewResponse getPlPrimaryViewDetailsByProposalId(Long toApplicationId, Integer userType, Long userId, Long productMappingId, Boolean isFinal, Long proposalId);
 
 }

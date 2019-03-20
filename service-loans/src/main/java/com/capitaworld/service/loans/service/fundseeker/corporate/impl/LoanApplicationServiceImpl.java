@@ -1,5 +1,3 @@
-
-
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
@@ -8,20 +6,19 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.capitaworld.connect.api.ConnectLogRequest;
+import com.capitaworld.connect.api.ConnectRequest;
+import com.capitaworld.service.loans.model.*;
+import javax.servlet.http.HttpSession;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +29,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -150,6 +148,7 @@ import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
@@ -7935,5 +7934,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.error("Failed to get proposal id from application id and user org id" + applicationId);
 		}
 		return proposalId;
+	}
+
+	@Override
+	public List<FpProfileBasicDetailRequest> getFpNegativeListByProposalId(Long proposalId) {
+		try {
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+			if (!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)) {
+				List<Long> fpUserIdList = productMasterRepository
+						.getUserIdListByProductId(applicationProposalMapping.getProductId());
+				if (!CommonUtils.isListNullOrEmpty(fpUserIdList)) {
+					// get fp name from user client
+
+					UserResponse userResponse = userClient.getFPNameListByUserId(fpUserIdList);
+					if (userResponse != null && userResponse.getData() != null) {
+						return  (List<FpProfileBasicDetailRequest>) userResponse.getData();
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return Collections.emptyList();
 	}
 }
