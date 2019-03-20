@@ -34,10 +34,6 @@ public class ProposalDetails implements Serializable {
 
     @Column(name="fp_product_id")
     private Long fpProductId;
-    
-    @OneToOne
-    @JoinColumn(name = "proposal_mapping_id")
-    private ApplicationProposalMapping applicationProposalMapping;
 
     @Column(name="application_id")
     private Long applicationId;
