@@ -170,6 +170,40 @@ public class ProposalController {
 		response.setUserType(userType.longValue());
 		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
 	}
+	
+	
+	
+	
+	//Arun's Code
+	
+	@RequestMapping(value = "/getByProposalId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> get(@PathVariable Long proposalId, @RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
+		
+		Long userId = null;
+		Long userType = null;
+		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+			userType = clientUserType;
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
+		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));	
+		}
+		request.setUserType(userType);
+		request.setUserId(userId);
+		ProposalMappingResponse response = proposalService.getProposalId(request);
+		response.setUserType(userType.longValue());
+		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	@RequestMapping(value = "/getSanctionProposalByApplicationId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> getSanctionProposalByApplicationId(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {

@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.retail;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
@@ -21,6 +22,10 @@ public class ObligationDetail implements Serializable {
     @ManyToOne
     @JoinColumn(name="application_id")
     private LoanApplicationMaster applicationId;
+    
+    @ManyToOne
+    @JoinColumn(name = "proposal_mapping_id")
+    private ApplicationProposalMapping applicationProposalMapping;
 
     @Column(name="obligation_head")
     private String obligationHead;

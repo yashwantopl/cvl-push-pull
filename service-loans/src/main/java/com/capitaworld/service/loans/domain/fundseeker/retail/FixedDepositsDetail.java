@@ -10,10 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -36,6 +38,10 @@ public class FixedDepositsDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+	
+	@ManyToOne
+    @JoinColumn(name = "proposal_mapping_id")
+    private ApplicationProposalMapping applicationProposalMapping;
 
 	@Column(name="bank_name")
 	private String bankName;
