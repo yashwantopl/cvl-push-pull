@@ -2908,7 +2908,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			proposalMappingRequest = (ProposalMappingRequest) MultipleJSONObjectHelper.getObjectFromMap(
 					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
 
-			ProposalDetails proposalDetails = proposalDetailRepository.getProposalId(request.getApplicationId(), request.getProposalId());
+			ProposalDetails proposalDetails = proposalDetailRepository.getProposalId(request.getApplicationId(), request.getId());
 
 			Boolean isButtonDisplay=true;
 			String messageOfButton=null;
