@@ -101,6 +101,7 @@ public class DDRRequest implements Serializable {
 	private String password;
 	
 	//AUTO FILED
+	private String isAnySeasonalPatternInSales;
 	private String nameOfBorrower;
 	private String contactNo;
 	private String regEmailId;
@@ -815,5 +816,13 @@ public class DDRRequest implements Serializable {
 
 	public void setProposalMappingId(Long proposalMappingId) {
 		this.proposalMappingId = proposalMappingId;
+	}
+
+	public String getIsAnySeasonalPatternInSales() {
+		return isAnySeasonalPatternInSales;
+	}
+
+	public void setIsAnySeasonalPatternInSales(String isAnySeasonalPatternInSales) {
+		this.isAnySeasonalPatternInSales = isAnySeasonalPatternInSales;
 	}
 }
