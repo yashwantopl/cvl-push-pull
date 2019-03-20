@@ -177,7 +177,7 @@ public class ProposalController {
 	//Arun's Code
 	
 	@RequestMapping(value = "/getByProposalId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProposalMappingResponse> get(@PathVariable Long proposalId, @RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
+	public ResponseEntity<ProposalMappingResponse> getByProposalId(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		
 		Long userId = null;
 		Long userType = null;
