@@ -1,4 +1,3 @@
-
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
@@ -242,7 +241,6 @@ public interface LoanApplicationService {
 
 	public Long getProposalId(Long applicationId, Long userOrgId);
 
+  public LoanApplicationRequest getBasicInformation(Long id);
 
 }
-
-

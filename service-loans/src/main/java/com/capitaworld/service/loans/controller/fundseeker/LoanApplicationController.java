@@ -831,6 +831,7 @@ public class LoanApplicationController {
 				json.put("isPrimaryLock", applicationRequest.getProfilePrimaryLocked());
 				json.put("isFinalLock", applicationRequest.getFinalLocked());
 				json.put("isMcqSkipped", applicationRequest.getIsMcqSkipped());
+				//json.put("isSkipMcq", applicationRequest.getIsMcqSkipped());
 				json.put("ddrStatusId", applicationRequest.getDdrStatusId());
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
@@ -2018,6 +2019,23 @@ public class LoanApplicationController {
 			}
 			CommonDocumentUtils.endHook(logger, "get");
 			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getFromClient(proposalId), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details from Client==>", e);
+			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/getBasicInformation/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoanApplicationRequest> getBasicInformation(@PathVariable("applicationId") Long applicationId) {
+		// request must not be null
+		try {
+			if (applicationId == null) {
+				logger.warn("ID Require to get Loan Application Details. ID==>{}" , applicationId);
+				return null;
+			}
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getBasicInformation(applicationId), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details from Client==>", e);

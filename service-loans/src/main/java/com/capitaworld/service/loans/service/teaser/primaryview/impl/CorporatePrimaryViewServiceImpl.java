@@ -1321,7 +1321,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		if(loanApplicationMaster.getMcaCompanyId() != null) {
+		/*if(loanApplicationMaster.getMcaCompanyId() != null) {
 			DocumentRequest documentRequestForMCAZip = new DocumentRequest();
 			documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
 			documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -1334,7 +1334,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}	
 		}else {
 			logger.info("MCA Zip File Is Null...");
-		}
+		} */
 		
 		/* documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
 		   try {
