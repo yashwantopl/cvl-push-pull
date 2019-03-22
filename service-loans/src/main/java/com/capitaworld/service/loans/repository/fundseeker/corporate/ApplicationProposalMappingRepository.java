@@ -184,5 +184,5 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     public Integer getDenominationId(@Param("proposalId") Long proposalId);
 
     @Query(nativeQuery = true,value="SELECT b.business_type_id FROM `loan_application`.`application_proposal_mapping` b WHERE b.user_id=:userId ORDER BY b.created_date DESC LIMIT 1")
-    public Integer getApplicationByUserId(@Param("userId") Long userId);
+    public Integer getBusinessIdByUserId(@Param("userId") Long userId);
 }
