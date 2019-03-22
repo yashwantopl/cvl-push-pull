@@ -21,5 +21,5 @@ public interface LoanSanctionService {
 
 	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws Exception ;*/
 
-	public Boolean  sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId,LoanSanctionDomain loanSanctionDomainOld );
+	public Boolean  sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId) throws IndexOutOfBoundsException;
 }
