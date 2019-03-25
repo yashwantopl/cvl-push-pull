@@ -119,6 +119,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 
+	@Override
 	public Long getOfflineCountByAppId(Long applicationId) {
 		BigInteger count =  (BigInteger) entityManager
 				.createNativeQuery("SELECT COUNT(*) FROM `loan_application`.`ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
@@ -126,15 +127,27 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return count != null ? count.longValue() : 0l;
 	}
 	
+	@Override
 	public String getOfflineDetailsByAppId(Long applicationId) {
 		return  (String) entityManager
 				.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('applicationId',inl.`application_id`,\r\n" + 
 						"'status',sts.`display_name`,'bankName',org.`organisation_name`,'branchName',brn.`name`,'branchCode', brn.`code`)) AS CHAR) AS JSON \r\n" + 
-						"FROM `loan_application`.`ineligible_proposal_details` inl\r\n" + 
-						"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status`\r\n" + 
+						"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
+						"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status` \r\n" + 
 						"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id` \r\n" + 
-						"LEFT JOIN users.`branch_master` brn ON brn.`id` = inl.`branch_id`\r\n" + 
+						"LEFT JOIN users.`branch_master` brn ON brn.`id` = inl.`branch_id` \r\n" + 
 						"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE;")
+						.setParameter("applicationId", applicationId).getSingleResult();
+	}
+	
+	@Override
+	public String getOfflineStatusByAppId(Long applicationId) {
+		return  (String) entityManager
+				.createNativeQuery("SELECT CAST(JSON_OBJECT('applicationId',inl.`application_id`,'status',sts.`display_name`,'bankName',org.`organisation_name`,'modifiedDate',inl.`modified_date`) AS CHAR ) \r\n" + 
+						"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
+						"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status`\r\n" + 
+						"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id`\r\n" + 
+						"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
 						.setParameter("applicationId", applicationId).getSingleResult();
 	}
 }
