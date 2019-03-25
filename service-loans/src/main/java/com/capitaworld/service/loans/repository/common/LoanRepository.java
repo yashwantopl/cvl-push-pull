@@ -25,5 +25,7 @@ public interface LoanRepository {
 	public Long getOfflineCountByAppId(Long applicationId);
 	
 	public String getOfflineDetailsByAppId(Long applicationId);
+	
+	public String getOfflineStatusByAppId(Long applicationId);
 
 }
