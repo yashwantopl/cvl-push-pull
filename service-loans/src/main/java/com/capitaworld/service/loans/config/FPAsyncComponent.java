@@ -1847,10 +1847,15 @@ public class FPAsyncComponent {
 						} else {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
+						
 						parameters.put(PARAMETERS_HO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -1922,9 +1927,13 @@ public class FPAsyncComponent {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
 						parameters.put(PARAMETERS_BO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2203,10 +2212,14 @@ public class FPAsyncComponent {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
 						parameters.put(PARAMETERS_HO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_HO_MAKER_REASSIGN_TO_CHECKER, subject);
 						parameters.put("isDynamic", false);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2276,9 +2289,13 @@ public class FPAsyncComponent {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
 						parameters.put(PARAMETERS_BO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+						//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_ALL_BO_MAKER_REASSIGN_TO_CHECKER, subject);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
