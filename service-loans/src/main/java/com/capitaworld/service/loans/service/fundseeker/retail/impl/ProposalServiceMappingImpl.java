@@ -1332,6 +1332,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
+			
+			// GET OFFLINE STATUS FOR SHOW IN MATCHED LIST
+			String offlineStatus = loanRepository.getOfflineStatusByAppId(request.getApplicationId());
+			
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
@@ -1386,6 +1390,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setElAmount(proposalrequest.getElAmount());
 				fundProviderProposalDetails.setElRoi(proposalrequest.getElRoi());
 				fundProviderProposalDetails.setElTenure(proposalrequest.getElTenure());
+				fundProviderProposalDetails.setOfflineStatus(offlineStatus);
 				// add disbursed amount logic
 
 				fundProviderProposalDetails
