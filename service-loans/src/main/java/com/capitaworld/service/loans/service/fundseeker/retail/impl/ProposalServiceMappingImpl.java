@@ -12,19 +12,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
 import java.util.stream.Collectors;
 
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.api.exception.ConnectException;
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.matchengine.utils.MatchConstant;
-import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
+import org.joda.time.DateTimeComparator;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.joda.time.DateTimeComparator;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +27,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.connect.api.ConnectRequest;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.exception.ConnectException;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -47,6 +42,8 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -64,12 +61,15 @@ import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
-import com.capitaworld.service.loans.service.common.NotificationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtility;
@@ -86,8 +86,9 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
-import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -143,20 +144,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private UsersClient usersClient;
-	@Autowired
-	private NotificationService notificationService;
+	
+	/*@Autowired
+	private NotificationService notificationService;*/
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	@Autowired
-	private NotificationClient notificationClient;
+	/*@Autowired
+	private NotificationClient notificationClient;*/
 
 	@Autowired
 	private LogService logService;
 
-	@Autowired
-	private CorporateDirectorIncomeService corporateDirectorIncomeService;
+	/*@Autowired
+	private CorporateDirectorIncomeService corporateDirectorIncomeService;*/
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -199,7 +201,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private static final String THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG = "Throw Exception While Get Branch Id from UserId : ";
 	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_IS_ALREADY_ASSIGNED_TO_ANOTHER_CHECKER_MSG = "The said proposal is already assigned to other Checker, hence you can not take any action on the same.";
 	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_ASSIGN_PROPOAL_TO_UPPER_LEVEL_CHECKER_MSG = "You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.";
-	private static final String USER_URL = "userURL";
+	/*private static final String USER_URL = "userURL";*/
 
 	private String getMainDirectorName(Long appId) {
 		DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
@@ -1310,6 +1312,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return null;
 	}
 
+	public String getOfflineProposalList(Long applicationId) {
+		try {
+			return loanRepository.getOfflineDetailsByAppId(applicationId);	
+		} catch (Exception e) {
+			logger.error("Error : ",e);
+		}
+		return Collections.emptyList().toString();
+	}
+	
 	@Override
 	public List<FundProviderProposalDetails> fundseekerProposal(ProposalMappingRequest request, Long userId) {
 
@@ -1322,7 +1333,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-				UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
@@ -1332,7 +1342,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				userRequest.setId(master.getUserId());
 
 				// calling USER for getting fp details
-				UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
+				UserResponse userResponse = usersClient.getFPDetails(userRequest);
 
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
@@ -1409,6 +1419,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		ProposalCountResponse response = new ProposalCountResponse();
 		try {
 			response = proposalDetailsClient.proposalCountOfFundSeeker(request);
+			try {
+				logger.info("Application ID==========================================> " +request.getApplicationId());
+				Long offlineCount = loanRepository.getOfflineCountByAppId(request.getApplicationId());
+				logger.info("Offline Counts ==========================================> " + offlineCount);
+				response.setOffline(offlineCount);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -1911,8 +1929,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
-						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
-
 						BigInteger fpProductId = BigInteger.class
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
@@ -1931,7 +1947,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
+						UserResponse userResponse = usersClient.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -1983,7 +1999,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
-						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
@@ -1999,7 +2014,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
+						UserResponse userResponse = usersClient.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
