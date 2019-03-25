@@ -42,6 +42,7 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -2935,8 +2936,10 @@ public class FPAsyncComponent {
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan===>{}");
 			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
-			LoanApplicationRequest applicationRequest = loanApplicationService
-					.getFromClient(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingResponse proposal = proposalDetailsClient.getActiveProposalByApplicationID(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ApplicationProposalMapping.class);
+			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
+			
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
@@ -3240,7 +3243,10 @@ public class FPAsyncComponent {
 			logger.info("Into sending Mail to FS when Checker sanction loan===>{}");
 			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
-			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingResponse proposal = proposalDetailsClient.getActiveProposalByApplicationID(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ApplicationProposalMapping.class);
+			
+			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
