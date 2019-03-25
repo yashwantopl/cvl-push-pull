@@ -163,9 +163,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
 		}catch (IndexOutOfBoundsException e) {
 			logger.info("Application not from multiple bank applicationid:"+loanSanctionDomainOld.getApplicationId());
-			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 		}
-		
+		fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 		//=================================================================================
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
