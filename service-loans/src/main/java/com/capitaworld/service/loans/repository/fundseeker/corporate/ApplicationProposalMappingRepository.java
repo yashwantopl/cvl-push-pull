@@ -183,4 +183,6 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query("select lm.denominationId from ApplicationProposalMapping lm where lm.proposalId=:proposalId and lm.isActive = true")
     public Integer getDenominationId(@Param("proposalId") Long proposalId);
 
+    @Query(nativeQuery = true,value="SELECT b.business_type_id FROM `loan_application`.`application_proposal_mapping` b WHERE b.user_id=:userId ORDER BY b.created_date DESC LIMIT 1")
+    public Integer getBusinessIdByUserId(@Param("userId") Long userId);
 }

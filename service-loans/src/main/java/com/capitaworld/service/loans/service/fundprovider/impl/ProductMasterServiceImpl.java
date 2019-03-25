@@ -286,7 +286,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyState=workingCapitalParameterRequest.getStateList();
 						geogaphicallyCity=workingCapitalParameterRequest.getCityList();
 						negativeIndList=workingCapitalParameterRequest.getUnInterestedIndustrylist();
-						if(addProductRequest.getFinId()==4)
+						if(addProductRequest.getFinId()==null ||addProductRequest.getFinId()==4)
 						{
 							workingCapitalParameterRequest.setIsNewTolTnwCheck(false);
 							workingCapitalParameterRequest.setNewTolTnw(null);
@@ -310,7 +310,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							geogaphicallyCity=termLoanParameterRequest.getCityList();
 							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
 							//END set multiple value in temp
-							if(addProductRequest.getFinId()==4)
+							if(addProductRequest.getFinId()==null ||addProductRequest.getFinId()==4)
 							{
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
@@ -330,7 +330,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							geogaphicallyCity=termLoanParameterRequest.getCityList();
 							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
 							//END set multiple value in temp
-							if(addProductRequest.getFinId()==4)
+							if(addProductRequest.getFinId()==null || addProductRequest.getFinId()==4)
 							{
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
@@ -352,7 +352,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyCity=wcTlParameterRequest.getCityList();
 						negativeIndList=wcTlParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
-						if(addProductRequest.getFinId()==4)
+						if(addProductRequest.getFinId()==null ||addProductRequest.getFinId()==4)
 						{
 							wcTlParameterRequest.setIsNewTolTnwCheck(false);
 							wcTlParameterRequest.setNewTolTnw(null);
