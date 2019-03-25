@@ -128,7 +128,10 @@ public class FPAsyncComponent {
 
 	@Autowired
 	public GstClient gstClient;
-
+	
+	@Autowired
+	ApplicationProposalMappingRepository appProposalMappingRepo;
+	
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
 
@@ -1780,6 +1783,9 @@ public class FPAsyncComponent {
 				logger.info("Email Sending TO CHECKER on sendMailWhenMakerAssignDDRToChecker===to==>{}", toIds);
 				// ====================== MAIL TO CHECKER ======================
 				parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+//				Arun's Code(1786 - 1788)
+				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId()) 
+						&& !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 				createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,
 						NotificationAlias.EMAIL_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subjcet);
 
@@ -1955,7 +1961,7 @@ public class FPAsyncComponent {
 
 			// =========================================================================================
 
-		} catch (Exception e) {
+		} }catch (Exception e) {
 			logger.error("Throw exception while sending mail to Checker/HO/BO when Maker Assign DDR to Checker : ",e);
 		}
 	}
@@ -2489,14 +2495,22 @@ public class FPAsyncComponent {
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 						logger.info(MSG_MAKER_ID+userObj.getEmail());
 						to = userObj.getEmail();
+						
+
 						if (LITERAL_NULL.equals(name)) {
 							mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
 						} else {
 							mailParameters.put(PARAMETERS_ADMIN_CHECKER, name != null ? name : PARAMETERS_SIR_MADAM);
 						}
+//						Arun's Modification(2505 - 2508)
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(userId);
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, userId.toString(), mailParameters,
 								NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, subject);
 					}
+					
+					
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
 						logger.info(MSG_MAKER_ID+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2530,7 +2544,7 @@ public class FPAsyncComponent {
 
 				}
 
-			} else {
+			} }else {
 				logger.info("No Admin Checker found=================>");
 			}
 
@@ -2726,6 +2740,12 @@ public class FPAsyncComponent {
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,
 					productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+			
+			//Aruns Modification
+			Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+					&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
+			
 			UsersRequest adminForChecker = new UsersRequest();
 			adminForChecker.setId(userId);
 
@@ -2741,7 +2761,9 @@ public class FPAsyncComponent {
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 			}
-
+			
+			
+			
 			if (LITERAL_NULL.equals(adminCheckerName)) {
 				adminCheckerName = LITERAL_CHECKER;
 			} else {
@@ -2885,7 +2907,7 @@ public class FPAsyncComponent {
 				logger.info("No Admin Maker found=================>");
 			}*/
 
-		} catch (Exception e) {
+		} }catch (Exception e) {
 			logger.error("An exception getting while sending Mail to Maker when Admin Checker reverted product=============>{}",e);
 		}
 
