@@ -29,6 +29,8 @@ public interface ProposalService {
 
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request);
 	
+	public String getOfflineProposalList(Long applicationId);
+	
 	public List<FundProviderProposalDetails>  fundseekerProposal(ProposalMappingRequest request,Long userId);
 	
 	public ProposalCountResponse fundProviderProposalCount(ProposalMappingRequest request);
