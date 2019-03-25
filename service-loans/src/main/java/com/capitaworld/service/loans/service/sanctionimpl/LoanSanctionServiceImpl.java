@@ -156,15 +156,18 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		//==================Sending Mail notification to Maker=============================
 		try{
 			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-//			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			
-			Boolean sanctionMailStatus = sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId(),loanSanctionDomainOld);
-			if(sanctionMailStatus) {
-				logger.info("Sanction email has been sent"); 
-			}
 		}catch(Exception e){
 			logger.error("Exception : {}",e);
 		}
+		try {
+			Boolean sanctionMailStatus = sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
+			if(sanctionMailStatus) {
+				logger.info("Sanction email has been sent"); 
+			}
+		}catch (IndexOutOfBoundsException e) {
+			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+		}
+		
 		//=================================================================================
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
@@ -175,31 +178,20 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 
 
-	public Boolean sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId,LoanSanctionDomain loanSanctionDomainOld ){
+	public Boolean sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId) throws IndexOutOfBoundsException{
 		logger.info("inside notification start for sanction");
 
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
-
-		/*if(loanSanctionDomainOld!=null) {
-			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		}*/
-		try{
 			if(proposalDetailByApplicationId != null) {
 				if (proposalDetailByApplicationId.get(1) != null){
-					//multiple bank emails
 					for(Object[] arr : proposalDetailByApplicationId ){
-		
 						Integer proposal_status = CommonUtils.convertInteger(arr[1]);
 						logger.info("Proposal_Status ====>"+proposal_status);
 						String proposal_code = CommonUtils.convertString(arr[2]);
 						Long branch_id = CommonUtils.convertLong(arr[3]);
 						logger.info("Branch_id ====>"+branch_id);
-		
-		
 						if (proposal_status == 5 && branch_id != null) {
-		
 							UserResponse userResponse=  userClient.getBranchUsersListByBranchId(branch_id);
-		
 							for (int i=0;i<userResponse.getListData().size();i++) {
 								try {
 									String to[] = null;
@@ -356,18 +348,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						}
 		
 					}
-				}else{
-					if(loanSanctionDomainOld!=null) {
-						fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-					}
 				}
 			}
-		}catch (Exception e){
-			logger.info("Single proposal found: - "+e);
-			/*if(loanSanctionDomainOld!=null) {
-				fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			}*/
-		}
+	 
 		logger.info("outside notification end for sanction");
 		return  true;
 	}
