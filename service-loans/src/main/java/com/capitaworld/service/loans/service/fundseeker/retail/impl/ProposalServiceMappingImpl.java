@@ -89,6 +89,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
+import com.capitaworld.service.notification.utils.NotificationApiUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -144,7 +145,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private UsersClient usersClient;
-	
+
 	/*@Autowired
 	private NotificationService notificationService;*/
 
@@ -1314,13 +1315,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	public String getOfflineProposalList(Long applicationId) {
 		try {
-			return loanRepository.getOfflineDetailsByAppId(applicationId);	
+			return loanRepository.getOfflineDetailsByAppId(applicationId);
 		} catch (Exception e) {
 			logger.error("Error : ",e);
 		}
 		return Collections.emptyList().toString();
 	}
-	
+
 	@Override
 	public List<FundProviderProposalDetails> fundseekerProposal(ProposalMappingRequest request, Long userId) {
 
@@ -1332,10 +1333,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
-			
+
 			// GET OFFLINE STATUS FOR SHOW IN MATCHED LIST
 			String offlineStatus = loanRepository.getOfflineStatusByAppId(request.getApplicationId());
-			
+
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
@@ -2648,6 +2649,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
+							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Offline.getId());
 						}else{
 							schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
 							if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
@@ -2657,6 +2659,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
 							//set online
+							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Online.getId());
 						}
 						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest1.getProposalId());
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
