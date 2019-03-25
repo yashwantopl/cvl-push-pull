@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
 import java.util.stream.Collectors;
 
 import com.capitaworld.connect.api.ConnectResponse;
@@ -88,6 +87,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.notification.utils.NotificationApiUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -2628,6 +2628,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
+							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Offline.getId());
 						}else{
 							schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
 							if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
@@ -2637,6 +2638,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
 							//set online
+							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Online.getId());
 						}
 						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest1.getProposalId());
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
