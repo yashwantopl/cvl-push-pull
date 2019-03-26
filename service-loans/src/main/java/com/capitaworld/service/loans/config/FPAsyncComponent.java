@@ -3244,7 +3244,7 @@ public class FPAsyncComponent {
 			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			ProposalMappingResponse proposal = proposalDetailsClient.getActiveProposalByApplicationID(loanSanctionDomainOld.getApplicationId());
-			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ApplicationProposalMapping.class);
+			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ProposalMappingRequest.class);
 			
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 
@@ -3271,7 +3271,7 @@ public class FPAsyncComponent {
 			}
 
 			SimpleDateFormat form = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
-			String fpName = proposalresp.get("organisationName") != null ? proposalresp.get("organisationName").toString() : "";
+			String fpName = (null!=proposalresp  && proposalresp.get("organisationName") != null )? proposalresp.get("organisationName").toString() : "";
 			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) && loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION) ){
 
 					subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
