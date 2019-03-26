@@ -40,7 +40,9 @@ import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -286,6 +288,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
+			
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
 			int noOfCustomer = gstData.getNoOfCustomer().intValue();
 			map.put("noOfCustomer", noOfCustomer);
@@ -294,8 +297,24 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
+
+			CAMGSTData resp =null;		
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
-			if(!CommonUtils.isObjectNullOrEmpty(response)) {
+			// STARTS HERE TOTAL MOM SALES------>
+			Double totalSales =0.0d;
+			DecimalFormat df = new DecimalFormat(".##");
+			if (!CommonUtils.isObjectNullOrEmpty(response) && (!CommonUtils.isObjectNullOrEmpty(response.getData()))) {
+				resp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(),CAMGSTData.class);
+				if(resp.getMomSales() != null) {
+					List<MomSales> momSalesResp = resp.getMomSales();
+					 for (MomSales sales : momSalesResp) {
+					    	totalSales += Double.valueOf(sales.getValue());
+					}
+					map.put("totalMomSales", df.format(totalSales));
+				}
+			}
+			//  ENDS HERE----> TOTAL MOM SALES------>
+			if(!CommonUtils.isObjectNullOrEmpty(response) && (!CommonUtils.isObjectNullOrEmpty(response.getData()))) {
 				map.put("gstDetailedResp",response.getData());
 			}
 		}catch(Exception e) {
