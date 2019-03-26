@@ -112,9 +112,9 @@ public class CorporateUploadController {
 		}
 	}
 
-	@RequestMapping(value = "/profile/get/{applicationId}/proposalMappingId/{mappingId}/{userType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/profile/get/{applicationId}/{proposalId}/{mappingId}/{userType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getProfileImage(@PathVariable("applicationId") Long applicationId,
-														 @PathVariable("proposalMappingId") Long proposalMappingId,
+														 @PathVariable("proposalId") Long proposalMappingId,
 														 @PathVariable("mappingId") Long mappingId,
 														 @PathVariable("userType") String userType,
 														 HttpServletRequest request) {

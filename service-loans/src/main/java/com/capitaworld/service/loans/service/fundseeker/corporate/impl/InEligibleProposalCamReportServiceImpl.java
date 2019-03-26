@@ -192,11 +192,12 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserIdForInEligibleCam(applicationId, userId);
-		if(loanApplicationMaster!= null) {
 		
+		/*CURRENTLY COMMENTED THE CODE -- DATE IS NOT USED
+		 * 
+		 * if(loanApplicationMaster!= null) {
 			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
-			
-		}
+		}*/
 		
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
@@ -252,6 +253,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}
 		
 		//TIMELINE DATES
+		// date of is now change again it is consider at the time of mcq page selection time ---- 
 		if(loanApplicationMaster != null && loanApplicationMaster.getCreatedDate() != null)
 		{
 			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
@@ -576,6 +578,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			if(analyzerResponse.getData()!=null){
 			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
 			
 			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
@@ -609,6 +612,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 				
 			}
+		 }
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
@@ -842,7 +846,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			financialInputRequestString.setOtherIncomeNeedTocCheckLia(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
 			
 			/************************************************ ASSETS DETAIL ***************************************************/
-			AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+"");
+			AssetsDetails assetsDetails = assetsDetailsRepository.getAssestDetailsByApplicationId(applicationId, year+"");
 			if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
 				assetsDetails = new AssetsDetails();
 			}
