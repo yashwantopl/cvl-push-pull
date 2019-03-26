@@ -181,11 +181,21 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 			if(proposalDetailByApplicationId != null) {
 				if (proposalDetailByApplicationId.get(1) != null){
+					// check is their any sanction
+					Boolean isSanction = false;
+					for(Object[] arr : proposalDetailByApplicationId ){
+						Integer proposalStatus = CommonUtils.convertInteger(arr[1]);
+						Long branchId = CommonUtils.convertLong(arr[3]);
+						if (proposalStatus == 5 && branchId != null) {
+							isSanction =true;
+						}
+					}
+					
 					for(Object[] arr : proposalDetailByApplicationId ){
 						Integer proposalStatus = CommonUtils.convertInteger(arr[1]);
 						String proposalCode = CommonUtils.convertString(arr[2]);
 						Long branchId = CommonUtils.convertLong(arr[3]);
-						if (proposalStatus == 5 && branchId != null) {
+						if (isSanction && (proposalStatus != 5)) {
 							UserResponse userResponse=  userClient.getBranchUsersListByBranchId(branchId);
 							for (int i=0;i<userResponse.getListData().size();i++) {
 								try {
@@ -313,7 +323,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			}
 	 
 		logger.info("outside notification end for sanction");
-		return  true;
+		return true;
 	}
 
 
