@@ -1011,6 +1011,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				request.setApplicationStatus(applicationStatus);
 			}
+				List<LoanApplicationMaster> offlineResults = loanApplicationRepository.getUserLoans(userId);
+				for (LoanApplicationMaster master : offlineResults) {
+					LoanApplicationRequest request = new LoanApplicationRequest();
+					request.setId(master.getId());
+					BeanUtils.copyProperties(master, request, "name");
+					if (request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
+							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
+						request.setLoanTypeMain(CommonUtils.CORPORATE);
+						request.setLoanTypeSub("DEBT");
+						request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue());
+						List<LoanApplicationRequest> tempList = requests.stream()
+								.filter(appId -> request.getId().equals(appId.getId()))
+								.collect(Collectors.toList());
+						if(CommonUtils.isListNullOrEmpty(tempList)){
+							requests.add(request);
+						}
+					}
+				}
 		}
 			return requests;
 		} catch (Exception e) {
