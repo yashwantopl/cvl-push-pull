@@ -495,7 +495,8 @@ public class CommonUtils {
 		DISBURSED(4,"Disbursed"),
 		HOLD(5,"On Hold"),
 		REJECT(6,"Rejected"),
-		SANCTIONED(7,"Sanctioned");
+		SANCTIONED(7,"Sanctioned"),
+		IN_ELIGIBLE(8,"In Eligible");
 
 		private int id;
 		private String value;
