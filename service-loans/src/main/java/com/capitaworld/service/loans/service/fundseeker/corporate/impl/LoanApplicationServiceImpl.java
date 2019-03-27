@@ -1020,7 +1020,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 						request.setLoanTypeMain(CommonUtils.CORPORATE);
 						request.setLoanTypeSub("DEBT");
-						request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue());
+                        request.setName("Offline");
+						request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_ELIGIBLE.getValue());
 						List<LoanApplicationRequest> tempList = requests.stream()
 								.filter(appId -> request.getId().equals(appId.getId()))
 								.collect(Collectors.toList());
