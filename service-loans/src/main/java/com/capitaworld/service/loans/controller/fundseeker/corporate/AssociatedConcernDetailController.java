@@ -112,24 +112,9 @@ public class AssociatedConcernDetailController {
 			List<AssociatedConcernDetailRequest> response = associatedConcernDetaillService
 					.getAssociatedConcernsDetailListByProposalId(proposalId,userId);
 			Integer currentYear = null;
-			if (!CommonUtils.isListNullOrEmpty(response)) {
-				currentYear = response.get(0).getCurrentYear();
-				if (currentYear != null) {
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(new Date());
-					currentYear = calendar.get(Calendar.YEAR);
-				}
-				else {
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(new Date());
-					currentYear = calendar.get(Calendar.YEAR);
-				}
-
-			} else {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(new Date());
-				currentYear = calendar.get(Calendar.YEAR);
-			}
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(new Date());
+			currentYear = calendar.get(Calendar.YEAR);
 
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(currentYear);
