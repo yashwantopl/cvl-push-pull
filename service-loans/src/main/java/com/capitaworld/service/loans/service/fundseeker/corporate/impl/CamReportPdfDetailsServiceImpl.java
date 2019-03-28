@@ -1506,7 +1506,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService
 				.getCorporateApplicant(applicationId);
 		try {
-			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
+			if(corporateApplicantRequest != null) {
+				map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
+			}
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}

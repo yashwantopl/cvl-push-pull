@@ -16,13 +16,13 @@ public interface RetailApplicantIncomeRepository extends JpaRepository<RetailApp
 	
 	public List<RetailApplicantIncomeDetail> findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
 	
-	@Query("select i from RetailApplicantIncomeDetail i where i.applicationId.id =:applicationId and i.proposalId =:proposalId and i.isActive = true ")
+	@Query("select i from RetailApplicantIncomeDetail i where i.applicationId =:applicationId and i.proposalId =:proposalId and i.isActive = true ")
 	public List<RetailApplicantIncomeDetail> findByPropsoalIdAndIsActive(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
 
-	@Query("select MAX(o.year) from RetailApplicantIncomeDetail o where o.applicationId.id =:id and o.isActive = true")
+	@Query("select MAX(o.year) from RetailApplicantIncomeDetail o where o.applicationId =:id and o.isActive = true")
 	public Integer getMaxYearByApplicationId(@Param("id")Long id);
 
-	@Query("select i.incomeRatio from RetailApplicantIncomeDetail i where i.applicationId.id =:id and i.year=:year and i.isActive = true ")
+	@Query("select i.incomeRatio from RetailApplicantIncomeDetail i where i.applicationId =:id and i.year=:year and i.isActive = true ")
 	public Double getTotalIncomeByApplicationIdAndYear(@Param("id")Long id,@Param("year")Integer year);
 	
 }

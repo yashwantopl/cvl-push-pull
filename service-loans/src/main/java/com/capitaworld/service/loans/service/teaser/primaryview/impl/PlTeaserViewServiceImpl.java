@@ -1181,7 +1181,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			
 			//FIXED DEPOSITS DETAILS
 			try {
-				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailList(toApplicationId, 1);
+				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalId(proposalId, 1);
 					if(fixedDepositeDetails != null) {
 					
 					plTeaserViewResponse.setFixDepositDetails(fixedDepositeDetails);
@@ -1211,7 +1211,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			//OBLIGATION DETAILS
 			try {
 				
-				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailList(toApplicationId,1);
+				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailsFromProposalId(proposalId, 1);
 				
 				if(obligationRequest != null) {
 					
