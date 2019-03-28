@@ -21,14 +21,14 @@ public interface OfflineProcessedAppService {
 	 * @param userId
 	 * @return
 	 */
-	public List<OfflineProcessedApplicationRequest> getUniformApplicationList(Long userId);
+	public String getUniformApplicationList(Long userId);
 	
 	/**
 	 * Getting Sanctioned List
 	 * @param userId
 	 * @return
 	 */
-	public List<OfflineProcessedApplicationRequest> getUniformSanctionedApplicationList(Long userId);
+	public String getUniformSanctionedApplicationList(Long userId);
 
 	/**
 	 * Getting Uniform Disbursed Application List
@@ -36,7 +36,7 @@ public interface OfflineProcessedAppService {
 	 * @return
 	 */
 
-	public List<OfflineProcessedApplicationRequest> getUniformDisbursedApplicationList(Long userId);
+	public String getUniformDisbursedApplicationList(Long userId);
 
 
 	/**
@@ -44,7 +44,7 @@ public interface OfflineProcessedAppService {
 	 * @param userId
 	 * @return
 	 */
-	public List<OfflineProcessedApplicationRequest> getUniformRejectProposalList(Long userId);
+	public String getUniformRejectProposalList(Long userId);
 
 
 	/**
@@ -53,5 +53,5 @@ public interface OfflineProcessedAppService {
 	 * @return
 	 */
 
-	public List<OfflineProcessedApplicationRequest> getUniformOtherProposalList(Long userId);
+	public String getUniformOtherProposalList(Long userId);
 }
