@@ -237,7 +237,7 @@ public class FPAsyncComponent {
 						/*if(applicantRequest.getUserId()!=null && proposalResponse.getId()!=null){*/
 						applicantRequest = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(),propsalId);
 						logger.info("THIS IS USER ID --------- AND" + " "+applicantRequest.getUserId()+ ""
-								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+proposalResponse.getId());
+								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+( proposalResponse != null ? proposalResponse.getId() : null));
 						/*}*/
 					}catch (Exception e) {
 						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:"+e.getMessage());
