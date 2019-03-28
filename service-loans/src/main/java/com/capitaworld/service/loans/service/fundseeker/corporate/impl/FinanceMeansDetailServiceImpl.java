@@ -77,8 +77,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 			}
 			return financeMeansRequests;
 		} catch (Exception e) {
-			logger.info("Exception getting financeMeansDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception getting financeMeansDetail  :- {}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

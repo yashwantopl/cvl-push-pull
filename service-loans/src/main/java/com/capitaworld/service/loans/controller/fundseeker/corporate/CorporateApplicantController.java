@@ -510,8 +510,7 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.endHook(logger, "getPrimary");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Term Loan Details==>", e);
-			e.printStackTrace();
+			logger.error("Error while getting Primary Term Loan Details==>{}", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

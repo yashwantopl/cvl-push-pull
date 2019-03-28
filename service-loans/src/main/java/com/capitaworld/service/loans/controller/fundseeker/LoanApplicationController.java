@@ -1057,8 +1057,7 @@ public class LoanApplicationController {
 			loansResponse.setData(loanApplicationService.getBowlCountByProposalId(proposalId, userId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getBowlCount Details==>", e);
-			e.printStackTrace();
+			logger.error("Error while getBowlCount Details==>{}", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -3375,8 +3374,7 @@ public class LoanApplicationController {
 			loansResponse.setStatus(200);
 			return new ResponseEntity<>(loansResponse,HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getProposalId==>");
-			e.printStackTrace();
+			logger.error("Error while getProposalId==>{}",e);
 			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
@@ -3411,8 +3409,7 @@ public class LoanApplicationController {
 					coAppllicantOrGuarantorId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Working Details==>", e);
-			e.printStackTrace();
+			logger.error("Error while getting Primary Working Details==>{}", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -3441,8 +3438,7 @@ public class LoanApplicationController {
 			logger.info("Inside getLoanApplicationById - end");
 			return new ResponseEntity<>(loansResponse,HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while /getLoanApplicationById/{applicationId}==>");
-			e.printStackTrace();
+			logger.error("Error while /getLoanApplicationById/{applicationId}==>{}",e);
 			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}

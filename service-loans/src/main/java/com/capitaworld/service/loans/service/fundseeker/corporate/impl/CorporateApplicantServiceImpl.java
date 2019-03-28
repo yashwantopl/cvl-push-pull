@@ -224,14 +224,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantRequest.setLandlineNo(userRequest.getMobile());
 			}
 			catch (Exception e){
-				logger.warn("error while get user data");
-				e.printStackTrace();
+				logger.warn("error while get user data = {}",e);
 			}
 			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Corporate Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting Corporate Profile:- {}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -651,8 +649,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		try {
 			return applicantDetailRepository.getApplicantEstablishmentYearFromProposalId(proposalId);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while getting Establishment Year",e);
+			logger.error("Error while getting Establishment Year = {}",e);
 		}
 		return null;
 	}
