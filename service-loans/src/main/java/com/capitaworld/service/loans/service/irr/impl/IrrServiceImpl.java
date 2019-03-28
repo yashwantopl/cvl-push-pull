@@ -341,11 +341,11 @@ public class IrrServiceImpl implements IrrService{
 		try {
 			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId ,proposalId); // // NEW BASED ON PROPOSAL MAPPING ID
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("{}",e);
 		}
 
 		//log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest);
-		log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest.getSharePriceFace());
+		log.info("corporateFinalInfoRequest========================>{}",corporateFinalInfoRequest.getSharePriceFace());
 		
 		//---SHARE FACE VALUE SET-----
         Double shareFaceVal=1.00;

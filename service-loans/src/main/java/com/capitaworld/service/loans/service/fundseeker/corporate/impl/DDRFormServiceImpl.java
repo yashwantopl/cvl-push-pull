@@ -5488,8 +5488,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			logger.info("DDR ===============> DDR Form Saved Successfully in Service-----------------> "
 					+ dDRFormDetails.getId());
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception while saving ddr form");
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception while saving ddr form == >{}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
