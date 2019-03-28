@@ -213,8 +213,7 @@ public class DDRFormController {
 			logger.info("DDR COMBINED Form Saved Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while saving COMBINED DDR Form Details ==>", e);
-			e.printStackTrace();
+			logger.error("Error while saving COMBINED DDR Form Details ==>{}", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

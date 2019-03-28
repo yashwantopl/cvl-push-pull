@@ -2561,13 +2561,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			io.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! == {}",io);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			e.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! == {}",e);
 		}
 		return Boolean.FALSE;
 	}
@@ -2611,13 +2607,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			io.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! = {}",io);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			e.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! = {}",e);
 		}
 		return Boolean.FALSE;
 	}

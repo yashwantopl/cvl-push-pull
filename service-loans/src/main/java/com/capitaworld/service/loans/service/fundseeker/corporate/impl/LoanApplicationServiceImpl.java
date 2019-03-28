@@ -1478,8 +1478,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
             }
             return loanApplicationRequest;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Error while Locking Final Information : ",e);
+            logger.error("Error while Locking Final Information : {}",e);
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
         }
@@ -1999,8 +1998,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long count = applicationProposalMappingRepository.checkFinalDetailIsLocked(proposalId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
-			logger.error("Error while getting isFinalLocked ?");
-			e.printStackTrace();
+			logger.error("Error while getting isFinalLocked ? = {}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -5777,8 +5775,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationProposalMappingRepository.save(applicationProposalMapping);
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Updating DDR Status");
+			logger.error("Error while Updating DDR Status = {}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

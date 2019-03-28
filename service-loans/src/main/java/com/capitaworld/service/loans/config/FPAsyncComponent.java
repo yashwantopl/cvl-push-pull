@@ -219,9 +219,7 @@ public class FPAsyncComponent {
 							.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
 				}
 					}catch (Exception e) {
-					logger.info(
-							"Error calling Proposal Details Client for getting Branch Id:-" + paymentRequest.getApplicationId());
-					e.printStackTrace();
+					logger.info("Error calling Proposal Details Client for getting Branch Id:- {}" , paymentRequest.getApplicationId());
 				}
 */
 				Long propsalId = Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
@@ -240,8 +238,7 @@ public class FPAsyncComponent {
 								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+( proposalResponse != null ? proposalResponse.getId() : null));
 						/*}*/
 					}catch (Exception e) {
-						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:"+e.getMessage());
-						e.printStackTrace();
+						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:{}",e);
 					}
 					//      OLD CODE==============>
 /*					CorporateApplicantRequest applicantRequest = corporateapplicantService
@@ -1094,9 +1091,7 @@ public class FPAsyncComponent {
 							}
 
 						} catch (Exception e) {
-							logger.info("Error Calling One form client for getting state by state list Id");
-
-							e.printStackTrace();
+							logger.error("Error Calling One form client for getting state by state list Id = {}",e);
 						}
 					}
 				}
