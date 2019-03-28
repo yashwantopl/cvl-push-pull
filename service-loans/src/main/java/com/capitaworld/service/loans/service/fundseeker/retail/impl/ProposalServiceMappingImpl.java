@@ -293,7 +293,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
 					Object[] loanDeatils = loanApplicationService
 							.getApplicationDetailsByProposalId(proposalrequest.getApplicationId(),proposalrequest.getId());
-					logger.info("user id based on application Id:" + loanDeatils.toString());
+					logger.info("user id based on application Id:{}" , loanDeatils);
 					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
 
 					try {
@@ -2496,10 +2496,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 			}
 
-			if(proposalDetailsList.size() == 0){//for offline cases
+			if(proposalDetailsList != null && proposalDetailsList.size() == 0){//for offline cases
 				return checkLogicForOfflineMultiBankSelection(applicationId,proposalDetailsList);
 			}
-			if(!CommonUtils.isListNullOrEmpty(inActivityProposalList) && inActivityProposalList.size()>0){
+			if(inActivityProposalList != null && !inActivityProposalList.isEmpty()){
 				ConnectRequest connectRequest = new ConnectRequest();
 				connectRequest.setApplicationId(applicationId);
 				connectRequest.setBusinessTypeId(businessTypeId);

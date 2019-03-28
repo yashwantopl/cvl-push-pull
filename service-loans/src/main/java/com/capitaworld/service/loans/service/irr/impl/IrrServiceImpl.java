@@ -118,20 +118,19 @@ public class IrrServiceImpl implements IrrService{
 	@Override
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId, Long proposalId) {
 
-		log.info("THIS IS FINAL PROPOSAL ID=============================>"+proposalId);
+		log.info("THIS IS FINAL PROPOSAL ID=============================>{}",proposalId);
 
 		Integer businessTypeId = null; // get from irr-cw industry mapping
 		Double industryRiskScore = 0.0;
 		String industry = "";
 		IrrRequest irrIndustryRequest = new IrrRequest();
 		IrrRequest irrRequest = new IrrRequest();
-		LoanApplicationMaster applicationMaster = null;
 		ApplicationProposalMapping applicationProposalMapping = null;
 		CorporateApplicantDetail corporateApplicantDetail = null;
+		Long usrId = null;
 		try {
 
 			applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
-			applicationMaster = loanApplicationRepository.findOne(appId);
 
 			Long denom = 1l; // CHANGES FOR MULTIPLE BANK
 			/*if (applicationMaster.getDenominationId() != null) {
@@ -141,9 +140,8 @@ public class IrrServiceImpl implements IrrService{
 			}*/
 
 			//userId = applicationMaster.getUserId();
-			userId = applicationProposalMapping.getUserId();
-			corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId,
-					appId.longValue());
+			usrId = applicationProposalMapping.getUserId();
+			corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(usrId,appId);
 
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding())
 					|| CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector())
@@ -155,8 +153,7 @@ public class IrrServiceImpl implements IrrService{
 						HttpStatus.OK);
 			}
 
-			if (applicationProposalMapping != null && (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalLocked())
-					|| !(true == applicationProposalMapping.getIsFinalLocked()))) {
+			if ((CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalLocked())|| !applicationProposalMapping.getIsFinalLocked())) {
 				log.info("final section is not locked");
 				return new ResponseEntity<RatingResponse>(
 						new RatingResponse("Submit your final one form section for MSME score",
@@ -213,7 +210,7 @@ public class IrrServiceImpl implements IrrService{
 			//irrRequest.setProposalMappingId(proposalMapId);
 			irrRequest.setCompanyName(corporateApplicantDetail.getOrganisationName());
 			irrRequest.setBusinessTypeId(businessTypeId);
-			irrRequest.setUserId(userId);
+			irrRequest.setUserId(usrId);
 
 			Boolean isCmaUploaded=true;
 			Boolean isCoActUploaded=false;
@@ -233,21 +230,21 @@ public class IrrServiceImpl implements IrrService{
 
 			if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
 				// ---- Manufacturing
-				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, userId,
+				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, usrId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, industryRiskScore, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
 				// ---- Service
-				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId,
+				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, usrId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
 				// ---- Trading
-				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId,
+				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, usrId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			}
 
 			// if CMA filled
 			if(isCmaUploaded) {
-				irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId, appId, industry, denom,proposalId));
+				irrRequest.setFinancialInputRequest(cmaIrrMappingService(usrId, appId, industry, denom,proposalId));
 			}
 
 			/*// if coAct filled
