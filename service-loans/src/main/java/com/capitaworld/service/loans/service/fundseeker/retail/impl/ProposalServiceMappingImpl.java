@@ -2655,8 +2655,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
 							schedulerDataMultipleBankRequest.setEmailType(2);//NotificationApiUtils.ApplicationType.Offline.getId());
-							logger.info("userOrgId:",schedulerDataMultipleBankRequest.getApplicationId());
-							IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(schedulerDataMultipleBankRequest.getApplicationId(),true);
+							logger.info("appId:",connectRequest1.getApplicationId());
+							IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(connectRequest1.getApplicationId(),true);
 							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
 									&& CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())){
 								schedulerDataMultipleBankRequest.setOrgId(ineligibleProposalDetails.getUserOrgId());
