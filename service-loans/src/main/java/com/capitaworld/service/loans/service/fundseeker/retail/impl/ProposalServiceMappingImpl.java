@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -175,6 +177,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private LoanRepository loanRepository;
+
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
 
 	@Value("${cw.maxdays.recalculation}")
 	private String mxaDays;
@@ -2650,6 +2655,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
 							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Offline.getId());
+							IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(schedulerDataMultipleBankRequest.getApplicationId(),true);
+							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
+									&& CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())){
+								schedulerDataMultipleBankRequest.setOrgId(ineligibleProposalDetails.getUserOrgId());
+							}
 						}else{
 							schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
 							if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
