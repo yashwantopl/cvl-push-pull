@@ -2694,7 +2694,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return null;
 	}
 
-	public Boolean calculateAndGetNewMatches(Long applicationId, Integer businessTypeId){
+	/*public Boolean calculateAndGetNewMatches(Long applicationId, Integer businessTypeId){
 		try {
 			ConnectRequest connectRequest = new ConnectRequest();
 			connectRequest.setApplicationId(applicationId);
@@ -2717,7 +2717,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			e.printStackTrace();
 		}
 		return Boolean.FALSE;
-	}
+	}*/
 	@Override
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request,
 			Long userId) {
