@@ -2654,7 +2654,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
-							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Offline.getId());
+							schedulerDataMultipleBankRequest.setEmailType(2);//NotificationApiUtils.ApplicationType.Offline.getId());
 							logger.info("userOrgId:",schedulerDataMultipleBankRequest.getApplicationId());
 							IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(schedulerDataMultipleBankRequest.getApplicationId(),true);
 							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
@@ -2671,7 +2671,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
 							//set online
-							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Online.getId());
+							schedulerDataMultipleBankRequest.setEmailType(1);//NotificationApiUtils.ApplicationType.Online.getId());
 						}
 						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest1.getProposalId());
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
