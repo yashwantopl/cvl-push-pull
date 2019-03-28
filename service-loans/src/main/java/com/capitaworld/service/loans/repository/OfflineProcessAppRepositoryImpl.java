@@ -113,44 +113,44 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getUniformApplications(Long userId) {
+	public String getUniformApplications(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformPendingProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getUniformSanctionedApplicationList(Long userId) {
+	public String getUniformSanctionedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformSanctionedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getUniformDisbursedApplicationList(Long userId) {
+	public String getUniformDisbursedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformDisbursedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 
 	@Override
-	public List<Object[]> getUniformRejectProposalsList(Long userId) {
+	public String getUniformRejectProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformRejectProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 
 	@Override
-	public List<Object[]> getUniformOtherProposalsList(Long userId) {
+	public String getUniformOtherProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformOtherProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
-		return (List<Object[]>) storedProcedureQuery.getResultList();
+		return (String) storedProcedureQuery.getSingleResult();
 	}
 }
