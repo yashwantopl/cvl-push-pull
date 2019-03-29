@@ -2557,8 +2557,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}else if(connectListSize >= 3){
 								//List<ConnectRequest> connectRequestList = new ArrayList<>(connectListSize);
 								int ineligibleCnt = 0,eligibleCnt=0,totalAttempt=0;
-								for (int i = 0; i < connectListSize; i++) {
-									ConnectRequest connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(i),ConnectRequest.class);
+								for (int j = 0; j < connectListSize; j++) {
+									ConnectRequest connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
 									if(connectReq.getStageId().equals(4) && connectReq.getStatus().equals(6)){
 										ineligibleCnt++;
 									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7)) && connectReq.getStatus().equals(3)){
@@ -2675,6 +2675,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 									&& !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())){
 								schedulerDataMultipleBankRequest.setOrgId(ineligibleProposalDetails.getUserOrgId());
 								logger.info("userOrgId:"+ineligibleProposalDetails.getUserOrgId());
+							}else {
+								continue;
 							}
 						}else{
 							schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
@@ -2693,7 +2695,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						}
 						boolean idExists = schedulerDataMultipleBankRequestList.stream()
 									.anyMatch(t -> t.getApplicationId().equals(connectRequest1.getApplicationId()));
-						logger.info("exist:"+idExists);
+						//logger.info("exist:"+idExists);
 						if(!idExists){
 							schedulerDataMultipleBankRequestList.add(schedulerDataMultipleBankRequest);
 						}
