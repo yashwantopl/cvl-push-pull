@@ -2020,8 +2020,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 						dirRes = new DirectorBackgroundDetailRequest();
 						BeanUtils.copyProperties(drDetails, dirRes);
 						dirRes.setDirectorsName(drDetails.getFirstName() + " " + drDetails.getMiddleName() + " " + drDetails.getLastName());
-						SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
-						dirRes.setDobString(sd.format(dirRes.getDob()));
+						if (!CommonUtils.isObjectNullOrEmpty(dirRes.getDob())) {
+							SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
+							dirRes.setDobString(sd.format(dirRes.getDob()));	
+						}
 						if (!CommonUtils.isObjectNullOrEmpty(drDetails.getDistrictMappingId())) {
 							PincodeData pincodeData = pincodeDataRepository.findOne(drDetails.getDistrictMappingId());
 							if (!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
