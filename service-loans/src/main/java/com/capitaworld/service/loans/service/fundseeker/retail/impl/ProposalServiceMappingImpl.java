@@ -2570,7 +2570,26 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								}
 								totalAttempt = ineligibleCnt + eligibleCnt;
 								if(totalAttempt < 3){
-									return Boolean.TRUE;
+									ConnectRequest connectReqObj = new ConnectRequest();
+									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+										connectReqObj =	filteredAppListList.get(connectListSize-1);
+									}else {
+										if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+											connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+										}
+									}
+									if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
+										days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
+												new LocalDate(new Date())).getDays();
+									}else{
+										days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+												new LocalDate(new Date())).getDays();
+									}
+									if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
+										return Boolean.TRUE;
+									}else {
+										return Boolean.FALSE;
+									}
 								}else {
 									return Boolean.FALSE;
 								}
