@@ -1195,6 +1195,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			if(analyzerResponse.getData()!=null){
 			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
 
 			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
@@ -1222,6 +1223,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 
 			}
+		 }
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
