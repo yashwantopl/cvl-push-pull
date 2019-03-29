@@ -6144,10 +6144,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			productDetails = productMasterRepository.findByIdAndIsActive(proposalDetails.getFpProductId(),true);
 		}
 
-		if(!CommonUtils.isObjectNullOrEmpty(productDetails) &&
-				(LoanType.WORKING_CAPITAL.getValue() ==productDetails.getProductId() ||
-				LoanType.TERM_LOAN.getValue() ==productDetails.getProductId() ||
-				LoanType.WCTL_LOAN.getValue() ==productDetails.getProductId())){
+		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
 			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				applicationProposalMapping = new ApplicationProposalMapping();
