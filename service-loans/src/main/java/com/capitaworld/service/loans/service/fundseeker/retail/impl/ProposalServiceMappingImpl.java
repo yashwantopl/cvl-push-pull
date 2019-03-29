@@ -2585,7 +2585,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 										days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 												new LocalDate(new Date())).getDays();
 									}
-									if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
+									if(eligibleCnt>=1 && days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
 										return Boolean.TRUE;
 									}else {
 										return Boolean.FALSE;
