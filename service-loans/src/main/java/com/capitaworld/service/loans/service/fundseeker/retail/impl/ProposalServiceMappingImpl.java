@@ -1520,8 +1520,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 				}
 			}
-			else
-			{
+			else{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(ineligibleProposalDetails.getUserOrgId() != userOrgId){
+						if(ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
