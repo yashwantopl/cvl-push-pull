@@ -3445,6 +3445,49 @@ public class LoanApplicationController {
 	}
 
 
-
+	/**
+	 * 
+	 * @param request
+	 * @param clientId
+	 * @return loans response, that set with  json data of userApplicationList
+	 * @author nilay.darji
+	 */
+	@RequestMapping(value = "/getUserApplicationList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getUserAppplicationList(HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getUserApplicationList from Procedure");
+			
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			if (userId == null) {
+				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			String response = loanApplicationService.getUserApplicationList(userId);
+			if(response != null) {
+				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+				loansResponse.setData(response);
+				CommonDocumentUtils.endHook(logger, "getList");
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+			else {
+				CommonDocumentUtils.endHook(logger, "Response Null::--> "+userId);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_LOAN_APPLICATION_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }
