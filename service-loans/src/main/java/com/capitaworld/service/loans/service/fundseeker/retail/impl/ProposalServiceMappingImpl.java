@@ -2496,6 +2496,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList) {
 		try {
+			IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+				return Boolean.FALSE;
+			}
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsList.size(); i++) {
@@ -2629,10 +2633,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			int days = 0;
 			if(proposalDetailsList.size() == 0){//for offline cases
 				ConnectResponse connectResponseOffline = connectClient.getApplicationList(applicationId);
-				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				/*IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
 				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
 					return Boolean.FALSE;
-				}
+				}*/
 				if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline)
 						&& !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())
 						&& connectResponseOffline.getDataList().size() > 0){
