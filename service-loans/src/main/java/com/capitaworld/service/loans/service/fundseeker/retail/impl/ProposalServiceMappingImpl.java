@@ -1482,10 +1482,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			{
 				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(proposalMappingRequest.getApplicationId());
 				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
-					if(!ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
-						if(ineligibleProposalDetails.getIsDisbursed() == true)
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
 							messageOfButton="This proposal has been Disbursed by Other Bank.";
-						else if(ineligibleProposalDetails.getIsSanctioned() == true)
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
 							messageOfButton="This proposal has been Sanctioned by Other Bank.";
 						isButtonDisplay=false;
 
@@ -1538,10 +1539,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			else{
 				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
 				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
-					if(ineligibleProposalDetails.getUserOrgId() != userOrgId){
-						if(ineligibleProposalDetails.getIsDisbursed() == true)
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& ineligibleProposalDetails.getUserOrgId() != userOrgId){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
 							messageOfButton="This proposal has been Disbursed by Other Bank.";
-						else if(ineligibleProposalDetails.getIsSanctioned() == true)
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
 							messageOfButton="This proposal has been Sanctioned by Other Bank.";
 						isButtonDisplay=false;
 
