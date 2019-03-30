@@ -2629,6 +2629,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			int days = 0;
 			if(proposalDetailsList.size() == 0){//for offline cases
 				ConnectResponse connectResponseOffline = connectClient.getApplicationList(applicationId);
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					return Boolean.FALSE;
+				}
 				if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline)
 						&& !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())
 						&& connectResponseOffline.getDataList().size() > 0){
