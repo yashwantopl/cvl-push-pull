@@ -946,26 +946,24 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationId(nhbsApplicationsResponse.getApplicationId());
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(nhbsApplicationsResponse.getApplicationId());
 				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
 					ApplicationProposalMapping applicationProposalMapping1 = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 					if (!applicationProposalMapping1.getOrgId().equals(npOrgId)) {
 						nhbsApplicationsResponse.setSanction(true);
 					}
-				}else{
-					IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
-					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
-						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
-								&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
-							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
-								nhbsApplicationsResponse.setSanction(true);
-							else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
-								nhbsApplicationsResponse.setSanction(true);
-							nhbsApplicationsResponse.setSanction(false);
-						}else{
-							nhbsApplicationsResponse.setSanction(false);
-						}
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
+						&& (CommonUtils.isObjectNullOrEmpty(nhbsApplicationsResponse.isSanction()) || !nhbsApplicationsResponse.isSanction())){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							nhbsApplicationsResponse.setSanction(true);
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							nhbsApplicationsResponse.setSanction(true);
+					}else{
+						nhbsApplicationsResponse.setSanction(false);
 					}
-
 				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
@@ -1326,26 +1324,24 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationId(nhbsApplicationsResponse.getApplicationId());
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(nhbsApplicationsResponse.getApplicationId());
 				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
 					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 					if (!applicationProposalMapping.getOrgId().equals(usersRequest.getUserOrgId())) {
 						nhbsApplicationsResponse.setSanction(true);
 					}
-				}else{
-					IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
-					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
-						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
-								&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
-							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
-								nhbsApplicationsResponse.setSanction(true);
-							else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
-								nhbsApplicationsResponse.setSanction(true);
-							nhbsApplicationsResponse.setSanction(false);
-						}else{
-							nhbsApplicationsResponse.setSanction(false);
-						}
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
+						&& (CommonUtils.isObjectNullOrEmpty(nhbsApplicationsResponse.isSanction()) || !nhbsApplicationsResponse.isSanction())){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							nhbsApplicationsResponse.setSanction(true);
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							nhbsApplicationsResponse.setSanction(true);
+					}else{
+						nhbsApplicationsResponse.setSanction(false);
 					}
-
 				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}

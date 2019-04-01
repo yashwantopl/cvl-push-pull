@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,9 +22,9 @@ import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -31,6 +32,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDet
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
@@ -52,6 +54,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	private static final Logger logger = LoggerFactory.getLogger(CoApplicantServiceImpl.class.getName());
 
 	protected static final String DMS_URL = "dmsURL";
+	private static final String ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG = "Error while Saving Retail Profile :- ";
 
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
@@ -88,6 +91,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
 	
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -1173,6 +1179,53 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return coApplicantDetailRepository.getApplicantIdById(id);
 		} catch (Exception e) {
 			logger.error("Error While getting Applicant Id by CoApplicant ID : ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	@Override
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException {
+		try {
+			CoApplicantDetail applicantDetail = null;
+			if (applicantRequest.getId() != null) {
+				applicantDetail = coApplicantDetailRepository.findByIdAndIsActive(applicantRequest.getId(), true);	
+			} 
+			
+			if (applicantDetail != null) {
+				applicantDetail.setModifiedBy(applicantRequest.getUserId());
+				applicantDetail.setModifiedDate(new Date());
+			} else {
+				applicantDetail = new CoApplicantDetail();
+				applicantDetail.setCreatedBy(applicantRequest.getUserId());
+				applicantDetail.setCreatedDate(new Date());
+				applicantDetail.setIsActive(true);
+				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+			}
+			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.getRetailFinalWithId());
+			applicantDetail.setEmail(applicantRequest.getEmail());
+			applicantDetail.setMobile(applicantRequest.getLanLineNo());
+			Address address = applicantRequest.getFirstAddress();
+			if(!CommonUtils.isObjectNullOrEmpty(address)) {
+				applicantDetail.setAddressPremiseName(address.getPremiseNumber());
+				applicantDetail.setAddressLandmark(address.getLandMark());
+				applicantDetail.setAddressStreetName(address.getStreetName());
+				applicantDetail.setAddressCountry(address.getCountryId());
+				applicantDetail.setAddressState(!CommonUtils.isObjectNullOrEmpty(address.getStateId()) ? address.getStateId() : null);
+				applicantDetail.setAddressCity(!CommonUtils.isObjectNullOrEmpty(address.getCityId()) ? address.getCityId().intValue() : null);
+				applicantDetail.setAddressPincode(!CommonUtils.isObjectNullOrEmpty(address.getPincode()) ? BigInteger.valueOf(address.getPincode()) : null);
+			}
+			applicantDetail.setBirthDate(applicantRequest.getDob());
+			applicantDetail = coApplicantDetailRepository.save(applicantDetail);
+
+			if (applicantDetail != null){
+				logger.info("Co applicantDetail is saved successfully");
+			}
+
+			//SAVE INCOME DETAILS
+			coApplicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
+			return true;
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
