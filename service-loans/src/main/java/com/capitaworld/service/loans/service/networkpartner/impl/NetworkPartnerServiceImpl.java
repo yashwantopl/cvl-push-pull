@@ -15,10 +15,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusAudit;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.*;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
@@ -28,6 +25,7 @@ import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ApplicationStatusAuditRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
@@ -131,6 +129,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private FPAsyncComponent fpAsyncComponent;
+
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
 
 	private static String isPaymentBypass="cw.is_payment_bypass";
 
@@ -950,6 +951,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					if (!applicationProposalMapping1.getOrgId().equals(npOrgId)) {
 						nhbsApplicationsResponse.setSanction(true);
 					}
+				}else{
+					IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+								&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+								nhbsApplicationsResponse.setSanction(true);
+							else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+								nhbsApplicationsResponse.setSanction(true);
+							nhbsApplicationsResponse.setSanction(false);
+						}else{
+							nhbsApplicationsResponse.setSanction(false);
+						}
+					}
+
 				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
@@ -1315,6 +1331,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					if (!applicationProposalMapping.getOrgId().equals(usersRequest.getUserOrgId())) {
 						nhbsApplicationsResponse.setSanction(true);
 					}
+				}else{
+					IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+								&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+								nhbsApplicationsResponse.setSanction(true);
+							else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+								nhbsApplicationsResponse.setSanction(true);
+							nhbsApplicationsResponse.setSanction(false);
+						}else{
+							nhbsApplicationsResponse.setSanction(false);
+						}
+					}
+
 				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
