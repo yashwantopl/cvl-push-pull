@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,6 +175,27 @@ public class CoApplicantController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@RequestMapping(value = "${profile}/saveITRRes", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveITRRes(@RequestBody RetailApplicantRequest applicantRequest) {
+		logger.info("Enter in Save Profile Retail Applicant Details From ITR Repsonse");
+		try {
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>" + applicantRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			coApplicantService.saveITRResponse(applicantRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 }
