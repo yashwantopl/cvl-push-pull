@@ -2637,9 +2637,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
-			logger.error("Error while checking availability for bank selection...! == {}",io);
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",io);
 		} catch (Exception e) {
-			logger.error("Error while checking availability for bank selection...! == {}",e);
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",e);
 		}
 		return Boolean.FALSE;
 	}
