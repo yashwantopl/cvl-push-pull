@@ -2593,7 +2593,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								//List<ConnectRequest> connectRequestList = new ArrayList<>(connectListSize);
 								int ineligibleCnt = 0,eligibleCnt=0,totalAttempt=0;
 								for (int j = 0; j < connectListSize; j++) {
-									ConnectRequest connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
+									ConnectRequest connectReq = null;
+									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+										connectReq = filteredAppListList.get(j);
+									}else{
+										connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
+									}
 									if(connectReq.getStageId().equals(4) && connectReq.getStatus().equals(6)){
 										ineligibleCnt++;
 									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7)) && connectReq.getStatus().equals(3)){
@@ -3047,6 +3052,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			else
 			{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
