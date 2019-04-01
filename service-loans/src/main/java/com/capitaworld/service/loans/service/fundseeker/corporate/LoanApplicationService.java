@@ -241,6 +241,9 @@ public interface LoanApplicationService {
 
 	public Long getProposalId(Long applicationId, Long userOrgId);
 
-  public LoanApplicationRequest getBasicInformation(Long id);
+	public LoanApplicationRequest getBasicInformation(Long id);
+ 
+	public String getUserApplicationList(Long userId);
+  
 
 }

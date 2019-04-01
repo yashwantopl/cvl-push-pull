@@ -38,4 +38,7 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
 
     public IneligibleProposalDetails findByGstinAndUserOrgIdAndIsActive(String gstin,Long userOrgId,Boolean isActive);
 
+	@Query(value = "SELECT * FROM loan_application.ineligible_proposal_details WHERE application_id=:applicationId AND is_active=TRUE AND (is_sanctioned = TRUE OR is_disbursed = TRUE)", nativeQuery = true)
+    public IneligibleProposalDetails getSanctionedByApplicationId(@Param("applicationId")Long applicationId);
+
 }

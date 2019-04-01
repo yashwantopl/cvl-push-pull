@@ -1480,6 +1480,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			else
 			{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(proposalMappingRequest.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
@@ -1520,8 +1536,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 				}
 			}
-			else
-			{
+			else{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& ineligibleProposalDetails.getUserOrgId() != userOrgId){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
@@ -2482,6 +2513,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList) {
 		try {
+			IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+				return Boolean.FALSE;
+			}
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsList.size(); i++) {
@@ -2558,7 +2593,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								//List<ConnectRequest> connectRequestList = new ArrayList<>(connectListSize);
 								int ineligibleCnt = 0,eligibleCnt=0,totalAttempt=0;
 								for (int j = 0; j < connectListSize; j++) {
-									ConnectRequest connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
+									ConnectRequest connectReq = null;
+									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+										connectReq = filteredAppListList.get(j);
+									}else{
+										connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
+									}
 									if(connectReq.getStageId().equals(4) && connectReq.getStatus().equals(6)){
 										ineligibleCnt++;
 									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7)) && connectReq.getStatus().equals(3)){
@@ -2602,9 +2642,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
-			logger.error("Error while checking availability for bank selection...! == {}",io);
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",io);
 		} catch (Exception e) {
-			logger.error("Error while checking availability for bank selection...! == {}",e);
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",e);
 		}
 		return Boolean.FALSE;
 	}
@@ -2615,6 +2655,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			int days = 0;
 			if(proposalDetailsList.size() == 0){//for offline cases
 				ConnectResponse connectResponseOffline = connectClient.getApplicationList(applicationId);
+				/*IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					return Boolean.FALSE;
+				}*/
 				if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline)
 						&& !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())
 						&& connectResponseOffline.getDataList().size() > 0){
@@ -3008,6 +3052,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			else
 			{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
