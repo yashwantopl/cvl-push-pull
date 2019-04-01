@@ -1543,7 +1543,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							&& ineligibleProposalDetails.getUserOrgId() != userOrgId){
 						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
 							messageOfButton="This proposal has been Disbursed by Other Bank.";
-						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
 							messageOfButton="This proposal has been Sanctioned by Other Bank.";
 						isButtonDisplay=false;
 
@@ -3058,7 +3058,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
 						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
 							messageOfButton="This proposal has been Disbursed by Other Bank.";
-						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsSanctioned() == true)
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
 							messageOfButton="This proposal has been Sanctioned by Other Bank.";
 						isButtonDisplay=false;
 
