@@ -36,6 +36,8 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	
 	@Query("select cd.applicationId.id from CoApplicantDetail cd where cd.id =:id and cd.isActive = true")
 	public Long getApplicantIdById(@Param("id") Long id);
+	
+	public CoApplicantDetail findByIdAndIsActive(Long id,Boolean isActive);
 
 
 }

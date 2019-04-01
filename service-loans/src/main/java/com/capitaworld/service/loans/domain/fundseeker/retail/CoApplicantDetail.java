@@ -33,6 +33,12 @@ public class CoApplicantDetail implements Serializable {
 	@Column(name = "aadhar_number")
 	private String aadharNumber;
 	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "mobile")
+	private String mobile;
+	
 	@Column(name = "name_as_per_aadharCard")
 	private String nameAsPerAadharCard;
 
@@ -1305,4 +1311,21 @@ public class CoApplicantDetail implements Serializable {
 	public void setModeOfReceipt(Integer modeOfReceipt) {
 		this.modeOfReceipt = modeOfReceipt;
 	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	
 }
