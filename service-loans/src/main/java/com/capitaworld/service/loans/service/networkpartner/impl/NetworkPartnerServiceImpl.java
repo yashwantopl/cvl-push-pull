@@ -956,7 +956,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
 						&& (CommonUtils.isObjectNullOrEmpty(nhbsApplicationsResponse.isSanction()) || !nhbsApplicationsResponse.isSanction())){
 					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
-							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+							&& !ineligibleProposalDetails.getUserOrgId().equals(npOrgId.toString())){
 						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
 							nhbsApplicationsResponse.setSanction(true);
 						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
@@ -1334,7 +1334,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
 						&& (CommonUtils.isObjectNullOrEmpty(nhbsApplicationsResponse.isSanction()) || !nhbsApplicationsResponse.isSanction())){
 					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
-							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+							&& !ineligibleProposalDetails.getUserOrgId().equals(usersRequest.getUserOrgId().toString())){
 						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
 							nhbsApplicationsResponse.setSanction(true);
 						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
