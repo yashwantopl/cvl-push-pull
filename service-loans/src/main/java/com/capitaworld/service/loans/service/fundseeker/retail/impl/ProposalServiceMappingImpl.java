@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -176,6 +178,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private LoanRepository loanRepository;
 
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+
 	@Value("${cw.maxdays.recalculation}")
 	private String mxaDays;
 
@@ -288,7 +293,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
 					Object[] loanDeatils = loanApplicationService
 							.getApplicationDetailsByProposalId(proposalrequest.getApplicationId(),proposalrequest.getId());
-					logger.info("user id based on application Id:" + loanDeatils.toString());
+					logger.info("user id based on application Id:{}" , loanDeatils);
 					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
 
 					try {
@@ -1475,6 +1480,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			else
 			{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(proposalMappingRequest.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
@@ -1515,8 +1536,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 				}
 			}
-			else
-			{
+			else{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& ineligibleProposalDetails.getUserOrgId() != userOrgId){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
@@ -2477,6 +2513,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList) {
 		try {
+			IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+				return Boolean.FALSE;
+			}
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsList.size(); i++) {
@@ -2491,10 +2531,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 			}
 
-			if(proposalDetailsList.size() == 0){//for offline cases
+			if(proposalDetailsList != null && proposalDetailsList.size() == 0){//for offline cases
 				return checkLogicForOfflineMultiBankSelection(applicationId,proposalDetailsList);
 			}
-			if(!CommonUtils.isListNullOrEmpty(inActivityProposalList) && inActivityProposalList.size()>0){
+			if(inActivityProposalList != null && !inActivityProposalList.isEmpty()){
 				ConnectRequest connectRequest = new ConnectRequest();
 				connectRequest.setApplicationId(applicationId);
 				connectRequest.setBusinessTypeId(businessTypeId);
@@ -2527,26 +2567,72 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							if(days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
 								return Boolean.TRUE;
 							}
-						}else if(inActivityProposalList.size()<3 && (connectListSize > 1 && connectListSize < 3)){
-							ConnectRequest connectReqObj = new ConnectRequest();
-							if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
-								connectReqObj =	filteredAppListList.get(connectListSize-1);
-							}else {
-								if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
-									connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+						}else if(inActivityProposalList.size()<3 ){ //&& (connectListSize > 1 && connectListSize < 3)){
+							if(connectListSize > 1 && connectListSize < 3){
+								ConnectRequest connectReqObj = new ConnectRequest();
+								if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+									connectReqObj =	filteredAppListList.get(connectListSize-1);
+								}else {
+									if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+										connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+									}
 								}
-							}
-							if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
-								days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
-										new LocalDate(new Date())).getDays();
-							}else{
-								days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
-										new LocalDate(new Date())).getDays();
-							}
-							if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
-								return Boolean.TRUE;
-							}else {
-								return Boolean.FALSE;
+								if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
+									days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
+											new LocalDate(new Date())).getDays();
+								}else{
+									days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+											new LocalDate(new Date())).getDays();
+								}
+								if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
+									return Boolean.TRUE;
+								}else {
+									return Boolean.FALSE;
+								}
+							}else if(connectListSize >= 3){
+								//List<ConnectRequest> connectRequestList = new ArrayList<>(connectListSize);
+								int ineligibleCnt = 0,eligibleCnt=0,totalAttempt=0;
+								for (int j = 0; j < connectListSize; j++) {
+									ConnectRequest connectReq = null;
+									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+										connectReq = filteredAppListList.get(j);
+									}else{
+										connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
+									}
+									if(connectReq.getStageId().equals(4) && connectReq.getStatus().equals(6)){
+										ineligibleCnt++;
+									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7)) && connectReq.getStatus().equals(3)){
+										eligibleCnt++;
+									}
+									if(ineligibleCnt>0 && eligibleCnt == 0)
+										ineligibleCnt = 1;
+									//connectRequestList.add(connectReq);
+								}
+								totalAttempt = ineligibleCnt + eligibleCnt;
+								if(totalAttempt < 3){
+									ConnectRequest connectReqObj = new ConnectRequest();
+									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+										connectReqObj =	filteredAppListList.get(connectListSize-1);
+									}else {
+										if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+											connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+										}
+									}
+									if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
+										days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
+												new LocalDate(new Date())).getDays();
+									}else{
+										days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+												new LocalDate(new Date())).getDays();
+									}
+									if(eligibleCnt>=1 && days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
+										return Boolean.TRUE;
+									}else {
+										return Boolean.FALSE;
+									}
+								}else {
+									return Boolean.FALSE;
+								}
 							}
 						}else {
 							return Boolean.FALSE;
@@ -2556,13 +2642,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			io.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",io);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			e.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",e);
 		}
 		return Boolean.FALSE;
 	}
@@ -2573,6 +2655,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			int days = 0;
 			if(proposalDetailsList.size() == 0){//for offline cases
 				ConnectResponse connectResponseOffline = connectClient.getApplicationList(applicationId);
+				/*IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					return Boolean.FALSE;
+				}*/
 				if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline)
 						&& !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())
 						&& connectResponseOffline.getDataList().size() > 0){
@@ -2606,13 +2692,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			io.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! = {}",io);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			e.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! = {}",e);
 		}
 		return Boolean.FALSE;
 	}
@@ -2649,7 +2731,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
-							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Offline.getId());
+							schedulerDataMultipleBankRequest.setEmailType(2);//NotificationApiUtils.ApplicationType.Offline.getId());
+							logger.info("appId:"+connectRequest1.getApplicationId());
+								IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(connectRequest1.getApplicationId(),true);
+							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
+									&& !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())){
+								schedulerDataMultipleBankRequest.setOrgId(ineligibleProposalDetails.getUserOrgId());
+								logger.info("userOrgId:"+ineligibleProposalDetails.getUserOrgId());
+							}else {
+								continue;
+							}
 						}else{
 							schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
 							if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
@@ -2659,7 +2750,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
 							//set online
-							schedulerDataMultipleBankRequest.setEmailType(NotificationApiUtils.ApplicationType.Online.getId());
+							schedulerDataMultipleBankRequest.setEmailType(1);//NotificationApiUtils.ApplicationType.Online.getId());
 						}
 						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest1.getProposalId());
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
@@ -2667,7 +2758,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						}
 						boolean idExists = schedulerDataMultipleBankRequestList.stream()
 									.anyMatch(t -> t.getApplicationId().equals(connectRequest1.getApplicationId()));
-						logger.info("exist:"+idExists);
+						//logger.info("exist:"+idExists);
 						if(!idExists){
 							schedulerDataMultipleBankRequestList.add(schedulerDataMultipleBankRequest);
 						}
@@ -2684,7 +2775,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return null;
 	}
 
-	public Boolean calculateAndGetNewMatches(Long applicationId, Integer businessTypeId){
+	/*public Boolean calculateAndGetNewMatches(Long applicationId, Integer businessTypeId){
 		try {
 			ConnectRequest connectRequest = new ConnectRequest();
 			connectRequest.setApplicationId(applicationId);
@@ -2707,7 +2798,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			e.printStackTrace();
 		}
 		return Boolean.FALSE;
-	}
+	}*/
 	@Override
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request,
 			Long userId) {
@@ -2935,7 +3026,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			proposalMappingRequest = (ProposalMappingRequest) MultipleJSONObjectHelper.getObjectFromMap(
 					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
 
-			ProposalDetails proposalDetails = proposalDetailRepository.getProposalId(request.getApplicationId(), request.getId());
+			ProposalDetails proposalDetails = proposalDetailRepository.getProposalId(request.getApplicationId());
 
 			Boolean isButtonDisplay=true;
 			String messageOfButton=null;
@@ -2961,6 +3052,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			else
 			{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);

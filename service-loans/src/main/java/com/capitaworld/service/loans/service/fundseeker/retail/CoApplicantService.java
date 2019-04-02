@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 
@@ -26,4 +27,6 @@ public interface CoApplicantService {
 	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId,int productId) throws LoansException;
 	
 	public Long getApplicantIdById(Long id) throws LoansException;
+	
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException;;
 }

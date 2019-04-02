@@ -161,7 +161,7 @@ public class FixedDepositsDetailController {
 
 	}
 	
-	@RequestMapping(value = "/getList/{applicationType}/{id}/{propasalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getList/{applicationType}/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType, @PathVariable Long proposalId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null

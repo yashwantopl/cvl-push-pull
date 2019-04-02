@@ -31,14 +31,14 @@ public interface OfflineProcessedAppRepository{
 	 * @param userId
 	 * @return
 	 */
-	public List<Object []> getUniformApplications(Long userId);
+	public String getUniformApplications(Long userId);
 
 	/**
 	 * Getting Uniform Sanctioned Proposals
 	 * @param userId
 	 * @return
 	 */
-	public List<Object []> getUniformSanctionedApplicationList(Long userId);
+	public String getUniformSanctionedApplicationList(Long userId);
 
 	/**
 	 * Get Uniform Disbursed Application List
@@ -47,7 +47,7 @@ public interface OfflineProcessedAppRepository{
 	 * @return
 	 */
 
-	public List<Object []> getUniformDisbursedApplicationList(Long userId);
+	public String getUniformDisbursedApplicationList(Long userId);
 
 
 	/**
@@ -55,7 +55,7 @@ public interface OfflineProcessedAppRepository{
 	 * @param userId
 	 * @return
 	 */
-	public List<Object[]> getUniformRejectProposalsList(Long userId);
+	public String getUniformRejectProposalsList(Long userId);
 
 
 	/**
@@ -63,5 +63,5 @@ public interface OfflineProcessedAppRepository{
 	 * @param userId
 	 * @return
 	 */
-	public List<Object[]> getUniformOtherProposalsList(Long userId);;
+	public String getUniformOtherProposalsList(Long userId);;
 }

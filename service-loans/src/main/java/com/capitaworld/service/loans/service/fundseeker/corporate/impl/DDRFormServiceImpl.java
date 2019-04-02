@@ -2020,8 +2020,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 						dirRes = new DirectorBackgroundDetailRequest();
 						BeanUtils.copyProperties(drDetails, dirRes);
 						dirRes.setDirectorsName(drDetails.getFirstName() + " " + drDetails.getMiddleName() + " " + drDetails.getLastName());
-						SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
-						dirRes.setDobString(sd.format(dirRes.getDob()));
+						if (!CommonUtils.isObjectNullOrEmpty(dirRes.getDob())) {
+							SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
+							dirRes.setDobString(sd.format(dirRes.getDob()));	
+						}
 						if (!CommonUtils.isObjectNullOrEmpty(drDetails.getDistrictMappingId())) {
 							PincodeData pincodeData = pincodeDataRepository.findOne(drDetails.getDistrictMappingId());
 							if (!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
@@ -2468,8 +2470,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 	private List<FinancialArrangementDetailResponseString> setFinancialArrangDetails(Long applicationId,Long toProposalId) {
 		try {
-		/*	List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);*/
-			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdAndProposalId(applicationId,toProposalId);//NEW
+			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
+//			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdAndProposalId(applicationId,toProposalId);//NEW
 			List<FinancialArrangementDetailResponseString> finArrDetailResList = new ArrayList<>(financialArrangementsList.size());
 			FinancialArrangementDetailResponseString finArrDetailRes = null;
 			for (FinancialArrangementsDetail finArrDetailReq : financialArrangementsList) {
@@ -5241,7 +5243,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 							proposedProductDetail = proposedProductDetailsRepository
 									.findByIdAndIsActive(proProduct.getId(), true);
 						}
-						if (CommonUtils.isObjectNullOrEmpty(proposedProductDetail)) {
+						if (proposedProductDetail == null) {
 							proposedProductDetail = new ProposedProductDetail();
 							proposedProductDetail.setCreatedBy(userId);
 							proposedProductDetail.setCreatedDate(new Date());
@@ -5269,7 +5271,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 								existingProductDetail = existingProductDetailsRepository
 										.findByIdAndIsActive(existingPro.getId(), true);
 							}
-							if (CommonUtils.isObjectNullOrEmpty(existingProductDetail)) {
+							if (existingProductDetail == null) {
 								existingProductDetail = new ExistingProductDetail();
 								existingProductDetail.setCreatedBy(userId);
 								existingProductDetail.setCreatedDate(new Date());
@@ -5299,7 +5301,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(promBack)) {
+							if (promBack == null) {
 								promBack = new PromotorBackgroundDetail();
 								promBack.setCreatedBy(userId);
 								promBack.setCreatedDate(new Date());
@@ -5337,7 +5339,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 											.findByIdAndIsActive(directorBackReq.getId(), true);
 								}
 
-								if (CommonUtils.isObjectNullOrEmpty(dirBack)) {
+								if (dirBack == null) {
 									dirBack = new DirectorBackgroundDetail();
 									dirBack.setCreatedBy(userId);
 									dirBack.setCreatedDate(new Date());
@@ -5374,7 +5376,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 								ownership = ownershipDetailsRepository.findByIdAndIsActive(ownershipReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(ownership)) {
+							if (ownership == null) {
 								ownership = new OwnershipDetail();
 								ownership.setCreatedBy(userId);
 								ownership.setCreatedDate(new Date());
@@ -5403,7 +5405,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										.findByIdAndIsActive(assConcernDetailReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
+							if (assConcernDetail == null) {
 								assConcernDetail = new AssociatedConcernDetail();
 								assConcernDetail.setCreatedBy(userId);
 								assConcernDetail.setCreatedDate(new Date());
@@ -5443,7 +5445,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										.findByIdAndIsActive(securityCorDetailReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(securityCorporateDetail)) {
+							if (securityCorporateDetail == null) {
 								securityCorporateDetail = new SecurityCorporateDetail();
 								securityCorporateDetail.setCreatedBy(userId);
 								securityCorporateDetail.setCreatedDate(new Date());
@@ -5488,8 +5490,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			logger.info("DDR ===============> DDR Form Saved Successfully in Service-----------------> "
 					+ dDRFormDetails.getId());
 		} catch (Exception e) {
-			logger.info("DDR ===============> Throw Exception while saving ddr form");
-			e.printStackTrace();
+			logger.error("DDR ===============> Throw Exception while saving ddr form == >{}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

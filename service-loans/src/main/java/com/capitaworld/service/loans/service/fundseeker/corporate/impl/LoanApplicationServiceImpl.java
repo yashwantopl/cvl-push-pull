@@ -6,19 +6,25 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.capitaworld.connect.api.ConnectLogRequest;
-import com.capitaworld.connect.api.ConnectRequest;
-import com.capitaworld.service.loans.model.*;
-import javax.servlet.http.HttpSession;
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +35,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -148,7 +153,6 @@ import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
@@ -228,6 +232,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Transactional
 public class LoanApplicationServiceImpl implements LoanApplicationService {
 
+	@PersistenceContext
+	private EntityManager entityManager;
+	
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
 
 	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response -->";
@@ -1011,6 +1018,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				request.setApplicationStatus(applicationStatus);
 			}
+				List<LoanApplicationMaster> offlineResults = loanApplicationRepository.getUserLoans(userId);
+				for (LoanApplicationMaster master : offlineResults) {
+					LoanApplicationRequest request = new LoanApplicationRequest();
+					request.setId(master.getId());
+					BeanUtils.copyProperties(master, request, "name");
+					if (request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
+							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
+						request.setLoanTypeMain(CommonUtils.CORPORATE);
+						request.setLoanTypeSub("DEBT");
+						if(CommonUtils.isObjectNullOrEmpty(master.getIsPrimaryLocked()) || !master.getIsPrimaryLocked()){
+							request.setName("MSME Application");
+						}else{
+							request.setName("Offline");
+						}
+						request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_ELIGIBLE.getValue());
+						List<LoanApplicationRequest> tempList = requests.stream()
+								.filter(appId -> request.getId().equals(appId.getId()))
+								.collect(Collectors.toList());
+						if(CommonUtils.isListNullOrEmpty(tempList)){
+							requests.add(request);
+						}
+					}
+				}
 		}
 			return requests;
 		} catch (Exception e) {
@@ -1459,8 +1489,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
             }
             return loanApplicationRequest;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Error while Locking Final Information : ",e);
+            logger.error("Error while Locking Final Information : {}",e);
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
         }
@@ -1980,8 +2009,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long count = applicationProposalMappingRepository.checkFinalDetailIsLocked(proposalId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
-			logger.error("Error while getting isFinalLocked ?");
-			e.printStackTrace();
+			logger.error("Error while getting isFinalLocked ? = {}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -5758,8 +5786,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationProposalMappingRepository.save(applicationProposalMapping);
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Updating DDR Status");
+			logger.error("Error while Updating DDR Status = {}",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -6128,10 +6155,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			productDetails = productMasterRepository.findByIdAndIsActive(proposalDetails.getFpProductId(),true);
 		}
 
-		if(!CommonUtils.isObjectNullOrEmpty(productDetails) &&
-				(LoanType.WORKING_CAPITAL.getValue() ==productDetails.getProductId() ||
-				LoanType.TERM_LOAN.getValue() ==productDetails.getProductId() ||
-				LoanType.WCTL_LOAN.getValue() ==productDetails.getProductId())){
+		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
 			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				applicationProposalMapping = new ApplicationProposalMapping();
@@ -8097,4 +8121,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return Collections.emptyList();
 	}
+	/**
+	 * @author nilay.darji
+	 * @return Json of userApplicationDetailList as per userId 
+	 * 
+	 */
+	@Override
+	public String getUserApplicationList(Long userId) {
+		
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.listUserApplication");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.execute();
+		return (String) storedProcedureQuery.getOutputParameterValue("result");
+		
+	}
+	
 }
