@@ -163,7 +163,8 @@ public class LoansClient {
 	private static final String GET_FULL_PRIMARY_PL = "/personal/primary/get_primary_info";
 	private static final String GET_FULL_PRIMARY_LAP = "/lap/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
-	private static final String SAVE_ITR_RETAIL_APPLICANT_DETAILS= "/fs_retail_profile/profile/saveITRRes";
+	private static final String SAVE_ITR_RETAIL_APPLICANT_DETAILS = "/fs_retail_profile/profile/saveITRRes";
+	private static final String SAVE_ITR_RETAIL_CO_APPLICANT_DETAILS= "/co_applicant/profile/saveITRRes";
 	
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
 	
@@ -2344,6 +2345,21 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveITRResRetailApplicantDetails : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse saveITRResRetailCoApplicantDetails(RetailApplicantRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_ITR_RETAIL_CO_APPLICANT_DETAILS);
+		try {
+			logger.info("Enter in save ITR Response Retail CO Applicant Details---------->{}" , url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<RetailApplicantRequest> entity = new HttpEntity<>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in saveITRResRetailCoApplicantDetails : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
