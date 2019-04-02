@@ -2992,7 +2992,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 Double totalCredit = null;
                                 Double projctedSales = null;
-
+                                Integer noOfMonths = 1;
                                 // start get total credit from Analyser
                                 ReportRequest reportRequest = new ReportRequest();
                                 reportRequest.setApplicationId(applicationId);
@@ -3000,6 +3000,11 @@ public class ScoringServiceImpl implements ScoringService {
                                     AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                                     Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
                                             Data.class);
+
+
+                                    if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                        noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
+                                    }
                                     if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
                                         {
                                             if (!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit())) {
@@ -3029,8 +3034,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
 
                                 // end get projected sales from GST client
-
-
+                                scoringParameterRequest.setNoOfMonths(noOfMonths);
                                 scoringParameterRequest.setTotalCredit(totalCredit);
                                 scoringParameterRequest.setProjectedSale(projctedSales);
                                 scoringParameterRequest.setCreditSummation_p(true);

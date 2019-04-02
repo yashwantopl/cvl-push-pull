@@ -12,19 +12,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
 import java.util.stream.Collectors;
 
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.api.exception.ConnectException;
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.matchengine.utils.MatchConstant;
-import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
+import org.joda.time.DateTimeComparator;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.joda.time.DateTimeComparator;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +29,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.connect.api.ConnectRequest;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.exception.ConnectException;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -47,6 +44,8 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -64,12 +63,15 @@ import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
-import com.capitaworld.service.loans.service.common.NotificationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtility;
@@ -86,8 +88,10 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
-import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
+import com.capitaworld.service.notification.utils.NotificationApiUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -143,20 +147,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private UsersClient usersClient;
-	@Autowired
-	private NotificationService notificationService;
+
+	/*@Autowired
+	private NotificationService notificationService;*/
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	@Autowired
-	private NotificationClient notificationClient;
+	/*@Autowired
+	private NotificationClient notificationClient;*/
 
 	@Autowired
 	private LogService logService;
 
-	@Autowired
-	private CorporateDirectorIncomeService corporateDirectorIncomeService;
+	/*@Autowired
+	private CorporateDirectorIncomeService corporateDirectorIncomeService;*/
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -173,11 +178,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private LoanRepository loanRepository;
 
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+
 	@Value("${cw.maxdays.recalculation}")
 	private String mxaDays;
 
 	@Value("${cw.daysdiff.recalculation}")
 	private String daysDiff;
+
+	@Value("${cw.maxdays.recalculation.offline}")
+	private String maxDaysForOffline;
+
+	@Value("${cw.interval.days.recalculation.offline}")
+	private String daysIntervalForOffline;
+
+	@Value("${cw.interval.start.recalculation.offline}")
+	private String startIntervalForOffline;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -190,7 +207,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private static final String THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG = "Throw Exception While Get Branch Id from UserId : ";
 	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_IS_ALREADY_ASSIGNED_TO_ANOTHER_CHECKER_MSG = "The said proposal is already assigned to other Checker, hence you can not take any action on the same.";
 	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_ASSIGN_PROPOAL_TO_UPPER_LEVEL_CHECKER_MSG = "You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.";
-	private static final String USER_URL = "userURL";
+	/*private static final String USER_URL = "userURL";*/
 
 	private String getMainDirectorName(Long appId) {
 		DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
@@ -276,7 +293,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
 					Object[] loanDeatils = loanApplicationService
 							.getApplicationDetailsByProposalId(proposalrequest.getApplicationId(),proposalrequest.getId());
-					logger.info("user id based on application Id:" + loanDeatils.toString());
+					logger.info("user id based on application Id:{}" , loanDeatils);
 					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
 
 					try {
@@ -1301,6 +1318,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return null;
 	}
 
+	public String getOfflineProposalList(Long applicationId) {
+		try {
+			return loanRepository.getOfflineDetailsByAppId(applicationId);
+		} catch (Exception e) {
+			logger.error("Error : ",e);
+		}
+		return Collections.emptyList().toString();
+	}
+
 	@Override
 	public List<FundProviderProposalDetails> fundseekerProposal(ProposalMappingRequest request, Long userId) {
 
@@ -1312,8 +1338,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
+
+			// GET OFFLINE STATUS FOR SHOW IN MATCHED LIST
+			String offlineStatus = loanRepository.getOfflineStatusByAppId(request.getApplicationId());
+
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-				UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
@@ -1323,7 +1352,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				userRequest.setId(master.getUserId());
 
 				// calling USER for getting fp details
-				UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
+				UserResponse userResponse = usersClient.getFPDetails(userRequest);
 
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
@@ -1367,6 +1396,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setElAmount(proposalrequest.getElAmount());
 				fundProviderProposalDetails.setElRoi(proposalrequest.getElRoi());
 				fundProviderProposalDetails.setElTenure(proposalrequest.getElTenure());
+				fundProviderProposalDetails.setOfflineStatus(offlineStatus);
 				// add disbursed amount logic
 
 				fundProviderProposalDetails
@@ -1400,6 +1430,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		ProposalCountResponse response = new ProposalCountResponse();
 		try {
 			response = proposalDetailsClient.proposalCountOfFundSeeker(request);
+			try {
+				logger.info("Application ID==========================================> " +request.getApplicationId());
+				Long offlineCount = loanRepository.getOfflineCountByAppId(request.getApplicationId());
+				logger.info("Offline Counts ==========================================> " + offlineCount);
+				response.setOffline(offlineCount);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -1442,6 +1480,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			else
 			{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(proposalMappingRequest.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
@@ -1482,8 +1536,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 				}
 			}
-			else
-			{
+			else{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& ineligibleProposalDetails.getUserOrgId() != userOrgId){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
 				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
 			response.setData(proposalMappingRequest);
@@ -1902,8 +1971,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
-						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
-
 						BigInteger fpProductId = BigInteger.class
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
@@ -1922,7 +1989,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
+						UserResponse userResponse = usersClient.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -1974,7 +2041,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
-						UsersClient usersClientObj = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
@@ -1990,7 +2056,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						userRequest.setId(master.getUserId());
 
 						// calling USER for getting fp details
-						UserResponse userResponse = usersClientObj.getFPDetails(userRequest);
+						UserResponse userResponse = usersClient.getFPDetails(userRequest);
 
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
@@ -2442,77 +2508,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId) {
 		return checkMainLogicForMultiBankSelection(applicationId,businessTypeId,null);
-		/*try {
-			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
-			//ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.getProposalsByApplicationId(applicationId);
-			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
-			for (int i = 0; i < proposalDetailsList.size(); i++) {
-				ProposalDetails proposalDetail = proposalDetailsList.get(i); //MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),ProposalMappingRequest.class);
-				if(proposalDetail.getProposalStatusId().getId()== MatchConstant.ProposalStatus.ACCEPT || proposalDetail.getProposalStatusId().getId()==MatchConstant.ProposalStatus.HOLD || proposalDetail.getProposalStatusId().getId()==MatchConstant.ProposalStatus.DECLINE || proposalDetail.getProposalStatusId().getId()== ProposalStatus.CANCELED){
-					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-					BeanUtils.copyProperties(proposalDetail, proposalMappingRequest);
-					//BeanUtils.copyProperties(proposalrequest,proposalMappingRequest);
-					inActivityProposalList.add(proposalMappingRequest);
-				}else {
-					inActivityProposalList = null;
-					break;
-				}
-			}
-			if(!CommonUtils.isListNullOrEmpty(inActivityProposalList) && inActivityProposalList.size()>0){
-				ConnectRequest connectRequest = new ConnectRequest();
-				connectRequest.setApplicationId(applicationId);
-				connectRequest.setBusinessTypeId(businessTypeId);
-				int days = 0;
-				ConnectResponse connectResponse = connectClient.getApplicationList(applicationId);
-				if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
-					ConnectRequest connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
-					days = Days.daysBetween(new LocalDate(connectRequest1.getModifiedDate()),
-							new LocalDate(new Date())).getDays();
-					if(days> Integer.parseInt(mxaDays)){//take 22 from application.properties file
-						return Boolean.FALSE;
-					}else{
-						if(inActivityProposalList.size()<3 && connectResponse.getDataList().size() ==1) {
-							if(days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
-								return Boolean.TRUE;
-							}
-						}else if(inActivityProposalList.size()<3 && (connectResponse.getDataList().size() > 1 && connectResponse.getDataList().size() < 3)){
-							ConnectRequest connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectResponse.getDataList().size()-1),ConnectRequest.class);
-							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
-									new LocalDate(new Date())).getDays();
-							if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
-								return Boolean.TRUE;
-							}else {
-								return Boolean.FALSE;
-							}
-						}else {
-							return Boolean.FALSE;
-						}
-					}
-				}
-			}
-			//connectClient.createForMultipleBank(connectRequest);
-			//logger.info("=============> <=============");
-			return Boolean.FALSE;
-		} *//*catch (MatchException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			e.printStackTrace();
-		}*//* catch (IOException io) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			io.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			e.printStackTrace();
-		}
-
-		return Boolean.FALSE;*/
 	}
 
 	@Override
 	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList) {
 		try {
+			IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+				return Boolean.FALSE;
+			}
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsList.size(); i++) {
@@ -2526,11 +2530,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					break;
 				}
 			}
-			if(!CommonUtils.isListNullOrEmpty(inActivityProposalList) && inActivityProposalList.size()>0){
+
+			if(proposalDetailsList != null && proposalDetailsList.size() == 0){//for offline cases
+				return checkLogicForOfflineMultiBankSelection(applicationId,proposalDetailsList);
+			}
+			if(inActivityProposalList != null && !inActivityProposalList.isEmpty()){
 				ConnectRequest connectRequest = new ConnectRequest();
 				connectRequest.setApplicationId(applicationId);
 				connectRequest.setBusinessTypeId(businessTypeId);
-				int days = 0,connectListSize=0;
+				int connectListSize=0, days = 0;
 				ConnectRequest connectRequest1 = new ConnectRequest();
 				ConnectResponse connectResponse = new ConnectResponse();
 				if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
@@ -2559,26 +2567,72 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							if(days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
 								return Boolean.TRUE;
 							}
-						}else if(inActivityProposalList.size()<3 && (connectListSize > 1 && connectListSize < 3)){
-							ConnectRequest connectReqObj = new ConnectRequest();
-							if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
-								connectReqObj =	filteredAppListList.get(connectListSize-1);
-							}else {
-								if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
-									connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+						}else if(inActivityProposalList.size()<3 ){ //&& (connectListSize > 1 && connectListSize < 3)){
+							if(connectListSize > 1 && connectListSize < 3){
+								ConnectRequest connectReqObj = new ConnectRequest();
+								if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+									connectReqObj =	filteredAppListList.get(connectListSize-1);
+								}else {
+									if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+										connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+									}
 								}
-							}
-							if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
-								days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
-										new LocalDate(new Date())).getDays();
-							}else{
-								days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
-										new LocalDate(new Date())).getDays();
-							}
-							if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
-								return Boolean.TRUE;
-							}else {
-								return Boolean.FALSE;
+								if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
+									days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
+											new LocalDate(new Date())).getDays();
+								}else{
+									days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+											new LocalDate(new Date())).getDays();
+								}
+								if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
+									return Boolean.TRUE;
+								}else {
+									return Boolean.FALSE;
+								}
+							}else if(connectListSize >= 3){
+								//List<ConnectRequest> connectRequestList = new ArrayList<>(connectListSize);
+								int ineligibleCnt = 0,eligibleCnt=0,totalAttempt=0;
+								for (int j = 0; j < connectListSize; j++) {
+									ConnectRequest connectReq = null;
+									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+										connectReq = filteredAppListList.get(j);
+									}else{
+										connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
+									}
+									if(connectReq.getStageId().equals(4) && connectReq.getStatus().equals(6)){
+										ineligibleCnt++;
+									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7)) && connectReq.getStatus().equals(3)){
+										eligibleCnt++;
+									}
+									if(ineligibleCnt>0 && eligibleCnt == 0)
+										ineligibleCnt = 1;
+									//connectRequestList.add(connectReq);
+								}
+								totalAttempt = ineligibleCnt + eligibleCnt;
+								if(totalAttempt < 3){
+									ConnectRequest connectReqObj = new ConnectRequest();
+									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
+										connectReqObj =	filteredAppListList.get(connectListSize-1);
+									}else {
+										if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+											connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectListSize-1),ConnectRequest.class);
+										}
+									}
+									if(!CommonUtils.isObjectNullOrEmpty(connectReqObj.getInPrincipleDate())){
+										days = Days.daysBetween(new LocalDate(connectReqObj.getInPrincipleDate()),
+												new LocalDate(new Date())).getDays();
+									}else{
+										days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+												new LocalDate(new Date())).getDays();
+									}
+									if(eligibleCnt>=1 && days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
+										return Boolean.TRUE;
+									}else {
+										return Boolean.FALSE;
+									}
+								}else {
+									return Boolean.FALSE;
+								}
 							}
 						}else {
 							return Boolean.FALSE;
@@ -2588,13 +2642,59 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			io.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",io);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while checking availability for bank selection...!");
-			e.printStackTrace();
+			logger.error("Error while checking availability for bank selection...! == {}",applicationId," - ",e);
+		}
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList) {
+		try {
+			int days = 0;
+			if(proposalDetailsList.size() == 0){//for offline cases
+				ConnectResponse connectResponseOffline = connectClient.getApplicationList(applicationId);
+				/*IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					return Boolean.FALSE;
+				}*/
+				if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline)
+						&& !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())
+						&& connectResponseOffline.getDataList().size() > 0){
+					ConnectRequest connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
+					if(!CommonUtils.isObjectNullOrEmpty(connectRequestOffline) && CommonUtils.isObjectNullOrEmpty(connectRequestOffline.getOrgId())){
+						days = Days.daysBetween(new LocalDate(connectRequestOffline.getModifiedDate()),
+								new LocalDate(new Date())).getDays();
+						if(days > Integer.parseInt(maxDaysForOffline)){
+							return Boolean.FALSE;
+						}else {
+							int offlineResponseListSize = connectResponseOffline.getDataList().size();
+							ConnectRequest connectReqObj = new ConnectRequest();
+							if(offlineResponseListSize > 1){
+								connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(offlineResponseListSize-1),ConnectRequest.class);
+								days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+										new LocalDate(new Date())).getDays();
+								if(days >= Integer.parseInt(daysIntervalForOffline)) {//take 1 from application.properties file
+									return Boolean.TRUE;
+								}
+							}else{
+								if(days >= Integer.parseInt(startIntervalForOffline)) {//take 15 from application.properties file
+									return Boolean.TRUE;
+								}
+							}
+						}
+					}
+					return Boolean.FALSE;
+				}else{
+					return Boolean.FALSE;
+				}
+			}
+			return Boolean.FALSE;
+		} catch (IOException io) {
+			logger.error("Error while checking availability for bank selection...! = {}",io);
+		} catch (Exception e) {
+			logger.error("Error while checking availability for bank selection...! = {}",e);
 		}
 		return Boolean.FALSE;
 	}
@@ -2627,20 +2727,38 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						SchedulerDataMultipleBankRequest schedulerDataMultipleBankRequest = new SchedulerDataMultipleBankRequest();
 						schedulerDataMultipleBankRequest.setUserId(connectRequest1.getUserId());
 						schedulerDataMultipleBankRequest.setApplicationId(connectRequest1.getApplicationId());
-						schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
-						if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
-							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getInPrincipleDate());
-						}else{
+						if(connectRequest1.getStageId().equals(4) && connectRequest1.getStatus().equals(6)){
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
+							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
+							//set offline
+							schedulerDataMultipleBankRequest.setEmailType(2);//NotificationApiUtils.ApplicationType.Offline.getId());
+							logger.info("appId:"+connectRequest1.getApplicationId());
+								IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(connectRequest1.getApplicationId(),true);
+							if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
+									&& !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())){
+								schedulerDataMultipleBankRequest.setOrgId(ineligibleProposalDetails.getUserOrgId());
+								logger.info("userOrgId:"+ineligibleProposalDetails.getUserOrgId());
+							}else {
+								continue;
+							}
+						}else{
+							schedulerDataMultipleBankRequest.setProposalId(connectRequest1.getProposalId());
+							if(!CommonUtils.isObjectNullOrEmpty(connectRequest1.getInPrincipleDate())){
+								schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getInPrincipleDate());
+							}else{
+								schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
+							}
+							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
+							//set online
+							schedulerDataMultipleBankRequest.setEmailType(1);//NotificationApiUtils.ApplicationType.Online.getId());
 						}
-						schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
 						Long userOrgId = proposalDetailRepository.getOrgIdByProposalId(connectRequest1.getProposalId());
 						if(!CommonUtils.isObjectNullOrEmpty(userOrgId)){
 							schedulerDataMultipleBankRequest.setOrgId(userOrgId);
 						}
 						boolean idExists = schedulerDataMultipleBankRequestList.stream()
 									.anyMatch(t -> t.getApplicationId().equals(connectRequest1.getApplicationId()));
-						logger.info("exist:"+idExists);
+						//logger.info("exist:"+idExists);
 						if(!idExists){
 							schedulerDataMultipleBankRequestList.add(schedulerDataMultipleBankRequest);
 						}
@@ -2657,7 +2775,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return null;
 	}
 
-	public Boolean calculateAndGetNewMatches(Long applicationId, Integer businessTypeId){
+	/*public Boolean calculateAndGetNewMatches(Long applicationId, Integer businessTypeId){
 		try {
 			ConnectRequest connectRequest = new ConnectRequest();
 			connectRequest.setApplicationId(applicationId);
@@ -2680,7 +2798,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			e.printStackTrace();
 		}
 		return Boolean.FALSE;
-	}
+	}*/
 	@Override
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request,
 			Long userId) {
@@ -2896,6 +3014,68 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public Integer updateStatus(Long applicationId, Long fpProductId, Long status,String remarks) {
 		return proposalDetailRepository.updateStatus(status, applicationId, fpProductId,remarks);
+	}
+
+	@Override
+	public ProposalMappingResponse getProposalId(ProposalMappingRequest request) {
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		ProposalMappingRequest proposalMappingRequest=null;
+		try {
+			response = proposalDetailsClient.getProposal(request);
+
+			proposalMappingRequest = (ProposalMappingRequest) MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
+
+			ProposalDetails proposalDetails = proposalDetailRepository.getProposalId(request.getApplicationId());
+
+			Boolean isButtonDisplay=true;
+			String messageOfButton=null;
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				if(!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString()))
+				{
+					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Sanctioned by Other Bank.";
+					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Disbursed by Other Bank.";
+					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
+					isButtonDisplay=false;
+
+					proposalMappingRequest.setMessageOfButton(messageOfButton);
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+				else
+				{
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+			}
+			else
+			{
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(request.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(request.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						isButtonDisplay=false;
+
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}else{
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+					}
+				}
+				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			}
+			response.setData(proposalMappingRequest);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		return response;
 	}
 }
 

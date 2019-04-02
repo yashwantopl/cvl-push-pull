@@ -6,7 +6,7 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 
-public interface RetailApplicantIncomeService {
+public interface CoApplicantIncomeService {
 	
 	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws LoansException;
 	

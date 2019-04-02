@@ -42,6 +42,7 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -128,7 +129,10 @@ public class FPAsyncComponent {
 
 	@Autowired
 	public GstClient gstClient;
-
+	
+	@Autowired
+	ApplicationProposalMappingRepository appProposalMappingRepo;
+	
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
 
@@ -215,9 +219,7 @@ public class FPAsyncComponent {
 							.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
 				}
 					}catch (Exception e) {
-					logger.info(
-							"Error calling Proposal Details Client for getting Branch Id:-" + paymentRequest.getApplicationId());
-					e.printStackTrace();
+					logger.info("Error calling Proposal Details Client for getting Branch Id:- {}" , paymentRequest.getApplicationId());
 				}
 */
 				Long propsalId = Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
@@ -233,11 +235,10 @@ public class FPAsyncComponent {
 						/*if(applicantRequest.getUserId()!=null && proposalResponse.getId()!=null){*/
 						applicantRequest = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(),propsalId);
 						logger.info("THIS IS USER ID --------- AND" + " "+applicantRequest.getUserId()+ ""
-								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+proposalResponse.getId());
+								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+( proposalResponse != null ? proposalResponse.getId() : null));
 						/*}*/
 					}catch (Exception e) {
-						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:"+e.getMessage());
-						e.printStackTrace();
+						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:{}",e);
 					}
 					//      OLD CODE==============>
 /*					CorporateApplicantRequest applicantRequest = corporateapplicantService
@@ -1090,9 +1091,7 @@ public class FPAsyncComponent {
 							}
 
 						} catch (Exception e) {
-							logger.info("Error Calling One form client for getting state by state list Id");
-
-							e.printStackTrace();
+							logger.error("Error Calling One form client for getting state by state list Id = {}",e);
 						}
 					}
 				}
@@ -1780,6 +1779,9 @@ public class FPAsyncComponent {
 				logger.info("Email Sending TO CHECKER on sendMailWhenMakerAssignDDRToChecker===to==>{}", toIds);
 				// ====================== MAIL TO CHECKER ======================
 				parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+//				Arun's Code(1786 - 1788)
+				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId()) 
+						&& !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 				createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,
 						NotificationAlias.EMAIL_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subjcet);
 
@@ -1841,10 +1843,15 @@ public class FPAsyncComponent {
 						} else {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
+						
 						parameters.put(PARAMETERS_HO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -1916,9 +1923,13 @@ public class FPAsyncComponent {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
 						parameters.put(PARAMETERS_BO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -1955,7 +1966,7 @@ public class FPAsyncComponent {
 
 			// =========================================================================================
 
-		} catch (Exception e) {
+		} }catch (Exception e) {
 			logger.error("Throw exception while sending mail to Checker/HO/BO when Maker Assign DDR to Checker : ",e);
 		}
 	}
@@ -2197,10 +2208,14 @@ public class FPAsyncComponent {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
 						parameters.put(PARAMETERS_HO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_HO_MAKER_REASSIGN_TO_CHECKER, subject);
 						parameters.put("isDynamic", false);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2270,9 +2285,13 @@ public class FPAsyncComponent {
 							name = name != null ? name : PARAMETERS_SIR_MADAM;
 						}
 						parameters.put(PARAMETERS_BO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
+						//						Arun's Code
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, request.getUserId().toString(), parameters,
 								NotificationAlias.EMAIL_ALL_BO_MAKER_REASSIGN_TO_CHECKER, subject);
-					}
+					}}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2489,14 +2508,22 @@ public class FPAsyncComponent {
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 						logger.info(MSG_MAKER_ID+userObj.getEmail());
 						to = userObj.getEmail();
+						
+
 						if (LITERAL_NULL.equals(name)) {
 							mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
 						} else {
 							mailParameters.put(PARAMETERS_ADMIN_CHECKER, name != null ? name : PARAMETERS_SIR_MADAM);
 						}
+//						Arun's Modification(2505 - 2508)
+						Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(userId);
+						if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+								&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
 						createNotificationForEmail(to, userId.toString(), mailParameters,
 								NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, subject);
 					}
+					
+					
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
 						logger.info(MSG_MAKER_ID+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2530,7 +2557,7 @@ public class FPAsyncComponent {
 
 				}
 
-			} else {
+			} }else {
 				logger.info("No Admin Checker found=================>");
 			}
 
@@ -2726,6 +2753,12 @@ public class FPAsyncComponent {
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,
 					productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+			
+			//Aruns Modification
+			Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) 
+					&& ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
+			
 			UsersRequest adminForChecker = new UsersRequest();
 			adminForChecker.setId(userId);
 
@@ -2741,7 +2774,9 @@ public class FPAsyncComponent {
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 			}
-
+			
+			
+			
 			if (LITERAL_NULL.equals(adminCheckerName)) {
 				adminCheckerName = LITERAL_CHECKER;
 			} else {
@@ -2885,7 +2920,7 @@ public class FPAsyncComponent {
 				logger.info("No Admin Maker found=================>");
 			}*/
 
-		} catch (Exception e) {
+		} }catch (Exception e) {
 			logger.error("An exception getting while sending Mail to Maker when Admin Checker reverted product=============>{}",e);
 		}
 
@@ -2896,8 +2931,10 @@ public class FPAsyncComponent {
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan===>{}");
 			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
-			LoanApplicationRequest applicationRequest = loanApplicationService
-					.getFromClient(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingResponse proposal = proposalDetailsClient.getActiveProposalByApplicationID(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ApplicationProposalMapping.class);
+			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
+			
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
@@ -3201,7 +3238,10 @@ public class FPAsyncComponent {
 			logger.info("Into sending Mail to FS when Checker sanction loan===>{}");
 			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
-			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingResponse proposal = proposalDetailsClient.getActiveProposalByApplicationID(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ProposalMappingRequest.class);
+			
+			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
@@ -3226,7 +3266,7 @@ public class FPAsyncComponent {
 			}
 
 			SimpleDateFormat form = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
-			String fpName = proposalresp.get("organisationName") != null ? proposalresp.get("organisationName").toString() : "";
+			String fpName = (null!=proposalresp  && proposalresp.get("organisationName") != null )? proposalresp.get("organisationName").toString() : "";
 			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) && loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION) ){
 
 					subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";

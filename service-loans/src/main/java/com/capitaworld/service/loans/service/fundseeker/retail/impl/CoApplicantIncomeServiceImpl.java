@@ -5,10 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -16,24 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantIncomeDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantIncomeDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantIncomeRepository;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 
 @Service
 @Transactional
-public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeService{
+public class CoApplicantIncomeServiceImpl implements CoApplicantIncomeService{
 
-	private static final Logger logger = LoggerFactory.getLogger(RetailApplicantIncomeServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(CoApplicantIncomeServiceImpl.class);
 	
 	@Autowired
-	private RetailApplicantIncomeRepository appIncomeRepository;
+	private CoApplicantIncomeRepository appIncomeRepository;
 	
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws LoansException {
@@ -42,7 +39,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			throw new LoansException("ApplicationId or Year Null Or Empty");
 		}
 		try {
-			RetailApplicantIncomeDetail appIncomeDetail = null;
+			CoApplicantIncomeDetail appIncomeDetail = null;
 			if(!CommonUtils.isObjectNullOrEmpty(appIncomeReq.getId())) {
 				appIncomeDetail = appIncomeRepository.findByIdAndIsActive(appIncomeReq.getId(), true);
 			}
@@ -52,7 +49,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			}
 			
 			if(appIncomeDetail == null || CommonUtils.isObjectNullOrEmpty(appIncomeDetail)) {
-				appIncomeDetail = new RetailApplicantIncomeDetail();
+				appIncomeDetail = new CoApplicantIncomeDetail();
 				appIncomeDetail.setCreatedBy(appIncomeReq.getUserId());
 				appIncomeDetail.setCreatedDate(new Date());
 				appIncomeDetail.setIsActive(true);
@@ -73,7 +70,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeRepository.save(appIncomeDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("THROW EXCEPTION WHILE SAVE RETAIL APPLICANT INCOME DETAILS : ",e);
+			logger.error("THROW EXCEPTION WHILE SAVE RETAIL CO APPLICANT INCOME DETAILS : ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -91,10 +88,10 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	
 	@Override
 	public List<RetailApplicantIncomeRequest> getAll(Long applicationId) {
-		List<RetailApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByApplicationIdAndIsActive(applicationId,true);
+		List<CoApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByApplicationIdAndIsActive(applicationId,true);
 		List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(appIncomeDetailList.size());
 		RetailApplicantIncomeRequest appIncomeReq = null;
-		for(RetailApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
+		for(CoApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
 			appIncomeReq = new RetailApplicantIncomeRequest();
 			//FOR PL CAM
 			appIncomeReq.setSalaryIncomeString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncome()));
@@ -123,7 +120,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				RetailApplicantIncomeRequest retailApplicantIncomeRequest = (RetailApplicantIncomeRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, RetailApplicantIncomeRequest.class);
-				RetailApplicantIncomeDetail incomeDetail = new RetailApplicantIncomeDetail();
+				CoApplicantIncomeDetail incomeDetail = new CoApplicantIncomeDetail();
 				BeanUtils.copyProperties(retailApplicantIncomeRequest, incomeDetail);
 				if (retailApplicantIncomeRequest.getId() == null) {
 					incomeDetail.setCreatedBy(frameRequest.getUserId());
@@ -148,10 +145,10 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	@Override
 	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId) {
 		
-		List<RetailApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByPropsoalIdAndIsActive(applicationId,proposalId);
+		List<CoApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByPropsoalIdAndIsActive(applicationId,proposalId);
 		List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(appIncomeDetailList.size());
 		RetailApplicantIncomeRequest appIncomeReq = null;
-		for(RetailApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
+		for(CoApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
 			appIncomeReq = new RetailApplicantIncomeRequest();
 			//FOR PL CAM
 			appIncomeReq.setSalaryIncomeString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncome()));

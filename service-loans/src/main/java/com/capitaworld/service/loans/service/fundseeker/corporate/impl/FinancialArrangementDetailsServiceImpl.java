@@ -86,7 +86,6 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 
-
 	@Override
 	public List<FinancialArrangementsDetailRequest> getManuallyAddedFinancialArrangementDetailsList(Long applicationId) {
 		try {
@@ -128,7 +127,6 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		return true;
 	}
 	
-
 	@Override
 	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest, Long applicationId,
 			Long userId, Long directorId) {

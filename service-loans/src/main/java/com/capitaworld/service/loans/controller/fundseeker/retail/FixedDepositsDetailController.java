@@ -160,5 +160,54 @@ public class FixedDepositsDetailController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/getList/{applicationType}/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType, @PathVariable Long proposalId,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (proposalId == null) {
+				logger.warn("Proposal ID Require to get Fixed Deposits Details ==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<FixedDepositsDetailsRequest> response = fixedDepositsDetailService.getFixedDepositsDetailByProposalId(proposalId, applicationType);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			Integer currencyId = null;
+			Long applicantIdById = null;
+			switch (applicationType) {
+			case CommonUtils.ApplicantType.APPLICANT:
+				currencyId = retailApplicantService.getCurrency(id, userId);
+				break;
+			case CommonUtils.ApplicantType.COAPPLICANT:
+				applicantIdById = coApplicantService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
+				break;
+			case CommonUtils.ApplicantType.GARRANTOR:
+				applicantIdById = guarantorService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
+				break;
+			default : break;
+			}
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Fixed Deposits Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
 
 }

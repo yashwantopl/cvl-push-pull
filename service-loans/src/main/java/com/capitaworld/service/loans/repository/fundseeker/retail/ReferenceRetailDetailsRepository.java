@@ -27,4 +27,7 @@ public interface ReferenceRetailDetailsRepository extends JpaRepository<Referenc
 	@Modifying
 	@Query("update ReferencesRetailDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
+	
+	@Query("select o from ReferencesRetailDetail o where o.applicationProposalMapping.proposalId = :proposalId and o.isActive = true")
+	public List<ReferencesRetailDetail> listReferencesRetailFromPropsalId(@Param("proposalId")Long proposalId);
 }

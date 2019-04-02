@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
@@ -43,6 +44,9 @@ public class ReferenceRetailDetailsController {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private ApplicationProposalMappingService applicationProposalMappingService;
 	
 	@Autowired
 	private RetailApplicantService retailApplicantService;
@@ -88,7 +92,14 @@ public class ReferenceRetailDetailsController {
 			}else if(CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()){
 				applicationId = guarantorService.getApplicantIdById(frameRequest.getApplicationId());
 			}
-			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			
+			Boolean primaryLocked = null;
+			if(frameRequest.getProposalMappingId() != null) {
+				primaryLocked = applicationProposalMappingService.isFinalLocked(frameRequest.getProposalMappingId());
+			}else {
+				primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			}
+			
 			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -130,6 +141,54 @@ public class ReferenceRetailDetailsController {
 			}
 			List<ReferenceRetailDetailsRequest> response = referenceRetailDetailsService
 					.getReferenceRetailDetailList(id, applicationType);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			Integer currencyId = null;
+			Long applicantIdById = null;
+			switch (applicationType) {
+			case CommonUtils.ApplicantType.APPLICANT:
+				currencyId = retailApplicantService.getCurrency(id, userId);
+				break;
+			case CommonUtils.ApplicantType.COAPPLICANT:
+				applicantIdById = coApplicantService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
+				break;
+			case CommonUtils.ApplicantType.GARRANTOR:
+				applicantIdById = guarantorService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
+				break;
+			default : break;
+			}
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Reference Retail Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	@RequestMapping(value = "/getList/{applicationType}/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType, @PathVariable Long proposalId,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			if (id == null) {
+				logger.warn("ID Require to get Reference Retail Details ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			List<ReferenceRetailDetailsRequest> response = referenceRetailDetailsService
+					.getReferenceRetailDetailListByPropsalId(proposalId, applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			Integer currencyId = null;

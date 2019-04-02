@@ -33,7 +33,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
  *
  */
 @RestController
-@RequestMapping("bank_account_held_details")
+@RequestMapping("/bank_account_held_details")
 public class BankAccountHeldDetailController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BankAccountHeldDetailController.class);
@@ -123,6 +123,54 @@ public class BankAccountHeldDetailController {
 			}
 
 			List<BankAccountHeldDetailsRequest> response = bankAccountHeldDetailService.getExistingLoanDetailList(id,
+					applicationType);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			Integer currencyId = null;
+			Long applicantIdById = null;
+			switch (applicationType) {
+			case CommonUtils.ApplicantType.APPLICANT:
+				currencyId = retailApplicantService.getCurrency(id,userId);
+				break;
+			case CommonUtils.ApplicantType.COAPPLICANT:
+				applicantIdById = coApplicantService.getApplicantIdById(id);				
+				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				break;
+			case CommonUtils.ApplicantType.GARRANTOR:
+				applicantIdById = guarantorService.getApplicantIdById(id);				
+				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				break;
+			default : break;
+			}
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Bank Account Held Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	@RequestMapping(value = "/getList/{applicationType}/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long id, @PathVariable int applicationType, @PathVariable Long proposalId,@RequestParam(value = "clientId",required = false) Long clientId,HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if(CommonDocumentUtils.isThisClientApplication(request)){
+				userId = clientId;
+			}else{
+				userId = (Long)request.getAttribute(CommonUtils.USER_ID); 
+			}
+			if (id == null) {
+				logger.warn("ID Require to get Bank Account Held Details ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			List<BankAccountHeldDetailsRequest> response = bankAccountHeldDetailService.getExistingLoanDetailListByProposalId(proposalId,
 					applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);

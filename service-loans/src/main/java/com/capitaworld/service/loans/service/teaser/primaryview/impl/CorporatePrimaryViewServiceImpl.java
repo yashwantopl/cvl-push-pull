@@ -1334,7 +1334,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}	
 		}else {
 			logger.info("MCA Zip File Is Null...");
-		}*/
+		} */
 		
 		/* documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
 		   try {

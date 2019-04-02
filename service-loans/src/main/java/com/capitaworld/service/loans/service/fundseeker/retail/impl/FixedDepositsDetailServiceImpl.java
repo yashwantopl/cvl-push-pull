@@ -132,5 +132,51 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 		}
 
 	}
+	
+	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailByProposalId(Long proposalId, int applicationType) throws LoansException {
+		try {
+			List<FixedDepositsDetail> fixedDepositsDetails = null;
+//			switch (applicationType) {
+//			case CommonUtils.ApplicantType.APPLICANT:
+//				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromProposalId(proposalId);
+//				break;
+//			case CommonUtils.ApplicantType.COAPPLICANT:
+//				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromCoAppId(proposalId);
+//				break;
+//			case CommonUtils.ApplicantType.GARRANTOR:
+//				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromGarrId(proposalId);
+//				break;
+//			default:
+//				throw new LoansException();
+//			}
+
+			fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromProposalId(proposalId);
+			List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>(fixedDepositsDetails.size());
+
+			for (FixedDepositsDetail detail : fixedDepositsDetails) {
+				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
+				fixedDepositsDetailRequest.setAmountString(CommonUtils.convertValue(detail.getAmount()));
+				fixedDepositsDetailRequest.setRateString(CommonUtils.convertValue(detail.getRate()));
+				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getMaturityDate()))
+				{
+					SimpleDateFormat dateFormat=new SimpleDateFormat("dd/MM/yyyy");
+					
+					fixedDepositsDetailRequest.setMaturityDateInString(dateFormat.format(detail.getMaturityDate()).toString());
+				}
+				fixedDepositsDetailRequests.add(fixedDepositsDetailRequest);
+			}
+			return fixedDepositsDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in get Proposal ID  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	
+	
 
 }

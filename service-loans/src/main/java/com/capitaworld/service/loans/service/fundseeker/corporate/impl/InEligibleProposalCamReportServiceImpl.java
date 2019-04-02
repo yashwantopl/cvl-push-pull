@@ -40,7 +40,9 @@ import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -192,11 +194,12 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserIdForInEligibleCam(applicationId, userId);
-		if(loanApplicationMaster!= null) {
 		
+		/*CURRENTLY COMMENTED THE CODE -- DATE IS NOT USED
+		 * 
+		 * if(loanApplicationMaster!= null) {
 			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
-			
-		}
+		}*/
 		
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
@@ -252,6 +255,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}
 		
 		//TIMELINE DATES
+		// date of is now change again it is consider at the time of mcq page selection time ---- 
 		if(loanApplicationMaster != null && loanApplicationMaster.getCreatedDate() != null)
 		{
 			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
@@ -284,6 +288,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
+			
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
 			int noOfCustomer = gstData.getNoOfCustomer().intValue();
 			map.put("noOfCustomer", noOfCustomer);
@@ -292,8 +297,24 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
+
+			CAMGSTData resp =null;		
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
-			if(!CommonUtils.isObjectNullOrEmpty(response)) {
+			// STARTS HERE TOTAL MOM SALES------>
+			Double totalSales =0.0d;
+			DecimalFormat df = new DecimalFormat(".##");
+			if (!CommonUtils.isObjectNullOrEmpty(response) && (!CommonUtils.isObjectNullOrEmpty(response.getData()))) {
+				resp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(),CAMGSTData.class);
+				if(resp.getMomSales() != null) {
+					List<MomSales> momSalesResp = resp.getMomSales();
+					 for (MomSales sales : momSalesResp) {
+					    	totalSales += Double.valueOf(sales.getValue());
+					}
+					map.put("totalMomSales", df.format(totalSales));
+				}
+			}
+			//  ENDS HERE----> TOTAL MOM SALES------>
+			if(!CommonUtils.isObjectNullOrEmpty(response) && (!CommonUtils.isObjectNullOrEmpty(response.getData()))) {
 				map.put("gstDetailedResp",response.getData());
 			}
 		}catch(Exception e) {
@@ -576,6 +597,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			if(analyzerResponse.getData()!=null){
 			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
 			
 			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
@@ -609,6 +631,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 				
 			}
+		 }
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
@@ -842,7 +865,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			financialInputRequestString.setOtherIncomeNeedTocCheckLia(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
 			
 			/************************************************ ASSETS DETAIL ***************************************************/
-			AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+"");
+			AssetsDetails assetsDetails = assetsDetailsRepository.getAssestDetailsByApplicationId(applicationId, year+"");
 			if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
 				assetsDetails = new AssetsDetails();
 			}

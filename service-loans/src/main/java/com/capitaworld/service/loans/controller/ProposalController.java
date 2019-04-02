@@ -111,6 +111,22 @@ public class ProposalController {
 		
 	}
 	
+	@RequestMapping(value = "/getOfflineProposals", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getOfflineProposals(@RequestBody ProposalMappingRequest request) {
+		
+		if(CommonUtils.isObjectNullOrEmpty(request.getApplicationId())) {
+			logger.info("getOfflineProposals " + BAD_REQUEST_MSG);
+			return new ResponseEntity<>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.getOfflineProposalList(request.getApplicationId())), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
 	@RequestMapping(value = "/saveDisbursementDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> saveDisbursementDetails(@RequestBody DisbursementDetailsModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
 		
@@ -170,6 +186,40 @@ public class ProposalController {
 		response.setUserType(userType.longValue());
 		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
 	}
+	
+	
+	
+	
+	//Arun's Code
+	
+	@RequestMapping(value = "/getByProposalId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> getByProposalId(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
+		
+		Long userId = null;
+		Long userType = null;
+		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+			userType = clientUserType;
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
+		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));	
+		}
+		request.setUserType(userType);
+		request.setUserId(userId);
+		ProposalMappingResponse response = proposalService.getProposalId(request);
+		response.setUserType(userType.longValue());
+		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	@RequestMapping(value = "/getSanctionProposalByApplicationId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> getSanctionProposalByApplicationId(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {

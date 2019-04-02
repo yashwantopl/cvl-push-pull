@@ -1,4 +1,3 @@
-
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
@@ -120,6 +119,8 @@ public interface LoanApplicationService {
 	
 	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId);
 	
+	public List<FpProfileBasicDetailRequest> getFpNegativeListByProposalId(Long proposalId);
+	
 	public void saveSuggestionList(ProposalList  proposalList);	
 	
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
@@ -173,8 +174,6 @@ public interface LoanApplicationService {
 	public Boolean updateDDRStatusByProposalId(Long applicationId, Long userId , Long proposalId, Long statusId) throws Exception;
 
 	public LoanApplicationRequest getFromClient(Long id) throws LoansException;
-	
-	public LoanApplicationRequest getBasicInformation(Long id);
 
 	public Boolean isApplicationEligibleForIrr(Long applicationId) throws LoansException;
 	
@@ -242,7 +241,9 @@ public interface LoanApplicationService {
 
 	public Long getProposalId(Long applicationId, Long userOrgId);
 
+	public LoanApplicationRequest getBasicInformation(Long id);
+ 
+	public String getUserApplicationList(Long userId);
+  
 
 }
-
-

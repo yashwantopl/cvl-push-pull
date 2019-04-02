@@ -30,6 +30,8 @@ public class FundProviderProposalDetails {
 	
 	private String lastDisbursmentDate;
 	
+	private String offlineStatus;
+	
 	
 	public String getFpProductName() {
 		return fpProductName;
@@ -133,6 +135,14 @@ public class FundProviderProposalDetails {
 
 	public void setLastDisbursmentDate(String lastDisbursmentDate) {
 		this.lastDisbursmentDate = lastDisbursmentDate;
+	}
+
+	public String getOfflineStatus() {
+		return offlineStatus;
+	}
+
+	public void setOfflineStatus(String offlineStatus) {
+		this.offlineStatus = offlineStatus;
 	}
 	
 	

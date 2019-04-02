@@ -76,6 +76,32 @@ public class PlRetailApplicantController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping(value = "/profile/get/{applicationId}/{proposalId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getProfileByProposalId(@PathVariable("applicationId")  Long applicationId, @PathVariable("proposalId")  Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+        // request must not be null
+        try {
+            Long userId = null;
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                userId = clientId;
+            } else {
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+            if (applicationId == null) {
+                logger.warn("ApplicationId Require to get Retail Profile Details. Application Id ==> NULL");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId, proposalId);
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(plRetailApplicantRequest);
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Applicant Profile Details==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
     @PostMapping(value = "/primary/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -121,6 +147,31 @@ public class PlRetailApplicantController {
 
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(plRetailApplicantService.getPrimary(userId,applicationId));
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Applicant Primary Details==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(value = "/primary/get/{applicationId}/{proposalId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getPrimaryByProposalId(@PathVariable("applicationId")  Long applicationId, @PathVariable("proposalId") Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+        // request must not be null
+        try {
+            Long userId = null;
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                userId = clientId;
+            } else {
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+            if (applicationId == null) {
+                logger.warn("ApplicationId Require to get Retail Primary Details. Application Id ==> NULL");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -182,6 +233,36 @@ public class PlRetailApplicantController {
             }
 
             RetailFinalInfoRequest response = plRetailApplicantService.getFinal(userId, applicationId);
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(response);
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Applicant Final  Details==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @RequestMapping(value = "/final/get/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getFinalByProposalId(@PathVariable("applicationId") Long applicationId, @PathVariable("proposalId") Long proposalId,
+                                                  HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+        // request must not be null
+        try {
+            Long userId = null;
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                userId = clientId;
+            } else {
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+            if (applicationId == null || proposalId == null) {
+                logger.warn("Application ID Require to get Retail Final Profile Details. Application ID==>"
+                        + applicationId+" proposalID ==> "+proposalId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            RetailFinalInfoRequest response = plRetailApplicantService.getFinalByProposalId(userId, applicationId, proposalId);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(response);
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

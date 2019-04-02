@@ -119,9 +119,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
-
-
-
+	
+	
 	@Override
 	public Integer save(InEligibleProposalDetailsRequest inlPropReq) {
 		try {
@@ -289,7 +288,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 				LoanApplicationRequest applicationRequest = null;
 				try {
-					applicationRequest = loanApplicationService.getFromClient(loanApplication.getProposalId());
+					applicationRequest =loanApplicationService.getBasicInformation(applicationId);  // CHANGES FOR OFFLINE CAM REPORT PURPOSE NEW --->
+							//loanApplicationService.getFromClient(loanApplication.getProposalId()); // OLD
 				} catch (Exception e1) {
 					logger.error("Exception in getting :" + e1);
 				}

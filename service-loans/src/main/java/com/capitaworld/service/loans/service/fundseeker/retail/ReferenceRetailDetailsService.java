@@ -16,4 +16,5 @@ public interface ReferenceRetailDetailsService {
 
 	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailList(Long id, int applicationType) throws LoansException;
 
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailListByPropsalId(Long proposalId, int applicationType) throws LoansException;
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.connect.api.ConnectRequest;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -29,6 +30,8 @@ public interface ProposalService {
 
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request);
 	
+	public String getOfflineProposalList(Long applicationId);
+	
 	public List<FundProviderProposalDetails>  fundseekerProposal(ProposalMappingRequest request,Long userId);
 	
 	public ProposalCountResponse fundProviderProposalCount(ProposalMappingRequest request);
@@ -40,6 +43,8 @@ public interface ProposalService {
 	public ProposalMappingResponse getSanctionProposalByApplicationId(Long applicationId,Long userOrgId);
 
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request);
+	
+	public ProposalMappingResponse getProposalId(ProposalMappingRequest reuqest);
 	
 	public ProposalMappingResponse sendRequest(ProposalMappingRequest request);
 	
@@ -68,6 +73,8 @@ public interface ProposalService {
     public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId);
 
 	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList);
+
+	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList);
 
 	public List<SchedulerDataMultipleBankRequest> getApplicationListForMultipleBank();
 }

@@ -130,5 +130,32 @@ public class RetailApplicantIncomeController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/final_frame/getList/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long id, @PathVariable Long proposalId,
+												 @RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		// request must not be null
+		try {
+			if (proposalId == null) {
+				logger.warn("ID Require to get Gross Income Details==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<RetailApplicantIncomeRequest> response = applicantIncomeService.getAllByProposalId(id, proposalId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			Integer currencyId = null;
+
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Gross Income Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 
 }

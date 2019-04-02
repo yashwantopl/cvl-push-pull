@@ -21,5 +21,11 @@ public interface LoanRepository {
 	public String getGSTINByAppId(Long applicationId);
 
 	public String getCommonPropertiesValue(String key);
+	
+	public Long getOfflineCountByAppId(Long applicationId);
+	
+	public String getOfflineDetailsByAppId(Long applicationId);
+	
+	public String getOfflineStatusByAppId(Long applicationId);
 
 }

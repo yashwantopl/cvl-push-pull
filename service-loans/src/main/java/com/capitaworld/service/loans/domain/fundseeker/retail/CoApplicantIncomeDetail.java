@@ -13,12 +13,12 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 
 /**
- * @author harshit 30-08-2018
+ * @author harshit 01-04-2019
  *
  */
 @Entity
-@Table(name = "fs_retail_applicant_income_details")
-public class RetailApplicantIncomeDetail extends AuditActivity implements Serializable {
+@Table(name = "fs_retail_co_applicant_income_details")
+public class CoApplicantIncomeDetail extends AuditActivity implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 

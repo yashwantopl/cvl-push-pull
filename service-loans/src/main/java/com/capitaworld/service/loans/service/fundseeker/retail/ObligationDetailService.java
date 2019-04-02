@@ -15,5 +15,7 @@ public interface ObligationDetailService {
     public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
     public List<ObligationDetailRequest> getObligationDetailList(Long id, int applicationType) throws LoansException;
+    
+    public List<ObligationDetailRequest> getObligationDetailsFromProposalId(Long proposalId, int applicationType) throws LoansException;
 
 }

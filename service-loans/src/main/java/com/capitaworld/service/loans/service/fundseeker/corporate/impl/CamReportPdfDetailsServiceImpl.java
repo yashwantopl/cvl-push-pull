@@ -1195,6 +1195,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			if(analyzerResponse.getData()!=null){
 			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
 
 			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
@@ -1222,6 +1223,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 
 			}
+		 }
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
@@ -1353,30 +1355,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
-			try {
-	/*			map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailList(applicationProposalMapping.getApplicationId(), userId),null));
-				map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailList(applicationProposalMapping.getApplicationId(), userId),null));
-				map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailList(applicationProposalMapping.getApplicationId(), userId),null));*/
-
-				map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailListFromProposalId(applicationProposalMapping.getProposalId(), userId),null));
-				map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailListByProposalId(applicationProposalMapping.getProposalId(), userId),null));
-				map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailListForMultipleBank(applicationProposalMapping.getProposalId()),null));
-
-			}catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}
 			
-			//SHARE PRICE
-			try {
-				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndProposalIdAndUserId(userId, toApplicationId,applicationProposalMapping.getProposalId());
-				if(corporateApplicantDetail != null) {
-					map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
-					map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
-				}
-
-			}catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}
 			
 			//DETAILS OF GUARANTER
 			try {
@@ -1436,6 +1415,32 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 		}
+		
+		try {
+/*			map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailList(applicationProposalMapping.getApplicationId(), userId),null));
+			map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailList(applicationProposalMapping.getApplicationId(), userId),null));
+			map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailList(applicationProposalMapping.getApplicationId(), userId),null));*/
+						
+			map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailListFromProposalId(applicationProposalMapping.getProposalId(), userId),null));
+			map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailListByProposalId(applicationProposalMapping.getProposalId(), userId),null));
+			map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailListForMultipleBank(applicationProposalMapping.getProposalId()),null));
+
+		}catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		
+		//SHARE PRICE
+		try {
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndProposalIdAndUserId(userId, toApplicationId,applicationProposalMapping.getProposalId());
+			if(corporateApplicantDetail != null) {
+				map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
+				map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
+			}
+
+		}catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		
 		return map;
 	}
 	
@@ -1503,7 +1508,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService
 				.getCorporateApplicant(applicationId);
 		try {
-			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
+			if(corporateApplicantRequest != null) {
+				map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
+			}
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
