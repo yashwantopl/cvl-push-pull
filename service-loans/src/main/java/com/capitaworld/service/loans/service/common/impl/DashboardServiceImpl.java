@@ -72,7 +72,7 @@ public class DashboardServiceImpl implements DashboardService {
 		}else {
 			LoanApplicationMaster loanApplicationMaster1 = loanApplicationRepository.findOne(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster1)){
-				if(loanApplicationMaster1.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS)){
+				if(loanApplicationMaster1.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())){
 					userMainType = CommonUtils.UserMainType.CORPORATE;
 					PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOne(applicationId);
 					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)){
