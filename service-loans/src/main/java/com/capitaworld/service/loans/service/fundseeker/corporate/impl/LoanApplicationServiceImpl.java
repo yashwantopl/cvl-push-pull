@@ -1027,10 +1027,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 						request.setLoanTypeMain(CommonUtils.CORPORATE);
 						request.setLoanTypeSub("DEBT");
-						if(master.getIsPrimaryLocked()){
-							request.setName("Offline");
-						}else{
+						if(CommonUtils.isObjectNullOrEmpty(master.getIsPrimaryLocked()) || !master.getIsPrimaryLocked()){
 							request.setName("MSME Application");
+						}else{
+							request.setName("Offline");
 						}
 						request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_ELIGIBLE.getValue());
 						List<LoanApplicationRequest> tempList = requests.stream()
