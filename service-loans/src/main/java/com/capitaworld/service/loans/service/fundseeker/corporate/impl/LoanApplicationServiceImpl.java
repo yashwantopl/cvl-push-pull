@@ -1027,7 +1027,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 						request.setLoanTypeMain(CommonUtils.CORPORATE);
 						request.setLoanTypeSub("DEBT");
-                        request.setName("Offline");
+						if(master.getIsPrimaryLocked()){
+							request.setName("Offline");
+						}else{
+							request.setName("MSME Application");
+						}
 						request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_ELIGIBLE.getValue());
 						List<LoanApplicationRequest> tempList = requests.stream()
 								.filter(appId -> request.getId().equals(appId.getId()))
