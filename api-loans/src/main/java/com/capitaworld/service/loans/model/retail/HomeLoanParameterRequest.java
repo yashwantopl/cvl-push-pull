@@ -79,11 +79,6 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isDpdsDisplay = false;
 	private Boolean isDpdsMandatory = false;
 
-	//Risk Scoring Model (Score)
-	private Double minRiskScore;
-	private Double maxRiskScore;
-	private Boolean isRiskScoreDisplay = false;
-	private Boolean isRiskScoreMandatory = false;
 
 	//Total Job Experience (Yrs.)
 	private Integer minTotalJobExperience;
@@ -385,37 +380,6 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 		this.isDpdsMandatory = isDpdsMandatory;
 	}
 
-	public Double getMinRiskScore() {
-		return minRiskScore;
-	}
-
-	public void setMinRiskScore(Double minRiskScore) {
-		this.minRiskScore = minRiskScore;
-	}
-
-	public Double getMaxRiskScore() {
-		return maxRiskScore;
-	}
-
-	public void setMaxRiskScore(Double maxRiskScore) {
-		this.maxRiskScore = maxRiskScore;
-	}
-
-	public Boolean getIsRiskScoreDisplay() {
-		return isRiskScoreDisplay;
-	}
-
-	public void setIsRiskScoreDisplay(Boolean isRiskScoreDisplay) {
-		this.isRiskScoreDisplay = isRiskScoreDisplay;
-	}
-
-	public Boolean getIsRiskScoreMandatory() {
-		return isRiskScoreMandatory;
-	}
-
-	public void setIsRiskScoreMandatory(Boolean isRiskScoreMandatory) {
-		this.isRiskScoreMandatory = isRiskScoreMandatory;
-	}
 
 	public Integer getMinTotalJobExperience() {
 		return minTotalJobExperience;

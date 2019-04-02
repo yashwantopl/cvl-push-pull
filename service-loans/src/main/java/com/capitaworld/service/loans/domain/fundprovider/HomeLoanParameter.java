@@ -71,15 +71,6 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	@Column(name = "is_dpds_mandatory")
 	private Boolean isDpdsMandatory = false;
 
-	// Risk Scoring Model (Score)
-	@Column(name = "min_risk_score")
-	private Double minRiskScore;
-	@Column(name = "max_risk_score")
-	private Double maxRiskScore;
-	@Column(name = "is_disk_score_display")
-	private Boolean isRiskScoreDisplay = false;
-	@Column(name = "is_disk_score_mandatory")
-	private Boolean isRiskScoreMandatory = false;
 
 	// Total Job Experience (Yrs.)
 	@Column(name = "min_total_job_experience")
@@ -132,6 +123,7 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 
 	// Minimum Banking Relationship (Months)
 	private Integer minBankRelationship;
+	private Integer maxBankRelationship;
 	private Boolean isBankRelationshipDisplay = false;
 	private Boolean isBankRelationshipMandatory = false;
 
@@ -358,37 +350,6 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isDpdsMandatory = isDpdsMandatory;
 	}
 
-	public Double getMinRiskScore() {
-		return minRiskScore;
-	}
-
-	public void setMinRiskScore(Double minRiskScore) {
-		this.minRiskScore = minRiskScore;
-	}
-
-	public Double getMaxRiskScore() {
-		return maxRiskScore;
-	}
-
-	public void setMaxRiskScore(Double maxRiskScore) {
-		this.maxRiskScore = maxRiskScore;
-	}
-
-	public Boolean getIsRiskScoreDisplay() {
-		return isRiskScoreDisplay;
-	}
-
-	public void setIsRiskScoreDisplay(Boolean isRiskScoreDisplay) {
-		this.isRiskScoreDisplay = isRiskScoreDisplay;
-	}
-
-	public Boolean getIsRiskScoreMandatory() {
-		return isRiskScoreMandatory;
-	}
-
-	public void setIsRiskScoreMandatory(Boolean isRiskScoreMandatory) {
-		this.isRiskScoreMandatory = isRiskScoreMandatory;
-	}
 
 	public Integer getMinTotalJobExperience() {
 		return minTotalJobExperience;
@@ -588,6 +549,14 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 
 	public void setMinBankRelationship(Integer minBankRelationship) {
 		this.minBankRelationship = minBankRelationship;
+	}
+
+	public Integer getMaxBankRelationship() {
+		return maxBankRelationship;
+	}
+
+	public void setMaxBankRelationship(Integer maxBankRelationship) {
+		this.maxBankRelationship = maxBankRelationship;
 	}
 
 	public Boolean getIsBankRelationshipDisplay() {
