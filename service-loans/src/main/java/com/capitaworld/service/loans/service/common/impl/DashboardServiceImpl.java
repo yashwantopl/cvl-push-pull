@@ -65,7 +65,7 @@ public class DashboardServiceImpl implements DashboardService {
 			productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);			
 		}*/
 		ApplicationProposalMapping loanApplicationMaster = applicationProposalMappingRepository.getLastByApplicationIdAndUserId(applicationId,userId);
-		int userMainType = 0;CommonUtils.getUserMainType(productId);
+		int userMainType = 0;//CommonUtils.getUserMainType(productId);
 		if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId())){
 			productId = loanApplicationMaster.getProductId();
 			userMainType = CommonUtils.getUserMainType(productId);
