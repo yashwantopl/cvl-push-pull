@@ -60,14 +60,6 @@ public class ProductMasterRequest implements Serializable {
 	
 	private String actionFor;
 	
-	private Double maxLoanAmount;
-	
-	private Double minLoanAmount;
-	
-	private Boolean isLoanAmountDisplay = false;
-
-	private Boolean isLoanAmountMandatory = false;
-	
 
 	public ProductMasterRequest() {
 		// Do nothing because of X and Y.
@@ -269,35 +261,4 @@ public class ProductMasterRequest implements Serializable {
 		this.userOrgId = userOrgId;
 	}
 
-	public Double getMaxLoanAmount() {
-		return maxLoanAmount;
-	}
-
-	public void setMaxLoanAmount(Double maxLoanAmount) {
-		this.maxLoanAmount = maxLoanAmount;
-	}
-
-	public Double getMinLoanAmount() {
-		return minLoanAmount;
-	}
-
-	public void setMinLoanAmount(Double minLoanAmount) {
-		this.minLoanAmount = minLoanAmount;
-	}
-
-	public Boolean getIsLoanAmountDisplay() {
-		return isLoanAmountDisplay;
-	}
-
-	public void setIsLoanAmountDisplay(Boolean isLoanAmountDisplay) {
-		this.isLoanAmountDisplay = isLoanAmountDisplay;
-	}
-
-	public Boolean getIsLoanAmountMandatory() {
-		return isLoanAmountMandatory;
-	}
-
-	public void setIsLoanAmountMandatory(Boolean isLoanAmountMandatory) {
-		this.isLoanAmountMandatory = isLoanAmountMandatory;
-	}
 }

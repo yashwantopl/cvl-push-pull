@@ -84,16 +84,18 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public HomeLoanParameterRequest getHomeLoanParameterRequest(Long id) {
 
 		CommonDocumentUtils.startHook(logger, "getHomeLoanParameterRequest");
-		HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
-		HomeLoanParameter homeLoanParameter = homeLoanParameterRepository.getByID(id);
-		if (homeLoanParameter == null)
+		HomeLoanParameter homeLoanParameter = homeLoanParameterRepository.findById(id);
+		if (homeLoanParameter == null) {
 			return null;
+		}
+		HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
 		BeanUtils.copyProperties(homeLoanParameter, homeLoanParameterRequest);
-		
+
 		if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMaxTenure()))
 			homeLoanParameterRequest.setMaxTenure(homeLoanParameterRequest.getMaxTenure() / 12);
 		if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMinTenure()))
@@ -107,7 +109,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG,e);
+				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
 
@@ -118,7 +120,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG,e);
+				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
 
@@ -129,7 +131,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG,e);
+				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getHomeLoanParameterRequest");
