@@ -16,12 +16,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class HomeLoanParameterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Long fpProductId;
-
-	private Integer currency;
-
-
-
 //  Co-Applicant/Guarantor
 //	private Integer coAppOrGuarantor;
 //	private Boolean isCoAppOrGuarantorDisplay = false;
@@ -170,22 +164,6 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	
 	public HomeLoanParameterRequest() {
 		// Do nothing because of X and Y.
-	}
-
-	public Long getFpProductId() {
-		return fpProductId;
-	}
-
-	public void setFpProductId(Long fpProductId) {
-		this.fpProductId = fpProductId;
-	}
-
-	public Integer getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(Integer currency) {
-		this.currency = currency;
 	}
 
 	public Double getMinNetMonthlyIncomeRange() {
