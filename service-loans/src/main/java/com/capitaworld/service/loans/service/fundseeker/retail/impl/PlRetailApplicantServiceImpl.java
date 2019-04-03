@@ -251,7 +251,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 
-                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
                 
                 if (applicationProposalMapping != null){
                     logger.info("getByproposalId called successfully ");

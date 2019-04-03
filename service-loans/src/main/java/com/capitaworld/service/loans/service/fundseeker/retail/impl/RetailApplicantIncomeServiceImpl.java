@@ -130,7 +130,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 					incomeDetail.setCreatedDate(new Date());
 				}
 				incomeDetail.setApplicationId(frameRequest.getApplicationId());
-
+				incomeDetail.setProposalId(frameRequest.getProposalMappingId());
 				incomeDetail.setModifiedBy(frameRequest.getUserId());
 				incomeDetail.setModifiedDate(new Date());
 				appIncomeRepository.save(incomeDetail);
