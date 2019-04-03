@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
@@ -52,6 +53,10 @@ public class BankAccountHeldDetailController {
 	
 	@Autowired
 	private CoApplicantService coApplicantService;
+	
+	@Autowired
+	ApplicationProposalMappingService applicationProposalMappingService;
+	
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
@@ -87,7 +92,9 @@ public class BankAccountHeldDetailController {
 			}else if(CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()){
 				applicationId = guarantorService.getApplicantIdById(frameRequest.getApplicationId());
 			}
-			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			
+//			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			Boolean primaryLocked = applicationProposalMappingService.isFinalLocked(frameRequest.getProposalMappingId());
 			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);

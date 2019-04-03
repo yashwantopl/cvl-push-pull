@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -30,6 +32,10 @@ public class RetailApplicantIncomeController {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private ApplicationProposalMappingService applicationProposalMappingService;
+	
 
 	@RequestMapping(value = "/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getIncomeDetails(@PathVariable("applicationId") Long applicationId){
@@ -86,7 +92,9 @@ public class RetailApplicantIncomeController {
 					: frameRequest.getClientId());
 			Long applicationId = frameRequest.getApplicationId();
 
-			Boolean finalLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+//			Boolean finalLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			Boolean finalLocked = applicationProposalMappingService.isFinalLocked(frameRequest.getProposalMappingId());
+			
 			if(!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()){
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
