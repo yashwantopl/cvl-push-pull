@@ -599,7 +599,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId, true);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
                         + userId + "  ApplicationId==>" + applicationId);

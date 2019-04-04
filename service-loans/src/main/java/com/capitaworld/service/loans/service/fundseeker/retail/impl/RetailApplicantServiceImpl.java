@@ -141,7 +141,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(), true);
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
 				applicantDetail.setModifiedBy(applicantRequest.getUserId());
 				applicantDetail.setModifiedDate(new Date());
@@ -201,7 +201,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public RetailApplicantRequest get(Long applicationId) throws LoansException {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
+//			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
 			/*if (applicantDetail == null) {
 				RetailApplicantRequest request = new RetailApplicantRequest();
 				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
