@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankAccountHeldDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankAccountHeldDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
@@ -46,6 +48,9 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
+	
+	@Autowired
+	ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -75,7 +80,10 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 				default:
 					throw new LoansException();
 				}
+				
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true);
 
+				bankAccountHeldDetail.setApplicationProposalMapping(applicationProposalMapping);
 				bankAccountHeldDetail.setModifiedBy(frameRequest.getUserId());
 				bankAccountHeldDetail.setModifiedDate(new Date());
 				bankAccountHeldDetailRepository.save(bankAccountHeldDetail);

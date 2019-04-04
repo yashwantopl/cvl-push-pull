@@ -267,7 +267,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				Long proposalMappingId = proposalrequest.getId();
-				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalrequest.getId());
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalrequest.getId(), true);
 				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 					logger.info("Proposal not in application_proposal_mapping table "+proposalMappingId);
 					continue;
@@ -2191,7 +2191,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					Long applicationId = proposalrequest.getApplicationId();
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalrequest.getId());
+					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalrequest.getId(), true);
 					if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 						logger.info("Proposal not in application_proposal_mapping table "+applicationProposalMapping.getProposalId());
 						continue;
@@ -2593,15 +2593,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								//List<ConnectRequest> connectRequestList = new ArrayList<>(connectListSize);
 								int ineligibleCnt = 0,eligibleCnt=0,totalAttempt=0;
 								for (int j = 0; j < connectListSize; j++) {
+
 									ConnectRequest connectReq = null;
 									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
 										connectReq = filteredAppListList.get(j);
 									}else{
 										connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
 									}
-									if(connectReq.getStageId().equals(4) && connectReq.getStatus().equals(6)){
+									if((connectReq.getStageId().equals(4) || connectReq.getStageId().equals(207)) && connectReq.getStatus().equals(6)){
 										ineligibleCnt++;
-									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7)) && connectReq.getStatus().equals(3)){
+									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7) || connectReq.getStageId().equals(210) || connectReq.getStageId().equals(211)) && connectReq.getStatus().equals(3)){
 										eligibleCnt++;
 									}
 									if(ineligibleCnt>0 && eligibleCnt == 0)
