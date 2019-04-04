@@ -6176,7 +6176,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationProposalMapping.setIsApplicantDetailsFilled(true);
 			applicationProposalMapping.setIsApplicantPrimaryFilled(true);
 			applicationProposalMapping.setIsPrimaryLocked(true);
-			applicationProposalMapping.setBusinessTypeId(CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			applicationProposalMapping.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
 				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
 			}
