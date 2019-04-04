@@ -721,7 +721,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			paymentRequest.setIsAcceptConsent(loanApplicationMaster.getIsAcceptConsent());
             if (CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(loanApplicationMaster.getBusinessTypeId())) {
 
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
                 if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 
                     String firstName = retailApplicantDetail.getFirstName();

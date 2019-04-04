@@ -304,7 +304,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
 				//GET ADDRESS, CITY, STATE, COUNTRY
@@ -438,7 +438,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
 				//GET ADDRESS, CITY, STATE, COUNTRY
@@ -572,7 +572,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
 				//GET ADDRESS, CITY, STATE, COUNTRY
@@ -780,7 +780,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 					}
 					else{
 						//FOR RETAIL USER
-						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 						if(retailApplicantDetail == null)
 							continue;
 						//GET ADDRESS, CITY, STATE, COUNTRY

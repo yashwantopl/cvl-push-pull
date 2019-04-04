@@ -315,7 +315,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			logger.info("start getProfile() method");
 			RetailApplicantDetail applicantDetail = null;
 			if(userId == null || userId <= 0){
-				applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+				applicantDetail = applicantRepository.findByApplicationId(applicationId);
 			}else{
 				applicantDetail = applicantRepository.getByApplicationAndUserId(userId,applicationId);
 			}
@@ -449,7 +449,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public JSONObject getNameAndPanByAppId(Long applicationId) {
 		JSONObject obj = new JSONObject();
-		RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+		RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			obj.put("name", applicantDetail.getFirstName() + " " + applicantDetail.getMiddleName() + " " + applicantDetail.getLastName());
 			obj.put("pan", applicantDetail.getPan());

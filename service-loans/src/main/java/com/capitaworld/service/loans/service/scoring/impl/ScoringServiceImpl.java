@@ -192,7 +192,7 @@ public class ScoringServiceImpl implements ScoringService {
         }*/
         RetailApplicantDetail retailApplicantDetail = null;
         if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail) || CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId())) {
-            retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
+            retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(scoringRequestLoans.getApplicationId());
             if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                 logger.warn("Business type id is null or empty");
                 return new ResponseEntity<LoansResponse>(
@@ -263,7 +263,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
-            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 
             if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
@@ -679,7 +679,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                 // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                     logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
