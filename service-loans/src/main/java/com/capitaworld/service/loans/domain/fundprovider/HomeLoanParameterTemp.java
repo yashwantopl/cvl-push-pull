@@ -12,9 +12,9 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name = "fp_home_loan_details")
+@Table(name = "fp_home_loan_details_temp")
 @PrimaryKeyJoinColumn(referencedColumnName = "fp_product_id")
-public class HomeLoanParameter extends ProductMaster implements Serializable {
+public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Net Monthly Income Range (Rs.)

@@ -2,11 +2,13 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.persistence.EntityManager;
-
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
@@ -41,6 +44,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
@@ -55,6 +59,7 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
@@ -215,9 +220,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     @Autowired
     private ProposalDetailsRepository proposalDetailsRepository;
     
-    
-    @Autowired
-    private EntityManager entityManager; 
    
 	
 	@Override
@@ -242,7 +244,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 				return true;
 			} else {
-				ProductMasterTemp productMaster = null;
+				ProductMasterTemp productMasterTemp = null;
 				LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
 				WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
 						WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
@@ -252,26 +254,33 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 				switch (loanType) {
 				case WORKING_CAPITAL:
-					productMaster = new WorkingCapitalParameterTemp();
+					productMasterTemp = new WorkingCapitalParameterTemp();
 					break;
 				case TERM_LOAN:
 					if (addProductRequest.getBusinessTypeId() == 2) {
-						productMaster = new NtbTermLoanParameterTemp();
+						productMasterTemp = new NtbTermLoanParameterTemp();
 					} else {
-						productMaster = new TermLoanParameterTemp();
+						productMasterTemp = new TermLoanParameterTemp();
 					}
 					break;
 				case WCTL_LOAN:
-					productMaster = new WcTlParameterTemp();
+					productMasterTemp = new WcTlParameterTemp();
 					break;
 				case PERSONAL_LOAN:
-					productMaster = new PersonalLoanParameterTemp();
+					productMasterTemp = new PersonalLoanParameterTemp();
 					break;
-
+				case HOME_LOAN:
+					productMasterTemp = new HomeLoanParameterTemp();
+					break;
 				default:
 					break;
 				}
-				List<DataRequest> industrySecIdList = null,secIdList=null,geogaphicallyCountry=null,geogaphicallyState=null,geogaphicallyCity=null,negativeIndList=null;
+				List<DataRequest> industrySecIdList = null;
+				List<DataRequest> secIdList=null;
+				List<DataRequest> geogaphicallyCountry=null;
+				List<DataRequest> geogaphicallyState=null;
+				List<DataRequest> geogaphicallyCity=null;
+				List<DataRequest> negativeIndList=null;
 				if(!CommonUtils.isObjectNullOrEmpty(addProductRequest.getLoanId()))
 				{
 					switch (loanType) {
@@ -293,8 +302,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						}
 						//END set multiple value in temp
 						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id");
-						productMaster = workingCapitalParameterTemp;
-						productMaster.setIsParameterFilled(true);
+						productMasterTemp = workingCapitalParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
 						break;
 					case TERM_LOAN:
 						if (addProductRequest.getBusinessTypeId()==2) {
@@ -316,8 +325,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
 							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
-							productMaster = ntbTermLoanParameterTemp;
-							productMaster.setIsParameterFilled(true);
+							productMasterTemp = ntbTermLoanParameterTemp;
+							productMasterTemp.setIsParameterFilled(true);
 						} else {
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
@@ -336,8 +345,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
 							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
-							productMaster = termLoanParameterTemp;
-							productMaster.setIsParameterFilled(true);
+							productMasterTemp = termLoanParameterTemp;
+							productMasterTemp.setIsParameterFilled(true);
 						}
 						break;
 					case WCTL_LOAN:
@@ -358,8 +367,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							wcTlParameterRequest.setNewTolTnw(null);
 						}
 						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
-						productMaster = wcTlParameterTemp;
-						productMaster.setIsParameterFilled(true);
+						productMasterTemp = wcTlParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
 						break;
 					case PERSONAL_LOAN:
 
@@ -372,10 +381,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						//negativeIndList=personalLoanParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
 						BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameterTemp,"id");
-						productMaster = personalLoanParameterTemp;
-						productMaster.setIsParameterFilled(true);
+						productMasterTemp = personalLoanParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
 						break;
 
+					case HOME_LOAN:
+						HomeLoanParameterRequest homeLoanParameterRequest = homeLoanParameterService.getHomeLoanParameterRequest(addProductRequest.getLoanId());
+						geogaphicallyCountry=homeLoanParameterRequest.getCountryList();
+						geogaphicallyState=homeLoanParameterRequest.getStateList();
+						geogaphicallyCity=homeLoanParameterRequest.getCityList();
+						BeanUtils.copyProperties(homeLoanParameterRequest, productMasterTemp,"id");
+						productMasterTemp.setIsParameterFilled(true);
+						break;
 					default:
 						break;
 					}
@@ -387,32 +404,32 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					jobId = workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
 				}
 				
-				productMaster.setJobId(jobId);
+				productMasterTemp.setJobId(jobId);
 
-				productMaster.setProductId(addProductRequest.getProductId());
-				productMaster.setIsMatched(false);
-				productMaster.setName(addProductRequest.getName());
-				productMaster.setFpName(addProductRequest.getFpName());
-				productMaster.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMasterTemp.setProductId(addProductRequest.getProductId());
+				productMasterTemp.setIsMatched(false);
+				productMasterTemp.setName(addProductRequest.getName());
+				productMasterTemp.setFpName(addProductRequest.getFpName());
+				productMasterTemp.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMaster.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMasterTemp.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMaster.setCreatedDate(new Date());
-				productMaster.setModifiedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMasterTemp.setCreatedDate(new Date());
+				productMasterTemp.setModifiedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMaster.setIsParameterFilled(false);
-				productMaster.setModifiedDate(new Date());
+				productMasterTemp.setIsParameterFilled(false);
+				productMasterTemp.setModifiedDate(new Date());
 				// set business type id
-				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
-				productMaster.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
-				productMaster.setFinId(addProductRequest.getFinId());
-				productMaster.setIsCopied(false);
-				productMaster.setIsActive(true);
-				productMaster.setUserOrgId(userOrgId);
-				productMaster.setStatusId(1);
-				productMaster.setProductCode(
+				productMasterTemp.setBusinessTypeId(addProductRequest.getBusinessTypeId());
+				productMasterTemp.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
+				productMasterTemp.setFinId(addProductRequest.getFinId());
+				productMasterTemp.setIsCopied(false);
+				productMasterTemp.setIsActive(true);
+				productMasterTemp.setUserOrgId(userOrgId);
+				productMasterTemp.setStatusId(1);
+				productMasterTemp.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
-				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMaster);
+				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMasterTemp);
 				industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				// industry data save
 				if(!CommonUtils.isListNullOrEmpty(industrySecIdList))

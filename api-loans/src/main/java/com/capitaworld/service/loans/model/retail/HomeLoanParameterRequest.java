@@ -16,25 +16,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class HomeLoanParameterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-//  Co-Applicant/Guarantor
-//	private Integer coAppOrGuarantor;
-//	private Boolean isCoAppOrGuarantorDisplay = false;
-//	private Boolean isCoAppOrGuarantorMandatory = false;
-
-	// Number of Co-Applicant?
-
-//	private Integer minNoOfCoAppOrGua;
-//	private Integer maxNoOfCoAppOrGua;
-//	private Boolean isNoOfCoAppOrGuaDisplay = false;
-//	private Boolean isNoOfCoAppOrGuaMandatory = false;
-
-	// Do you wish to consider the Income of Co-Applicant for Assessment of Loan
-	// Amount? Yes Or No
-//	private Boolean isConsiderIncomeOfCoApp;
-//	private Boolean isIsConsiderIncomeOfCoAppDisplay = false;
-//	private Boolean isIsConsiderIncomeOfCoAppMandatory = false;
-
-	
 	//Net Monthly Income Range (Rs.)
 	private Double minNetMonthlyIncomeRange;
 	private Double maxNetMonthlyIncomeRange;
