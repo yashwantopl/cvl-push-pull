@@ -601,7 +601,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					Long fpProductId = request.getFpProductId();
 
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
+							.findByApplicationId(applicationId);
 
 					if (retailApplicantDetail == null)
 						continue;
@@ -1132,7 +1132,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					Long fpProductId = request.getFpProductId();
 
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
+							.findByApplicationId(applicationId);
 
 					if (retailApplicantDetail == null)
 						continue;
@@ -1711,7 +1711,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							proposalByMatches.add(corporateProposalDetails);
 						} else {
 							RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-									.findOneByApplicationIdId(applicationId.longValue());
+									.findByApplicationId(applicationId.longValue());
 
 							if (retailApplicantDetail == null)
 								continue;
@@ -1890,7 +1890,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							proposalWithoutMatches.add(corporateProposalDetails);
 						} else {
 							RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-									.findOneByApplicationIdId(applicationId.longValue());
+									.findByApplicationId(applicationId.longValue());
 
 							if (retailApplicantDetail == null)
 								continue;

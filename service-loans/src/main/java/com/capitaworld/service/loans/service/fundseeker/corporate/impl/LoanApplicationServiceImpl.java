@@ -3665,13 +3665,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
 					.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-						.findOneByApplicationIdId(applicationId);
+						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 			}
 			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
+							.findByApplicationId(applicationId);
 					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 				} else if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
 					  CorporateApplicantDetail crApp = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
@@ -5917,7 +5917,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				} else {
 					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(id);
+							.findByApplicationId(id);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 						address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
 					}
