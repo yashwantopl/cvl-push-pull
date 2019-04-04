@@ -26,7 +26,7 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	public Integer getCurrency(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 	
-	public RetailApplicantDetail findOneByApplicationIdId(Long applicationId);
+	//public RetailApplicantDetail findOneByApplicationIdId(Long applicationId);
 	
 	@Query("from RetailApplicantDetail rt where rt.applicationProposalMapping.proposalId =:proposalId and rt.applicationId.id =:applicationId and rt.isActive = true")
 	public RetailApplicantDetail findByProposalId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
