@@ -1302,6 +1302,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 GSTR1Request gstr1Request = new GSTR1Request();
                 gstr1Request.setGstin(gstNumber);
+                gstr1Request.setApplicationId(applicationId);
                 gstResponse = gstClient.getCalculations(gstr1Request);
 
                 if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
@@ -2395,6 +2396,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     GSTR1Request gstr1Request = new GSTR1Request();
                     gstr1Request.setGstin(gstNumber);
+                    gstr1Request.setApplicationId(applicationId);
                     gstResponse = gstClient.getCalculations(gstr1Request);
 
                     if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
