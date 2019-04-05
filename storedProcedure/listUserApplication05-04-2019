@@ -147,12 +147,11 @@ BEGIN
 					
 					IF (@proposalStage = 11 OR @proposalStage = 13) THEN
 				
-					SET @disbursementAmountDetails:=CONCAT('SELECT SUM(d.`disbursed_amount`)INTO @disAmt FROM loan_application.`disbursement_detail` d where  d.is_active = true AND d.application_id=',@applicationId,' AND d.org_id=',@orgId);
-					PREPARE stmtDisburse FROM @disbursementAmountDetails;
+					SET @disbursementDetails:=CONCAT('SELECT SUM(d.`disbursed_amount`),d.created_date INTO @disAmt,@disDate FROM loan_application.`disbursement_detail` d where  d.is_active = true AND d.application_id=',@applicationId);
+					
+					PREPARE stmtDisburse FROM @disbursementDetails;
 					EXECUTE stmtDisburse;
-					SET @disbursementDateDetails:=CONCAT('SELECT d.created_date INTO @disDate FROM loan_application.`disbursement_detail` d where  d.is_active = true AND d.application_id=',@applicationId,' AND d.org_id=',@orgId,' order by d.created_date desc limit 1');
-					PREPARE stmtDisburse FROM @disbursementDateDetails;
-					EXECUTE stmtDisburse;	
+						
 					END IF;
 					
 					
@@ -195,7 +194,7 @@ BEGIN
 					PREPARE offlineStmtSanction FROM @offlineSanctionAppData;
 					EXECUTE offlineStmtSanction;
 					
-					SET @offlineDisbursementDetails:=CONCAT('SELECT d.`disbursed_amount`,d.created_date INTO @offlineDisAmt,@offlineDisDate FROM loan_application.`disbursement_detail` d where  d.is_active = true AND d.application_id=',@applicationId);
+					SET @offlineDisbursementDetails:=CONCAT('SELECT SUM(d.`disbursed_amount`),d.created_date INTO @offlineDisAmt,@offlineDisDate FROM loan_application.`disbursement_detail` d where  d.is_active = true AND d.application_id=',@applicationId);
 					
 					PREPARE offlineStmtDisburse FROM @offlineDisbursementDetails;
 					EXECUTE offlineStmtDisburse;
