@@ -108,4 +108,28 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 		}
 		return null;
 	}
+
+	@Override
+	public boolean saveOrUpdateSpecificData(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException {
+
+		try {
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(
+					primaryCorporateRequest.getId(),
+					(CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getClientId()) ? userId
+							: primaryCorporateRequest.getClientId()));
+			if (primaryCorporateDetail == null) {
+				throw new NullPointerException(PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG
+						+ primaryCorporateRequest.getId() + " and UserId==>" + userId);
+			}
+
+			primaryCorporateDetail.setPurposeOfLoanId(primaryCorporateRequest.getPurposeOfLoanId());
+			primaryCorporateDetail.setModifiedBy(userId);
+			primaryCorporateDetail.setModifiedDate(new Date());
+			primaryCorporateRepository.save(primaryCorporateDetail);
+			return true;
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }

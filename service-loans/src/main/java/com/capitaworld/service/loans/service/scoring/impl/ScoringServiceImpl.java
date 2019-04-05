@@ -1318,7 +1318,10 @@ public class ScoringServiceImpl implements ScoringService {
             // get GST Data for Sales Show A Rising Trend
 
             try {
-                gstResponseScoring = gstClient.getCalculationForScoring(gstNumber);
+                GSTR1Request gstr1Request = new GSTR1Request();
+                gstr1Request.setGstin(gstNumber);
+                gstr1Request.setApplicationId(applicationId);
+                gstResponseScoring = gstClient.getCalculationForScoring(gstr1Request);
             } catch (Exception e) {
                 logger.error("error while getting GST parameter for GST Sales Show A Rising Trend : ",e);
             }
@@ -2412,7 +2415,10 @@ public class ScoringServiceImpl implements ScoringService {
                 // get GST Data for Sales Show A Rising Trend
 
                 try {
-                    gstResponseScoring = gstClient.getCalculationForScoring(gstNumber);
+                    GSTR1Request gstr1Request = new GSTR1Request();
+                    gstr1Request.setGstin(gstNumber);
+                    gstr1Request.setApplicationId(applicationId);
+                    gstResponseScoring = gstClient.getCalculationForScoring(gstr1Request);
                 } catch (Exception e) {
                     logger.error("error while getting GST parameter for GST Sales Show A Rising Trend : ",e);
                 }

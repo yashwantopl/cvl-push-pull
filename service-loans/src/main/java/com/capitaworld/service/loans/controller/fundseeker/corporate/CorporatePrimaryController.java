@@ -115,4 +115,41 @@ public class CorporatePrimaryController {
             return null;
         }
     }
+
+    @RequestMapping(value = "${primary}/save/specificData", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> savePrimarySpecificData(@RequestBody PrimaryCorporateRequest primaryCorporateRequest,
+                                                     HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
+            throws LoansException {
+        try {
+            CommonDocumentUtils.startHook(logger, "savePrimary");
+            // request must not be null
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                primaryCorporateRequest.setClientId(clientId);
+            }
+
+            if (userId == null) {
+                logger.warn("userId can not be empty ==>" + primaryCorporateRequest);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            if (primaryCorporateRequest.getId() == null) {
+                logger.warn("ID must not be empty ==>" + primaryCorporateRequest.getId());
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            primaryCorporateService.saveOrUpdateSpecificData(primaryCorporateRequest, userId);
+            CommonDocumentUtils.endHook(logger, "savePrimarySpecificData");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while saving savePrimarySpecificData()==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
