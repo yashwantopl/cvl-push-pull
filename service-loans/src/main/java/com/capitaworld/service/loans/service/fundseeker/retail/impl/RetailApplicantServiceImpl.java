@@ -141,7 +141,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(), true);
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
 				applicantDetail.setModifiedBy(applicantRequest.getUserId());
 				applicantDetail.setModifiedDate(new Date());
@@ -201,7 +201,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public RetailApplicantRequest get(Long applicationId) throws LoansException {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
+//			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
 			/*if (applicantDetail == null) {
 				RetailApplicantRequest request = new RetailApplicantRequest();
 				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -314,7 +315,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			logger.info("start getProfile() method");
 			RetailApplicantDetail applicantDetail = null;
 			if(userId == null || userId <= 0){
-				applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+				applicantDetail = applicantRepository.findByApplicationId(applicationId);
 			}else{
 				applicantDetail = applicantRepository.getByApplicationAndUserId(userId,applicationId);
 			}
@@ -448,7 +449,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public JSONObject getNameAndPanByAppId(Long applicationId) {
 		JSONObject obj = new JSONObject();
-		RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+		RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			obj.put("name", applicantDetail.getFirstName() + " " + applicantDetail.getMiddleName() + " " + applicantDetail.getLastName());
 			obj.put("pan", applicantDetail.getPan());

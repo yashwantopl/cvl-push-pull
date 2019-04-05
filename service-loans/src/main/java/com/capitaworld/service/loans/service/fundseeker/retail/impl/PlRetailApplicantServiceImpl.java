@@ -124,7 +124,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -489,7 +489,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -599,7 +599,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId, true);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
                         + userId + "  ApplicationId==>" + applicationId);

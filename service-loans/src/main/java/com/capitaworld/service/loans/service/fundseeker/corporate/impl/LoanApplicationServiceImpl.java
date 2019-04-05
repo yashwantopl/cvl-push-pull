@@ -1876,7 +1876,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception {
+	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws LoansException {
 		try {
 			Long count = applicationProposalMappingRepository.checkPrimaryDetailIsLocked(proposalId);
 			return (count != null ? count > 0 : false);
@@ -3558,6 +3558,94 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return response;
 	}
+	
+	private JSONObject retailValidating(ApplicationProposalMapping applicationProposalMapping, Integer toTabType,
+			Long coAppllicantOrGuarantorId) throws LoansException {
+		List<Long> coAppIds = null;
+		List<Long> guaIds = null;
+		Long coAppCount = null;
+		Long guarantorCount = null;
+		int index = 0;
+		final String INVALID_MSG = "Requested data is Invalid.";
+
+		JSONObject response = new JSONObject();
+		response.put(MESSAGE_LITERAL, "NA");
+		response.put(RESULT_LITERAL, true);
+		switch (toTabType) {
+		case CommonUtils.TabType.MATCHES:
+			boolean isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the matches !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.CONNECTIONS:
+			isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the connections !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+
+		case CommonUtils.TabType.PRIMARY_INFORMATION:
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			
+			break;
+			
+		case CommonUtils.TabType.PRIMARY_UPLOAD:
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			// Primary Information Tab Validating
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantPrimaryFilled())
+					|| !applicationProposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+			
+		case CommonUtils.TabType.FINAL_INFORMATION:
+			isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			// Primary Information Tab Validating
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantPrimaryFilled())
+					|| !applicationProposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			break;
+		
+		default:
+			break;
+		}
+		return response;
+	}
 
 	@Override
 	public String getFsApplicantName(Long applicationId) throws LoansException {
@@ -3577,13 +3665,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
 					.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-						.findOneByApplicationIdId(applicationId);
+						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 			}
 			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
+							.findByApplicationId(applicationId);
 					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 				} else if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
 					  CorporateApplicantDetail crApp = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
@@ -5829,7 +5917,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				} else {
 					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(id);
+							.findByApplicationId(id);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 						address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
 					}
@@ -7758,7 +7846,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
 			return corporateValidating(applicationProposalMapping, nextTabType, coAppllicantOrGuarantorId);
 		} else {
-			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
+			//return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
+			return retailValidating(applicationProposalMapping, nextTabType, coAppllicantOrGuarantorId);
 		}
 	}
 
