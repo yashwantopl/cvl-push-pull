@@ -1170,7 +1170,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		try {
 
 			if(corporateApplicantDetail.getGstIn()!= null) {
-				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn(),applicationId);
 				if (response != null) {
 					corporatePrimaryViewResponse.setGstData(response);
 				} else {
