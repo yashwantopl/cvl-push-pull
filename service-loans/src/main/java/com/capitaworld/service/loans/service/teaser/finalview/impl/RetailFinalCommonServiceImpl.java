@@ -163,9 +163,9 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 							!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? format.format(applicantDetail.getBusinessStartDate()) : "-");
 					finalViewCommonResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getShareHolding()) ? applicantDetail.getShareHolding() : "-");
 					finalViewCommonResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat(applicantDetail.getAnnualTurnover().toString()) : "-");
-					finalViewCommonResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseNumber()) ? applicantDetail.getTradeLicenseNumber() : "-");
+					finalViewCommonResponse.setDrivingLicenseNumber(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getDrivingLicenseNumber()) ? applicantDetail.getDrivingLicenseNumber() : "-");
 					SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
-					finalViewCommonResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseExpiryDate()) ?  format1.format(applicantDetail.getTradeLicenseExpiryDate()) : "-");
+					finalViewCommonResponse.setDrivingLicenseExpiryDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getDrivingLicenseExpiryDate()) ?  format1.format(applicantDetail.getDrivingLicenseExpiryDate()) : "-");
 					finalViewCommonResponse.setNameOfPoaHolder(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPoaHolderName()) ?  applicantDetail.getPoaHolderName() : "-");
 				}
 			}
