@@ -15,4 +15,6 @@ public interface PrimaryCorporateService {
      * @return
      */
     public PrimaryCorporateRequest get(Long applicationId);
+
+    public boolean saveOrUpdateSpecificData(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException;
 }

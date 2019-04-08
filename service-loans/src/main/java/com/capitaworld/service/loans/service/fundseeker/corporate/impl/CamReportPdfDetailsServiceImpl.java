@@ -479,7 +479,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
 			CAMGSTData resp =null;
-			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
+			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn(),applicationId);
 
 			Double totalSales =0.0d;
 			DecimalFormat df = new DecimalFormat(".##");
