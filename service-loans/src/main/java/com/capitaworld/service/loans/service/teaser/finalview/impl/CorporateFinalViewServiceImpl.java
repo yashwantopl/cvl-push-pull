@@ -1704,7 +1704,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 
 			if(corporateApplicantDetail.getGstIn()!= null) {
-				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn(),toApplicationId);
 				if (response != null) {
 					corporateFinalViewResponse.setGstData(response);
 				} else {
