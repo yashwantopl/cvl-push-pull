@@ -3641,6 +3641,38 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			break;
 		
+		case CommonUtils.TabType.FINAL_UPLOAD:
+			isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+					.getById(applicationProposalMapping.getProductId());
+			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
+					&& (loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
+							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
+                    && (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+                            || !applicationProposalMapping.getIsFinalMcqFilled().booleanValue())) {
+					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
+					} else {
+						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
+					}
+					response.put(RESULT_LITERAL, false);
+					return response;
+			}
+			break;
+		
 		default:
 			break;
 		}
