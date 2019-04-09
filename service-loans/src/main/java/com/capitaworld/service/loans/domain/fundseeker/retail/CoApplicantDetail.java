@@ -379,6 +379,24 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "mode_of_receipt")
 	private Integer modeOfReceipt;
+	
+	@Column(name="is_itr_completed")
+	private Boolean isItrCompleted;
+	
+	@Column(name="is_itr_skip")
+	private Boolean isItrSkip;
+	
+	@Column(name="is_itr_manual")
+	private Boolean isItrManual;
+	
+	@Column(name="is_cibil_completed")
+	private Boolean isCibilCompleted;
+	
+	@Column(name="is_bank_state_completed")
+	private Boolean isBankStatementCompleted;
+	
+	@Column(name="is_one_form_completed")
+	private Boolean isOneFormCompleted;
 
 	public CoApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1327,5 +1345,55 @@ public class CoApplicantDetail implements Serializable {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+
+	public Boolean getIsBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setIsBankStatementCompleted(Boolean isBankStatementCompleted) {
+		this.isBankStatementCompleted = isBankStatementCompleted;
+	}
+
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Boolean getIsItrSkip() {
+		return isItrSkip;
+	}
+
+	public void setIsItrSkip(Boolean isItrSkip) {
+		this.isItrSkip = isItrSkip;
+	}
+
+	public Boolean getIsItrManual() {
+		return isItrManual;
+	}
+
+	public void setIsItrManual(Boolean isItrManual) {
+		this.isItrManual = isItrManual;
+	}
+	
+	
 	
 }
