@@ -298,6 +298,7 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			LoanApplicationMaster loanApplicationMaster=loanApplicationRepo.getMcaCin(documentRequest.getApplicationId());
 			DocumentResponse response = dmsClient.listProductDocumentByProposalId(documentRequest);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully -->");
@@ -313,6 +314,7 @@ public class CorporateUploadController {
 				}
 				finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				finalResponse.setListData(response.getDataList());
+				finalResponse.setData(loanApplicationMaster.getMcaCompanyId());
 				CommonDocumentUtils.endHook(logger, "getExcelDocList");
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {

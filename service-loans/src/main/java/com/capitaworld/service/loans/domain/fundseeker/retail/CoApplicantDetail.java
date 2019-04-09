@@ -321,11 +321,11 @@ public class CoApplicantDetail implements Serializable {
 	private Double totalLandOwned;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "trade_license_expiry_date")
-	private Date tradeLicenseExpiryDate;
+	@Column(name = "driving_license_expiry_date")
+	private Date drivingLicenseExpiryDate;
 
-	@Column(name = "trade_license_number")
-	private String tradeLicenseNumber;
+	@Column(name = "driving_license_number")
+	private String drivingLicenseNumber;
 
 	private String unattended;
 
@@ -1163,20 +1163,20 @@ public class CoApplicantDetail implements Serializable {
 		this.totalLandOwned = totalLandOwned;
 	}
 
-	public Date getTradeLicenseExpiryDate() {
-		return this.tradeLicenseExpiryDate;
+	public Date getDrivingLicenseExpiryDate() {
+		return drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseExpiryDate(Date tradeLicenseExpiryDate) {
-		this.tradeLicenseExpiryDate = tradeLicenseExpiryDate;
+	public String getDrivingLicenseNumber() {
+		return drivingLicenseNumber;
 	}
 
-	public String getTradeLicenseNumber() {
-		return this.tradeLicenseNumber;
+	public void setDrivingLicenseExpiryDate(Date drivingLicenseExpiryDate) {
+		this.drivingLicenseExpiryDate = drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseNumber(String tradeLicenseNumber) {
-		this.tradeLicenseNumber = tradeLicenseNumber;
+	public void setDrivingLicenseNumber(String drivingLicenseNumber) {
+		this.drivingLicenseNumber = drivingLicenseNumber;
 	}
 
 	public String getUnattended() {

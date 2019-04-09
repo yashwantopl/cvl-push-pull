@@ -287,6 +287,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		try {
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+			gstr1Request.setApplicationId(applicationId);
 			GstResponse response = gstClient.getCalculations(gstr1Request);
 			
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
@@ -299,7 +300,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}try {
 
 			CAMGSTData resp =null;		
-			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
+			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn(),applicationId);
 			// STARTS HERE TOTAL MOM SALES------>
 			Double totalSales =0.0d;
 			DecimalFormat df = new DecimalFormat(".##");

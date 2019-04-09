@@ -479,7 +479,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
 			CAMGSTData resp =null;
-			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
+			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn(),applicationId);
 
 			Double totalSales =0.0d;
 			DecimalFormat df = new DecimalFormat(".##");
@@ -1154,6 +1154,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
 				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
 			}
+
+			McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+			if(mcaFinancialAndDetailsRes.getData()!=null){
+				map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+			}
+			
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
