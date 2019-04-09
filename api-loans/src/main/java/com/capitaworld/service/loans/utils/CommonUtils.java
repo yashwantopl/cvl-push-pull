@@ -1222,7 +1222,8 @@ public class CommonUtils {
 		NEW_TO_BUSINESS(2, "New to Business"),
 		EXISTING_BUSINESS(1, "Existing Business"),
 		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
-		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business");
+		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
+		RETAIL_HOME_LOAN(5, "Retail Home Loan");
 
 		private Integer id;
 		private String value;
