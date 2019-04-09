@@ -876,14 +876,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse.setAnnualTurnover(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualTurnover())
 											? guarantorDetail.getAnnualTurnover().toString() : null);
-							finalViewResponse.setTradeLicenseNo(
-									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseNumber())
-											? guarantorDetail.getTradeLicenseNumber() : null);
+							finalViewResponse.setDrivingLicenseNumber(
+									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDrivingLicenseNumber())
+											? guarantorDetail.getDrivingLicenseNumber() : null);
 
 							SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
-							finalViewResponse.setTradeExpiryDate(
-									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseExpiryDate())
-											? format1.format(guarantorDetail.getTradeLicenseExpiryDate()) : null);
+							finalViewResponse.setDrivingLicenseExpiryDate(
+									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDrivingLicenseExpiryDate())
+											? format1.format(guarantorDetail.getDrivingLicenseExpiryDate()) : null);
 							finalViewResponse.setNameOfPoaHolder(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPoaHolderName())
 											? guarantorDetail.getPoaHolderName() : null);

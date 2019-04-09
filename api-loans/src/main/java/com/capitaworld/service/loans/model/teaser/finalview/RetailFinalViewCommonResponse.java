@@ -67,8 +67,8 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	private String businessEstablishmentYear;
 	private String shareHolding;
 	private String annualTurnover;
-	private String tradeLicenseNo;
-	private String tradeExpiryDate;
+	private String drivingLicenseNumber;
+	private String drivingLicenseExpiryDate;
 	private String nameOfPoaHolder;
 	private String relationShipWithApplicant;
 	
@@ -566,18 +566,7 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	public void setAnnualTurnover(String annualTurnover) {
 		this.annualTurnover = annualTurnover;
 	}
-	public String getTradeLicenseNo() {
-		return tradeLicenseNo;
-	}
-	public void setTradeLicenseNo(String tradeLicenseNo) {
-		this.tradeLicenseNo = tradeLicenseNo;
-	}
-	public String getTradeExpiryDate() {
-		return tradeExpiryDate;
-	}
-	public void setTradeExpiryDate(String tradeExpiryDate) {
-		this.tradeExpiryDate = tradeExpiryDate;
-	}
+	
 	public String getNameOfPoaHolder() {
 		return nameOfPoaHolder;
 	}
@@ -662,6 +651,18 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	}
 	public void setBirthDate(String birthDate) {
 		this.birthDate = birthDate;
+	}
+	public String getDrivingLicenseNumber() {
+		return drivingLicenseNumber;
+	}
+	public String getDrivingLicenseExpiryDate() {
+		return drivingLicenseExpiryDate;
+	}
+	public void setDrivingLicenseNumber(String drivingLicenseNumber) {
+		this.drivingLicenseNumber = drivingLicenseNumber;
+	}
+	public void setDrivingLicenseExpiryDate(String drivingLicenseExpiryDate) {
+		this.drivingLicenseExpiryDate = drivingLicenseExpiryDate;
 	}
 
 	
