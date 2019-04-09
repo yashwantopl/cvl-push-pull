@@ -1134,12 +1134,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 
-				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporatePrimaryViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}*/
+				}
 			} else {
 				logger.warn("Mca Company Id is Null");
 
