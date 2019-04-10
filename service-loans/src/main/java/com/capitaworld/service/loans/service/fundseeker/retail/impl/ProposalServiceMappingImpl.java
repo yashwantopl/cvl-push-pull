@@ -2531,7 +2531,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 			if(proposalDetailsList != null && proposalDetailsList.size() == 0){//for offline cases
-				return checkLogicForOfflineMultiBankSelection(applicationId,proposalDetailsList);
+				return checkLogicForOfflineMultiBankSelection(applicationId,proposalDetailsList,filteredAppListList);
 			}
 			if(inActivityProposalList != null && !inActivityProposalList.isEmpty()){
 				ConnectRequest connectRequest = new ConnectRequest();
@@ -2650,45 +2650,46 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList) {
+	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList,List<ConnectRequest> filteredAppListList) {
 		try {
-			int days = 0;
+			int days = 0,connectListSize = 0;
 			if(proposalDetailsList.size() == 0){//for offline cases
-				ConnectResponse connectResponseOffline = connectClient.getApplicationList(applicationId);
-				/*IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
-				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
-					return Boolean.FALSE;
-				}*/
-				if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline)
-						&& !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())
-						&& connectResponseOffline.getDataList().size() > 0){
-					ConnectRequest connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
-					if(!CommonUtils.isObjectNullOrEmpty(connectRequestOffline) && CommonUtils.isObjectNullOrEmpty(connectRequestOffline.getOrgId())){
-						days = Days.daysBetween(new LocalDate(connectRequestOffline.getModifiedDate()),
-								new LocalDate(new Date())).getDays();
-						if(days > Integer.parseInt(maxDaysForOffline)){
-							return Boolean.FALSE;
-						}else {
-							int offlineResponseListSize = connectResponseOffline.getDataList().size();
-							ConnectRequest connectReqObj = new ConnectRequest();
-							if(offlineResponseListSize > 1){
-								connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(offlineResponseListSize-1),ConnectRequest.class);
-								days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
-										new LocalDate(new Date())).getDays();
-								if(days >= Integer.parseInt(daysIntervalForOffline)) {//take 1 from application.properties file
-									return Boolean.TRUE;
-								}
-							}else{
-								if(days >= Integer.parseInt(startIntervalForOffline)) {//take 15 from application.properties file
-									return Boolean.TRUE;
-								}
+				ConnectRequest connectRequestOffline = new ConnectRequest();
+				ConnectResponse connectResponseOffline = new ConnectResponse();
+				if(!CommonUtils.isObjectNullOrEmpty(filteredAppListList)){
+					connectListSize = filteredAppListList.size();
+					connectRequestOffline = filteredAppListList.get(0);
+				}else{
+					connectResponseOffline = connectClient.getApplicationList(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline) && !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())){
+						connectListSize = connectResponseOffline.getDataList().size();
+						connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
+					}
+				}
+				//ConnectRequest connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
+				if(!CommonUtils.isObjectNullOrEmpty(connectRequestOffline) && CommonUtils.isObjectNullOrEmpty(connectRequestOffline.getOrgId())){
+					days = Days.daysBetween(new LocalDate(connectRequestOffline.getModifiedDate()),
+							new LocalDate(new Date())).getDays();
+					if(days > Integer.parseInt(maxDaysForOffline)){
+						return Boolean.FALSE;
+					}else {
+						//int offlineResponseListSize = connectResponseOffline.getDataList().size();
+						ConnectRequest connectReqObj = new ConnectRequest();
+						if(connectListSize > 1){
+							connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(connectListSize-1),ConnectRequest.class);
+							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+									new LocalDate(new Date())).getDays();
+							if(days >= Integer.parseInt(daysIntervalForOffline)) {//take 1 from application.properties file
+								return Boolean.TRUE;
+							}
+						}else{
+							if(days >= Integer.parseInt(startIntervalForOffline)) {//take 15 from application.properties file
+								return Boolean.TRUE;
 							}
 						}
 					}
-					return Boolean.FALSE;
-				}else{
-					return Boolean.FALSE;
 				}
+				return Boolean.FALSE;
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
