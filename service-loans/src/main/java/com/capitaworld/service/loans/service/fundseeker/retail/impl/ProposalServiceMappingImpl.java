@@ -2456,8 +2456,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try
 		{
 			loansResponse.setFlag(true);
-
-            ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndProposalId(userRequest.getApplicationId(), userRequest.getProposalMappingId(), userOrgId);
+            ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(userRequest.getApplicationId(), userOrgId);
 			UserResponse userResponse = null;
 			userRequest.setProductIdString(CommonUtility.encode("" + applicationProposalMapping.getProductId()));
 
