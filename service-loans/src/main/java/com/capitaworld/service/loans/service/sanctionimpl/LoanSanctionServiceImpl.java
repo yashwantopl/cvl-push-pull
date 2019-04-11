@@ -53,7 +53,14 @@ import com.capitaworld.sidbi.integration.util.AESEncryptionUtilitySBI;
 @Service
 @Transactional
 public class LoanSanctionServiceImpl implements LoanSanctionService {
+
+	private static final String LOGGER_PARAMETER_FP_NAME_CHEKER = "parameter fpName Cheker=====>{}";
+	private static final String PARAM_SIR_MADAM = "Sir/Madam";
+	private static final String LOGGER_PARAMETER_FP_NAME_HO = "parameter fpName HO=====>{}";
+	private static final String LOGGER_MOBILE_NO = "Mobile No ====>{}";
+	private static final String LOGGER_EMAIL_ID = "Email id ====>{}";
 	private static final Logger logger = LoggerFactory.getLogger(LoanSanctionServiceImpl.class);
+	private static final String LOGGER_SUBJECT = "Subject ====>{}";
 
 	private static final String SUCCESS_LITERAL = "SUCCESS";
 	private static final String ERROR_LITERAL = "error";
@@ -163,8 +170,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
 		}catch (IndexOutOfBoundsException e) {
 			logger.info("Application not from multiple bank applicationid:"+loanSanctionDomainOld.getApplicationId());
+			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 		}
-		fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 		//=================================================================================
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
@@ -175,12 +182,11 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 
 
-	public Boolean sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId) throws IndexOutOfBoundsException{
+	public Boolean sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId) {
 		logger.info("inside notification start for sanction");
-
+		Boolean isSent = false;
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
-			if(proposalDetailByApplicationId != null) {
-				if (proposalDetailByApplicationId.get(1) != null){
+				if(proposalDetailByApplicationId != null && proposalDetailByApplicationId.get(1) != null){
 					// check is their any sanction
 					Boolean isSanction = false;
 					for(Object[] arr : proposalDetailByApplicationId ){
@@ -193,7 +199,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					
 					for(Object[] arr : proposalDetailByApplicationId ){
 						Integer proposalStatus = CommonUtils.convertInteger(arr[1]);
-						String proposalCode = CommonUtils.convertString(arr[2]);
 						Long branchId = CommonUtils.convertLong(arr[3]);
 						if (isSanction && (proposalStatus != 5)) {
 							UserResponse userResponse=  userClient.getBranchUsersListByBranchId(branchId);
@@ -202,15 +207,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									String to[] = null;
 									String smsTo = null;
 									Map<String, Object> parameters = new HashMap<>();
-									String mailTo = "";
 									String fpName = "";
 									String subject = "Intimation - Another Bank has Sanctioned the Proposal";
 									Boolean result = false;
 									String checkerName = "Checker";
 		
-									try {
 										BranchUserResponse request = MultipleJSONObjectHelper.getObjectFromMap((Map) userResponse.getListData().get(i), BranchUserResponse.class);
-										logger.info("BranchUser=>"+request );
+										logger.info("BranchUser=>{}",request );
 										String userId = request.getUserId();
 										fpName = request.getUserName();
 										String organizationName = loanApplicationService.getFsApplicantName(applicationId);
@@ -220,10 +223,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		
 										parameters.put(USER_NAME, fpName);
 										if (request.getUserRole().equals(CHECKER)){
-											if(request.getUserName() != "" && request.getUserName() != null) {
+											if(!request.getUserName().equals("") && request.getUserName() != null) {
 												checkerName = request.getUserName();
 											}
-											logger.info("Checker Name =====>"+checkerName);
+											logger.info("Checker Name =====>{}",checkerName);
 										}
 										to = new String[]{request.getEmail()};
 										smsTo = request.getMobile();
@@ -237,13 +240,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 												parameters.put(HO_NAME, fpName);
 											}
 											else{
-												parameters.put(HO_NAME, "Sir/Madam");
+												parameters.put(HO_NAME, PARAM_SIR_MADAM);
 											}
 		
-											logger.info("Subject ====> " + subject);
-											logger.info("parameter fpName HO=====>"+parameters.get(HO_NAME));
-											logger.info("Email id ====>"+to[0]);
-											logger.info("Mobile No ====>"+smsTo);
+											logger.info(LOGGER_SUBJECT,subject);
+											logger.info(LOGGER_PARAMETER_FP_NAME_HO,parameters.get(HO_NAME));
+											logger.info(LOGGER_EMAIL_ID,to[0]);
+											logger.info(LOGGER_MOBILE_NO,smsTo);
 		
 											result = sendEmail(to,userId,parameters, NotificationAlias.EMAIL_SANCTION_HO_MULTIPLE_BANK,subject);
 											if(result) {
@@ -253,7 +256,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											}
 		
 											Boolean smsStatus = createNotificationForSMS(smsTo,userId,parameters,NotificationAlias.SMS_SANCTION_HO_MULTIPLE_BANK);
-											logger.info("SMS sending process complete STATUS is :" + smsStatus);
+											logger.info("SMS sending process complete STATUS is :{}" , smsStatus);
 		
 										}
 										else if (request.getUserRole().equals(BO)) {
@@ -264,13 +267,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 												parameters.put(BO_CHECKER, fpName);
 											}
 											else{
-												parameters.put(BO_CHECKER, "Sir/Madam");
+												parameters.put(BO_CHECKER, PARAM_SIR_MADAM);
 											}
 		
-											logger.info("Subject ====> " + subject);
-											logger.info("parameter fpName BO=====>"+parameters.get(BO_CHECKER));
-											logger.info("Email id ====>"+to[0]);
-											logger.info("Mobile No ====>"+smsTo);
+											logger.info(LOGGER_SUBJECT , subject);
+											logger.info("parameter fpName BO=====>{}",parameters.get(HO_NAME));
+											logger.info(LOGGER_EMAIL_ID,to[0]);
+											logger.info(LOGGER_MOBILE_NO,smsTo);
 		
 											result = sendEmail(to,userId,parameters, NotificationAlias.EMAIL_SANCTION_BO_MULTIPLE_BANK,subject);
 											if(result) {
@@ -280,22 +283,18 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											}
 		
 											Boolean smsStatus = createNotificationForSMS(smsTo,userId,parameters,NotificationAlias.SMS_SANCTION_BO_MULTIPLE_BANK);
-											logger.info("SMS sending process complete STATUS is :" + smsStatus);
+											logger.info("SMS sending process complete STATUS is :{}", smsStatus);
 										}
 										else if(request.getUserRole().equals(CHECKER)) {
 											fpName = request.getUserName();
 											parameters.put(APPLICATION_ID, applicationCode);
 											parameters.put(NAME_OF_ENTITY, organizationName);
-											if (fpName != "" && fpName != null) {
-												parameters.put(CHECKER_NAME, fpName);
-											} else {
-												parameters.put(CHECKER_NAME, "Sir/Madam");
-											}
+											parameters.put(CHECKER_NAME, !fpName.equals("")?fpName:PARAM_SIR_MADAM);
 		
-											logger.info("Subject ====> " + subject);
-											logger.info("parameter fpName Checker=====>"+parameters.get(CHECKER_NAME));
-											logger.info("Email id ====>"+to[0]);
-											logger.info("Mobile No ====>"+smsTo);
+											logger.info(LOGGER_SUBJECT , subject);
+											logger.info(LOGGER_PARAMETER_FP_NAME_CHEKER,parameters.get(HO_NAME));
+											logger.info(LOGGER_EMAIL_ID,to[0]);
+											logger.info(LOGGER_MOBILE_NO,smsTo);
 		
 											result = sendEmail(to, userId, parameters, NotificationAlias.EMAIL_SANCTION_CHECKER_MULTIPLE_BANK, subject);
 											if (result) {
@@ -308,10 +307,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											logger.info("SMS sending process complete STATUS is :" + smsStatus);
 		
 										}
+										isSent = true;
 										logger.info(userId+" ====>"+request.getUserRole() + " ===> " + request.getEmail() + " ====> " + fpName+" ====> "+organizationName+ " ====> "+request.getMobile());
-									} catch (IOException e) {
-										logger.error("Exception",e);
-									}
 								} catch (Exception e) {
 									logger.error("Exception",e);
 								}
@@ -320,10 +317,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		
 					}
 				}
-			}
 	 
 		logger.info("outside notification end for sanction");
-		return true;
+		return isSent;
 	}
 
 
