@@ -54,7 +54,7 @@ public class FundSeekerInputRequestResponse {
     private Boolean isGstCompleted;
 
     private Boolean isItrCompleted;
-
+    
     private Double collateralSecurityAmount;
 
     private Integer constitutionId;
@@ -139,6 +139,12 @@ public class FundSeekerInputRequestResponse {
     private Double projectedProfitCurrFinYear;
 
     private Double enhancementAmount;
+    
+    private Boolean isAdditionalAmount;
+    
+    private Boolean  isAllowSwitchExistingLender;
+    
+    private Double additionalLoanAmount;
 
     public Long getUserId() {
         return userId;
@@ -609,15 +615,39 @@ public class FundSeekerInputRequestResponse {
 		this.estYear = estYear;
 	}
 
+	public Boolean getIsAdditionalAmount() {
+		return isAdditionalAmount;
+	}
+
+	public void setIsAdditionalAmount(Boolean isAdditionalAmount) {
+		this.isAdditionalAmount = isAdditionalAmount;
+	}
+
+	public Double getAdditionalLoanAmount() {
+		return additionalLoanAmount;
+	}
+
+	public void setAdditionalLoanAmount(Double additionalLoanAmount) {
+		this.additionalLoanAmount = additionalLoanAmount;
+	}
+
+	public Boolean getIsAllowSwitchExistingLender() {
+		return isAllowSwitchExistingLender;
+	}
+
+	public void setIsAllowSwitchExistingLender(Boolean isAllowSwitchExistingLender) {
+		this.isAllowSwitchExistingLender = isAllowSwitchExistingLender;
+	}
+
 	@Override
 	public String toString() {
 		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
 				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding
 				+ ", keyVerticalSector=" + keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector
-				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName
-				+ ", msmeRegistrationNumber=" + msmeRegistrationNumber + ", loanAmount=" + loanAmount
-				+ ", purposeOfLoanId=" + purposeOfLoanId + ", haveCollateralSecurity=" + haveCollateralSecurity
-				+ ", isGstCompleted=" + isGstCompleted + ", isItrCompleted=" + isItrCompleted
+				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName + ", gstIn=" + gstIn
+				+ ", pan=" + pan + ", aadhar=" + aadhar + ", msmeRegistrationNumber=" + msmeRegistrationNumber
+				+ ", loanAmount=" + loanAmount + ", purposeOfLoanId=" + purposeOfLoanId + ", haveCollateralSecurity="
+				+ haveCollateralSecurity + ", isGstCompleted=" + isGstCompleted + ", isItrCompleted=" + isItrCompleted
 				+ ", collateralSecurityAmount=" + collateralSecurityAmount + ", constitutionId=" + constitutionId
 				+ ", financialArrangementsDetailRequestsList=" + financialArrangementsDetailRequestsList
 				+ ", directorBackgroundDetailRequestsList=" + directorBackgroundDetailRequestsList
@@ -637,6 +667,11 @@ public class FundSeekerInputRequestResponse {
 				+ ", turnOverPrevFinYear=" + turnOverPrevFinYear + ", turnOverCurrFinYearTillMonth="
 				+ turnOverCurrFinYearTillMonth + ", projectedTurnOverCurrFinYear=" + projectedTurnOverCurrFinYear
 				+ ", profitCurrFinYear=" + profitCurrFinYear + ", projectedProfitCurrFinYear="
-				+ projectedProfitCurrFinYear + ", enhancementAmount=" + enhancementAmount + "]";
+				+ projectedProfitCurrFinYear + ", enhancementAmount=" + enhancementAmount + ", isAdditionalAmount="
+				+ isAdditionalAmount + ", isAllowSwitchExistingLender=" + isAllowSwitchExistingLender
+				+ ", additionalLoanAmount=" + additionalLoanAmount + "]";
 	}
+
+	
+
 }
