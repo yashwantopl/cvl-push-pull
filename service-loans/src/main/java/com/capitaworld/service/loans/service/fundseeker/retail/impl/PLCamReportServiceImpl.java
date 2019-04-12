@@ -804,7 +804,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		
 		//INCOME DETAILS - NET INCOME
 		try {
-			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId,proposalId);
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
+			
 			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
 				map.put("incomeDetails", retailApplicantIncomeDetail);
 			}
@@ -1083,7 +1084,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//INCOME DETAILS - GROSS INCOME
 			try {
-				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
+				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
+				
 				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
 					map.put("grossIncomeDetails", retailApplicantIncomeDetail);
 				}
