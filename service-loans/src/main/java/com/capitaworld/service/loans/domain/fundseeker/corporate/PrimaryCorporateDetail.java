@@ -125,6 +125,15 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "gross_sales")
     private Double grossSales;
 
+    @Column(name = "additional_loan_amount")
+    private Double additionalLoanAmount;
+    
+    @Column(name = "is_additional_amount")
+    private Boolean isAdditionalAmount;
+    
+    @Column(name = "is_allow_switch_existing_lender")
+    private Boolean isAllowSwitchExistingLender;
+    
   //End By Akshay for OnePager Eligibility
 
 
@@ -372,5 +381,30 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 		this.enhancementAmount = enhancementAmount;
 	}
 
+	public Double getAdditionalLoanAmount() {
+		return additionalLoanAmount;
+	}
+
+	public void setAdditionalLoanAmount(Double additionalLoanAmount) {
+		this.additionalLoanAmount = additionalLoanAmount;
+	}
+
+	public Boolean getIsAdditionalAmount() {
+		return isAdditionalAmount;
+	}
+
+	public void setIsAdditionalAmount(Boolean isAdditionalAmount) {
+		this.isAdditionalAmount = isAdditionalAmount;
+	}
+
+	public Boolean getIsAllowSwitchExistingLender() {
+		return isAllowSwitchExistingLender;
+	}
+
+	public void setIsAllowSwitchExistingLender(Boolean isAllowSwitchExistingLender) {
+		this.isAllowSwitchExistingLender = isAllowSwitchExistingLender;
+	}
+
+	
 
 }
