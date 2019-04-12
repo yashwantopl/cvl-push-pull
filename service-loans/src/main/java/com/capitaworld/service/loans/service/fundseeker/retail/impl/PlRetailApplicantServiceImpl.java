@@ -283,7 +283,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             try {
             	
-            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdAndProposalId(applicationId ,proposalId);
+            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId ,userId);
                 
                 if(retailFinancialDetailsList != null) {
                 
