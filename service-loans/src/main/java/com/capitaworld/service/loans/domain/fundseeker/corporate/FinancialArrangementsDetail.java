@@ -89,6 +89,9 @@ public class FinancialArrangementsDetail implements Serializable {
 	@JoinColumn(name = "director_id")
 	private DirectorBackgroundDetail directorBackgroundDetail;
 
+	@Column(name = "collateral_security_amount")
+	private Double collateralSecurityAmount;
+	
 	/*
 	 * SBI MSME Integration related fields
 	 * By Ravina
@@ -288,5 +291,15 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
 	}
+
+	public Double getCollateralSecurityAmount() {
+		return collateralSecurityAmount;
+	}
+
+	public void setCollateralSecurityAmount(Double collateralSecurityAmount) {
+		this.collateralSecurityAmount = collateralSecurityAmount;
+	}
+	
+	
 }
 
