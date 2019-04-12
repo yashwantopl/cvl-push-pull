@@ -79,7 +79,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 				}
 				
 				if(frameRequest.getProposalMappingId() != null) {
-					referencesRetailDetail.setApplicationProposalMapping(applicationProposalMappingRepository.findOne(frameRequest.getProposalMappingId()));
+					referencesRetailDetail.setApplicationProposalMapping(applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true));
 				}
 				
 				referencesRetailDetail.setModifiedBy(frameRequest.getUserId());

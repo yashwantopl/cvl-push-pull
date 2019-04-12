@@ -64,8 +64,8 @@ public class FinalCommonRetailRequestOld {
 	private Double totalLandOwned;
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
-	private Date tradeLicenseExpiryDate;
-	private String tradeLicenseNumber;
+	private Date drivingLicenseExpiryDate;
+	private String drivingLicenseNumber;
 	private String unattended;
 	private String websiteAddress;
 	
@@ -446,20 +446,20 @@ public class FinalCommonRetailRequestOld {
 		this.totalLandOwned = totalLandOwned;
 	}
 
-	public Date getTradeLicenseExpiryDate() {
-		return tradeLicenseExpiryDate;
+	public Date getDrivingLicenseExpiryDate() {
+		return drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseExpiryDate(Date tradeLicenseExpiryDate) {
-		this.tradeLicenseExpiryDate = tradeLicenseExpiryDate;
+	public String getDrivingLicenseNumber() {
+		return drivingLicenseNumber;
 	}
 
-	public String getTradeLicenseNumber() {
-		return tradeLicenseNumber;
+	public void setDrivingLicenseExpiryDate(Date drivingLicenseExpiryDate) {
+		this.drivingLicenseExpiryDate = drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseNumber(String tradeLicenseNumber) {
-		this.tradeLicenseNumber = tradeLicenseNumber;
+	public void setDrivingLicenseNumber(String drivingLicenseNumber) {
+		this.drivingLicenseNumber = drivingLicenseNumber;
 	}
 
 	public String getUnattended() {

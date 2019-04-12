@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -721,7 +722,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			paymentRequest.setIsAcceptConsent(loanApplicationMaster.getIsAcceptConsent());
             if (CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(loanApplicationMaster.getBusinessTypeId())) {
 
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
                 if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 
                     String firstName = retailApplicantDetail.getFirstName();
@@ -810,6 +811,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			obj.put("entityName", applicantDetail.getOrganisationName());
 			obj.put("panNo", applicantDetail.getPanNo());
 			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+		}
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.getOne(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)
+				&& !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())){
+			obj.put("purposeOfLoanId",primaryCorporateDetail.getPurposeOfLoanId());
 		}
 		logger.info("ENd Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
 		return obj;
