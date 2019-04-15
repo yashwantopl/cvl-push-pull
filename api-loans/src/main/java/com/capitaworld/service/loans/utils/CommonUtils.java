@@ -528,6 +528,18 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
 	}
+	
+	public static final class ParameterTypes {
+		private ParameterTypes() {
+			// Do nothing because of X and Y.
+		}
+		public static final Integer CURRENT_EMPLOYMENT = 1;
+		public static final Integer RESIDENTIAL = 2;
+		public static final Integer BORROWER_TYPE = 3;
+		public static final Integer SALARY_MODE = 4;
+		public static final Integer BORROWER_SALARY_ACCOUNT = 5;
+	}
+	
 
 	public static final class InEligibleProposalStatus {
 		private InEligibleProposalStatus() {}
@@ -1222,7 +1234,8 @@ public class CommonUtils {
 		NEW_TO_BUSINESS(2, "New to Business"),
 		EXISTING_BUSINESS(1, "Existing Business"),
 		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
-		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business");
+		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
+		RETAIL_HOME_LOAN(5, "Retail Home Loan");
 
 		private Integer id;
 		private String value;

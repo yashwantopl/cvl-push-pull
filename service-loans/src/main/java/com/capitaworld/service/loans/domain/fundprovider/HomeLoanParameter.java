@@ -17,6 +17,8 @@ import javax.persistence.Table;
 public class HomeLoanParameter extends ProductMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private Double currency;
+	
 	// Net Monthly Income Range (Rs.)
 	@Column(name = "min_net_monthly_income_range")
 	private Double minNetMonthlyIncomeRange;
@@ -47,6 +49,12 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	@Column(name = "is_tenure_mandatory")
 	private Boolean isTenureMandatory = false;
 
+	//Purpose Loan
+	@Column(name = "is_purpose_loan_display")
+	private Boolean isPurposeLoanDisplay = false;
+	@Column(name = "is_purpose_loan_mandatory")
+	private Boolean isPurposeLoanMandatory = false;
+	
 	// Geographical Market Focus
 	@Column(name = "is_geographical_display")
 	private Boolean isGeographicalDisplay = false;
@@ -54,14 +62,14 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	private Boolean isGeographicalMandatory = false;
 
 	// Minimum Bureau Score
-	@Column(name = "min_cibil_score")
-	private Integer minCibilScore;
-	@Column(name = "max_cibil_score")
-	private Integer maxCibilScore;
-	@Column(name = "is_cibil_score_display")
-	private Boolean isCibilScoreDisplay = false;
-	@Column(name = "is_cibil_score_mandatory")
-	private Boolean isCibilScoreMandatory = false;
+	@Column(name = "min_bureau_score")
+	private Integer minBureauScore;
+	@Column(name = "max_bureau_score")
+	private Integer maxBureauScore;
+	@Column(name = "is_bureau_score_display")
+	private Boolean isBureauScoreDisplay = false;
+	@Column(name = "is_bureau_score_mandatory")
+	private Boolean isBureauScoreMandatory = false;
 
 	// Maximum DPDs (Satisfactory with No Default: DPD) (Days) (Past 12 Months)
 	@Column(name = "max_dpds")
@@ -70,17 +78,32 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	private Boolean isDpdsDisplay = false;
 	@Column(name = "is_dpds_mandatory")
 	private Boolean isDpdsMandatory = false;
+	
+	//Risk Model
+	@Column(name="min_risk_score_model")
+	private Double minRiskScoreRetail;
+	@Column(name="is_risk_score_model_display")
+	private Boolean isRiskScoreRetailDisplay=false;
+	@Column(name="is_risk_score_model_mandatory")
+	private Boolean isRiskScoreRetailMandatory=false;
+	
+	@Column(name="min_risk_score_model_co_app")
+	private Double minRiskScoreModelCoApp;
+	@Column(name="is_risk_score_model_coapp_display")
+	private Boolean isRiskScoreRetailCoAppDisplay=false;
+	@Column(name="is_risk_score_model_coapp_mandatory")
+	private Boolean isRiskScoreRetailCoAppMandatory=false;
 
 
 	// Total Job Experience (Yrs.)
 	@Column(name = "min_total_job_experience")
-	private Integer minTotalJobExperience;
+	private Integer minTotalJobExp;
 	@Column(name = "max_total_job_experience")
-	private Integer maxTotalJobExperience;
+	private Integer maxTotalJobExp;
 	@Column(name = "is_total_job_experience_display")
-	private Boolean isTotalJobExperienceDisplay = false;
+	private Boolean isTotalJobExpDisplay = false;
 	@Column(name = "is_total_job_experience_mandatory")
-	private Boolean isTotalJobExperienceMandatory = false;
+	private Boolean isTotalJobExpMandatory = false;
 
 	// Total Current Job Experience (Yrs.)
 	@Column(name = "min_current_job_experience")
@@ -93,8 +116,6 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	private Boolean isCurrentJobExperienceMandatory = false;
 
 	// Current Employment Status
-	@Column(name = "current_employment_status")
-	private Integer currentEmploymentStatus;
 	@Column(name = "is_current_employment_status_display")
 	private Boolean isCurrentEmploymentStatusDisplay = false;
 	@Column(name = "is_current_employment_status_mandatory")
@@ -110,25 +131,21 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 
 	// Loan Amount (Rs.)
 	@Column(name = "min_loan_amount")
-	private Double maxLoanAmount;
-	@Column(name = "max_loan_amount")
 	private Double minLoanAmount;
+	@Column(name = "max_loan_amount")
+	private Double maxLoanAmount;
 	@Column(name = "is_loan_amount_display")
 	private Boolean isLoanAmountDisplay = false;
 	@Column(name = "is_loan_amount_mandatory")
 	private Boolean isLoanAmountMandatory = false;
 
 	// Residential Status
-	@Column(name = "residential_status")
-	private Integer residentialStatus;
 	@Column(name = "is_residential_status_display")
 	private Boolean isResidentialStatusDisplay = false;
 	@Column(name = "is_residential_status_mandatory")
 	private Boolean isResidentialStatusMandatory = false;
 
 	// Borrower Type
-	@Column(name = "borrower_type")
-	private Integer borrowerType;
 	@Column(name = "is_borrower_type_display")
 	private Boolean isBorrowerTypeDisplay = false;
 	@Column(name = "is_borrower_type_mandatory")
@@ -136,85 +153,138 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 
 	// Minimum Banking Relationship (Months)
 	@Column(name = "min_bank_relationship")
-	private Integer minBankRelationship;
+	private Integer minBankRelation;
 	@Column(name = "max_bank_relationship")
-	private Integer maxBankRelationship;
+	private Integer maxBankRelation;
 	@Column(name = "is_bank_relationship_display")
-	private Boolean isBankRelationshipDisplay = false;
+	private Boolean isBankingRelationDisplay = false;
 	@Column(name = "is_bank_relationship_mandatory")
-	private Boolean isBankRelationshipMandatory = false;
+	private Boolean isBankingRelationMandatory = false;
 
 	// Mode of Salary
-	@Column(name = "salary_mode")
-	private Integer salaryMode;
 	@Column(name = "is_salary_mode_display")
 	private Boolean isSalaryModeDisplay = false;
 	@Column(name = "is_salary_mode_mandatory")
 	private Boolean isSalaryModeMandatory = false;
 
 	// Borrower Salary Account From
-	@Column(name = "borr_sal_acc")
-	private Integer borrSalAcc;
 	@Column(name = "is_borr_sal_acc_display")
 	private Boolean isBorrSalAccDisplay = false;
 	@Column(name = "is_borr_sal_acc_mandatory")
 	private Boolean isBorrSalAccMandatory = false;
 
 	// Loan to Value (LTV) %
-	@Column(name = "ltv")
-	private Double ltv;
+	
+	@Column(name = "min_ltv")
+	private Double minLtv;
+	@Column(name = "max_ltv")
+	private Double maxLtv;
 	@Column(name = "is_ltv_display")
 	private Boolean isLtvDisplay = false;
 	@Column(name = "is_ltv_mandatory")
 	private Boolean isLtvMandatory = false;
 
 	// Minimum % of Gross Monthly Income as Take Home Pay
-	@Column(name = "min_grss_mon_income_as_home_pay_sal_indiv")
-	private Double minGrssMonIncomeAsHomePaySalIndiv;
-	@Column(name = "is_grss_mon_income_as_home_pay_sal_indiv_display")
-	private Boolean isGrssMonIncomeAsHomePaySalIndivDisplay = false;
-	@Column(name = "is_grss_mon_income_as_home_pay_sal_indiv_mandatory")
-	private Boolean isGrssMonIncomeAsHomePaySalIndivMandatory = false;
+//	@Column(name = "min_grss_mon_income_as_home_pay_sal_indiv")
+//	private Double minGrssMonIncomeAsHomePaySalIndiv;
+//	@Column(name = "is_grss_mon_income_as_home_pay_sal_indiv_display")
+//	private Boolean isGrssMonIncomeAsHomePaySalIndivDisplay = false;
+//	@Column(name = "is_grss_mon_income_as_home_pay_sal_indiv_mandatory")
+//	private Boolean isGrssMonIncomeAsHomePaySalIndivMandatory = false;
+//
+//	// Maximum % of Net Income as Permissible EMI
+//	@Column(name = "max_net_income_permiss_emi_sal_indiv")
+//	private Double maxNetIncomePermissEMISalIndiv;
+//	@Column(name = "is_net_income_permiss_emi_sal_indiv_display")
+//	private Boolean isNetIncomePermissEMISalIndivDisplay = false;
+//	@Column(name = "is_net_income_permiss_emi_sal_indiv_mandatory")
+//	private Boolean isNetIncomePermissEMISalIndivMandatory = false;
+//
+//	// Maximum Number of Times of Gross Monthly Income to be considered 
+//	@Column(name = "max_time_consi_month_grss_income_sal_indiv")
+//	private Double maxTimeConsiMonthGrssIncomeSalIndiv;
+//	@Column(name = "is_time_consi_month_grss_income_sal_indiv_display")
+//	private Boolean isTimeConsiMonthGrssIncomeSalIndivDisplay = false;
+//	@Column(name = "is_time_consi_month_grss_income_sal_indiv_mandatory")
+//	private Boolean isTimeConsiMonthGrssIncomeSalIndivMandatory = false;
+//
+//	// Minimum % of Gross Monthly Income as Take Home Pay
+//	@Column(name = "max_grss_mon_income_as_home_pay_oth_thn_sal_indi")
+//	private Double maxGrssMonIncomeAsHomePayOthThnSalIndi;
+//	@Column(name = "is_grss_mon_income_as_home_pay_oth_thn_sal_indi_display")
+//	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiDisplay = false;
+//	@Column(name = "is_grss_mon_income_as_home_pay_oth_thn_sal_indi_mandatory")
+//	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiMandatory = false;
+//
+//	// Maximum % of Net Income as Permissible EMI
+//	@Column(name = "max_net_income_permiss_emi_oth_thn_sal_indiv")
+//	private Double maxNetIncomePermissEMIOthThnSalIndi;
+//	@Column(name = "is_net_income_permiss_emi_oth_thn_sal_indiv_display")
+//	private Boolean isNetIncomePermissEMIOthThnSalIndiDisplay = false;
+//	@Column(name = "is_net_income_permiss_emi_oth_thn_sal_indiv_mandatory")
+//	private Boolean isNetIncomePermissEMIOthThnSalIndiMandatory = false;
+//
+//	// Maximum Number of Times of Gross Monthly Income to be considered 
+//	@Column(name = "max_time_consi_month_grss_income_oth_thn_sal_indi")
+//	private Double maxTimeConsiMonthGrssIncomeOthThnSalIndi;
+//	@Column(name = "is_time_consi_month_grss_income_oth_thn_sal_indi_display")
+//	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay = false;
+//	@Column(name = "is_time_consi_month_grss_income_oth_thn_sal_indi_mandatory")
+//	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory = false;
+	
+	//No. of Co-Applicant
+	@Column(name = "no_of_co_app_or_gua")
+	private Integer noOfCoAppOrGua;
 
-	// Maximum % of Net Income as Permissible EMI
-	@Column(name = "max_net_income_permiss_emi_sal_indiv")
-	private Double maxNetIncomePermissEMISalIndiv;
-	@Column(name = "is_net_income_permiss_emi_sal_indiv_display")
-	private Boolean isNetIncomePermissEMISalIndivDisplay = false;
-	@Column(name = "is_net_income_permiss_emi_sal_indiv_mandatory")
-	private Boolean isNetIncomePermissEMISalIndivMandatory = false;
+	// Do you wish to consider the Income of Co-Applicant for Assessment of Loan Amount? Yes Or No
+	@Column(name = "is_consider_income_of_co_app")
+	private Boolean isConsiderIncomeOfCoApp;
+	
+//	Maximum Age allowed
+	@Column(name = "max_age_allowed")
+	private Integer maxAgeAllowed;
+	
+	
+	@Column(name = "assessment_method_id")
+	private Integer assessmentMethodId;
+	
+	@Column(name = "is_gross_net_income")
+	private Boolean isGrossNetIncome;
+	
+	@Column(name = "mon_income_type")
+	private Integer monIncomeType;
+	
+	private Double foir;
+	
+	@Column(name = "is_times_multiplier_income")
+	private Boolean isTimesMultiplierIncome;
+	
+	@Column(name = "mon_income_multiplier_type")
+	private Integer monIncomeMultiplierType;
+	
+	@Column(name = "times_multiplier")
+	private Integer timesMultiplier;
+	
+	
+	@Column(name = "is_ltv")
+	private Boolean isLtv;
+	
+	@Column(name = "is_pur_ren_cons_exp_rep_cost")
+	private Boolean isPurRenConsExpRepCost;
+	
+	@Column(name = "is_market_value")
+	private Boolean isMarketValue;
+	
+	@Column(name = "ltv_for_eligibility")
+	private Integer ltvForEligibility;
 
-	// Maximum Number of Times of Gross Monthly Income to be considered 
-	@Column(name = "max_time_consi_month_grss_income_sal_indiv")
-	private Double maxTimeConsiMonthGrssIncomeSalIndiv;
-	@Column(name = "is_time_consi_month_grss_income_sal_indiv_display")
-	private Boolean isTimeConsiMonthGrssIncomeSalIndivDisplay = false;
-	@Column(name = "is_time_consi_month_grss_income_sal_indiv_mandatory")
-	private Boolean isTimeConsiMonthGrssIncomeSalIndivMandatory = false;
+	public Double getCurrency() {
+		return currency;
+	}
 
-	// Minimum % of Gross Monthly Income as Take Home Pay
-	@Column(name = "max_grss_mon_income_as_home_pay_oth_thn_sal_indi")
-	private Double maxGrssMonIncomeAsHomePayOthThnSalIndi;
-	@Column(name = "is_grss_mon_income_as_home_pay_oth_thn_sal_indi_display")
-	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiDisplay = false;
-	@Column(name = "is_grss_mon_income_as_home_pay_oth_thn_sal_indi_mandatory")
-	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiMandatory = false;
-
-	// Maximum % of Net Income as Permissible EMI
-	@Column(name = "max_net_income_permiss_emi_oth_thn_sal_indiv")
-	private Double maxNetIncomePermissEMIOthThnSalIndi;
-	@Column(name = "is_net_income_permiss_emi_oth_thn_sal_indiv_display")
-	private Boolean isNetIncomePermissEMIOthThnSalIndiDisplay = false;
-	@Column(name = "is_net_income_permiss_emi_oth_thn_sal_indiv_mandatory")
-	private Boolean isNetIncomePermissEMIOthThnSalIndiMandatory = false;
-
-	// Maximum Number of Times of Gross Monthly Income to be considered 
-	@Column(name = "max_time_consi_month_grss_income_oth_thn_sal_indi")
-	private Double maxTimeConsiMonthGrssIncomeOthThnSalIndi;
-	@Column(name = "is_time_consi_month_grss_income_oth_thn_sal_indi_display")
-	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay = false;
-	@Column(name = "is_time_consi_month_grss_income_oth_thn_sal_indi_mandatory")
-	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory = false;
+	public void setCurrency(Double currency) {
+		this.currency = currency;
+	}
 
 	public Double getMinNetMonthlyIncomeRange() {
 		return minNetMonthlyIncomeRange;
@@ -312,6 +382,22 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isTenureMandatory = isTenureMandatory;
 	}
 
+	public Boolean getIsPurposeLoanDisplay() {
+		return isPurposeLoanDisplay;
+	}
+
+	public void setIsPurposeLoanDisplay(Boolean isPurposeLoanDisplay) {
+		this.isPurposeLoanDisplay = isPurposeLoanDisplay;
+	}
+
+	public Boolean getIsPurposeLoanMandatory() {
+		return isPurposeLoanMandatory;
+	}
+
+	public void setIsPurposeLoanMandatory(Boolean isPurposeLoanMandatory) {
+		this.isPurposeLoanMandatory = isPurposeLoanMandatory;
+	}
+
 	public Boolean getIsGeographicalDisplay() {
 		return isGeographicalDisplay;
 	}
@@ -328,36 +414,36 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isGeographicalMandatory = isGeographicalMandatory;
 	}
 
-	public Integer getMinCibilScore() {
-		return minCibilScore;
+	public Integer getMinBureauScore() {
+		return minBureauScore;
 	}
 
-	public void setMinCibilScore(Integer minCibilScore) {
-		this.minCibilScore = minCibilScore;
+	public void setMinBureauScore(Integer minBureauScore) {
+		this.minBureauScore = minBureauScore;
 	}
 
-	public Integer getMaxCibilScore() {
-		return maxCibilScore;
+	public Integer getMaxBureauScore() {
+		return maxBureauScore;
 	}
 
-	public void setMaxCibilScore(Integer maxCibilScore) {
-		this.maxCibilScore = maxCibilScore;
+	public void setMaxBureauScore(Integer maxBureauScore) {
+		this.maxBureauScore = maxBureauScore;
 	}
 
-	public Boolean getIsCibilScoreDisplay() {
-		return isCibilScoreDisplay;
+	public Boolean getIsBureauScoreDisplay() {
+		return isBureauScoreDisplay;
 	}
 
-	public void setIsCibilScoreDisplay(Boolean isCibilScoreDisplay) {
-		this.isCibilScoreDisplay = isCibilScoreDisplay;
+	public void setIsBureauScoreDisplay(Boolean isBureauScoreDisplay) {
+		this.isBureauScoreDisplay = isBureauScoreDisplay;
 	}
 
-	public Boolean getIsCibilScoreMandatory() {
-		return isCibilScoreMandatory;
+	public Boolean getIsBureauScoreMandatory() {
+		return isBureauScoreMandatory;
 	}
 
-	public void setIsCibilScoreMandatory(Boolean isCibilScoreMandatory) {
-		this.isCibilScoreMandatory = isCibilScoreMandatory;
+	public void setIsBureauScoreMandatory(Boolean isBureauScoreMandatory) {
+		this.isBureauScoreMandatory = isBureauScoreMandatory;
 	}
 
 	public Integer getMaxDpds() {
@@ -384,37 +470,84 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isDpdsMandatory = isDpdsMandatory;
 	}
 
-
-	public Integer getMinTotalJobExperience() {
-		return minTotalJobExperience;
+	public Double getMinRiskScoreRetail() {
+		return minRiskScoreRetail;
 	}
 
-	public void setMinTotalJobExperience(Integer minTotalJobExperience) {
-		this.minTotalJobExperience = minTotalJobExperience;
+	public void setMinRiskScoreRetail(Double minRiskScoreRetail) {
+		this.minRiskScoreRetail = minRiskScoreRetail;
 	}
 
-	public Integer getMaxTotalJobExperience() {
-		return maxTotalJobExperience;
+	public Boolean getIsRiskScoreRetailDisplay() {
+		return isRiskScoreRetailDisplay;
 	}
 
-	public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
-		this.maxTotalJobExperience = maxTotalJobExperience;
+	public void setIsRiskScoreRetailDisplay(Boolean isRiskScoreRetailDisplay) {
+		this.isRiskScoreRetailDisplay = isRiskScoreRetailDisplay;
 	}
 
-	public Boolean getIsTotalJobExperienceDisplay() {
-		return isTotalJobExperienceDisplay;
+	public Boolean getIsRiskScoreRetailMandatory() {
+		return isRiskScoreRetailMandatory;
 	}
 
-	public void setIsTotalJobExperienceDisplay(Boolean isTotalJobExperienceDisplay) {
-		this.isTotalJobExperienceDisplay = isTotalJobExperienceDisplay;
+	public void setIsRiskScoreRetailMandatory(Boolean isRiskScoreRetailMandatory) {
+		this.isRiskScoreRetailMandatory = isRiskScoreRetailMandatory;
 	}
 
-	public Boolean getIsTotalJobExperienceMandatory() {
-		return isTotalJobExperienceMandatory;
+	public Double getMinRiskScoreModelCoApp() {
+		return minRiskScoreModelCoApp;
 	}
 
-	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
-		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
+	public void setMinRiskScoreModelCoApp(Double minRiskScoreModelCoApp) {
+		this.minRiskScoreModelCoApp = minRiskScoreModelCoApp;
+	}
+
+	public Boolean getIsRiskScoreRetailCoAppDisplay() {
+		return isRiskScoreRetailCoAppDisplay;
+	}
+
+	public void setIsRiskScoreRetailCoAppDisplay(Boolean isRiskScoreRetailCoAppDisplay) {
+		this.isRiskScoreRetailCoAppDisplay = isRiskScoreRetailCoAppDisplay;
+	}
+
+	public Boolean getIsRiskScoreRetailCoAppMandatory() {
+		return isRiskScoreRetailCoAppMandatory;
+	}
+
+	public void setIsRiskScoreRetailCoAppMandatory(Boolean isRiskScoreRetailCoAppMandatory) {
+		this.isRiskScoreRetailCoAppMandatory = isRiskScoreRetailCoAppMandatory;
+	}
+
+	public Integer getMinTotalJobExp() {
+		return minTotalJobExp;
+	}
+
+	public void setMinTotalJobExp(Integer minTotalJobExp) {
+		this.minTotalJobExp = minTotalJobExp;
+	}
+
+	public Integer getMaxTotalJobExp() {
+		return maxTotalJobExp;
+	}
+
+	public void setMaxTotalJobExp(Integer maxTotalJobExp) {
+		this.maxTotalJobExp = maxTotalJobExp;
+	}
+
+	public Boolean getIsTotalJobExpDisplay() {
+		return isTotalJobExpDisplay;
+	}
+
+	public void setIsTotalJobExpDisplay(Boolean isTotalJobExpDisplay) {
+		this.isTotalJobExpDisplay = isTotalJobExpDisplay;
+	}
+
+	public Boolean getIsTotalJobExpMandatory() {
+		return isTotalJobExpMandatory;
+	}
+
+	public void setIsTotalJobExpMandatory(Boolean isTotalJobExpMandatory) {
+		this.isTotalJobExpMandatory = isTotalJobExpMandatory;
 	}
 
 	public Integer getMinCurrentJobExperience() {
@@ -447,14 +580,6 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 
 	public void setIsCurrentJobExperienceMandatory(Boolean isCurrentJobExperienceMandatory) {
 		this.isCurrentJobExperienceMandatory = isCurrentJobExperienceMandatory;
-	}
-
-	public Integer getCurrentEmploymentStatus() {
-		return currentEmploymentStatus;
-	}
-
-	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
-		this.currentEmploymentStatus = currentEmploymentStatus;
 	}
 
 	public Boolean getIsCurrentEmploymentStatusDisplay() {
@@ -529,14 +654,6 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isLoanAmountMandatory = isLoanAmountMandatory;
 	}
 
-	public Integer getResidentialStatus() {
-		return residentialStatus;
-	}
-
-	public void setResidentialStatus(Integer residentialStatus) {
-		this.residentialStatus = residentialStatus;
-	}
-
 	public Boolean getIsResidentialStatusDisplay() {
 		return isResidentialStatusDisplay;
 	}
@@ -551,14 +668,6 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 
 	public void setIsResidentialStatusMandatory(Boolean isResidentialStatusMandatory) {
 		this.isResidentialStatusMandatory = isResidentialStatusMandatory;
-	}
-
-	public Integer getBorrowerType() {
-		return borrowerType;
-	}
-
-	public void setBorrowerType(Integer borrowerType) {
-		this.borrowerType = borrowerType;
 	}
 
 	public Boolean getIsBorrowerTypeDisplay() {
@@ -577,44 +686,36 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isBorrowerTypeMandatory = isBorrowerTypeMandatory;
 	}
 
-	public Integer getMinBankRelationship() {
-		return minBankRelationship;
+	public Integer getMinBankRelation() {
+		return minBankRelation;
 	}
 
-	public void setMinBankRelationship(Integer minBankRelationship) {
-		this.minBankRelationship = minBankRelationship;
+	public void setMinBankRelation(Integer minBankRelation) {
+		this.minBankRelation = minBankRelation;
 	}
 
-	public Integer getMaxBankRelationship() {
-		return maxBankRelationship;
+	public Integer getMaxBankRelation() {
+		return maxBankRelation;
 	}
 
-	public void setMaxBankRelationship(Integer maxBankRelationship) {
-		this.maxBankRelationship = maxBankRelationship;
+	public void setMaxBankRelation(Integer maxBankRelation) {
+		this.maxBankRelation = maxBankRelation;
 	}
 
-	public Boolean getIsBankRelationshipDisplay() {
-		return isBankRelationshipDisplay;
+	public Boolean getIsBankingRelationDisplay() {
+		return isBankingRelationDisplay;
 	}
 
-	public void setIsBankRelationshipDisplay(Boolean isBankRelationshipDisplay) {
-		this.isBankRelationshipDisplay = isBankRelationshipDisplay;
+	public void setIsBankingRelationDisplay(Boolean isBankingRelationDisplay) {
+		this.isBankingRelationDisplay = isBankingRelationDisplay;
 	}
 
-	public Boolean getIsBankRelationshipMandatory() {
-		return isBankRelationshipMandatory;
+	public Boolean getIsBankingRelationMandatory() {
+		return isBankingRelationMandatory;
 	}
 
-	public void setIsBankRelationshipMandatory(Boolean isBankRelationshipMandatory) {
-		this.isBankRelationshipMandatory = isBankRelationshipMandatory;
-	}
-
-	public Integer getSalaryMode() {
-		return salaryMode;
-	}
-
-	public void setSalaryMode(Integer salaryMode) {
-		this.salaryMode = salaryMode;
+	public void setIsBankingRelationMandatory(Boolean isBankingRelationMandatory) {
+		this.isBankingRelationMandatory = isBankingRelationMandatory;
 	}
 
 	public Boolean getIsSalaryModeDisplay() {
@@ -633,14 +734,6 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isSalaryModeMandatory = isSalaryModeMandatory;
 	}
 
-	public Integer getBorrSalAcc() {
-		return borrSalAcc;
-	}
-
-	public void setBorrSalAcc(Integer borrSalAcc) {
-		this.borrSalAcc = borrSalAcc;
-	}
-
 	public Boolean getIsBorrSalAccDisplay() {
 		return isBorrSalAccDisplay;
 	}
@@ -657,12 +750,20 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isBorrSalAccMandatory = isBorrSalAccMandatory;
 	}
 
-	public Double getLtv() {
-		return ltv;
+	public Double getMinLtv() {
+		return minLtv;
 	}
 
-	public void setLtv(Double ltv) {
-		this.ltv = ltv;
+	public void setMinLtv(Double minLtv) {
+		this.minLtv = minLtv;
+	}
+
+	public Double getMaxLtv() {
+		return maxLtv;
+	}
+
+	public void setMaxLtv(Double maxLtv) {
+		this.maxLtv = maxLtv;
 	}
 
 	public Boolean getIsLtvDisplay() {
@@ -681,151 +782,115 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 		this.isLtvMandatory = isLtvMandatory;
 	}
 
-	public Double getMinGrssMonIncomeAsHomePaySalIndiv() {
-		return minGrssMonIncomeAsHomePaySalIndiv;
+	public Integer getNoOfCoAppOrGua() {
+		return noOfCoAppOrGua;
 	}
 
-	public void setMinGrssMonIncomeAsHomePaySalIndiv(Double minGrssMonIncomeAsHomePaySalIndiv) {
-		this.minGrssMonIncomeAsHomePaySalIndiv = minGrssMonIncomeAsHomePaySalIndiv;
+	public void setNoOfCoAppOrGua(Integer noOfCoAppOrGua) {
+		this.noOfCoAppOrGua = noOfCoAppOrGua;
 	}
 
-	public Boolean getIsGrssMonIncomeAsHomePaySalIndivDisplay() {
-		return isGrssMonIncomeAsHomePaySalIndivDisplay;
+	public Boolean getIsConsiderIncomeOfCoApp() {
+		return isConsiderIncomeOfCoApp;
 	}
 
-	public void setIsGrssMonIncomeAsHomePaySalIndivDisplay(Boolean isGrssMonIncomeAsHomePaySalIndivDisplay) {
-		this.isGrssMonIncomeAsHomePaySalIndivDisplay = isGrssMonIncomeAsHomePaySalIndivDisplay;
+	public void setIsConsiderIncomeOfCoApp(Boolean isConsiderIncomeOfCoApp) {
+		this.isConsiderIncomeOfCoApp = isConsiderIncomeOfCoApp;
 	}
 
-	public Boolean getIsGrssMonIncomeAsHomePaySalIndivMandatory() {
-		return isGrssMonIncomeAsHomePaySalIndivMandatory;
+	public Integer getMaxAgeAllowed() {
+		return maxAgeAllowed;
 	}
 
-	public void setIsGrssMonIncomeAsHomePaySalIndivMandatory(Boolean isGrssMonIncomeAsHomePaySalIndivMandatory) {
-		this.isGrssMonIncomeAsHomePaySalIndivMandatory = isGrssMonIncomeAsHomePaySalIndivMandatory;
+	public void setMaxAgeAllowed(Integer maxAgeAllowed) {
+		this.maxAgeAllowed = maxAgeAllowed;
 	}
 
-	public Double getMaxNetIncomePermissEMISalIndiv() {
-		return maxNetIncomePermissEMISalIndiv;
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
 	}
 
-	public void setMaxNetIncomePermissEMISalIndiv(Double maxNetIncomePermissEMISalIndiv) {
-		this.maxNetIncomePermissEMISalIndiv = maxNetIncomePermissEMISalIndiv;
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
 	}
 
-	public Boolean getIsNetIncomePermissEMISalIndivDisplay() {
-		return isNetIncomePermissEMISalIndivDisplay;
+	public Boolean getIsGrossNetIncome() {
+		return isGrossNetIncome;
 	}
 
-	public void setIsNetIncomePermissEMISalIndivDisplay(Boolean isNetIncomePermissEMISalIndivDisplay) {
-		this.isNetIncomePermissEMISalIndivDisplay = isNetIncomePermissEMISalIndivDisplay;
+	public void setIsGrossNetIncome(Boolean isGrossNetIncome) {
+		this.isGrossNetIncome = isGrossNetIncome;
 	}
 
-	public Boolean getIsNetIncomePermissEMISalIndivMandatory() {
-		return isNetIncomePermissEMISalIndivMandatory;
+	public Integer getMonIncomeType() {
+		return monIncomeType;
 	}
 
-	public void setIsNetIncomePermissEMISalIndivMandatory(Boolean isNetIncomePermissEMISalIndivMandatory) {
-		this.isNetIncomePermissEMISalIndivMandatory = isNetIncomePermissEMISalIndivMandatory;
+	public void setMonIncomeType(Integer monIncomeType) {
+		this.monIncomeType = monIncomeType;
 	}
 
-	public Double getMaxTimeConsiMonthGrssIncomeSalIndiv() {
-		return maxTimeConsiMonthGrssIncomeSalIndiv;
+	public Double getFoir() {
+		return foir;
 	}
 
-	public void setMaxTimeConsiMonthGrssIncomeSalIndiv(Double maxTimeConsiMonthGrssIncomeSalIndiv) {
-		this.maxTimeConsiMonthGrssIncomeSalIndiv = maxTimeConsiMonthGrssIncomeSalIndiv;
+	public void setFoir(Double foir) {
+		this.foir = foir;
 	}
 
-	public Boolean getIsTimeConsiMonthGrssIncomeSalIndivDisplay() {
-		return isTimeConsiMonthGrssIncomeSalIndivDisplay;
+	public Boolean getIsTimesMultiplierIncome() {
+		return isTimesMultiplierIncome;
 	}
 
-	public void setIsTimeConsiMonthGrssIncomeSalIndivDisplay(Boolean isTimeConsiMonthGrssIncomeSalIndivDisplay) {
-		this.isTimeConsiMonthGrssIncomeSalIndivDisplay = isTimeConsiMonthGrssIncomeSalIndivDisplay;
+	public void setIsTimesMultiplierIncome(Boolean isTimesMultiplierIncome) {
+		this.isTimesMultiplierIncome = isTimesMultiplierIncome;
 	}
 
-	public Boolean getIsTimeConsiMonthGrssIncomeSalIndivMandatory() {
-		return isTimeConsiMonthGrssIncomeSalIndivMandatory;
+	public Integer getMonIncomeMultiplierType() {
+		return monIncomeMultiplierType;
 	}
 
-	public void setIsTimeConsiMonthGrssIncomeSalIndivMandatory(Boolean isTimeConsiMonthGrssIncomeSalIndivMandatory) {
-		this.isTimeConsiMonthGrssIncomeSalIndivMandatory = isTimeConsiMonthGrssIncomeSalIndivMandatory;
+	public void setMonIncomeMultiplierType(Integer monIncomeMultiplierType) {
+		this.monIncomeMultiplierType = monIncomeMultiplierType;
 	}
 
-	public Double getMaxGrssMonIncomeAsHomePayOthThnSalIndi() {
-		return maxGrssMonIncomeAsHomePayOthThnSalIndi;
+	public Integer getTimesMultiplier() {
+		return timesMultiplier;
 	}
 
-	public void setMaxGrssMonIncomeAsHomePayOthThnSalIndi(Double maxGrssMonIncomeAsHomePayOthThnSalIndi) {
-		this.maxGrssMonIncomeAsHomePayOthThnSalIndi = maxGrssMonIncomeAsHomePayOthThnSalIndi;
+	public void setTimesMultiplier(Integer timesMultiplier) {
+		this.timesMultiplier = timesMultiplier;
 	}
 
-	public Boolean getIsGrssMonIncomeAsHomePayOthThnSalIndiDisplay() {
-		return isGrssMonIncomeAsHomePayOthThnSalIndiDisplay;
+	public Boolean getIsLtv() {
+		return isLtv;
 	}
 
-	public void setIsGrssMonIncomeAsHomePayOthThnSalIndiDisplay(Boolean isGrssMonIncomeAsHomePayOthThnSalIndiDisplay) {
-		this.isGrssMonIncomeAsHomePayOthThnSalIndiDisplay = isGrssMonIncomeAsHomePayOthThnSalIndiDisplay;
+	public void setIsLtv(Boolean isLtv) {
+		this.isLtv = isLtv;
 	}
 
-	public Boolean getIsGrssMonIncomeAsHomePayOthThnSalIndiMandatory() {
-		return isGrssMonIncomeAsHomePayOthThnSalIndiMandatory;
+	public Boolean getIsPurRenConsExpRepCost() {
+		return isPurRenConsExpRepCost;
 	}
 
-	public void setIsGrssMonIncomeAsHomePayOthThnSalIndiMandatory(
-			Boolean isGrssMonIncomeAsHomePayOthThnSalIndiMandatory) {
-		this.isGrssMonIncomeAsHomePayOthThnSalIndiMandatory = isGrssMonIncomeAsHomePayOthThnSalIndiMandatory;
+	public void setIsPurRenConsExpRepCost(Boolean isPurRenConsExpRepCost) {
+		this.isPurRenConsExpRepCost = isPurRenConsExpRepCost;
 	}
 
-	public Double getMaxNetIncomePermissEMIOthThnSalIndi() {
-		return maxNetIncomePermissEMIOthThnSalIndi;
+	public Boolean getIsMarketValue() {
+		return isMarketValue;
 	}
 
-	public void setMaxNetIncomePermissEMIOthThnSalIndi(Double maxNetIncomePermissEMIOthThnSalIndi) {
-		this.maxNetIncomePermissEMIOthThnSalIndi = maxNetIncomePermissEMIOthThnSalIndi;
+	public void setIsMarketValue(Boolean isMarketValue) {
+		this.isMarketValue = isMarketValue;
 	}
 
-	public Boolean getIsNetIncomePermissEMIOthThnSalIndiDisplay() {
-		return isNetIncomePermissEMIOthThnSalIndiDisplay;
+	public Integer getLtvForEligibility() {
+		return ltvForEligibility;
 	}
 
-	public void setIsNetIncomePermissEMIOthThnSalIndiDisplay(Boolean isNetIncomePermissEMIOthThnSalIndiDisplay) {
-		this.isNetIncomePermissEMIOthThnSalIndiDisplay = isNetIncomePermissEMIOthThnSalIndiDisplay;
+	public void setLtvForEligibility(Integer ltvForEligibility) {
+		this.ltvForEligibility = ltvForEligibility;
 	}
-
-	public Boolean getIsNetIncomePermissEMIOthThnSalIndiMandatory() {
-		return isNetIncomePermissEMIOthThnSalIndiMandatory;
-	}
-
-	public void setIsNetIncomePermissEMIOthThnSalIndiMandatory(Boolean isNetIncomePermissEMIOthThnSalIndiMandatory) {
-		this.isNetIncomePermissEMIOthThnSalIndiMandatory = isNetIncomePermissEMIOthThnSalIndiMandatory;
-	}
-
-	public Double getMaxTimeConsiMonthGrssIncomeOthThnSalIndi() {
-		return maxTimeConsiMonthGrssIncomeOthThnSalIndi;
-	}
-
-	public void setMaxTimeConsiMonthGrssIncomeOthThnSalIndi(Double maxTimeConsiMonthGrssIncomeOthThnSalIndi) {
-		this.maxTimeConsiMonthGrssIncomeOthThnSalIndi = maxTimeConsiMonthGrssIncomeOthThnSalIndi;
-	}
-
-	public Boolean getIsTimeConsiMonthGrssIncomeOthThnSalIndiDisplay() {
-		return isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay;
-	}
-
-	public void setIsTimeConsiMonthGrssIncomeOthThnSalIndiDisplay(
-			Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay) {
-		this.isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay = isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay;
-	}
-
-	public Boolean getIsTimeConsiMonthGrssIncomeOthThnSalIndiMandatory() {
-		return isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory;
-	}
-
-	public void setIsTimeConsiMonthGrssIncomeOthThnSalIndiMandatory(
-			Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory) {
-		this.isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory = isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory;
-	}
-
 }

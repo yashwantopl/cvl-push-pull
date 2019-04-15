@@ -43,6 +43,10 @@ public class ProductMasterRequest implements Serializable {
 	private Integer appstage;
 
 	private Long scoreModelId;
+	
+	private Long scoreModelIdCoAppId;
+	
+	private Long purposeLoanModelId;
 
 	private Long businessTypeId;
 	
@@ -261,4 +265,20 @@ public class ProductMasterRequest implements Serializable {
 		this.userOrgId = userOrgId;
 	}
 
+	public Long getScoreModelIdCoAppId() {
+		return scoreModelIdCoAppId;
+	}
+
+	public void setScoreModelIdCoAppId(Long scoreModelIdCoAppId) {
+		this.scoreModelIdCoAppId = scoreModelIdCoAppId;
+	}
+
+	public Long getPurposeLoanModelId() {
+		return purposeLoanModelId;
+	}
+
+	public void setPurposeLoanModelId(Long purposeLoanModelId) {
+		this.purposeLoanModelId = purposeLoanModelId;
+	}
+	
 }

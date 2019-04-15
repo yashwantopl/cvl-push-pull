@@ -4,12 +4,17 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RetailProduct extends ProductMasterRequest {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3041203910477155624L;
 
 	private Long fpProductId;
 
