@@ -149,6 +149,9 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId) {
 		
 		List<RetailApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+		if(appIncomeDetailList == null || appIncomeDetailList.size() < 1) {
+			appIncomeDetailList = appIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+		}
 		List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(appIncomeDetailList.size());
 		RetailApplicantIncomeRequest appIncomeReq = null;
 		for(RetailApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
