@@ -1667,12 +1667,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 
-				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporateFinalViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}*/
+				}
 
 			} else {
 				logger.warn("Mca Company Id is Null");
@@ -1704,7 +1704,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 
 			if(corporateApplicantDetail.getGstIn()!= null) {
-				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn(),toApplicationId);
 				if (response != null) {
 					corporateFinalViewResponse.setGstData(response);
 				} else {

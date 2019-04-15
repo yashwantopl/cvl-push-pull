@@ -197,4 +197,14 @@ public class FixedDepositsDetail implements Serializable {
 		this.rate = rate;
 	}
 
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
+	
+	
+
 }

@@ -130,7 +130,7 @@ public class IrrServiceImpl implements IrrService{
 		Long usrId = null;
 		try {
 
-			applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+			applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
 
 			Long denom = 1l; // CHANGES FOR MULTIPLE BANK
 			/*if (applicationMaster.getDenominationId() != null) {

@@ -124,7 +124,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -251,7 +251,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 
-                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
                 
                 if (applicationProposalMapping != null){
                     logger.info("getByproposalId called successfully ");
@@ -267,7 +267,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
             applicantRequest.setMobile(request.getMobile());*/
 
-            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+            if(retailApplicantIncomeDetailList == null || retailApplicantIncomeDetailList.size() < 1) {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+            }
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
 
             RetailApplicantIncomeRequest incomeRequest = null;
@@ -283,7 +286,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             try {
             	
-            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdAndProposalId(applicationId ,proposalId);
+            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId ,userId);
                 
                 if(retailFinancialDetailsList != null) {
                 
@@ -489,7 +492,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -599,7 +602,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId, true);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
                         + userId + "  ApplicationId==>" + applicationId);

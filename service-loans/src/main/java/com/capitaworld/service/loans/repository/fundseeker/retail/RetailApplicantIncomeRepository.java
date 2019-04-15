@@ -16,8 +16,7 @@ public interface RetailApplicantIncomeRepository extends JpaRepository<RetailApp
 	
 	public List<RetailApplicantIncomeDetail> findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
 	
-	@Query("select i from RetailApplicantIncomeDetail i where i.applicationId =:applicationId and i.proposalId =:proposalId and i.isActive = true ")
-	public List<RetailApplicantIncomeDetail> findByPropsoalIdAndIsActive(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
+	public List<RetailApplicantIncomeDetail> findByProposalIdAndIsActive(Long proposalId, Boolean isActive);
 
 	@Query("select MAX(o.year) from RetailApplicantIncomeDetail o where o.applicationId =:id and o.isActive = true")
 	public Integer getMaxYearByApplicationId(@Param("id")Long id);

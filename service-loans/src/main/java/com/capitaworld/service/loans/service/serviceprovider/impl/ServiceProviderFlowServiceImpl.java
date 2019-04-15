@@ -161,7 +161,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 							applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());
 							int fsType = CommonUtils.getUserMainType(applicationDetailsForSp.getProductId());
 							if(CommonUtils.UserMainType.RETAIL == fsType){
-								RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationDetailsForSp.getId());
+								RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationDetailsForSp.getId());
 								applicationDetailsForSp.setCurrencyId((!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) ? retailApplicantDetail.getCurrencyId() : null);
 							}
 							applicationDetailsForSp.setCurrencyValue(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getCurrencyId()) ? Currency.getById(applicationDetailsForSp.getCurrencyId()).getValue() : null);

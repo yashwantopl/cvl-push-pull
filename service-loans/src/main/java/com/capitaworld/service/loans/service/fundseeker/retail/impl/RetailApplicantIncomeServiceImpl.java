@@ -130,7 +130,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 					incomeDetail.setCreatedDate(new Date());
 				}
 				incomeDetail.setApplicationId(frameRequest.getApplicationId());
-
+				incomeDetail.setProposalId(frameRequest.getProposalMappingId());
 				incomeDetail.setModifiedBy(frameRequest.getUserId());
 				incomeDetail.setModifiedDate(new Date());
 				appIncomeRepository.save(incomeDetail);
@@ -148,7 +148,10 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	@Override
 	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId) {
 		
-		List<RetailApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByPropsoalIdAndIsActive(applicationId,proposalId);
+		List<RetailApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+		if(appIncomeDetailList == null || appIncomeDetailList.size() < 1) {
+			appIncomeDetailList = appIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+		}
 		List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(appIncomeDetailList.size());
 		RetailApplicantIncomeRequest appIncomeReq = null;
 		for(RetailApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {

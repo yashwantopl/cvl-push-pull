@@ -900,13 +900,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalViewResponse.setAnnualTurnover(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover())
 											? CommonUtils.CurrencyFormat(coApplicantDetail.getAnnualTurnover().toString()) : null);
-							finalViewResponse.setTradeLicenseNo(
-									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseNumber())
-											? coApplicantDetail.getTradeLicenseNumber() : null);
+							finalViewResponse.setDrivingLicenseNumber(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDrivingLicenseNumber())
+											? coApplicantDetail.getDrivingLicenseNumber() : null);
 							SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
-							finalViewResponse.setTradeExpiryDate(
-									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseExpiryDate())
-											? format1.format(coApplicantDetail.getTradeLicenseExpiryDate()) : null);
+							finalViewResponse.setDrivingLicenseExpiryDate(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDrivingLicenseExpiryDate())
+											? format1.format(coApplicantDetail.getDrivingLicenseExpiryDate()) : null);
 							finalViewResponse.setNameOfPoaHolder(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPoaHolderName())
 											? coApplicantDetail.getPoaHolderName() : null);
