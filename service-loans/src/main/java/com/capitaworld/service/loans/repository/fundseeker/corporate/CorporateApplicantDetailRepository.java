@@ -75,7 +75,7 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("select cr.gstIn from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true and cr.applicationProposalMapping.proposalId =NULL")
 	public String getGstInByApplicationId(@Param("applicationId") Long applicationId);
 	
-	@Query("select cr.panNo from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true and cr.applicationProposalMapping.proposalId =NULL")
+	@Query("select CAST(AES_DECRYPT(UNHEX(cr.panNo),'C@p!ta@W0rld#AES') AS CHAR(50)) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true and cr.applicationProposalMapping.proposalId =NULL")
 	public String getPanNoByApplicationId(@Param("applicationId") Long applicationId);
 
 	@Modifying
