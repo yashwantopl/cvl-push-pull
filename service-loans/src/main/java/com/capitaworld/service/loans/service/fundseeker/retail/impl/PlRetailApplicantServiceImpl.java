@@ -267,7 +267,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
             applicantRequest.setMobile(request.getMobile());*/
 
-            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+            if(retailApplicantIncomeDetailList == null || retailApplicantIncomeDetailList.size() < 1) {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+            }
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
 
             RetailApplicantIncomeRequest incomeRequest = null;
