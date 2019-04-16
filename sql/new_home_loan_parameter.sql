@@ -189,6 +189,38 @@ CREATE TABLE `loan_application`.`fp_parameter_mapping`
   );
 ALTER TABLE `loan_application`.`fp_parameter_mapping` ADD INDEX `map_id_type_active` (`fp_product_mapping_id`, `type`, `is_active`); 
 
+CREATE TABLE `loan_application`.`retail_model`
+( `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+ `name` VARCHAR(255), `business_type_id` INT(2) UNSIGNED,
+ `org_id` BIGINT(20) UNSIGNED,
+ `created_by` BIGINT(20) UNSIGNED,
+ `created_date` DATETIME,
+ `is_active` BIT(1),
+ `job_id` BIGINT(20) UNSIGNED,
+ `modified_by` BIGINT(20) UNSIGNED,
+ `modified_date` DATETIME,
+ PRIMARY KEY (`id`) 
+ ); 
+
+CREATE TABLE `loan_application`.`home_loan_model` (  
+   `retail_model_id` BIGINT(20) UNSIGNED NOT NULL,
+  `isPurReadyBuiltHouse` BIT(1) DEFAULT NULL,
+  `isPurReadyBuiltIndependentHouse` BIT(1) DEFAULT NULL,
+  `isPurResidetialFlat` BIT(1) DEFAULT NULL,
+  `isPurResidetialFlatAllotee` BIT(1) DEFAULT NULL,
+  `isPurResidetialSite` BIT(1) DEFAULT NULL,
+
+  `isConstruResidetialBuid` BIT(1) DEFAULT NULL,
+  `isConstruExpaResBuild` BIT(1) DEFAULT NULL,
+  `isConstruPurResSite` BIT(1) DEFAULT NULL,
+  `isRepPurReadyBuiltIndependant` BIT(1) DEFAULT NULL,
+  `isRepRenImpFlatHouse` BIT(1) DEFAULT NULL,
+
+  `isOthRefExcessMarginPaid` BIT(1) DEFAULT NULL,
+  `isOthLoanReimbursementFlat` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`retail_model_id`),
+  CONSTRAINT `retail_model_ibfk_1` FOREIGN KEY (`retail_model_id`) REFERENCES `retail_model` (`id`)
+);
 
 
 -- Temp Table Queries --------------------------------
@@ -339,3 +371,36 @@ CREATE TABLE `loan_application`.`fp_parameter_mapping_temp`
   ); 
 
 ALTER TABLE `loan_application`.`fp_parameter_mapping_temp` ADD INDEX `map_id_type_active` (`fp_product_mapping_id`, `type`, `is_active`); 
+
+
+CREATE TABLE `loan_application`.`retail_model_temp` 
+( `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+ `name` VARCHAR(255), `business_type_id` INT(2) UNSIGNED,
+ `org_id` BIGINT(20) UNSIGNED,
+ `created_by` BIGINT(20) UNSIGNED,
+ `created_date` DATETIME,
+ `is_active` BIT(1),
+ `job_id` BIGINT(20) UNSIGNED,
+ `modified_by` BIGINT(20) UNSIGNED,
+ `modified_date` DATETIME,
+ PRIMARY KEY (`id`) 
+ );
+CREATE TABLE `home_loan_model_temp` (  
+  `retail_model_id` BIGINT(20) UNSIGNED NOT NULL,
+  `isPurReadyBuiltHouse` BIT(1) DEFAULT NULL,
+  `isPurReadyBuiltIndependentHouse` BIT(1) DEFAULT NULL,
+  `isPurResidetialFlat` BIT(1) DEFAULT NULL,
+  `isPurResidetialFlatAllotee` BIT(1) DEFAULT NULL,
+  `isPurResidetialSite` BIT(1) DEFAULT NULL,
+
+  `isConstruResidetialBuid` BIT(1) DEFAULT NULL,
+  `isConstruExpaResBuild` BIT(1) DEFAULT NULL,
+  `isConstruPurResSite` BIT(1) DEFAULT NULL,
+  `isRepPurReadyBuiltIndependant` BIT(1) DEFAULT NULL,
+  `isRepRenImpFlatHouse` BIT(1) DEFAULT NULL,
+
+  `isOthRefExcessMarginPaid` BIT(1) DEFAULT NULL,
+  `isOthLoanReimbursementFlat` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`retail_model_id`),
+  CONSTRAINT `retail_model_temp_ibfk_1` FOREIGN KEY (`retail_model_id`) REFERENCES `retail_model_temp` (`id`)
+);
