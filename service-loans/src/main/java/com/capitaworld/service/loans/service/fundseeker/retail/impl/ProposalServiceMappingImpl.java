@@ -3078,5 +3078,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		return response;
 	}
+
+	@Override
+	public String getDayDiffrenceForInprinciple() {
+		if(daysDiff != null) {
+			return daysDiff;
+		}
+		return null;
+	}
 }
 
