@@ -1134,12 +1134,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 
-				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporatePrimaryViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}
+				}*/
 			} else {
 				logger.warn("Mca Company Id is Null");
 
@@ -1169,7 +1169,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		try {
 
-			if(corporateApplicantDetail.getGstIn()!= null) {
+			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
 				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn(),applicationId);
 				if (response != null) {
 					corporatePrimaryViewResponse.setGstData(response);
@@ -1178,9 +1178,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
 				}
-			}else {
+			/*}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
-			}
+			}*/
 
 
 		} catch (Exception e) {

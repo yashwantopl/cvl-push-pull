@@ -531,4 +531,18 @@ public class ProposalController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	@GetMapping(value = "/getDayDiffrenceForMultipleBank",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDayDiffrenceForMultipleBank() {
+		try {
+			String dayDiff = proposalService.getDayDiffrenceForInprinciple();
+			
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(dayDiff);
+			loansResponse.setStatus(HttpStatus.OK.value());
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

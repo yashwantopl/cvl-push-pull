@@ -129,7 +129,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailListByPropsalId(Long proposalId,
 			int applicationType) throws LoansException {
 		
-		List<ReferencesRetailDetail> referencesRetailDetails;
+		List<ReferencesRetailDetail> referencesRetailDetails = null;
 //		switch (applicationType) {
 //		case CommonUtils.ApplicantType.APPLICANT:
 //			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromAppId(id);
@@ -145,6 +145,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 //		}
 		
 		referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromPropsalId(proposalId);
+		
 		List<ReferenceRetailDetailsRequest> referencesRetailRequests = new ArrayList<ReferenceRetailDetailsRequest>();
 
 		for (ReferencesRetailDetail detail : referencesRetailDetails) {

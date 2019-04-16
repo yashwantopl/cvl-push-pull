@@ -720,7 +720,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		if(!CommonUtils.isListNullOrEmpty(proposalIdList)){
 			for (BigInteger proposalId : proposalIdList) {
 				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId.longValue());
-				Long fpProductId = proposalDetailsRepository.getFpProductIdByApplicationId(applicationProposalMapping.getApplicationId());
+				Long fpProductId = proposalDetailsRepository.getFpProductIdByApplicationIdAndProposalId(applicationProposalMapping.getApplicationId(), proposalId.longValue());
 				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
 				nhbsApplicationsResponse.setUserId(applicationProposalMapping.getUserId());
 				nhbsApplicationsResponse.setProposalId(applicationProposalMapping.getProposalId());

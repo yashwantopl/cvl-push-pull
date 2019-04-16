@@ -64,6 +64,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     @Query(value="SELECT fp_product_id FROM proposal_details WHERE application_id =:applicationId  AND is_active = TRUE LIMIT 1",nativeQuery= true)
     public Long getFpProductIdByApplicationId(@Param("applicationId") Long applicationId);
+    
+    @Query(value="SELECT fp_product_id FROM proposal_details WHERE application_id =:applicationId AND id =:proposalId AND is_active = TRUE LIMIT 1",nativeQuery= true)
+    public Long getFpProductIdByApplicationIdAndProposalId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
 
     @Modifying
     @Query("UPDATE ProposalDetails set proposalStatusId.id =:statuId , modifiedDate = now()  WHERE  applicationId =:applicationId AND isActive = true " )

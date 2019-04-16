@@ -1703,7 +1703,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		try {
 
-			if(corporateApplicantDetail.getGstIn()!= null) {
+			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
 				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn(),toApplicationId);
 				if (response != null) {
 					corporateFinalViewResponse.setGstData(response);
@@ -1712,9 +1712,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
 				}
-			}else {
+			/*}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
-			}
+			}*/
 
 
 		} catch (Exception e) {
