@@ -3234,26 +3234,13 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToFSWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-
-			logger.info("Into sending Mail to FS when Checker sanction loan===>{}");
+			logger.info("Into sending Mail to FS when Checker sanction loan");
 			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
-			ProposalMappingResponse proposal = proposalDetailsClient.getActiveProposalByApplicationID(loanSanctionDomainOld.getApplicationId());
+			ProposalMappingResponse proposal = proposalDetailsClient.getProposalByApplicationIdAndUserOrgId(loanSanctionDomainOld.getOrgId(),loanSanctionDomainOld.getApplicationId());
 			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ProposalMappingRequest.class);
-			
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 
-			ProposalMappingResponse proposalResponse = null;
-			Map<String, Object> proposalresp = null;
-			try {
-				logger.info("Calling Proposal details client :-" + loanSanctionDomainOld.getApplicationId());
-				proposalResponse = proposalDetailsClient.getInPricipleById(loanSanctionDomainOld.getApplicationId());
-				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT + proposalResponse);
-				proposalresp = MultipleJSONObjectHelper
-						.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
-			} catch (Exception e) {
-				logger.error("Error calling Proposal Details Client" + loanSanctionDomainOld.getApplicationId());
-			}
 			String productType = null;
 			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest)) {
 				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getProductId())) {
@@ -3266,54 +3253,33 @@ public class FPAsyncComponent {
 			}
 
 			SimpleDateFormat form = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
-			String fpName = (null!=proposalresp  && proposalresp.get("organisationName") != null )? proposalresp.get("organisationName").toString() : "";
+			String fpName = " - ";
+			//==================For getting Organisation Name==================
+			UserResponse userResponse = null;
+			Map<String, Object> usersResp = null;
+			UserOrganisationRequest organisationRequest = null;
+			userResponse = userClient.getOrgNameByOrgId(loanSanctionDomainOld.getOrgId());
+			if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+				usersResp = (Map<String, Object>) userResponse.getData();
+				organisationRequest = MultipleJSONObjectHelper.getObjectFromMap(usersResp,UserOrganisationRequest.class);
+				fpName = organisationRequest.getOrganisationName();
+			}
+			//============================================================
 			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) && loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION) ){
-
-					subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
-					//==================For getting Organisation Name==================
-					UserResponse userResponse = null;
-					Map<String, Object> usersResp = null;
-					UserOrganisationRequest organisationRequest = null;
-					String organisationName = null;
-					try {
-						userResponse = userClient.getOrgNameByOrgId(loanSanctionDomainOld.getOrgId());
-					}
-					catch(Exception e) {
-						logger.error("Exception occured while getting Organisation details by orgId : ",e);
-					}
-
-					try {
-						if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
-							usersResp = (Map<String, Object>) userResponse.getData();
-							organisationRequest = MultipleJSONObjectHelper.getObjectFromMap(usersResp,
-									UserOrganisationRequest.class);
-							organisationName = organisationRequest.getOrganisationName();
-							fpName = organisationName;
-						}
-					}
-					catch(Exception e) {
-						logger.error("Exception occured while getting Organisation details by orgId : ",e);
-					}
-					//============================================================
+				subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
 			}
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
 			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
-			mailParameters.put("processing_fees",
-					loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "");
-			mailParameters.put(CommonUtils.LITERAL_AMOUNT,
-					loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
+			mailParameters.put("processing_fees",loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "");
+			mailParameters.put(CommonUtils.LITERAL_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
 							: "NA");
-			mailParameters.put(PARAMETERS_INTEREST_RATE,
-					loanSanctionDomainOld.getRoi() != null ? loanSanctionDomainOld.getRoi() : "");
-			mailParameters.put("tenure",
-					loanSanctionDomainOld.getTenure() != null ? loanSanctionDomainOld.getTenure() : "");
-			mailParameters.put("date",
-					form.format(loanSanctionDomainOld.getSanctionDate()) != null
+			mailParameters.put(PARAMETERS_INTEREST_RATE,loanSanctionDomainOld.getRoi() != null ? loanSanctionDomainOld.getRoi() : "");
+			mailParameters.put("tenure",loanSanctionDomainOld.getTenure() != null ? loanSanctionDomainOld.getTenure() : "");
+			mailParameters.put("date",form.format(loanSanctionDomainOld.getSanctionDate()) != null
 							? form.format(loanSanctionDomainOld.getSanctionDate())
 							: "");
-			mailParameters.put("remarks",
-					loanSanctionDomainOld.getRemark() != null ? loanSanctionDomainOld.getRemark() : "");
+			mailParameters.put("remarks",loanSanctionDomainOld.getRemark() != null ? loanSanctionDomainOld.getRemark() : "");
 
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
@@ -3370,7 +3336,7 @@ public class FPAsyncComponent {
 				 * subjcet);
 				 */
 				// ====================== MAIL TO MAKER by new code ======================
-				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 				createNotificationForEmail(toIds, applicationRequest.getUserId().toString(), mailParameters,
 						NotificationAlias.EMAIL_FS_CHECKER_SANCTIONED, subject);
 
@@ -3398,8 +3364,6 @@ public class FPAsyncComponent {
 						applicationRequest.getUserId().toString(), applicationRequest.getUserId().toString());
 			}
 
-			// ==================================================================================
-
 		} catch (Exception e) {
 			logger.error("An exception getting while sending mail to FS when Checker sanction loan=============>{}",e);
 		}
@@ -3407,7 +3371,7 @@ public class FPAsyncComponent {
 	}
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 											Long templateId, String emailSubject) throws NotificationException {
-		logger.info("Inside send notification===>{}" + toNo);
+		logger.info("Inside send notification===>{}" , toNo);
 
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
@@ -3430,7 +3394,7 @@ public class FPAsyncComponent {
 
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
-		logger.info("Outside send notification===>{}" + toNo);
+		logger.info("Outside send notification===>{}" , toNo);
 	}
 
 /*
