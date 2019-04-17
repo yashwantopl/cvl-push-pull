@@ -5925,7 +5925,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			applicationRequest.setUserName(getFsApplicantName(applicationMaster.getApplicationId()));
-
+			applicationRequest.setProposalId(applicationMaster.getProposalId());
 			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
 			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
 				logger.warn(EMAIL_MOBILE_OR_DATA_IN_EMAIL_MOBILE_MUST_NOT_BE_NULL, emailMobile);
