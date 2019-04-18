@@ -3468,6 +3468,165 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
+                            case ScoreParameter.PAST_YEAR_TURNOVER: {
+
+                                OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                                try {
+                                    Double domesticSales = operatingStatementDetails.getDomesticSales();
+                                    Double exportSales = operatingStatementDetails.getExportSales();
+                                    if (!CommonUtils.isObjectNullOrEmpty(domesticSales) && !CommonUtils.isObjectNullOrEmpty(exportSales)){
+
+                                        scoringParameterRequest.setPastYearTurnover_p(true);
+                                        scoringParameterRequest.setExportSales(exportSales);
+                                        scoringParameterRequest.setDomesticSales(domesticSales);
+                                        scoringParameterRequest.setPastYearTurnover(domesticSales + exportSales);
+                                    }else{
+                                        scoringParameterRequest.setPastYearTurnover_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting PAST_YEAR_TURNOVER parameter : ",e);
+                                    scoringParameterRequest.setPastYearTurnover_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.DEBT_EBITDA: {
+                                try {
+
+                                    OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
+                                    LiabilitiesDetails liabilitiesDetails  = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
+                                    AssetsDetails assetsDetails  = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
+                                    if (CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTotalTermLiabilities()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOthers()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getMinorityInterest()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredTaxLiability()) ||
+                                            CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredTaxAssets()) ||
+                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOpProfitBeforeIntrest()) ||
+                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation())) {
+
+                                        scoringParameterRequest.setDebtEBITDA_p(false);
+                                    } else {
+
+                                        //debt
+                                        scoringParameterRequest.setTotalTermLiabilities(liabilitiesDetails.getTotalTermLiabilities());
+                                        scoringParameterRequest.setPreferenceShares(liabilitiesDetails.getPreferencesShares());
+                                        scoringParameterRequest.setUnsecuredLoansFromOthers(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther());
+                                        scoringParameterRequest.setOthers(liabilitiesDetails.getOthers());
+                                        scoringParameterRequest.setMinorityInterest(liabilitiesDetails.getMinorityInterest());
+                                        scoringParameterRequest.setDeferredTaxLiability(liabilitiesDetails.getDeferredTaxLiability());
+                                        scoringParameterRequest.setDeferredTaxAssets(assetsDetails.getDeferredTaxAssets());
+
+                                        //EBITA
+                                        scoringParameterRequest.setProfitBeforeInterest(operatingStatementDetails.getOpProfitBeforeIntrest());
+                                        scoringParameterRequest.setDepreciation(operatingStatementDetails.getDepreciation());
+                                        scoringParameterRequest.setDebtEBITDA_p(true);
+                                    }
+                                }catch (Exception e){
+                                    logger.error("error while getting DEBT_EBITDA parameter : ",e);
+                                    scoringParameterRequest.setDebtEBITDA_p(false);
+                                }
+                                break;
+                            }
+
+                            case ScoreParameter.TURNOVER_ATNW: {
+                                try {
+                                    OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
+                                    LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                                    AssetsDetails assetsDetails = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
+
+                                    if (CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getGeneralReserve()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSurplusOrDeficit()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()) ||
+                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()) ||
+                                            CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestmentsInSubsidiary()) ||
+                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExportSales()) ||
+                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales())
+                                            ) {
+                                        scoringParameterRequest.setTurnoverATNW_p(false);
+                                    } else {
+
+                                        scoringParameterRequest.setLiabilitiesOrdinaryShareCapital(liabilitiesDetails.getOrdinarySharesCapital());
+                                        scoringParameterRequest.setLiabilitiesGeneralReserve(liabilitiesDetails.getGeneralReserve());
+                                        scoringParameterRequest.setDeficitInProfitANDLossAccount(liabilitiesDetails.getSurplusOrDeficit());
+                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromoters(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters());
+                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthers(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther());
+                                        scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliates(assetsDetails.getInvestmentsInSubsidiary());
+                                        scoringParameterRequest.setDomesticSales(operatingStatementDetails.getDomesticSales());
+                                        scoringParameterRequest.setExportSales(operatingStatementDetails.getExportSales());
+                                        scoringParameterRequest.setTurnoverATNW_p(true);
+                                    }
+
+                                }catch (Exception e){
+                                    logger.error("error while getting TURNOVER_ATNW parameter : ",e);
+                                    scoringParameterRequest.setTurnoverATNW_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.NO_OF_CHEQUES_BOUNCED: {
+                                try{
+                                    Double noOfChequeBounce = 0.0;
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+                                    reportRequest.setDirectorId(null);
+
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
+                                                noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
+                                            } else {
+                                                noOfChequeBounce = 0.0;
+                                            }
+                                        }
+                                    } else {
+                                        noOfChequeBounce = 0.0;
+                                    }
+                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setChequesBouncedLastMonth_p(true);
+                                }catch (Exception e){
+                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED parameter : ",e);
+                                    scoringParameterRequest.setChequesBouncedLastMonth_p(false);
+                                }
+                                break;
+                            }
+
+                            case ScoreParameter.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH: {
+                                try{
+                                    Double noOfChequeBounce = 0.0;
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+                                    reportRequest.setDirectorId(null);
+
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
+                                                noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
+                                            } else {
+                                                noOfChequeBounce = 0.0;
+                                            }
+
+                                        }
+                                    } else {
+                                        noOfChequeBounce = 0.0;
+                                    }
+
+                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
+                                }catch (Exception e){
+                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
+                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
+                                }
+                                break;
+                            }
 
                             default: break;
                         }
