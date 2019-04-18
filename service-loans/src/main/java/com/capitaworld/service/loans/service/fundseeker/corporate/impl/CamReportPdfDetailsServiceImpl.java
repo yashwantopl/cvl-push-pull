@@ -478,8 +478,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
+			GSTR1Request req= new GSTR1Request();
+			req.setApplicationId(toApplicationId);
+			req.setUserId(userId);
+			req.setGstin(corporateApplicantRequest.getGstIn());	
 			CAMGSTData resp =null;
-			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn(),applicationId);
+			GstResponse response = gstClient.detailCalculation(req);
 
 			Double totalSales =0.0d;
 			DecimalFormat df = new DecimalFormat(".##");
