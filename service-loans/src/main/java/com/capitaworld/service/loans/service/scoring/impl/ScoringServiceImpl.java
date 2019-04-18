@@ -3470,19 +3470,13 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.PAST_YEAR_TURNOVER: {
 
-                                OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                                 try {
-                                    Double domesticSales = operatingStatementDetails.getDomesticSales();
-                                    Double exportSales = operatingStatementDetails.getExportSales();
-                                    if (!CommonUtils.isObjectNullOrEmpty(domesticSales) && !CommonUtils.isObjectNullOrEmpty(exportSales)){
-
-                                        scoringParameterRequest.setPastYearTurnover_p(true);
-                                        scoringParameterRequest.setExportSales(exportSales);
-                                        scoringParameterRequest.setDomesticSales(domesticSales);
-                                        scoringParameterRequest.setPastYearTurnover(domesticSales + exportSales);
-                                    }else{
-                                        scoringParameterRequest.setPastYearTurnover_p(false);
-                                    }
+                                    Double domesticSales = operatingStatementDetailsTY.getDomesticSales();
+                                    Double exportSales = operatingStatementDetailsTY.getExportSales();
+                                    scoringParameterRequest.setPastYearTurnover_p(true);
+                                    scoringParameterRequest.setExportSales(exportSales);
+                                    scoringParameterRequest.setDomesticSales(domesticSales);
+                                    scoringParameterRequest.setPastYearTurnover(domesticSales + exportSales);
                                 } catch (Exception e) {
                                     logger.error("error while getting PAST_YEAR_TURNOVER parameter : ",e);
                                     scoringParameterRequest.setPastYearTurnover_p(false);
@@ -3492,36 +3486,19 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.DEBT_EBITDA: {
                                 try {
 
-                                    OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
-                                    LiabilitiesDetails liabilitiesDetails  = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
-                                    AssetsDetails assetsDetails  = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
-                                    if (CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTotalTermLiabilities()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOthers()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getMinorityInterest()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredTaxLiability()) ||
-                                            CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredTaxAssets()) ||
-                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOpProfitBeforeIntrest()) ||
-                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation())) {
-
-                                        scoringParameterRequest.setDebtEBITDA_p(false);
-                                    } else {
-
                                         //debt
-                                        scoringParameterRequest.setTotalTermLiabilities(liabilitiesDetails.getTotalTermLiabilities());
-                                        scoringParameterRequest.setPreferenceShares(liabilitiesDetails.getPreferencesShares());
-                                        scoringParameterRequest.setUnsecuredLoansFromOthers(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther());
-                                        scoringParameterRequest.setOthers(liabilitiesDetails.getOthers());
-                                        scoringParameterRequest.setMinorityInterest(liabilitiesDetails.getMinorityInterest());
-                                        scoringParameterRequest.setDeferredTaxLiability(liabilitiesDetails.getDeferredTaxLiability());
-                                        scoringParameterRequest.setDeferredTaxAssets(assetsDetails.getDeferredTaxAssets());
+                                        scoringParameterRequest.setTotalTermLiabilities(liabilitiesDetailsTY.getTotalTermLiabilities());
+                                        scoringParameterRequest.setPreferenceShares(liabilitiesDetailsTY.getPreferencesShares());
+                                        scoringParameterRequest.setUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
+                                        scoringParameterRequest.setOthers(liabilitiesDetailsTY.getOthers());
+                                        scoringParameterRequest.setMinorityInterest(liabilitiesDetailsTY.getMinorityInterest());
+                                        scoringParameterRequest.setDeferredTaxLiability(liabilitiesDetailsTY.getDeferredTaxLiability());
+                                        scoringParameterRequest.setDeferredTaxAssets(assetsDetailsTY.getDeferredTaxAssets());
 
                                         //EBITA
-                                        scoringParameterRequest.setProfitBeforeInterest(operatingStatementDetails.getOpProfitBeforeIntrest());
-                                        scoringParameterRequest.setDepreciation(operatingStatementDetails.getDepreciation());
+                                        scoringParameterRequest.setProfitBeforeInterest(operatingStatementDetailsTY.getOpProfitBeforeIntrest());
+                                        scoringParameterRequest.setDepreciation(operatingStatementDetailsTY.getDepreciation());
                                         scoringParameterRequest.setDebtEBITDA_p(true);
-                                    }
                                 }catch (Exception e){
                                     logger.error("error while getting DEBT_EBITDA parameter : ",e);
                                     scoringParameterRequest.setDebtEBITDA_p(false);
@@ -3531,32 +3508,15 @@ public class ScoringServiceImpl implements ScoringService {
 
                             case ScoreParameter.TURNOVER_ATNW: {
                                 try {
-                                    OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
-                                    LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                                    AssetsDetails assetsDetails = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear + "");
-
-                                    if (CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getGeneralReserve()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSurplusOrDeficit()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()) ||
-                                            CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()) ||
-                                            CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestmentsInSubsidiary()) ||
-                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExportSales()) ||
-                                            CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales())
-                                            ) {
-                                        scoringParameterRequest.setTurnoverATNW_p(false);
-                                    } else {
-
-                                        scoringParameterRequest.setLiabilitiesOrdinaryShareCapital(liabilitiesDetails.getOrdinarySharesCapital());
-                                        scoringParameterRequest.setLiabilitiesGeneralReserve(liabilitiesDetails.getGeneralReserve());
-                                        scoringParameterRequest.setDeficitInProfitANDLossAccount(liabilitiesDetails.getSurplusOrDeficit());
-                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromoters(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters());
-                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthers(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther());
-                                        scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliates(assetsDetails.getInvestmentsInSubsidiary());
-                                        scoringParameterRequest.setDomesticSales(operatingStatementDetails.getDomesticSales());
-                                        scoringParameterRequest.setExportSales(operatingStatementDetails.getExportSales());
+                                        scoringParameterRequest.setLiabilitiesOrdinaryShareCapital(liabilitiesDetailsTY.getOrdinarySharesCapital());
+                                        scoringParameterRequest.setLiabilitiesGeneralReserve(liabilitiesDetailsTY.getGeneralReserve());
+                                        scoringParameterRequest.setDeficitInProfitANDLossAccount(liabilitiesDetailsTY.getSurplusOrDeficit());
+                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromoters(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromPromoters());
+                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
+                                        scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliates(assetsDetailsTY.getInvestmentsInSubsidiary());
+                                        scoringParameterRequest.setDomesticSales(operatingStatementDetailsTY.getDomesticSales());
+                                        scoringParameterRequest.setExportSales(operatingStatementDetailsTY.getExportSales());
                                         scoringParameterRequest.setTurnoverATNW_p(true);
-                                    }
 
                                 }catch (Exception e){
                                     logger.error("error while getting TURNOVER_ATNW parameter : ",e);
