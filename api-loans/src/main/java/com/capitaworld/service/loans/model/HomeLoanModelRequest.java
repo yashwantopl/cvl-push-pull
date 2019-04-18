@@ -1,20 +1,10 @@
-package com.capitaworld.service.loans.domain.fundprovider;
+package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
 
-/**
- * The persistent class for the fp_home_loan_details database table.
- * 
- */
-@Entity
-@Table(name = "home_loan_model")
-@PrimaryKeyJoinColumn(referencedColumnName="id")
-public class HomeLoanModel extends RetailModel implements Serializable {
+public class HomeLoanModelRequest extends RetailModelRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = "is_pur_ready_built_house")

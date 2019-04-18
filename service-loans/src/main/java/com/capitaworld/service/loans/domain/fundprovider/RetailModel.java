@@ -37,8 +37,14 @@ public abstract class RetailModel extends AuditActivity implements Serializable 
 	private Long orgId;
 	
 	@Column(name = "business_type_id")
-	private Long businessTypeId;
-
+	private Integer businessTypeId;
+	
+	@Column(name = "job_id")
+	private Long jobId;
+	
+	@Column(name = "retail_model_temp_ref_id")
+	private Long retailModelTempRefId;
+	
 	public RetailModel() {
 	}
 	
@@ -78,11 +84,27 @@ public abstract class RetailModel extends AuditActivity implements Serializable 
 		this.orgId = orgId;
 	}
 
-	public Long getBusinessTypeId() {
+	public Integer getBusinessTypeId() {
 		return businessTypeId;
 	}
 
-	public void setBusinessTypeId(Long businessTypeId) {
+	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
+	}
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
+
+	public Long getRetailModelTempRefId() {
+		return retailModelTempRefId;
+	}
+
+	public void setRetailModelTempRefId(Long retailModelTempRefId) {
+		this.retailModelTempRefId = retailModelTempRefId;
 	}
 }

@@ -1,6 +1,16 @@
 package com.capitaworld.service.loans.model;
 
-public class WorkflowData {
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class WorkflowData implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6453935998292244328L;
+	private Long id;
 	private Long nextworkflowStep;
 	private Long workflowStep;
 	private Long actionId;
@@ -58,7 +68,11 @@ public class WorkflowData {
 	public void setStage(Integer stage) {
 		this.stage = stage;
 	}
-	
-	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 }

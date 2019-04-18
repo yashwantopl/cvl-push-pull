@@ -1,66 +1,49 @@
-package com.capitaworld.service.loans.domain.fundprovider;
+package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
+import com.capitaworld.service.loans.model.common.AuditActivityRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 
-@Entity
-@Table(name = "retail_model_temp")
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class RetailModelTemp extends AuditActivity implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class RetailModelRequest extends AuditActivityRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
+	
 	private String name;
 
-	@Column(name = "user_id")
 	private Long userId;
+	
+	private Long clientId;
 
-	@Column(name = "org_id")
 	private Long orgId;
 	
-	@Column(name = "business_type_id")
 	private Integer businessTypeId;
-
-	@Column(name = "job_id")
+	
 	private Long jobId;
 	
-	@Column(name="is_approved")
     private Boolean isApproved;
 
-    @Column(name="is_deleted")
     private Boolean isDeleted;
 
-    @Column(name="is_copied")
     private Boolean isCopied;
 
-    @Column(name="is_edit")
     private Boolean isEdit;
 
-    @Column(name="status_id")
     private Integer statusId;
 
-    @Column(name="approval_date")
     private Date approvalDate;
 	
-	public RetailModelTemp() {
+	private Object workflowData;
+
+	public RetailModelRequest() {
+		// Do nothing because of X and Y.
 	}
-	
-	public RetailModelTemp(Long id) {
+
+	public RetailModelRequest(Long id) {
 		this.id = id;
 	}
 
@@ -104,12 +87,28 @@ public abstract class RetailModelTemp extends AuditActivity implements Serializa
 		this.businessTypeId = businessTypeId;
 	}
 
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
+
 	public Long getJobId() {
 		return jobId;
 	}
 
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
+	}
+
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
 	}
 
 	public Boolean getIsApproved() {
@@ -159,5 +158,10 @@ public abstract class RetailModelTemp extends AuditActivity implements Serializa
 	public void setApprovalDate(Date approvalDate) {
 		this.approvalDate = approvalDate;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "RetailModelRequest [id=" + id + ", name=" + name + ", userId=" + userId + ", orgId=" + orgId
+				+ ", businessTypeId=" + businessTypeId + "]";
+	}
 }

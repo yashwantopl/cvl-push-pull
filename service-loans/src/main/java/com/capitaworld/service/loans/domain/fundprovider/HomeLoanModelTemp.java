@@ -13,7 +13,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "home_loan_model_temp")
-@PrimaryKeyJoinColumn(referencedColumnName = "retail_model_id")
+@PrimaryKeyJoinColumn(referencedColumnName="id")
 public class HomeLoanModelTemp extends RetailModelTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 

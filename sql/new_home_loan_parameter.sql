@@ -202,26 +202,35 @@ CREATE TABLE `loan_application`.`retail_model`
  PRIMARY KEY (`id`) 
  ); 
 
-CREATE TABLE `loan_application`.`home_loan_model` (  
-   `retail_model_id` BIGINT(20) UNSIGNED NOT NULL,
-  `isPurReadyBuiltHouse` BIT(1) DEFAULT NULL,
-  `isPurReadyBuiltIndependentHouse` BIT(1) DEFAULT NULL,
-  `isPurResidetialFlat` BIT(1) DEFAULT NULL,
-  `isPurResidetialFlatAllotee` BIT(1) DEFAULT NULL,
-  `isPurResidetialSite` BIT(1) DEFAULT NULL,
+-- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN is_approved BIT(1) DEFAULT NULL;
+-- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN is_deleted BIT(1) DEFAULT NULL;
+-- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN is_copied BIT(1) DEFAULT NULL;
+-- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN is_edit BIT(1) DEFAULT NULL;
+-- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN status_id INT(2) DEFAULT NULL;
+-- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN approval_date DATETIME DEFAULT NULL;
 
-  `isConstruResidetialBuid` BIT(1) DEFAULT NULL,
-  `isConstruExpaResBuild` BIT(1) DEFAULT NULL,
-  `isConstruPurResSite` BIT(1) DEFAULT NULL,
-  `isRepPurReadyBuiltIndependant` BIT(1) DEFAULT NULL,
-  `isRepRenImpFlatHouse` BIT(1) DEFAULT NULL,
-
-  `isOthRefExcessMarginPaid` BIT(1) DEFAULT NULL,
-  `isOthLoanReimbursementFlat` BIT(1) DEFAULT NULL,
-  PRIMARY KEY (`retail_model_id`),
-  CONSTRAINT `retail_model_ibfk_1` FOREIGN KEY (`retail_model_id`) REFERENCES `retail_model` (`id`)
+CREATE TABLE `home_loan_model` (
+  `id` BIGINT(20) UNSIGNED NOT NULL,
+  `is_pur_ready_built_house` BIT(1) DEFAULT NULL,
+  `is_pur_ready_built_independent_house` BIT(1) DEFAULT NULL,
+  `is_pur_residetial_flat` BIT(1) DEFAULT NULL,
+  `is_pur_residetial_flat_allotee` BIT(1) DEFAULT NULL,
+  `is_pur_residetial_site` BIT(1) DEFAULT NULL,
+  `is_constru_residetial_buid` BIT(1) DEFAULT NULL,
+  `is_constru_expa_res_build` BIT(1) DEFAULT NULL,
+  `is_constru_pur_res_site` BIT(1) DEFAULT NULL,
+  `is_rep_pur_ready_built_independant` BIT(1) DEFAULT NULL,
+  `is_rep_ren_imp_flat_house` BIT(1) DEFAULT NULL,
+  `is_oth_ref_excess_margin_paid` BIT(1) DEFAULT NULL,
+  `is_oth_loan_reimbursement_flat` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `retail_model_ibfk_1` FOREIGN KEY (`id`) REFERENCES `retail_model` (`id`)
 );
 
+ALTER TABLE `loan_application`.`retail_model` ADD COLUMN user_id BIGINT(20) DEFAULT NULL;
+
+ALTER TABLE `loan_application`.`retail_model` ADD COLUMN `retail_model_temp_ref_id` BIGINT(20) UNSIGNED NULL AFTER `user_id`, 
+ADD CONSTRAINT `retail_model_temp_id_fk` FOREIGN KEY (`retail_model_temp_ref_id`) REFERENCES `loan_application`.`retail_model_temp`(`id`); 
 
 -- Temp Table Queries --------------------------------
 
@@ -385,22 +394,31 @@ CREATE TABLE `loan_application`.`retail_model_temp`
  `modified_date` DATETIME,
  PRIMARY KEY (`id`) 
  );
-CREATE TABLE `home_loan_model_temp` (  
-  `retail_model_id` BIGINT(20) UNSIGNED NOT NULL,
-  `isPurReadyBuiltHouse` BIT(1) DEFAULT NULL,
-  `isPurReadyBuiltIndependentHouse` BIT(1) DEFAULT NULL,
-  `isPurResidetialFlat` BIT(1) DEFAULT NULL,
-  `isPurResidetialFlatAllotee` BIT(1) DEFAULT NULL,
-  `isPurResidetialSite` BIT(1) DEFAULT NULL,
 
-  `isConstruResidetialBuid` BIT(1) DEFAULT NULL,
-  `isConstruExpaResBuild` BIT(1) DEFAULT NULL,
-  `isConstruPurResSite` BIT(1) DEFAULT NULL,
-  `isRepPurReadyBuiltIndependant` BIT(1) DEFAULT NULL,
-  `isRepRenImpFlatHouse` BIT(1) DEFAULT NULL,
+ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN is_approved BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN is_deleted BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN is_copied BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN is_edit BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN status_id INT(2) DEFAULT NULL;
 
-  `isOthRefExcessMarginPaid` BIT(1) DEFAULT NULL,
-  `isOthLoanReimbursementFlat` BIT(1) DEFAULT NULL,
-  PRIMARY KEY (`retail_model_id`),
-  CONSTRAINT `retail_model_temp_ibfk_1` FOREIGN KEY (`retail_model_id`) REFERENCES `retail_model_temp` (`id`)
+CREATE TABLE `home_loan_model_temp` (
+  `id` BIGINT(20) UNSIGNED NOT NULL,
+  `is_pur_ready_built_house` BIT(1) DEFAULT NULL,
+  `is_pur_ready_built_independent_house` BIT(1) DEFAULT NULL,
+  `is_pur_residetial_flat` BIT(1) DEFAULT NULL,
+  `is_pur_residetial_flat_allotee` BIT(1) DEFAULT NULL,
+  `is_pur_residetial_site` BIT(1) DEFAULT NULL,
+  `is_constru_residetial_buid` BIT(1) DEFAULT NULL,
+  `is_constru_expa_res_build` BIT(1) DEFAULT NULL,
+  `is_constru_pur_res_site` BIT(1) DEFAULT NULL,
+  `is_rep_pur_ready_built_independant` BIT(1) DEFAULT NULL,
+  `is_rep_ren_imp_flat_house` BIT(1) DEFAULT NULL,
+  `is_oth_ref_excess_margin_paid` BIT(1) DEFAULT NULL,
+  `is_oth_loan_reimbursement_flat` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `retail_model_temp_ibfk_1` FOREIGN KEY (`id`) REFERENCES `retail_model_temp` (`id`)
 );
+
+
+ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN user_id BIGINT(20) DEFAULT NULL;
+ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN approval_date DATETIME DEFAULT NULL;

@@ -122,6 +122,8 @@ public class CommonUtils {
 	public static final String MODIFIED_BY = "modifiedBy";
 	public static final String MODIFIED_DATE = "modifiedDate";
 	public static final String IS_ACTIVE = "isActive";
+	public static final String ENTRY_IN = "Entry in ";
+	public static final String EXIT_FROM = "Exit From ";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -1448,6 +1450,7 @@ public enum APIFlags {
 		public static final int IN_PROGRESS = 2;
 		public static final int REVERTED = 3;
 		public static final int APPROVED = 4;
+		public static final int MODIFIED = 5;
 	}
 	
 	
