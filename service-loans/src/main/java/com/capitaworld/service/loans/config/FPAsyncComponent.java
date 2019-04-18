@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.api.payment.gateway.model.GatewayResponse;
 import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
@@ -148,6 +150,9 @@ public class FPAsyncComponent {
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
 
+	@Autowired
+	private GatewayClient gatewayClient;
+	
 	@Autowired
 	private Environment environment;
 
@@ -913,13 +918,14 @@ public class FPAsyncComponent {
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
-				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
-				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
-				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT + proposalResponse);
+				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID , request.getApplicationId());
+//				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
+				GatewayResponse inpRespose = gatewayClient.getInPrincipleByApplicationId(request.getApplicationId());
+				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT , proposalResponse);
 				proposalresp = MultipleJSONObjectHelper
-						.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+						.getObjectFromMap((Map<String, Object>) inpRespose.getData(), Map.class);
 			} catch (Exception e) {
-				logger.error(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
+				logger.error(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID , request.getApplicationId());
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
@@ -1600,13 +1606,14 @@ public class FPAsyncComponent {
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
-				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
-				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
-				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT + proposalResponse);
+				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID , request.getApplicationId());
+//				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
+				GatewayResponse inpData = gatewayClient.getInPrincipleByApplicationId(request.getApplicationId());
+				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT ,proposalResponse);
 				proposalresp = MultipleJSONObjectHelper
-						.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+						.getObjectFromMap((Map<String, Object>) inpData.getData(), Map.class);
 			} catch (Exception e) {
-				logger.info(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
+				logger.info(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID , request.getApplicationId());
 			}
 
 			Long branchId = null;
@@ -1981,13 +1988,14 @@ public class FPAsyncComponent {
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
-				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
-				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
-				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT + proposalResponse);
+				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID , request.getApplicationId());
+//				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
+				GatewayResponse inpData = gatewayClient.getInPrincipleByApplicationId(request.getApplicationId());
+				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT , proposalResponse);
 				proposalresp = MultipleJSONObjectHelper
-						.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+						.getObjectFromMap((Map<String, Object>) inpData.getData(), Map.class);
 			} catch (Exception e) {
-				logger.error(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
+				logger.error(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID , request.getApplicationId());
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			Long branchId = null;
@@ -2000,7 +2008,7 @@ public class FPAsyncComponent {
 			String makerName = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
 				try {
-					logger.info(MSG_INTO_GETTING_FP_NAME + assignedMakerForName);
+					logger.info(MSG_INTO_GETTING_FP_NAME , assignedMakerForName);
 					UserResponse userResponseForName = userClient.getFPDetails(assignedMakerForName);
 					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
@@ -2036,7 +2044,7 @@ public class FPAsyncComponent {
 			if (!CommonUtils.isObjectNullOrEmpty(assignedCheckerForName)) {
 
 				try {
-					logger.info(MSG_INTO_GETTING_FP_NAME + assignedCheckerForName);
+					logger.info(MSG_INTO_GETTING_FP_NAME , assignedCheckerForName);
 					UserResponse userResponseForName = userClient.getFPDetails(assignedCheckerForName);
 					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
@@ -2188,7 +2196,7 @@ public class FPAsyncComponent {
 							UsersRequest.class);
 					String name = null;
 					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME + hoObj);
+						logger.info(MSG_INTO_GETTING_FP_NAME , hoObj);
 						UserResponse userResponseForName = userClient.getFPDetails(hoObj);
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
@@ -2265,7 +2273,7 @@ public class FPAsyncComponent {
 							UsersRequest.class);
 					String name = null;
 					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME + boObj);
+						logger.info(MSG_INTO_GETTING_FP_NAME , boObj);
 						UserResponse userResponseForName = userClient.getFPDetails(boObj);
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
@@ -2340,7 +2348,7 @@ public class FPAsyncComponent {
 
 		try {
 
-			logger.info("Into sending Mail to Checker when Admin Maker send product for Approval===>{}");
+			logger.info("Into sending Mail to Checker when Admin Maker send product for Approval ");
 			String subject = "Intimation: New Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 
@@ -2353,7 +2361,7 @@ public class FPAsyncComponent {
 
 			String adminMakerName = null;
 			try {
-				logger.info(MSG_INTO_GETTING_FP_NAME + adminForMaker);
+				logger.info(MSG_INTO_GETTING_FP_NAME , adminForMaker);
 				UserResponse userResponseForName = userClient.getFPDetails(adminForMaker);
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
@@ -2383,7 +2391,7 @@ public class FPAsyncComponent {
 					String name = null;
 
 					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME + userObj);
+						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
 						UserResponse userResponseForName = userClient.getFPDetails(userObj);
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
@@ -2396,7 +2404,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						to = userObj.getEmail();
 						if (LITERAL_NULL.equals(name)) {
 							mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
@@ -2409,7 +2417,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						if (LITERAL_NULL.equals(name)) {
@@ -2428,7 +2436,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName != null ? adminMakerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2457,7 +2465,7 @@ public class FPAsyncComponent {
 	public void sendEmailToCheckerWhenAdminMakerResendProductForApproval(ProductMasterTemp productMasterTemp,
 																		 Long userId, String productType) {
 		try {
-			logger.info("Into sending Mail to Checker when Admin Maker resend product for Approval===>{}");
+			logger.info("Into sending Mail to Checker when Admin Maker resend product for Approval");
 			String subject = "Intimation: Re-sent Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2468,7 +2476,7 @@ public class FPAsyncComponent {
 			adminForMaker.setId(userId);
 			String adminMakerName = null;
 			try {
-				logger.info(MSG_INTO_GETTING_FP_NAME + adminForMaker);
+				logger.info(MSG_INTO_GETTING_FP_NAME , adminForMaker);
 				UserResponse userResponseForName = userClient.getFPDetails(adminForMaker);
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
@@ -2494,7 +2502,7 @@ public class FPAsyncComponent {
 							UsersRequest.class);
 					String name = null;
 					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME + userObj);
+						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
 						UserResponse userResponseForName = userClient.getFPDetails(userObj);
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
@@ -2506,7 +2514,7 @@ public class FPAsyncComponent {
 						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						to = userObj.getEmail();
 						
 
@@ -2525,7 +2533,7 @@ public class FPAsyncComponent {
 					
 					
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						if (LITERAL_NULL.equals(name)) {
@@ -2544,8 +2552,8 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
-						Map<String, Object> sysParameters = new HashMap<String, Object>();
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
+						Map<String, Object> sysParameters = new HashMap<>();
 						sysParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName != null ? adminMakerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_PRODUCT_NAME,
 								productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
@@ -2572,7 +2580,7 @@ public class FPAsyncComponent {
 	public void sendEmailToMakerWhenAdminCheckerApprovedProduct(ProductMasterTemp productMasterTemp, Long userId,
 																String productType) {
 		try {
-			logger.info("Into sending Mail to Maker when Admin Checker Approved product===>{}");
+			logger.info("Into sending Mail to Maker when Admin Checker Approved product");
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,
 					productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
@@ -2616,7 +2624,7 @@ public class FPAsyncComponent {
 			String makerName = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
 				try {
-					logger.info(MSG_INTO_GETTING_FP_NAME + assignedMakerForName);
+					logger.info(MSG_INTO_GETTING_FP_NAME , assignedMakerForName);
 					UserResponse userResponseForName = userClient.getFPDetails(assignedMakerForName);
 					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
@@ -2643,7 +2651,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
-				Map<String, Object> smsParameters = new HashMap<String, Object>();
+				Map<String, Object> smsParameters = new HashMap<>();
 				to = "91" + assignedMaker.getMobile();
 				smsParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
 				smsParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2655,7 +2663,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
-				Map<String, Object> sysParameters = new HashMap<String, Object>();
+				Map<String, Object> sysParameters = new HashMap<>();
 
 				sysParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
 				sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2928,23 +2936,23 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToMakerHOBOWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan===>{}");
+			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan ");
 			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
-			Map<String, Object> mailParameters = new HashMap<String, Object>();
-			ProposalMappingResponse proposal = proposalDetailsClient.getActiveProposalByApplicationID(loanSanctionDomainOld.getApplicationId());
+			Map<String, Object> mailParameters = new HashMap<>();
+			ProposalMappingResponse proposal = proposalDetailsClient.getProposalByApplicationIdAndUserOrgId(loanSanctionDomainOld.getOrgId(),loanSanctionDomainOld.getApplicationId());
 			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ApplicationProposalMapping.class);
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 			
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
-				logger.info("Calling Proposal details client :-" + loanSanctionDomainOld.getApplicationId());
+				logger.info("Calling Proposal details client {}" , loanSanctionDomainOld.getApplicationId());
 				proposalResponse = proposalDetailsClient.getInPricipleById(loanSanctionDomainOld.getApplicationId());
-				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT + proposalResponse);
+				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT , proposalResponse);
 				proposalresp = MultipleJSONObjectHelper
 						.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
 			} catch (Exception e) {
-				logger.info("Error calling Proposal Details Client" + loanSanctionDomainOld.getApplicationId());
+				logger.info("Error calling Proposal Details Client {}" , loanSanctionDomainOld.getApplicationId());
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			String productType = null;
@@ -3012,7 +3020,7 @@ public class FPAsyncComponent {
 			if(loanSanctionDomainOld.getModifiedBy() != null) {
 				checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
 				try {
-					logger.info(MSG_INTO_GETTING_FP_NAME + checkerForName);
+					logger.info(MSG_INTO_GETTING_FP_NAME , checkerForName);
 					UserResponse userResponseForName = userClient.getFPDetails(checkerForName);
 					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
@@ -3045,7 +3053,7 @@ public class FPAsyncComponent {
 			makerForName.setId(applicationRequest.getFpMakerId());
 			String makerName = null;
 			try {
-				logger.info(MSG_INTO_GETTING_FP_NAME + makerForName);
+				logger.info(MSG_INTO_GETTING_FP_NAME , makerForName);
 				UserResponse userResponseForName = userClient.getFPDetails(makerForName);
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
@@ -3080,7 +3088,7 @@ public class FPAsyncComponent {
 	
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
-					Map<String, Object> sysParameters = new HashMap<String, Object>();
+					Map<String, Object> sysParameters = new HashMap<>();
 	
 					sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 					sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -3108,7 +3116,7 @@ public class FPAsyncComponent {
 							UsersRequest.class);
 					String name = null;
 					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME + userObj);
+						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
 						UserResponse userResponseForName = userClient.getFPDetails(userObj);
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
@@ -3121,7 +3129,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						to = userObj.getEmail();
 						if (LITERAL_NULL.equals(name)) {
 							mailParameters.put(PARAMETERS_HO_NAME, PARAMETERS_SIR_MADAM);
@@ -3133,8 +3141,8 @@ public class FPAsyncComponent {
 								NotificationAlias.EMAIL_HO_CHECKER_SANCTIONED, subject);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
-						Map<String, Object> smsParameters = new HashMap<String, Object>();
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
+						Map<String, Object> smsParameters = new HashMap<>();
 						to = "91" + userObj.getMobile();
 						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -3146,7 +3154,7 @@ public class FPAsyncComponent {
 								NotificationAlias.SMS_HO_CHECKER_SANCTIONED, to);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -3172,7 +3180,7 @@ public class FPAsyncComponent {
 							UsersRequest.class);
 					String name = null;
 					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME + userObj);
+						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
 						UserResponse userResponseForName = userClient.getFPDetails(userObj);
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
 								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
@@ -3184,7 +3192,7 @@ public class FPAsyncComponent {
 						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						to = userObj.getEmail();
 						if (LITERAL_NULL.equals(name)) {
 							mailParameters.put(PARAMETERS_BO_NAME, PARAMETERS_SIR_MADAM);
@@ -3197,7 +3205,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -3212,7 +3220,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						logger.info(MSG_MAKER_ID+userObj.getEmail());
+						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
