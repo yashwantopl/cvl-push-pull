@@ -805,6 +805,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                         + userId + "  ApplicationId==>" + applicationId+" proposalID ==> "+proposalId);
             }
             RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
+            if(applicantDetail.getApplicationProposalMapping() != null) {
+            	applicantRequest.setApplicationStatus(applicantDetail.getApplicationProposalMapping().getApplicationStatusMaster() != null ? applicantDetail.getApplicationProposalMapping().getApplicationStatusMaster().getId() : null);
+            }
+            
             BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailPlProfile());
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
