@@ -249,7 +249,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameter.getMaxTotalJobExp())) {
 			homeLoanParameterRequest.setMaxTotalJobExp(homeLoanParameter.getMaxTotalJobExp().doubleValue());	
 		}
-
+		
 		
 		// Getting Mapping Current CURRENT_EMPLOYMENT
 		homeLoanParameterRequest.setCurrentEmploymentStatusIds(fPParameterMappingService
@@ -417,7 +417,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameter.getMaxTotalJobExp())) {
 			homeLoanParameterRequest.setMaxTotalJobExp(homeLoanParameter.getMaxTotalJobExp().doubleValue());	
 		}
-
+		
 		// Getting Mapping Current CURRENT_EMPLOYMENT
 		homeLoanParameterRequest.setCurrentEmploymentStatusIds(fPParameterMappingService
 				.getParametersTemp(homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.CURRENT_EMPLOYMENT));

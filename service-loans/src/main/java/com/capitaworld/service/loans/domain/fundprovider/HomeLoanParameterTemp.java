@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Double currency;
+	private Integer currency;
 	
 	// Net Monthly Income Range (Rs.)
 	@Column(name = "min_net_monthly_income_range")
@@ -286,12 +286,12 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	}
 
 
-	public Double getCurrency() {
+	public Integer getCurrency() {
 		return currency;
 	}
 
 
-	public void setCurrency(Double currency) {
+	public void setCurrency(Integer currency) {
 		this.currency = currency;
 	}
 
