@@ -61,6 +61,10 @@ public class RetailFinalInfoRequest {
     private Integer ddoOrganizationType;
 
     private Boolean isApplicantFinalFilled;
+    
+    private String remarks;
+    private Long applicationStatus;
+    
     public Long getId() {
         return id;
     }
@@ -405,6 +409,23 @@ public class RetailFinalInfoRequest {
 	public void setDrivingLicenseExpiryDate(Date drivingLicenseExpiryDate) {
 		this.drivingLicenseExpiryDate = drivingLicenseExpiryDate;
 	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public Long getApplicationStatus() {
+		return applicationStatus;
+	}
+
+	public void setApplicationStatus(Long applicationStatus) {
+		this.applicationStatus = applicationStatus;
+	}
     
+	
     
 }
