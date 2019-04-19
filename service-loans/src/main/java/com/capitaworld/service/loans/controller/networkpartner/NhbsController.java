@@ -518,4 +518,42 @@ public class NhbsController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/set/fp/approve", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> approveApplication(@RequestBody NhbsApplicationRequest nhbsApplicationRequest, HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonUtils.isObjectNullOrEmpty(userId) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationId()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getNpUserId())) {
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
+				logger.warn(APPLICATION_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getApplicationId());
+				logger.warn(NP_USER_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getNpUserId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			nhbsApplicationRequest.setUserId(userId);
+			LoansResponse loansResponse = new LoansResponse();
+			boolean isDataUpdated = networkPartnerService.approveApplication(nhbsApplicationRequest);
+			if (isDataUpdated) {
+				logger.info(DATA_UPDATED);
+				loansResponse.setMessage(DATA_UPDATED);
+				/*boolean status = networkPartnerService.sendSMSNotificationWhenCheckerAssignMaker(nhbsApplicationRequest.getApplicationId(),nhbsApplicationRequest.getAssignedUserId());
+				logger.info("SMS notification status is:-"+status);*/
+
+			} else {
+				logger.info(DATA_NOT_UPDATED);
+				loansResponse.setMessage(DATA_NOT_UPDATED);
+			}
+			loansResponse.setStatus(HttpStatus.OK.value());
+			loansResponse.setData(isDataUpdated);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_SETTING_MAKER_TO_PROPOSALS_MSG, e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

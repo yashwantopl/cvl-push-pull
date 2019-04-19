@@ -541,6 +541,8 @@ public class RetailApplicantDetail implements Serializable {
 
     @Column(name="is_other_salary_bank")
     private Boolean isOtherSalaryBank;
+    
+    private String remarks;
 
 
 	public RetailApplicantDetail() {
@@ -1891,6 +1893,14 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 
 
