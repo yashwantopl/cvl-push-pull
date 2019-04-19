@@ -262,12 +262,27 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
+            if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
+
+				LocalDate since = LocalDate.of(applicantRequest.getSalaryBankYear(), applicantRequest.getSalaryBankMonth(), 1);
+		        LocalDate today = LocalDate.now();
+
+		        Period age = Period.between(since, today);
+		        int years = age.getYears();
+		        int months = age.getMonths();
+
+				applicantRequest.setSalaryBankYear(years);
+				applicantRequest.setSalaryBankMonth(months);
+			}
             /*UserResponse userResponse = usersClient.getEmailMobile(userId);
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
             applicantRequest.setMobile(request.getMobile());*/
 
-            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+            if(retailApplicantIncomeDetailList == null || retailApplicantIncomeDetailList.size() < 1) {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+            }
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
 
             RetailApplicantIncomeRequest incomeRequest = null;
@@ -641,6 +656,17 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         address.setPincode(from.getAddressPincode());
         address.setDistrictMappingId(from.getAddressDistrictMappingId());
         to.setContactAddress(address);
+        
+        Address officeAddress = new Address();
+        officeAddress.setPremiseNumber(from.getOfficePremiseNumberName());
+        officeAddress.setLandMark(from.getOfficeLandMark());
+        officeAddress.setStreetName(from.getOfficeStreetName());
+        officeAddress.setCityId(from.getOfficeCityId());
+        officeAddress.setStateId(from.getOfficeStateId());
+        officeAddress.setCountryId(from.getOfficeCountryId());
+        officeAddress.setPincode(from.getOfficePincode());
+        officeAddress.setDistrictMappingId(from.getOfficeDistrictMappingId());
+        to.setOfficeAddress(officeAddress);
 
     }
 
@@ -779,6 +805,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                         + userId + "  ApplicationId==>" + applicationId+" proposalID ==> "+proposalId);
             }
             RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
+            if(applicantDetail.getApplicationProposalMapping() != null) {
+            	applicantRequest.setApplicationStatus(applicantDetail.getApplicationProposalMapping().getApplicationStatusMaster() != null ? applicantDetail.getApplicationProposalMapping().getApplicationStatusMaster().getId() : null);
+            }
+            
             BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailPlProfile());
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);

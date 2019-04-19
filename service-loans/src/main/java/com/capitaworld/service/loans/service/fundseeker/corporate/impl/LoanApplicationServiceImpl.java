@@ -163,6 +163,7 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -5925,7 +5926,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			applicationRequest.setUserName(getFsApplicantName(applicationMaster.getApplicationId()));
-
+			applicationRequest.setProposalId(applicationMaster.getProposalId());
 			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
 			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
 				logger.warn(EMAIL_MOBILE_OR_DATA_IN_EMAIL_MOBILE_MUST_NOT_BE_NULL, emailMobile);
@@ -6290,7 +6291,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
 			applicationProposalMapping.setApplicationStatusMaster(applicationStatusMaster);
 			//set application ddr stage
-			applicationProposalMapping.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+			if(BusinessType.EXISTING_BUSINESS.getId() == loanApplicationMaster.getBusinessTypeId()) {
+				applicationProposalMapping.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+			}
 			applicationProposalMapping.setApplicationCode(loanApplicationMaster.getApplicationCode());
 			applicationProposalMapping.setIsPrimaryUploadFilled(true);
 			applicationProposalMapping.setIsApplicantDetailsFilled(true);

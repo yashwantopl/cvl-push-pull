@@ -17,6 +17,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
@@ -1169,8 +1170,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		try {
 
-			if(corporateApplicantDetail.getGstIn()!= null) {
-				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn(),applicationId);
+			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
+				GSTR1Request req= new GSTR1Request();
+				req.setApplicationId(toApplicationId);
+				req.setUserId(toUserId);
+				req.setGstin(corporateApplicantDetail.getGstIn());
+				GstResponse response = gstClient.detailCalculation(req);
 				if (response != null) {
 					corporatePrimaryViewResponse.setGstData(response);
 				} else {
@@ -1178,9 +1183,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
 				}
-			}else {
+			/*}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
-			}
+			}*/
 
 
 		} catch (Exception e) {
