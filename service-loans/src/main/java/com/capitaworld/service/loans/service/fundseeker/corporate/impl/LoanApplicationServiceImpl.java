@@ -38,7 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+
 import com.capitaworld.connect.api.ConnectRequest;
+
+import com.capitaworld.client.payment.gateway.GatewayClient;
+
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -994,7 +998,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				String applicationStatus = null;
 				if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
 					if (request
-							.getPaymentStatus() == CommonUtils.PaymentStatus.SUCCESS) {
+							.getPaymentStatus() ==CommonUtils.PaymentStatus.SUCCESS) {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
 					} else {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
@@ -5599,7 +5603,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			}
 			try {
-				updatePayment = gatewayClient.updatePayment(gatewayRequest);
+			updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			} catch (Exception e) {
 				logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT : ",e);
 			}

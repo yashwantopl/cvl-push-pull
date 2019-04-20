@@ -2494,6 +2494,7 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
+
 	
 	public LoansResponse getCorporateApplicantByProposalId(Long proposalId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_CORPORATE_BY_PROPOSAL_ID).concat("/" + proposalId);
@@ -2536,6 +2537,7 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available While Get responce from /GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK");
 		}
 	}
+
 }
 
 

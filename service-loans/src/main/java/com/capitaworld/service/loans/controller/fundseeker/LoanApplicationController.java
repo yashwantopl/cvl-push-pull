@@ -1881,8 +1881,10 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
+
 			GatewayRequest gatewayRequest = new GatewayRequest();
 			gatewayRequest.setUserId(userId);
+
 			BeanUtils.copyProperties(paymentRequest, gatewayRequest);
 			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
 			logger.info(RESPONSE_MSG, paymentStatus);
