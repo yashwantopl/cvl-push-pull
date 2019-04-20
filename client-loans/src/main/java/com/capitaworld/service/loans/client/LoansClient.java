@@ -255,6 +255,7 @@ public class LoansClient {
     private static final String GET_LOAN_APPLICATION_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
     private static final String GET_CORPORATE_BY_PROPOSAL_ID="/final_info/getByProposalId";
     private static final String GET_INPRINCIPLE_LIST_FOR_MULTIPLEBANNK="/proposal/inprincipleDataMulipleBank";
+    private static final String GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK="/proposal/getDayDiffrenceForMultipleBank";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2493,6 +2494,7 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
+
 	
 	public LoansResponse getCorporateApplicantByProposalId(Long proposalId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_CORPORATE_BY_PROPOSAL_ID).concat("/" + proposalId);
@@ -2521,6 +2523,21 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
+	public LoansResponse getMultipleBankDayDiffrenceForInprinciple() throws LoansException {
+		String url = loansBaseUrl.concat(GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK);
+		try {
+			logger.info("Enter in GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK ---------->{}" , url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {			
+			logger.error("{}",e);
+			throw new LoansException("Loans service is not available While Get responce from /GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK");
+		}
+	}
+
 }
 
 

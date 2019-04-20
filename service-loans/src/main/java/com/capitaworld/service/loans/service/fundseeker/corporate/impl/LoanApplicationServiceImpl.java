@@ -38,7 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+
 import com.capitaworld.connect.api.ConnectRequest;
+
+import com.capitaworld.client.payment.gateway.GatewayClient;
+
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -163,6 +167,7 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -993,7 +998,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				String applicationStatus = null;
 				if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
 					if (request
-							.getPaymentStatus() == CommonUtils.PaymentStatus.SUCCESS) {
+							.getPaymentStatus() ==CommonUtils.PaymentStatus.SUCCESS) {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
 					} else {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
@@ -1876,7 +1881,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception {
+	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws LoansException {
 		try {
 			Long count = applicationProposalMappingRepository.checkPrimaryDetailIsLocked(proposalId);
 			return (count != null ? count > 0 : false);
@@ -3558,6 +3563,126 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return response;
 	}
+	
+	private JSONObject retailValidating(ApplicationProposalMapping applicationProposalMapping, Integer toTabType,
+			Long coAppllicantOrGuarantorId) throws LoansException {
+		List<Long> coAppIds = null;
+		List<Long> guaIds = null;
+		Long coAppCount = null;
+		Long guarantorCount = null;
+		int index = 0;
+		final String INVALID_MSG = "Requested data is Invalid.";
+
+		JSONObject response = new JSONObject();
+		response.put(MESSAGE_LITERAL, "NA");
+		response.put(RESULT_LITERAL, true);
+		switch (toTabType) {
+		case CommonUtils.TabType.MATCHES:
+			boolean isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the matches !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.CONNECTIONS:
+			isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to See the connections !");
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+
+		case CommonUtils.TabType.PRIMARY_INFORMATION:
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			
+			break;
+			
+		case CommonUtils.TabType.PRIMARY_UPLOAD:
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			// Primary Information Tab Validating
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantPrimaryFilled())
+					|| !applicationProposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+			break;
+			
+		case CommonUtils.TabType.FINAL_INFORMATION:
+			isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			// Primary Information Tab Validating
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantPrimaryFilled())
+					|| !applicationProposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			break;
+		
+		case CommonUtils.TabType.FINAL_UPLOAD:
+			isPrimaryLocked = isPrimaryLockedByProposalId(applicationProposalMapping.getProposalId(), applicationProposalMapping.getUserId());
+			if (!isPrimaryLocked) {
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsApplicantDetailsFilled())
+					|| !applicationProposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT);
+				response.put(RESULT_LITERAL, false);
+				return response;
+			}
+
+			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+					.getById(applicationProposalMapping.getProductId());
+			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
+					&& (loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
+							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
+                    && (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+                            || !applicationProposalMapping.getIsFinalMcqFilled().booleanValue())) {
+					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
+					} else {
+						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
+					}
+					response.put(RESULT_LITERAL, false);
+					return response;
+			}
+			break;
+		
+		default:
+			break;
+		}
+		return response;
+	}
 
 	@Override
 	public String getFsApplicantName(Long applicationId) throws LoansException {
@@ -3577,13 +3702,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
 					.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-						.findOneByApplicationIdId(applicationId);
+						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 			}
 			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
+							.findByApplicationId(applicationId);
 					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 				} else if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
 					  CorporateApplicantDetail crApp = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
@@ -5478,7 +5603,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			}
 			try {
-				updatePayment = gatewayClient.updatePayment(gatewayRequest);
+			updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			} catch (Exception e) {
 				logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT : ",e);
 			}
@@ -5805,7 +5930,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			applicationRequest.setUserName(getFsApplicantName(applicationMaster.getApplicationId()));
-
+			applicationRequest.setProposalId(applicationMaster.getProposalId());
 			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
 			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
 				logger.warn(EMAIL_MOBILE_OR_DATA_IN_EMAIL_MOBILE_MUST_NOT_BE_NULL, emailMobile);
@@ -5829,7 +5954,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				} else {
 					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(id);
+							.findByApplicationId(id);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 						address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
 					}
@@ -6170,13 +6295,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
 			applicationProposalMapping.setApplicationStatusMaster(applicationStatusMaster);
 			//set application ddr stage
-			applicationProposalMapping.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+			if(BusinessType.EXISTING_BUSINESS.getId() == loanApplicationMaster.getBusinessTypeId()) {
+				applicationProposalMapping.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+			}
 			applicationProposalMapping.setApplicationCode(loanApplicationMaster.getApplicationCode());
 			applicationProposalMapping.setIsPrimaryUploadFilled(true);
 			applicationProposalMapping.setIsApplicantDetailsFilled(true);
 			applicationProposalMapping.setIsApplicantPrimaryFilled(true);
 			applicationProposalMapping.setIsPrimaryLocked(true);
-			applicationProposalMapping.setBusinessTypeId(CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			applicationProposalMapping.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
 				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
 			}
@@ -7758,7 +7885,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
 			return corporateValidating(applicationProposalMapping, nextTabType, coAppllicantOrGuarantorId);
 		} else {
-			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
+			//return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
+			return retailValidating(applicationProposalMapping, nextTabType, coAppllicantOrGuarantorId);
 		}
 	}
 

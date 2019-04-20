@@ -267,7 +267,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				Long proposalMappingId = proposalrequest.getId();
-				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalrequest.getId());
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalrequest.getId(), true);
 				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 					logger.info("Proposal not in application_proposal_mapping table "+proposalMappingId);
 					continue;
@@ -601,7 +601,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					Long fpProductId = request.getFpProductId();
 
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
+							.findByApplicationId(applicationId);
 
 					if (retailApplicantDetail == null)
 						continue;
@@ -1132,7 +1132,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					Long fpProductId = request.getFpProductId();
 
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
+							.findByApplicationId(applicationId);
 
 					if (retailApplicantDetail == null)
 						continue;
@@ -1711,7 +1711,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							proposalByMatches.add(corporateProposalDetails);
 						} else {
 							RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-									.findOneByApplicationIdId(applicationId.longValue());
+									.findByApplicationId(applicationId.longValue());
 
 							if (retailApplicantDetail == null)
 								continue;
@@ -1890,7 +1890,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							proposalWithoutMatches.add(corporateProposalDetails);
 						} else {
 							RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-									.findOneByApplicationIdId(applicationId.longValue());
+									.findByApplicationId(applicationId.longValue());
 
 							if (retailApplicantDetail == null)
 								continue;
@@ -2191,7 +2191,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					Long applicationId = proposalrequest.getApplicationId();
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalrequest.getId());
+					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalrequest.getId(), true);
 					if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 						logger.info("Proposal not in application_proposal_mapping table "+applicationProposalMapping.getProposalId());
 						continue;
@@ -2456,8 +2456,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try
 		{
 			loansResponse.setFlag(true);
-
-            ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndProposalId(userRequest.getApplicationId(), userRequest.getProposalMappingId(), userOrgId);
+            ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(userRequest.getApplicationId(), userOrgId);
 			UserResponse userResponse = null;
 			userRequest.setProductIdString(CommonUtility.encode("" + applicationProposalMapping.getProductId()));
 
@@ -2532,7 +2531,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 			if(proposalDetailsList != null && proposalDetailsList.size() == 0){//for offline cases
-				return checkLogicForOfflineMultiBankSelection(applicationId,proposalDetailsList);
+				return checkLogicForOfflineMultiBankSelection(applicationId,proposalDetailsList,filteredAppListList);
 			}
 			if(inActivityProposalList != null && !inActivityProposalList.isEmpty()){
 				ConnectRequest connectRequest = new ConnectRequest();
@@ -2593,15 +2592,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								//List<ConnectRequest> connectRequestList = new ArrayList<>(connectListSize);
 								int ineligibleCnt = 0,eligibleCnt=0,totalAttempt=0;
 								for (int j = 0; j < connectListSize; j++) {
+
 									ConnectRequest connectReq = null;
 									if(!CommonUtils.isListNullOrEmpty(filteredAppListList)){
 										connectReq = filteredAppListList.get(j);
 									}else{
 										connectReq = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(j),ConnectRequest.class);
 									}
-									if(connectReq.getStageId().equals(4) && connectReq.getStatus().equals(6)){
+									if((connectReq.getStageId().equals(4) || connectReq.getStageId().equals(207)) && connectReq.getStatus().equals(6)){
 										ineligibleCnt++;
-									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7)) && connectReq.getStatus().equals(3)){
+									}else if((connectReq.getStageId().equals(9) || connectReq.getStageId().equals(7) || connectReq.getStageId().equals(210) || connectReq.getStageId().equals(211)) && connectReq.getStatus().equals(3)){
 										eligibleCnt++;
 									}
 									if(ineligibleCnt>0 && eligibleCnt == 0)
@@ -2650,45 +2650,46 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList) {
+	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList,List<ConnectRequest> filteredAppListList) {
 		try {
-			int days = 0;
+			int days = 0,connectListSize = 0;
 			if(proposalDetailsList.size() == 0){//for offline cases
-				ConnectResponse connectResponseOffline = connectClient.getApplicationList(applicationId);
-				/*IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
-				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
-					return Boolean.FALSE;
-				}*/
-				if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline)
-						&& !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())
-						&& connectResponseOffline.getDataList().size() > 0){
-					ConnectRequest connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
-					if(!CommonUtils.isObjectNullOrEmpty(connectRequestOffline) && CommonUtils.isObjectNullOrEmpty(connectRequestOffline.getOrgId())){
-						days = Days.daysBetween(new LocalDate(connectRequestOffline.getModifiedDate()),
-								new LocalDate(new Date())).getDays();
-						if(days > Integer.parseInt(maxDaysForOffline)){
-							return Boolean.FALSE;
-						}else {
-							int offlineResponseListSize = connectResponseOffline.getDataList().size();
-							ConnectRequest connectReqObj = new ConnectRequest();
-							if(offlineResponseListSize > 1){
-								connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(offlineResponseListSize-1),ConnectRequest.class);
-								days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
-										new LocalDate(new Date())).getDays();
-								if(days >= Integer.parseInt(daysIntervalForOffline)) {//take 1 from application.properties file
-									return Boolean.TRUE;
-								}
-							}else{
-								if(days >= Integer.parseInt(startIntervalForOffline)) {//take 15 from application.properties file
-									return Boolean.TRUE;
-								}
+				ConnectRequest connectRequestOffline = new ConnectRequest();
+				ConnectResponse connectResponseOffline = new ConnectResponse();
+				if(!CommonUtils.isObjectNullOrEmpty(filteredAppListList)){
+					connectListSize = filteredAppListList.size();
+					connectRequestOffline = filteredAppListList.get(0);
+				}else{
+					connectResponseOffline = connectClient.getApplicationList(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(connectResponseOffline) && !CommonUtils.isListNullOrEmpty(connectResponseOffline.getDataList())){
+						connectListSize = connectResponseOffline.getDataList().size();
+						connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
+					}
+				}
+				//ConnectRequest connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
+				if(!CommonUtils.isObjectNullOrEmpty(connectRequestOffline) && CommonUtils.isObjectNullOrEmpty(connectRequestOffline.getOrgId())){
+					days = Days.daysBetween(new LocalDate(connectRequestOffline.getModifiedDate()),
+							new LocalDate(new Date())).getDays();
+					if(days > Integer.parseInt(maxDaysForOffline)){
+						return Boolean.FALSE;
+					}else {
+						//int offlineResponseListSize = connectResponseOffline.getDataList().size();
+						ConnectRequest connectReqObj = new ConnectRequest();
+						if(connectListSize > 1){
+							connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(connectListSize-1),ConnectRequest.class);
+							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+									new LocalDate(new Date())).getDays();
+							if(days >= Integer.parseInt(daysIntervalForOffline)) {//take 1 from application.properties file
+								return Boolean.TRUE;
+							}
+						}else{
+							if(days >= Integer.parseInt(startIntervalForOffline)) {//take 15 from application.properties file
+								return Boolean.TRUE;
 							}
 						}
 					}
-					return Boolean.FALSE;
-				}else{
-					return Boolean.FALSE;
 				}
+				return Boolean.FALSE;
 			}
 			return Boolean.FALSE;
 		} catch (IOException io) {
@@ -3076,6 +3077,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 
 		return response;
+	}
+
+	@Override
+	public String getDayDiffrenceForInprinciple() {
+		if(daysDiff != null) {
+			return daysDiff;
+		}
+		return null;
 	}
 }
 

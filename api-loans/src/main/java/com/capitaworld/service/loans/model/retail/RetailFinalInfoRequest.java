@@ -30,9 +30,9 @@ public class RetailFinalInfoRequest {
     private Integer castId;
     private String birthPlace;
     private Integer disabilityType;
-    private String tradeLicenseNumber;
+    private String drivingLicenseNumber;
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
-    private Date tradeLicenseExpiryDate;
+    private Date drivingLicenseExpiryDate;
     private String passport;
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date passportValidity;
@@ -61,6 +61,10 @@ public class RetailFinalInfoRequest {
     private Integer ddoOrganizationType;
 
     private Boolean isApplicantFinalFilled;
+    
+    private String remarks;
+    private Long applicationStatus;
+    
     public Long getId() {
         return id;
     }
@@ -197,21 +201,6 @@ public class RetailFinalInfoRequest {
         this.disabilityType = disabilityType;
     }
 
-    public String getTradeLicenseNumber() {
-        return tradeLicenseNumber;
-    }
-
-    public void setTradeLicenseNumber(String tradeLicenseNumber) {
-        this.tradeLicenseNumber = tradeLicenseNumber;
-    }
-
-    public Date getTradeLicenseExpiryDate() {
-        return tradeLicenseExpiryDate;
-    }
-
-    public void setTradeLicenseExpiryDate(Date tradeLicenseExpiryDate) {
-        this.tradeLicenseExpiryDate = tradeLicenseExpiryDate;
-    }
 
     public String getPassport() {
         return passport;
@@ -404,6 +393,39 @@ public class RetailFinalInfoRequest {
 	public void setProposalId(Long proposalId) {
 		this.proposalId = proposalId;
 	}
+
+	public String getDrivingLicenseNumber() {
+		return drivingLicenseNumber;
+	}
+
+	public Date getDrivingLicenseExpiryDate() {
+		return drivingLicenseExpiryDate;
+	}
+
+	public void setDrivingLicenseNumber(String drivingLicenseNumber) {
+		this.drivingLicenseNumber = drivingLicenseNumber;
+	}
+
+	public void setDrivingLicenseExpiryDate(Date drivingLicenseExpiryDate) {
+		this.drivingLicenseExpiryDate = drivingLicenseExpiryDate;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public Long getApplicationStatus() {
+		return applicationStatus;
+	}
+
+	public void setApplicationStatus(Long applicationStatus) {
+		this.applicationStatus = applicationStatus;
+	}
     
+	
     
 }

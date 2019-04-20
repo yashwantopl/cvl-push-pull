@@ -1,3 +1,4 @@
+
 package com.capitaworld.service.loans.service.networkpartner;
 
 import java.util.List;
@@ -42,4 +43,7 @@ public interface NetworkPartnerService {
 	public JSONObject getFPProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId);
 	
 	public boolean revertApplication(NhbsApplicationRequest request);
+	
+	public boolean approveApplication(NhbsApplicationRequest request);
 }
+

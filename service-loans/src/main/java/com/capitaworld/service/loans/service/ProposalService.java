@@ -74,7 +74,9 @@ public interface ProposalService {
 
 	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList);
 
-	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList);
+	public Boolean checkLogicForOfflineMultiBankSelection(Long applicationId,List<ProposalDetails> proposalDetailsList,List<ConnectRequest> filteredAppListList);
 
 	public List<SchedulerDataMultipleBankRequest> getApplicationListForMultipleBank();
+	
+	public String getDayDiffrenceForInprinciple();
 }
