@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,9 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+
 	@Override
 	public boolean saveOrUpdate(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException {
 
@@ -60,6 +65,14 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 	@Override
 	public PrimaryCorporateRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
+			if(CommonUtils.isObjectNullOrEmpty(userId)){
+				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicationId);
+				if(loanApplicationMaster == null){
+					throw new NullPointerException(
+							PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG + applicationId + " and UserId==>" + userId);
+				}
+				userId = loanApplicationMaster.getUserId();
+			}
 			PrimaryCorporateDetail loanDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId,
 					userId);
 			if (loanDetail == null) {
@@ -94,5 +107,29 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
 		}
 		return null;
+	}
+
+	@Override
+	public boolean saveOrUpdateSpecificData(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException {
+
+		try {
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(
+					primaryCorporateRequest.getId(),
+					(CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getClientId()) ? userId
+							: primaryCorporateRequest.getClientId()));
+			if (primaryCorporateDetail == null) {
+				throw new NullPointerException(PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG
+						+ primaryCorporateRequest.getId() + " and UserId==>" + userId);
+			}
+
+			primaryCorporateDetail.setPurposeOfLoanId(primaryCorporateRequest.getPurposeOfLoanId());
+			primaryCorporateDetail.setModifiedBy(userId);
+			primaryCorporateDetail.setModifiedDate(new Date());
+			primaryCorporateRepository.save(primaryCorporateDetail);
+			return true;
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 }

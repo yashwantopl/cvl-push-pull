@@ -1,4 +1,3 @@
-
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
@@ -6,12 +5,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.common.*;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+
+
 import com.capitaworld.api.payment.gateway.model.GatewayRequest;
+
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -38,7 +42,7 @@ public interface LoanApplicationService {
 	
 	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws LoansException;
 
-	public LoanApplicationRequest get(Long id, Long userId) throws LoansException;
+	public LoanApplicationRequest get(Long id, Long userId,Long userOrdId) throws LoansException;
 	
 	public LoanApplicationRequest inActive(Long id, Long userId) throws LoansException;
 	
@@ -46,18 +50,24 @@ public interface LoanApplicationService {
 
 	public List<LoanApplicationRequest> getList(Long userId) throws LoansException;
 
+	public List<LoanApplicationRequest> getApplicationList(Long userId) throws LoansException;
+
 	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId);
 
 	public boolean lockPrimary(Long applicationId, Long userId,boolean flag) throws LoansException;
 
 	public LoanApplicationRequest lockFinal(Long applicationId, Long userId,boolean flag) throws LoansException;
-	
+
+	public LoanApplicationRequest lockFinalByProposalId(Long applicationId,Long proposalId ,Long userId,boolean flag) throws Exception;
+
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws LoansException;
-	
+
 	public Integer getProductIdByApplicationId(Long applicationId,Long userId) throws LoansException;
-	
+
+	public Object[] getApplicationDetailsByProposalId(Long applicationId,Long proposalMappingId) throws Exception;
+
 	public Object[] getApplicationDetailsById(Long applicationId) throws LoansException;
-	
+
 	public String getFsApplicantName(Long applicationId) throws LoansException;
 	
 	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws LoansException;
@@ -65,13 +75,19 @@ public interface LoanApplicationService {
 	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId,Long userId) throws LoansException;
 	
 	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws LoansException;
-	
-	public Boolean isApplicationIdActive(Long applicationId) throws LoansException;
+
+	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception;
+
+	public Boolean isApplicationIdActive(Long applicationId) throws LoansException; // previous
+
+    public Boolean getByProposalId(Long proposalId) throws Exception; // new
 	
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws LoansException;
 	
 	public Boolean isFinalLocked(Long applicationId, Long userId) throws LoansException;
-	
+
+	public Boolean isFinalLockedByProposalId(Long proposalId, Long userId) throws Exception;
+
 	public JSONObject getSelfViewAndPrimaryLocked(Long applicationId, Long userId) throws LoansException;
 	
 	public Integer getCurrencyId(Long applicationId, Long userId) throws LoansException;
@@ -79,11 +95,15 @@ public interface LoanApplicationService {
 	public JSONObject getCurrencyAndDenomination(Long applicationId, Long userId) throws LoansException;
 	
 	public JSONObject isAllowToMoveAhead(Long applicationId, Long userId, Integer nextTabType,Long coAppllicantOrGuarantorId) throws LoansException;
-	
-	public boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId);
+
+	public JSONObject isAllowToMoveAheadForMultiProposal(Long applicationId, Long proposalId, Long userId, Integer nextTabType, Long coAppllicantOrGuarantorId) throws Exception;
+
+	public boolean hasAlreadyApplied(Long userId, Long applicationId,Integer productId);
 	
 	public JSONObject getBowlCount(Long applicationId, Long userId);
-	
+
+	public JSONObject getBowlCountByProposalId(Long applicationId, Long proposalId);
+
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(MobileLoanRequest loanRequest);
 	
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type,MobileLoanRequest loanRequest) throws IOException, LoansException;
@@ -104,6 +124,8 @@ public interface LoanApplicationService {
 	
 	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId);
 	
+	public List<FpProfileBasicDetailRequest> getFpNegativeListByProposalId(Long proposalId);
+	
 	public void saveSuggestionList(ProposalList  proposalList);	
 	
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
@@ -118,7 +140,11 @@ public interface LoanApplicationService {
 	
 	public Long getTotalUserApplication(Long userId);
 	
-	public Long getUserIdByApplicationId(Long applicationId);
+	public Long getUserIdByApplicationId(Long applicationId); // previous
+
+	public Long getApplicationIdByProposalId(Long proposalId); //NEW
+
+	public Long getUserIdByProposalId(Long proposalId); //NEW
 	
 	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws LoansException;
 	
@@ -150,6 +176,8 @@ public interface LoanApplicationService {
 	
 	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws LoansException;
 	
+	public Boolean updateDDRStatusByProposalId(Long applicationId, Long userId , Long proposalId, Long statusId) throws Exception;
+
 	public LoanApplicationRequest getFromClient(Long id) throws LoansException;
 
 	public Boolean isApplicationEligibleForIrr(Long applicationId) throws LoansException;
@@ -207,12 +235,20 @@ public interface LoanApplicationService {
 	public Integer getLoanWCRenewalType(Long applicationId);
 
 	Boolean isMcqSkipped(Long applicationId) throws LoansException;
-	
+
 	public String getCommonPropertiesValue(String key);
 
 	Long getIrrByApplicationId(Long id) throws LoansException;
 
 	LoanApplicationRequest getAllFlag(Long id, Long userId) throws LoansException;
+
+	LoanApplicationRequest getAllFlagByProposalId(Long proposalId, Long userId) throws LoansException;
+
+	public Long getProposalId(Long applicationId, Long userOrgId);
+
+	public LoanApplicationRequest getBasicInformation(Long id);
+ 
+	public String getUserApplicationList(Long userId);
+  
+
 }
-
-

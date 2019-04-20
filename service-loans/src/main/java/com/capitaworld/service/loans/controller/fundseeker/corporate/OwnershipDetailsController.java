@@ -95,8 +95,8 @@ public class OwnershipDetailsController {
 
 	}
 
-	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	@RequestMapping(value = "/getList/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long proposalId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
@@ -107,13 +107,13 @@ public class OwnershipDetailsController {
 		}
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Ownership Details ==>" + id);
+			if (proposalId == null) {
+				logger.warn("ID Require to get Ownership Details ==>" + proposalId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<OwnershipDetailRequest> response = ownershipDetailsService.getOwnershipDetailList(id,userId);
+			List<OwnershipDetailRequest> response = ownershipDetailsService.getOwnershipDetailListForMultipleBank(proposalId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");

@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import java.util.Date;
@@ -46,6 +47,10 @@ public class MonthlyTurnoverDetail implements Serializable {
 
 	@Column(name="month_name")
 	private String monthName;
+	
+	@ManyToOne
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping proposalMapping;
 
 	public MonthlyTurnoverDetail() {
 		// Do nothing because of X and Y.
@@ -123,4 +128,11 @@ public class MonthlyTurnoverDetail implements Serializable {
 		this.monthName = monthName;
 	}
 
+	public ApplicationProposalMapping getProposalMapping() {
+		return proposalMapping;
+	}
+
+	public void setProposalMapping(ApplicationProposalMapping proposalMapping) {
+		this.proposalMapping = proposalMapping;
+	}
 }

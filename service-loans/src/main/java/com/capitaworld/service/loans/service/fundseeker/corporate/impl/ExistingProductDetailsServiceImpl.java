@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,7 +33,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 
 	private static final Logger logger = LoggerFactory.getLogger(ExistingProductDetailsServiceImpl.class.getName());
 	@Autowired
-	public ExistingProductDetailsRepository existingProductDetailsRepository;
+	private ExistingProductDetailsRepository existingProductDetailsRepository;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -41,23 +42,21 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
-				ExistingProductDetailRequest existingProductDetailRequest = (ExistingProductDetailRequest) MultipleJSONObjectHelper
-						.getObjectFromMap(obj, ExistingProductDetailRequest.class);
+				ExistingProductDetailRequest existingProductDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(obj, ExistingProductDetailRequest.class);
 				ExistingProductDetail existingProductDetail = new ExistingProductDetail();
 				BeanUtils.copyProperties(existingProductDetailRequest, existingProductDetail);
 				if (existingProductDetailRequest.getId() == null) {
 					existingProductDetail.setCreatedBy(frameRequest.getUserId());
 					existingProductDetail.setCreatedDate(new Date());
 				}
-				existingProductDetail
-						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				existingProductDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				existingProductDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				existingProductDetail.setModifiedBy(frameRequest.getUserId());
 				existingProductDetail.setModifiedDate(new Date());
 				existingProductDetailsRepository.save(existingProductDetail);
 			}
 			return true;
 		}
-
 		catch (Exception e) {
 			logger.error("Exception  in save existingProductDetail  :-",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
@@ -65,12 +64,29 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	}
 
 	@Override
+	public List<ExistingProductDetailRequest> getExistingProductDetailListByProposalId(Long proposalId, Long userId) throws LoansException {
+		try {
+			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository.listExistingProductFromProposalId(proposalId);
+			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<>();
+			for (ExistingProductDetail detail : existingProductDetails) {
+				ExistingProductDetailRequest existingProductDetailRequest = new ExistingProductDetailRequest();
+				BeanUtils.copyProperties(detail, existingProductDetailRequest);
+				ExistingProductDetailRequest.printFields(existingProductDetailRequest);
+				existingProductDetailRequests.add(existingProductDetailRequest);
+			}
+			return existingProductDetailRequests;
+		} catch (Exception e) {
+			logger.error("Exception  in save existingProductDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
 	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws LoansException {
 		try {
-			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository
-					.listExistingProductFromAppId(applicationId);
-			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<ExistingProductDetailRequest>();
-
+			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository.listExistingProductFromAppId(applicationId);
+			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<>();
 			for (ExistingProductDetail detail : existingProductDetails) {
 				ExistingProductDetailRequest existingProductDetailRequest = new ExistingProductDetailRequest();
 				BeanUtils.copyProperties(detail, existingProductDetailRequest);

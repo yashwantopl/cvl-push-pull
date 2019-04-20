@@ -2,10 +2,12 @@ package com.capitaworld.service.loans.utils.cma;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -28,8 +30,43 @@ public class OperatingStatementDetailsExcelReader {
     private static final List<String> OPERATING_STATEMENT_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
+    public static void run(Long storageDetailsId, XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster, ApplicationProposalMapping applicationProposalMapping, OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws ExcelException {
+
+        String[] numbers = new String[]{"8", "9", "10", "11", "13", "14",
+                "15", "17", "20", "21", "22", "24",
+                "25", "26", "28", "30", "32", "34",
+                "36", "38", "40", "42", "44", "46",
+                "48", "50", "52", "54", "56", "58",
+                "60", "62", "64", "66", "67", "68",
+                "69", "70", "71", "73", "75", "76",
+                "77", "78", "80", "82", "84", "86"};
+
+        OPERATING_STATEMENT_MAPPING_LIST.clear();
+        OPERATING_STATEMENT_MAPPING_LIST.addAll(Arrays.asList(numbers));
+        log.info("OperatingStatementDetailsExcelReader -----------> {} " , sheet.getRow(4).getCell(1).getNumericCellValue());
+
+        int j = 2;
+        if (applicationProposalMapping.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+        	
+        	cmaAuditedAndEstimatedValidation(sheet);
+        	int updateRow = operatingStatementDetailsRepository.inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId() , applicationProposalMapping.getProposalId());
+        	 log.info("---------------- inactive old estimate and project data ------- updated row ==> {}" , updateRow);
+
+        	 extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, OPERATING_STATEMENT_MAPPING_LIST, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", operatingStatementDetailsRepository);
+            j = 5;
+        }
+
+        if (applicationProposalMapping.getProductId() != 15 && applicationProposalMapping.getProductId() != 1) {
+            for (int i = 0; i < applicationProposalMapping.getTenure(); i++) {
+            	cmaValidationProjection(sheet, j);
+                extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, OPERATING_STATEMENT_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()), String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()), "Projected", operatingStatementDetailsRepository);
+                j++;
+            }
+        }
+    }
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws ExcelException {
-           	OPERATING_STATEMENT_MAPPING_LIST.clear();
+            OPERATING_STATEMENT_MAPPING_LIST.clear();
             OPERATING_STATEMENT_MAPPING_LIST.add("8");
             OPERATING_STATEMENT_MAPPING_LIST.add("9");
             OPERATING_STATEMENT_MAPPING_LIST.add("10");
@@ -86,7 +123,7 @@ public class OperatingStatementDetailsExcelReader {
              */
             
              
-            log.info("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
+            log.info("OperatingStatementDetailsExcelReader -----------> {}", sheet.getRow(4).getCell(1).getNumericCellValue());       
            
 
             //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
@@ -95,18 +132,19 @@ public class OperatingStatementDetailsExcelReader {
             //j== 2 for NTB 
             int j = 2;
          if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
-        	 
+
+        	 cmaAuditedAndEstimatedValidation(sheet);
         	 int updateRow = operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
-        	 log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
-        	 
+        	 log.info("---------------- inactive old estimate and project data ------- updated row ==> {}" , updateRow);
+
         	 extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
-        	 j=5; 
+        	 j=5;
           
         }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
-        	/*int j = 5;*/
 
         	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) {
+        		cmaValidationProjection(sheet, j); 
         		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
         		j++;
         	}
@@ -136,7 +174,7 @@ public class OperatingStatementDetailsExcelReader {
         */}
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws ExcelException
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,ApplicationProposalMapping applicationProposalMapping,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws ExcelException
     {
         int arrayListCounter = 0;
         int nullCounter=0;
@@ -145,22 +183,24 @@ public class OperatingStatementDetailsExcelReader {
                 ++nullCounter;
             }
         }
-        log.info("nullCounter---" + nullCounter);
+        log.info("nullCounter---> {}" , nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
-        	
-        	Double yearFromSheet  = Double.valueOf(year) ; 
+
+        	/*Double yearFromSheet  = Double.valueOf(year) ;
            	OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
-           	
+
            	if(operatingStatementDetails != null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(operatingStatementDetails.getYear()) ) {
-           		
+
            		throw new ExcelException("Invalid cma details");
-         
-           	}
-           		
-           	operatingStatementDetails = new OperatingStatementDetails() ;
+
+           	}*/
+        	cmaValidationFromDB(operatingStatementDetailsRepository, loanApplicationMaster.getId() , applicationProposalMapping.getProposalId() ,  year);
+           	
+        	OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails() ;
            	operatingStatementDetails.setCreatedDate(new Date());
         	operatingStatementDetails.setModifiedDate(new Date());
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
+            operatingStatementDetails.setApplicationProposalMapping(applicationProposalMapping);
             operatingStatementDetails.setStorageDetailsId(storageDetailsId);
             
             operatingStatementDetails.setYear(CommonUtils.getCMAFilterYear(year));
@@ -215,19 +255,105 @@ public class OperatingStatementDetailsExcelReader {
             operatingStatementDetails.setRetainedProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setRetainedProfitOrNetProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
-            log.info("arrayListCounter : "+arrayListCounter);
-
             operatingStatementDetails.setIsActive(true);
-            
+
 //          operatingStatementDetails.setCreatedBy(createdBy);
 //          operatingStatementDetails.setModifiedBy(modifiedBy);
-            
+
+            operatingStatementDetailsRepository.save(operatingStatementDetails);
+        }
+    }
+
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository)  throws ExcelException
+    {
+        int arrayListCounter = 0;
+        int nullCounter=0;
+        for (int i = 0; i < OPERATING_STATEMENT_MAPPING_LIST.size(); i++) {
+            if ((getNumericDataFromCell(sheet,column + OPERATING_STATEMENT_MAPPING_LIST.get(i)))==0.0) {
+                ++nullCounter;
+            }
+        }
+        log.info("nullCounter---> {} " , nullCounter);
+        if(!(nullCounter==46||nullCounter==47)) {
+
+        	Double yearFromSheet  = Double.valueOf(year) ;
+           	OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
+
+           	if(operatingStatementDetails != null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(operatingStatementDetails.getYear()) ) {
+
+           		throw new  ExcelException("Invalid cma details");
+
+           	}
+
+           	operatingStatementDetails = new OperatingStatementDetails() ;
+           	operatingStatementDetails.setCreatedDate(new Date());
+        	operatingStatementDetails.setModifiedDate(new Date());
+            operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
+            operatingStatementDetails.setStorageDetailsId(storageDetailsId);
+
+            operatingStatementDetails.setYear(CommonUtils.getCMAFilterYear(year));
+            operatingStatementDetails.setFinancialYearlyStatement(financialYearlyStatement);
+            operatingStatementDetails.setDomesticSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setExportSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setAddOtherRevenueIncome(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setTotalGrossSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setLessExciseDuty(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setDeductOtherItems(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setNetSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setPercentageRiseOrFall(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setRawMaterials(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setRawMaterialsImported(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setRawMaterialsIndigenous(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOtherSpares(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOtherSparesImported(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOtherSparesIndigenous(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setPowerAndFuel(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setDirectLabour(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOtherMfgExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setDepreciation(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSubTotalCostSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setAddOperatingStock(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSubTotalOfCostSalesAndOperatingStock(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setDeductStockInProcess(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setProductionCost(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setAddOperatingStockFg(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSubTotalDeductAndCostOfProduction(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setDeductClStockFg(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setTotalCostSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSellingAndDistributionExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSellingGenlAdmnExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSubTotalCostSalesAndSelling(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOpProfitBeforeIntrest(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setInterest(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOpProfitAfterInterest(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setAddOtherNonOpIncome(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+
+            operatingStatementDetails.setSubTotalOfIncome(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setDeductOtherNonOpExp(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSubTotalExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setNetofNonOpIncomeOrExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setExpensesAmortised(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setProfitBeforeTaxOrLoss(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setProvisionForTaxes(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOtherIncomeNeedTocCheckOp(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setProvisionForDeferredTax(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setNetProfitOrLoss(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setEquityDeividendPaidAmt(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setDividendRate(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setRetainedProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setRetainedProfitOrNetProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+
+            operatingStatementDetails.setIsActive(true);
+
+//          operatingStatementDetails.setCreatedBy(createdBy);
+//          operatingStatementDetails.setModifiedBy(modifiedBy);
+
           	operatingStatementDetailsRepository.save(operatingStatementDetails);
         }
     }
     public static double getNumericDataFromCell(XSSFSheet sheet,String cellNumber)
     {
-    	log.info("getNumericDataFromCell:"+cellNumber );
+    	log.info("getNumericDataFromCell:==>{} ", cellNumber );
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
@@ -244,5 +370,63 @@ public class OperatingStatementDetailsExcelReader {
         return cell.getStringCellValue();
 
     }
+    
+    public static void cmaAuditedAndEstimatedValidation(XSSFSheet sheet ) throws ExcelException {
+    	int i = 0 ;
+    	for(i = 1 ; i <=3 ; i++) {
+	    	if(!"Audited".equalsIgnoreCase(sheet.getRow(5).getCell(i).getStringCellValue()) &&  
+	    			sheet.getRow(4).getCell(i).getNumericCellValue() <= sheet.getRow(4).getCell(i+1).getNumericCellValue()) {
+	    		throw new ExcelException("Please upload correct cma file as there is no audited information available for the year " + sheet.getRow(4).getCell(i).getNumericCellValue() );
+	   	 	}
+    	}
+    	if(!"Estimated".equalsIgnoreCase(sheet.getRow(5).getCell(4).getStringCellValue()) 
+    			&&  (sheet.getRow(4).getCell(4).getNumericCellValue() <= sheet.getRow(4).getCell(3).getNumericCellValue())
+    			&&  (sheet.getRow(4).getCell(5).getNumericCellValue() <= sheet.getRow(4).getCell(4).getNumericCellValue())) {
+    		throw new ExcelException("Please upload correct cma file as there is no Estimated information available for the year " + sheet.getRow(4).getCell(4).getNumericCellValue() );
+    	
+    	}
+    	
+    }
+    public static void cmaValidationProjection(XSSFSheet sheet , int cellNumber ) throws ExcelException {
+    	log.info("------------XSSFSheet info compare with Projected----------- sheet ==> {} cellNumber ==> {} " , sheet.getRow(5).getCell(cellNumber).getStringCellValue() , cellNumber );
+    	if( ! "Projected".equalsIgnoreCase(sheet.getRow(5).getCell(cellNumber).getStringCellValue()) 
+    			&& sheet.getRow(4).getCell(cellNumber).getNumericCellValue() >=  sheet.getRow(4).getCell(cellNumber-1).getNumericCellValue()) {
+    		throw new ExcelException("Please upload correct cma file as there is no Projected information available for the year " + sheet.getRow(4).getCell(cellNumber).getNumericCellValue() );
+    	
+    	}
+    	
+    }
+    
+    public static void cmaValidationFromDB(OperatingStatementDetailsRepository operatingStatementDetailsRepository,Long applicationId ,Long proposalId , String year) throws ExcelException {
+    	log.info("============= Enter into cmaValidationFromDB() ============ applicationId ==> {} year ==> {}" , applicationId  , year);
+    	
+    	/**Boolean isValid = false ;*/
+    	int rowUpdated = 0;
+    	List<OperatingStatementDetails> operatingStatementDetailsList  = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndIsActive(applicationId , year,  true);
+    	/**if(operatingStatementDetailsList.stream().filter(opsd -> "Audited".equalsIgnoreCase(opsd.getFinancialYearlyStatement())).findAny().isPresent()) {*/
+    	if(operatingStatementDetailsList.stream().anyMatch(opsd -> "Audited".equalsIgnoreCase(opsd.getFinancialYearlyStatement()))) {
+    		throw new ExcelException("Invalid cma file");
+    	}else {
+    		if(proposalId == null ) {
+    			rowUpdated = operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(applicationId); 
+    		}else {
+    			rowUpdated = operatingStatementDetailsRepository.inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(applicationId, proposalId);
+    		}
+    		
+    		log.info("----------------- inactive the old Estimated and Projected FinancialYearlyStatement ------------ rowUpdated ==> {}" ,rowUpdated);
+    	}
+    	/**for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
+			if("Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement())  ){
+				
+				throw new ExcelException("Invalid cma file");
+			}else {
+				isValid = true ;
+			}
+		}
+    	if(isValid ) {
+    		operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(applicationId);
+    	}*/
+    	log.info("============= Exit from cmaValidationFromDB() ============ ");
+    } 
 }
 

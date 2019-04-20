@@ -1,6 +1,10 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,9 @@ public class DashboardServiceImpl implements DashboardService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
+	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
@@ -44,6 +51,9 @@ public class DashboardServiceImpl implements DashboardService {
 	@Autowired
 	private UsersClient usersClient;
 
+	@Autowired
+	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
+
 	@Override
 	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws LoansException {
 		CommonDocumentUtils.startHook(logger, GET_BASIC_PROFILE_INFO);
@@ -54,14 +64,31 @@ public class DashboardServiceImpl implements DashboardService {
 		}else{
 			productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);			
 		}*/
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-		productId = loanApplicationMaster.getProductId();
+		ApplicationProposalMapping loanApplicationMaster = applicationProposalMappingRepository.getLastByApplicationIdAndUserId(applicationId,userId);
+		int userMainType = 0;//CommonUtils.getUserMainType(productId);
+		if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster) && !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId())){
+			productId = loanApplicationMaster.getProductId();
+			userMainType = CommonUtils.getUserMainType(productId);
+		}else {
+			LoanApplicationMaster loanApplicationMaster1 = loanApplicationRepository.findOne(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster1)){
+				if(loanApplicationMaster1.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())){
+					userMainType = CommonUtils.UserMainType.CORPORATE;
+					PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOne(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)){
+						if(primaryCorporateDetail.getPurposeOfLoanId()==1){
+							productId = CommonUtils.LoanType.TERM_LOAN.getValue();
+						}else if(primaryCorporateDetail.getPurposeOfLoanId()==2){
+							productId = CommonUtils.LoanType.WORKING_CAPITAL.getValue();
+						}
+					}
+				}
+			}
+		}
 		DashboardProfileResponse dashboardProfileResponse = null;
-		int userMainType = CommonUtils.getUserMainType(productId);
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-			dashboardProfileResponse.setModeOfPayment(loanApplicationMaster.getTypeOfPayment());
 			CorporateApplicantDetail corporateApplicantDetail = null;
 			if(isSP){
 				corporateApplicantDetail = corporateApplicantDetailRepository

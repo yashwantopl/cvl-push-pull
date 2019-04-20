@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import java.util.Date;
@@ -27,6 +28,10 @@ public class FinanceMeansDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+
+	@ManyToOne
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping proposalId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -154,4 +159,11 @@ public class FinanceMeansDetail implements Serializable {
 				+ "]";
 	}
 
+	public ApplicationProposalMapping getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(ApplicationProposalMapping proposalId) {
+		this.proposalId = proposalId;
+	}
 }

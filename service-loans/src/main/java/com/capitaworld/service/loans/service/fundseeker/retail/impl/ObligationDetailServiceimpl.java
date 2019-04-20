@@ -1,9 +1,11 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ObligationDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ObligationDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.ObligationDetailService;
@@ -36,6 +38,10 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+    
+    @Autowired
+    private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+    
     @Override
     public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
         try {
@@ -57,6 +63,8 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
                         throw new LoansException();
                 }
 
+                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true);
+                obligationDetail.setApplicationProposalMapping(applicationProposalMapping);
                 obligationDetail.setModifiedBy(frameRequest.getUserId());
                 obligationDetail.setModifiedDate(new Date());
                 obligationDetailRepository.save(obligationDetail);
@@ -94,5 +102,35 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
         }
         return obligationDetailRequests;
     }
+
+	@Override
+	public List<ObligationDetailRequest> getObligationDetailsFromProposalId(Long proposalId, int applicationType)
+			throws LoansException {
+		List<ObligationDetail> otherCurrentAssetDetails;
+		otherCurrentAssetDetails = obligationDetailRepository.listObligationDetailFromProposalId(proposalId);
+		
+//        switch (applicationType) {
+//            case CommonUtils.ApplicantType.APPLICANT:
+//                otherCurrentAssetDetails = obligationDetailRepository.listObligationDetailFromProposalId(proposalId);
+//                break;
+//
+//            default:
+//                throw new LoansException();
+//        }
+
+        List<ObligationDetailRequest> obligationDetailRequests = new ArrayList<ObligationDetailRequest>();
+
+        for (ObligationDetail detail : otherCurrentAssetDetails) {
+            ObligationDetailRequest obligationDetailRequest = new ObligationDetailRequest();
+            obligationDetailRequest.setGrossAmountString(CommonUtils.convertValue(detail.getGrossAmount()));
+            obligationDetailRequest.setNetAmountString(CommonUtils.convertValue(detail.getNetAmount()));
+            obligationDetailRequest.setPeriodicityString(CommonUtils.convertValue(detail.getPeriodicity()));
+            BeanUtils.copyProperties(detail, obligationDetailRequest);
+            obligationDetailRequests.add(obligationDetailRequest);
+        }
+        return obligationDetailRequests;
+    }
+    
+    
 
 }

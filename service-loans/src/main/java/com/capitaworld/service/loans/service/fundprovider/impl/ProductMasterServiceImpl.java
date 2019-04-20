@@ -286,7 +286,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyState=workingCapitalParameterRequest.getStateList();
 						geogaphicallyCity=workingCapitalParameterRequest.getCityList();
 						negativeIndList=workingCapitalParameterRequest.getUnInterestedIndustrylist();
-						if(addProductRequest.getFinId()==4)
+						if(addProductRequest.getFinId()==null ||addProductRequest.getFinId()==4)
 						{
 							workingCapitalParameterRequest.setIsNewTolTnwCheck(false);
 							workingCapitalParameterRequest.setNewTolTnw(null);
@@ -310,7 +310,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							geogaphicallyCity=termLoanParameterRequest.getCityList();
 							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
 							//END set multiple value in temp
-							if(addProductRequest.getFinId()==4)
+							if(addProductRequest.getFinId()==null ||addProductRequest.getFinId()==4)
 							{
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
@@ -330,7 +330,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							geogaphicallyCity=termLoanParameterRequest.getCityList();
 							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
 							//END set multiple value in temp
-							if(addProductRequest.getFinId()==4)
+							if(addProductRequest.getFinId()==null || addProductRequest.getFinId()==4)
 							{
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
@@ -352,7 +352,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyCity=wcTlParameterRequest.getCityList();
 						negativeIndList=wcTlParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
-						if(addProductRequest.getFinId()==4)
+						if(addProductRequest.getFinId()==null ||addProductRequest.getFinId()==4)
 						{
 							wcTlParameterRequest.setIsNewTolTnwCheck(false);
 							wcTlParameterRequest.setNewTolTnw(null);
@@ -699,7 +699,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
 		List<ProductMasterRequest> activeProducts= new ArrayList<>();
 		List<ProductMasterRequest> inActiveProducts= new ArrayList<>();
-		
+
 		Long matchCount = productMasterRepository.countByUserIdAndIsMatched(userId, true);
 		
 		for (ProductMaster master : results) {
@@ -726,15 +726,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
 			}
 			request.setProposalCount(count);
-			
+
 			if(request.getIsActive() == true) {
 				activeProducts.add(request);
 			}else {
 				inActiveProducts.add(request);
 			}
-			
+
 		}
-		
+
 		requests.addAll(activeProducts);
 		requests.addAll(inActiveProducts);
 		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
@@ -905,6 +905,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
 				if (!CommonUtils.isObjectNullOrEmpty(master) && !productMasterRequest.getProductId().toString()
 						.equals(productDetailsForSps.get(0).getProductId().toString())) {
+					// if(master.getId())
 						CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 						return true;
 				}

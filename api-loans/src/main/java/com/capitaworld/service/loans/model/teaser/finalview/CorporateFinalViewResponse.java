@@ -223,19 +223,20 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object regPinData;
     private String regAddDist;
     private String regAddTaluko;
-    
+
     private String applicationType;
     private String fpProductName;
     
     private Object mcaFinancialAndDetailsResponse;
-    
+
     private Boolean isMcqSkipped;
     private String companyId;
     private String scoringModelName;
     private String eligibilityFinancialYear;
     private Double loanObligation;
     private Object cibilConsumerReport;
-    
+    private List<Object> mcaCorpZipFile;
+
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -2187,6 +2188,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setCibilConsumerReport(Object cibilConsumerReport) {
 		this.cibilConsumerReport = cibilConsumerReport;
+	}
+
+	public List<Object> getMcaCorpZipFile() {
+		return mcaCorpZipFile;
+	}
+
+	public void setMcaCorpZipFile(List<Object> mcaCorpZipFile) {
+		this.mcaCorpZipFile = mcaCorpZipFile;
 	}
 
 

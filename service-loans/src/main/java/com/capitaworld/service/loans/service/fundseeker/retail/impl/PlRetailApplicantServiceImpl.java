@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
@@ -32,6 +33,7 @@ import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
@@ -58,6 +60,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+    
+    @Autowired
+    private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
     @Autowired
     private RetailApplicantIncomeRepository retailApplicantIncomeRepository;
@@ -67,7 +72,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private CreditCardsDetailRepository creditCardsDetailRepository;
-    
+
     @Autowired
     private BankingRelationlRepository bankingRelationlRepository;
 
@@ -75,7 +80,14 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
-            RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
+            RetailApplicantDetail applicantDetail = null;
+            
+            if(plRetailApplicantRequest.getProposalId() != null) {
+            	applicantDetail = applicantRepository.findByProposalIdAndUserId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId(), finalUserId);
+            }else {
+            	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
+            }
+            
             if (applicantDetail != null) {
                 applicantDetail.setModifiedBy(userId);
                 applicantDetail.setModifiedDate(new Date());
@@ -93,8 +105,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             applicantRepository.save(applicantDetail);
 
             // Updating Flag
-            loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
-                    finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+            if(plRetailApplicantRequest.getProposalId() != null) {
+            	applicationProposalMappingRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getProposalId(),
+                        finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+            }else {
+            	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
+                        finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+            }
 
             return true;
 
@@ -107,7 +124,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -195,30 +212,169 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			} catch (Exception e) {
 				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============",e);
 			}
-             
+
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
             List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
             	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
-            	
+
             	if(bankingRelation.getSinceYear() !=null && bankingRelation.getSinceMonth() != null) {
-			        
+
 					LocalDate since = LocalDate.of(bankingRelation.getSinceYear(), bankingRelation.getSinceMonth(), 1);
 			        LocalDate today = LocalDate.now();
-			        
+
 			        Period age = Period.between(since, today);
 			        int years = age.getYears();
 			        int months = age.getMonths();
-			        
+
 			        bankRelationshipRequest.setSinceYear(years);
 			        bankRelationshipRequest.setSinceMonth(months);
 				}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
             applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
+
             
+
+            return applicantRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Profile :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
+
+    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException {
+        try {
+            RetailApplicantDetail applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
+            if (applicantDetail == null) {
+                PLRetailApplicantRequest request = new PLRetailApplicantRequest();
+                
+                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
+                
+                if (applicationProposalMapping != null){
+                    logger.info("getByproposalId called successfully ");
+                }
+                return request;
+            }
+            PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
+            BeanUtils.copyProperties(applicantDetail, applicantRequest);
+            copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+
+            if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
+
+				LocalDate since = LocalDate.of(applicantRequest.getSalaryBankYear(), applicantRequest.getSalaryBankMonth(), 1);
+		        LocalDate today = LocalDate.now();
+
+		        Period age = Period.between(since, today);
+		        int years = age.getYears();
+		        int months = age.getMonths();
+
+				applicantRequest.setSalaryBankYear(years);
+				applicantRequest.setSalaryBankMonth(months);
+			}
+            /*UserResponse userResponse = usersClient.getEmailMobile(userId);
+            LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
+            UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
+            applicantRequest.setMobile(request.getMobile());*/
+
+            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+            if(retailApplicantIncomeDetailList == null || retailApplicantIncomeDetailList.size() < 1) {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+            }
+            List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
+
+            RetailApplicantIncomeRequest incomeRequest = null;
+            for(RetailApplicantIncomeDetail incomeDetail : retailApplicantIncomeDetailList){
+                incomeRequest = new RetailApplicantIncomeRequest();
+                BeanUtils.copyProperties(incomeDetail, incomeRequest);
+                retailApplicantIncomeRequestList.add(incomeRequest);
+            }
+            applicantRequest.setRetailApplicantIncomeRequestList(retailApplicantIncomeRequestList);
+            
+            
+            // financialArrangement data fetched and copy in beanUtil 
+
+            try {
+            	
+            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId ,userId);
+                
+                if(retailFinancialDetailsList != null) {
+                
+                	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+                    
+                    FinancialArrangementsDetailRequest retailFinReq=null;
+                    
+                    for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+                    	 
+                    	retailFinReq =new FinancialArrangementsDetailRequest();
+                    	BeanUtils.copyProperties(finArDetails, retailFinReq);
+                    	retailFinancialDetailsReq.add(retailFinReq);
+                    }
+                    applicantRequest.setFinancialArrangementsDetailRequestsList(retailFinancialDetailsReq);
+                	
+                }else {
+					logger.warn("FinancialArrangementData is Null");
+				}
+                
+			} catch (Exception e) {
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
+			}
+            
+            
+            //CraditCard Details Fetching
+            
+            try {
+            	
+            	List<CreditCardsDetail> creditCardDetails= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+            	
+            	if(creditCardDetails != null) {
+            	
+            		List<CreditCardsDetailRequest> creditCardDetailsRequest=new ArrayList<CreditCardsDetailRequest>(creditCardDetails.size());
+                    
+                    CreditCardsDetailRequest creditCardDetailReq=null;
+
+                    for(CreditCardsDetail creditCard :creditCardDetails) {
+                    	creditCardDetailReq= new CreditCardsDetailRequest();
+                    	BeanUtils.copyProperties(creditCard, creditCardDetailReq);
+                    	if(creditCard.getCreditCardTypesId() != 0) {
+                    		creditCardDetailReq.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCard.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCard.getCreditCardTypesId()).getValue() : "");
+                    	}
+                    	creditCardDetailReq.setOutstandingBalanceString(!CommonUtils.isObjectNullOrEmpty(creditCard.getOutstandingBalance()) ? CommonUtils.convertValue(creditCard.getOutstandingBalance()) : "");
+                    	creditCardDetailsRequest.add(creditCardDetailReq);
+                    }
+                    applicantRequest.setCreditCardsDetailRequestList(creditCardDetailsRequest);
+            	}else {
+					logger.warn("CreditCard Details is Null");
+				}
+			} catch (Exception e) {
+				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============",e);
+			}
+
+            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            BankRelationshipRequest bankRelationshipRequest = null;
+            for(BankingRelation bankingRelation : bankingRelations) {
+            	bankRelationshipRequest = new BankRelationshipRequest();
+            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+
+            	if(bankingRelation.getSinceYear() !=null && bankingRelation.getSinceMonth() != null) {
+
+					LocalDate since = LocalDate.of(bankingRelation.getSinceYear(), bankingRelation.getSinceMonth(), 1);
+			        LocalDate today = LocalDate.now();
+
+			        Period age = Period.between(since, today);
+			        int years = age.getYears();
+			        int months = age.getMonths();
+
+			        bankRelationshipRequest.setSinceYear(years);
+			        bankRelationshipRequest.setSinceMonth(months);
+				}
+            	bankRelationshipRequests.add(bankRelationshipRequest);
+            }
+            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
+
             
 
             return applicantRequest;
@@ -232,7 +388,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
-            RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
+            RetailApplicantDetail applicantDetail = null;
+            if(plRetailApplicantRequest.getProposalId() != null) {
+            	applicantDetail = applicantRepository.findByProposalIdAndUserId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId(), finalUserId);
+            }else {
+            	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
+            }
+            
             if (applicantDetail != null) {
                 applicantDetail.setModifiedBy(userId);
                 applicantDetail.setModifiedDate(new Date());
@@ -245,7 +407,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
 
             BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailProfile());
-            
+
             List<BankingRelation> bankingRelations = new ArrayList<>();
             BankingRelation bankingRelation = null;
             for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
@@ -262,7 +424,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	bankingRelations.add(bankingRelation);
             }
             bankingRelationlRepository.save(bankingRelations);
-            
+
             applicantRepository.save(applicantDetail);
 
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
@@ -320,13 +482,17 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
 
             // Updating Flag
-            LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(plRetailApplicantRequest.getApplicationId(), userId);
-
-            loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
-                    finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
-            applicationMaster.setIsPrimaryLocked(true);
-            loanApplicationRepository.save(applicationMaster);
-
+            if(plRetailApplicantRequest.getProposalId() != null) {
+            	applicationProposalMappingRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getProposalId(), finalUserId,
+            			plRetailApplicantRequest.getIsApplicantDetailsFilled());
+            	applicationProposalMappingRepository.setIsPrimaryLocked(plRetailApplicantRequest.getProposalId(), finalUserId, true);
+            	
+            }else {
+            	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(), finalUserId,
+            			plRetailApplicantRequest.getIsApplicantDetailsFilled());
+            	loanApplicationRepository.setIsPrimaryLocked(plRetailApplicantRequest.getApplicationId(), finalUserId,true);
+            }
+            
             return true;
 
         } catch (Exception e) {
@@ -338,7 +504,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -358,7 +524,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
             List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
             System.out.println("bankingRelations :"+bankingRelations.size());
-            
+
             FinancialArrangementsDetailRequest financialRequest = null;
             for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
                 financialRequest = new FinancialArrangementsDetailRequest();
@@ -375,7 +541,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             System.out.println("bankRelationshipRequests :"+bankRelationshipRequests.size());
             applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
-            
+
             List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
             List<CreditCardsDetailRequest> creditCardsDetailRequestList= new ArrayList<CreditCardsDetailRequest>(creditCardsDetailList.size());
 
@@ -405,8 +571,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
                     : applicantRequest.getClientId());
-            RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
-                    applicantRequest.getApplicationId());
+            
+            RetailApplicantDetail applicantDetail = null;
+            if(applicantRequest.getProposalId() != null) {
+            	applicantDetail = applicantRepository.findByProposalIdAndUserId(applicantRequest.getApplicationId(), 
+            			applicantRequest.getProposalId(), finaluserId);
+            }else {
+            	applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
+                        applicantRequest.getApplicationId());
+            }
+            
             if (applicantDetail == null) {
                 throw new NullPointerException(
                         "Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
@@ -419,8 +593,15 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
             applicantRepository.save(applicantDetail);
             // Updating Final Flag
-            loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
-                    finaluserId, applicantRequest.getIsApplicantFinalFilled());
+            
+            if(applicantRequest.getProposalId() != null) {
+            	applicationProposalMappingRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getProposalId(),
+            			applicantRequest.getApplicationId(), finaluserId, applicantRequest.getIsApplicantFinalFilled());
+            }else {
+            	loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
+                        finaluserId, applicantRequest.getIsApplicantFinalFilled());
+            }
+            
             // Updating Final Count
 
             return true;
@@ -433,7 +614,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Override
     public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId, true);
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
                         + userId + "  ApplicationId==>" + applicationId);
@@ -475,6 +656,17 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         address.setPincode(from.getAddressPincode());
         address.setDistrictMappingId(from.getAddressDistrictMappingId());
         to.setContactAddress(address);
+        
+        Address officeAddress = new Address();
+        officeAddress.setPremiseNumber(from.getOfficePremiseNumberName());
+        officeAddress.setLandMark(from.getOfficeLandMark());
+        officeAddress.setStreetName(from.getOfficeStreetName());
+        officeAddress.setCityId(from.getOfficeCityId());
+        officeAddress.setStateId(from.getOfficeStateId());
+        officeAddress.setCountryId(from.getOfficeCountryId());
+        officeAddress.setPincode(from.getOfficePincode());
+        officeAddress.setDistrictMappingId(from.getOfficeDistrictMappingId());
+        to.setOfficeAddress(officeAddress);
 
     }
 
@@ -539,4 +731,92 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setOfficePincode(from.getOfficeAddress().getPincode());
         }
     }
+
+	@Override
+	public PLRetailApplicantRequest getPrimaryByProposalId(Long userId, Long applicationId, Long proposalId)
+			throws LoansException {
+		try {
+            RetailApplicantDetail applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
+            if (applicantDetail == null) {
+                PLRetailApplicantRequest request = new PLRetailApplicantRequest();
+//                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
+//                        userId);
+                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
+                if (applicationProposalMapping != null){
+                    logger.info("getByIdAndUserId called successfully");
+                }
+                return request;
+            }
+            
+            PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
+            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
+            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
+            BeanUtils.copyProperties(applicantDetail, applicantRequest);
+
+            List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
+            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+
+            FinancialArrangementsDetailRequest financialRequest = null;
+            for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
+                financialRequest = new FinancialArrangementsDetailRequest();
+                BeanUtils.copyProperties(financialDetail, financialRequest);
+                financialArrangementsDetailRequestList.add(financialRequest);
+            }
+            applicantRequest.setFinancialArrangementsDetailRequestsList(financialArrangementsDetailRequestList);
+
+            BankRelationshipRequest bankRelationshipRequest = null;
+            for(BankingRelation bankingRelation : bankingRelations) {
+            	bankRelationshipRequest = new BankRelationshipRequest();
+            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	bankRelationshipRequests.add(bankRelationshipRequest);
+            }
+            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
+
+            List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+            List<CreditCardsDetailRequest> creditCardsDetailRequestList= new ArrayList<CreditCardsDetailRequest>(creditCardsDetailList.size());
+
+            CreditCardsDetailRequest creditCardRequest = null;
+            for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
+                creditCardRequest = new CreditCardsDetailRequest();
+                //creditCardRequest.setOutstandingBalanceString(CommonUtils.convertValue(creditCardsDetail.getOutstandingBalance()));
+                //creditCardRequest.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCardsDetail.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCardsDetail.getCreditCardTypesId()).getValue() : "");
+                BeanUtils.copyProperties(creditCardsDetail, creditCardRequest);
+                creditCardsDetailRequestList.add(creditCardRequest);
+            }
+            applicantRequest.setCreditCardsDetailRequestList(creditCardsDetailRequestList);
+
+            return applicantRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Primary :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+	}
+
+	@Override
+	public RetailFinalInfoRequest getFinalByProposalId(Long userId, Long applicationId, Long proposalId)
+			throws LoansException {
+		
+		try {
+            RetailApplicantDetail applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
+            if (applicantDetail == null) {
+                throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
+                        + userId + "  ApplicationId==>" + applicationId+" proposalID ==> "+proposalId);
+            }
+            RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
+            if(applicantDetail.getApplicationProposalMapping() != null) {
+            	applicantRequest.setApplicationStatus(applicantDetail.getApplicationProposalMapping().getApplicationStatusMaster() != null ? applicantDetail.getApplicationProposalMapping().getApplicationStatusMaster().getId() : null);
+            }
+            
+            BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailPlProfile());
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
+            return applicantRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Final :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+	}
 }

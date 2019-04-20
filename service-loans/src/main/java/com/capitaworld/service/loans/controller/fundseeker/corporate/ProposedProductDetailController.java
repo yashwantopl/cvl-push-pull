@@ -50,8 +50,8 @@ public class ProposedProductDetailController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
-		if (frameRequest.getApplicationId() == null) {
-			logger.warn("application id and user id must not be null ==>" + frameRequest);
+		if (frameRequest.getProposalMappingId() == null) {
+			logger.warn("proposal id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -96,6 +96,40 @@ public class ProposedProductDetailController {
 
 			List<ProposedProductDetailRequest> response = proposedProductDetailsService
 					.getProposedProductDetailList(id,userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Proposed Product Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	@RequestMapping(value = "/getListByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long proposalId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+
+		CommonDocumentUtils.startHook(logger, "getList");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		// request must not be null
+		try {
+			if (proposalId == null) {
+				logger.warn("ID Require to get Proposed Product Details ==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<ProposedProductDetailRequest> response = proposedProductDetailsService
+					.getProposedProductDetailListFromProposalId(proposalId,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");

@@ -138,9 +138,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
-    
+
     @Autowired
-    private FinancialArrangementDetailsService financialArrangementDetailsService; 
+    private FinancialArrangementDetailsService financialArrangementDetailsService;
 
     @Autowired
     private ITRClient itrClient;
@@ -192,7 +192,7 @@ public class ScoringServiceImpl implements ScoringService {
         }*/
         RetailApplicantDetail retailApplicantDetail = null;
         if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail) || CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId())) {
-            retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
+            retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(scoringRequestLoans.getApplicationId());
             if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                 logger.warn("Business type id is null or empty");
                 return new ResponseEntity<LoansResponse>(
@@ -263,7 +263,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
-            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 
             if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
@@ -679,7 +679,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                 // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                     logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
@@ -1302,6 +1302,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 GSTR1Request gstr1Request = new GSTR1Request();
                 gstr1Request.setGstin(gstNumber);
+                gstr1Request.setApplicationId(applicationId);
                 gstResponse = gstClient.getCalculations(gstr1Request);
 
                 if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
@@ -1317,7 +1318,10 @@ public class ScoringServiceImpl implements ScoringService {
             // get GST Data for Sales Show A Rising Trend
 
             try {
-                gstResponseScoring = gstClient.getCalculationForScoring(gstNumber);
+                GSTR1Request gstr1Request = new GSTR1Request();
+                gstr1Request.setGstin(gstNumber);
+                gstr1Request.setApplicationId(applicationId);
+                gstResponseScoring = gstClient.getCalculationForScoring(gstr1Request);
             } catch (Exception e) {
                 logger.error("error while getting GST parameter for GST Sales Show A Rising Trend : ",e);
             }
@@ -1346,24 +1350,24 @@ public class ScoringServiceImpl implements ScoringService {
             AssetsDetails assetsDetailsTY = new AssetsDetails();
 
             if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == financialTypeId) {
-                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 2 + "");
-                operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                operatingStatementDetailsSY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+                operatingStatementDetailsFY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
 
-                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
-                liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + "");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                liabilitiesDetailsSY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+                liabilitiesDetailsFY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
 
-                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
-                assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
-                assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
+                assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                assetsDetailsSY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+                assetsDetailsFY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
             } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId) {
                 operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
             } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId) {
                 operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
             }
 
@@ -2395,6 +2399,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     GSTR1Request gstr1Request = new GSTR1Request();
                     gstr1Request.setGstin(gstNumber);
+                    gstr1Request.setApplicationId(applicationId);
                     gstResponse = gstClient.getCalculations(gstr1Request);
 
                     if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
@@ -2410,7 +2415,10 @@ public class ScoringServiceImpl implements ScoringService {
                 // get GST Data for Sales Show A Rising Trend
 
                 try {
-                    gstResponseScoring = gstClient.getCalculationForScoring(gstNumber);
+                    GSTR1Request gstr1Request = new GSTR1Request();
+                    gstr1Request.setGstin(gstNumber);
+                    gstr1Request.setApplicationId(applicationId);
+                    gstResponseScoring = gstClient.getCalculationForScoring(gstr1Request);
                 } catch (Exception e) {
                     logger.error("error while getting GST parameter for GST Sales Show A Rising Trend : ",e);
                 }
@@ -2439,25 +2447,25 @@ public class ScoringServiceImpl implements ScoringService {
                 AssetsDetails assetsDetailsTY = new AssetsDetails();
 
                 if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                    operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 2 + "");
-                    operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    operatingStatementDetailsSY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+                    operatingStatementDetailsFY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
 
-                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
-                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + "");
+                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    liabilitiesDetailsSY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
 
-                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
-                    assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
-                    assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
+                    assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    assetsDetailsSY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+                    assetsDetailsFY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
                 } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 }
 
                 ///////////////
@@ -2992,7 +3000,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 Double totalCredit = null;
                                 Double projctedSales = null;
-
+                                Integer noOfMonths = 1;
                                 // start get total credit from Analyser
                                 ReportRequest reportRequest = new ReportRequest();
                                 reportRequest.setApplicationId(applicationId);
@@ -3000,6 +3008,11 @@ public class ScoringServiceImpl implements ScoringService {
                                     AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                                     Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
                                             Data.class);
+
+
+                                    if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                        noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
+                                    }
                                     if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
                                         {
                                             if (!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit())) {
@@ -3029,8 +3042,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
 
                                 // end get projected sales from GST client
-
-
+                                scoringParameterRequest.setNoOfMonths(noOfMonths);
                                 scoringParameterRequest.setTotalCredit(totalCredit);
                                 scoringParameterRequest.setProjectedSale(projctedSales);
                                 scoringParameterRequest.setCreditSummation_p(true);
@@ -3453,6 +3465,125 @@ public class ScoringServiceImpl implements ScoringService {
                                 } catch (Exception e) {
                                     logger.error("error while getting DEBT_SERVICE_COVERAGE_RATIO parameter : ",e);
                                     scoringParameterRequest.setDebtServiceCoverageRatio_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.PAST_YEAR_TURNOVER: {
+
+                                try {
+                                    Double domesticSales = operatingStatementDetailsTY.getDomesticSales();
+                                    Double exportSales = operatingStatementDetailsTY.getExportSales();
+                                    scoringParameterRequest.setPastYearTurnover_p(true);
+                                    scoringParameterRequest.setExportSales(exportSales);
+                                    scoringParameterRequest.setDomesticSales(domesticSales);
+                                    scoringParameterRequest.setPastYearTurnover(domesticSales + exportSales);
+                                } catch (Exception e) {
+                                    logger.error("error while getting PAST_YEAR_TURNOVER parameter : ",e);
+                                    scoringParameterRequest.setPastYearTurnover_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.DEBT_EBITDA: {
+                                try {
+
+                                        //debt
+                                        scoringParameterRequest.setTotalTermLiabilities(liabilitiesDetailsTY.getTotalTermLiabilities());
+                                        scoringParameterRequest.setPreferenceShares(liabilitiesDetailsTY.getPreferencesShares());
+                                        scoringParameterRequest.setUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
+                                        scoringParameterRequest.setOthers(liabilitiesDetailsTY.getOthers());
+                                        scoringParameterRequest.setMinorityInterest(liabilitiesDetailsTY.getMinorityInterest());
+                                        scoringParameterRequest.setDeferredTaxLiability(liabilitiesDetailsTY.getDeferredTaxLiability());
+                                        scoringParameterRequest.setDeferredTaxAssets(assetsDetailsTY.getDeferredTaxAssets());
+
+                                        //EBITA
+                                        scoringParameterRequest.setProfitBeforeInterest(operatingStatementDetailsTY.getOpProfitBeforeIntrest());
+                                        scoringParameterRequest.setDepreciation(operatingStatementDetailsTY.getDepreciation());
+                                        scoringParameterRequest.setDebtEBITDA_p(true);
+                                }catch (Exception e){
+                                    logger.error("error while getting DEBT_EBITDA parameter : ",e);
+                                    scoringParameterRequest.setDebtEBITDA_p(false);
+                                }
+                                break;
+                            }
+
+                            case ScoreParameter.TURNOVER_ATNW: {
+                                try {
+                                        scoringParameterRequest.setLiabilitiesOrdinaryShareCapital(liabilitiesDetailsTY.getOrdinarySharesCapital());
+                                        scoringParameterRequest.setLiabilitiesGeneralReserve(liabilitiesDetailsTY.getGeneralReserve());
+                                        scoringParameterRequest.setDeficitInProfitANDLossAccount(liabilitiesDetailsTY.getSurplusOrDeficit());
+                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromoters(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromPromoters());
+                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
+                                        scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliates(assetsDetailsTY.getInvestmentsInSubsidiary());
+                                        scoringParameterRequest.setDomesticSales(operatingStatementDetailsTY.getDomesticSales());
+                                        scoringParameterRequest.setExportSales(operatingStatementDetailsTY.getExportSales());
+                                        scoringParameterRequest.setTurnoverATNW_p(true);
+
+                                }catch (Exception e){
+                                    logger.error("error while getting TURNOVER_ATNW parameter : ",e);
+                                    scoringParameterRequest.setTurnoverATNW_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.NO_OF_CHEQUES_BOUNCED: {
+                                try{
+                                    Double noOfChequeBounce = 0.0;
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+                                    reportRequest.setDirectorId(null);
+
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
+                                                noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
+                                            } else {
+                                                noOfChequeBounce = 0.0;
+                                            }
+                                        }
+                                    } else {
+                                        noOfChequeBounce = 0.0;
+                                    }
+                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setChequesBouncedLastMonth_p(true);
+                                }catch (Exception e){
+                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED parameter : ",e);
+                                    scoringParameterRequest.setChequesBouncedLastMonth_p(false);
+                                }
+                                break;
+                            }
+
+                            case ScoreParameter.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH: {
+                                try{
+                                    Double noOfChequeBounce = 0.0;
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+                                    reportRequest.setDirectorId(null);
+
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
+                                                noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
+                                            } else {
+                                                noOfChequeBounce = 0.0;
+                                            }
+
+                                        }
+                                    } else {
+                                        noOfChequeBounce = 0.0;
+                                    }
+
+                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
+                                }catch (Exception e){
+                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
+                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
                                 }
                                 break;
                             }

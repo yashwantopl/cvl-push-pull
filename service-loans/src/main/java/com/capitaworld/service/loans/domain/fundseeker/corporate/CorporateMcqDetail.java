@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
@@ -18,6 +19,10 @@ public class CorporateMcqDetail implements Serializable {
     @OneToOne
     @JoinColumn(name = "application_id")
     private LoanApplicationMaster applicationId;
+
+    @OneToOne
+    @JoinColumn(name = "proposal_mapping_id")
+    private ApplicationProposalMapping applicationProposalMapping;
 
     @Column(name = "accounting_systems_id")
     private Integer accountingSystemsId;
@@ -733,5 +738,13 @@ public class CorporateMcqDetail implements Serializable {
 
     public void setVarianceInProjectedSales(Integer varianceInProjectedSales) {
         this.varianceInProjectedSales = varianceInProjectedSales;
+    }
+
+    public ApplicationProposalMapping getApplicationProposalMapping() {
+        return applicationProposalMapping;
+    }
+
+    public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+        this.applicationProposalMapping = applicationProposalMapping;
     }
 }

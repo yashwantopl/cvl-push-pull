@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +51,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 					associatedConcernDetail.setCreatedBy(frameRequest.getUserId());
 					associatedConcernDetail.setCreatedDate(new Date());
 					associatedConcernDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+					associatedConcernDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				}
 				BeanUtils.copyProperties(associatedConcernDetailRequest, associatedConcernDetail);
 				associatedConcernDetail.setModifiedBy(frameRequest.getUserId());
@@ -84,6 +86,36 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		}
 		return true;
 	}
+
+    @Override
+    public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailListByProposalId(Long proposalId,Long userId) throws Exception {
+        try {
+            CommonDocumentUtils.startHook(logger, "getAssociatedConcernsDetailList");
+            List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
+                    .listAssociatedConcernFromProposalId(proposalId);
+            List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
+
+            for (AssociatedConcernDetail detail : associatedConcernDetail) {
+                AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
+                associatedConcernDetailRequest.setProfitPastOneYearString(CommonUtils.convertValue(detail.getProfitPastOneYear()));
+                associatedConcernDetailRequest.setProfitPastTwoYearString(CommonUtils.convertValue(detail.getProfitPastTwoYear()));
+                associatedConcernDetailRequest.setProfitPastThreeYearString(CommonUtils.convertValue(detail.getProfitPastThreeYear()));
+                associatedConcernDetailRequest.setTurnOverFirstYearString(CommonUtils.convertValue(detail.getTurnOverFirstYear()));
+                associatedConcernDetailRequest.setTurnOverSecondYearString(CommonUtils.convertValue(detail.getTurnOverSecondYear()));
+                associatedConcernDetailRequest.setTurnOverThirdYearString(CommonUtils.convertValue(detail.getTurnOverThirdYear()));
+                BeanUtils.copyProperties(detail, associatedConcernDetailRequest);
+                AssociatedConcernDetailRequest.printFields(associatedConcernDetailRequest);
+                associatedConcernDetailRequests.add(associatedConcernDetailRequest);
+            }
+            CommonDocumentUtils.endHook(logger, "getAssociatedConcernsDetailList");
+            return associatedConcernDetailRequests;
+        }
+
+        catch (Exception e) {
+            logger.error("Exception  in get monthlyTurnoverDetail  :-{}",e);
+            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
 
 
 	@Override

@@ -26,6 +26,7 @@ import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
@@ -138,6 +139,28 @@ public class DDRFormController {
 					HttpStatus.OK);
 		}
 	}
+
+	@RequestMapping(value = "/getCombinedDDR/{appId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCombinedDDR(@PathVariable("appId") Long appId, @PathVariable("proposalId") Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in COMBINED DDR Form Get Method -------------------------->" + appId +" -- "+proposalId);
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		try {
+			DDRRequest ddrRequest = ddrFormService.getMergeDDRByProposalId(appId, userId,proposalId);
+			logger.info("DDR Form Get Successfully---------------------------->");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), ddrRequest),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting DDR Form Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 	
 	/**
 	 * SAVE DDR MERGE FORM DETAILS BY DDR FORM ID
@@ -165,6 +188,32 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving COMBINED DDR Form Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/saveCombinedDDRByProposalId", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCombinedDDRNew(@RequestBody DDRRequest ddrRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in COMBINED DDR Form SAVE Method -------------------------->");
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		if (CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.info("Invalid Request, UserId is null or Empty, COMBINED DDR Form SAVE Method");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			ddrRequest.setUserId(userId);
+			ddrFormService.saveMergeDDRByProposalId(ddrRequest);
+			logger.info("DDR COMBINED Form Saved Successfully---------------------------->");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saving COMBINED DDR Form Details ==>{}", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -217,7 +266,7 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId, null, true);
 			logger.info("DDR AutoFilled Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), oneFormDetails), HttpStatus.OK);
@@ -282,19 +331,43 @@ public class DDRFormController {
 		}
 	}
 
-	@RequestMapping(value = "/generateDDRPDF/{appId}", method = RequestMethod.GET)
-	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "clientId", required = false) Long clientId) {
+	@RequestMapping(value = "/deleteDocsByProposalId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> deleteDocsByPropsoalId(@RequestBody DDRUploadRequest ddrUploadRequest) {
+		try {
+			boolean deleteDocument = ddrFormService.deleteDocumentByProposalId(ddrUploadRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Deleted", HttpStatus.OK.value(), deleteDocument), HttpStatus.OK);
+		} catch (Exception e) {logger.error("Error while DDR Delete Documents ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/generateDDRPDF/{appId}/{proposalId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId,@PathVariable(value = "proposalId") Long proposalId, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("In generateDDRPDF");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
+
+		Long  toApplicationId = loanApplicationService.getApplicationIdByProposalId(proposalId);
+		Long toUserId = loanApplicationService.getUserIdByProposalId(proposalId);
+
+	     logger.info("THIS IS THE USER ID ----------->"+toUserId);
+	     logger.info("THIS IS THE application Id ----------->"+toApplicationId);
+
+/*		 toApplicationId = ApplicationProposalMapping.getApplicationId();
+	     Long toUserId = ApplicationProposalMapping.getUserId();*/
+
 		if (CommonUtils.UserType.FUND_PROVIDER == userType) {
-			userId = loanApplicationService.getUserIdByApplicationId(appId);
+		//userId = loanApplicationService.getUserIdByApplicationId(appId);
+			userId = loanApplicationService.getUserIdByApplicationId(toApplicationId); // NEW BASED ON PROPOSAL MAPPING ID
 		} else if (CommonDocumentUtils.isThisClientApplication(request)) {
 			userId = clientId;
 		}
 		Boolean isDDRApproved = false;
 		try {
-			isDDRApproved = ddrFormService.isDDRApproved(userId, appId);
+			//isDDRApproved = ddrFormService.isDDRApproved(userId, appId); // PRREVIOUS
+			isDDRApproved = ddrFormService.isDDRApprovedByProposaId(proposalId); // NEW BASED ON PROPOSALID
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -304,8 +377,12 @@ public class DDRFormController {
 		}
 
 		try {
-			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId, userId);
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
+			/*DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId, userId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);*/ // PREVIOUS
+
+			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(toApplicationId, toUserId,proposalId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(toUserId, toApplicationId, proposalId, true); // BASED ON NEW APPLICATION ID
+
 			DDRFormDetailsRequest.printFields(dDRFormDetailsRequest);
 			DDROneFormResponse.printFields(oneFormDetails);
 			Map<String, Object> obj = new HashMap<String, Object>();
@@ -321,10 +398,10 @@ public class DDRFormController {
 			MultipartFile multipartFile = new DDRMultipart(byteArr);
 			JSONObject jsonObj = new JSONObject();
 
-			jsonObj.put("applicationId", appId);
+			jsonObj.put("applicationId", toApplicationId);
 			jsonObj.put("productDocumentMappingId", 329L);
 			jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-			jsonObj.put("originalFileName", "NHBS_" + appId + ".pdf");
+			jsonObj.put("originalFileName", "NHBS_" + toApplicationId + ".pdf");
 
 			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 			if (documentResponse.getStatus() == 200) {

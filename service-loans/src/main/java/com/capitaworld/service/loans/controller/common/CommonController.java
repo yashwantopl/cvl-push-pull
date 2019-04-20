@@ -63,6 +63,7 @@ public class CommonController {
 		}
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 
 		Long finalUserId = userId;
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
@@ -131,6 +132,7 @@ public class CommonController {
 		}
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 
 		Long finalUserId = userId;
 		if (CommonDocumentUtils.isThisClientApplication(request)) {

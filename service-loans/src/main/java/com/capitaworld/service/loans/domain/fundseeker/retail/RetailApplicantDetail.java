@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 /**
@@ -32,6 +33,10 @@ public class RetailApplicantDetail implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
+	
+	@OneToOne
+	@JoinColumn(name = "proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 
 	@Column(name = "aadhar_number")
 	private String aadharNumber;
@@ -330,11 +335,11 @@ public class RetailApplicantDetail implements Serializable {
 	private Double totalLandOwned;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "trade_license_expiry_date")
-	private Date tradeLicenseExpiryDate;
+	@Column(name = "driving_license_expiry_date")
+	private Date drivingLicenseExpiryDate;
 
-	@Column(name = "trade_license_number")
-	private String tradeLicenseNumber;
+	@Column(name = "driving_license_number")
+	private String drivingLicenseNumber;
 
 	private String unattended;
 
@@ -506,37 +511,39 @@ public class RetailApplicantDetail implements Serializable {
 
     @Column(name="ddo_organization_type")
     private Integer ddoOrganizationType;
-    
+
     @Column(name="spouse_employment")
     private Integer spouseEmployment;
-    
+
     @Column(name="no_of_dependent")
     private Integer noOfDependent;
-    
+
     @Column(name="designation")
     private Integer designation;
-    
+
     @Column(name="residence_since_year")
     private Integer residenceSinceYear;
-    
+
     @Column(name="residence_since_month")
     private Integer residenceSinceMonth;
 
     @Column(name="salary_mode")
     private Integer salaryMode;
-    
+
     @Column(name="salary_bank_name")
     private String salaryBankName;
-    
+
     @Column(name="salary_bank_month")
     private Integer salaryBankMonth;
-    
+
     @Column(name="salary_bank_year")
     private Integer salaryBankYear;
-    
+
     @Column(name="is_other_salary_bank")
     private Boolean isOtherSalaryBank;
     
+    private String remarks;
+
 
 	public RetailApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1319,20 +1326,20 @@ public class RetailApplicantDetail implements Serializable {
 		this.totalLandOwned = totalLandOwned;
 	}
 
-	public Date getTradeLicenseExpiryDate() {
-		return this.tradeLicenseExpiryDate;
+	public Date getDrivingLicenseExpiryDate() {
+		return drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseExpiryDate(Date tradeLicenseExpiryDate) {
-		this.tradeLicenseExpiryDate = tradeLicenseExpiryDate;
+	public String getDrivingLicenseNumber() {
+		return drivingLicenseNumber;
 	}
 
-	public String getTradeLicenseNumber() {
-		return this.tradeLicenseNumber;
+	public void setDrivingLicenseExpiryDate(Date drivingLicenseExpiryDate) {
+		this.drivingLicenseExpiryDate = drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseNumber(String tradeLicenseNumber) {
-		this.tradeLicenseNumber = tradeLicenseNumber;
+	public void setDrivingLicenseNumber(String drivingLicenseNumber) {
+		this.drivingLicenseNumber = drivingLicenseNumber;
 	}
 
 	public String getUnattended() {
@@ -1849,8 +1856,8 @@ public class RetailApplicantDetail implements Serializable {
 	public String getSalaryBankName() {
 		return salaryBankName;
 	}
-	
-	
+
+
 
 	public Boolean getIsOtherSalaryBank() {
 		return isOtherSalaryBank;
@@ -1879,11 +1886,25 @@ public class RetailApplicantDetail implements Serializable {
 	public void setSalaryBankYear(Integer salaryBankYear) {
 		this.salaryBankYear = salaryBankYear;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+
+
+
+
 }

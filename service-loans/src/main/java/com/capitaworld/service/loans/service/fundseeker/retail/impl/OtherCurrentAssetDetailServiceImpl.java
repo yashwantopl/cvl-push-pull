@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.OtherCurrentAssetDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
@@ -47,6 +49,9 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 	
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
+	
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -74,6 +79,8 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 					throw new LoansException();
 				}
 				
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true);
+				otherCurrentAssetDetail.setApplicationProposalMapping(applicationProposalMapping);
 				otherCurrentAssetDetail.setModifiedBy(frameRequest.getUserId());
 				otherCurrentAssetDetail.setModifiedDate(new Date());
 				otherCurrentAssetDetailRepository.save(otherCurrentAssetDetail);
@@ -106,6 +113,37 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 			throw new LoansException();
 		}
 		
+		List<OtherCurrentAssetDetailRequest> otherCurrentAssetRequests = new ArrayList<OtherCurrentAssetDetailRequest>();
+
+		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
+			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
+			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValue(detail.getAssetValue()));
+			otherCurrentAssetRequest.setAssetType(!CommonUtils.isObjectNullOrEmpty(detail.getAssetTypesId()) ? StringEscapeUtils.escapeXml(Assets.getById(detail.getAssetTypesId()).getValue()) : "");
+			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
+			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
+		}
+		return otherCurrentAssetRequests;
+	}
+
+	@Override
+	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailListByProposalId(Long proposalId,
+			int applicationType) throws LoansException {
+		List<OtherCurrentAssetDetail> otherCurrentAssetDetails;
+//		switch (applicationType) {
+//		case CommonUtils.ApplicantType.APPLICANT:
+//			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.COAPPLICANT:
+//			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromCoAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.GARRANTOR:
+//			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromGarrId(id);
+//			break;
+//		default:
+//			throw new LoansException();
+//		}
+		
+		otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromProposalId(proposalId);
 		List<OtherCurrentAssetDetailRequest> otherCurrentAssetRequests = new ArrayList<OtherCurrentAssetDetailRequest>();
 
 		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {

@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +27,38 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 	@Autowired
 	LoanApplicationRepository loanApplicationRepository;
 
+	@Autowired
+	ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 	@Override
 	public void saveOrUpdate(AssetsDetails assetsDetails) {
 		assetsDetailsRepository.save(assetsDetails);
 	}
 
 	@Override
-	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException {
-		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
-				assetsDetailsRepository);
+	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException{
+		logger.info("=========== Enter in readAssetsDetails()========= applicationId ==> {} ", applicationId );
+		try {
+			AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
+					assetsDetailsRepository);
+		} catch (ExcelException e) {
+			logger.error("Error/Exception while saving assets detail from excel to db MSG -->{} " , e);
+			throw e;
+		}
+	}
 
+	@Override
+	public void readAssetsDetails(Long applicationId,Long proposalMappingId, Long storageDetailsId, XSSFSheet sheet) throws ExcelException {
+		logger.info("=========== Enter in readAssetsDetails() =========== applicationId ==> {} proposalMappingId==> {} ", applicationId , proposalMappingId);
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMappingId);
+		try {
+			AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping,
+					assetsDetailsRepository);
+		} catch (ExcelException e) {
+			logger.error("Error/Exception while saving assets detail from excel to db MSG -->{} " , e);
+			throw e;
+		}
 	}
 
 	@Override

@@ -12,7 +12,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long id;
     private Long clientId;
     private Long applicationId;
-
+    private Long proposalId;
+    
     /*
     * Profile Fields
     * */
@@ -45,6 +46,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long keyVerticalSector;
     private Long keyVerticalSubSector;
     private Address contactAddress;
+    private Address officeAddress;
     private String contactNo;
     private String email;
     private String companyName;
@@ -573,7 +575,22 @@ public class PLRetailApplicantRequest implements Serializable {
 	public void setIsOtherSalaryBank(Boolean isOtherSalaryBank) {
 		this.isOtherSalaryBank = isOtherSalaryBank;
 	}
-	
+
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+
+	public Address getOfficeAddress() {
+		return officeAddress;
+	}
+
+	public void setOfficeAddress(Address officeAddress) {
+		this.officeAddress = officeAddress;
+	}
     
     
 }

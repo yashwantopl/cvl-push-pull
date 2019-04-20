@@ -27,6 +27,9 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :id and o.isActive = true")
 	public List<DirectorBackgroundDetail> listPromotorBackgroundFromAppId(@Param("id") Long id);
 
+	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :id and o.applicationProposalMapping.proposalId =:proposalId and o.isActive = true")
+	public List<DirectorBackgroundDetail> listPromotorBackgroundFromAppIdAndProposalId(@Param("id") Long id,@Param("proposalId") Long proposalId);
+
 	public DirectorBackgroundDetail findByIdAndIsActive(Long id,Boolean isActive);
 
 	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :appId and o.isMainDirector = true")

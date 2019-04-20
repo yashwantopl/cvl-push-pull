@@ -106,10 +106,10 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 	
 	@Autowired
 	private FpSalaryModeRepository fpSalaryModeRepository;
-	
+
 	@Autowired
 	private FpSalaryModeTempRepository fpSalaryModeTempRepository;
-	
+
 	@Autowired
 	private FpEmpWithRepository fpEmpWithRepository;
 	
@@ -223,7 +223,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		}
 		}
 		logger.info("end saveSalaryModeMaster");
-		
+
 	}
 
 	@Override
@@ -312,10 +312,10 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 				List<Integer> salaryModeIds = fpSalaryModeRepository
 						.getSalaryModeByFpProductId(personalLoanParameterRequest.getId());
 				if (!salaryModeIds.isEmpty()) {
-									
+
 						personalLoanParameterRequest.setSalaryModeIds(salaryModeIds);
 				}
-				
+
 				
 				//get emp with
 				
@@ -519,10 +519,10 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		List<Integer> salaryModeIds = fpSalaryModeTempRepository
 				.getSalaryModeByFpProductId(personalLoanParameterRequest.getId());
 		if (!salaryModeIds.isEmpty()) {
-							
+
 				personalLoanParameterRequest.setSalaryModeIds(salaryModeIds);
 		}
-		
+
 		//get emp with
 		
 		List<Integer> empWithIds = fpEmpWithTempRepository
@@ -668,7 +668,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		//save salaryModeIds
 		fpSalaryModeTempRepository.inActiveSalaryModeByFpProductId(personalLoanParameterTemp.getId());
 		saveSalaryMode(personalLoanParameterRequest);
-		
+
 		//save rating info
 		fpRatingAgencyTempRepository.inActiveEmpWithByFpProductId(personalLoanParameterTemp.getId());
 		saveRatingAgencyInfo(personalLoanParameterRequest);
@@ -701,7 +701,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		}
 		}
 		logger.info("end saveSalaryMode");
-		
+
 	}
 
 	private void saveRatingAgencyInfo(PersonalLoanParameterRequest personalLoanParameterRequest) {

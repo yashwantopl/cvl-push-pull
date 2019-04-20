@@ -101,15 +101,14 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	
 	@Autowired
 	OperatingStatementDetailsService operatingStatementDetailsService; 
-	
-	
-	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws ExcelException {
+
+	public Boolean readCMA(Long applicationId,Long proposalMappingId,Long storageDetailsId,MultipartFile multipartFile) throws ExcelException {
 		InputStream file;
 		XSSFWorkbook workbook;
 		XSSFSheet operatingStatementSheet,liabilitiesSheet,assetsSheet;
-		
-		
-		
+
+
+
 		try{
 			 file = new ByteArrayInputStream(multipartFile.getBytes());
 			 workbook = new XSSFWorkbook(file);
@@ -118,20 +117,55 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	         liabilitiesSheet  = workbook.getSheetAt(1);//pass DPR sheet to function
 	         assetsSheet  = workbook.getSheetAt(2);//pass DPR sheet to function
 
-	         operatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,operatingStatementSheet);
-	         liabilitiesDetailsService.readLiabilitiesDetails(applicationId,storageDetailsId, liabilitiesSheet);
-	         assetsDetailsService.readAssetsDetails(applicationId,storageDetailsId, assetsSheet);
-	         workbook.close(); 
+	         operatingStatementDetailsService.readOperatingStatementDetails(applicationId,proposalMappingId,storageDetailsId,operatingStatementSheet);
+			liabilitiesDetailsService.readLiabilitiesDetails(applicationId,proposalMappingId,storageDetailsId, liabilitiesSheet);
+			assetsDetailsService.readAssetsDetails(applicationId,proposalMappingId,storageDetailsId, assetsSheet);
+	         workbook.close();
 		}
 		catch (Exception e) {
-			
+
 			assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			log.error("Error while reading CMA : ",e);
 			throw new ExcelException(e) ;
 		}
-		
+
+		return true;
+	}
+
+	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws Exception {
+		// TODO Auto-generated method stub
+
+		InputStream file;
+		XSSFWorkbook workbook;
+		XSSFSheet operatingStatementSheet,liabilitiesSheet,assetsSheet;
+
+
+
+		try{
+			 file = new ByteArrayInputStream(multipartFile.getBytes());
+			 workbook = new XSSFWorkbook(file);
+
+	         operatingStatementSheet  = workbook.getSheetAt(0);//pass DPR sheet to function
+	         liabilitiesSheet  = workbook.getSheetAt(1);//pass DPR sheet to function
+	         assetsSheet  = workbook.getSheetAt(2);//pass DPR sheet to function
+
+	         operatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,operatingStatementSheet);
+	         liabilitiesDetailsService.readLiabilitiesDetails(applicationId,storageDetailsId, liabilitiesSheet);
+	         assetsDetailsService.readAssetsDetails(applicationId,storageDetailsId, assetsSheet);
+	         workbook.close();
+		}
+		catch (Exception e) {
+
+			assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			log.error("Error while reading CMA : ",e);
+			throw e ;
+			/*return false;*/
+		}
+
 		return true;
 	}
 

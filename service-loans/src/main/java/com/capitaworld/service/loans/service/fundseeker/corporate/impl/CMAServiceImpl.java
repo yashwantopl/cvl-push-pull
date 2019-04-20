@@ -62,7 +62,13 @@ public class CMAServiceImpl implements CMAService {
 		logger.info("ENTER IN CMA SAVE SERVICE IMPLEMENTATION");
 		//SAVE LIABILITY DETAILS BY APPLICATION ID
 		try {
-			logger.info("TOTAL LIABILITY OBJECT --------------------------------->"+cmaRequest.getLiabilitiesRequestList().size());
+			try {
+				if(!CommonUtils.isObjectNullOrEmpty(cmaRequest.getApplicationId())) {
+					liabilitiesDetailsRepository.inActiveByAppId(cmaRequest.getApplicationId());	
+				}
+			} catch (Exception e) {
+				logger.error("Exception while inactive liability --->",e);
+			}
 			for(LiabilitiesDetailsRequest liabilitiesDetailsRequest : cmaRequest.getLiabilitiesRequestList()) {
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetailsRequest)) {
 					logger.info("Current Object is null or Empty in FOR LOOP");
@@ -98,7 +104,13 @@ public class CMAServiceImpl implements CMAService {
 		
 		//SAVE ASSET DETAILS BY APPLICATION ID
 		try {
-			logger.info("TOTAL ASSET OBJECT --------------------------------->"+cmaRequest.getAssetsRequestList().size());
+			try {
+				if(!CommonUtils.isObjectNullOrEmpty(cmaRequest.getApplicationId())) {
+					assetsDetailsRepository.inActiveByAppId(cmaRequest.getApplicationId());	
+				}
+			} catch (Exception e) {
+				logger.error("Exception while inactive assets --->",e);
+			}
 			for(AssetsDetailsRequest assetsDetailsRequest : cmaRequest.getAssetsRequestList()) {
 				AssetsDetails assetsDetails = null;
 				if(!CommonUtils.isObjectNullOrEmpty(assetsDetailsRequest.getId())) {
@@ -128,7 +140,13 @@ public class CMAServiceImpl implements CMAService {
 		
 		//SAVE OPERATING STATEMENT DETAILS BY APPLICATION ID
 		try {
-			logger.info("TOTAL OPEATING STATEMENT OBJECT --------------------------------->"+cmaRequest.getOperatingStatementRequestList().size());
+			try {
+				if(!CommonUtils.isObjectNullOrEmpty(cmaRequest.getApplicationId())) {
+					operatingStatementDetailsRepository.inActiveByAppId(cmaRequest.getApplicationId());	
+				}
+			} catch (Exception e) {
+				logger.error("Exception while inactive operating statement --->",e);
+			}
 			for(OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
 				OperatingStatementDetails operatingStatementDetails = null;
 				if(!CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getId())) {

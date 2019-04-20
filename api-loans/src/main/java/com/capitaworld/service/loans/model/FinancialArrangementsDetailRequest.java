@@ -38,6 +38,8 @@ public class FinancialArrangementsDetailRequest {
 	private String address;
 
 	private Double emi;
+	
+	private Double collateralSecurityAmount;
 
 	private Boolean isActive = true;
 	
@@ -195,4 +197,13 @@ public class FinancialArrangementsDetailRequest {
 	public void setIsManuallyAdded(Boolean isManuallyAdded) {
 		this.isManuallyAdded = isManuallyAdded;
 	}
+
+	public Double getCollateralSecurityAmount() {
+		return collateralSecurityAmount;
+	}
+
+	public void setCollateralSecurityAmount(Double collateralSecurityAmount) {
+		this.collateralSecurityAmount = collateralSecurityAmount;
+	}
+
 }

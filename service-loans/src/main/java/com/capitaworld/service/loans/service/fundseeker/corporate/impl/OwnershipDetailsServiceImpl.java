@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -51,8 +53,10 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 				}
 				BeanUtils.copyProperties(ownershipDetailRequest, ownershipDetail);
 				ownershipDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				ownershipDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				ownershipDetail.setModifiedBy(frameRequest.getUserId());
 				ownershipDetail.setModifiedDate(new Date());
+				ownershipDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				ownershipDetailsRepository.save(ownershipDetail);
 			}
 			return true;
@@ -80,6 +84,48 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 
 		catch (Exception e) {
 			logger.error("Exception  in get ownershipDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId ,Long proposalId) throws Exception {
+		try {
+			List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppIdAndProposalId(applicationId,proposalId); // new
+			List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
+
+			for (OwnershipDetail detail : ownershipDetails) {
+				OwnershipDetailRequest ownershipDetailRequest = new OwnershipDetailRequest();
+				BeanUtils.copyProperties(detail, ownershipDetailRequest);
+				ownershipDetailRequests.add(ownershipDetailRequest);
+			}
+			return ownershipDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception  in get ownershipDetail  :-",e);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	/*multiple bank*/
+	@Override
+	public List<OwnershipDetailRequest> getOwnershipDetailListForMultipleBank(Long proposalId) throws Exception {
+		try {
+			CommonDocumentUtils.startHook(logger, "getOwnershipDetailList");
+			List<OwnershipDetail> achievementDetails = ownershipDetailsRepository.listOwnershipFromProposalId(proposalId);
+			List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<>(achievementDetails.size());
+
+			for (OwnershipDetail detail : achievementDetails) {
+				OwnershipDetailRequest ownershipDetailRequest = new OwnershipDetailRequest();
+				BeanUtils.copyProperties(detail, ownershipDetailRequest);
+				ownershipDetailRequests.add(ownershipDetailRequest);
+			}
+
+			CommonDocumentUtils.endHook(logger, "getOwnershipDetailList");
+			return ownershipDetailRequests;
+		} catch (Exception e) {
+			logger.error("Exception getting getOwnershipDetailList  :-",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

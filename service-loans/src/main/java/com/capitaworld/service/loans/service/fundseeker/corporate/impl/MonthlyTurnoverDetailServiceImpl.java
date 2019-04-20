@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 				}
 				BeanUtils.copyProperties(monthlyTurnoverDetailRequest, monthlyTurnoverDetail);
 				monthlyTurnoverDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				monthlyTurnoverDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				monthlyTurnoverDetail.setModifiedBy(frameRequest.getUserId());
 				monthlyTurnoverDetail.setModifiedDate(new Date());
 				monthlyTurnoverDetailsRepository.save(monthlyTurnoverDetail);
@@ -71,6 +73,33 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 
 	}
 
+	@Override
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailListByProposalId(Long id,Long userId,Long proposalId) throws LoansException {
+		try {
+			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository
+					.listMonthlyTurnoverFromAppIdAndProposalId(id,proposalId);
+
+			if(CommonUtils.isListNullOrEmpty(monthlyTurnoverDetails)){
+				return getList();
+			}
+		
+			List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequests = new ArrayList<MonthlyTurnoverDetailRequest>();
+
+			for (MonthlyTurnoverDetail detail : monthlyTurnoverDetails) {
+				MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest = new MonthlyTurnoverDetailRequest();
+				monthlyTurnoverDetailRequest.setAmountString(CommonUtils.convertValue(detail.getAmount()));
+				BeanUtils.copyProperties(detail, monthlyTurnoverDetailRequest);
+				monthlyTurnoverDetailRequests.add(monthlyTurnoverDetailRequest);
+			}
+			return monthlyTurnoverDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in get List monthlyTurnoverDetail :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
 	@Override
 	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws LoansException {
 		try {

@@ -57,8 +57,8 @@ public class AssociatedConcernDetailController {
 		}
 
 		// application id must not be null
-		if (frameRequest.getApplicationId() == null) {
-			logger.warn("application id and user id must not be null ==>" + frameRequest);
+		if (frameRequest.getProposalMappingId() == null) {
+			logger.warn("proposal id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
 		}
@@ -71,7 +71,7 @@ public class AssociatedConcernDetailController {
 
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean finalLocked = loanApplicationService.isFinalLocked(frameRequest.getApplicationId(), finalUserId);
+			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalMappingId(), finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
@@ -88,6 +88,45 @@ public class AssociatedConcernDetailController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
+		}
+
+	}
+
+	@RequestMapping(value = "/getListByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long proposalId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "getList");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		try {
+			if (proposalId == null) {
+				logger.warn("ID Require to get Associated Concerns Details ==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<AssociatedConcernDetailRequest> response = associatedConcernDetaillService
+					.getAssociatedConcernsDetailListByProposalId(proposalId,userId);
+			Integer currentYear = null;
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(new Date());
+			currentYear = calendar.get(Calendar.YEAR);
+
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(currentYear);
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Associated Concerns Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

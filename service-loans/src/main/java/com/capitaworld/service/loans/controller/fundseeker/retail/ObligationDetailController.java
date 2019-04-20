@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ObligationDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
@@ -31,12 +32,14 @@ public class ObligationDetailController {
     @Autowired
     private ObligationDetailService obligationDetailService;
 
-
     @Autowired
     private RetailApplicantService retailApplicantService;
 
     @Autowired
     private LoanApplicationService loanApplicationService;
+    
+    @Autowired
+    ApplicationProposalMappingService applicationProposalMappingService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
@@ -69,7 +72,9 @@ public class ObligationDetailController {
             if(CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()){
                 applicationId = frameRequest.getApplicationId();
             }
-            Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+//            Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+            Boolean primaryLocked = applicationProposalMappingService.isFinalLocked(frameRequest.getProposalMappingId());
+            
             if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
                         HttpStatus.OK);
@@ -105,6 +110,46 @@ public class ObligationDetailController {
             }
 
             List<ObligationDetailRequest> response = obligationDetailService.getObligationDetailList(id, applicationType);
+            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            loansResponse.setListData(response);
+            Integer currencyId = null;
+            switch (applicationType) {
+                case CommonUtils.ApplicantType.APPLICANT:
+                    currencyId = retailApplicantService.getCurrency(id, userId);
+                    break;
+
+                default : break;
+
+            }
+            loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting Other Current Asset Details==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+    
+    @RequestMapping(value = "/getList/{applicationType}/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType, @PathVariable Long proposalId,
+                                                 @RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+        // request must not be null
+        try {
+            Long userId = null;
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                userId = clientId;
+            } else {
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+            if (proposalId == null) {
+                logger.warn("ID Require to get Other Current Asset Details ==>" + proposalId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            List<ObligationDetailRequest> response = obligationDetailService.getObligationDetailsFromProposalId(proposalId, applicationType);
             LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
             loansResponse.setListData(response);
             Integer currencyId = null;

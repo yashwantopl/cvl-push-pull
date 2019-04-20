@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,7 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
@@ -112,6 +116,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 	private static final String DISTRICT_ID_IS_NULL_MSG = "District id is null";
 
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -180,6 +186,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
 	
+	@Autowired
+	ApplicationProposalMappingRepository applicationProposalMappingRepository;
+	
 
 	@Override
 	public PlTeaserViewResponse getPlPrimaryViewDetails(Long toApplicationId, Integer userType, Long userId,
@@ -194,7 +203,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		plTeaserViewResponse.setTenure(((loanApplicationMaster.getTenure()).toString()) + " Years");
 		plTeaserViewResponse.setAppId(toApplicationId);
 		
-		
+
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
@@ -202,13 +211,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
-				plTeaserViewResponse.setDateOfProposal(obj);	
-				}	
+				plTeaserViewResponse.setDateOfProposal(obj);
+				}
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			// ENDS HERE===================>
-		
+
 
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -234,8 +243,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			plRetailApplicantResponse = new PLRetailApplicantResponse();
 			if(plRetailApplicantRequest != null) {
 				
-				/*-----  all primary details fetch from db (fs_retail_applicat_detail) and using enum ------*/ 	
-				
+				/*-----  all primary details fetch from db (fs_retail_applicat_detail) and using enum ------*/
+
 				plRetailApplicantResponse.setFullName((plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : ""));
 				plRetailApplicantResponse.setGender(plRetailApplicantRequest.getGenderId() != null ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setBirthDate(plRetailApplicantRequest.getBirthDate());
@@ -256,23 +265,23 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
 				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
-				
+
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
-				
+
 				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
-					        
+
 					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
 			        LocalDate today = LocalDate.now();
-			        
+
 			        Period age = Period.between(since, today);
 			        int years = age.getYears();
 			        int months = age.getMonths();
-			        
+
 					plRetailApplicantResponse.setSalaryAccountBankSince(years+" year "+months+" months");
 				}
-				
+
 				//citetailApplicantResponse.setry,State,country
 				
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
@@ -301,7 +310,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 				
 				/*banking relationship details*/
-				
+
 				
 				// loan Details 
 				
@@ -329,11 +338,11 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 
 				if(plRetailApplicantRequest.getBankingRelationshipList() != null) {
-					plRetailApplicantResponse.setBankRelationShipList(plRetailApplicantRequest.getBankingRelationshipList());	
+					plRetailApplicantResponse.setBankRelationShipList(plRetailApplicantRequest.getBankingRelationshipList());
 				}else {
 					logger.warn("bankRelationship  is null...");
 				}
-				
+
 				//KEY VERTICAL FUNDING
 				List<Long> keyVerticalFundingId = new ArrayList<>();
 				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
@@ -405,7 +414,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					}else {
 						logger.info("proposal data is null");
 					}
-					
+
 				}catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
@@ -711,5 +720,549 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 		return plTeaserViewResponse;
 	}
+	
+	@Override
+	public PlTeaserViewResponse getPlPrimaryViewDetailsByProposalId(Long toApplicationId, Integer userType, Long userId,
+			Long productMappingId, Boolean isFinal, Long proposalId) {
+
+		PlTeaserViewResponse plTeaserViewResponse = new PlTeaserViewResponse();
+
+//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
+		
+		Long userid=applicationProposalMapping.getUserId();
+		plTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
+		plTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
+		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).toString()) + " Years");
+		plTeaserViewResponse.setAppId(toApplicationId);
+		
+
+		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
+			try {
+				Object obj = "-";
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
+			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
+				}else{
+				plTeaserViewResponse.setDateOfProposal(obj);
+				}
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+			// ENDS HERE===================>
+
+
+		/* ========= Matches Data ========== */
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			// TEASER VIEW FROM FP SIDE
+				try {
+					MatchRequest matchRequest = new MatchRequest();
+					matchRequest.setApplicationId(toApplicationId);
+					matchRequest.setProductId(productMappingId);
+					matchRequest.setProposalId(proposalId);
+					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
+					plTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+				} catch (Exception e) {
+					logger.error("Error while getting matches data : " + e);
+				}
+		}
+		
+		
+		// basic Details
+		
+		PLRetailApplicantResponse plRetailApplicantResponse = null;
+		try {
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId, proposalId);
+			plRetailApplicantResponse = new PLRetailApplicantResponse();
+			if(plRetailApplicantRequest != null) {
+				
+				/*-----  all primary details fetch from db (fs_retail_applicat_detail) and using enum ------*/
+
+				plRetailApplicantResponse.setFullName((plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : ""));
+				plRetailApplicantResponse.setGender(plRetailApplicantRequest.getGenderId() != null ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue().toString() : "-");
+				plRetailApplicantResponse.setBirthDate(plRetailApplicantRequest.getBirthDate());
+				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
+				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
+				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
+				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue().toString() : "-");
+				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
+				plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() !=null ? (plRetailApplicantRequest.getTotalExperienceYear() +" year") : "") + " " + (plRetailApplicantRequest.getTotalExperienceMonth() != null ? (plRetailApplicantRequest.getTotalExperienceMonth() +" months") :  "" ));
+				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setMaritalStatus(plRetailApplicantRequest.getStatusId() != null ? MaritalStatusMst.getById(plRetailApplicantRequest.getStatusId()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEducationQualificationString(plRetailApplicantRequest.getEducationQualification() != null ? EducationStatusRetailMst.getById(plRetailApplicantRequest.getEducationQualification()).getValue().toString() : "-");
+				plRetailApplicantResponse.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
+				plRetailApplicantResponse.setDesignation(plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
+				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
+				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
+
+				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(plRetailApplicantRequest.getRetailApplicantIncomeRequestList());
+				
+				/*salary account details*/
+				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
+				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
+
+				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
+
+					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
+			        LocalDate today = LocalDate.now();
+
+			        Period age = Period.between(since, today);
+			        int years = age.getYears();
+			        int months = age.getMonths();
+
+					plRetailApplicantResponse.setSalaryAccountBankSince(years+" year "+months+" months");
+				}
+
+				//citetailApplicantResponse.setry,State,country
+				
+				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
+				plTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
+				plTeaserViewResponse.setCountry(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressCountry(), oneFormClient));
+				
+				// address
+				
+				try {
+					if(plRetailApplicantRequest.getContactAddress() != null) {
+						
+						PincodeDataResponse pindata=pincodeDateService.getById(plRetailApplicantRequest.getContactAddress().getDistrictMappingId());
+						plTeaserViewResponse.setPresentAddDist(pindata.getDistrictName());
+						plTeaserViewResponse.setPresentAddTaluko(pindata.getTaluka());
+						pindata.getTaluka();
+					}else {
+						logger.warn(DISTRICT_ID_IS_NULL_MSG);
+					}
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				
+				if(plRetailApplicantRequest.getContactAddress() != null){
+					
+					plTeaserViewResponse.setPresentAdd( (plRetailApplicantRequest.getContactAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getPremiseNumber())) :"") + (plRetailApplicantRequest.getContactAddress().getStreetName() != null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getStreetName())) : "") + (plRetailApplicantRequest.getContactAddress().getLandMark() != null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPresentAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPresentAddDist())) :"")+ (plTeaserViewResponse.getPresentAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPresentAddTaluko())) : "") + (plRetailApplicantRequest.getContactAddress().getPincode() != null ? (plRetailApplicantRequest.getContactAddress().getPincode()) : ""));
+				}
+				
+				/*banking relationship details*/
+
+				
+				// loan Details 
+				
+				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
+				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
+				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
+				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
+				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+				
+				//set existing financial data if not null 
+				
+				if(plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList() != null) {
+					plRetailApplicantResponse.setFinancialArrangementsDetailRequestsList(plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList());	
+				}else {
+					logger.warn("FinancialArrangementsDetail is null...");
+				}
+				
+				//set credit card data if not null
+				if(plRetailApplicantRequest.getCreditCardsDetailRequestList() != null) {
+					
+					plRetailApplicantResponse.setCreditCardsDetailRequestList(plRetailApplicantRequest.getCreditCardsDetailRequestList());	
+				}else {
+					logger.warn("CreditCardDetails is null...");
+				}
+				
+
+				if(plRetailApplicantRequest.getBankingRelationshipList() != null) {
+					plRetailApplicantResponse.setBankRelationShipList(plRetailApplicantRequest.getBankingRelationshipList());
+				}else {
+					logger.warn("bankRelationship  is null...");
+				}
+
+				//KEY VERTICAL FUNDING
+				List<Long> keyVerticalFundingId = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
+					keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
+				if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						    plTeaserViewResponse.setKeyVericalFunding(masterResponse.getValue());
+						} else {
+							logger.warn("key vertical funding is null");
+						}
+
+					} catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
+					}
+				}
+				//KEY VERTICAL SECTOR
+				List<Long> keyVerticalSectorId = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
+					keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
+				try {
+					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						plTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
+					} else {
+						logger.warn("key vertical sector is null");
+					}
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				//KEY VERTICAL SUBSECTOR
+				try {
+					if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
+						OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(plRetailApplicantRequest.getKeyVerticalSubSector());
+						plTeaserViewResponse.setKeyVericalSubsector(oneFormResponse.getData().toString());
+					}
+				} catch (Exception e) {
+					logger.warn("key vertical subSector is null ");
+				}
+				
+				
+				plTeaserViewResponse.setRetailApplicantDetail(plRetailApplicantResponse);
+				
+			}else {
+				logger.warn("retailApplicantDetail is null");
+			}
+			
+		} catch (Exception e) {
+			logger.error("error while fetching retailApplicantDetails : ",e);
+		}
+		
+		//PROPOSAL RESPONSE
+				try {
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setApplicationId(toApplicationId);
+					proposalMappingRequest.setFpProductId(productMappingId);
+					ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+					if(proposalMappingResponse.getData() != null) {
+					
+						plTeaserViewResponse.setProposalData(proposalMappingResponse.getData());
+						
+					}else {
+						logger.info("proposal data is null");
+					}
+
+				}catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				
+		//cibil score
+		
+				try {
+					CibilRequest cibilReq=new CibilRequest();
+					cibilReq.setPan(plRetailApplicantResponse.getPan());
+					cibilReq.setApplicationId(toApplicationId);
+					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
+				} catch (Exception e) {
+					logger.error("Error While calling Cibil Score By PanCard : ",e);
+				}
+		
+		// Income Details
+		
+		try {
+			
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(toApplicationId, proposalId);
+			
+			if(retailApplicantIncomeDetail != null) {
+				plTeaserViewResponse.setRetailApplicantIncomeDetails(retailApplicantIncomeDetail);	
+			}else {
+				logger.warn("..........::::::::----->>retailApplicantIncomeDetail is null<<-----:::::::::.....");
+				
+			}
+			
+			
+		} catch (Exception e) {
+			logger.error("..........::::::::----->> Error while calling PL Income Details <<-----:::::::::.....",e);
+		}
+		
+		// bank statement data
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(toApplicationId);
+		reportRequest.setUserId(userId);
+		List<Data> datas = new ArrayList<>();
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMaps = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			if (!CommonUtils.isListNullOrEmpty(hashMaps)) {
+				for (HashMap<String, Object> hashMap : hashMaps) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
+					datas.add(data);
+				}
+			}
+			plTeaserViewResponse.setBankData(datas);
+		
+		} catch (Exception e) {
+			logger.error("Error while getting perfios data : ",e);
+		}
+
+		// SCORING DATA
+		ScoringRequest scoringRequest = new ScoringRequest();
+		scoringRequest.setApplicationId(toApplicationId);
+		scoringRequest.setFpProductId(productMappingId);
+
+		try {
+
+			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
+
+			if (proposalScoreResponse != null){
+				logger.info("getObjectFromMap called successfully");
+			}
+
+			plTeaserViewResponse.setDataList(scoringResponse.getDataList());
+			plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
+			plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());
+
+		} catch (ScoringException | IOException e1) {
+			logger.error(CommonUtils.EXCEPTION,e1);
+		}
+
+		// Eligibility Data
+
+		EligibililityRequest eligibilityReq = new EligibililityRequest();
+		eligibilityReq.setApplicationId(toApplicationId);
+		eligibilityReq.setFpProductMappingId(productMappingId);
+		logger.info(" for eligibility appid============>>" + toApplicationId);
+
+		try {
+
+			EligibilityResponse eligibilityResp = eligibilityClient.getRetailLoanData(eligibilityReq);
+
+			plTeaserViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+
+		} catch (Exception e1) {
+			logger.error(CommonUtils.EXCEPTION,e1);
+		}
+		
+		try {
+			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
+			if (resNameAsPerITR != null) {
+
+				plTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+			} else {
+
+				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+			}
+
+		} catch (Exception e) {
+			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+		}
+		
+		
+		// GET DOCUMENTS
+				DocumentRequest documentRequest = new DocumentRequest();
+				documentRequest.setApplicationId(toApplicationId);
+				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setProfilePic(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setBankStatement(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_PDF);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setIrtPdfReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_XML);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setIrtXMLReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+		
+
+		// pl final view details filled from here
+		if (isFinal) {
+			
+			try {
+				
+				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinalByProposalId(userId, toApplicationId, proposalId);
+				
+				if(retailFinalInfo != null) {
+				
+					plTeaserViewResponse.setReligion(retailFinalInfo.getReligion() != null ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue().toString() : "-");
+					plTeaserViewResponse.setResidentialStatus(retailFinalInfo.getResidentialStatus() != null ? ResidentialStatus.getById(retailFinalInfo.getResidentialStatus()).getValue().toString() : "-");
+					plTeaserViewResponse.setCastCategory(retailFinalInfo.getCastId() != null ? CastCategory.getById(retailFinalInfo.getCastId()).getValue().toString() : "-");
+					plTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
+					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
+					if(retailFinalInfo.getDdoRemainingSerYrs() != null && retailFinalInfo.getDdoRemainingSerMonths() != null) {
+						LocalDate today = LocalDate.now();
+						LocalDate remainingYears = LocalDate.of(retailFinalInfo.getDdoRemainingSerYrs(), retailFinalInfo.getDdoRemainingSerMonths(), 1);
+						Period p = Period.between(today, remainingYears);
+						retailFinalInfo.setDdoRemainingSerYrs(p.getYears());
+						retailFinalInfo.setDdoRemainingSerMonths(p.getMonths());
+					}
+					//permanent address
+					
+					try {
+						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {
+							
+							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId());
+							plTeaserViewResponse.setPermAddDist(pindata.getDistrictName());
+							plTeaserViewResponse.setPermAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}else {
+							logger.warn(DISTRICT_ID_IS_NULL_MSG);
+						}
+					} catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
+					}
+					
+					if(retailFinalInfo.getPermanentAddress() != null){
+						
+						plTeaserViewResponse.setPermAdd( (retailFinalInfo.getPermanentAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getPremiseNumber())) :"") + (retailFinalInfo.getPermanentAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getStreetName())) : "") + (retailFinalInfo.getPermanentAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPermAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPermAddDist())) :"")+ (plTeaserViewResponse.getPermAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPermAddTaluko())) : "") + (retailFinalInfo.getPermanentAddress().getPincode() != null ? (retailFinalInfo.getPermanentAddress().getPincode()) : ""));
+					}
+					
+					
+					//Office address
+					
+					try {
+						if(retailFinalInfo != null && retailFinalInfo.getOfficeAddress().getDistrictMappingId() !=null) {
+							
+							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId());
+							plTeaserViewResponse.setOffAddDist(pindata.getDistrictName());
+							plTeaserViewResponse.setOffAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}else {
+							logger.warn(DISTRICT_ID_IS_NULL_MSG);
+						}
+					} catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
+					}
+					
+					if(retailFinalInfo.getOfficeAddress() != null){
+						
+						plTeaserViewResponse.setOffAdd( (retailFinalInfo.getOfficeAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getPremiseNumber())) :"") + (retailFinalInfo.getOfficeAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getStreetName())) : "") + (retailFinalInfo.getOfficeAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getLandMark())) : "")+ (plTeaserViewResponse.getOffAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getOffAddDist())) :"")+ (plTeaserViewResponse.getOffAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getOffAddTaluko())) : "") + (retailFinalInfo.getOfficeAddress().getPincode() != null ? (retailFinalInfo.getOfficeAddress().getPincode()) : ""));
+					}
+					
+					
+					
+					plTeaserViewResponse.setFinalDetails(retailFinalInfo);
+					
+				}else {
+					logger.warn("Retail Final Info is Null....");
+				}
+				
+				
+				
+				
+			} catch (Exception e) {
+				logger.error("Error while fetching RetailFinalData : ",e);
+			}
+			
+			
+			//BANK ACCOUNT HELD DETAILS
+			try {
+				List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailsService.getExistingLoanDetailListByProposalId(proposalId,1);
+				if(bankAccountHeldDetails != null) {
+					
+					plTeaserViewResponse.setBankAccountDetails(bankAccountHeldDetails);
+					
+				}else {
+					logger.warn("Bank Held Details is Null....");
+				}
+				
+			} catch (Exception e) {
+				logger.error("Error while getting bank account held details : ",e);
+			}
+			
+			//FIXED DEPOSITS DETAILS
+			try {
+				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalId(proposalId, 1);
+					if(fixedDepositeDetails != null) {
+					
+					plTeaserViewResponse.setFixDepositDetails(fixedDepositeDetails);
+					
+				}else {
+					logger.warn("Fix Deposit Details is Null....");
+				}
+			} catch (Exception e) {
+				logger.error("Error while getting fixed deposite details : ",e);
+			}
+			
+			//OTHER CURRENT ASSEST DETAILS
+			try {
+				List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetails = otherCurrentAssetDetailsService.getOtherCurrentAssetDetailListByProposalId(proposalId,1);
+					
+				if(otherCurrentAssetDetails != null) {
+					
+					plTeaserViewResponse.setOtherCurruntAssetDetail(otherCurrentAssetDetails);
+					
+				}else {
+					logger.warn("Other Currnt Asset Details is Null....");
+				}
+			} catch (Exception e) {
+				logger.error("Error while getting other current asset details : ",e);
+			}
+			
+			//OBLIGATION DETAILS
+			try {
+				
+				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailsFromProposalId(proposalId, 1);
+				
+				if(obligationRequest != null) {
+					
+					plTeaserViewResponse.setObligationDetails(obligationRequest);
+					
+				}else {
+					logger.warn("Obligation Details is Null....");
+				}
+				
+			} catch (Exception e) {
+				logger.error("Error while getting obligation details : ",e);
+			}
+			
+			//REFERENCES DETAILS
+			try {
+				List<ReferenceRetailDetailsRequest> referenceDetails = referenceRetailDetailService.getReferenceRetailDetailListByPropsalId(proposalId,1);
+				if(referenceDetails !=null) {
+					
+					plTeaserViewResponse.setReferenceDetails(referenceDetails);
+				}else {
+					logger.warn("Reference Details is Null...");
+				}
+			} catch (Exception e) {
+				logger.error("Error while getting reference details : ",e);
+			}
+			
+			DocumentRequest finalDocumentRequest = new DocumentRequest();
+			documentRequest.setApplicationId(toApplicationId);
+			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(finalDocumentRequest);
+				plTeaserViewResponse.setProfilePic(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+
+		}
+		return plTeaserViewResponse;
+	}
+
+	
 
 }

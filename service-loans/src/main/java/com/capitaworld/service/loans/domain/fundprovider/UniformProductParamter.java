@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 /**
  * The persistent class for the fp_working_capital_details database table.
- * 
+ *
  */
 @Entity
 @Table(name = "fp_uniform_product_details")
@@ -27,34 +27,34 @@ public class UniformProductParamter extends ProductMaster implements Serializabl
 	private Double minCibilScore;
 	@Column(name = "min_cmr")
 	private Integer minCmr;
-	
+
 	@Column(name = "max_cmr")
 	private Integer maxCmr;
-	
+
 	private Integer currency;
-	
+
 	private Integer dpd;
 
 	private Integer denomination;
-	
+
 	@Column(name = "assessment_method")
 	private Integer assessmentMethod;
-	
+
 	@Column(name = "promotor_contribution")
 	private Double promotorContribution;
-	
+
 	@Column(name = "wc_requirement")
 	private Double wcRequirement;
-	
+
 	@Column(name = "max_growth")
 	private Double maxGrowth;
-	
+
 	private Integer version;
 
 	public UniformProductParamter(){
 		super();
 	}
-	
+
 	public UniformProductParamter(Long id){
 		super();
 	}

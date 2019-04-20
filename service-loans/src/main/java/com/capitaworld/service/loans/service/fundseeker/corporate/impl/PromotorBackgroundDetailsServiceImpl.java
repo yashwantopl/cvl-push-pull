@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,7 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 				}
 				BeanUtils.copyProperties(promotorBackgroundDetailRequest, promotorBackgroundDetail, "applicationId");
 				promotorBackgroundDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				promotorBackgroundDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				promotorBackgroundDetail.setModifiedBy(frameRequest.getUserId());
 				promotorBackgroundDetail.setModifiedDate(new Date());
 				promotorBackgroundDetailsRepository.save(promotorBackgroundDetail);
@@ -62,6 +64,25 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 		catch (Exception e) {
 			logger.error("Exception  in save promoterBackgroundDetail  :-",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailListByProposalId(Long applicationId,Long proposalId,Long userId) throws Exception {
+		try {
+			List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
+					.listPromotorBackgroundFromApplicationIdAndProposalId(applicationId,proposalId);
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequests = new ArrayList<PromotorBackgroundDetailRequest>();
+
+			for (PromotorBackgroundDetail detail : promotorBackgroundDetails) {
+				PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = new PromotorBackgroundDetailRequest();
+				BeanUtils.copyProperties(detail, promotorBackgroundDetailRequest);
+				promotorBackgroundDetailRequests.add(promotorBackgroundDetailRequest);
+			}
+			return promotorBackgroundDetailRequests;
+		} catch (Exception e) {
+			logger.error("Exception  in getpromoterBackgroundDetail  :-{}",e);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

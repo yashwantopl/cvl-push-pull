@@ -33,7 +33,7 @@ public class OfflineProcessedApplicationRequest {
 	private String reason;
 	private Date modifiedDate;
 	private Integer status;
-	
+
 	//DISBURSED APPLICATION LIST
 	private Double disbursedAmount;
 	private Date disbursedDate;
@@ -43,7 +43,7 @@ public class OfflineProcessedApplicationRequest {
 	private String email;
 	private String mobile;
 	private Long userOrgId;
-	
+
 	public Long getApplicationId() {
 		return applicationId;
 	}

@@ -53,7 +53,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 	private static final String EARLIER_LITERAL = "earlier";
 	private static final String THIS_MONTH = "thisMonth";
 	private static final String THIS_WEEK = "thisWeek";
-	
+
 	@Autowired
 	private NotificationClient notificationClient;
 	
@@ -304,7 +304,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
 				//GET ADDRESS, CITY, STATE, COUNTRY
@@ -438,7 +438,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
 				//GET ADDRESS, CITY, STATE, COUNTRY
@@ -572,7 +572,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
 				//GET ADDRESS, CITY, STATE, COUNTRY
@@ -780,7 +780,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 					}
 					else{
 						//FOR RETAIL USER
-						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 						if(retailApplicantDetail == null)
 							continue;
 						//GET ADDRESS, CITY, STATE, COUNTRY
@@ -849,7 +849,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 		catch (Exception e){
 			throw new LoansException(e);
 		}
-
 	}
 
 }

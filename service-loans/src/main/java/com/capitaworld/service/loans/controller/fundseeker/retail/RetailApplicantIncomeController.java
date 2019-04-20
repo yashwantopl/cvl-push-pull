@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -30,6 +32,10 @@ public class RetailApplicantIncomeController {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private ApplicationProposalMappingService applicationProposalMappingService;
+	
 
 	@RequestMapping(value = "/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getIncomeDetails(@PathVariable("applicationId") Long applicationId){
@@ -86,7 +92,9 @@ public class RetailApplicantIncomeController {
 					: frameRequest.getClientId());
 			Long applicationId = frameRequest.getApplicationId();
 
-			Boolean finalLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+//			Boolean finalLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			Boolean finalLocked = applicationProposalMappingService.isFinalLocked(frameRequest.getProposalMappingId());
+			
 			if(!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()){
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -116,6 +124,33 @@ public class RetailApplicantIncomeController {
 			}
 
 			List<RetailApplicantIncomeRequest> response = applicantIncomeService.getAll(id);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			Integer currencyId = null;
+
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Gross Income Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	@RequestMapping(value = "/final_frame/getList/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long id, @PathVariable Long proposalId,
+												 @RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		// request must not be null
+		try {
+			if (proposalId == null) {
+				logger.warn("ID Require to get Gross Income Details==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<RetailApplicantIncomeRequest> response = applicantIncomeService.getAllByProposalId(id, proposalId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			Integer currencyId = null;

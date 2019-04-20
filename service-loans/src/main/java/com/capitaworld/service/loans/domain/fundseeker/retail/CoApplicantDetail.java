@@ -33,6 +33,12 @@ public class CoApplicantDetail implements Serializable {
 	@Column(name = "aadhar_number")
 	private String aadharNumber;
 	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "mobile")
+	private String mobile;
+	
 	@Column(name = "name_as_per_aadharCard")
 	private String nameAsPerAadharCard;
 
@@ -315,11 +321,11 @@ public class CoApplicantDetail implements Serializable {
 	private Double totalLandOwned;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "trade_license_expiry_date")
-	private Date tradeLicenseExpiryDate;
+	@Column(name = "driving_license_expiry_date")
+	private Date drivingLicenseExpiryDate;
 
-	@Column(name = "trade_license_number")
-	private String tradeLicenseNumber;
+	@Column(name = "driving_license_number")
+	private String drivingLicenseNumber;
 
 	private String unattended;
 
@@ -373,6 +379,24 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "mode_of_receipt")
 	private Integer modeOfReceipt;
+	
+	@Column(name="is_itr_completed")
+	private Boolean isItrCompleted;
+	
+	@Column(name="is_itr_skip")
+	private Boolean isItrSkip;
+	
+	@Column(name="is_itr_manual")
+	private Boolean isItrManual;
+	
+	@Column(name="is_cibil_completed")
+	private Boolean isCibilCompleted;
+	
+	@Column(name="is_bank_state_completed")
+	private Boolean isBankStatementCompleted;
+	
+	@Column(name="is_one_form_completed")
+	private Boolean isOneFormCompleted;
 
 	public CoApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1139,20 +1163,20 @@ public class CoApplicantDetail implements Serializable {
 		this.totalLandOwned = totalLandOwned;
 	}
 
-	public Date getTradeLicenseExpiryDate() {
-		return this.tradeLicenseExpiryDate;
+	public Date getDrivingLicenseExpiryDate() {
+		return drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseExpiryDate(Date tradeLicenseExpiryDate) {
-		this.tradeLicenseExpiryDate = tradeLicenseExpiryDate;
+	public String getDrivingLicenseNumber() {
+		return drivingLicenseNumber;
 	}
 
-	public String getTradeLicenseNumber() {
-		return this.tradeLicenseNumber;
+	public void setDrivingLicenseExpiryDate(Date drivingLicenseExpiryDate) {
+		this.drivingLicenseExpiryDate = drivingLicenseExpiryDate;
 	}
 
-	public void setTradeLicenseNumber(String tradeLicenseNumber) {
-		this.tradeLicenseNumber = tradeLicenseNumber;
+	public void setDrivingLicenseNumber(String drivingLicenseNumber) {
+		this.drivingLicenseNumber = drivingLicenseNumber;
 	}
 
 	public String getUnattended() {
@@ -1305,4 +1329,71 @@ public class CoApplicantDetail implements Serializable {
 	public void setModeOfReceipt(Integer modeOfReceipt) {
 		this.modeOfReceipt = modeOfReceipt;
 	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+
+	public Boolean getIsBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setIsBankStatementCompleted(Boolean isBankStatementCompleted) {
+		this.isBankStatementCompleted = isBankStatementCompleted;
+	}
+
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Boolean getIsItrSkip() {
+		return isItrSkip;
+	}
+
+	public void setIsItrSkip(Boolean isItrSkip) {
+		this.isItrSkip = isItrSkip;
+	}
+
+	public Boolean getIsItrManual() {
+		return isItrManual;
+	}
+
+	public void setIsItrManual(Boolean isItrManual) {
+		this.isItrManual = isItrManual;
+	}
+	
+	
+	
 }

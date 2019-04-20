@@ -14,17 +14,19 @@ import java.util.List;
 
 public interface IrrService {
 
-	public  FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws LoansException;
+	public  FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalMapId) throws LoansException;
 	
 	public  FinancialInputRequest coActIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws LoansException;
 	
-	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws LoansException;
+	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom, Long proposalMapId) throws LoansException;
 	
-	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom) throws LoansException;
+	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom, Long proposalMapId) throws LoansException;
 	
-	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom) throws LoansException;
+	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom, Long proposalMapId) throws LoansException;
 	
-	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
+//	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
+
+	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId, Long proposalId);
 
 	public List<CreditRatingCompanyDetail> getCompanyDetails(String companyName);
 

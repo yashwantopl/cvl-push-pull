@@ -15,5 +15,8 @@ public interface OwnershipDetailsService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
 	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId) throws LoansException;
+	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId,Long proposalId) throws Exception;
 
+	/*multiple bank*/
+	public List<OwnershipDetailRequest> getOwnershipDetailListForMultipleBank(Long proposalId) throws Exception;
 }

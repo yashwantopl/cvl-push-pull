@@ -16,4 +16,6 @@ public interface PromotorBackgroundDetailsService {
 
 	List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws LoansException;
 
+	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailListByProposalId(Long applicationId,Long proposalId,Long userId) throws Exception;
+
 }

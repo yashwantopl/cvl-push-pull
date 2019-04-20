@@ -265,7 +265,7 @@ public class FundSeekerInputRequestController {
                     HttpStatus.OK);
         }
     }
-    
+
     @RequestMapping(value = "/save_one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> saveUniformProductOneForm(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse , HttpServletRequest request)
             throws LoansException
@@ -279,7 +279,7 @@ public class FundSeekerInputRequestController {
         	if(fundSeekerInputRequestResponse.getApplicationId() == null) {
      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-        	
+
 /*        	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsGstCompleted()) || !fundSeekerInputRequestResponse.getIsGstCompleted()){
         		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
         	}
@@ -287,11 +287,11 @@ public class FundSeekerInputRequestController {
         	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsItrCompleted()) || !fundSeekerInputRequestResponse.getIsItrCompleted()){
         		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
         	} */
-        	
+
         	fundSeekerInputRequestResponse.setUserId(userId);
         	LoansResponse eligibility = fundSeekerInputRequestService.saveOrUpdateForOnePagerEligibility(fundSeekerInputRequestResponse);
         	if(CommonUtils.isObjectNullOrEmpty(eligibility) || CommonUtils.isObjectNullOrEmpty(eligibility.getFlag()) || !eligibility.getFlag() || eligibility.getStatus() != 200){
-        		return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);	
+        		return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);
         	}
         		try {
         			ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequestResponse.getApplicationId(), userId, CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId());
@@ -324,7 +324,7 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
-    
+
     @RequestMapping(value = "/one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getUniformProductOneForm(@RequestBody Long applicationId , HttpServletRequest request)
             throws LoansException
@@ -344,7 +344,7 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
-    
+
     @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<LoansResponse> verifyGST(@PathVariable("gstin") String gstin,@RequestParam("gstReceipts") MultipartFile[] uploadingFiles,@RequestPart("requestedData") String requestedData,HttpServletRequest request)
             throws LoansException
@@ -355,18 +355,18 @@ public class FundSeekerInputRequestController {
         	if(userId == null) {
         		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
         	}
-        	
+
         	if(requestedData == null) {
         		logger.warn("Request Data is Null in verify GST Information for GST===={}",gstin);
       		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
          	}
-        	
+
         	Long applicationId = null;
         	try{
         		applicationId = Long.valueOf(requestedData);
             	if(applicationId == null) {
          		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            	}        		
+            	}
         	}catch(Exception e){
         		logger.error("Error Converting String to Long for ApplicationId : {}",e);
         		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -381,7 +381,7 @@ public class FundSeekerInputRequestController {
     }
 
     @RequestMapping(value = "/updateFlag/{flagValue}/{flagType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> updateFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,@PathVariable("flagType") Integer flagType,HttpServletRequest request)throws LoansException{
+    public ResponseEntity<LoansResponse> updateFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,@PathVariable("flagType") Integer flagType,HttpServletRequest request)throws Exception{
         try
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -397,9 +397,9 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
-    
+
     @RequestMapping(value = "/delete/{applicationId}/{mappingId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> deleteFile(@RequestBody List<Long> docIds , @PathVariable("applicationId") Long applicationId,@PathVariable("mappingId") Long mappingId,HttpServletRequest request)throws LoansException{
+    public ResponseEntity<LoansResponse> deleteFile(@RequestBody List<Long> docIds , @PathVariable("applicationId") Long applicationId,@PathVariable("mappingId") Long mappingId,HttpServletRequest request)throws Exception{
         try
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -410,12 +410,12 @@ public class FundSeekerInputRequestController {
         		logger.warn("docIds Must not be null or Empty====>{}",docIds);
      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-        	
+
         	if(CommonUtils.isObjectNullOrEmpty(mappingId)) {
         		logger.warn("mappingId Must not be null or Empty====>{}",mappingId);
       		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
          	}
-        	
+
         	if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
         		logger.warn("applicationId Must not be null or Empty====>{}",applicationId);
       		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -426,22 +426,22 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
-    
+
     @RequestMapping(value = "/reset", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> resetApplicationUniform(@RequestBody ConnectResponse connectResponse ,HttpServletRequest request)throws LoansException{
         try
         {
-        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-        	if(userId == null) {
-        		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
-        	}
-        	
-        	if(CommonUtils.isObjectNullOrEmpty(connectResponse.getApplicationId())) {
-        		logger.warn("applicationId Must not be null or Empty====>{}",connectResponse.getApplicationId());
-      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-         	}
-        	
-        	connectResponse.setUserId(userId);
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(userId == null) {
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+            }
+
+            if(CommonUtils.isObjectNullOrEmpty(connectResponse.getApplicationId())) {
+                logger.warn("applicationId Must not be null or Empty====>{}",connectResponse.getApplicationId());
+                return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            connectResponse.setUserId(userId);
             return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.resetUniformApplication(connectResponse), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Deleting Document for Uniform Product : ",e);

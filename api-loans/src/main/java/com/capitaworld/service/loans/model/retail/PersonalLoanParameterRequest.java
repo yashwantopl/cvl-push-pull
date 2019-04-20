@@ -67,65 +67,65 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	private Double maxMonthlyIncomeRange;
 
-	private Boolean isMonthlyIncomeRangeDisplay;
+	private Boolean isMonthlyIncomeRangeDisplay= false;
 
-	private Boolean isMonthlyIncomeRangeMandatory;
+	private Boolean isMonthlyIncomeRangeMandatory= false;
 
 	private Double minBureauScore;
 
 	private Double maxBureauScore;
 
-	private Boolean isBureauScoreDisplay;
+	private Boolean isBureauScoreDisplay= false;
 
-	private Boolean isBureauScoreMandatory;
+	private Boolean isBureauScoreMandatory= false;
 
 	private Double minBureauScoreDays;
 
 	private Double maxBureauScoreDays;
 
-	private Boolean isBureauScoreDaysDisplay;
+	private Boolean isBureauScoreDaysDisplay= false;
 
-	private Boolean isBureauScoreDaysMandatory;
+	private Boolean isBureauScoreDaysMandatory= false;
 
 	private Double minRiskScoreRetail;
 
 	private Double maxRiskScoreRetail;
 
-	private Boolean isRiskScoreRetailDisplay;
+	private Boolean isRiskScoreRetailDisplay= false;
 
-	private Boolean isRiskScoreRetailMandatory;
+	private Boolean isRiskScoreRetailMandatory= false;
 
 	private List<Integer> empWithIds;
 
-	private Boolean isEmpWithDisplay;
+	private Boolean isEmpWithDisplay= false;
 
-	private Boolean isEmpWithMandatory;
+	private Boolean isEmpWithMandatory= false;
 
-	private Boolean isEmpRatingDisplay;
+	private Boolean isEmpRatingDisplay= false;
 
-	private Boolean isEmpRatingMandatory;
+	private Boolean isEmpRatingMandatory= false;
 
 	private Double minTotalJobExp;
 
 	private Double maxTotalJobExp;
 
-	private Boolean isTotalJobExpDisplay;
+	private Boolean isTotalJobExpDisplay= false;
 
-	private Boolean isTotalJobExpMandatory;
+	private Boolean isTotalJobExpMandatory= false;
 
 	private Double minTotalCurrentJobExp;
 
 	private Double maxTotalCurrentJobExp;
 
-	private Boolean isTotalCurrentJobExpDisplay;
+	private Boolean isTotalCurrentJobExpDisplay= false;
 
-	private Boolean isTotalCurrentJobExpMandatory;
+	private Boolean isTotalCurrentJobExpMandatory= false;
 
 	private List<Integer> empStatusIds;
 
-	private Boolean isEmpStatusDisplay;
+	private Boolean isEmpStatusDisplay= false;
 
-	private Boolean isEmpStatusMandatory;
+	private Boolean isEmpStatusMandatory= false;
 
 	private List<CreditRatingPlParameter> creditRatingSelectedList;
 
@@ -135,9 +135,9 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	private Integer userCreditRating;
 
-	private Boolean isBankingRelationMandatory;
+	private Boolean isBankingRelationMandatory= false;
 
-	private Boolean isBankingRelationDisplay;
+	private Boolean isBankingRelationDisplay= false;
 
 	private Double minBankRelation;
 
@@ -145,13 +145,13 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	private List<Integer> salaryModeIds;
 
-	private Boolean isSalaryModeDisplay;
+	private Boolean isSalaryModeDisplay= false;
 
-	private Boolean isSalaryModeMandatory;
+	private Boolean isSalaryModeMandatory= false;
 
-	private Boolean isSalaryAcTypeDisplay;
+	private Boolean isSalaryAcTypeDisplay= false;
 
-	private Boolean isSalaryAcTypeMandatory;
+	private Boolean isSalaryAcTypeMandatory= false;
 
 	private Integer salaryAcType;
 

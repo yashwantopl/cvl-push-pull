@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -26,7 +27,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
-	
+
 	public Object[] getRoleIdAndBranchIdByUserId(Long userId) {
 		try {
 			return  (Object[]) entityManager
@@ -38,7 +39,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
-	
+
 	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -49,7 +50,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	public List<Object[]> searchProposalForCheckerAndMaker(Long orgId,String searchString,Long branchId,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndBranchAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -62,7 +63,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndUserIdAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -75,14 +76,14 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
-	
+
 	public Object[] fpDashBoardCountByOrgId(Long orgId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
-	
+
 	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndBranchId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -91,7 +92,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
-	
+
 	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndUserId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
@@ -100,13 +101,13 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
-	
+
 	public String getGSTINByAppId(Long applicationId) {
 		return  (String) entityManager
-				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId")
+				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId order by id desc limit 1")
 						.setParameter("applicationId", applicationId).getSingleResult();
 	}
-	
+
 	public String getCommonPropertiesValue(String key) {
 		try {
 			return (String) entityManager
@@ -117,5 +118,47 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
+
+	@Override
+	public Long getOfflineCountByAppId(Long applicationId) {
+		BigInteger count =  (BigInteger) entityManager
+				.createNativeQuery("SELECT COUNT(*) FROM `loan_application`.`ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
+						.setParameter("applicationId", applicationId).getSingleResult();
+		return count != null ? count.longValue() : 0l;
+	}
 	
+	@Override
+	public String getOfflineDetailsByAppId(Long applicationId) {
+		try {
+			return  (String) entityManager
+					.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('applicationId',inl.`application_id`,\r\n" + 
+							"'status',sts.`display_name`,'bankName',org.`organisation_name`,'branchName',brn.`name`,'branchCode', brn.`code`)) AS CHAR) AS JSON \r\n" + 
+							"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
+							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status` \r\n" + 
+							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id` \r\n" + 
+							"LEFT JOIN users.`branch_master` brn ON brn.`id` = inl.`branch_id` \r\n" + 
+							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE;")
+							.setParameter("applicationId", applicationId).getSingleResult();	
+		} catch (Exception e) {
+			logger.error("Exception while get offline details by application id ----->" ,e);
+		}
+		return null;
+	}
+	
+	@Override
+	public String getOfflineStatusByAppId(Long applicationId) {
+		try {
+			return  (String) entityManager
+					.createNativeQuery("SELECT CAST(JSON_OBJECT('applicationId',inl.`application_id`,'status',sts.`display_name`,'bankName',org.`organisation_name`,'modifiedDate',inl.`modified_date`) AS CHAR ) \r\n" + 
+							"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
+							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status`\r\n" + 
+							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id`\r\n" + 
+							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
+							.setParameter("applicationId", applicationId).getSingleResult();	
+		} catch (Exception e) {
+			logger.error("Exception while get offline status  ----->" ,e);
+		}
+		return null;
+		
+	}
 }

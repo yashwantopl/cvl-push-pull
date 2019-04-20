@@ -20,8 +20,13 @@ public interface OwnershipDetailsRepository extends JpaRepository<OwnershipDetai
 	
 	@Query("from OwnershipDetail o where o.applicationId.id =:id and o.isActive = true")
 	public List<OwnershipDetail> listOwnershipFromAppId(@Param("id") Long id);
-	
-	
+
+	@Query("from OwnershipDetail o where o.applicationId.id =:id and o.proposalMapping.proposalId=:proposalId and o.isActive = true")
+	public List<OwnershipDetail> listOwnershipFromAppIdAndProposalId(@Param("id") Long id,@Param("proposalId")Long proposalId);
+
+	@Query("from OwnershipDetail o where o.proposalMapping.proposalId=:proposalId and o.isActive = true")
+	public List<OwnershipDetail> listOwnershipFromProposalId(@Param("proposalId")Long proposalId);
+
 	public OwnershipDetail findByIdAndIsActive(Long id,Boolean isActive);
 	
 	@Modifying

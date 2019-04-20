@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
     @Autowired
     private RetailApplicantDetailRepository retailApplicantDetailRepository;
-    
+
     @Autowired
     private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
@@ -102,7 +103,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			int count = primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(applicantRequest.getApplicationId(), applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear(),applicantRequest.getGrossSales());
 			logger.info("Count in Updation===>{}",count);
 		/*}*/
-		
+
 		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			applicantDetail.setModifiedBy(applicantRequest.getUserId());
@@ -195,6 +196,42 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		} catch (Exception e) {
 			logger.error("Error while Saving Corporate Profile :- ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public CorporateApplicantRequest getCorporateApplicantByProposalId(Long userId, Long proposalId) throws Exception {
+		try {
+			// TODO Auto-generated method stub
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByProposalId(proposalId);
+
+			if (applicantDetail == null) {
+				return null;
+			}
+			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest);
+			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			applicantRequest.setIndustrylist(industrySectorRepository.getIndustryByPorposalId(proposalId));
+			applicantRequest.setSectorlist(industrySectorRepository.getSectorByProposalId(proposalId));
+			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByProposalId(proposalId));
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+			try {
+
+				UserResponse userResponse= usersClient.getEmailMobile(userId);
+				@SuppressWarnings("unchecked")
+				UsersRequest userRequest= MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				applicantRequest.setEmail(userRequest.getEmail());
+				applicantRequest.setLandlineNo(userRequest.getMobile());
+			}
+			catch (Exception e){
+				logger.warn("error while get user data = {}",e);
+			}
+			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Corporate Profile:- {}",e);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -371,7 +408,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Override
 	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws LoansException {
-
 		return sectorIndustryMappingRepository.getSectorListByIndustryList(industryList);
 	}
 
@@ -446,6 +482,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> patsPercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= pats.size() - 1; i++) {
+//			 logger.info(pats.get(i)+"-"+sales.get(i));
 			val = (pats.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -458,6 +495,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		salesPercentage.add(null);
 		// calculate revenue % (Previous sales/sales)%
 		for (int i = 0; i <= (sales.size() - 2); i++) {
+			// logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (sales.get(i + 1) - sales.get(i));
 			val = val / sales.get(i);
 			val = val * 100;
@@ -469,6 +507,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate Ebidta Percentage (Ebidta/sales)%
 		List<Double> ebidtaPercentage = new ArrayList<>(sales.size());
 		for (int i = 0; i <= (sales.size() - 1); i++) {
+//			 logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -479,6 +518,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROE(%) (pat/netWorth)%
 		List<Double> roePercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= (pats.size() - 1); i++) {
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (pats.get(i) / netWorth.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -489,6 +529,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROCE(%) (EBIDTA/CurrentAssets+FixsedAssets)%
 		List<Double> rocePercentage = new ArrayList<>(ebidta.size());
 		for (int i = 0; i <= (ebidta.size() - 1); i++) {
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / (currentAsset.get(i) + fixedAsset.get(i)));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -499,6 +540,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
 		for (int i = 0; i <= (debt.size() - 1); i++) {
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (debt.get(i) / netWorth.get(i));
 			if (Double.isNaN(val)) {
 				val = 0d;
@@ -509,6 +551,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate current Ration (Current Assets/Current Liabilities)
 		List<Double> currentRatio = new ArrayList<>(currentAsset.size());
 		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
 			if (Double.isNaN(val)) {
 				val = 0d;
@@ -603,8 +646,17 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws LoansException {
+	public Integer getCorporateEstablishmentYearFromProposalId(Long proposalId) throws Exception {
+		try {
+			return applicantDetailRepository.getApplicantEstablishmentYearFromProposalId(proposalId);
+		} catch (Exception e) {
+			logger.error("Error while getting Establishment Year = {}",e);
+		}
+		return null;
+	}
 
+	@Override
+	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws LoansException {
 		return coApplicantService.getList(applicationId, userId);
 	}
 
@@ -670,7 +722,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			paymentRequest.setIsAcceptConsent(loanApplicationMaster.getIsAcceptConsent());
             if (CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(loanApplicationMaster.getBusinessTypeId())) {
 
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
                 if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 
                     String firstName = retailApplicantDetail.getFirstName();
@@ -757,8 +809,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		CorporateApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectListNull(applicantDetail)) {
 			obj.put("entityName", applicantDetail.getOrganisationName());
-			obj.put("panNo", applicantDetail.getPanNo());
 			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+			obj.put("panNo", corporateApplicantDetailRepository.getPanNoByApplicationId(applicationId));
+		}
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.getOne(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)
+				&& !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())){
+			obj.put("purposeOfLoanId",primaryCorporateDetail.getPurposeOfLoanId());
 		}
 		logger.info("ENd Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
 		return obj;

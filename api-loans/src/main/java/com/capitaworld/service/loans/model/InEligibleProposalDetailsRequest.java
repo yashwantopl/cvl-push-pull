@@ -19,17 +19,17 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     private Boolean isSanctioned;
     
     private Boolean isDisbursed;
-    
+
     private Long userId;
-    
+
     private Integer status;
-    
+
     private String reason;
-    
+
     private String reOpenReason;
-    
+
     private Integer businessTypeId;
-    
+
     private Long ineligibleProposalId;
 
     public Long getApplicationId() {
@@ -112,7 +112,7 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 		this.businessTypeId = businessTypeId;
 	}
 
-	
+
 	public Long getIneligibleProposalId() {
 		return ineligibleProposalId;
 	}

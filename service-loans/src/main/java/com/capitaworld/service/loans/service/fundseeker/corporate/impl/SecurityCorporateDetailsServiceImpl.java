@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -52,11 +53,35 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 				}
 				BeanUtils.copyProperties(securityCorporateDetailRequest, securityCorporateDetail);
 				securityCorporateDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				securityCorporateDetail.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				securityCorporateDetail.setModifiedBy(frameRequest.getUserId());
 				securityCorporateDetail.setModifiedDate(new Date());
 				securityCorporateDetailsRepository.save(securityCorporateDetail);
 			}
 			return true;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception  in save securityCorporateDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailsListFromProposalId(Long proposalId,Long userId) throws Exception {
+		try {
+			List<SecurityCorporateDetail> securityCorporateDetails = securityCorporateDetailsRepository
+					.getSecurityCorporateDetailFromProposalId(proposalId);
+			List<SecurityCorporateDetailRequest> securityCorporateDetailRequests = new ArrayList<SecurityCorporateDetailRequest>();
+
+			for (SecurityCorporateDetail detail : securityCorporateDetails) {
+				SecurityCorporateDetailRequest securityCorporateDetailsRequest = new SecurityCorporateDetailRequest();
+				BeanUtils.copyProperties(detail, securityCorporateDetailsRequest);
+				securityCorporateDetailsRequest.setAmountString(CommonUtils.checkString(detail.getAmount()));
+				SecurityCorporateDetailRequest.printFields(securityCorporateDetailsRequest);
+				securityCorporateDetailRequests.add(securityCorporateDetailsRequest);
+			}
+			return securityCorporateDetailRequests;
 		}
 
 		catch (Exception e) {

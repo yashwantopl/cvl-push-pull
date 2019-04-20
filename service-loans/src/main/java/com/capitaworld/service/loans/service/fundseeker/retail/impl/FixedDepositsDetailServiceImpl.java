@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FixedDepositsDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FixedDepositsDetailRepository;
@@ -46,6 +48,9 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
+	
+	@Autowired
+	ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -76,6 +81,8 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 					throw new LoansException();
 				}
 
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true);
+				fixedDepositsDetail.setApplicationProposalMapping(applicationProposalMapping);
 				fixedDepositsDetail.setModifiedBy(frameRequest.getUserId());
 				fixedDepositsDetail.setModifiedDate(new Date());
 				fixedDepositsDetailRepository.save(fixedDepositsDetail);
@@ -132,5 +139,51 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 		}
 
 	}
+	
+	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailByProposalId(Long proposalId, int applicationType) throws LoansException {
+		try {
+			List<FixedDepositsDetail> fixedDepositsDetails = null;
+//			switch (applicationType) {
+//			case CommonUtils.ApplicantType.APPLICANT:
+//				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromProposalId(proposalId);
+//				break;
+//			case CommonUtils.ApplicantType.COAPPLICANT:
+//				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromCoAppId(proposalId);
+//				break;
+//			case CommonUtils.ApplicantType.GARRANTOR:
+//				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromGarrId(proposalId);
+//				break;
+//			default:
+//				throw new LoansException();
+//			}
+
+			fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromProposalId(proposalId);
+			List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>(fixedDepositsDetails.size());
+
+			for (FixedDepositsDetail detail : fixedDepositsDetails) {
+				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
+				fixedDepositsDetailRequest.setAmountString(CommonUtils.convertValue(detail.getAmount()));
+				fixedDepositsDetailRequest.setRateString(CommonUtils.convertValue(detail.getRate()));
+				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getMaturityDate()))
+				{
+					SimpleDateFormat dateFormat=new SimpleDateFormat("dd/MM/yyyy");
+					
+					fixedDepositsDetailRequest.setMaturityDateInString(dateFormat.format(detail.getMaturityDate()).toString());
+				}
+				fixedDepositsDetailRequests.add(fixedDepositsDetailRequest);
+			}
+			return fixedDepositsDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in get Proposal ID  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	
+	
 
 }

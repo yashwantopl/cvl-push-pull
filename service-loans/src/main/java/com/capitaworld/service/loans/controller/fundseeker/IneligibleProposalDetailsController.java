@@ -1,21 +1,27 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
-import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
+import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
  * Created by KushalCW on 22-09-2018.
@@ -28,7 +34,9 @@ public class IneligibleProposalDetailsController {
 
 	@Autowired
 	private IneligibleProposalDetailsService ineligibleProposalDetailsService;
-
+/**
+ * need to change the method sendMailToFsAndBankBranch of applicationId to proposalId
+ * */
 	@RequestMapping(value = "/save/ineligible/proposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(
 			@RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest,
@@ -41,12 +49,16 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 		}
-		
+
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			inEligibleProposalDetailsRequest.setUserId(userId);
+		}
+
 		Integer isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved == 2) {
 
@@ -80,14 +92,14 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
+
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
 		}
-		
+
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateStatus(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
@@ -97,7 +109,7 @@ public class IneligibleProposalDetailsController {
 					new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/getOfflineProposalByOrgId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getOfflineProposalByOrgId(@RequestBody ProposalDetailsAdminRequest request, HttpServletRequest httpServletRequest) {
 		
@@ -116,9 +128,9 @@ public class IneligibleProposalDetailsController {
 		
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
-	
+
 	/**
-	 * Transfer branch and reason 
+	 * Transfer branch and reason
 	 * @param inEligibleProposalDetailsRequest
 	 * @param request
 	 * @return
@@ -132,14 +144,14 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
+
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
 		}
-		
+
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateTransferBranchDetail(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
@@ -149,7 +161,7 @@ public class IneligibleProposalDetailsController {
 					new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
-	
+
 	/**
 	 * Re open proposal
 	 * @param inEligibleProposalDetailsRequest
@@ -163,14 +175,14 @@ public class IneligibleProposalDetailsController {
 			logger.warn("Requested data can not be empty.Invalid Request. ");
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
+
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
 			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
 		}
-		
+
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateReOpenProposalDetail(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data updated", HttpStatus.OK.value()),
@@ -179,5 +191,12 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
+	}
+	
+	@RequestMapping(value = "/checkIsExistOfflineProposalByApplicationId/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkIsExistOfflineProposalByApplicationId(@PathVariable(value = "applicationId") Long applicationId) {
+		LoansResponse response = new LoansResponse("Success.", HttpStatus.OK.value());
+		response.setFlag(ineligibleProposalDetailsService.checkIsExistOfflineProposalByApplicationId(applicationId));
+		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 }

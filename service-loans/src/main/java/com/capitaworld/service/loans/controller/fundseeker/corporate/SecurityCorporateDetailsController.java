@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,9 @@ public class SecurityCorporateDetailsController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
+	@Autowired
+	private ApplicationProposalMappingService applicationProposalMappingService;
+
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
@@ -55,8 +59,8 @@ public class SecurityCorporateDetailsController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
-		if (frameRequest.getApplicationId() == null) {
-			logger.warn("application id and user id must not be null ==>" + frameRequest);
+		if (frameRequest.getProposalMappingId() == null) {
+			logger.warn("proposal id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -69,7 +73,7 @@ public class SecurityCorporateDetailsController {
 			}
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean finalLocked = loanApplicationService.isFinalLocked(frameRequest.getApplicationId(),
+			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalMappingId(),
 					finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
@@ -86,6 +90,43 @@ public class SecurityCorporateDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
+		}
+
+	}
+
+	@RequestMapping(value = "/getListByApplicationIdAndProposalId/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListFromProposalId(@PathVariable Long applicationId,@PathVariable Long proposalId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		CommonDocumentUtils.startHook(logger, "getList");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		// request must not be null
+		try {
+			if (proposalId == null) {
+				logger.warn("ID Require to get Security Corporate Details ==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<SecurityCorporateDetailRequest> response = securityCorporateDetailsService
+					.getSecurityCorporateDetailsListFromProposalId(proposalId,userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			JSONObject result = applicationProposalMappingService.getCurrencyAndDenomination(applicationId,proposalId,userId);
+			String data = result.get("currency").toString();
+			data = data.concat(" In "+ result.get("denomination").toString());
+			loansResponse.setData(data);
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Security Corporate Details==>{}", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

@@ -27,7 +27,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "loan_amount")
     private Double loanAmount;
-    
+
     @Column(name = "enhancement_amount")
     private Double enhancementAmount;
 
@@ -104,29 +104,38 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "incremental_margin")
     private Double incrementalMargin;
-    
-    
+
+
     //Start By Akshay for OnePager Eligibility
     @Column(name = "turn_over_prev_fin_year")
     private Double turnOverPrevFinYear;
-    
+
     @Column(name = "turn_over_curr_fin_year_till_month")
     private Double turnOverCurrFinYearTillMonth;
-    
+
     @Column(name = "projected_turn_over_curr_fin_year")
     private Double projectedTurnOverCurrFinYear;
-    
+
     @Column(name = "profit_curr_fin_year")
     private Double profitCurrFinYear;
-    
+
     @Column(name = "projected_profit_curr_fin_year")
     private Double projectedProfitCurrFinYear;
-    
+
     @Column(name = "gross_sales")
     private Double grossSales;
+
+    @Column(name = "additional_loan_amount")
+    private Double additionalLoanAmount;
+    
+    @Column(name = "is_additional_amount")
+    private Boolean isAdditionalAmount;
+    
+    @Column(name = "is_allow_switch_existing_lender")
+    private Boolean isAllowSwitchExistingLender;
     
   //End By Akshay for OnePager Eligibility
-    
+
 
     public PrimaryCorporateDetail() {
         // Do nothing because of X and Y.
@@ -371,6 +380,31 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 	public void setEnhancementAmount(Double enhancementAmount) {
 		this.enhancementAmount = enhancementAmount;
 	}
+
+	public Double getAdditionalLoanAmount() {
+		return additionalLoanAmount;
+	}
+
+	public void setAdditionalLoanAmount(Double additionalLoanAmount) {
+		this.additionalLoanAmount = additionalLoanAmount;
+	}
+
+	public Boolean getIsAdditionalAmount() {
+		return isAdditionalAmount;
+	}
+
+	public void setIsAdditionalAmount(Boolean isAdditionalAmount) {
+		this.isAdditionalAmount = isAdditionalAmount;
+	}
+
+	public Boolean getIsAllowSwitchExistingLender() {
+		return isAllowSwitchExistingLender;
+	}
+
+	public void setIsAllowSwitchExistingLender(Boolean isAllowSwitchExistingLender) {
+		this.isAllowSwitchExistingLender = isAllowSwitchExistingLender;
+	}
+
 	
-	
+
 }
