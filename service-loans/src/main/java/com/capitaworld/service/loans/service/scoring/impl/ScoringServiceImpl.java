@@ -3535,7 +3535,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
                                             Data.class);
-                                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+                                    if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
                                         {
                                             if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
                                                 noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
@@ -3566,7 +3566,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
                                             Data.class);
-                                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                                    if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
                                         {
                                             if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
                                                 noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
