@@ -263,7 +263,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 				plRetailApplicantResponse.setDesignation(plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
-				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getResidenceSinceYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
 
 				/*salary account details*/
@@ -773,7 +773,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		
 		PLRetailApplicantResponse plRetailApplicantResponse = null;
 		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId, proposalId);
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId);
 			plRetailApplicantResponse = new PLRetailApplicantResponse();
 			if(plRetailApplicantRequest != null) {
 				
@@ -797,7 +797,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 				plRetailApplicantResponse.setDesignation(plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
-				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				
 				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
 
 				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(plRetailApplicantRequest.getRetailApplicantIncomeRequestList());
@@ -806,10 +806,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
 
+				LocalDate today = LocalDate.now();
 				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
 
 					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
-			        LocalDate today = LocalDate.now();
 
 			        Period age = Period.between(since, today);
 			        int years = age.getYears();
@@ -817,7 +817,18 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 					plRetailApplicantResponse.setSalaryAccountBankSince(years+" year "+months+" months");
 				}
+				
+				if(plRetailApplicantRequest.getResidenceSinceYear() !=null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
+					LocalDate since = LocalDate.of(plRetailApplicantRequest.getResidenceSinceYear(), plRetailApplicantRequest.getResidenceSinceMonth(), 1);
 
+			        Period age = Period.between(since, today);
+			        int years = age.getYears();
+			        int months = age.getMonths();
+			        
+			        plRetailApplicantResponse.setResidenceSinceMonthYear(years+" year "+months+" months");
+				}
+
+				
 				//citetailApplicantResponse.setry,State,country
 				
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
