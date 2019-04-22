@@ -975,14 +975,30 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("collateralScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					financial++;
 					continue;
-
 				case ScoreParameter.DEBT_SERVICE_COVERAGE_RATIO:
 					map.put("dscrActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("dscrScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("dscrScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					financial++;
 					continue;
-
+				case ScoreParameter.PAST_YEAR_TURNOVER:
+					map.put("pastYearActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("pastYearScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("pastYearScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					financial++;
+					continue;
+				case ScoreParameter.DEBT_EBITDA:
+					map.put("debtEbitdaActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("debtEbitdaScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("debtEbitdaScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					financial++;
+					continue;	
+				case ScoreParameter.TURNOVER_ATNW:
+					map.put("turnActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("turnOverScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("turnOverScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					financial++;
+					continue;	
 				case ScoreParameter.QUALITY_OF_RECEIVABLES:
 					map.put("qualityReceivablesActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("qualityReceivablesScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
@@ -1043,7 +1059,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("turnOverScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("turnOverScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					business++;
+					continue;	
+				case ScoreParameter.NO_OF_CHEQUES_BOUNCED:
+					map.put("nocbActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("nocbScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("nocbScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					business++;
 					continue;
+				case ScoreParameter.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH:
+					map.put("nocblsmActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("nocblsmScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("nocbScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					business++;
+					continue;	
 				default:
 					break;
 				}
