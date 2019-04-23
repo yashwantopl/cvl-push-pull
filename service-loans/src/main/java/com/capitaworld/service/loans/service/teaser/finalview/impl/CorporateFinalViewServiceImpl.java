@@ -337,7 +337,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		corporateFinalViewResponse.setIsMcqSkipped(applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
 		corporateFinalViewResponse.setProductId(applicationProposalMapping.getProductId());
 		// ===================== MATCHES DATA ======================//
-		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+		if (userType != null && CommonUtils.UserType.FUND_SEEKER != userType ) {
 			    // TEASER VIEW FROM FP
 				Long fpProductMappingId = null;
 				try {
@@ -358,6 +358,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					logger.error("Error while getting matches data for final teaser view : ",e);
 				}
 		}
+		
+		
 		// GET CORPORATE APPLICANT DETAILS
 /*		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndUserId(userId, toApplicationId);*/ //PREVIOUS
@@ -811,51 +813,39 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					}
 				}
 				
-				
 				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				// is main director so fetch personal detail by personal id
 				try {
-					
 					if(directorBackgroundDetailRequest.getIsMainDirector() != null && directorBackgroundDetailRequest.getIsMainDirector() == true){
-
 						DirectorPersonalDetailResponse directorPersonalDetailResponse= new DirectorPersonalDetailResponse();
 						if(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null)
 						{
-						directorPersonalDetailResponse.setMaritalStatus(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus() != null ? MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setSpouseName(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName());
-						directorPersonalDetailResponse.setSpouseDetail(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail() != null ? SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setAssessedForIt(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt() != null ? AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setOwningHouse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null ? OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setNoOfChildren(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren());
-						directorPersonalDetailResponse.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
+							directorPersonalDetailResponse.setMaritalStatus(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus() != null ? MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString() : "-");
+							directorPersonalDetailResponse.setSpouseName(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName());
+							directorPersonalDetailResponse.setSpouseDetail(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail() != null ? SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString() : "-");
+							directorPersonalDetailResponse.setAssessedForIt(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt() != null ? AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString() : "-");
+							directorPersonalDetailResponse.setOwningHouse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null ? OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString() : "-");
+							directorPersonalDetailResponse.setNoOfChildren(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren());
+							directorPersonalDetailResponse.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
 						
-						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
-						
-						
+							directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
 						}
 						else {
-							
 							logger.warn("directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() is null....");
 						}
 					}else {
-						logger.warn("----:::::: is main director is null ::::::-----For-----",toApplicationId);
-					}
-					
+						logger.warn("----:::::: is main director is null ::::::-----For-----AppId==>{}",toApplicationId);
+					}					
 				} catch (Exception e) {
-					logger.error("----:::::: error while get is main dir details ::::::-----For-----",toApplicationId + CommonUtils.EXCEPTION + e);
+					logger.error("----:::::: error while get is main dir details ::::::-----For-----AppId==>{} ..Error==>{}",toApplicationId ,e);
 				}
 			}
-			
 			corporateFinalViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
-		
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Director's Background {}", e);
 		}
 		
 		// address
-		
-		
-		
 		
 		// FINANCIAL ARRANGEMENTS
 		try {
@@ -894,7 +884,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination,proposalMapId);
 
-			logger.info("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
+			logger.info("financialInputRequest.getYear()===>>>{}" , financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -1554,13 +1544,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// scoring Data
 		Long fpProductMappingId = null;
 		try {
-
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(fundProviderUserId);
 			UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 			fpProductMappingId = userResponse.getId();
-
-			logger.info("fp product id=========================>>>>>" + fpProductMappingId);
+			logger.info("fp product id=========================>>>>>{}" , fpProductMappingId);
 		} catch (Exception e) {
 			logger.error("Error while getting fpMappingId For Scoring : ",e);
 		}
@@ -1568,8 +1556,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		scoringRequest.setApplicationId(toApplicationId);
 		scoringRequest.setFpProductId(fpProductMappingId);
 		try {
-			logger.info("Enter in get scoing data -----APPID-->" + toApplicationId + "-----FPProductId------->"
-					+ fpProductMappingId);
+			logger.info("Enter in get scoing data -----APPID-->{}  --FPProductId-->{}" , toApplicationId , fpProductMappingId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			if (!CommonUtils.isObjectNullOrEmpty(scoringResponse)
 					&& !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())) {
@@ -1628,17 +1615,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 
 		// Product Name
-
-				if(fpProductMappingId != null) {
-					String productName = productMasterRepository.getFpProductName(fpProductMappingId);
-					if(productName != null) {
-						corporateFinalViewResponse.setFpProductName(productName);
-					}else {
-						logger.info("product name is null..");
-					}
-				}else {
-					logger.info("fpProductMapping id is null..");
-				}
+		if(fpProductMappingId != null) {
+			String productName = productMasterRepository.getFpProductName(fpProductMappingId);
+			if(productName != null) {
+				corporateFinalViewResponse.setFpProductName(productName);
+			}else {
+				logger.info("product name is null..");
+			}
+		}else {
+			logger.info("fpProductMapping id is null..");
+		}
 
 
 		// Eligibility Data
@@ -1690,13 +1676,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		eligibilityReq.setApplicationId(toApplicationId);
 		// eligibilityReq.set
 		eligibilityReq.setFpProductMappingId(fpProductMappingId);
-		logger.info(" for eligibility appid============>>" + toApplicationId);
+		logger.info(" for eligibility appid============>>{}" , toApplicationId);
 
 		try {
-
 			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
 			corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -1716,64 +1700,51 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			corporateFinalViewResponse.setCompanyId(companyId);
-			logger.info("mca comp id==>>" + companyId);
+			logger.info("mca comp id==>>{}" , companyId);
 
 			if (companyId != null) {
-
 				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
 				if (mcaStatusResponse != null) {
 					corporateFinalViewResponse.setMcaCheckStatus(mcaStatusResponse.getData());
 				} else {
-
-					logger.warn("::::::=====MCA Check Status Data is Null====:::::::For:::::==>" + companyId);
+					logger.warn("::::::=====MCA Check Status Data is Null====:::::::For:::::CompanyId==>{}" , companyId);
 				}
 
-				if (!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
-
+				if (!CommonUtils.isObjectNullOrEmpty(mcaResponse)) {
 					corporateFinalViewResponse.setMcaData(mcaResponse);
-
 				} else {
-
-					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
+					logger.warn("::::::=====MCA Data is Null====:::::::For:::::CompanyId==>{}" , companyId);
 				}
 
 				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporateFinalViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
-					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
+					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::CompanyId==>{}   AppId==>{}", companyId ,toApplicationId);
 				}
-
 			} else {
 				logger.warn("Mca Company Id is Null");
-
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
-		// Name As Per
-
+		// Name As Per ITR
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getITRBasicDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
-
 				corporateFinalViewResponse
 						.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 			} else {
-
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
-
 		} catch (Exception e) {
 			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
 
 		// Name as per Gst
-
 		try {
-
 			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
 			GSTR1Request req= new GSTR1Request();
 			req.setApplicationId(toApplicationId);
@@ -1783,19 +1754,17 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				if (response != null) {
 					corporateFinalViewResponse.setGstData(response);
 				} else {
-
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
-
 				}
 			/*}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}*/
-
-
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);
 		}
 
+		
+		
 		// Fraud Detection Data
 
 		/*try {
@@ -1812,63 +1781,47 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		
 		
-		// address
-		
+		//ADMIN OFFICE ADDRESS
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
 	/*		corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);*/
 			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId); // NEW BASED ON PROPOSAL ID--->
-			//ADMIN OFFICE ADDRESS
-			try {
-				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
-					
-					PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
-					corporateFinalViewResponse.setAdminAddDist(pindata.getDistrictName());
-					corporateFinalViewResponse.setAdminAddTaluko(pindata.getTaluka());
-					pindata.getTaluka();
-				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
+			if(corporateFinalInfoRequest != null && corporateFinalInfoRequest.getSecondAddress() != null && corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+				PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
+				corporateFinalViewResponse.setAdminAddDist(pindata.getDistrictName());
+				corporateFinalViewResponse.setAdminAddTaluko(pindata.getTaluka());
+				pindata.getTaluka();
 			}
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
-				
+			
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){	
 				corporateFinalViewResponse.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (corporateFinalViewResponse.getAdminAddDist() != null ?(CommonUtils.commaReplace(corporateFinalViewResponse.getAdminAddDist())) :"")+ (corporateFinalViewResponse.getAdminAddTaluko() != null ? (CommonUtils.commaReplace(corporateFinalViewResponse.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
 			}
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			}	
-		
-		//address
-		
-		
+		}	
+
+		//Reg OFFICE ADDRESS
 		try {
 			/*corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);*/
 			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId);
-			//Reg OFFICE ADDRESS
-			try {
-				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
-					
-					PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId());
-					corporateFinalViewResponse.setRegAddDist(pindata.getDistrictName());
-					corporateFinalViewResponse.setRegAddTaluko(pindata.getTaluka());
-					pindata.getTaluka();
-				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
+			
+			if(corporateFinalInfoRequest != null && corporateFinalInfoRequest.getFirstAddress() != null && corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId() != null) {
+				PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId());
+				corporateFinalViewResponse.setRegAddDist(pindata.getDistrictName());
+				corporateFinalViewResponse.setRegAddTaluko(pindata.getTaluka());
+				pindata.getTaluka();
 			}
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
-				
+			
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){		
 				corporateFinalViewResponse.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (corporateFinalViewResponse.getRegAddDist() != null ?(CommonUtils.commaReplace(corporateFinalViewResponse.getRegAddDist())) :"")+ (corporateFinalViewResponse.getRegAddTaluko() != null ? (CommonUtils.commaReplace(corporateFinalViewResponse.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
 			}
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			}	
-		
-		
-		
 
+		
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);

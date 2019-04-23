@@ -43,6 +43,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -198,6 +199,9 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 
 	@Autowired
 	private ThirdPartyClient thirdPartyClient;
+	
+	@Autowired
+	private CommonService commonService;
 
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -233,6 +237,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					logger.error("Error while getting matches data for final teaser view : ",e);
 				}
 		}
+		
 		// GET CORPORATE APPLICANT DETAILS
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndUserId(userId, toApplicationId);
@@ -265,6 +270,71 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 				}
 			}
 
+			//Set Registered Data
+			Long cityId = null ;
+			Integer stateId = null;
+			Integer countryId = null;
+			String cityName = null;
+			String stateName = null;
+			String countryName = null;
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+				cityId = corporateApplicantDetail.getRegisteredCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+				stateId = corporateApplicantDetail.getRegisteredStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+				countryId = corporateApplicantDetail.getRegisteredCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get("cityName").toString();
+					stateName = mapData.get("stateName").toString();
+					countryName = mapData.get("countryName").toString();
+					
+					//set City
+					ntbFinalViewResponse.setCity(cityName != null ? cityName : "NA");
+					ntbFinalViewResponse.setRegOfficeCity(cityName);
+					
+					//set State
+					ntbFinalViewResponse.setState(stateName != null ? stateName : "NA");
+					ntbFinalViewResponse.setRegOfficestate(stateName);
+					
+					//set Country
+					ntbFinalViewResponse.setCountry(countryName != null ? countryName : "NA");
+					ntbFinalViewResponse.setRegOfficecountry(countryName);
+				}
+			}
+			
+			//set Administrative Data
+			cityId = null;
+			stateId = null;
+			countryId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+				cityId = corporateApplicantDetail.getAdministrativeCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+				stateId = corporateApplicantDetail.getAdministrativeStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+				countryId = corporateApplicantDetail.getAdministrativeCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get("cityName").toString();
+					stateName = mapData.get("stateName").toString();
+					countryName = mapData.get("countryName").toString();
+					
+					//set City
+					ntbFinalViewResponse.setAddOfficeCity(cityName != null ? cityName : "NA");
+					
+					//set State
+					ntbFinalViewResponse.setAddOfficestate(stateName != null ? stateName : "NA");
+					
+					//set Country
+					ntbFinalViewResponse.setAddOfficecountry(countryName != null ? countryName : "NA");
+				}
+			}
+			
+			/**
 			// SET CITY
 			List<Long> cityList = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
@@ -386,6 +456,8 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
+			*/
+			
 			// KEY VERTICAL FUNDING (INDUSTRY SECTOR SUBSECTOR DETAILS)
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
@@ -591,7 +663,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId = userResponse.getId();
 					
-					logger.info("fp product id=========================>>>>>"+fpProductMappingId);
+					logger.info("fp product id=========================>>>>>{}",fpProductMappingId);
 				} catch (Exception e) {
 					logger.error("Error while getting fpMappingId For Scoring : ",e);
 				}
@@ -618,7 +690,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 				EligibililityRequest eligibilityReq=new EligibililityRequest();
 				eligibilityReq.setApplicationId(toApplicationId);
 				eligibilityReq.setProductId(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductId()) ? Long.valueOf(primaryCorporateDetail.getProductId()) : null);
-				logger.info(" for eligibility appid============>>"+toApplicationId);
+				logger.info(" for eligibility appid============>>{}",toApplicationId);
 				
 				try {
 					EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
