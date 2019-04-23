@@ -50,6 +50,7 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -164,6 +165,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
 	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+	
+	@Autowired
+	private CommonService commonService;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -251,13 +255,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 			}
 
-			Long cityId = 0l ;
-			Integer stateId = 0;
-			Integer countryId = 0;
+			//Set Registered Data
+			Long cityId = null ;
+			Integer stateId = null;
+			Integer countryId = null;
 			String cityName = null;
 			String stateName = null;
 			String countryName = null;
-			
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 				cityId = corporateApplicantDetail.getRegisteredCityId();
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
@@ -265,9 +269,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 				countryId = corporateApplicantDetail.getRegisteredCountryId();
 			
-			//Set Registered Data
 			if(cityId != null || stateId != null || countryId != null) {
-				Map<String ,Object> mapData = getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
 				if(mapData != null) {
 					cityName = mapData.get("cityName").toString();
 					stateName = mapData.get("stateName").toString();
@@ -299,7 +302,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				countryId = corporateApplicantDetail.getAdministrativeCountryId();
 			
 			if(cityId != null || stateId != null || countryId != null) {
-				Map<String ,Object> mapData = getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
 				if(mapData != null) {
 					cityName = mapData.get("cityName").toString();
 					stateName = mapData.get("stateName").toString();
@@ -315,6 +318,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					corporatePrimaryViewResponse.setAddOfficecountry(countryName != null ? countryName : "NA");
 				}
 			}
+			
 			/**
 			// set city
 			List<Long> cityList = new ArrayList<>();
@@ -1433,25 +1437,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
-	}
-	
-	public Map<String , Object> getCityStateCountryNameFromOneForm(Long cityId , Integer stateId ,Integer countryId) {
-		try {
-			OneFormResponse oneFormResponse= oneFormClient.getCityStateCountryById(cityId, stateId, countryId);
-			if(oneFormResponse != null && oneFormResponse.getListData() != null && !oneFormResponse.getListData().isEmpty() &&  oneFormResponse.getListData().get(0) != null ) {	
-				@SuppressWarnings("unchecked")
-				List<String> b = (List<String>) oneFormResponse.getListData().get(0);
-				Map<String ,Object> map= new HashMap<>();
-				map.put("cityName" , b.get(0));
-				map.put("stateName" , b.get(1));
-				map.put("countryName" , b.get(2));
-				logger.info("Data of city state and country {} " , oneFormResponse);
-				return map;
-			}
-		} catch (Exception e) {
-			logger.error("Error/Exception while getting city state and country name by calling oneform client",e);
-		}
-		return null;
 	}
 	
 }

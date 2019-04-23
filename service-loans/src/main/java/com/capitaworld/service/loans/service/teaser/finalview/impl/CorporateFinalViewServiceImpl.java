@@ -73,6 +73,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
@@ -312,9 +313,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
+	
 	@Autowired
 	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
+	@Autowired
+	private CommonService commonService;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -390,6 +394,71 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				}
 			}
 
+			//Set Registered Data
+			Long cityId = null ;
+			Integer stateId = null;
+			Integer countryId = null;
+			String cityName = null;
+			String stateName = null;
+			String countryName = null;
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+				cityId = corporateApplicantDetail.getRegisteredCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+				stateId = corporateApplicantDetail.getRegisteredStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+				countryId = corporateApplicantDetail.getRegisteredCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get("cityName").toString();
+					stateName = mapData.get("stateName").toString();
+					countryName = mapData.get("countryName").toString();
+					
+					//set City
+					corporateFinalViewResponse.setCity(cityName != null ? cityName : "NA");
+					corporateFinalViewResponse.setRegOfficeCity(cityName);
+					
+					//set State
+					corporateFinalViewResponse.setState(stateName != null ? stateName : "NA");
+					corporateFinalViewResponse.setRegOfficestate(stateName);
+					
+					//set Country
+					corporateFinalViewResponse.setCountry(countryName != null ? countryName : "NA");
+					corporateFinalViewResponse.setRegOfficecountry(countryName);
+				}
+			}
+			
+			//set Administrative Data
+			cityId = null;
+			stateId = null;
+			countryId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+				cityId = corporateApplicantDetail.getAdministrativeCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+				stateId = corporateApplicantDetail.getAdministrativeStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+				countryId = corporateApplicantDetail.getAdministrativeCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get("cityName").toString();
+					stateName = mapData.get("stateName").toString();
+					countryName = mapData.get("countryName").toString();
+					
+					//set City
+					corporateFinalViewResponse.setAddOfficeCity(cityName != null ? cityName : "NA");
+					
+					//set State
+					corporateFinalViewResponse.setAddOfficestate(stateName != null ? stateName : "NA");
+					
+					//set Country
+					corporateFinalViewResponse.setAddOfficecountry(countryName != null ? countryName : "NA");
+				}
+			}
+			
+			/**
 			// SET CITY
 			List<Long> cityList = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
@@ -510,7 +579,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
+			}*/
+			
 			// KEY VERTICAL FUNDING (INDUSTRY SECTOR SUBSECTOR DETAILS)
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))

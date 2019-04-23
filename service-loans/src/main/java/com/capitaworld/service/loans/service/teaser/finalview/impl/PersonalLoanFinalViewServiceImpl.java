@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.service.teaser.finalview.impl;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.finalview.PersonalLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewResponse;
