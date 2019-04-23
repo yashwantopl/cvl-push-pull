@@ -4,18 +4,14 @@ import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,11 +41,8 @@ import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryV
 import com.capitaworld.service.loans.service.teaser.primaryview.UnsecuredLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UserTypeRequest;
@@ -631,7 +624,7 @@ public class PrimaryViewController {
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "applicationId") Long applicationId,
 			@PathVariable(value = "proposalId") Long proposalId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
-		logger.info("into /Corporate/{proposalId} and proposalId is" + proposalId);
+		logger.info("Into /Corporate/{proposalId} and proposalId is==>{}" , proposalId);
 		LoansResponse loansResponse = new LoansResponse();
 
 		// get user id from http servlet request
@@ -691,10 +684,10 @@ public class PrimaryViewController {
 		} else {
 			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
 			try {
-				logger.info("proposalId,userType,userId is" + proposalId + userType + userId);
+				logger.info("proposalId==>{} ,userType==>{} ,userId==>{}" , proposalId , userType , userId);
 				corporatePrimaryViewResponse = corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicationId,proposalId,userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(corporatePrimaryViewResponse)) {
-					logger.info("response is" + corporatePrimaryViewResponse.toString());
+					logger.info("Response is==>{}" , corporatePrimaryViewResponse.toString());
 					loansResponse.setData(corporatePrimaryViewResponse);
 					loansResponse.setMessage("Corporate Primary Details");
 					loansResponse.setStatus(HttpStatus.OK.value());
@@ -704,6 +697,7 @@ public class PrimaryViewController {
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
+				logger.error("Error/Exception occurred Into /Corporate/{applicationId}/{proposalId}..Error==>{}",e);
 				loansResponse.setData(corporatePrimaryViewResponse);
 				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
