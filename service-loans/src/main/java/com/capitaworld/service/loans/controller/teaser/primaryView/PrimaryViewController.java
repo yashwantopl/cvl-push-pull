@@ -631,7 +631,7 @@ public class PrimaryViewController {
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "applicationId") Long applicationId,
 			@PathVariable(value = "proposalId") Long proposalId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
-		logger.info("into /Corporate/{proposalId} and proposalId is" + proposalId);
+		logger.info("Into /Corporate/{proposalId} and proposalId is==>{}" , proposalId);
 		LoansResponse loansResponse = new LoansResponse();
 
 		// get user id from http servlet request
@@ -691,10 +691,10 @@ public class PrimaryViewController {
 		} else {
 			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
 			try {
-				logger.info("proposalId,userType,userId is" + proposalId + userType + userId);
+				logger.info("proposalId==>{} ,userType==>{} ,userId==>{}" , proposalId , userType , userId);
 				corporatePrimaryViewResponse = corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicationId,proposalId,userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(corporatePrimaryViewResponse)) {
-					logger.info("response is" + corporatePrimaryViewResponse.toString());
+					logger.info("Response is==>{}" , corporatePrimaryViewResponse.toString());
 					loansResponse.setData(corporatePrimaryViewResponse);
 					loansResponse.setMessage("Corporate Primary Details");
 					loansResponse.setStatus(HttpStatus.OK.value());
@@ -704,6 +704,7 @@ public class PrimaryViewController {
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
+				logger.error("Error/Exception occurred Into /Corporate/{applicationId}/{proposalId}..Error==>{}",e);
 				loansResponse.setData(corporatePrimaryViewResponse);
 				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
