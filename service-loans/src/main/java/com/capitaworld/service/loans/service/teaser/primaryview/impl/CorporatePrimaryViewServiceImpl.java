@@ -189,7 +189,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		corporatePrimaryViewResponse.setProductId(applicationProposalMapping.getProductId()); // new
 		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
-		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+		if (userType != null && CommonUtils.UserType.FUND_SEEKER != userType ) {
 			     // teaser
 				// view
 				// viwed by
@@ -216,8 +216,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 		}
-
-
 
 		// get details of CorporateApplicantDetail PREVIOUS
 	/*	CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
