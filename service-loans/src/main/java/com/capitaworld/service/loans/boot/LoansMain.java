@@ -226,12 +226,12 @@ public class LoansMain {
 		return thirdPartyClient;
 	}
 
-	@Bean
+	/*@Bean
 	public SidbiIntegrationClient sidbiIntegrationClient() {
 		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
 		return sidbiIntegrationClient;
-	}
+	}*/
 
 	@Bean
 	public McaClient mcaClient() {
