@@ -31,11 +31,14 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDeta
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMapping;
+import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
+import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
@@ -43,6 +46,8 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountry
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
@@ -109,6 +114,12 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 
 	@Autowired
 	private MsmeValueMappingService msmeValueMappingService;
+	
+	@Autowired
+	private LoanArrangementMappingRepository loanArrangementMappingRepository;
+	
+	@Autowired
+	private LoanArrangementMappingTempRepository loanArrangementMappingTempRepository;
 
 	@Override
 	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest,Long mappingId) {
@@ -172,6 +183,10 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(wcTlParameterRequest.getId());
 		saveNegativeIndustry(wcTlParameterRequest);
 
+		//loan arrangements
+		loanArrangementMappingRepository.inActiveMasterByFpProductId(wcTlParameterRequest.getId());
+		saveLoanArrangements(wcTlParameterRequest);
+		
 		//Ravina
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,wcTlParameter2.getId());
 		logger.info("updated = {}",isUpdate);
@@ -317,6 +332,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		}
 		
 		wcTlParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, wcTlParameterRequest.getUserId()));
+		wcTlParameterRequest.setLoanArrangementIds(loanArrangementMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return wcTlParameterRequest;
 	}
@@ -605,6 +621,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
             logger.info("you set jobId or list of roleId NULL for calling workflow");
         }
 		wcTlParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
+		wcTlParameterRequest.setLoanArrangementIds(loanArrangementMappingTempRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
 		return wcTlParameterRequest;
 	}
@@ -686,6 +703,10 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		//negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(WcTlParameter.getId());
 		saveNegativeIndustryTemp(wcTlParameterRequest);
+		
+		//loan arrangements
+				loanArrangementMappingTempRepository.inActiveMasterByFpProductId(wcTlParameterRequest.getId());
+				saveLoanArrangementsTemp(wcTlParameterRequest);
 
 		//Ravina
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(wcTlParameterRequest.getMsmeFundingIds(),wcTlParameterRequest.getId(), wcTlParameterRequest.getUserId());
@@ -803,6 +824,47 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			negativeIndustryTempRepository.save(negativeIndustry);
 		}
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustryTemp");
+		
+	}
+	
+	private void saveLoanArrangements(WcTlParameterRequest wcTlParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveLoanArrangements");
+		LoanArrangementMapping loanArrangementMapping= null;
+		for (Integer dataRequest : wcTlParameterRequest.getLoanArrangementIds()) {
+			loanArrangementMapping = new LoanArrangementMapping();
+			loanArrangementMapping.setFpProductId(wcTlParameterRequest.getId());
+			loanArrangementMapping.setLoanArrangementId(dataRequest);
+			loanArrangementMapping.setCreatedBy(wcTlParameterRequest.getUserId());
+			loanArrangementMapping.setModifiedBy(wcTlParameterRequest.getUserId());
+			loanArrangementMapping.setCreatedDate(new Date());
+			loanArrangementMapping.setModifiedDate(new Date());
+			loanArrangementMapping.setIsActive(true);
+			// create by and update
+			loanArrangementMappingRepository.save(loanArrangementMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveLoanArrangements");
+		
+	}
+	
+	private void saveLoanArrangementsTemp(WcTlParameterRequest wcTlParameterRequest) {
+		// TODO Auto-generated method stub
+		
+		CommonDocumentUtils.startHook(logger, "saveLoanArrangementsTemp");
+		LoanArrangementMappingTemp loanArrangementMapping= null;
+		for (Integer dataRequest : wcTlParameterRequest.getLoanArrangementIds()) {
+			loanArrangementMapping = new LoanArrangementMappingTemp();
+			loanArrangementMapping.setFpProductId(wcTlParameterRequest.getId());
+			loanArrangementMapping.setLoanArrangementId(dataRequest);
+			loanArrangementMapping.setCreatedBy(wcTlParameterRequest.getUserId());
+			loanArrangementMapping.setModifiedBy(wcTlParameterRequest.getUserId());
+			loanArrangementMapping.setCreatedDate(new Date());
+			loanArrangementMapping.setModifiedDate(new Date());
+			loanArrangementMapping.setIsActive(true);
+			// create by and update
+			loanArrangementMappingTempRepository.save(loanArrangementMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveLoanArrangementsTemp");
 		
 	}
 
