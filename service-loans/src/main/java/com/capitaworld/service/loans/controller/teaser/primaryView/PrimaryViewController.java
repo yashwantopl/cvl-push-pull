@@ -148,7 +148,7 @@ public class PrimaryViewController {
 			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
-			logger.debug(MSG_USER_ID + userId + MSG_USER_TYPE + userType);
+			logger.debug(MSG_USER_ID , userId , MSG_USER_TYPE , userType);
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
@@ -220,7 +220,7 @@ public class PrimaryViewController {
 			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
-		logger.info(USER_ID_MSG + userId + USER_TYPE_MSG + userType);
+		logger.info(USER_ID_MSG , userId , USER_TYPE_MSG , userType);
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
@@ -714,7 +714,7 @@ public class PrimaryViewController {
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request,
 			@PathVariable(value = "isFinalView") Boolean isFinalView) {
 
-		logger.info("In NTB View Ctrl of applicationId" + toApplicationId + "productMappingId" + productMappingId);
+		logger.info("In NTB View Ctrl of applicationId==>{}  productMappingId==>{}", toApplicationId ,productMappingId);
 
 		// GET USER ID AND USER TYPE
 		Long userId = null;
@@ -765,12 +765,12 @@ public class PrimaryViewController {
 			LoansResponse loansResponse = new LoansResponse();
 			NtbPrimaryViewResponse ntbPrimaryViewResponse = null;
 			try {
-				logger.info("GET NTB PRIMARY TEASER VIEW OF USER OF APPLICATION ID" + toApplicationId
-						+ "PRODUCT MAPPING ID" + productMappingId + "USER TYPE" + userType + "USER ID" + userId);
+				logger.info("GET NTB PRIMARY TEASER VIEW OF USER OF APPLICATION ID==>{}  PRODUCT MAPPING ID==>{}  USER TYPE==>{}  USER ID==>{}" , 
+						toApplicationId, productMappingId ,userType ,userId);
 				ntbPrimaryViewResponse = ntbTeaserViewService.getNtbTeaserViewDetails(toApplicationId, userType, userId,
 						productMappingId, isFinalView);
 				if (!CommonUtils.isObjectNullOrEmpty(ntbPrimaryViewResponse)) {
-					logger.info("Response of Teaser View" + ntbPrimaryViewResponse.toString());
+					logger.info("Response of Teaser View==>{}" , ntbPrimaryViewResponse.toString());
 					loansResponse.setData(ntbPrimaryViewResponse);
 					loansResponse.setMessage("Ntb Primary Details");
 					loansResponse.setStatus(HttpStatus.OK.value());
@@ -938,7 +938,7 @@ public class PrimaryViewController {
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request,
 			@PathVariable(value = "isFinalView") Boolean isFinalView) {
 
-		logger.info("In PL View Ctrl of applicationId" + toApplicationId + "productMappingId" + productMappingId);
+		logger.info("In PL View Ctrl of applicationId==>{}  productMappingId==>{}" , toApplicationId , productMappingId);
 
 		// GET USER ID AND USER TYPE
 		Long userId = null;
@@ -978,7 +978,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = 1;// ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
@@ -989,12 +989,12 @@ public class PrimaryViewController {
 			LoansResponse loansResponse = new LoansResponse();
 			PlTeaserViewResponse plPrimaryViewResponse = null;
 			try {
-				logger.info("GET PL PRIMARY TEASER VIEW OF USER OF APPLICATION ID" + toApplicationId
-						+ "PRODUCT MAPPING ID" + productMappingId + "USER TYPE" + userType + "USER ID" + userId);
+				logger.info("GET PL PRIMARY TEASER VIEW OF USER OF APPLICATION ID==>{}  PRODUCT MAPPING ID==>{}  USER TYPE==>{}  USER ID==>{}" , 
+						toApplicationId, productMappingId ,userType ,userId);
 				plPrimaryViewResponse = plTeaserViewService.getPlPrimaryViewDetails(toApplicationId, userType, userId,
 						productMappingId, isFinalView);
 				if (!CommonUtils.isObjectNullOrEmpty(plPrimaryViewResponse)) {
-					logger.info("Response of Teaser View" + plPrimaryViewResponse.toString());
+					logger.info("Response of Teaser View==>{}" , plPrimaryViewResponse.toString());
 					loansResponse.setData(plPrimaryViewResponse);
 					loansResponse.setMessage("PL Primary Details");
 					loansResponse.setStatus(HttpStatus.OK.value());
@@ -1020,7 +1020,7 @@ public class PrimaryViewController {
 			@PathVariable(value = "isFinalView") Boolean isFinalView,
 			@PathVariable("proposalId") Long proposalId) {
 
-		logger.info("In PL View Ctrl of applicationId" + toApplicationId + "productMappingId" + productMappingId);
+		logger.info("In PL View Ctrl of applicationId==>{}   productMappingId==>{}" , toApplicationId , productMappingId);
 
 		// GET USER ID AND USER TYPE
 		Long userId = null;
@@ -1060,7 +1060,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = 1;// ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
@@ -1071,12 +1071,12 @@ public class PrimaryViewController {
 			LoansResponse loansResponse = new LoansResponse();
 			PlTeaserViewResponse plPrimaryViewResponse = null;
 			try {
-				logger.info("GET PL PRIMARY TEASER VIEW OF USER OF APPLICATION ID" + toApplicationId
-						+ "PRODUCT MAPPING ID" + productMappingId + "USER TYPE" + userType + "USER ID" + userId);
+				logger.info("GET PL PRIMARY TEASER VIEW OF USER OF APPLICATION ID==>{}  PRODUCT MAPPING ID==>{}  USER TYPE==>{}  USER ID==>{}" , 
+						toApplicationId, productMappingId ,userType ,userId);
 				plPrimaryViewResponse = plTeaserViewService.getPlPrimaryViewDetailsByProposalId(toApplicationId, userType, userId,
 						productMappingId, isFinalView, proposalId);
 				if (!CommonUtils.isObjectNullOrEmpty(plPrimaryViewResponse)) {
-					logger.info("Response of Teaser View" + plPrimaryViewResponse.toString());
+					logger.info("Response of Teaser View==>{}" , plPrimaryViewResponse.toString());
 					loansResponse.setData(plPrimaryViewResponse);
 					loansResponse.setMessage("PL Primary Details");
 					loansResponse.setStatus(HttpStatus.OK.value());

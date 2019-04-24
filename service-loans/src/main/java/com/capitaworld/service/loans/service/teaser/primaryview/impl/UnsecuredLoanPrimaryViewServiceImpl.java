@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +33,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
@@ -157,10 +157,21 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
+	
+	@Autowired
+	private CommonService commonService;
 
 	@Override
 	public UnsecuredLoanPrimaryViewResponse getUnsecuredLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
 																			   Long fundProviderUserId) throws LoansException {
+		
+		Long cityId = null ;
+		Integer stateId = null;
+		Integer countryId = null;
+		String cityName = null;
+		String stateName = null;
+		String countryName = null;
+		
 		UnsecuredLoanPrimaryViewResponse unsecuredLoanPrimaryViewResponse = new UnsecuredLoanPrimaryViewResponse();
 
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -206,9 +217,37 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				unsecuredLoanPrimaryViewResponse.setEstablishmentMonth(
 						EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
-
+			//Set Registered Data
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+				cityId = corporateApplicantDetail.getRegisteredCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+				stateId = corporateApplicantDetail.getRegisteredStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+				countryId = corporateApplicantDetail.getRegisteredCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+					
+					//set City
+					unsecuredLoanPrimaryViewResponse.setCity(cityName != null ? cityName : "NA");
+					unsecuredLoanPrimaryViewResponse.setRegOfficeCity(cityName);
+					
+					//set State
+					unsecuredLoanPrimaryViewResponse.setState(stateName != null ? stateName : "NA");
+					unsecuredLoanPrimaryViewResponse.setRegOfficestate(stateName);
+					
+					//set Country
+					unsecuredLoanPrimaryViewResponse.setCountry(countryName != null ? countryName : "NA");
+					unsecuredLoanPrimaryViewResponse.setRegOfficecountry(countryName);
+				}
+			}
+			
 			// set city
-			List<Long> cityList = new ArrayList<>();
+			/**List<Long> cityList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 				cityList.add(corporateApplicantDetail.getRegisteredCityId());
 			if(!CommonUtils.isListNullOrEmpty(cityList))
@@ -339,7 +378,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
+			}*/
 
 
 			List<Long> keyVerticalFundingId = new ArrayList<>();
@@ -800,6 +839,41 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 		//Set Permanent Address
 		AddressResponse permanentAddress = new AddressResponse();
+		cityId = null;
+		stateId = null;
+		countryId = null;
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+			cityId = corporateApplicantDetail.getAdministrativeCityId();
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+			stateId = corporateApplicantDetail.getAdministrativeStateId();
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+			countryId = corporateApplicantDetail.getAdministrativeCountryId();
+		
+		if(cityId != null || stateId != null || countryId != null) {
+			Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+			if(mapData != null) {
+				cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+				stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+				countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+				
+				//set City
+				permanentAddress.setCity(cityName != null ? cityName : "-");
+				
+				//set State
+				permanentAddress.setState(stateName != null ? stateName : "-");
+				
+				//set Country
+				permanentAddress.setCountry(countryName != null ? countryName : "-");
+			}
+		}
+		
+		permanentAddress.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
+		permanentAddress.setPincode(corporateApplicantDetail.getRegisteredPincode() != null ? corporateApplicantDetail.getRegisteredPincode().toString() : null);
+		permanentAddress.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+		permanentAddress.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
+		unsecuredLoanPrimaryViewResponse.setPermanentAddress(permanentAddress);
+		
+		/**AddressResponse permanentAddress = new AddressResponse();
 		try {
 			List<Long> permanentCity = new ArrayList<Long>(1);
 			permanentCity.add(corporateApplicantDetail.getRegisteredCityId());
@@ -837,13 +911,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-		}
-		permanentAddress.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
-		permanentAddress.setPincode(corporateApplicantDetail.getRegisteredPincode() != null ? corporateApplicantDetail.getRegisteredPincode().toString() : null);
-		permanentAddress.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
-		permanentAddress.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
-		unsecuredLoanPrimaryViewResponse.setPermanentAddress(permanentAddress);
-
+		}*/
 		return unsecuredLoanPrimaryViewResponse;
 	}
 }
