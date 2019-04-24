@@ -34,6 +34,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinanci
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -144,15 +145,19 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
+	
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
+	@Autowired
+	private CommonService commonService;
+	
 	@Override
 	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
 																	 Long fundProviderUserId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
 
-		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+		if (userType != null && CommonUtils.UserType.FUND_SEEKER != userType) {
 			     // teaser
 				// view
 				// viwed by
@@ -196,8 +201,43 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
 
+			//Set Registered Data
+			Long cityId = null ;
+			Integer stateId = null;
+			Integer countryId = null;
+			String cityName = null;
+			String stateName = null;
+			String countryName = null;
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+				cityId = corporateApplicantDetail.getRegisteredCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+				stateId = corporateApplicantDetail.getRegisteredStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+				countryId = corporateApplicantDetail.getRegisteredCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+					
+					//set City
+					termLoanPrimaryViewResponse.setCity(cityName != null ? cityName : "NA");
+					termLoanPrimaryViewResponse.setRegOfficeCity(cityName);
+					
+					//set State
+					termLoanPrimaryViewResponse.setState(stateName != null ? stateName : "NA");
+					termLoanPrimaryViewResponse.setRegOfficestate(stateName);
+					
+					//set Country
+					termLoanPrimaryViewResponse.setCountry(countryName != null ? countryName : "NA");
+					termLoanPrimaryViewResponse.setRegOfficecountry(countryName);
+				}
+			}
+			
 			// set city
-			List<Long> cityList = new ArrayList<>();
+			/**List<Long> cityList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 				cityList.add(corporateApplicantDetail.getRegisteredCityId());
 			if(!CommonUtils.isListNullOrEmpty(cityList))
@@ -328,7 +368,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
+			}*/
 
 
 			List<Long> keyVerticalFundingId = new ArrayList<>();

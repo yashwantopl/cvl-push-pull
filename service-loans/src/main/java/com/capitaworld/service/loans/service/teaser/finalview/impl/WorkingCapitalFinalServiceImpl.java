@@ -557,9 +557,9 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			if(cityId != null || stateId != null || countryId != null) {
 				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
 				if(mapData != null) {
-					cityName = mapData.get("cityName").toString();
-					stateName = mapData.get("stateName").toString();
-					countryName = mapData.get("countryName").toString();
+					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
 					
 					//set City
 					response.setCity(cityName != null ? cityName : "NA");
@@ -589,9 +589,9 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			if(cityId != null || stateId != null || countryId != null) {
 				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
 				if(mapData != null) {
-					cityName = mapData.get("cityName").toString();
-					stateName = mapData.get("stateName").toString();
-					countryName = mapData.get("countryName").toString();
+					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
 					
 					//set City
 					response.setAddOfficeCity(cityName != null ? cityName : "NA");

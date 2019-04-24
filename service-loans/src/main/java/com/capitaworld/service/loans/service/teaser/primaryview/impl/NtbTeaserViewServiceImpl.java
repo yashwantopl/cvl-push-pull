@@ -211,7 +211,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		// ntbPrimaryViewRespone.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 
 		/* ========= Matches Data ========== */
-		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+		if (userType != null && CommonUtils.UserType.FUND_SEEKER != userType ) {
 			// TEASER VIEW FROM FP SIDE
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -221,7 +221,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					ntbPrimaryViewRespone.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					logger.error("Error while getting matches data" + e);
+					logger.error("Error while getting matches data ..Error==>{}" , e);
 				}
 		}
 
@@ -232,7 +232,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			ntbPrimaryViewRespone.setOrganisationName(corporateApplicantDetail.getOrganisationName());
 			ntbPrimaryViewRespone.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
 			ntbPrimaryViewRespone.setConsitution(corporateApplicantDetail.getConstitutionId() != null
-					? Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue().toString()
+					? Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue()
 					: "-");
 			ntbPrimaryViewRespone.setPan(corporateApplicantDetail.getPanNo());
 			ntbPrimaryViewRespone.setEstablishDate(corporateApplicantDetail.getEstablishmentDate());
@@ -260,8 +260,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 				ntbPrimaryViewRespone.setPurposeOfLoan(
 						CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
-								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue()
-										.toString());
+								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue());
 
 				ntbPrimaryViewRespone
 						.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
@@ -297,7 +296,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
 			}
 			if (directorBackgroundDetails.size() == 1) {
-				logger.info("director list size====>>>>" + directorBackgroundDetails.size());
+				logger.info("director list size====>>>>{}" , directorBackgroundDetails.size());
 				ntbPrimaryViewRespone.setIsMultipleUser(false);
 			} else {
 				ntbPrimaryViewRespone.setIsMultipleUser(true);
@@ -540,7 +539,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		EligibililityRequest eligibilityReq = new EligibililityRequest();
 		eligibilityReq.setApplicationId(toApplicationId);
 		eligibilityReq.setFpProductMappingId(productMappingId);
-		logger.info(" for eligibility appid============>>" + toApplicationId);
+		logger.info(" for eligibility appid============>>{}" , toApplicationId);
 
 		try {
 
@@ -555,7 +554,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		// CGTMSE
 		try {
 			boolean isMultipleUserForCgtmse = ntbPrimaryViewRespone.getIsMultipleUser();
-			logger.info("is multiple user...??" + isMultipleUserForCgtmse);
+			logger.info("is multiple user...??{}" , isMultipleUserForCgtmse);
 
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
 
@@ -575,7 +574,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 			}
 		} catch (Exception e1) {
-			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----", toApplicationId + CommonUtils.EXCEPTION + e1);
+			logger.error("------:::::...Error while fetching Fraud Detection Details...For..AppId==>{}::::::-----Error==>{}", toApplicationId , e1);
 		}
 
 		// GET DOCUMENTS

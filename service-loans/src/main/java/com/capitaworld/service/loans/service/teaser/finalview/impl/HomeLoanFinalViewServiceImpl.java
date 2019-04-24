@@ -17,10 +17,7 @@ import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewS
 import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +25,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -131,9 +126,9 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 				if(cityId != null || stateId != null || countryId != null) {
 					Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
 					if(mapData != null) {
-						cityName = mapData.get("cityName").toString();
-						stateName = mapData.get("stateName").toString();
-						countryName = mapData.get("countryName").toString();
+						cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+						stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+						countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
 						
 						//set City
 						homeLoanFinalViewResponse.setPropCity(cityName != null ? cityName : "-");
@@ -225,9 +220,9 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 				if(cityId != null || stateId != null || countryId != null) {
 					Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
 					if(mapData != null) {
-						cityName = mapData.get("cityName").toString();
-						stateName = mapData.get("stateName").toString();
-						countryName = mapData.get("countryName").toString();
+						cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+						stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+						countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
 						
 						//set City
 						homeLoanFinalViewResponse.setSellerCity(cityName != null ? cityName : "NA");
