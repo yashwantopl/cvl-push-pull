@@ -14,16 +14,14 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewR
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +29,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Sanket
@@ -72,6 +69,9 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 	@Autowired
 	private DocumentManagementService documentManagementService;
 	
+	@Autowired
+	private CommonService commonService;
+	
 	@Override
 	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
@@ -101,10 +101,47 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				profileViewPLResponse.setOtherIncome(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? applicantDetail.getOtherIncome().toString() : "-");
 				profileViewPLResponse.setOtherInvestment(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? applicantDetail.getOtherInvestment().toString() : "-");
 				profileViewPLResponse.setTaxPaid(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? applicantDetail.getTaxPaidLastYear().toString() : "-");
+				
 				//Office Address Data
 				AddressResponse officeAddress = new AddressResponse();
+				Long cityId = null ;
+    			Integer stateId = null;
+    			Integer countryId = null;
+    			String cityName = null;
+    			String stateName = null;
+    			String countryName = null;
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCityId()))
+    				cityId = applicantDetail.getOfficeCityId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId()))
+    				stateId = applicantDetail.getOfficeStateId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId()))
+    				countryId = applicantDetail.getOfficeCountryId();
+    			
+    			if(cityId != null || stateId != null || countryId != null) {
+    				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+    				if(mapData != null) {
+    					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+    					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+    					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+    					
+    					//set City
+    					officeAddress.setCity(cityName != null ? cityName : "-");
+    					
+    					//set State
+    					officeAddress.setState(stateName != null ? stateName : "-");
+    					
+    					//set Country
+    					officeAddress.setCountry(countryName != null ? countryName : "-");
+    				}
+    			}
+    			
+    			officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
+				officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
+				officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
+				officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
+				personalLoanResponse.setOfficeAddress(officeAddress);
 
-				try {
+				/**try {
 					List<Long> officeCity = new ArrayList<Long>(1);
 					officeCity.add(applicantDetail.getOfficeCityId());
 					OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
@@ -135,16 +172,45 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
-				}
-				officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
-				officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
-				officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
-				officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
-				personalLoanResponse.setOfficeAddress(officeAddress);
-
+				}*/
+				
 				//Permanent Address Data
 				AddressResponse permanentAddress = new AddressResponse();
-				try {
+				cityId = null;
+    			stateId = null;
+    			countryId = null;
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCityId()))
+    				cityId = applicantDetail.getPermanentCityId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId()))
+    				stateId = applicantDetail.getPermanentStateId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCountryId()))
+    				countryId = applicantDetail.getPermanentCountryId();
+    			
+    			if(cityId != null || stateId != null || countryId != null) {
+    				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+    				if(mapData != null) {
+    					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+    					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+    					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+    					
+    					//set City
+    					permanentAddress.setCity(cityName != null ? cityName : "-");
+    					
+    					//set State
+    					permanentAddress.setState(stateName != null ? stateName : "-");
+    					
+    					//set Country
+    					permanentAddress.setCountry(countryName != null ? countryName : "-");
+    				}
+    			}
+    			
+    			permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
+				permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
+				permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
+				permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
+				personalLoanResponse.setPermanentAddress(permanentAddress);
+
+				/**try {
 					List<Long> permanentCity = new ArrayList<Long>(1);
 					permanentCity.add(applicantDetail.getPermanentCityId());
 					OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
@@ -175,13 +241,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
-				}
-				permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
-				permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
-				permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
-				permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
-				personalLoanResponse.setPermanentAddress(permanentAddress);
-
+				}*/
 
 				profileViewPLResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewPLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
