@@ -1197,14 +1197,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//HUNTER API ANALYSIS
-		/*try {
+		try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
 			if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
 				map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
 			}
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
-		}*/
+		}
 		
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
 		try {
