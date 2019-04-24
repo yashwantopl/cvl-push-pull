@@ -425,6 +425,18 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	@Column(name="is_wc_req_check")
 	private Boolean wcReqCheck = false;
+	
+	@Column(name="min_additional_loan")
+	private BigDecimal minAdditionalLoan;
+
+	@Column(name="max_additional_loan")
+	private BigDecimal maxAdditionalLoan;
+	
+	@Column(name="min_total_loan")
+	private BigDecimal minTotalLoan;
+
+	@Column(name="max_total_loan")
+	private BigDecimal maxTotalLoan;	
 
 	/**
 	 * @return the jobId
@@ -1510,6 +1522,40 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	public void setNewHistoricGrowth(BigDecimal newHistoricGrowth) {
 		this.newHistoricGrowth = newHistoricGrowth;
 	}
+
+	public BigDecimal getMinAdditionalLoan() {
+		return minAdditionalLoan;
+	}
+
+	public void setMinAdditionalLoan(BigDecimal minAdditionalLoan) {
+		this.minAdditionalLoan = minAdditionalLoan;
+	}
+
+	public BigDecimal getMaxAdditionalLoan() {
+		return maxAdditionalLoan;
+	}
+
+	public void setMaxAdditionalLoan(BigDecimal maxAdditionalLoan) {
+		this.maxAdditionalLoan = maxAdditionalLoan;
+	}
+
+	public BigDecimal getMinTotalLoan() {
+		return minTotalLoan;
+	}
+
+	public void setMinTotalLoan(BigDecimal minTotalLoan) {
+		this.minTotalLoan = minTotalLoan;
+	}
+
+	public BigDecimal getMaxTotalLoan() {
+		return maxTotalLoan;
+	}
+
+	public void setMaxTotalLoan(BigDecimal maxTotalLoan) {
+		this.maxTotalLoan = maxTotalLoan;
+	}
+	
+	
 
 	
 }

@@ -240,6 +240,18 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	
 
 	private Boolean wcReqCheck = false;
+	
+	//total limits
+	private List<Integer> loanArrangementIds;
+	
+	private BigDecimal minAdditionalLoan;
+
+	private BigDecimal maxAdditionalLoan;
+	
+	private BigDecimal minTotalLoan;
+
+	private BigDecimal maxTotalLoan;	
+	
 
 	
 
@@ -1406,5 +1418,46 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.newHistoricGrowth = newHistoricGrowth;
 	}
 
+	public List<Integer> getLoanArrangementIds() {
+		return loanArrangementIds;
+	}
+
+	public void setLoanArrangementIds(List<Integer> loanArrangementIds) {
+		this.loanArrangementIds = loanArrangementIds;
+	}
+
+	public BigDecimal getMinAdditionalLoan() {
+		return minAdditionalLoan;
+	}
+
+	public void setMinAdditionalLoan(BigDecimal minAdditionalLoan) {
+		this.minAdditionalLoan = minAdditionalLoan;
+	}
+
+	public BigDecimal getMaxAdditionalLoan() {
+		return maxAdditionalLoan;
+	}
+
+	public void setMaxAdditionalLoan(BigDecimal maxAdditionalLoan) {
+		this.maxAdditionalLoan = maxAdditionalLoan;
+	}
+
+	public BigDecimal getMinTotalLoan() {
+		return minTotalLoan;
+	}
+
+	public void setMinTotalLoan(BigDecimal minTotalLoan) {
+		this.minTotalLoan = minTotalLoan;
+	}
+
+	public BigDecimal getMaxTotalLoan() {
+		return maxTotalLoan;
+	}
+
+	public void setMaxTotalLoan(BigDecimal maxTotalLoan) {
+		this.maxTotalLoan = maxTotalLoan;
+	}
+
+	
 	
 }
