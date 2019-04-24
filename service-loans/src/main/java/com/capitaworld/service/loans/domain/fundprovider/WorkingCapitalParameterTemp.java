@@ -418,6 +418,19 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 
 	@Column(name = "new_historic_growth")
 	private BigDecimal newHistoricGrowth;
+	
+	
+	@Column(name="min_additional_loan")
+	private BigDecimal minAdditionalLoan;
+
+	@Column(name="max_additional_loan")
+	private BigDecimal maxAdditionalLoan;
+	
+	@Column(name="min_total_loan")
+	private BigDecimal minTotalLoan;
+
+	@Column(name="max_total_loan")
+	private BigDecimal maxTotalLoan;	
 
 	/* ends here */
 
@@ -1494,5 +1507,38 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 		this.newHistoricGrowth = newHistoricGrowth;
 	}
 
+	public BigDecimal getMinAdditionalLoan() {
+		return minAdditionalLoan;
+	}
+
+	public void setMinAdditionalLoan(BigDecimal minAdditionalLoan) {
+		this.minAdditionalLoan = minAdditionalLoan;
+	}
+
+	public BigDecimal getMaxAdditionalLoan() {
+		return maxAdditionalLoan;
+	}
+
+	public void setMaxAdditionalLoan(BigDecimal maxAdditionalLoan) {
+		this.maxAdditionalLoan = maxAdditionalLoan;
+	}
+
+	public BigDecimal getMinTotalLoan() {
+		return minTotalLoan;
+	}
+
+	public void setMinTotalLoan(BigDecimal minTotalLoan) {
+		this.minTotalLoan = minTotalLoan;
+	}
+
+	public BigDecimal getMaxTotalLoan() {
+		return maxTotalLoan;
+	}
+
+	public void setMaxTotalLoan(BigDecimal maxTotalLoan) {
+		this.maxTotalLoan = maxTotalLoan;
+	}
+
+	
 	
 }
