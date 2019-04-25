@@ -226,6 +226,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
 				Boolean saveOrUpdate = financialArrangementDetailsService.saveOrUpdate(financialArrangementsDetailRequestsList, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 				logger.info("Update Result in Loans Details==>{}",saveOrUpdate);
+			}else{
+				financialArrangementDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
 			}
 			return true;
 		} catch (Exception e) {
