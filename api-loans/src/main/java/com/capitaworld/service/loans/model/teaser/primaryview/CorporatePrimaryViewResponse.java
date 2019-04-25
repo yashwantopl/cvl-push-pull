@@ -143,7 +143,7 @@ public class CorporatePrimaryViewResponse {
     private Object mcaFinancialAndDetailsResponse;
     private String eligibilityFinancialYear;
     private Double loanObligation;
-    
+    private String cibilCmrScore;
    
 	public List<Object> getCibilReport() {
 		return cibilReport;
@@ -1230,6 +1230,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setMcaCorpZipFile(List<Object> mcaCorpZipFile) {
 		this.mcaCorpZipFile = mcaCorpZipFile;
+	}
+	public String getCibilCmrScore() {
+		return cibilCmrScore;
+	}
+	public void setCibilCmrScore(String cibilCmrScore) {
+		this.cibilCmrScore = cibilCmrScore;
 	}
 	
 	

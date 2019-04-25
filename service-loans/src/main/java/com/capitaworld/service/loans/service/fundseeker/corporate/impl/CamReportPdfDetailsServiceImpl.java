@@ -595,6 +595,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		catch (Exception e) {
 			logger.error("Error in getting directors background details : ",e);
 		}
+		
+		/* cmr details cibil */
+		
+		try {
+			map.put("cibilCmrScore", cibilClient.getCMRScore(applicationId));
+		} catch (Exception e) {
+			
+			logger.error("error while getting cmr score : ",e);
+		}
 			
 		//FINANCIAL ARRANGEMENTS
 		try {
