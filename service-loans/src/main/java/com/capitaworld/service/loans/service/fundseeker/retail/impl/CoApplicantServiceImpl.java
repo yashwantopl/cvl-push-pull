@@ -1234,8 +1234,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	public List<HLOnefromResponse> getListForOneForm(Long applicationId) {
 		List<HLOnefromResponse> resList = new ArrayList<>();
 		Object[] obj = retailApplicantDetailRepository.getBasicDetailsByAppId(applicationId);
-		if(obj != null) {
-			resList.add(setValueFromObj(obj, applicationId));
+		if(obj != null && obj.length > 0) {
+			resList.add(setValueFromObj((Object[])obj[0], applicationId));	
 		}
 		List<Object[]> objList = coApplicantDetailRepository.getBasicDetailsByAppId(applicationId);
 		for(Object[] objs : objList) {
