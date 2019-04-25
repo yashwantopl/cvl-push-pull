@@ -14,25 +14,23 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewR
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -60,12 +58,21 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 
     @Autowired
     private DocumentManagementService documentManagementService;
+    
+    @Autowired
+    private CommonService commonService;
 
     protected static final String DMS_URL = "dmsURL";
 
 	@Override
 	public LapPrimaryViewResponse getLapPrimaryViewDetails(Long applicantId) throws LoansException {
 		
+		Long cityId = null ;
+		Integer stateId = null;
+		Integer countryId = null;
+		String cityName = null;
+		String stateName = null;
+		String countryName = null;
 		LapPrimaryViewResponse lapPrimaryViewResponse = new LapPrimaryViewResponse();
 		LapResponse lapResponse = new LapResponse();
 		//applicant
@@ -200,9 +207,41 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 profileViewLAPResponse.setOtherIncome(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? applicantDetail.getOtherIncome().toString() : "-");
                 profileViewLAPResponse.setOtherInvestment(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? applicantDetail.getOtherInvestment().toString() : "-");
                 profileViewLAPResponse.setTaxPaid(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? applicantDetail.getTaxPaidLastYear().toString() : "-");
+                
 				//set office address
                 AddressResponse officeAddress = new AddressResponse();
-                try {
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCityId()))
+    				cityId = applicantDetail.getOfficeCityId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId()))
+    				stateId = applicantDetail.getOfficeStateId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId()))
+    				countryId = applicantDetail.getOfficeCountryId();
+    			
+    			if(cityId != null || stateId != null || countryId != null) {
+    				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+    				if(mapData != null) {
+    					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+    					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+    					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+    					
+    					//set City
+    					officeAddress.setCity(cityName != null ? cityName : "-");
+    					
+    					//set State
+    					officeAddress.setState(stateName != null ? stateName : "-");
+    					
+    					//set Country
+    					officeAddress.setCountry(countryName != null ? countryName : "-");
+    				}
+    			}
+                
+    			officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
+                officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
+                officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
+                officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
+                lapResponse.setOfficeAddress(officeAddress);
+
+                /**try {
                     List<Long> officeCity = new ArrayList<Long>(1);
                     if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCityId())){
                     	officeCity.add(applicantDetail.getOfficeCityId());
@@ -259,16 +298,45 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     }
                 } catch (Exception e) {
                     logger.error(CommonUtils.EXCEPTION,e);
-                }
-                officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
-                officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
-                officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
-                officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
-                lapResponse.setOfficeAddress(officeAddress);
-
+                }*/
+                
                 //set permanent address
                 AddressResponse permanentAddress = new AddressResponse();
-                try {
+                cityId = null;
+    			stateId = null;
+    			countryId = null;
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCityId()))
+    				cityId = applicantDetail.getPermanentCityId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId()))
+    				stateId = applicantDetail.getPermanentStateId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCountryId()))
+    				countryId = applicantDetail.getPermanentCountryId();
+    			
+    			if(cityId != null || stateId != null || countryId != null) {
+    				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+    				if(mapData != null) {
+    					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+    					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+    					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+    					
+    					//set City
+    					permanentAddress.setCity(cityName != null ? cityName : "-");
+    					
+    					//set State
+    					permanentAddress.setState(stateName != null ? stateName : "-");
+    					
+    					//set Country
+    					permanentAddress.setCountry(countryName != null ? countryName : "-");
+    				}
+    			}
+    			
+    			permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
+                permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
+                permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
+                permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
+                lapResponse.setPermanentAddress(permanentAddress);
+                
+                /**try {
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCityId())) {
                     	permanentCity.add(applicantDetail.getPermanentCityId());
@@ -322,13 +390,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     }
                 } catch (Exception e) {
                     logger.error(CommonUtils.EXCEPTION,e);
-                }
-                permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
-                permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
-                permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
-                permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
-                lapResponse.setPermanentAddress(permanentAddress);
-
+                }*/
 
 				profileViewLAPResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewLAPResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
@@ -404,7 +466,35 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 			lapResponse.setPropertyStreetName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressStreet()) ? loanDetail.getAddressStreet() : null);
 			lapResponse.setPropertyLandmark(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressLandmark()) ? loanDetail.getAddressLandmark() : null);
 			
-            try {
+			cityId = null;
+			stateId = null;
+			countryId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressCity()))
+				cityId = loanDetail.getAddressCity().longValue();
+			if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressState()))
+				stateId = loanDetail.getAddressState();
+			if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressCountry()))
+				countryId = loanDetail.getAddressCountry();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+					
+					//set City
+					lapResponse.setPropertyCity(cityName != null ? cityName : "-");
+					
+					//set State
+					lapResponse.setPropertyState(stateName != null ? stateName : "-");
+					
+					//set Country
+					lapResponse.setPropertyCountry(countryName != null ? countryName : "-");
+				}
+			}
+			
+            /**try {
                 List<Long> officeCity = new ArrayList<Long>(1);
                 if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressCity())){
                 	officeCity.add(Long.valueOf(loanDetail.getAddressCity().toString()));
@@ -460,7 +550,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 }
             } catch (Exception e) {
                 logger.error(CommonUtils.EXCEPTION,e);
-            }
+            }*/
 			
 			lapResponse.setPropertyPincode(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPincode()) ? loanDetail.getPincode().toString() : null);
 		}

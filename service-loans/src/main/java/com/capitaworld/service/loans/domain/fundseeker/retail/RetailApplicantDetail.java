@@ -133,6 +133,12 @@ public class RetailApplicantDetail implements Serializable {
 
 	@Column(name = "employment_status")
 	private Integer employmentStatus;
+	
+	@Column(name = "employment_status_other")
+	private Integer employmentStatusOther;
+	
+	@Column(name = "current_employment_status")
+	private Integer currentEmploymentStatus;
 
 	@Column(name = "entity_name")
 	private String entityName;
@@ -184,6 +190,9 @@ public class RetailApplicantDetail implements Serializable {
 
 	@Column(name = "monthly_income")
 	private Double monthlyIncome;
+	
+	@Column(name = "gross_monthly_income")
+	private Double grossMonthlyIncome;
 
 	@Column(name = "mother_name")
 	private String motherName;
@@ -318,7 +327,10 @@ public class RetailApplicantDetail implements Serializable {
 
 	@Column(name = "spouse_name")
 	private String spouseName;
-
+	
+	@Column(name = "annual_income_of_spouse")
+	private Double annualIncomeOfSpouse;
+	
 	@Column(name = "status_id")
 	private Integer statusId;
 
@@ -541,6 +553,20 @@ public class RetailApplicantDetail implements Serializable {
 
     @Column(name="is_other_salary_bank")
     private Boolean isOtherSalaryBank;
+    
+    @Column(name="is_one_form_completed")
+    private Boolean isOneFormCompleted;
+    
+    @Column(name="is_cibil_completed")
+    private Boolean isCibilCompleted;
+    
+    @Column(name="category")
+    private Integer category;
+    
+    @Column(name="networth")
+    private Double networth;
+    
+    
     
     private String remarks;
 
@@ -1903,6 +1929,68 @@ public class RetailApplicantDetail implements Serializable {
 		this.remarks = remarks;
 	}
 
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+	public Integer getEmploymentStatusOther() {
+		return employmentStatusOther;
+	}
+
+	public void setEmploymentStatusOther(Integer employmentStatusOther) {
+		this.employmentStatusOther = employmentStatusOther;
+	}
+
+	public Integer getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public Double getAnnualIncomeOfSpouse() {
+		return annualIncomeOfSpouse;
+	}
+
+	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
+		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+
+	public Integer getCategory() {
+		return category;
+	}
+
+	public void setCategory(Integer category) {
+		this.category = category;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
 
 
 

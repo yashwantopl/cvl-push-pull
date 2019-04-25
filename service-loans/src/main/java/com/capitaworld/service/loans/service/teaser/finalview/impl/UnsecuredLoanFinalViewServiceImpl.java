@@ -61,6 +61,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.ScotAnalysi
 import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAlliancesDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyPositioningDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
@@ -293,6 +294,9 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	
 	@Autowired
 	private CreditCardsDetailService creditCardsDetailService;
+	
+	@Autowired
+	private CommonService commonService;
 
 	protected static final String ONE_FORM_URL = "oneForm";
 	protected static final String USERS_URL = "userURL";
@@ -654,10 +658,95 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, response);
-			response.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
-			response.setEstablishmentMonth(
-					EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()))
+				response.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentMonth()))
+				response.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
+			// ESTABLISHMENT YEAR
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear())) {
+				try {
+					OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(
+							CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear()) ? null
+									: corporateApplicantDetail.getEstablishmentYear().longValue());
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						response.setEstablishmentYear(masterResponse.getValue());
+					} else {
+						response.setEstablishmentYear("NA");
+					}
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+			}
 
+			//Set Registered Data
+			Long cityId = null ;
+			Integer stateId = null;
+			Integer countryId = null;
+			String cityName = null;
+			String stateName = null;
+			String countryName = null;
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+				cityId = corporateApplicantDetail.getRegisteredCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+				stateId = corporateApplicantDetail.getRegisteredStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+				countryId = corporateApplicantDetail.getRegisteredCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+					
+					//set City
+					response.setCity(cityName != null ? cityName : "NA");
+					response.setRegOfficeCity(cityName);
+					
+					//set State
+					response.setState(stateName != null ? stateName : "NA");
+					response.setRegOfficestate(stateName);
+					
+					//set Country
+					response.setCountry(countryName != null ? countryName : "NA");
+					response.setRegOfficecountry(countryName);
+				}
+			}
+			
+			//set Administrative Data
+			cityId = null;
+			stateId = null;
+			countryId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+				cityId = corporateApplicantDetail.getAdministrativeCityId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+				stateId = corporateApplicantDetail.getAdministrativeStateId();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+				countryId = corporateApplicantDetail.getAdministrativeCountryId();
+			
+			if(cityId != null || stateId != null || countryId != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+				if(mapData != null) {
+					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+					
+					//set City
+					response.setAddOfficeCity(cityName != null ? cityName : "NA");
+					
+					//set State
+					response.setAddOfficestate(stateName != null ? stateName : "NA");
+					
+					//set Country
+					response.setAddOfficecountry(countryName != null ? countryName : "NA");
+				}
+			}
+
+			/**
 			// set city
 						List<Long> cityList = new ArrayList<>();
 						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())) {
@@ -799,7 +888,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 								logger.error(CommonUtils.EXCEPTION,e);
 							}
 						}
-							
+			*/				
 
 			// set key vertical funding
 			List<Long> keyVerticalFundingId = new ArrayList<>();
@@ -821,24 +910,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			}
 		}
 
-		// set Establishment year
-		try {
-			OneFormResponse establishmentYearResponse = oneFormClient
-					.getYearByYearId(Long.valueOf(corporateApplicantDetail.getEstablishmentYear()));
-			List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse
-					.getListData();
-			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0),
-						MasterResponse.class);
-				response.setEstablishmentYear(masterResponse.getValue());
-			} else {
-				response.setEstablishmentYear("NA");
-			}
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
-
-		logger.trace("User Type : "+userType);
+		logger.trace("User Type :{} ",userType);
 
 		Integer user_type = CommonUtils.ApplicantType.APPLICANT;
 		// get industry sectors

@@ -220,7 +220,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 
 		/* ========= Matches Data ========== */
-		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+		if (userType != null && CommonUtils.UserType.FUND_SEEKER != userType ) {
 			// TEASER VIEW FROM FP SIDE
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -230,7 +230,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 					plTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					logger.error("Error while getting matches data : " + e);
+					logger.error("Error while getting matches data :{} " , e);
 				}
 		}
 		
@@ -497,7 +497,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		EligibililityRequest eligibilityReq = new EligibililityRequest();
 		eligibilityReq.setApplicationId(toApplicationId);
 		eligibilityReq.setFpProductMappingId(productMappingId);
-		logger.info(" for eligibility appid============>>" + toApplicationId);
+		logger.info(" for eligibility appid============>>{}" , toApplicationId);
 
 		try {
 
@@ -574,10 +574,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
 					
 					//permanent address
-					
 					try {
 						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {
-							
 							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId());
 							plTeaserViewResponse.setPermAddDist(pindata.getDistrictName());
 							plTeaserViewResponse.setPermAddTaluko(pindata.getTaluka());
@@ -589,17 +587,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
-					if(retailFinalInfo.getPermanentAddress() != null){
-						
+					if(retailFinalInfo.getPermanentAddress() != null){	
 						plTeaserViewResponse.setPermAdd( (retailFinalInfo.getPermanentAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getPremiseNumber())) :"") + (retailFinalInfo.getPermanentAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getStreetName())) : "") + (retailFinalInfo.getPermanentAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPermAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPermAddDist())) :"")+ (plTeaserViewResponse.getPermAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPermAddTaluko())) : "") + (retailFinalInfo.getPermanentAddress().getPincode() != null ? (retailFinalInfo.getPermanentAddress().getPincode()) : ""));
 					}
 					
-					
 					//Office address
-					
 					try {
 						if(retailFinalInfo != null && retailFinalInfo.getOfficeAddress().getDistrictMappingId() !=null) {
-							
 							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId());
 							plTeaserViewResponse.setOffAddDist(pindata.getDistrictName());
 							plTeaserViewResponse.setOffAddTaluko(pindata.getTaluka());
@@ -612,7 +606,6 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					}
 					
 					if(retailFinalInfo.getOfficeAddress() != null){
-						
 						plTeaserViewResponse.setOffAdd( (retailFinalInfo.getOfficeAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getPremiseNumber())) :"") + (retailFinalInfo.getOfficeAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getStreetName())) : "") + (retailFinalInfo.getOfficeAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getLandMark())) : "")+ (plTeaserViewResponse.getOffAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getOffAddDist())) :"")+ (plTeaserViewResponse.getOffAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getOffAddTaluko())) : "") + (retailFinalInfo.getOfficeAddress().getPincode() != null ? (retailFinalInfo.getOfficeAddress().getPincode()) : ""));
 					}
 					
@@ -830,16 +823,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 				
 				//citetailApplicantResponse.setry,State,country
-				
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
 				plTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
 				plTeaserViewResponse.setCountry(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressCountry(), oneFormClient));
 				
 				// address
-				
 				try {
 					if(plRetailApplicantRequest.getContactAddress() != null) {
-						
 						PincodeDataResponse pindata=pincodeDateService.getById(plRetailApplicantRequest.getContactAddress().getDistrictMappingId());
 						plTeaserViewResponse.setPresentAddDist(pindata.getDistrictName());
 						plTeaserViewResponse.setPresentAddTaluko(pindata.getTaluka());
@@ -852,7 +842,6 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 				
 				if(plRetailApplicantRequest.getContactAddress() != null){
-					
 					plTeaserViewResponse.setPresentAdd( (plRetailApplicantRequest.getContactAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getPremiseNumber())) :"") + (plRetailApplicantRequest.getContactAddress().getStreetName() != null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getStreetName())) : "") + (plRetailApplicantRequest.getContactAddress().getLandMark() != null ? (CommonUtils.commaReplace(plRetailApplicantRequest.getContactAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPresentAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPresentAddDist())) :"")+ (plTeaserViewResponse.getPresentAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPresentAddTaluko())) : "") + (plRetailApplicantRequest.getContactAddress().getPincode() != null ? (plRetailApplicantRequest.getContactAddress().getPincode()) : ""));
 				}
 				
@@ -860,7 +849,6 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 				
 				// loan Details 
-				
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
 				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
 				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
@@ -883,7 +871,6 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					logger.warn("CreditCardDetails is null...");
 				}
 				
-
 				if(plRetailApplicantRequest.getBankingRelationshipList() != null) {
 					plRetailApplicantResponse.setBankRelationShipList(plRetailApplicantRequest.getBankingRelationshipList());
 				}else {
@@ -909,6 +896,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
+				
 				//KEY VERTICAL SECTOR
 				List<Long> keyVerticalSectorId = new ArrayList<>();
 				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
@@ -927,6 +915,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
+				
 				//KEY VERTICAL SUBSECTOR
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
@@ -949,49 +938,40 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 		
 		//PROPOSAL RESPONSE
-				try {
-					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-					proposalMappingRequest.setApplicationId(toApplicationId);
-					proposalMappingRequest.setFpProductId(productMappingId);
-					ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-					if(proposalMappingResponse.getData() != null) {
-					
-						plTeaserViewResponse.setProposalData(proposalMappingResponse.getData());
-						
-					}else {
-						logger.info("proposal data is null");
-					}
-
-				}catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
+		try {
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			proposalMappingRequest.setApplicationId(toApplicationId);
+			proposalMappingRequest.setFpProductId(productMappingId);
+			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			if(proposalMappingResponse.getData() != null) {	
+				plTeaserViewResponse.setProposalData(proposalMappingResponse.getData());
+			}else {
+				logger.info("proposal data is null");
+			}
+		}catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 				
 		//cibil score
-		
-				try {
-					CibilRequest cibilReq=new CibilRequest();
-					cibilReq.setPan(plRetailApplicantResponse.getPan());
-					cibilReq.setApplicationId(toApplicationId);
-					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
-				} catch (Exception e) {
-					logger.error("Error While calling Cibil Score By PanCard : ",e);
-				}
+		try {
+			CibilRequest cibilReq=new CibilRequest();
+			cibilReq.setPan(plRetailApplicantResponse.getPan());
+			cibilReq.setApplicationId(toApplicationId);
+			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+			plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
+		} catch (Exception e) {
+			logger.error("Error While calling Cibil Score By PanCard : ",e);
+		}
 		
 		// Income Details
-		
 		try {
-			
 			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(toApplicationId, proposalId);
 			
 			if(retailApplicantIncomeDetail != null) {
 				plTeaserViewResponse.setRetailApplicantIncomeDetails(retailApplicantIncomeDetail);	
 			}else {
-				logger.warn("..........::::::::----->>retailApplicantIncomeDetail is null<<-----:::::::::.....");
-				
+				logger.warn("..........::::::::----->>retailApplicantIncomeDetail is null<<-----:::::::::.....");	
 			}
-			
-			
 		} catch (Exception e) {
 			logger.error("..........::::::::----->> Error while calling PL Income Details <<-----:::::::::.....",e);
 		}
@@ -1022,7 +1002,6 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		scoringRequest.setFpProductId(productMappingId);
 
 		try {
-
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
@@ -1030,28 +1009,22 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			if (proposalScoreResponse != null){
 				logger.info("getObjectFromMap called successfully");
 			}
-
 			plTeaserViewResponse.setDataList(scoringResponse.getDataList());
 			plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
 			plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());
-
 		} catch (ScoringException | IOException e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 
 		// Eligibility Data
-
 		EligibililityRequest eligibilityReq = new EligibililityRequest();
 		eligibilityReq.setApplicationId(toApplicationId);
 		eligibilityReq.setFpProductMappingId(productMappingId);
-		logger.info(" for eligibility appid============>>" + toApplicationId);
+		logger.info(" for eligibility appid============>>{}" , toApplicationId);
 
 		try {
-
 			EligibilityResponse eligibilityResp = eligibilityClient.getRetailLoanData(eligibilityReq);
-
 			plTeaserViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -1059,61 +1032,53 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
-
 				plTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 			} else {
-
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
-
 		} catch (Exception e) {
 			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
 		
 		
 		// GET DOCUMENTS
-				DocumentRequest documentRequest = new DocumentRequest();
-				documentRequest.setApplicationId(toApplicationId);
-				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
-				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-					plTeaserViewResponse.setProfilePic(documentResponse.getDataList());
-				} catch (DocumentException e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
-				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-					plTeaserViewResponse.setBankStatement(documentResponse.getDataList());
-				} catch (DocumentException e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-				documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_PDF);
-				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-					plTeaserViewResponse.setIrtPdfReport(documentResponse.getDataList());
-				} catch (DocumentException e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-				documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_XML);
-				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-					plTeaserViewResponse.setIrtXMLReport(documentResponse.getDataList());
-				} catch (DocumentException e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-		
+		DocumentRequest documentRequest = new DocumentRequest();
+		documentRequest.setApplicationId(toApplicationId);
+		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			plTeaserViewResponse.setProfilePic(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			plTeaserViewResponse.setBankStatement(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_PDF);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			plTeaserViewResponse.setIrtPdfReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_XML);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			plTeaserViewResponse.setIrtXMLReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 
 		// pl final view details filled from here
-		if (isFinal) {
-			
+		if (isFinal) {	
 			try {
-				
 				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinalByProposalId(userId, toApplicationId, proposalId);
-				
 				if(retailFinalInfo != null) {
-				
 					plTeaserViewResponse.setReligion(retailFinalInfo.getReligion() != null ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue().toString() : "-");
 					plTeaserViewResponse.setResidentialStatus(retailFinalInfo.getResidentialStatus() != null ? ResidentialStatus.getById(retailFinalInfo.getResidentialStatus()).getValue().toString() : "-");
 					plTeaserViewResponse.setCastCategory(retailFinalInfo.getCastId() != null ? CastCategory.getById(retailFinalInfo.getCastId()).getValue().toString() : "-");
@@ -1126,11 +1091,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						retailFinalInfo.setDdoRemainingSerYrs(p.getYears());
 						retailFinalInfo.setDdoRemainingSerMonths(p.getMonths());
 					}
-					//permanent address
 					
+					//permanent address
 					try {
-						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {
-							
+						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {	
 							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId());
 							plTeaserViewResponse.setPermAddDist(pindata.getDistrictName());
 							plTeaserViewResponse.setPermAddTaluko(pindata.getTaluka());
@@ -1142,17 +1106,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
-					if(retailFinalInfo.getPermanentAddress() != null){
-						
+					if(retailFinalInfo.getPermanentAddress() != null){	
 						plTeaserViewResponse.setPermAdd( (retailFinalInfo.getPermanentAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getPremiseNumber())) :"") + (retailFinalInfo.getPermanentAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getStreetName())) : "") + (retailFinalInfo.getPermanentAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPermAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPermAddDist())) :"")+ (plTeaserViewResponse.getPermAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPermAddTaluko())) : "") + (retailFinalInfo.getPermanentAddress().getPincode() != null ? (retailFinalInfo.getPermanentAddress().getPincode()) : ""));
 					}
 					
 					
 					//Office address
-					
 					try {
-						if(retailFinalInfo != null && retailFinalInfo.getOfficeAddress().getDistrictMappingId() !=null) {
-							
+						if(retailFinalInfo != null && retailFinalInfo.getOfficeAddress().getDistrictMappingId() !=null) {	
 							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId());
 							plTeaserViewResponse.setOffAddDist(pindata.getDistrictName());
 							plTeaserViewResponse.setOffAddTaluko(pindata.getTaluka());
@@ -1165,37 +1126,25 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					}
 					
 					if(retailFinalInfo.getOfficeAddress() != null){
-						
 						plTeaserViewResponse.setOffAdd( (retailFinalInfo.getOfficeAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getPremiseNumber())) :"") + (retailFinalInfo.getOfficeAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getStreetName())) : "") + (retailFinalInfo.getOfficeAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getLandMark())) : "")+ (plTeaserViewResponse.getOffAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getOffAddDist())) :"")+ (plTeaserViewResponse.getOffAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getOffAddTaluko())) : "") + (retailFinalInfo.getOfficeAddress().getPincode() != null ? (retailFinalInfo.getOfficeAddress().getPincode()) : ""));
 					}
-					
-					
-					
+				
 					plTeaserViewResponse.setFinalDetails(retailFinalInfo);
-					
 				}else {
 					logger.warn("Retail Final Info is Null....");
-				}
-				
-				
-				
-				
+				}	
 			} catch (Exception e) {
 				logger.error("Error while fetching RetailFinalData : ",e);
 			}
-			
-			
+
 			//BANK ACCOUNT HELD DETAILS
 			try {
 				List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailsService.getExistingLoanDetailListByProposalId(proposalId,1);
 				if(bankAccountHeldDetails != null) {
-					
 					plTeaserViewResponse.setBankAccountDetails(bankAccountHeldDetails);
-					
 				}else {
 					logger.warn("Bank Held Details is Null....");
-				}
-				
+				}	
 			} catch (Exception e) {
 				logger.error("Error while getting bank account held details : ",e);
 			}
@@ -1203,10 +1152,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			//FIXED DEPOSITS DETAILS
 			try {
 				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalId(proposalId, 1);
-					if(fixedDepositeDetails != null) {
-					
+				if(fixedDepositeDetails != null) {
 					plTeaserViewResponse.setFixDepositDetails(fixedDepositeDetails);
-					
 				}else {
 					logger.warn("Fix Deposit Details is Null....");
 				}
@@ -1216,12 +1163,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			
 			//OTHER CURRENT ASSEST DETAILS
 			try {
-				List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetails = otherCurrentAssetDetailsService.getOtherCurrentAssetDetailListByProposalId(proposalId,1);
-					
+				List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetails = otherCurrentAssetDetailsService.getOtherCurrentAssetDetailListByProposalId(proposalId,1);	
 				if(otherCurrentAssetDetails != null) {
-					
-					plTeaserViewResponse.setOtherCurruntAssetDetail(otherCurrentAssetDetails);
-					
+					plTeaserViewResponse.setOtherCurruntAssetDetail(otherCurrentAssetDetails);	
 				}else {
 					logger.warn("Other Currnt Asset Details is Null....");
 				}
@@ -1231,17 +1175,12 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			
 			//OBLIGATION DETAILS
 			try {
-				
 				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailsFromProposalId(proposalId, 1);
-				
-				if(obligationRequest != null) {
-					
-					plTeaserViewResponse.setObligationDetails(obligationRequest);
-					
+				if(obligationRequest != null) {	
+					plTeaserViewResponse.setObligationDetails(obligationRequest);	
 				}else {
 					logger.warn("Obligation Details is Null....");
-				}
-				
+				}	
 			} catch (Exception e) {
 				logger.error("Error while getting obligation details : ",e);
 			}
@@ -1249,8 +1188,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			//REFERENCES DETAILS
 			try {
 				List<ReferenceRetailDetailsRequest> referenceDetails = referenceRetailDetailService.getReferenceRetailDetailListByPropsalId(proposalId,1);
-				if(referenceDetails !=null) {
-					
+				if(referenceDetails !=null) {	
 					plTeaserViewResponse.setReferenceDetails(referenceDetails);
 				}else {
 					logger.warn("Reference Details is Null...");
@@ -1269,11 +1207,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			} catch (DocumentException e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
-
 		}
 		return plTeaserViewResponse;
 	}
-
-	
 
 }
