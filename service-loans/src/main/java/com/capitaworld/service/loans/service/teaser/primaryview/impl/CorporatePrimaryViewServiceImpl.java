@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -200,6 +201,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CommonService commonService;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1011,6 +1015,17 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (Exception e) {
 			logger.error("Error From Irr Side While Calculate Financial data .....",e);
 		}
+		
+		/*get cmr score cibil */
+		
+		try {
+				corporatePrimaryViewResponse.setCibilCmrScore(cibilClient.getCMRScore(applicationId));	
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
 
 		// itr xml isUpload or Online check
 		try {

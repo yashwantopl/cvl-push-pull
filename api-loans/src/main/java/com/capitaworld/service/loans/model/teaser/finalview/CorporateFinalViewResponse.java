@@ -236,6 +236,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private Double loanObligation;
     private Object cibilConsumerReport;
     private List<Object> mcaCorpZipFile;
+    private String cibilCmrScore;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2196,6 +2197,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setMcaCorpZipFile(List<Object> mcaCorpZipFile) {
 		this.mcaCorpZipFile = mcaCorpZipFile;
+	}
+
+	public String getCibilCmrScore() {
+		return cibilCmrScore;
+	}
+
+	public void setCibilCmrScore(String cibilCmrScore) {
+		this.cibilCmrScore = cibilCmrScore;
 	}
 
 
