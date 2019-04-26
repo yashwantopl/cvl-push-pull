@@ -252,6 +252,13 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private BigDecimal maxTotalLoan;	
 	
+	private Boolean isConservativeRatioDisplay=false;
+
+	private Boolean isConservativeRatioMandatory=false;
+	
+	private BigDecimal maxConservativeRatio;
+	
+	private BigDecimal minConservativeRatio;
 
 	
 
@@ -1458,6 +1465,39 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.maxTotalLoan = maxTotalLoan;
 	}
 
+	public Boolean getIsConservativeRatioDisplay() {
+		return isConservativeRatioDisplay;
+	}
+
+	public void setIsConservativeRatioDisplay(Boolean isConservativeRatioDisplay) {
+		this.isConservativeRatioDisplay = isConservativeRatioDisplay;
+	}
+
+	public Boolean getIsConservativeRatioMandatory() {
+		return isConservativeRatioMandatory;
+	}
+
+	public void setIsConservativeRatioMandatory(Boolean isConservativeRatioMandatory) {
+		this.isConservativeRatioMandatory = isConservativeRatioMandatory;
+	}
+
+	public BigDecimal getMaxConservativeRatio() {
+		return maxConservativeRatio;
+	}
+
+	public void setMaxConservativeRatio(BigDecimal maxConservativeRatio) {
+		this.maxConservativeRatio = maxConservativeRatio;
+	}
+
+	public BigDecimal getMinConservativeRatio() {
+		return minConservativeRatio;
+	}
+
+	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
+		this.minConservativeRatio = minConservativeRatio;
+	}
+
+	
 	
 	
 }

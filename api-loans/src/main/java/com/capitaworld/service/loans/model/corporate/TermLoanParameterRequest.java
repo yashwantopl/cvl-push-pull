@@ -26,53 +26,53 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Integer denomination;
 
-	private Boolean isCollateralDisplay=false;
+	private Boolean isCollateralDisplay = false;
 
-	private Boolean isCollateralMandatory=false;
+	private Boolean isCollateralMandatory = false;
 
-	private Boolean isCreditRatingDisplay=false;
+	private Boolean isCreditRatingDisplay = false;
 
-	private Boolean isCreditRatingMandatory=false;
+	private Boolean isCreditRatingMandatory = false;
 
-	private Boolean isDebtEquityDisplay=false;
+	private Boolean isDebtEquityDisplay = false;
 
-	private Boolean isDebtEquityMandatory=false;
+	private Boolean isDebtEquityMandatory = false;
 
-	private Boolean isEstablishmentDisplay=false;
+	private Boolean isEstablishmentDisplay = false;
 
-	private Boolean isEstablishmentMandatory=false;
+	private Boolean isEstablishmentMandatory = false;
 
-	private Boolean isGeographicalDisplay=false;
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isGeographicalMandatory=false;
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isIndustrySectorDisplay=false;
+	private Boolean isIndustrySectorDisplay = false;
 
-	private Boolean isIndustrySectorMandatory=false;
+	private Boolean isIndustrySectorMandatory = false;
 
-	private Boolean isInvestmentSizeDisplay=false;
+	private Boolean isInvestmentSizeDisplay = false;
 
-	private Boolean isInvestmentSizeMandatory=false;
+	private Boolean isInvestmentSizeMandatory = false;
 
-	private Boolean isNetworthDisplay=false;
+	private Boolean isNetworthDisplay = false;
 
-	private Boolean isNetworthMandatory=false;
+	private Boolean isNetworthMandatory = false;
 
-	private Boolean isPastYearTurnoverDisplay=false;
+	private Boolean isPastYearTurnoverDisplay = false;
 
-	private Boolean isPastYearTurnoverMandatory=false;
+	private Boolean isPastYearTurnoverMandatory = false;
 
-	private Boolean isProfitabilityHistoryDisplay=false;
+	private Boolean isProfitabilityHistoryDisplay = false;
 
-	private Boolean isProfitabilityHistoryMandatory=false;
+	private Boolean isProfitabilityHistoryMandatory = false;
 
-	private Boolean isTenureDisplay=false;
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isTenureMandatory=false;
-	
-	private Boolean isUnInterestedIndustryDisplay=false;
+	private Boolean isTenureMandatory = false;
 
-	private Boolean isUnInterestedIndustryMandatory=false;
+	private Boolean isUnInterestedIndustryDisplay = false;
+
+	private Boolean isUnInterestedIndustryMandatory = false;
 
 	private Integer LongTermCreditRating;
 
@@ -107,7 +107,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Integer profitabilityHistory;
 
 	private Integer shortTermCreditRating;
-	
+
 	private Long uninterestedIndustry;
 
 	private BigDecimal minCurrentRatio;
@@ -156,7 +156,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Boolean isCustomerConcentrationDisplay = false;
 
-	private Boolean isCustomerConcentrationMandatory =false;
+	private Boolean isCustomerConcentrationMandatory = false;
 
 	private Integer minRiskModelScore;
 
@@ -197,15 +197,14 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCommercialCibilDisplay = false;
 
 	private Boolean isCommercialCibilMandatory = false;
-	
-	
+
 	private Long userOrgId;
-	
+
 	private Integer appstage;
-	
+
 	private Object workflowData;
 
-	//-----------------------added eligibility method for product
+	// -----------------------added eligibility method for product
 	private Integer assessmentMethodId;
 
 	private BigDecimal minCgtmseCoverage;
@@ -215,17 +214,17 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
-	
+
 	private BigDecimal minTenureNtb;
-	
+
 	private BigDecimal maxTenureNtb;
-	
+
 	private Integer cgtmseCoverage;
-	
+
 	private Integer cashMargin;
-	
+
 	private BigDecimal dscr;
-	
+
 	private Integer paybackPeriod;
 
 	private BigDecimal newTolTnw;
@@ -235,43 +234,42 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isNewCollateralCoverageCheck = false;
 
 	private Boolean isNewTolTnwCheck = false;
-    /**
+	/**
 	 * @return the workflowData
 	 */
-	
-	
-	/*ntb*/
-	
+
+	/* ntb */
+
 	private BigDecimal minAvrgAge;
 
 	private BigDecimal maxAvrgAge;
-	
+
 	private BigDecimal minAvgYearlyIncome;
 
 	private BigDecimal minAvrgYearlyIncome;
-	
+
 	private BigDecimal maxAvrgYearlyIncome;
 
 	private BigDecimal mincgtmse;
-	
+
 	private BigDecimal maxcgtmse;
 
 	private BigDecimal minLoanToAsset;
-	
+
 	private BigDecimal maxLoanToAsset;
-	
+
 	private BigDecimal minAvgWorkExp;
-	
+
 	private BigDecimal maxAvgWorkExp;
-	
+
 	private BigDecimal minCurrentFoir;
-	
+
 	private BigDecimal maxCurrentFoir;
-	
+
 	private Boolean isAvrgAgeDisplay = false;
 
 	private Boolean isAvrgAgeMandatory = false;
-	
+
 	private Boolean isAvrgYearlyIncomeDisplay = false;
 
 	private Boolean isAvrgYearlyIncomeMandatory = false;
@@ -279,7 +277,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean iscgtmseDisplay = false;
 
 	private Boolean iscgtmseMandatory = false;
-	
+
 	private Boolean isLoanToAssetDisplay = false;
 
 	private Boolean isLoanToAssetMandatory = false;
@@ -287,11 +285,11 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isAvgWorkExpDisplay = false;
 
 	private Boolean isAvgWorkExpMandatory = false;
-	
+
 	private Boolean isCurrentFoirDisplay = false;
 
 	private Boolean isCurrentFoirMandatory = false;
-	
+
 	private BigDecimal maxDropInTurnover;
 
 	private Boolean isMaxDropInTurnoverDisplay = false;
@@ -322,38 +320,46 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Boolean isCollateralCoverageMandatory = false;
 
-	private Integer kotakSubParameter ;
-	
+	private Integer kotakSubParameter;
+
 	private Boolean wcReqCheck = false;
 	private Boolean isNewDscrCheck = false;
-	
+
 	private BigDecimal newDscrCheck;
 
 	// projected sales
 	private Boolean isNewHistoricSales = false;
 	private BigDecimal newHistoricSales;
-	
-	
-		//total limits
-		private List<Integer> loanArrangementIds;
-		
-		private BigDecimal minAdditionalLoan;
 
-		private BigDecimal maxAdditionalLoan;
-		
-		private BigDecimal minTotalLoan;
+	// total limits
+	private List<Integer> loanArrangementIds;
 
-		private BigDecimal maxTotalLoan;	 
+	private BigDecimal minAdditionalLoan;
+
+	private BigDecimal maxAdditionalLoan;
+
+	private BigDecimal minTotalLoan;
+
+	private BigDecimal maxTotalLoan;
 
 	private Boolean isHistoricGrowth = false;
 	private BigDecimal newHistoricGrowth;
+
+	private Boolean isConservativeRatioDisplay = false;
+
+	private Boolean isConservativeRatioMandatory = false;
+
+	private BigDecimal maxConservativeRatio;
+
+	private BigDecimal minConservativeRatio;
 
 	public Object getWorkflowData() {
 		return workflowData;
 	}
 
 	/**
-	 * @param workflowData the workflowData to set
+	 * @param workflowData
+	 *            the workflowData to set
 	 */
 	public void setWorkflowData(Object workflowData) {
 		this.workflowData = workflowData;
@@ -671,23 +677,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxGrossCashAccuralsRatio = maxGrossCashAccuralsRatio;
 	}
 
-    public BigDecimal getMinCustomerConcentration() {
-        return minCustomerConcentration;
-    }
+	public BigDecimal getMinCustomerConcentration() {
+		return minCustomerConcentration;
+	}
 
-    public void setMinCustomerConcentration(BigDecimal minCustomerConcentration) {
-        this.minCustomerConcentration = minCustomerConcentration;
-    }
+	public void setMinCustomerConcentration(BigDecimal minCustomerConcentration) {
+		this.minCustomerConcentration = minCustomerConcentration;
+	}
 
-    public BigDecimal getMaxCustomerConcentration() {
-        return maxCustomerConcentration;
-    }
+	public BigDecimal getMaxCustomerConcentration() {
+		return maxCustomerConcentration;
+	}
 
-    public void setMaxCustomerConcentration(BigDecimal maxCustomerConcentration) {
-        this.maxCustomerConcentration = maxCustomerConcentration;
-    }
+	public void setMaxCustomerConcentration(BigDecimal maxCustomerConcentration) {
+		this.maxCustomerConcentration = maxCustomerConcentration;
+	}
 
-    public Integer getMinRiskModelScore() {
+	public Integer getMinRiskModelScore() {
 		return minRiskModelScore;
 	}
 
@@ -720,8 +726,8 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private List<DataRequest> stateList = Collections.emptyList();
 
 	private List<DataRequest> cityList = Collections.emptyList();
-	
-	private List<DataRequest> unInterestedIndustrylist=Collections.emptyList();
+
+	private List<DataRequest> unInterestedIndustrylist = Collections.emptyList();
 
 	public Integer getCurrency() {
 		return currency;
@@ -1082,8 +1088,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setCountryList(List<DataRequest> countryList) {
 		this.countryList = countryList;
 	}
-	
-	
 
 	public List<DataRequest> getUnInterestedIndustrylist() {
 		return unInterestedIndustrylist;
@@ -1213,7 +1217,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
 
-
 	public BigDecimal getMinAvrgAge() {
 		return minAvrgAge;
 	}
@@ -1238,7 +1241,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.minAvgYearlyIncome = minAvgYearlyIncome;
 	}
 
-
 	public BigDecimal getMinAvrgYearlyIncome() {
 		return minAvrgYearlyIncome;
 	}
@@ -1254,7 +1256,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setMaxAvrgYearlyIncome(BigDecimal maxAvrgYearlyIncome) {
 		this.maxAvrgYearlyIncome = maxAvrgYearlyIncome;
 	}
-
 
 	public BigDecimal getMincgtmse() {
 		return mincgtmse;
@@ -1320,7 +1321,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxCurrentFoir = maxCurrentFoir;
 	}
 
-
 	public Boolean getIsAvrgAgeDisplay() {
 		return isAvrgAgeDisplay;
 	}
@@ -1353,7 +1353,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.isAvrgYearlyIncomeMandatory = isAvrgYearlyIncomeMandatory;
 	}
 
-	
 	public Boolean getIscgtmseDisplay() {
 		return iscgtmseDisplay;
 	}
@@ -1633,6 +1632,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public Boolean getWcReqCheck() {
 		return wcReqCheck;
 	}
+
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}
@@ -1641,8 +1641,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.wcReqCheck = wcReqCheck;
 	}
 
-
-	
 	public BigDecimal getNewDscrCheck() {
 		return newDscrCheck;
 	}
@@ -1727,6 +1725,38 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxTotalLoan = maxTotalLoan;
 	}
 
+	public Boolean getIsConservativeRatioDisplay() {
+		return isConservativeRatioDisplay;
+	}
+
+	public void setIsConservativeRatioDisplay(Boolean isConservativeRatioDisplay) {
+		this.isConservativeRatioDisplay = isConservativeRatioDisplay;
+	}
+
+	public Boolean getIsConservativeRatioMandatory() {
+		return isConservativeRatioMandatory;
+	}
+
+	public void setIsConservativeRatioMandatory(Boolean isConservativeRatioMandatory) {
+		this.isConservativeRatioMandatory = isConservativeRatioMandatory;
+	}
+
+	public BigDecimal getMaxConservativeRatio() {
+		return maxConservativeRatio;
+	}
+
+	public void setMaxConservativeRatio(BigDecimal maxConservativeRatio) {
+		this.maxConservativeRatio = maxConservativeRatio;
+	}
+
+	public BigDecimal getMinConservativeRatio() {
+		return minConservativeRatio;
+	}
+
+	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
+		this.minConservativeRatio = minConservativeRatio;
+	}
+	
 	
 
 }
