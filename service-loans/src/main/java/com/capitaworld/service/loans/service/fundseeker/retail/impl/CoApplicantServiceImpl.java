@@ -1321,6 +1321,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					coApplicantDetail.setAddressPincode(BigInteger.valueOf(req.getAddressPincode()));	
 				}
 				coApplicantDetail.setEmploymentStatus(req.getEmploymentStatus());
+				coApplicantDetail.setEmploymentStatusOther(req.getEmploymentStatusOther());
 				coApplicantDetail.setEmployedWithOther(req.getEmployedWithOther());
 				coApplicantDetail.setNameOfEntity(req.getNameOfEntity());
 				coApplicantDetail.setCurrentEmploymentStatus(req.getCurrentEmploymentStatus());
@@ -1357,6 +1358,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				retailApplicantDetail.setBirthDate(req.getBirthDate());
 				retailApplicantDetail.setResidenceType(req.getResidenceType());
 				retailApplicantDetail.setResidenceSinceYear(req.getResidenceSinceYear());
+				retailApplicantDetail.setResidenceSinceMonth(req.getResidenceSinceMonth());
 				retailApplicantDetail.setResidentialStatus(req.getResidentialStatus());
 				retailApplicantDetail.setNetworth(req.getNetworth());
 				retailApplicantDetail.setAddressPremiseName(req.getAddressPremiseName());
@@ -1369,6 +1371,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				retailApplicantDetail.setAddressPincode(req.getAddressPincode());
 				retailApplicantDetail.setEmploymentType(req.getEmploymentType());
 				retailApplicantDetail.setEmploymentStatus(req.getEmploymentStatus());
+				retailApplicantDetail.setEmploymentStatusOther(req.getEmploymentStatusOther());
 				retailApplicantDetail.setEmployedWithOther(req.getEmployedWithOther());
 				retailApplicantDetail.setNameOfEmployer(req.getNameOfEmployer());
 				retailApplicantDetail.setCurrentEmploymentStatus(req.getCurrentEmploymentStatus());
