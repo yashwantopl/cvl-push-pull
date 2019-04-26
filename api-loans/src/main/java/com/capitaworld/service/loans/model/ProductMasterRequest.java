@@ -60,6 +60,8 @@ public class ProductMasterRequest implements Serializable {
 	
 	private String actionFor;
 	
+	private Integer gstType;
+	
 
 	public ProductMasterRequest() {
 		// Do nothing because of X and Y.
@@ -260,4 +262,13 @@ public class ProductMasterRequest implements Serializable {
 	public void setUserOrgId(Long userOrgId) {
 		this.userOrgId = userOrgId;
 	}
+
+	public Integer getGstType() {
+		return gstType;
+	}
+
+	public void setGstType(Integer gstType) {
+		this.gstType = gstType;
+	}
+	
 }

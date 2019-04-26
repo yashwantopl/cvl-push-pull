@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
+import com.capitaworld.service.loans.model.retail.HLOneformRequest;
+import com.capitaworld.service.loans.model.retail.HLOnefromResponse;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 
 import org.slf4j.Logger;
@@ -196,6 +198,51 @@ public class CoApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+	
+	@RequestMapping(value = "oneForm/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getOneFormList(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in get Onefrom List");
+		try {
+			if (applicationId == null) {
+				logger.warn("Application Id can not be empty ==>");
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),coApplicantService.getListForOneForm(applicationId)),HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "oneForm/get", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getOneFormById(@RequestBody HLOnefromResponse hlOnefromResponse) {
+		logger.info("Enter in get Onefrom data by id");
+		try {
+			if (hlOnefromResponse.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>");
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),coApplicantService.getById(hlOnefromResponse.getApplicationId(), hlOnefromResponse.getCoAppId())),HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "oneForm/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveOneform(@RequestBody HLOneformRequest hlOneformRequest) {
+		logger.info("Enter in save oneform details");
+		try {
+			if (hlOneformRequest.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>");
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),coApplicantService.saveOneForm(hlOneformRequest)),HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -32,6 +33,7 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
@@ -42,14 +44,23 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -65,7 +76,29 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.enums.AssessedForITMst;
+import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
+import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EducationalStatusMst;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FactoryPremiseMst;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.HaveLIMst;
+import com.capitaworld.service.oneform.enums.KnowHowMst;
+import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.MaritalStatusMst;
+import com.capitaworld.service.oneform.enums.OwningHouseMst;
+import com.capitaworld.service.oneform.enums.PurposeOfLoan;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
+import com.capitaworld.service.oneform.enums.SpouseDetailMst;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -168,6 +201,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CommonService commonService;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -979,6 +1015,17 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (Exception e) {
 			logger.error("Error From Irr Side While Calculate Financial data .....",e);
 		}
+		
+		/*get cmr score cibil */
+		
+		try {
+				corporatePrimaryViewResponse.setCibilCmrScore(cibilClient.getCMRScore(applicationId));	
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
 
 		// itr xml isUpload or Online check
 		try {
@@ -1260,7 +1307,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		// Fraud Detection Data
 
-		/*try {
+		try {
 			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
 
 			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
@@ -1270,7 +1317,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----" + toApplicationId + CommonUtils.EXCEPTION + e1);
-		}*/
+		}
 
 
 		// Product Name

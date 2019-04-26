@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -32,6 +33,7 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
@@ -319,6 +321,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private CommonService commonService;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1194,6 +1199,14 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Credit Rating {}", e);
 		}
+		
+		/*get cmr score cibil */	
+		try {
+			corporateFinalViewResponse.setCibilCmrScore(cibilClient.getCMRScore(toApplicationId));	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		// itr xml isUpload or Online check
 		try {
 			ITRConnectionResponse itrConnectionResponse = itrClient.getIsUploadAndYearDetails(toApplicationId);
@@ -1767,7 +1780,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		// Fraud Detection Data
 
-		/*try {
+		try {
 			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
 
 			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
@@ -1777,7 +1790,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----", toApplicationId + CommonUtils.EXCEPTION + e1);
-		}*/
+		}
 		
 		
 		

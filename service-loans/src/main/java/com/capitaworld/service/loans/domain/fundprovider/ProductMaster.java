@@ -97,6 +97,9 @@ public abstract class ProductMaster implements Serializable {
 	
 	@Column(name="action_for")
 	private String actionFor;
+	
+	@Column(name = "gst_type")
+	private Integer gstType;
 
 	public ProductMaster() {
 	}
@@ -289,6 +292,15 @@ public abstract class ProductMaster implements Serializable {
 		this.actionFor = actionFor;
 	}
 
+	public Integer getGstType() {
+		return gstType;
+	}
+
+	public void setGstType(Integer gstType) {
+		this.gstType = gstType;
+	}
+
+	
 	
 	
 	

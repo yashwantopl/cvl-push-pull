@@ -27,6 +27,9 @@ public class AddProductRequest {
 	
 	private Integer finId;
 	
+	private Integer gstType;
+	
+	
 	public Integer getProductId() {
 		return productId;
 	}
@@ -114,6 +117,16 @@ public class AddProductRequest {
 	public void setFinId(Integer finId) {
 		this.finId = finId;
 	}
+
+	public Integer getGstType() {
+		return gstType;
+	}
+
+	public void setGstType(Integer gstType) {
+		this.gstType = gstType;
+	}
+	
+	
 	
 	
 }

@@ -409,6 +409,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setIsCopied(false);
 				productMaster.setIsActive(true);
 				productMaster.setUserOrgId(userOrgId);
+				productMaster.setGstType(addProductRequest.getGstType());
 				productMaster.setStatusId(1);
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
