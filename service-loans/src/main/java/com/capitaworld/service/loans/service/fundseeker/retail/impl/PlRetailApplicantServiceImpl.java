@@ -83,7 +83,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             RetailApplicantDetail applicantDetail = null;
             
             if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalIdAndUserId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId(), finalUserId);
+            	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
             }else {
             	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
             }
@@ -390,7 +390,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = null;
             if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalIdAndUserId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId(), finalUserId);
+            	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
             }else {
             	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
             }
@@ -574,8 +574,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             
             RetailApplicantDetail applicantDetail = null;
             if(applicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalIdAndUserId(applicantRequest.getApplicationId(), 
-            			applicantRequest.getProposalId(), finaluserId);
+            	applicantDetail = applicantRepository.findByProposalId(applicantRequest.getApplicationId(), 
+            			applicantRequest.getProposalId());
             }else {
             	applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
                         applicantRequest.getApplicationId());
