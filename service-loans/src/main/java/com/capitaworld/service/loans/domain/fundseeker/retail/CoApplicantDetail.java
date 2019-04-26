@@ -130,7 +130,7 @@ public class CoApplicantDetail implements Serializable {
 	private Integer currentEmploymentStatus;
 	
 	@Column(name = "employment_status_other")
-	private Integer employmentStatusOther;
+	private String employmentStatusOther;
 
 	@Column(name = "entity_name")
 	private String entityName;
@@ -1420,11 +1420,11 @@ public class CoApplicantDetail implements Serializable {
 		this.currentEmploymentStatus = currentEmploymentStatus;
 	}
 
-	public Integer getEmploymentStatusOther() {
+	public String getEmploymentStatusOther() {
 		return employmentStatusOther;
 	}
 
-	public void setEmploymentStatusOther(Integer employmentStatusOther) {
+	public void setEmploymentStatusOther(String employmentStatusOther) {
 		this.employmentStatusOther = employmentStatusOther;
 	}
 

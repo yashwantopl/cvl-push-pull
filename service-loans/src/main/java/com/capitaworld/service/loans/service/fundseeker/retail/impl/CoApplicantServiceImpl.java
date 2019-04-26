@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1264,12 +1265,24 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
 			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
 				BeanUtils.copyProperties(coApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())) {
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(coApplicantDetail.getBusinessStartDate());
+					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+					res.setBusinessStartYear(cal.get(Calendar.YEAR));
+				}
 				res.setCoAppId(coAppId);
 			}
 		} else {
 			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 				BeanUtils.copyProperties(retailApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBusinessStartDate())) {
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(retailApplicantDetail.getBusinessStartDate());
+					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+					res.setBusinessStartYear(cal.get(Calendar.YEAR));
+				}
 				return res;
 			}
 		}
@@ -1315,7 +1328,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coApplicantDetail.setCurrentJobYear(req.getCurrentJobYear());
 				coApplicantDetail.setTotalExperienceMonth(req.getTotalExperienceMonth());
 				coApplicantDetail.setTotalExperienceYear(req.getTotalExperienceYear());
-				coApplicantDetail.setBusinessStartDate(req.getBusinessStartDate());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(req.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
+					coApplicantDetail.setBusinessStartDate(cal.getTime());
+				}
 				coApplicantDetail.setGrossMonthlyIncome(req.getGrossMonthlyIncome());
 				coApplicantDetail.setMonthlyIncome(req.getMonthlyIncome());
 				coApplicantDetail.setStatusId(req.getStatusId());
@@ -1359,7 +1376,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				retailApplicantDetail.setCurrentJobYear(req.getCurrentJobYear());
 				retailApplicantDetail.setTotalExperienceMonth(req.getTotalExperienceMonth());
 				retailApplicantDetail.setTotalExperienceYear(req.getTotalExperienceYear());
-				retailApplicantDetail.setBusinessStartDate(req.getBusinessStartDate());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(req.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
+					retailApplicantDetail.setBusinessStartDate(cal.getTime());
+				}
 				retailApplicantDetail.setGrossMonthlyIncome(req.getGrossMonthlyIncome());
 				retailApplicantDetail.setMonthlyIncome(req.getMonthlyIncome());
 				retailApplicantDetail.setEducationQualification(req.getEducationQualification());
