@@ -67,7 +67,7 @@ public class HLOneformRequest implements Serializable {
 	
 	//CO-APPLICANT 
 	private String nameOfEntity;
-	
+	private Integer nationality;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -344,6 +344,12 @@ public class HLOneformRequest implements Serializable {
 	}
 	public void setBusinessStartYear(Integer businessStartYear) {
 		this.businessStartYear = businessStartYear;
+	}
+	public Integer getNationality() {
+		return nationality;
+	}
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
 	}
 	
 	

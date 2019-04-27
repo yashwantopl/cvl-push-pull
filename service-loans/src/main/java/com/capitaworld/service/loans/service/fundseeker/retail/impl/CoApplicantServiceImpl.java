@@ -1270,6 +1270,16 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					cal.setTime(coApplicantDetail.getBusinessStartDate());
 					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
 					res.setBusinessStartYear(cal.get(Calendar.YEAR));
+					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressCity())) {
+						res.setAddressCity(coApplicantDetail.getAddressCity().longValue());	
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressState())) {
+						res.setAddressState(coApplicantDetail.getAddressState().longValue());				
+					}
+					res.setAddressCountry(coApplicantDetail.getAddressCountry());
+					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
+						res.setAddressPincode(coApplicantDetail.getAddressPincode().longValue());	
+					}
 				}
 				res.setCoAppId(coAppId);
 			}
@@ -1337,6 +1347,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coApplicantDetail.setGrossMonthlyIncome(req.getGrossMonthlyIncome());
 				coApplicantDetail.setMonthlyIncome(req.getMonthlyIncome());
 				coApplicantDetail.setStatusId(req.getStatusId());
+				coApplicantDetail.setNationality(req.getNationality());
 				coApplicantDetail.setModifiedBy(req.getUserId());
 				coApplicantDetail.setModifiedDate(new Date());
 				coApplicantDetail.setIsOneFormCompleted(true);
