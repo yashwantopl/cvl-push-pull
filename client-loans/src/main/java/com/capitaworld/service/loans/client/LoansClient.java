@@ -122,6 +122,7 @@ public class LoansClient {
 	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
 	private static final String PRIMARY_INFORMATION = "/corporate_primary/primary/get";
 	private static final String STRING_TO_BINARY_ARRAY = "/convertToByteArray";
+	private static final String SAVE_SWITCH_EXISTING = "/corporate_primary/primary/save/switchExisting";
 
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
 	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
@@ -2534,6 +2535,22 @@ public class LoansClient {
 		} catch (Exception e) {			
 			logger.error("{}",e);
 			throw new LoansException("Loans service is not available While Get responce from /GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK");
+		}
+	}
+	public LoansResponse saveSwitchExisting(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_SWITCH_EXISTING);
+		logger.info("URL in saveSwitchExisting : {}",url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			PrimaryCorporateRequest primaryCorporateRequest = new PrimaryCorporateRequest();
+			primaryCorporateRequest.setId(applicationId);
+			HttpEntity<PrimaryCorporateRequest> entity = new HttpEntity<>(primaryCorporateRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in saveSwitchExisting :{} ",e);
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 }

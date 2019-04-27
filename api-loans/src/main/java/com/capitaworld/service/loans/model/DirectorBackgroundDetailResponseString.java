@@ -49,6 +49,10 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	private String relationshipType;
 	
 	private String cibilScore;
+	
+	private String experianScore;
+	
+	private String highmarkScore;
 
 	private String shareholding;
 
@@ -506,8 +510,20 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	public void setDirectorPersonalDetailRequest(DirectorPersonalDetailRequest directorPersonalDetailRequest) {
 		this.directorPersonalDetailRequest = directorPersonalDetailRequest;
 	}
-	
-	
-	
-	
+
+	public String getExperianScore() {
+		return experianScore;
+	}
+
+	public void setExperianScore(String experianScore) {
+		this.experianScore = experianScore;
+	}
+
+	public String getHighmarkScore() {
+		return highmarkScore;
+	}
+
+	public void setHighmarkScore(String highmarkScore) {
+		this.highmarkScore = highmarkScore;
+	}
 }

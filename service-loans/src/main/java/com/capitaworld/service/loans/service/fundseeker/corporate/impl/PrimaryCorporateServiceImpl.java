@@ -132,4 +132,22 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+
+	@Override
+	public boolean saveSwitchExistingLoan(PrimaryCorporateRequest primaryCorporateRequest) throws LoansException {
+		try {
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findByApplicationIdId(primaryCorporateRequest.getId());
+			if (primaryCorporateDetail == null) {
+				throw new NullPointerException(PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG
+						+ primaryCorporateRequest.getId());
+			}
+			primaryCorporateDetail.setIsAllowSwitchExistingLender(true);
+			primaryCorporateDetail.setModifiedDate(new Date());
+			primaryCorporateRepository.save(primaryCorporateDetail);
+			return true;
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }

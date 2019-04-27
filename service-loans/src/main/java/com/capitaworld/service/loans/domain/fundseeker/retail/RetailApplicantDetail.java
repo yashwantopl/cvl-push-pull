@@ -135,7 +135,7 @@ public class RetailApplicantDetail implements Serializable {
 	private Integer employmentStatus;
 	
 	@Column(name = "employment_status_other")
-	private Integer employmentStatusOther;
+	private String employmentStatusOther;
 	
 	@Column(name = "current_employment_status")
 	private Integer currentEmploymentStatus;
@@ -1944,11 +1944,11 @@ public class RetailApplicantDetail implements Serializable {
 	public void setIsCibilCompleted(Boolean isCibilCompleted) {
 		this.isCibilCompleted = isCibilCompleted;
 	}
-	public Integer getEmploymentStatusOther() {
+	public String getEmploymentStatusOther() {
 		return employmentStatusOther;
 	}
 
-	public void setEmploymentStatusOther(Integer employmentStatusOther) {
+	public void setEmploymentStatusOther(String employmentStatusOther) {
 		this.employmentStatusOther = employmentStatusOther;
 	}
 
