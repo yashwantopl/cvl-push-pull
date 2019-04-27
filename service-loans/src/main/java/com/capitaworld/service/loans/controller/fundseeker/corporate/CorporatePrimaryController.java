@@ -152,4 +152,28 @@ public class CorporatePrimaryController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @RequestMapping(value = "${primary}/save/switchExisting", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveSwitchExisting(@RequestBody PrimaryCorporateRequest primaryCorporateRequest,
+                                                                 HttpServletRequest request)throws LoansException {
+        try {
+            CommonDocumentUtils.startHook(logger, "savePrimarySwitchExisting");
+            // request must not be null
+            if (primaryCorporateRequest.getId() == null) {
+                logger.warn("ID must not be empty ==>" + primaryCorporateRequest.getId());
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            primaryCorporateService.saveSwitchExistingLoan(primaryCorporateRequest);
+            CommonDocumentUtils.endHook(logger, "saveSwitchExisting");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while saving saveSwitchExisting()==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
