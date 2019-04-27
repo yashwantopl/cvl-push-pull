@@ -509,18 +509,27 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					try {
 						CibilRequest cibilRequest = new CibilRequest();
 						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+						cibilRequest.setApplicationId(toApplicationId);
 
-						CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
-						if(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)) {
-							if("000-1".equalsIgnoreCase(cibilScoreByPanCard.getActualScore())) {
-								directorBackgroundDetailResponse.setCibilScore("-1");
-							}else {
-								directorBackgroundDetailResponse.setCibilScore(Integer.valueOf(cibilScoreByPanCard.getActualScore()).toString());								
-							}								
-						}else {
-							directorBackgroundDetailResponse.setCibilScore("-");
+						List<CibilScoreLogRequest> response = cibilClient.getMultipleProviderScoreByApplicationIdAndPan(cibilRequest);
+						if(!CommonUtils.isListNullOrEmpty(response)) {
+							for(CibilScoreLogRequest cibilScoreLogRequest : response) {
+								String score = cibilScoreLogRequest.getActualScore();
+								if("000-1".equalsIgnoreCase(cibilScoreLogRequest.getActualScore())) {
+									score = "-1";
+								}else {
+									score = Integer.valueOf(cibilScoreLogRequest.getActualScore()).toString();								
+								}
+								if(cibilScoreLogRequest.getScoreName() != null && cibilScoreLogRequest.getScoreName().contains("CIBIL")) {
+									directorBackgroundDetailResponse.setCibilScore(score);								
+								}else if(cibilScoreLogRequest.getScoreName().contains("Experian")) {
+									directorBackgroundDetailResponse.setExperianScore(score);								
+								}else if(cibilScoreLogRequest.getScoreName().contains("HIGHMARK")) {
+									directorBackgroundDetailResponse.setHighmarkScore(score);								
+								}
+								
+							}
 						}
-						
 					}catch(Exception e) {
 						logger.error("Error while getting cibil details : ",e);
 					}

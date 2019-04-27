@@ -415,6 +415,18 @@ public class CoApplicantDetail implements Serializable {
     
     @Column(name = "address_district_mapping_id")
 	private Long addressDistrictMappingId;
+    
+    @Column(name = "nationality")
+	private Integer nationality;
+    
+    @Column(name="employment_type")
+	private Integer employmentType;
+    
+    @Column(name="residence_since_year")
+    private Integer residenceSinceYear;
+
+    @Column(name="residence_since_month")
+    private Integer residenceSinceMonth;
 
 	public CoApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1458,6 +1470,38 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setAddressDistrictMappingId(Long addressDistrictMappingId) {
 		this.addressDistrictMappingId = addressDistrictMappingId;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
+	}
+
+	public Integer getResidenceSinceYear() {
+		return residenceSinceYear;
+	}
+
+	public void setResidenceSinceYear(Integer residenceSinceYear) {
+		this.residenceSinceYear = residenceSinceYear;
+	}
+
+	public Integer getResidenceSinceMonth() {
+		return residenceSinceMonth;
+	}
+
+	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+		this.residenceSinceMonth = residenceSinceMonth;
 	}
 	
 	
