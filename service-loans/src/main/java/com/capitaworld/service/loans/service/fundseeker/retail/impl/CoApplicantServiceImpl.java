@@ -1315,6 +1315,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coApplicantDetail.setMobile(req.getMobile());
 				coApplicantDetail.setBirthDate(req.getBirthDate());
 				coApplicantDetail.setResidenceType(req.getResidenceType());
+				coApplicantDetail.setResidenceSinceMonth(req.getResidenceSinceMonth());
+				coApplicantDetail.setResidenceSinceYear(req.getResidenceSinceYear());
 				coApplicantDetail.setNetworth(req.getNetworth());
 				coApplicantDetail.setAddressPremiseName(req.getAddressPremiseName());
 				coApplicantDetail.setAddressStreetName(req.getAddressStreetName());
@@ -1330,6 +1332,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				if(!CommonUtils.isObjectNullOrEmpty(req.getAddressPincode())) {
 					coApplicantDetail.setAddressPincode(BigInteger.valueOf(req.getAddressPincode()));	
 				}
+				coApplicantDetail.setEmploymentType(req.getEmploymentType());
 				coApplicantDetail.setEmploymentStatus(req.getEmploymentStatus());
 				coApplicantDetail.setEmploymentStatusOther(req.getEmploymentStatusOther());
 				coApplicantDetail.setEmployedWithOther(req.getEmployedWithOther());
