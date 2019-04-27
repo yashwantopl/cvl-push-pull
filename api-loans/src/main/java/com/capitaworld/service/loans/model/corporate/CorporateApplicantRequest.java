@@ -82,6 +82,26 @@ public class CorporateApplicantRequest implements Serializable {
     
     private Double grossSales;
     
+    
+    private Boolean isMultiGST;
+    
+    
+    
+    
+	/**
+	 * @return the isMultiGST
+	 */
+	public Boolean getIsMultiGST() {
+		return isMultiGST;
+	}
+
+	/**
+	 * @param isMultiGST the isMultiGST to set
+	 */
+	public void setIsMultiGST(Boolean isMultiGST) {
+		this.isMultiGST = isMultiGST;
+	}
+
 	public Long getUserId() {
 		return userId;
 	}

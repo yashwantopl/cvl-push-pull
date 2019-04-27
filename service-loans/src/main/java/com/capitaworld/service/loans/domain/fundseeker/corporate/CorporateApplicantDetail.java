@@ -218,6 +218,25 @@ public class CorporateApplicantDetail implements Serializable {
 
     @Column(name="business_since_month")
     private Integer businessSinceMonth;
+    
+    @Column(name="is_multi_gst")
+    private Boolean isMultiGST;
+
+    
+    
+	/**
+	 * @return the isMultiGST
+	 */
+	public Boolean getIsMultiGST() {
+		return isMultiGST;
+	}
+
+	/**
+	 * @param isMultiGST the isMultiGST to set
+	 */
+	public void setIsMultiGST(Boolean isMultiGST) {
+		this.isMultiGST = isMultiGST;
+	}
 
 	public CorporateApplicantDetail() {
 		// Do nothing because of X and Y.

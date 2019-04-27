@@ -27,6 +27,7 @@ public class HLOneformRequest implements Serializable {
 	private Date birthDate;
 	private Integer residenceType;
 	private Integer residenceSinceYear;
+	private Integer residenceSinceMonth;
 	private Integer residentialStatus;
 	private Double networth;
 	
@@ -50,7 +51,8 @@ public class HLOneformRequest implements Serializable {
 	private Integer currentJobYear;
 	private Integer totalExperienceMonth;
 	private Integer totalExperienceYear;
-	private Date businessStartDate;
+	private Integer businessStartMonth;
+	private Integer businessStartYear;
 	private Double grossMonthlyIncome;
 	private Double monthlyIncome;
 	
@@ -60,6 +62,7 @@ public class HLOneformRequest implements Serializable {
 	private Integer spouseEmployment;
 	private Double annualIncomeOfSpouse;
 	private Integer noOfDependent;
+	private String employmentStatusOther;
 	//================ END RETAILS APPLICANT DETAILS ========================
 	
 	//CO-APPLICANT 
@@ -216,12 +219,6 @@ public class HLOneformRequest implements Serializable {
 	public void setTotalExperienceYear(Integer totalExperienceYear) {
 		this.totalExperienceYear = totalExperienceYear;
 	}
-	public Date getBusinessStartDate() {
-		return businessStartDate;
-	}
-	public void setBusinessStartDate(Date businessStartDate) {
-		this.businessStartDate = businessStartDate;
-	}
 	public Double getMonthlyIncome() {
 		return monthlyIncome;
 	}
@@ -323,6 +320,30 @@ public class HLOneformRequest implements Serializable {
 	}
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+	public Integer getResidenceSinceMonth() {
+		return residenceSinceMonth;
+	}
+	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+		this.residenceSinceMonth = residenceSinceMonth;
+	}
+	public String getEmploymentStatusOther() {
+		return employmentStatusOther;
+	}
+	public void setEmploymentStatusOther(String employmentStatusOther) {
+		this.employmentStatusOther = employmentStatusOther;
+	}
+	public Integer getBusinessStartMonth() {
+		return businessStartMonth;
+	}
+	public void setBusinessStartMonth(Integer businessStartMonth) {
+		this.businessStartMonth = businessStartMonth;
+	}
+	public Integer getBusinessStartYear() {
+		return businessStartYear;
+	}
+	public void setBusinessStartYear(Integer businessStartYear) {
+		this.businessStartYear = businessStartYear;
 	}
 	
 	

@@ -30,53 +30,53 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 
 	private Integer denomination;
 
-	private Boolean isCollateralDisplay=false;
+	private Boolean isCollateralDisplay = false;
 
-	private Boolean isCollateralMandatory=false;
+	private Boolean isCollateralMandatory = false;
 
-	private Boolean isCreditRatingDisplay=false;
+	private Boolean isCreditRatingDisplay = false;
 
-	private Boolean isCreditRatingMandatory=false;
+	private Boolean isCreditRatingMandatory = false;
 
-	private Boolean isDebtEquityDisplay=false;
+	private Boolean isDebtEquityDisplay = false;
 
-	private Boolean isDebtEquityMandatory=false;
+	private Boolean isDebtEquityMandatory = false;
 
-	private Boolean isEstablishmentDisplay=false;
+	private Boolean isEstablishmentDisplay = false;
 
-	private Boolean isEstablishmentMandatory=false;
+	private Boolean isEstablishmentMandatory = false;
 
-	private Boolean isGeographicalDisplay=false;
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isGeographicalMandatory=false;
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isIndustrySectorDisplay=false;
+	private Boolean isIndustrySectorDisplay = false;
 
-	private Boolean isIndustrySectorMandatory=false;
+	private Boolean isIndustrySectorMandatory = false;
 
-	private Boolean isInvestmentSizeDisplay=false;
+	private Boolean isInvestmentSizeDisplay = false;
 
-	private Boolean isInvestmentSizeMandatory=false;
+	private Boolean isInvestmentSizeMandatory = false;
 
-	private Boolean isNetworthDisplay=false;
+	private Boolean isNetworthDisplay = false;
 
-	private Boolean isNetworthMandatory=false;
+	private Boolean isNetworthMandatory = false;
 
-	private Boolean isPastYearTurnoverDisplay=false;
+	private Boolean isPastYearTurnoverDisplay = false;
 
-	private Boolean isPastYearTurnoverMandatory=false;
+	private Boolean isPastYearTurnoverMandatory = false;
 
-	private Boolean isProfitabilityHistoryDisplay=false;
+	private Boolean isProfitabilityHistoryDisplay = false;
 
-	private Boolean isProfitabilityHistoryMandatory=false;
+	private Boolean isProfitabilityHistoryMandatory = false;
 
-	private Boolean isTenureDisplay=false;
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isTenureMandatory=false;
-	
-	private Boolean isUnInterestedIndustryDisplay=false;
+	private Boolean isTenureMandatory = false;
 
-	private Boolean isUnInterestedIndustryMandatory=false;
+	private Boolean isUnInterestedIndustryDisplay = false;
+
+	private Boolean isUnInterestedIndustryMandatory = false;
 
 	private Integer LongTermCreditRating;
 
@@ -111,7 +111,7 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Integer profitabilityHistory;
 
 	private Integer shortTermCreditRating;
-	
+
 	private Long uninterestedIndustry;
 
 	private BigDecimal minCurrentRatio;
@@ -160,7 +160,7 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 
 	private Boolean isCustomerConcentrationDisplay = false;
 
-	private Boolean isCustomerConcentrationMandatory =false;
+	private Boolean isCustomerConcentrationMandatory = false;
 
 	private Integer minRiskModelScore;
 
@@ -201,14 +201,14 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Boolean isCommercialCibilDisplay = false;
 
 	private Boolean isCommercialCibilMandatory = false;
-	
+
 	private Long userOrgId;
-	
+
 	private Integer appstage;
-	
+
 	private Object workflowData;
 
-	//-----------------------added eligibility method for product
+	// -----------------------added eligibility method for product
 	private Integer assessmentMethodId;
 
 	private BigDecimal minCgtmseCoverage;
@@ -218,7 +218,7 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
-	
+
 	private Integer cgtmseCoverage;
 
 	private BigDecimal maxDropInTurnover;
@@ -259,11 +259,11 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 
 	private Boolean isNewTolTnwCheck = false;
 
-	private Integer kotakSubParameter ;
-	
+	private Integer kotakSubParameter;
+
 	private Boolean wcReqCheck = false;
 	private Boolean isNewDscrCheck;
-	
+
 	private BigDecimal newDscrCheck;
 
 	// projected sales
@@ -272,18 +272,25 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 
 	private Boolean isHistoricGrowth = false;
 	private BigDecimal newHistoricGrowth;
-	
-	//total limits
-			private List<Integer> loanArrangementIds;
-			
-			private BigDecimal minAdditionalLoan;
 
-			private BigDecimal maxAdditionalLoan;
-			
-			private BigDecimal minTotalLoan;
+	// total limits
+	private List<Integer> loanArrangementIds;
 
-			private BigDecimal maxTotalLoan;	 
-	
+	private BigDecimal minAdditionalLoan;
+
+	private BigDecimal maxAdditionalLoan;
+
+	private BigDecimal minTotalLoan;
+
+	private BigDecimal maxTotalLoan;
+
+	private Boolean isConservativeRatioDisplay = false;
+
+	private Boolean isConservativeRatioMandatory = false;
+
+	private BigDecimal maxConservativeRatio;
+
+	private BigDecimal minConservativeRatio;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -597,23 +604,23 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.maxGrossCashAccuralsRatio = maxGrossCashAccuralsRatio;
 	}
 
-    public BigDecimal getMinCustomerConcentration() {
-        return minCustomerConcentration;
-    }
+	public BigDecimal getMinCustomerConcentration() {
+		return minCustomerConcentration;
+	}
 
-    public void setMinCustomerConcentration(BigDecimal minCustomerConcentration) {
-        this.minCustomerConcentration = minCustomerConcentration;
-    }
+	public void setMinCustomerConcentration(BigDecimal minCustomerConcentration) {
+		this.minCustomerConcentration = minCustomerConcentration;
+	}
 
-    public BigDecimal getMaxCustomerConcentration() {
-        return maxCustomerConcentration;
-    }
+	public BigDecimal getMaxCustomerConcentration() {
+		return maxCustomerConcentration;
+	}
 
-    public void setMaxCustomerConcentration(BigDecimal maxCustomerConcentration) {
-        this.maxCustomerConcentration = maxCustomerConcentration;
-    }
+	public void setMaxCustomerConcentration(BigDecimal maxCustomerConcentration) {
+		this.maxCustomerConcentration = maxCustomerConcentration;
+	}
 
-    public Integer getMinRiskModelScore() {
+	public Integer getMinRiskModelScore() {
 		return minRiskModelScore;
 	}
 
@@ -646,8 +653,8 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private List<DataRequest> stateList = Collections.emptyList();
 
 	private List<DataRequest> cityList = Collections.emptyList();
-	
-	private List<DataRequest> unInterestedIndustrylist=Collections.emptyList();
+
+	private List<DataRequest> unInterestedIndustrylist = Collections.emptyList();
 
 	public Integer getCurrency() {
 		return currency;
@@ -1008,8 +1015,6 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	public void setCountryList(List<DataRequest> countryList) {
 		this.countryList = countryList;
 	}
-	
-	
 
 	public List<DataRequest> getUnInterestedIndustrylist() {
 		return unInterestedIndustrylist;
@@ -1059,7 +1064,6 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
 	}
 
-
 	public Integer getAssessmentMethodId() {
 		return assessmentMethodId;
 	}
@@ -1083,6 +1087,7 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	public void setAppstage(Integer appstage) {
 		this.appstage = appstage;
 	}
+
 	public Object getWorkflowData() {
 		return workflowData;
 	}
@@ -1327,7 +1332,6 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.wcReqCheck = wcReqCheck;
 	}
 
-	
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}
@@ -1415,8 +1419,39 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	public void setMaxTotalLoan(BigDecimal maxTotalLoan) {
 		this.maxTotalLoan = maxTotalLoan;
 	}
+
+	public Boolean getIsConservativeRatioDisplay() {
+		return isConservativeRatioDisplay;
+	}
+
+	public void setIsConservativeRatioDisplay(Boolean isConservativeRatioDisplay) {
+		this.isConservativeRatioDisplay = isConservativeRatioDisplay;
+	}
+
+	public Boolean getIsConservativeRatioMandatory() {
+		return isConservativeRatioMandatory;
+	}
+
+	public void setIsConservativeRatioMandatory(Boolean isConservativeRatioMandatory) {
+		this.isConservativeRatioMandatory = isConservativeRatioMandatory;
+	}
+
+	public BigDecimal getMaxConservativeRatio() {
+		return maxConservativeRatio;
+	}
+
+	public void setMaxConservativeRatio(BigDecimal maxConservativeRatio) {
+		this.maxConservativeRatio = maxConservativeRatio;
+	}
+
+	public BigDecimal getMinConservativeRatio() {
+		return minConservativeRatio;
+	}
+
+	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
+		this.minConservativeRatio = minConservativeRatio;
+	}
+	
 	
 
-	
-	
 }

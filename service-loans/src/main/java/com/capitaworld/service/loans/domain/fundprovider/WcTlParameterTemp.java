@@ -427,7 +427,19 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 	private BigDecimal minTotalLoan;
 
 	@Column(name="max_total_loan")
-	private BigDecimal maxTotalLoan;	
+	private BigDecimal maxTotalLoan;
+	
+	@Column(name = "is_conservative_ratio_display")
+	private Boolean isConservativeRatioDisplay=false;
+
+	@Column(name = "is_conservative_ratio_mandatory")
+	private Boolean isConservativeRatioMandatory=false;
+	
+	@Column(name = "max_conservative_ratio")
+	private BigDecimal maxConservativeRatio;
+	
+	@Column(name = "min_conservative_ratio")
+	private BigDecimal minConservativeRatio;
 
 	/* ends here */
 	
@@ -1502,6 +1514,39 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 	public void setMaxTotalLoan(BigDecimal maxTotalLoan) {
 		this.maxTotalLoan = maxTotalLoan;
 	}
+
+	public Boolean getIsConservativeRatioDisplay() {
+		return isConservativeRatioDisplay;
+	}
+
+	public void setIsConservativeRatioDisplay(Boolean isConservativeRatioDisplay) {
+		this.isConservativeRatioDisplay = isConservativeRatioDisplay;
+	}
+
+	public Boolean getIsConservativeRatioMandatory() {
+		return isConservativeRatioMandatory;
+	}
+
+	public void setIsConservativeRatioMandatory(Boolean isConservativeRatioMandatory) {
+		this.isConservativeRatioMandatory = isConservativeRatioMandatory;
+	}
+
+	public BigDecimal getMaxConservativeRatio() {
+		return maxConservativeRatio;
+	}
+
+	public void setMaxConservativeRatio(BigDecimal maxConservativeRatio) {
+		this.maxConservativeRatio = maxConservativeRatio;
+	}
+
+	public BigDecimal getMinConservativeRatio() {
+		return minConservativeRatio;
+	}
+
+	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
+		this.minConservativeRatio = minConservativeRatio;
+	}
+	
 	
 	
 

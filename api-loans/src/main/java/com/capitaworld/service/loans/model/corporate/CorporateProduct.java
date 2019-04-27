@@ -340,6 +340,14 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	private BigDecimal maxTotalLoan;	
 	
+	private Boolean isConservativeRatioDisplay=false;
+
+	private Boolean isConservativeRatioMandatory=false;
+	
+	private BigDecimal maxConservativeRatio;
+	
+	private BigDecimal minConservativeRatio;
+	
 	
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1734,6 +1742,39 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.maxTotalLoan = maxTotalLoan;
 	}
 
+	public Boolean getIsConservativeRatioDisplay() {
+		return isConservativeRatioDisplay;
+	}
+
+	public void setIsConservativeRatioDisplay(Boolean isConservativeRatioDisplay) {
+		this.isConservativeRatioDisplay = isConservativeRatioDisplay;
+	}
+
+	public Boolean getIsConservativeRatioMandatory() {
+		return isConservativeRatioMandatory;
+	}
+
+	public void setIsConservativeRatioMandatory(Boolean isConservativeRatioMandatory) {
+		this.isConservativeRatioMandatory = isConservativeRatioMandatory;
+	}
+
+	public BigDecimal getMaxConservativeRatio() {
+		return maxConservativeRatio;
+	}
+
+	public void setMaxConservativeRatio(BigDecimal maxConservativeRatio) {
+		this.maxConservativeRatio = maxConservativeRatio;
+	}
+
+	public BigDecimal getMinConservativeRatio() {
+		return minConservativeRatio;
+	}
+
+	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
+		this.minConservativeRatio = minConservativeRatio;
+	}
+
+	
 	
 	
 	
