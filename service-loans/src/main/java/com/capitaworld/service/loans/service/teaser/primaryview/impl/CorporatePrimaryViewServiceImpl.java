@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,7 +59,6 @@ import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
@@ -122,7 +120,6 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporatePrimaryViewServiceImpl.class);
-	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -139,9 +136,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Autowired
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 	
-	@Autowired
-	private DirectorPersonalDetailRepository dirPerRep;
-
 	@Autowired
 	private OneFormClient oneFormClient;
 
@@ -213,6 +207,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public CorporatePrimaryViewResponse getCorporatePrimaryViewDetails(Long applicationId,Long proposalId, Integer userType,
 			Long fundProviderUserId) {
@@ -1031,8 +1026,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryViewResponse.setCibilCmrScore(cibilClient.getCMRScore(applicationId));	
 			
 		} catch (Exception e) {
-			
-			e.printStackTrace();
+			logger.info("Exception while get CIBIL CMR Score {}",e);
 		}
 		
 
