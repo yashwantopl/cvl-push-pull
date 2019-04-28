@@ -246,6 +246,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
+	
+	@Autowired
+	private CollateralSecurityDetailService collateralSecurityDetailService;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -656,6 +659,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 
 			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
+				map.put("collateralSecurityList", collateralSecurityDetailService.getData(applicationId));
 				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
@@ -1433,6 +1437,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(corporateApplicantDetail != null) {
 				map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
 				map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
+				map.put("castCategory", corporateApplicantDetail.getCastCategory());
 			}
 		}catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);

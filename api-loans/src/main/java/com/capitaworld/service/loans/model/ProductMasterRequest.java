@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -60,7 +61,9 @@ public class ProductMasterRequest implements Serializable {
 	
 	private String actionFor;
 	
-	private Integer gstType;
+	
+	//total limits
+	private List<Integer> gstType;
 	
 
 	public ProductMasterRequest() {
@@ -263,12 +266,14 @@ public class ProductMasterRequest implements Serializable {
 		this.userOrgId = userOrgId;
 	}
 
-	public Integer getGstType() {
+	public List<Integer> getGstType() {
 		return gstType;
 	}
 
-	public void setGstType(Integer gstType) {
+	public void setGstType(List<Integer> gstType) {
 		this.gstType = gstType;
 	}
+
+
 	
 }

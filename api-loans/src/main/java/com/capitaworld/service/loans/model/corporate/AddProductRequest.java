@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.model.corporate;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,7 +29,7 @@ public class AddProductRequest {
 	
 	private Integer finId;
 	
-	private Integer gstType;
+	private List<Integer> gstType;
 	
 	
 	public Integer getProductId() {
@@ -118,14 +120,14 @@ public class AddProductRequest {
 		this.finId = finId;
 	}
 
-	public Integer getGstType() {
+	public List<Integer> getGstType() {
 		return gstType;
 	}
 
-	public void setGstType(Integer gstType) {
+	public void setGstType(List<Integer> gstType) {
 		this.gstType = gstType;
 	}
-	
+
 	
 	
 	

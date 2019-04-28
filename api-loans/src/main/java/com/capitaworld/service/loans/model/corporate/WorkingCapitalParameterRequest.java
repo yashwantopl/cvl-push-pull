@@ -259,6 +259,10 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private BigDecimal maxConservativeRatio;
 	
 	private BigDecimal minConservativeRatio;
+	
+	private List<Integer> gstType;
+	
+	
 
 	
 
@@ -1497,6 +1501,15 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.minConservativeRatio = minConservativeRatio;
 	}
 
+	public List<Integer> getGstType() {
+		return gstType;
+	}
+
+	public void setGstType(List<Integer> gstType) {
+		this.gstType = gstType;
+	}
+
+	
 	
 	
 	
