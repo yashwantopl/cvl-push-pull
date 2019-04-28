@@ -76,9 +76,7 @@ public class ProductMasterTemp implements Serializable {
 
 	@Column(name = "user_org_id")
 	private Long userOrgId;
-	
-	@Column(name = "gst_type")
-	private Integer gstType;
+
 	
 	@Column(name = "score_model_id")
 	private Long scoreModelId;
@@ -229,14 +227,7 @@ public class ProductMasterTemp implements Serializable {
 	}
 	
 	
-
-
-	public Integer getGstType() {
-		return gstType;
-	}
-	public void setGstType(Integer gstType) {
-		this.gstType = gstType;
-	}
+	
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
