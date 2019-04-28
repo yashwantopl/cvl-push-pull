@@ -69,12 +69,8 @@ import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
@@ -203,12 +199,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
 	@Autowired
-	private IndustrySectorRepository industrySectorRepository;
-
-	@Autowired
-	private SubSectorRepository subSectorRepository;
-
-	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
@@ -225,12 +215,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private UsersClient usersClient;
-
-	@Autowired
-	private SectorIndustryMappingRepository sectorIndustryMappingRepository;
-
-	@Autowired
-	private SubSectorMappingRepository subSectorMappingRepository;
 
 	@Autowired
 	private IrrService irrService;
@@ -327,6 +311,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toapplicationId,Long proposalMapId, Integer userType,Long fundProviderUserId) {
 
@@ -1204,7 +1189,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			corporateFinalViewResponse.setCibilCmrScore(cibilClient.getCMRScore(toApplicationId));	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("error while CIBIL CMR score : ",e);
 		}
 		
 		// itr xml isUpload or Online check
