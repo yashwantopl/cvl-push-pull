@@ -43,6 +43,8 @@ public class FundSeekerInputRequestResponse {
     private String aadhar;
 
     private String msmeRegistrationNumber;
+    
+    private String castCategory;
 
     private Double loanAmount;
 
@@ -59,6 +61,8 @@ public class FundSeekerInputRequestResponse {
 
     private Integer constitutionId;
 
+    private List<CollateralSecurityDetailRequest> collateralSecurityList = Collections.emptyList();
+    
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = Collections.emptyList();
 
     private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList = Collections.emptyList();
@@ -637,6 +641,22 @@ public class FundSeekerInputRequestResponse {
 
 	public void setIsAllowSwitchExistingLender(Boolean isAllowSwitchExistingLender) {
 		this.isAllowSwitchExistingLender = isAllowSwitchExistingLender;
+	}
+
+	public List<CollateralSecurityDetailRequest> getCollateralSecurityList() {
+		return collateralSecurityList;
+	}
+
+	public void setCollateralSecurityList(List<CollateralSecurityDetailRequest> collateralSecurityList) {
+		this.collateralSecurityList = collateralSecurityList;
+	}
+
+	public String getCastCategory() {
+		return castCategory;
+	}
+
+	public void setCastCategory(String castCategory) {
+		this.castCategory = castCategory;
 	}
 
 	@Override

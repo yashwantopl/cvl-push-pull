@@ -53,8 +53,10 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
+import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
@@ -63,6 +65,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -160,6 +163,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Autowired
 	private UsersClient userClient;
 	
+	@Autowired
+	private CollateralSecurityDetailService collateralSecurityDetailService;
+	
+	@Autowired
+	private CollateralSecurityDetailRepository collateralSecurityDetailRepository;
+	
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
 		try {
@@ -231,14 +240,22 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setIsAllowSwitchExistingLender(fundSeekerInputRequest.getIsAllowSwitchExistingLender());
 			primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
-			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest
-					.getFinancialArrangementsDetailRequestsList();
+			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
 			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
 				Boolean saveOrUpdate = financialArrangementDetailsService.saveOrUpdate(financialArrangementsDetailRequestsList, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 				logger.info("Update Result in Loans Details==>{}",saveOrUpdate);
 			}else{
 				financialArrangementDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
 			}
+			
+			List<CollateralSecurityDetailRequest> collateralSecurityDetailRequests = fundSeekerInputRequest.getCollateralSecurityList();
+			System.out.println("collateralSecurityDetailRequests size :"+collateralSecurityDetailRequests.size());
+			if(!CommonUtils.isListNullOrEmpty(collateralSecurityDetailRequests)) {
+				collateralSecurityDetailService.saveData(collateralSecurityDetailRequests, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+			}else{
+				collateralSecurityDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
+			}
+			
 			return true;
 		} catch (Exception e) {
 			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
@@ -440,6 +457,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
 			}
 			fsInputRes.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId()));
+			
+			fsInputRes.setCollateralSecurityList(collateralSecurityDetailService.getData(fsInputReq.getApplicationId()));
 			
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL INDUSTRY FOUND ------------>" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());

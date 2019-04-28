@@ -59,6 +59,7 @@ import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
@@ -79,6 +80,7 @@ import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateMcqService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
@@ -321,6 +323,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private CommonService commonService;
+	
+	@Autowired
+	CollateralSecurityDetailService collateralSecurityDetailService;
 	
 	@Autowired
 	private CIBILClient cibilClient;
@@ -687,6 +692,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
 								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
 			}
+			
+			List<CollateralSecurityDetailRequest> collateralSecurityDetails = collateralSecurityDetailService.getData(toapplicationId);
+			corporateFinalViewResponse.setCollateralSecurityDetails(collateralSecurityDetails);
 			
 			corporateFinalViewResponse
 					.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null

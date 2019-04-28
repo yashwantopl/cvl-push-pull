@@ -221,6 +221,9 @@ public class CorporateApplicantDetail implements Serializable {
     
     @Column(name="is_multi_gst")
     private Boolean isMultiGST;
+    
+    @Column(name="cast_category")
+    private String castCategory;
 
     
     
@@ -738,4 +741,14 @@ public class CorporateApplicantDetail implements Serializable {
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
 	}
+
+	public String getCastCategory() {
+		return castCategory;
+	}
+
+	public void setCastCategory(String castCategory) {
+		this.castCategory = castCategory;
+	}
+	
+	
 }

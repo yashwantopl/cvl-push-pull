@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 
 import java.util.List;
 
@@ -144,6 +145,8 @@ public class CorporatePrimaryViewResponse {
     private String eligibilityFinancialYear;
     private Double loanObligation;
     private String cibilCmrScore;
+    
+    private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
    
 	public List<Object> getCibilReport() {
 		return cibilReport;
@@ -1236,6 +1239,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setCibilCmrScore(String cibilCmrScore) {
 		this.cibilCmrScore = cibilCmrScore;
+	}
+	public List<CollateralSecurityDetailRequest> getCollateralSecurityDetails() {
+		return collateralSecurityDetails;
+	}
+	public void setCollateralSecurityDetails(List<CollateralSecurityDetailRequest> collateralSecurityDetails) {
+		this.collateralSecurityDetails = collateralSecurityDetails;
 	}
 	
 	
