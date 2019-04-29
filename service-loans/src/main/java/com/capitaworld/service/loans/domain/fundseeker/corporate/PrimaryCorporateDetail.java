@@ -84,6 +84,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "competition")
     private Integer competition;
 
+    @Column(name = "product_service_description")
+    private String productServiceDescription;
+
     /*
      * Promoter Contribution Logic
      * BY Ravina
@@ -405,6 +408,11 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 		this.isAllowSwitchExistingLender = isAllowSwitchExistingLender;
 	}
 
-	
+    public String getProductServiceDescription() {
+        return productServiceDescription;
+    }
 
+    public void setProductServiceDescription(String productServiceDescription) {
+        this.productServiceDescription = productServiceDescription;
+    }
 }
