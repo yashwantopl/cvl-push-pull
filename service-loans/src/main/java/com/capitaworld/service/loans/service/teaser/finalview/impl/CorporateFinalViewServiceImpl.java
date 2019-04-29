@@ -716,6 +716,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
 			corporateFinalViewResponse.setIncrementalTurnover(primaryCorporateDetail.getIncrementalTurnover());
 			corporateFinalViewResponse.setIncrementalMargin(primaryCorporateDetail.getIncrementalMargin());
+			corporateFinalViewResponse.setProductServiceDesc(primaryCorporateDetail.getProductServiceDescription());
 						
 		
 		}
