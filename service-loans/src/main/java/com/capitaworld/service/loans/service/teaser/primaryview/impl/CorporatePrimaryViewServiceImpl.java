@@ -34,14 +34,15 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CollateralSecurityDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
@@ -1287,13 +1288,31 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		try {
 
 			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
+			CAMGSTData resp =null;
 				GSTR1Request req= new GSTR1Request();
 				req.setApplicationId(toApplicationId);
 				req.setUserId(toUserId);
 				req.setGstin(corporateApplicantDetail.getGstIn());
 				GstResponse response = gstClient.detailCalculation(req);
 				if (response != null) {
-					corporatePrimaryViewResponse.setGstData(response);
+					
+					DecimalFormat df = new DecimalFormat(".##");
+					if (!CommonUtils.isObjectNullOrEmpty(response)) {
+						for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+							resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+							Double totalSales =0.0d;
+							if(resp.getMomSales() != null) {
+								List<MomSales> momSalesResp = resp.getMomSales();
+								for (MomSales sales : momSalesResp) {
+									
+									totalSales += Double.valueOf(sales.getValue());
+								}
+								data.put("totalMomSales", df.format(totalSales));
+//							resp.setTotalMomSales(totalSales);
+							}
+						}
+						
+					corporatePrimaryViewResponse.setGstData((List<LinkedHashMap<String, Object>>) response.getData());
 				} else {
 
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
@@ -1303,7 +1322,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}*/
 
-
+				}
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);
 		}

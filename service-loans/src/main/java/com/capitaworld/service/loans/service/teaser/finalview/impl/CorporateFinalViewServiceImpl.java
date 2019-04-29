@@ -35,7 +35,9 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -1751,20 +1753,43 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// Name as per Gst
 		try {
+
 			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
-			GSTR1Request req= new GSTR1Request();
-			req.setApplicationId(toApplicationId);
-			req.setUserId(userId);
-			req.setGstin(corporateApplicantDetail.getGstIn());	
-			GstResponse response = gstClient.detailCalculation(req);
+			CAMGSTData resp =null;
+				GSTR1Request req= new GSTR1Request();
+				req.setApplicationId(toApplicationId);
+				req.setUserId(userId);
+				req.setGstin(corporateApplicantDetail.getGstIn());
+				GstResponse response = gstClient.detailCalculation(req);
 				if (response != null) {
-					corporateFinalViewResponse.setGstData(response);
+					
+					DecimalFormat df = new DecimalFormat(".##");
+					if (!CommonUtils.isObjectNullOrEmpty(response)) {
+						for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+							resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+							Double totalSales =0.0d;
+							if(resp.getMomSales() != null) {
+								List<MomSales> momSalesResp = resp.getMomSales();
+								for (MomSales sales : momSalesResp) {
+									
+									totalSales += Double.valueOf(sales.getValue());
+								}
+								data.put("totalMomSales", df.format(totalSales));
+//							resp.setTotalMomSales(totalSales);
+							}
+						}
+						
+					corporateFinalViewResponse.setGstData((List<LinkedHashMap<String, Object>>) response.getData());
 				} else {
+
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
+
 				}
 			/*}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}*/
+
+				}
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);
 		}
