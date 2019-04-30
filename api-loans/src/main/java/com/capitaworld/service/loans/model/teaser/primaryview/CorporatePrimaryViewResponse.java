@@ -1255,7 +1255,7 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setCastCategory(String castCategory) {
 		this.castCategory = castCategory;
-
+	}
 	public String getProductServiceDesc() {
 		return productServiceDesc;
 	}
