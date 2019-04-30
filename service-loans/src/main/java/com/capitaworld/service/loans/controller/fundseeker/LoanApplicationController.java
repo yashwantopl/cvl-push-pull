@@ -40,7 +40,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationPro
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
-import com.capitaworld.service.loans.service.token.TokenService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -111,12 +110,7 @@ public class LoanApplicationController {
 
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
-
-	@Autowired
-	private AuditComponentBankToCW auditComponentBankToCW;
-
-	@Autowired
-	private TokenService tokenService;
+	
 	@Autowired
 	private ApplicationProposalMappingService appPropMappService;
 
