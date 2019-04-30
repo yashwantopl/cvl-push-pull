@@ -9,6 +9,8 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDet
 public interface PrimaryHomeLoanDetailRepository extends JpaRepository<PrimaryHomeLoanDetail, Long> {
 
 	@Query("from PrimaryHomeLoanDetail hl where hl.applicationId.id =:applicationId and isActive=true and hl.applicationId.userId =:userId")
-	public PrimaryHomeLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,
-			@Param("userId") Long userId);
+	public PrimaryHomeLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
+	
+	@Query("from PrimaryHomeLoanDetail hl where hl.applicationId.id =:applicationId and isActive = true")
+	public PrimaryHomeLoanDetail getByApplication(@Param("applicationId") Long applicationId);
 }
