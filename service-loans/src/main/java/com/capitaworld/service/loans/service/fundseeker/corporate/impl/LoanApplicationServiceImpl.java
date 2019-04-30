@@ -53,7 +53,6 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gst.client.GstClient;
-import com.capitaworld.service.loans.config.AuditComponent;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
@@ -89,15 +88,26 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.GenerateTokenRequest;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -108,6 +118,7 @@ import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
@@ -211,21 +222,6 @@ import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
-import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
-import com.capitaworld.sidbi.integration.model.AchievementDetailRequest;
-import com.capitaworld.sidbi.integration.model.AssociatedConcernDetailRequest;
-import com.capitaworld.sidbi.integration.model.CorporateProfileRequest;
-import com.capitaworld.sidbi.integration.model.CreditRatingOrganizationDetailRequest;
-import com.capitaworld.sidbi.integration.model.ExistingProductDetailRequest;
-import com.capitaworld.sidbi.integration.model.FinanceMeansDetailRequest;
-import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
-import com.capitaworld.sidbi.integration.model.GuarantorsCorporateDetailRequest;
-import com.capitaworld.sidbi.integration.model.MonthlyTurnoverDetailRequest;
-import com.capitaworld.sidbi.integration.model.ProfileReqRes;
-import com.capitaworld.sidbi.integration.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
-import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
-import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -270,9 +266,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private Environment environment;
-
-	@Autowired
-	private SidbiIntegrationClient sidbiIntegrationClient;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -435,10 +428,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private IrrService irrService;
-
-	@Autowired
-	private AuditComponent auditComponent;
-
+	
 	@Autowired
 	private AssetsDetailsRepository assetsDetailsRepository;
 
@@ -7693,45 +7683,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	 * return updatePayment; }
 	 */
 
-	public void setTokenAsExpired(GenerateTokenRequest generateTokenRequest, Integer codeLanguage) {
-		logger.info("Start expiring Token in setTokenAsExpired(){} ------------- generateTokenRequest "
-				+ generateTokenRequest);
-		try {
-			sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest, generateTokenRequest.getBankToken(),
-					codeLanguage);
-		} catch (Exception e) {
-			logger.error("Exception while set token as  expiring Token ------------- Msg " + e.getMessage());
-		}
-		logger.info("End expiring Token setTokenAsExpired(){} -------------");
-
-	}
-
-	public List<TotalCostOfProjectRequest> getTotalCostOfProjectRequestsList(Long applicationId, Long userId) {
-		List<TotalCostOfProject> totalCostOfProjectsList = totalCostOfProjectRepository
-				.listCostOfProjectFromAppId(applicationId, userId);
-
-		if (CommonUtils.isListNullOrEmpty(totalCostOfProjectsList)) {
-			logger.warn("No totalCostOfProjectsList Found for Application Id ==>{}", applicationId);
-			return Collections.emptyList();
-		} else {
-			List<TotalCostOfProjectRequest> totalCostOfProjectRequestsList = new ArrayList<>(
-					totalCostOfProjectsList.size());
-			TotalCostOfProjectRequest target = null;
-			for (TotalCostOfProject totalCostOfProject : totalCostOfProjectsList) {
-				target = new TotalCostOfProjectRequest();
-				target.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred());
-				target.setApplicationId(applicationId);
-				if (totalCostOfProject.getParticularsId() != null) {
-					target.setParticulars(Particular.getById(totalCostOfProject.getParticularsId()).getValue());
-				}
-				target.setToBeIncurred(totalCostOfProject.getToBeIncurred());
-				target.setTotalCost(totalCostOfProject.getTotalCost());
-				target.setCreatedBy(userId);
-				totalCostOfProjectRequestsList.add(target);
-			}
-			return totalCostOfProjectRequestsList;
-		}
-	}
 
 	public List<FinanceMeansDetailRequest> getFinanceMeansDetailRequestList(Long applicationId, Long userId) {
 		List<FinanceMeansDetail> financeMeansDetailsList = financeMeansDetailRepository

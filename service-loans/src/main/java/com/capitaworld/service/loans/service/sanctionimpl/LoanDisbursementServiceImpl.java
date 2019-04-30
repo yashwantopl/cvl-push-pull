@@ -8,27 +8,24 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
-import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
  * @author Ankit
@@ -53,15 +50,10 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 
 	@Autowired
 	private LoanSanctionRepository loanSanctionRepository;
-
-	@Autowired
-	private AuditComponentBankToCW  auditComponentBankToCW;
-	
-	@Autowired
-	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository;
 	
 	@Autowired
 	private OfflineProcessedAppRepository offlineProcessedAppRepository;
+	
 	@Override
 	public Boolean saveLoanDisbursementDetail(LoanDisbursementRequest loanDisbursementRequest) throws IOException {
 		logger.info("Enter in saveLoanDisbursementDetail() ----------------------->  LoanDisbursementRequest "+ loanDisbursementRequest);
@@ -211,69 +203,6 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}
 	}
 
-	//Its for list of disbursement per sanction
-	@Override
-	public List<LoanDisbursementRequest> bankRequestValidationAndSave(Long sanctionPrimaryId ,List<LoanDisbursementRequest> loanDisbursementRequestsList,Long orgId , Integer apiType) throws IOException {
-		String status = null;
-		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
-			
-			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findFirstByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActiveOrderByIdDesc(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId() , true))){
-				logger.info("-------------------------already  saving disbursement detail of reverse api---------------");
-				status ="Already save the disbursement detail applicationId ==> "+loanDisbursementRequest.getApplicationId() ;
-				loanDisbursementRequest.setIsSaved(true);
-				loanDisbursementRequest.setReason("already save disbursement detail of reverse api of applicaiton Id" + loanDisbursementRequest.getApplicationId() );
-				loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_DISBURSEMENT);
-				continue;
-			}
-			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getPaymentMode(),  loanDisbursementRequest.getAccountNo() , loanDisbursementRequest.getTransactionNo())){
-				
-				loanDisbursementRequest.setIsSaved(false);
-				loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.MANDAROTY_FIELD_MUST_NOT_BE_NULL);
-				loanDisbursementRequest.setReason("Mandatory Fields Must Not be Null");
-				String jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, null , "Mandatory Fields Must Not be Null" , orgId ,loanDisbursementRequest.getId());
-				continue;
-			}
-
-			loanDisbursementRequest = disbursementRequestValidation(sanctionPrimaryId , loanDisbursementRequest ,orgId , apiType);
-
-			//saving req in bank to  cw-audit table
-			String jsonString = null;
-			
-			if(SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || FIRST_DISBURSEMENT.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "Remaining".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
-				status= loanDisbursementRequest.getReason();
-				if(CommonUtility.ApiType.DISBURSEMENT == apiType) {
-					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
-						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
-					}
-				}/*else if(saveLoanDisbursementDetailbyId(orgId , loanDisbursementRequest)) {
-
-					status= loanDisbursementRequest.getReason();
-					try {
-						rowUpdated = proposalDetailsRepository.updateSanctionStatus(11l, loanDisbursementRequest.getApplicationId());
-						status +=" proposal detail rowUpdated ==> "+rowUpdated ;
-					}catch (Exception e) {
-						auditComponentBankToCW.saveBankToCWReqRes(null , loanDisbursementRequest.getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT   , null, "Exception while updating the proposal detail table sanction status= > MSG "+e.getMessage() , orgId, null);
-					}
-					//auditComponentBankToCW.saveBankToCWReqRes(null, loanDisbursementRequest.getApplicationId(), null, null , "updating the proposal detail table sanction status ", orgId, null);
-
-					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason() +"  -------updating the proposal detail table detail status rowUpdated ---------" +rowUpdated) ;
-					loanDisbursementRequest.setIsSaved(true);
-				}*/
-				try {
-					jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-					auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , status , null , orgId ,loanDisbursementRequest.getId());
-				}catch (Exception e) {
-					auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanDisbursementRequest.getApplicationId() , apiType , status, "Exception while converting the object in String = > MSG "+e.getMessage() , orgId, null);
-				}
-
-			}else {
-				jsonString =MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, status , loanDisbursementRequest.getReason(), orgId ,loanDisbursementRequest.getId());
-			}
-		}
-		return loanDisbursementRequestsList;
-	}
 	//its save , disbursement request by there primary key 'id' and isSavedFromBank
 	@Override
 	public Boolean saveLoanDisbursementDetailbyId(Long orgId , LoanDisbursementRequest loanDisbursementRequest ) throws IOException {
