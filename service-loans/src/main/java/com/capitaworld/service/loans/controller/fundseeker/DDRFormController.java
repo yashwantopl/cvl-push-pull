@@ -26,7 +26,6 @@ import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
@@ -38,12 +37,8 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.token.TokenService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
-import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
 
 @RestController
 @RequestMapping("/ddr")
@@ -459,103 +454,6 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@RequestMapping(value = "/saveDDRInfo", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<LoansResponse> saveDDRInfo(@RequestBody String encryptedString ,HttpServletRequest httpServletRequest ){
-		LoansResponse loansResponse=null;
-		String reason=null;
-		DDRFormDetailsRequest  ddrFormDetailsRequest= null;
-		Boolean isSuccess= null;
-		Long orgId=null;
-		String decrypt = null;
-		GenerateTokenRequest generateTokenRequest =null;
-		String tokenString =null; 
-		try {
-			logger.info("=============================Entry saveDDRInfo(){} ============================= ");
-			tokenString =httpServletRequest.getHeader("token");
-			if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
-				reason = "Token is null";
-				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
-			}else {
-				tokenString = tokenService.checkTokenExpiration(tokenString);
-				if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
-					reason = "Token is Expired ";
-					loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
-					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
-				}
-			}
-			
-			logger.info("------------------- Entry saveDDRInfo(){} -------------------");
-			if(encryptedString != null) {
-				
-				try {
-					decrypt = AESEncryptionUtility.decrypt(encryptedString);
-					ddrFormDetailsRequest= MultipleJSONObjectHelper.getObjectFromString(decrypt,DDRFormDetailsRequest.class);
-					
-				}catch (Exception e) {
-					logger.error("Error while Converting Encrypted Object to   saveDDRInfo(){} -------------------------> ", e);
-					loansResponse =new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
-					loansResponse.setData(false);
-					if(CommonUtils.isObjectNullOrEmpty(decrypt)) {
-						reason="ERROR WHILE DECRYPT ENCRYPTED OBJECT   ====> Msg ===> ";
-					}else {
-						reason="error while converting decrypt string to DDRFormDetailsRequest  ====> Msg ===> " ;
-					}
-					reason+=e.getMessage();
-					return  new ResponseEntity<LoansResponse>(loansResponse,  HttpStatus.OK);
-				}
-				if(!CommonUtils.isObjectListNull(ddrFormDetailsRequest,ddrFormDetailsRequest.getUserName(), ddrFormDetailsRequest.getPassword())) {
-					orgId = auditComponentBankToCW.getOrgIdByCredential(ddrFormDetailsRequest.getUserName(), ddrFormDetailsRequest.getPassword());
-					if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
-						ddrFormService.saveDDRForm(ddrFormDetailsRequest);
-						logger.info("Success msg while saveDDRInfo() ----------------> msg " + reason) ;
-						isSuccess = true;
-						loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
-						loansResponse.setData(isSuccess);
-
-						logger.info(SAVING_REQUEST_TO_DB_MSG + "Exit saveDDRInfo()() ---------------->  msg ==>" + "Information Successfully Stored " );
-						return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
-					}else {
-						reason ="Invalid Credentials";
-						logger.info("Invalid Credentials while saveDDRInfo() ----------------> orgId "+ orgId ) ;
-						loansResponse = new LoansResponse(reason, HttpStatus.OK.value());
-						loansResponse.setData(isSuccess);
-						logger.info(SAVING_REQUEST_TO_DB_MSG + "Exit saveDDRInfo()() ---------------->  msg ==>" + reason );
-						return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
-					}
-					
-				}else {
-					logger.info("Null in DDRFormDetailsRequest  while saveDDRInfo() ----------------> ddrFormDetailsRequest" + ddrFormDetailsRequest  );
-					loansResponse =new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
-					loansResponse.setData(isSuccess);
-					logger.info(SAVING_REQUEST_TO_DB_MSG);
-					reason="Mandatory Fields Must Not be Null  ddrFormDetailsRequest ====> " + ddrFormDetailsRequest;
-					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-				}
-			}else {
-				logger.info("Null in encryptedString while saveDDRInfo() ----------------> encryptedString " +encryptedString );
-				loansResponse =new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
-				loansResponse.setData(isSuccess);
-				logger.info(SAVING_REQUEST_TO_DB_MSG);
-				reason="Null in encryptedString  ====>"+encryptedString;
-				return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			}
-
-		} catch (Exception e) {
-			logger.error("Error while saveDDRInfo()----------------------> ", e);
-			loansResponse =new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(),HttpStatus.OK);
-			loansResponse.setData(isSuccess);
-			reason="Error while save ddrFormDetailsRequest ===> Msg "+ e.getMessage(); 
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-		}finally {
-			reason+=" \n while saveDDRInfo()";
-			generateTokenRequest= new GenerateTokenRequest();
-			generateTokenRequest.setToken(tokenString);
-			tokenService.setTokenAsExpired(generateTokenRequest);
-			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, null , reason, orgId , null );
 		}
 	}
 	
