@@ -95,4 +95,7 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 
 	@Query(value="from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationProposalMapping IS NULL")
 	public CorporateApplicantDetail getCorporateApplicantDetailByApplicationId(@Param("applicationId") Long applicationId);
+
+	@Query(value="SELECT c.organisation_name FROM loan_application.fs_corporate_applicant_details c WHERE c.application_id=:applicationId LIMIT 1;",nativeQuery = true)
+	public String getOrganizationNameFromId(@Param("applicationId") Long applicationId);
 }

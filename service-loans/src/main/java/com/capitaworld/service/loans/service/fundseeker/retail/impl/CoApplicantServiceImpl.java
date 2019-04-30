@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1234,8 +1235,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	public List<HLOnefromResponse> getListForOneForm(Long applicationId) {
 		List<HLOnefromResponse> resList = new ArrayList<>();
 		Object[] obj = retailApplicantDetailRepository.getBasicDetailsByAppId(applicationId);
-		if(obj != null) {
-			resList.add(setValueFromObj(obj, applicationId));
+		if(obj != null && obj.length > 0) {
+			resList.add(setValueFromObj((Object[])obj[0], applicationId));	
 		}
 		List<Object[]> objList = coApplicantDetailRepository.getBasicDetailsByAppId(applicationId);
 		for(Object[] objs : objList) {
@@ -1264,12 +1265,34 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
 			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
 				BeanUtils.copyProperties(coApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())) {
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(coApplicantDetail.getBusinessStartDate());
+					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+					res.setBusinessStartYear(cal.get(Calendar.YEAR));
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressCity())) {
+					res.setAddressCity(coApplicantDetail.getAddressCity().longValue());	
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressState())) {
+					res.setAddressState(coApplicantDetail.getAddressState().longValue());				
+				}
+				res.setAddressCountry(coApplicantDetail.getAddressCountry());
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
+					res.setAddressPincode(coApplicantDetail.getAddressPincode().longValue());	
+				}
 				res.setCoAppId(coAppId);
 			}
 		} else {
 			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 				BeanUtils.copyProperties(retailApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBusinessStartDate())) {
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(retailApplicantDetail.getBusinessStartDate());
+					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+					res.setBusinessStartYear(cal.get(Calendar.YEAR));
+				}
 				return res;
 			}
 		}
@@ -1292,6 +1315,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coApplicantDetail.setMobile(req.getMobile());
 				coApplicantDetail.setBirthDate(req.getBirthDate());
 				coApplicantDetail.setResidenceType(req.getResidenceType());
+				coApplicantDetail.setResidenceSinceMonth(req.getResidenceSinceMonth());
+				coApplicantDetail.setResidenceSinceYear(req.getResidenceSinceYear());
 				coApplicantDetail.setNetworth(req.getNetworth());
 				coApplicantDetail.setAddressPremiseName(req.getAddressPremiseName());
 				coApplicantDetail.setAddressStreetName(req.getAddressStreetName());
@@ -1307,7 +1332,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				if(!CommonUtils.isObjectNullOrEmpty(req.getAddressPincode())) {
 					coApplicantDetail.setAddressPincode(BigInteger.valueOf(req.getAddressPincode()));	
 				}
+				coApplicantDetail.setEmploymentType(req.getEmploymentType());
 				coApplicantDetail.setEmploymentStatus(req.getEmploymentStatus());
+				coApplicantDetail.setEmploymentStatusOther(req.getEmploymentStatusOther());
 				coApplicantDetail.setEmployedWithOther(req.getEmployedWithOther());
 				coApplicantDetail.setNameOfEntity(req.getNameOfEntity());
 				coApplicantDetail.setCurrentEmploymentStatus(req.getCurrentEmploymentStatus());
@@ -1315,10 +1342,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coApplicantDetail.setCurrentJobYear(req.getCurrentJobYear());
 				coApplicantDetail.setTotalExperienceMonth(req.getTotalExperienceMonth());
 				coApplicantDetail.setTotalExperienceYear(req.getTotalExperienceYear());
-				coApplicantDetail.setBusinessStartDate(req.getBusinessStartDate());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(req.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
+					coApplicantDetail.setBusinessStartDate(cal.getTime());
+				}
 				coApplicantDetail.setGrossMonthlyIncome(req.getGrossMonthlyIncome());
 				coApplicantDetail.setMonthlyIncome(req.getMonthlyIncome());
 				coApplicantDetail.setStatusId(req.getStatusId());
+				coApplicantDetail.setNationality(req.getNationality());
 				coApplicantDetail.setModifiedBy(req.getUserId());
 				coApplicantDetail.setModifiedDate(new Date());
 				coApplicantDetail.setIsOneFormCompleted(true);
@@ -1340,6 +1372,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				retailApplicantDetail.setBirthDate(req.getBirthDate());
 				retailApplicantDetail.setResidenceType(req.getResidenceType());
 				retailApplicantDetail.setResidenceSinceYear(req.getResidenceSinceYear());
+				retailApplicantDetail.setResidenceSinceMonth(req.getResidenceSinceMonth());
 				retailApplicantDetail.setResidentialStatus(req.getResidentialStatus());
 				retailApplicantDetail.setNetworth(req.getNetworth());
 				retailApplicantDetail.setAddressPremiseName(req.getAddressPremiseName());
@@ -1352,6 +1385,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				retailApplicantDetail.setAddressPincode(req.getAddressPincode());
 				retailApplicantDetail.setEmploymentType(req.getEmploymentType());
 				retailApplicantDetail.setEmploymentStatus(req.getEmploymentStatus());
+				retailApplicantDetail.setEmploymentStatusOther(req.getEmploymentStatusOther());
 				retailApplicantDetail.setEmployedWithOther(req.getEmployedWithOther());
 				retailApplicantDetail.setNameOfEmployer(req.getNameOfEmployer());
 				retailApplicantDetail.setCurrentEmploymentStatus(req.getCurrentEmploymentStatus());
@@ -1359,7 +1393,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				retailApplicantDetail.setCurrentJobYear(req.getCurrentJobYear());
 				retailApplicantDetail.setTotalExperienceMonth(req.getTotalExperienceMonth());
 				retailApplicantDetail.setTotalExperienceYear(req.getTotalExperienceYear());
-				retailApplicantDetail.setBusinessStartDate(req.getBusinessStartDate());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(req.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
+					retailApplicantDetail.setBusinessStartDate(cal.getTime());
+				}
 				retailApplicantDetail.setGrossMonthlyIncome(req.getGrossMonthlyIncome());
 				retailApplicantDetail.setMonthlyIncome(req.getMonthlyIncome());
 				retailApplicantDetail.setEducationQualification(req.getEducationQualification());

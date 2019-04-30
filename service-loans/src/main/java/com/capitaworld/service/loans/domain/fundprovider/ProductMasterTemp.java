@@ -76,6 +76,7 @@ public class ProductMasterTemp implements Serializable {
 
 	@Column(name = "user_org_id")
 	private Long userOrgId;
+
 	
 	@Column(name = "score_model_id")
 	private Long scoreModelId;
@@ -224,7 +225,9 @@ public class ProductMasterTemp implements Serializable {
 	public Long getUserId() {
 		return this.userId;
 	}
-
+	
+	
+	
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}

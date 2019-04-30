@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,7 +57,7 @@ public class CamReportPdfDetailsController {
 	private static final String INELIGIBLE_CAM_REPORT = "INELIGIBLECAMREPORT";
 	private static final String UNIFORM_CAM_REPORT = "UNIFORMCAMREPORT";
 
-	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId,
 			@PathVariable(value ="proposalId") Long proposalId,	HttpServletRequest request)  {
 		
@@ -102,7 +102,7 @@ public class CamReportPdfDetailsController {
 	 * cam generate for gateway
 	 * @return  byte[]
 	 * */
-	@RequestMapping(value = "/getPrimaryDataInByteArray/{applicationId}/{productMappingId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getPrimaryDataInByteArray/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, 
 			@PathVariable(value = "proposalId") Long proposalId)  {
 
@@ -132,7 +132,7 @@ public class CamReportPdfDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId,
 			@PathVariable(value ="proposalId") Long proposalId,HttpServletRequest request)  {
 		
@@ -158,7 +158,7 @@ public class CamReportPdfDetailsController {
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
-				logger.info(""+documentResponse.getData());
+				logger.info("DocumentResponse Data==>{}",documentResponse.getData());
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}
 				else{
@@ -173,7 +173,7 @@ public class CamReportPdfDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/getBankStatementAnalysis/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getBankStatementAnalysis/{applicationId}/{productMappingId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getBankStatementAnalysis(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
 		
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
@@ -198,7 +198,7 @@ public class CamReportPdfDetailsController {
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
-				logger.info(""+documentResponse.getData());
+				logger.info("DocumentResponse Data==>{}",documentResponse.getData());
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}
 				else{
@@ -211,7 +211,7 @@ public class CamReportPdfDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/getInEligiblePrimaryDataMap/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getInEligiblePrimaryDataMap/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId)  {
 
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
@@ -237,7 +237,7 @@ public class CamReportPdfDetailsController {
 
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
-				logger.info(""+documentResponse);
+				logger.info("DocumentResponse Data==>{}",documentResponse);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}else{
 					 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
@@ -252,9 +252,9 @@ public class CamReportPdfDetailsController {
 	}
 
 
-	@RequestMapping(value = "/getUniformProductCam/{applicationId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getUniformProductCam/{applicationId}/{fpProductId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUniformProductDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "fpProductId") Long fpProductId)  {
-		logger.info("In Uniform Product Cam Report..ApplicationId====>>"+applicationId+"....and fpProductId is==>>"+fpProductId);
+		logger.info("In Uniform Product Cam Report..ApplicationId====>>{}...and fpProductId is==>>{}" , applicationId, fpProductId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -278,8 +278,8 @@ public class CamReportPdfDetailsController {
 
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
-				logger.info(""+documentResponse);
-				logger.info("Out From Uniform Product Cam Report......Cam Genereated......ApplicationId====>>"+applicationId);
+				logger.info("DocumentResponse Data==>{}",documentResponse);
+				logger.info("Out From Uniform Product Cam Report......Cam Genereated......ApplicationId====>>{}",applicationId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}else{
 					 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);

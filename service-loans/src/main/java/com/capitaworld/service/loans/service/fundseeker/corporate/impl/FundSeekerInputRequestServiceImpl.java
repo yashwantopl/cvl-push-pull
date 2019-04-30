@@ -4,14 +4,11 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +53,19 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
+import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -66,6 +74,8 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
 
 @Service
 @Transactional
@@ -150,6 +160,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Autowired
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
 	
+	@Autowired
+	private UsersClient userClient;
+	
+	@Autowired
+	private CollateralSecurityDetailService collateralSecurityDetailService;
+	
+	@Autowired
+	private CollateralSecurityDetailRepository collateralSecurityDetailRepository;
+	
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
 		try {
@@ -221,12 +240,22 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setIsAllowSwitchExistingLender(fundSeekerInputRequest.getIsAllowSwitchExistingLender());
 			primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
-			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest
-					.getFinancialArrangementsDetailRequestsList();
+			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
 			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
 				Boolean saveOrUpdate = financialArrangementDetailsService.saveOrUpdate(financialArrangementsDetailRequestsList, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 				logger.info("Update Result in Loans Details==>{}",saveOrUpdate);
+			}else{
+				financialArrangementDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
 			}
+			
+			List<CollateralSecurityDetailRequest> collateralSecurityDetailRequests = fundSeekerInputRequest.getCollateralSecurityList();
+			System.out.println("collateralSecurityDetailRequests size :"+collateralSecurityDetailRequests.size());
+			if(!CommonUtils.isListNullOrEmpty(collateralSecurityDetailRequests)) {
+				collateralSecurityDetailService.saveData(collateralSecurityDetailRequests, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+			}else{
+				collateralSecurityDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
+			}
+			
 			return true;
 		} catch (Exception e) {
 			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
@@ -308,10 +337,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					DirectorBackgroundDetail saveDirObj = null;
 					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 						saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-						logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",
-								saveDirObj.getId());
-						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate");
+						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
 						saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
 						saveDirObj.setModifiedDate(new Date());
 					} else {
@@ -428,6 +454,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
 			}
 			fsInputRes.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId()));
+			
+			fsInputRes.setCollateralSecurityList(collateralSecurityDetailService.getData(fsInputReq.getApplicationId()));
 			
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL INDUSTRY FOUND ------------>" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
@@ -613,7 +641,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try {
 			logger.info("Start invokeFraudAnalytics()");
 			LoansResponse res = new LoansResponse();
-			if ("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
+			Boolean isMp = false;
+			
+			    try {
+			       UserResponse response = userClient.getCampaignCodesByUserId(fundSeekerInputRequestResponse.getUserId());
+			       if (CommonUtils.isObjectNullOrEmpty(response) || CommonUtils.isObjectNullOrEmpty(response.getData())) {
+			          logger.info("No Codes Found for UserId===>{}", fundSeekerInputRequestResponse.getUserId());
+			          isMp = true;
+			       }
+			    } catch (Exception e) {
+			       logger.error("Error while Getting Campaign Codes using Users Client : ",e);
+			    }
+			if ("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics"))) && isMp) {
 				Boolean isNTB = false;
 				HunterRequestDataResponse hunterRequestDataResponse = null;
 				if (fundSeekerInputRequestResponse.getBusinessTypeId() != null

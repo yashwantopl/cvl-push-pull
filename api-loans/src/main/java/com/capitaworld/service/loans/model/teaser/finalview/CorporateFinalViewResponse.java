@@ -17,6 +17,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 
 /**
  * @author nilay.darji
@@ -69,6 +70,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
 	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
 	private Object FinancialInputRequest;
+	private String castCategory;
 
 	// FINAL VIEW RESPONSE OBJECT
 	private String udhyogAadharNo;
@@ -236,6 +238,11 @@ public class CorporateFinalViewResponse implements Serializable {
     private Double loanObligation;
     private Object cibilConsumerReport;
     private List<Object> mcaCorpZipFile;
+    private String cibilCmrScore;
+    
+    private String productServiceDesc;
+    
+    private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2196,6 +2203,38 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setMcaCorpZipFile(List<Object> mcaCorpZipFile) {
 		this.mcaCorpZipFile = mcaCorpZipFile;
+	}
+
+	public String getCibilCmrScore() {
+		return cibilCmrScore;
+	}
+
+	public void setCibilCmrScore(String cibilCmrScore) {
+		this.cibilCmrScore = cibilCmrScore;
+	}
+
+	public List<CollateralSecurityDetailRequest> getCollateralSecurityDetails() {
+		return collateralSecurityDetails;
+	}
+
+	public void setCollateralSecurityDetails(List<CollateralSecurityDetailRequest> collateralSecurityDetails) {
+		this.collateralSecurityDetails = collateralSecurityDetails;
+	}
+
+	public String getCastCategory() {
+		return castCategory;
+	}
+
+	public void setCastCategory(String castCategory) {
+		this.castCategory = castCategory;
+	}
+
+	public String getProductServiceDesc() {
+		return productServiceDesc;
+	}
+
+	public void setProductServiceDesc(String productServiceDesc) {
+		this.productServiceDesc = productServiceDesc;
 	}
 
 

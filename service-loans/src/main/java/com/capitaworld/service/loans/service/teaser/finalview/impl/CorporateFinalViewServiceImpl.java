@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -32,8 +33,11 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -57,6 +61,7 @@ import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
@@ -67,16 +72,13 @@ import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateMcqService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
@@ -201,12 +203,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
 	@Autowired
-	private IndustrySectorRepository industrySectorRepository;
-
-	@Autowired
-	private SubSectorRepository subSectorRepository;
-
-	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
@@ -223,12 +219,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private UsersClient usersClient;
-
-	@Autowired
-	private SectorIndustryMappingRepository sectorIndustryMappingRepository;
-
-	@Autowired
-	private SubSectorMappingRepository subSectorMappingRepository;
 
 	@Autowired
 	private IrrService irrService;
@@ -319,9 +309,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private CommonService commonService;
+	
+	@Autowired
+	CollateralSecurityDetailService collateralSecurityDetailService;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toapplicationId,Long proposalMapId, Integer userType,Long fundProviderUserId) {
 
@@ -683,6 +680,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
 			}
 			
+			List<CollateralSecurityDetailRequest> collateralSecurityDetails = collateralSecurityDetailService.getData(toapplicationId);
+			corporateFinalViewResponse.setCollateralSecurityDetails(collateralSecurityDetails);
+			
 			corporateFinalViewResponse
 					.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
 							? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity())
@@ -716,6 +716,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
 			corporateFinalViewResponse.setIncrementalTurnover(primaryCorporateDetail.getIncrementalTurnover());
 			corporateFinalViewResponse.setIncrementalMargin(primaryCorporateDetail.getIncrementalMargin());
+			corporateFinalViewResponse.setProductServiceDesc(primaryCorporateDetail.getProductServiceDescription());
 						
 		
 		}
@@ -1194,6 +1195,14 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Credit Rating {}", e);
 		}
+		
+		/*get cmr score cibil */	
+		try {
+			corporateFinalViewResponse.setCibilCmrScore(cibilClient.getCMRScore(toApplicationId));	
+		} catch (Exception e) {
+			logger.error("error while CIBIL CMR score : ",e);
+		}
+		
 		// itr xml isUpload or Online check
 		try {
 			ITRConnectionResponse itrConnectionResponse = itrClient.getIsUploadAndYearDetails(toApplicationId);
@@ -1745,20 +1754,43 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// Name as per Gst
 		try {
+
 			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
-			GSTR1Request req= new GSTR1Request();
-			req.setApplicationId(toApplicationId);
-			req.setUserId(userId);
-			req.setGstin(corporateApplicantDetail.getGstIn());	
-			GstResponse response = gstClient.detailCalculation(req);
+			CAMGSTData resp =null;
+				GSTR1Request req= new GSTR1Request();
+				req.setApplicationId(toApplicationId);
+				req.setUserId(userId);
+				req.setGstin(corporateApplicantDetail.getGstIn());
+				GstResponse response = gstClient.detailCalculation(req);
 				if (response != null) {
-					corporateFinalViewResponse.setGstData(response);
+					
+					DecimalFormat df = new DecimalFormat(".##");
+					if (!CommonUtils.isObjectNullOrEmpty(response)) {
+						for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+							resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+							Double totalSales =0.0d;
+							if(resp.getMomSales() != null) {
+								List<MomSales> momSalesResp = resp.getMomSales();
+								for (MomSales sales : momSalesResp) {
+									
+									totalSales += Double.valueOf(sales.getValue());
+								}
+								data.put("totalMomSales", df.format(totalSales));
+//							resp.setTotalMomSales(totalSales);
+							}
+						}
+						
+					corporateFinalViewResponse.setGstData((List<LinkedHashMap<String, Object>>) response.getData());
 				} else {
+
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
+
 				}
 			/*}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}*/
+
+				}
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);
 		}
@@ -1767,7 +1799,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		// Fraud Detection Data
 
-		/*try {
+		try {
 			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
 
 			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
@@ -1777,7 +1809,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----", toApplicationId + CommonUtils.EXCEPTION + e1);
-		}*/
+		}
 		
 		
 		

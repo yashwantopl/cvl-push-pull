@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class CorporatePrimaryViewResponse {
     private String collateralSecurityAmount;
     private List<Object> profilePic;
     private Double enhancementAmount;
+    private String castCategory;
 
     /*private String  isBusinessAssetChecked;
     private String  isWorkingCapitalChecked;
@@ -143,7 +145,11 @@ public class CorporatePrimaryViewResponse {
     private Object mcaFinancialAndDetailsResponse;
     private String eligibilityFinancialYear;
     private Double loanObligation;
+    private String cibilCmrScore;
     
+    private String productServiceDesc;
+    
+    private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
    
 	public List<Object> getCibilReport() {
 		return cibilReport;
@@ -1230,6 +1236,31 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setMcaCorpZipFile(List<Object> mcaCorpZipFile) {
 		this.mcaCorpZipFile = mcaCorpZipFile;
+	}
+	public String getCibilCmrScore() {
+		return cibilCmrScore;
+	}
+	public void setCibilCmrScore(String cibilCmrScore) {
+		this.cibilCmrScore = cibilCmrScore;
+	}
+	public List<CollateralSecurityDetailRequest> getCollateralSecurityDetails() {
+		return collateralSecurityDetails;
+	}
+	public void setCollateralSecurityDetails(List<CollateralSecurityDetailRequest> collateralSecurityDetails) {
+		this.collateralSecurityDetails = collateralSecurityDetails;
+	}
+
+	public String getCastCategory() {
+		return castCategory;
+	}
+	public void setCastCategory(String castCategory) {
+		this.castCategory = castCategory;
+	}
+	public String getProductServiceDesc() {
+		return productServiceDesc;
+	}
+	public void setProductServiceDesc(String productServiceDesc) {
+		this.productServiceDesc = productServiceDesc;
 	}
 	
 	
