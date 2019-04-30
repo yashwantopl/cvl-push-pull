@@ -35,7 +35,6 @@ import com.capitaworld.service.loans.model.ddr.DDRRequest;
 import com.capitaworld.service.loans.model.ddr.DDRUploadRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.token.TokenService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
@@ -60,9 +59,6 @@ public class DDRFormController {
 
 	@Autowired
 	private DMSClient dmsClient;
-
-	@Autowired 
-	private TokenService tokenService ;
 	
 	@Autowired
 	private AuditComponentBankToCW auditComponentBankToCW;
