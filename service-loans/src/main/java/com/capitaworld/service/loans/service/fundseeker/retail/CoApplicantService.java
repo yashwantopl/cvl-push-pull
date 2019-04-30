@@ -32,9 +32,4 @@ public interface CoApplicantService {
 	
 	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException;
 	
-	public List<HLOnefromResponse> getListForOneForm(Long applicationId);
-	
-	public boolean saveOneForm(HLOneformRequest req);
-	
-	public HLOneformRequest getById(Long applicationId,Long coAppId);
 }
