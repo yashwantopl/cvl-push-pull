@@ -21,7 +21,7 @@ public class SbiWCRenewalController {
 
     @GetMapping(value = "/sbi/renewal/{applicationId}/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> save(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "userId") Long userId) {
-        //skip payment request
+         //skip payment request
         Boolean isProceed = null;
         boolean isMatchesDone = sbiWCRenewalService.callMatchEngine(applicationId);
         if (isMatchesDone) {
