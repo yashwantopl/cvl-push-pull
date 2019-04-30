@@ -471,6 +471,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//GST DATA
 		try {
 			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setApplicationId(toApplicationId);
+			gstr1Request.setUserId(userId);
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
