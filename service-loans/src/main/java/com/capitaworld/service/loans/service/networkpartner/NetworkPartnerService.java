@@ -1,3 +1,4 @@
+
 package com.capitaworld.service.loans.service.networkpartner;
 
 import java.util.List;
@@ -45,3 +46,4 @@ public interface NetworkPartnerService {
 	
 	public boolean approveApplication(NhbsApplicationRequest request);
 }
+
