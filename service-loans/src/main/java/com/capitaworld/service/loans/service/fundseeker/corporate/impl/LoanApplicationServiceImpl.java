@@ -210,14 +210,12 @@ import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
-import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 import com.capitaworld.sidbi.integration.model.AchievementDetailRequest;
 import com.capitaworld.sidbi.integration.model.AssociatedConcernDetailRequest;
 import com.capitaworld.sidbi.integration.model.CorporateProfileRequest;
 import com.capitaworld.sidbi.integration.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.sidbi.integration.model.ExistingProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.FinanceMeansDetailRequest;
-import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 import com.capitaworld.sidbi.integration.model.GuarantorsCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.MonthlyTurnoverDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProfileReqRes;
@@ -269,9 +267,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private Environment environment;
-
-	@Autowired
-	private SidbiIntegrationClient sidbiIntegrationClient;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -7689,18 +7684,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	 * return updatePayment; }
 	 */
 
-	public void setTokenAsExpired(GenerateTokenRequest generateTokenRequest, Integer codeLanguage) {
-		logger.info("Start expiring Token in setTokenAsExpired(){} ------------- generateTokenRequest "
-				+ generateTokenRequest);
-		try {
-			sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest, generateTokenRequest.getBankToken(),
-					codeLanguage);
-		} catch (Exception e) {
-			logger.error("Exception while set token as  expiring Token ------------- Msg " + e.getMessage());
-		}
-		logger.info("End expiring Token setTokenAsExpired(){} -------------");
-
-	}
 
 	public List<TotalCostOfProjectRequest> getTotalCostOfProjectRequestsList(Long applicationId, Long userId) {
 		List<TotalCostOfProject> totalCostOfProjectsList = totalCostOfProjectRepository
