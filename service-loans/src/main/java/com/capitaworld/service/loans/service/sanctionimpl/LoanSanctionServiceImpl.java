@@ -1,16 +1,32 @@
 package com.capitaworld.service.loans.service.sanctionimpl;
 
 import java.util.Date;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.LoanSanctionRequest;
+import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -19,32 +35,9 @@ import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
-import com.capitaworld.service.users.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import com.capitaworld.service.loans.config.FPAsyncComponent;
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.LoanSanctionRequest;
-import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
-import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.utils.OrganisationConfiguration;
-import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
-import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
-import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
-import com.capitaworld.sidbi.integration.util.AESEncryptionUtilitySBI;
+import com.capitaworld.service.users.model.BranchUserResponse;
+import com.capitaworld.service.users.model.UserResponse;
 /**
  * @author Ankit
  *
