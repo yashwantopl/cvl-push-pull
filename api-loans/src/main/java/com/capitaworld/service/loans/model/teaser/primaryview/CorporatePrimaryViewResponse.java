@@ -147,6 +147,8 @@ public class CorporatePrimaryViewResponse {
     private Double loanObligation;
     private String cibilCmrScore;
     
+    private String productServiceDesc;
+    
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
    
 	public List<Object> getCibilReport() {
@@ -1247,11 +1249,18 @@ public class CorporatePrimaryViewResponse {
 	public void setCollateralSecurityDetails(List<CollateralSecurityDetailRequest> collateralSecurityDetails) {
 		this.collateralSecurityDetails = collateralSecurityDetails;
 	}
+
 	public String getCastCategory() {
 		return castCategory;
 	}
 	public void setCastCategory(String castCategory) {
 		this.castCategory = castCategory;
+
+	public String getProductServiceDesc() {
+		return productServiceDesc;
+	}
+	public void setProductServiceDesc(String productServiceDesc) {
+		this.productServiceDesc = productServiceDesc;
 	}
 	
 	

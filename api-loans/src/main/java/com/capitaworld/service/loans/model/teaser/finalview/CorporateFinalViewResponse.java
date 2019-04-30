@@ -240,6 +240,8 @@ public class CorporateFinalViewResponse implements Serializable {
     private List<Object> mcaCorpZipFile;
     private String cibilCmrScore;
     
+    private String productServiceDesc;
+    
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
 
 	public List<?> getMatchesList() {
@@ -2225,6 +2227,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setCastCategory(String castCategory) {
 		this.castCategory = castCategory;
+	}
+
+	public String getProductServiceDesc() {
+		return productServiceDesc;
+	}
+
+	public void setProductServiceDesc(String productServiceDesc) {
+		this.productServiceDesc = productServiceDesc;
 	}
 
 
