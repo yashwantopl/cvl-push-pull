@@ -999,6 +999,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				for (ProductMasterTemp productMaster : results) {
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
+					List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
+					productMasterRequest.setGstType(gstTypes);
 					productMasterRequests.add(productMasterRequest);
 				}
 			} else {
@@ -1026,6 +1028,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				for (ProductMasterTemp productMaster : results) {
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
+					List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
+					productMasterRequest.setGstType(gstTypes);
 					productMasterRequests.add(productMasterRequest);
 				}
 			}
@@ -1077,6 +1081,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			for (ProductMaster productMaster : results) {
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
+				List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
+				productMasterRequest.setGstType(gstTypes);
 				productMasterRequests.add(productMasterRequest);
 			}
 		}
@@ -1088,6 +1094,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		 * getMatchedAndActiveProduct(userId).size() > 0 ? true : false);
 		 * requests.add(request); }
 		 */
+		
 		CommonDocumentUtils.endHook(logger, "getListByUserType");
 
 		return productMasterRequests;
