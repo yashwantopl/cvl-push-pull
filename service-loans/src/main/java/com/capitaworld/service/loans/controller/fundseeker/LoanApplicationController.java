@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -90,9 +89,6 @@ public class LoanApplicationController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-//	@Autowired
-//	private AsyncComponent asyncComponent;
-
 	@Autowired
 	private UsersClient usersClient;
 
@@ -113,9 +109,6 @@ public class LoanApplicationController {
 	
 	@Autowired
 	private ApplicationProposalMappingService appPropMappService;
-
-	/*@Autowired
-	private GatewayClient gatewayClient;*/
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,
