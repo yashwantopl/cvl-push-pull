@@ -46,6 +46,7 @@ public class CorporatePrimaryViewResponse {
     private String collateralSecurityAmount;
     private List<Object> profilePic;
     private Double enhancementAmount;
+    private String castCategory;
 
     /*private String  isBusinessAssetChecked;
     private String  isWorkingCapitalChecked;
@@ -1245,6 +1246,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setCollateralSecurityDetails(List<CollateralSecurityDetailRequest> collateralSecurityDetails) {
 		this.collateralSecurityDetails = collateralSecurityDetails;
+	}
+	public String getCastCategory() {
+		return castCategory;
+	}
+	public void setCastCategory(String castCategory) {
+		this.castCategory = castCategory;
 	}
 	
 	
