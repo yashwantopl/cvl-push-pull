@@ -30,6 +30,7 @@ public class HLOneformRequest implements Serializable {
 	private Integer residenceSinceMonth;
 	private Integer residentialStatus;
 	private Double networth;
+	private Boolean isOneFormCompleted;
 	
 	//======CONTACT DETAILS
 	private String addressPremiseName;
@@ -350,6 +351,12 @@ public class HLOneformRequest implements Serializable {
 	}
 	public void setNationality(Integer nationality) {
 		this.nationality = nationality;
+	}
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
 	}
 	
 	
