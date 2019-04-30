@@ -6,6 +6,11 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+
+
+import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
