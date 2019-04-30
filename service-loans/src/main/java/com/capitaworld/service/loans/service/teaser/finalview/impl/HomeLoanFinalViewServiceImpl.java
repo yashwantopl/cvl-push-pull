@@ -10,16 +10,14 @@ import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewRespo
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +25,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -63,6 +60,9 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 	
 	@Autowired
 	private RetailFinalCommonApplicantService finalCommonService;
+	
+	@Autowired
+	private CommonService commonService;
 	
 	@Override
 	public HomeLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws LoansException {
@@ -109,7 +109,39 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 				homeLoanFinalViewResponse.setPropStreetName(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressStreet()) ? finalHomeLoanDetails.getPropertyAddressStreet() : "-");
 				homeLoanFinalViewResponse.setPropPinCode(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressPincode()) ? finalHomeLoanDetails.getPropertyAddressPincode().toString() : "-");
 				
-                try {
+				//Set Property CityStateCountryName
+				Long cityId = null ;
+				Integer stateId = null;
+				Integer countryId = null;
+				String cityName = null;
+				String stateName = null;
+				String countryName = null;
+				if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressCity()))
+					cityId = finalHomeLoanDetails.getPropertyAddressCity().longValue();
+				if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressState()))
+					stateId = finalHomeLoanDetails.getPropertyAddressState();
+				if(CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressCountry()))
+					countryId = finalHomeLoanDetails.getPropertyAddressCountry();
+					
+				if(cityId != null || stateId != null || countryId != null) {
+					Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+					if(mapData != null) {
+						cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+						stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+						countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+						
+						//set City
+						homeLoanFinalViewResponse.setPropCity(cityName != null ? cityName : "-");
+						
+						//set State
+						homeLoanFinalViewResponse.setPropState(stateName != null ? stateName : "-");
+						
+						//set Country
+						homeLoanFinalViewResponse.setPropCountry(countryName != null ? countryName : "-");
+					}
+				}
+				
+               /** try {
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressCity())) {
                     	permanentCity.add(Long.valueOf(finalHomeLoanDetails.getPropertyAddressCity()));
@@ -163,7 +195,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     }
                 } catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
-                }
+                }*/
 				
 				homeLoanFinalViewResponse.setBuiltUpArea(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getBuiltUpArea()) ? finalHomeLoanDetails.getBuiltUpArea().toString() : null);
 				homeLoanFinalViewResponse.setCarpetArea(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getCarpetArea()) ? finalHomeLoanDetails.getCarpetArea().toString() : null);
@@ -174,6 +206,36 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 				homeLoanFinalViewResponse.setSellerLandmark(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressLandmark()) ? finalHomeLoanDetails.getSellersAddressLandmark() : null);
 				homeLoanFinalViewResponse.setSellerPinCode(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressPincode()) ? finalHomeLoanDetails.getSellersAddressPincode() : null);
 
+				//Set Seller CityStateCountryName
+				cityId = null;
+				stateId = null;
+				countryId = null;
+				if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressCity()))
+					cityId = finalHomeLoanDetails.getSellersAddressCity().longValue();
+				if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressState()))
+					stateId = finalHomeLoanDetails.getSellersAddressState();
+				if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressCountry()))
+					countryId = finalHomeLoanDetails.getSellersAddressCountry();
+				
+				if(cityId != null || stateId != null || countryId != null) {
+					Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+					if(mapData != null) {
+						cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+						stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+						countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+						
+						//set City
+						homeLoanFinalViewResponse.setSellerCity(cityName != null ? cityName : "NA");
+						
+						//set State
+						homeLoanFinalViewResponse.setSellerState(stateName != null ? stateName : "NA");
+						
+						//set Country
+						homeLoanFinalViewResponse.setSellerCountry(countryName != null ? countryName : "NA");
+					}
+				}
+				
+				/**
 				try {
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressCity())) {
@@ -230,7 +292,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                 } catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
                 }
-				
+				*/
 			} catch (Exception e) {
 				logger.error("error while getting HL final details : ",e);
 			}

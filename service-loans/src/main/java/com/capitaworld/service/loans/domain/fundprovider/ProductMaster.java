@@ -97,6 +97,8 @@ public abstract class ProductMaster implements Serializable {
 	
 	@Column(name="action_for")
 	private String actionFor;
+	
+	
 
 	public ProductMaster() {
 	}
@@ -289,6 +291,8 @@ public abstract class ProductMaster implements Serializable {
 		this.actionFor = actionFor;
 	}
 
+
+	
 	
 	
 	

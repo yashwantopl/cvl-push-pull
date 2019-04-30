@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1230,4 +1231,187 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		}
 	}
 
+	@Override
+	public List<HLOnefromResponse> getListForOneForm(Long applicationId) {
+		List<HLOnefromResponse> resList = new ArrayList<>();
+		Object[] obj = retailApplicantDetailRepository.getBasicDetailsByAppId(applicationId);
+		if(obj != null && obj.length > 0) {
+			resList.add(setValueFromObj((Object[])obj[0], applicationId));	
+		}
+		List<Object[]> objList = coApplicantDetailRepository.getBasicDetailsByAppId(applicationId);
+		for(Object[] objs : objList) {
+			resList.add(setValueFromObj(objs, applicationId));
+		}
+		return resList;
+	}
+	
+	private HLOnefromResponse setValueFromObj(Object[] obj,Long applicationId) {
+		HLOnefromResponse res = new HLOnefromResponse();
+		res.setApplicationId(applicationId);
+		res.setName(CommonUtils.convertString(obj[0]) +" " + CommonUtils.convertString(obj[1]));
+		res.setIsOneformComplete(CommonUtils.convertBoolean(obj[2]));
+		res.setIsCibilComplete(CommonUtils.convertBoolean(obj[3]));
+		if(obj.length > 4) {
+			res.setCoAppId(CommonUtils.convertLong(obj[4]));	
+		}
+		return res;
+	}
+	
+	@Override
+	public HLOneformRequest getById(Long applicationId,Long coAppId) {
+		HLOneformRequest res = new HLOneformRequest();
+		res.setApplicationId(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				BeanUtils.copyProperties(coApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())) {
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(coApplicantDetail.getBusinessStartDate());
+					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+					res.setBusinessStartYear(cal.get(Calendar.YEAR));
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressCity())) {
+					res.setAddressCity(coApplicantDetail.getAddressCity().longValue());	
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressState())) {
+					res.setAddressState(coApplicantDetail.getAddressState().longValue());				
+				}
+				res.setAddressCountry(coApplicantDetail.getAddressCountry());
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
+					res.setAddressPincode(coApplicantDetail.getAddressPincode().longValue());	
+				}
+				res.setCoAppId(coAppId);
+			}
+		} else {
+			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+				BeanUtils.copyProperties(retailApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBusinessStartDate())) {
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(retailApplicantDetail.getBusinessStartDate());
+					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+					res.setBusinessStartYear(cal.get(Calendar.YEAR));
+				}
+				return res;
+			}
+		}
+		return res;  
+	}
+	
+	@Override
+	public boolean saveOneForm(HLOneformRequest req) {
+		if(!CommonUtils.isObjectNullOrEmpty(req.getCoAppId())) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(req.getCoAppId(), true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				coApplicantDetail.setTitleId(req.getTitleId());
+				coApplicantDetail.setFirstName(req.getFirstName());
+				coApplicantDetail.setMiddleName(req.getMiddleName());
+				coApplicantDetail.setLastName(req.getLastName());
+				coApplicantDetail.setFatherName(req.getFatherName());
+				coApplicantDetail.setPan(req.getPan());
+				coApplicantDetail.setGenderId(req.getGenderId());
+				coApplicantDetail.setCategory(req.getCategory());
+				coApplicantDetail.setMobile(req.getMobile());
+				coApplicantDetail.setBirthDate(req.getBirthDate());
+				coApplicantDetail.setResidenceType(req.getResidenceType());
+				coApplicantDetail.setResidenceSinceMonth(req.getResidenceSinceMonth());
+				coApplicantDetail.setResidenceSinceYear(req.getResidenceSinceYear());
+				coApplicantDetail.setNetworth(req.getNetworth());
+				coApplicantDetail.setAddressPremiseName(req.getAddressPremiseName());
+				coApplicantDetail.setAddressStreetName(req.getAddressStreetName());
+				coApplicantDetail.setAddressLandmark(req.getAddressLandmark());
+				coApplicantDetail.setAddressDistrictMappingId(req.getAddressDistrictMappingId());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getAddressCity())) {
+					coApplicantDetail.setAddressCity(req.getAddressCity().intValue());	
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(req.getAddressState())) {
+					coApplicantDetail.setAddressState(req.getAddressState().intValue());				
+				}
+				coApplicantDetail.setAddressCountry(req.getAddressCountry());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getAddressPincode())) {
+					coApplicantDetail.setAddressPincode(BigInteger.valueOf(req.getAddressPincode()));	
+				}
+				coApplicantDetail.setEmploymentType(req.getEmploymentType());
+				coApplicantDetail.setEmploymentStatus(req.getEmploymentStatus());
+				coApplicantDetail.setEmploymentStatusOther(req.getEmploymentStatusOther());
+				coApplicantDetail.setEmployedWithOther(req.getEmployedWithOther());
+				coApplicantDetail.setNameOfEntity(req.getNameOfEntity());
+				coApplicantDetail.setCurrentEmploymentStatus(req.getCurrentEmploymentStatus());
+				coApplicantDetail.setCurrentJobMonth(req.getCurrentJobMonth());
+				coApplicantDetail.setCurrentJobYear(req.getCurrentJobYear());
+				coApplicantDetail.setTotalExperienceMonth(req.getTotalExperienceMonth());
+				coApplicantDetail.setTotalExperienceYear(req.getTotalExperienceYear());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(req.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
+					coApplicantDetail.setBusinessStartDate(cal.getTime());
+				}
+				coApplicantDetail.setGrossMonthlyIncome(req.getGrossMonthlyIncome());
+				coApplicantDetail.setMonthlyIncome(req.getMonthlyIncome());
+				coApplicantDetail.setStatusId(req.getStatusId());
+				coApplicantDetail.setNationality(req.getNationality());
+				coApplicantDetail.setModifiedBy(req.getUserId());
+				coApplicantDetail.setModifiedDate(new Date());
+				coApplicantDetail.setIsOneFormCompleted(true);
+				coApplicantDetailRepository.save(coApplicantDetail);
+				return true;
+			}
+		} else {
+			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(req.getApplicationId());
+			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+				retailApplicantDetail.setTitleId(req.getTitleId());
+				retailApplicantDetail.setFirstName(req.getFirstName());
+				retailApplicantDetail.setMiddleName(req.getMiddleName());
+				retailApplicantDetail.setLastName(req.getLastName());
+				retailApplicantDetail.setFatherName(req.getFatherName());
+				retailApplicantDetail.setPan(req.getPan());
+				retailApplicantDetail.setGenderId(req.getGenderId());
+				retailApplicantDetail.setCategory(req.getCategory());
+				retailApplicantDetail.setMobile(req.getMobile());
+				retailApplicantDetail.setBirthDate(req.getBirthDate());
+				retailApplicantDetail.setResidenceType(req.getResidenceType());
+				retailApplicantDetail.setResidenceSinceYear(req.getResidenceSinceYear());
+				retailApplicantDetail.setResidenceSinceMonth(req.getResidenceSinceMonth());
+				retailApplicantDetail.setResidentialStatus(req.getResidentialStatus());
+				retailApplicantDetail.setNetworth(req.getNetworth());
+				retailApplicantDetail.setAddressPremiseName(req.getAddressPremiseName());
+				retailApplicantDetail.setAddressStreetName(req.getAddressStreetName());
+				retailApplicantDetail.setAddressLandmark(req.getAddressLandmark());
+				retailApplicantDetail.setAddressDistrictMappingId(req.getAddressDistrictMappingId());
+				retailApplicantDetail.setAddressCity(req.getAddressCity());
+				retailApplicantDetail.setAddressState(req.getAddressState());
+				retailApplicantDetail.setAddressCountry(req.getAddressCountry());
+				retailApplicantDetail.setAddressPincode(req.getAddressPincode());
+				retailApplicantDetail.setEmploymentType(req.getEmploymentType());
+				retailApplicantDetail.setEmploymentStatus(req.getEmploymentStatus());
+				retailApplicantDetail.setEmploymentStatusOther(req.getEmploymentStatusOther());
+				retailApplicantDetail.setEmployedWithOther(req.getEmployedWithOther());
+				retailApplicantDetail.setNameOfEmployer(req.getNameOfEmployer());
+				retailApplicantDetail.setCurrentEmploymentStatus(req.getCurrentEmploymentStatus());
+				retailApplicantDetail.setCurrentJobMonth(req.getCurrentJobMonth());
+				retailApplicantDetail.setCurrentJobYear(req.getCurrentJobYear());
+				retailApplicantDetail.setTotalExperienceMonth(req.getTotalExperienceMonth());
+				retailApplicantDetail.setTotalExperienceYear(req.getTotalExperienceYear());
+				if(!CommonUtils.isObjectNullOrEmpty(req.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(req.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
+					retailApplicantDetail.setBusinessStartDate(cal.getTime());
+				}
+				retailApplicantDetail.setGrossMonthlyIncome(req.getGrossMonthlyIncome());
+				retailApplicantDetail.setMonthlyIncome(req.getMonthlyIncome());
+				retailApplicantDetail.setEducationQualification(req.getEducationQualification());
+				retailApplicantDetail.setStatusId(req.getStatusId());
+				retailApplicantDetail.setSpouseEmployment(req.getSpouseEmployment());
+				retailApplicantDetail.setAnnualIncomeOfSpouse(req.getAnnualIncomeOfSpouse());
+				retailApplicantDetail.setNoOfDependent(req.getNoOfDependent());
+				retailApplicantDetail.setModifiedBy(req.getUserId());
+				retailApplicantDetail.setModifiedDate(new Date());
+				retailApplicantDetail.setIsOneFormCompleted(true);
+				retailApplicantDetailRepository.save(retailApplicantDetail);
+				return true;
+			}
+		}
+		return false;
+	}
 }

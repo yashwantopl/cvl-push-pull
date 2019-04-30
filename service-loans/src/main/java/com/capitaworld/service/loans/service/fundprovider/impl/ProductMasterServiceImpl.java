@@ -2,11 +2,15 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +32,7 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
@@ -41,6 +46,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
@@ -58,6 +64,8 @@ import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequ
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
@@ -217,7 +225,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     
     
     @Autowired
-    private EntityManager entityManager; 
+    private EntityManager entityManager;
+    
+    @Autowired
+    private  FpGstTypeMappingRepository fpGstTypeMappingRepository;
+    
+    @Autowired
+    private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
    
 	
 	@Override
@@ -413,6 +427,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
 				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMaster);
+				
+				//save gst type for only WC
+				
+				if(loanType==LoanType.WORKING_CAPITAL)
+				{
+					fpGstTypeMappingTempRepository.inActiveMasterByFpProductId(productMaster2.getId());
+					if(!CommonUtils.isListNullOrEmpty(addProductRequest.getGstType()))
+						saveGstTypeTemp(productMaster2.getId(),addProductRequest.getGstType(),(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+							? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				}
+				
 				industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				// industry data save
 				if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
@@ -473,6 +498,25 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			logger.error("error while saveOrUpdate : ", e);
 			return false;
 		}
+	}
+
+	private void saveGstTypeTemp(Long id, List<Integer> gstType, Long userId) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
+		FpGstTypeMappingTemp fpGstTypeMappingTemp= null;
+		for (Integer dataRequest : gstType) {
+			fpGstTypeMappingTemp = new FpGstTypeMappingTemp();
+			fpGstTypeMappingTemp.setFpProductId(id);
+			fpGstTypeMappingTemp.setGstTypeId(dataRequest);
+			fpGstTypeMappingTemp.setCreatedBy(userId);
+			fpGstTypeMappingTemp.setModifiedBy(userId);
+			fpGstTypeMappingTemp.setCreatedDate(new Date());
+			fpGstTypeMappingTemp.setModifiedDate(new Date());
+			fpGstTypeMappingTemp.setIsActive(true);
+			// create by and update
+			fpGstTypeMappingTempRepository.save(fpGstTypeMappingTemp);
+		}
+		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
 	}
 
 	private void saveNegativeIndustryTemp(Long id, List<DataRequest> negativeIndList,Long userId) {

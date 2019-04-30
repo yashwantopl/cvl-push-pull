@@ -17,4 +17,6 @@ public interface PrimaryCorporateService {
     public PrimaryCorporateRequest get(Long applicationId);
 
     public boolean saveOrUpdateSpecificData(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException;
+
+    public boolean saveSwitchExistingLoan(PrimaryCorporateRequest primaryCorporateRequest) throws LoansException;
 }

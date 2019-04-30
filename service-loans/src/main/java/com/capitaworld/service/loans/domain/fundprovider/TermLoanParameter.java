@@ -425,6 +425,30 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	@Column(name="is_wc_req_check")
 	private Boolean wcReqCheck = false;
+	
+	@Column(name="min_additional_loan")
+	private BigDecimal minAdditionalLoan;
+
+	@Column(name="max_additional_loan")
+	private BigDecimal maxAdditionalLoan;
+	
+	@Column(name="min_total_loan")
+	private BigDecimal minTotalLoan;
+
+	@Column(name="max_total_loan")
+	private BigDecimal maxTotalLoan;	
+	
+	@Column(name = "is_conservative_ratio_display")
+	private Boolean isConservativeRatioDisplay=false;
+
+	@Column(name = "is_conservative_ratio_mandatory")
+	private Boolean isConservativeRatioMandatory=false;
+	
+	@Column(name = "max_conservative_ratio")
+	private BigDecimal maxConservativeRatio;
+	
+	@Column(name = "min_conservative_ratio")
+	private BigDecimal minConservativeRatio;
 
 	/**
 	 * @return the jobId
@@ -1510,6 +1534,73 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	public void setNewHistoricGrowth(BigDecimal newHistoricGrowth) {
 		this.newHistoricGrowth = newHistoricGrowth;
 	}
+
+	public BigDecimal getMinAdditionalLoan() {
+		return minAdditionalLoan;
+	}
+
+	public void setMinAdditionalLoan(BigDecimal minAdditionalLoan) {
+		this.minAdditionalLoan = minAdditionalLoan;
+	}
+
+	public BigDecimal getMaxAdditionalLoan() {
+		return maxAdditionalLoan;
+	}
+
+	public void setMaxAdditionalLoan(BigDecimal maxAdditionalLoan) {
+		this.maxAdditionalLoan = maxAdditionalLoan;
+	}
+
+	public BigDecimal getMinTotalLoan() {
+		return minTotalLoan;
+	}
+
+	public void setMinTotalLoan(BigDecimal minTotalLoan) {
+		this.minTotalLoan = minTotalLoan;
+	}
+
+	public BigDecimal getMaxTotalLoan() {
+		return maxTotalLoan;
+	}
+
+	public void setMaxTotalLoan(BigDecimal maxTotalLoan) {
+		this.maxTotalLoan = maxTotalLoan;
+	}
+
+	public Boolean getIsConservativeRatioDisplay() {
+		return isConservativeRatioDisplay;
+	}
+
+	public void setIsConservativeRatioDisplay(Boolean isConservativeRatioDisplay) {
+		this.isConservativeRatioDisplay = isConservativeRatioDisplay;
+	}
+
+	public Boolean getIsConservativeRatioMandatory() {
+		return isConservativeRatioMandatory;
+	}
+
+	public void setIsConservativeRatioMandatory(Boolean isConservativeRatioMandatory) {
+		this.isConservativeRatioMandatory = isConservativeRatioMandatory;
+	}
+
+	public BigDecimal getMaxConservativeRatio() {
+		return maxConservativeRatio;
+	}
+
+	public void setMaxConservativeRatio(BigDecimal maxConservativeRatio) {
+		this.maxConservativeRatio = maxConservativeRatio;
+	}
+
+	public BigDecimal getMinConservativeRatio() {
+		return minConservativeRatio;
+	}
+
+	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
+		this.minConservativeRatio = minConservativeRatio;
+	}
+	
+	
+	
 
 	
 }

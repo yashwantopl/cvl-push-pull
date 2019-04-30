@@ -1,10 +1,13 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,30 +22,40 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMapping;
+import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -91,12 +104,25 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	@Autowired
 	private NegativeIndustryTempRepository negativeIndustryTempRepository;
+	
+	@Autowired
+	private LoanArrangementMappingRepository loanArrangementMappingRepository;
+	
+	@Autowired
+	private LoanArrangementMappingTempRepository loanArrangementMappingTempRepository;
 
 	@Autowired
 	private WorkflowClient workflowClient;
 
 	@Autowired
 	private MsmeValueMappingService msmeValueMappingService;
+	
+    @Autowired
+    private  FpGstTypeMappingRepository fpGstTypeMappingRepository;
+    
+    @Autowired
+    private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
+
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest,Long mappingId) {
@@ -161,6 +187,15 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(workingCapitalParameterRequest.getId());
 		saveNegativeIndustry(workingCapitalParameterRequest);
+		
+		//loan arrangements
+		loanArrangementMappingRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
+		saveLoanArrangements(workingCapitalParameterRequest);
+		
+		//gst type 
+		fpGstTypeMappingRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
+		saveLoanGstType(workingCapitalParameterRequest);
+		
 
 		//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,workingCapitalParameter2.getId());
@@ -168,6 +203,66 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 		logger.info("end saveOrUpdate");
 		return true;
+	}
+
+	private void saveLoanGstType(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
+		FpGstTypeMapping fpGstTypeMapping= null;
+		for (Integer dataRequest : workingCapitalParameterRequest.getGstType()) {
+			fpGstTypeMapping = new FpGstTypeMapping();
+			fpGstTypeMapping.setFpProductId(workingCapitalParameterRequest.getId());
+			fpGstTypeMapping.setGstTypeId(dataRequest);
+			fpGstTypeMapping.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			fpGstTypeMapping.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			fpGstTypeMapping.setCreatedDate(new Date());
+			fpGstTypeMapping.setModifiedDate(new Date());
+			fpGstTypeMapping.setIsActive(true);
+			// create by and update
+			fpGstTypeMappingRepository.save(fpGstTypeMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
+		
+	}
+	
+	private void saveLoanGstTypeTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
+		FpGstTypeMappingTemp fpGstTypeMappingTemp= null;
+		for (Integer dataRequest : workingCapitalParameterRequest.getGstType()) {
+			fpGstTypeMappingTemp = new FpGstTypeMappingTemp();
+			fpGstTypeMappingTemp.setFpProductId(workingCapitalParameterRequest.getId());
+			fpGstTypeMappingTemp.setGstTypeId(dataRequest);
+			fpGstTypeMappingTemp.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			fpGstTypeMappingTemp.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			fpGstTypeMappingTemp.setCreatedDate(new Date());
+			fpGstTypeMappingTemp.setModifiedDate(new Date());
+			fpGstTypeMappingTemp.setIsActive(true);
+			// create by and update
+			fpGstTypeMappingTempRepository.save(fpGstTypeMappingTemp);
+		}
+		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
+		
+	}
+
+	private void saveLoanArrangements(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveLoanArrangements");
+		LoanArrangementMapping loanArrangementMapping= null;
+		for (Integer dataRequest : workingCapitalParameterRequest.getLoanArrangementIds()) {
+			loanArrangementMapping = new LoanArrangementMapping();
+			loanArrangementMapping.setFpProductId(workingCapitalParameterRequest.getId());
+			loanArrangementMapping.setLoanArrangementId(dataRequest);
+			loanArrangementMapping.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			loanArrangementMapping.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			loanArrangementMapping.setCreatedDate(new Date());
+			loanArrangementMapping.setModifiedDate(new Date());
+			loanArrangementMapping.setIsActive(true);
+			// create by and update
+			loanArrangementMappingRepository.save(loanArrangementMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveLoanArrangements");
+		
 	}
 
 	@Override
@@ -290,6 +385,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			}
 		}
 		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, workingCapitalParameterRequest.getUserId()));
+		
+		workingCapitalParameterRequest.setLoanArrangementIds(loanArrangementMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
 	}
@@ -571,6 +668,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
          }
 
 		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
+		workingCapitalParameterRequest.setLoanArrangementIds(loanArrangementMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
+		workingCapitalParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}
@@ -658,9 +757,34 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
 		//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(workingCapitalParameterRequest.getMsmeFundingIds(),workingCapitalParameterRequest.getId(), workingCapitalParameterRequest.getUserId());
+		
+		//loan arrangements
+				loanArrangementMappingTempRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
+				saveLoanArrangementsTemp(workingCapitalParameterRequest);
 		logger.info("updated = {}",isUpdate);
 		logger.info("end saveOrUpdateTemp");
 		return true;
+	}
+
+	private void saveLoanArrangementsTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		
+		CommonDocumentUtils.startHook(logger, "saveLoanArrangementsTemp");
+		LoanArrangementMappingTemp loanArrangementMapping= null;
+		for (Integer dataRequest : workingCapitalParameterRequest.getLoanArrangementIds()) {
+			loanArrangementMapping = new LoanArrangementMappingTemp();
+			loanArrangementMapping.setFpProductId(workingCapitalParameterRequest.getId());
+			loanArrangementMapping.setLoanArrangementId(dataRequest);
+			loanArrangementMapping.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			loanArrangementMapping.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			loanArrangementMapping.setCreatedDate(new Date());
+			loanArrangementMapping.setModifiedDate(new Date());
+			loanArrangementMapping.setIsActive(true);
+			// create by and update
+			loanArrangementMappingTempRepository.save(loanArrangementMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveLoanArrangementsTemp");
+		
 	}
 
 	private void saveIndustryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
