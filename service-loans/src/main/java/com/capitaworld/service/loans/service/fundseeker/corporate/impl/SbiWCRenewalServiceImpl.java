@@ -73,6 +73,7 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
         try {
             GatewayRequest gatewayRequest = new GatewayRequest();
             gatewayRequest.setApplicationId(application_id);
+            gatewayRequest.setIsSbiSpecific(true);
             GatewayResponse response = gatewayClient.skipPayment(gatewayRequest);
             return "Success".equals(response.getData()) ? true : false;
         } catch (Exception e) {
