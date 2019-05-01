@@ -686,7 +686,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/* cmr details cibil */
 		
 		try {
-			map.put("cibilCmrScore", cibilClient.getCMRScore(applicationId));
+			String cmrScore= cibilClient.getCMRScore(applicationId);
+			map.put("cibilCmrScore", cmrScore != null ? cmrScore : "Not Found");
 		} catch (Exception e) {
 			
 			logger.error("error while getting cmr score : ",e);
