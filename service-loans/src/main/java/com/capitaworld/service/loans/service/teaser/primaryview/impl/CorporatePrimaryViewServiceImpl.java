@@ -1025,7 +1025,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		/*get cmr score cibil */
 		
 		try {
-				corporatePrimaryViewResponse.setCibilCmrScore(cibilClient.getCMRScore(applicationId));	
+				String cmrScore= cibilClient.getCMRScore(applicationId);
+				corporatePrimaryViewResponse.setCibilCmrScore(cmrScore != null ? cmrScore : "Not Found");	
 			
 		} catch (Exception e) {
 			logger.info("Exception while get CIBIL CMR Score {}",e);

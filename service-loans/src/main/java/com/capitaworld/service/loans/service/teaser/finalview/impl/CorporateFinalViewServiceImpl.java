@@ -1198,7 +1198,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		/*get cmr score cibil */	
 		try {
-			corporateFinalViewResponse.setCibilCmrScore(cibilClient.getCMRScore(toApplicationId));	
+			String cmrScore= cibilClient.getCMRScore(toApplicationId);
+			corporateFinalViewResponse.setCibilCmrScore(cmrScore != null ? cmrScore : "Not Found");	
 		} catch (Exception e) {
 			logger.error("error while CIBIL CMR score : ",e);
 		}
