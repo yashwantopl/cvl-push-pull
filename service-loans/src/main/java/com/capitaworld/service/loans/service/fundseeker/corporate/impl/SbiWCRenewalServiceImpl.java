@@ -51,13 +51,23 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
     private ProductMasterRepository productMasterRepository;
 
     @Override
-    public boolean callSkipPayment(Long application_id) {
+    public boolean callSkipPayment(Long application_id, Long userId) {
         try {
             GatewayRequest gatewayRequest = new GatewayRequest();
             gatewayRequest.setApplicationId(application_id);
             gatewayRequest.setIsSbiSpecific(true);
             GatewayResponse response = gatewayClient.skipPayment(gatewayRequest);
-            return "Success".equals(response.getData()) ? true : false;
+            if("Success".equals(response.getData())){
+                ConnectResponse postOneForm = null;
+                try {
+                    postOneForm = connectClient.postInPrinciple(application_id,userId,null);
+                    return true;
+                } catch (ConnectException e1) {
+                    return false;
+                }
+            }else{
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;

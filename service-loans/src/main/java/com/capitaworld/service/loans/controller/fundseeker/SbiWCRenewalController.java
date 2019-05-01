@@ -25,7 +25,7 @@ public class SbiWCRenewalController {
         Boolean isProceed = null;
         boolean isMatchesDone = sbiWCRenewalService.callMatchEngine(applicationId,userId);
         if (isMatchesDone) {
-            sbiWCRenewalService.callSkipPayment(applicationId);
+            sbiWCRenewalService.callSkipPayment(applicationId,userId);
             isProceed =true;
         }
         LoansResponse response = new LoansResponse();
