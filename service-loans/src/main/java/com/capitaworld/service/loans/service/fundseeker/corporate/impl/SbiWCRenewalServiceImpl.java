@@ -7,7 +7,9 @@ import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.exception.ConnectException;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SbiWCRenewalService;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -44,6 +46,9 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
 
     @Autowired
     private LoanApplicationService loanApplicationService;
+
+    @Autowired
+    private ProductMasterRepository productMasterRepository;
 
     private static Long orgId = null;
     private static Long branchId = null;
@@ -130,7 +135,8 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
                 loanApplicationRequest.setId(application_id);
                 loanApplicationRequest.setAmount(response.getMaxLoanAmount());
                 loanApplicationRequest.setTenure(response.getMaxTenure());
-                loanApplicationRequest.setProductId(Integer.parseInt(String.valueOf(response.getFpProductId())));
+                ProductMaster productMaster = productMasterRepository.getById(response.getFpProductId());
+                loanApplicationRequest.setProductId(productMaster.getProductId());
                 loanApplicationRequest.setNpOrgId(orgId);
                 boolean isLoanDetailsUpdated  = loanApplicationService.updateProductDetails(loanApplicationRequest);
 
