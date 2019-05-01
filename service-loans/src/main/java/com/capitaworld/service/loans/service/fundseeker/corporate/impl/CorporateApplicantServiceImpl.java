@@ -820,7 +820,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		logger.info("ENd Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
 		return obj;
 	}
-	
-	
 
+	@Override
+	public String getOrganizationNameFromApplicationId(Long applicationId) {
+		return corporateApplicantDetailRepository.getOrganizationNameFromId(applicationId);
+	}
 }

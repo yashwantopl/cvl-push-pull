@@ -1,9 +1,9 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
@@ -65,6 +66,9 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
     @Autowired
     private DocumentManagementService documentManagementService;
+    
+    @Autowired
+    private CommonService commonService;
 
     protected static final String DMS_URL = "dmsURL";
 
@@ -202,7 +206,44 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
                 //set office address
                 AddressResponse officeAddress = new AddressResponse();
-                try {
+                Long cityId = null ;
+    			Integer stateId = null;
+    			Integer countryId = null;
+    			String cityName = null;
+    			String stateName = null;
+    			String countryName = null;
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCityId()))
+    				cityId = applicantDetail.getOfficeCityId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId()))
+    				stateId = applicantDetail.getOfficeStateId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId()))
+    				countryId = applicantDetail.getOfficeCountryId();
+    			
+    			if(cityId != null || stateId != null || countryId != null) {
+    				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+    				if(mapData != null) {
+    					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+    					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+    					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+    					
+    					//set City
+    					officeAddress.setCity(cityName);
+    					
+    					//set State
+    					officeAddress.setState(stateName);
+    					
+    					//set Country
+    					officeAddress.setCountry(countryName);
+    				}
+    			}
+    			
+    			officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
+                officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
+                officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
+                officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
+                carLoanResponse.setOfficeAddress(officeAddress);
+                
+                /**try {
                     List<Long> officeCity = new ArrayList<Long>(1);
                     officeCity.add(applicantDetail.getOfficeCityId());
                     OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
@@ -240,16 +281,45 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     }
                 } catch (Exception e) {
                     logger.error(CommonUtils.EXCEPTION,e);
-                }
-                officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
-                officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
-                officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
-                officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
-                carLoanResponse.setOfficeAddress(officeAddress);
+                }*/
 
                 //set permanent address
                 AddressResponse permanentAddress = new AddressResponse();
-                try {
+                cityId = null;
+    			stateId = null;
+    			countryId = null;
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCityId()))
+    				cityId = applicantDetail.getPermanentCityId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId()))
+    				stateId = applicantDetail.getPermanentStateId();
+    			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCountryId()))
+    				countryId = applicantDetail.getPermanentCountryId();
+    			
+    			if(cityId != null || stateId != null || countryId != null) {
+    				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+    				if(mapData != null) {
+    					cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+    					stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+    					countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+    					
+    					//set City
+    					permanentAddress.setCity(cityName);
+    					
+    					//set State
+    					permanentAddress.setState(stateName);
+    					
+    					//set Country
+    					permanentAddress.setCountry(countryName);
+    				}
+    			}
+    			
+    			 permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
+                 permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
+                 permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
+                 permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
+                 carLoanResponse.setPermanentAddress(permanentAddress);
+                 
+               /** try {
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     permanentCity.add(applicantDetail.getPermanentCityId());
                     OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
@@ -283,12 +353,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     }
                 } catch (Exception e) {
                     logger.error(CommonUtils.EXCEPTION,e);
-                }
-                permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
-                permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
-                permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
-                permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
-                carLoanResponse.setPermanentAddress(permanentAddress);
+                }*/
 
                 //get list of Pan Card
                 try {

@@ -31,7 +31,6 @@ import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 
 /**
  * @author win7
@@ -224,13 +223,6 @@ public class LoansMain {
 		ThirdPartyClient thirdPartyClient = new ThirdPartyClient(thirdPartyBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(thirdPartyClient);
 		return thirdPartyClient;
-	}
-
-	@Bean
-	public SidbiIntegrationClient sidbiIntegrationClient() {
-		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(90);
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
-		return sidbiIntegrationClient;
 	}
 
 	@Bean

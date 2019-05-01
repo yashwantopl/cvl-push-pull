@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
+import com.capitaworld.service.loans.model.retail.HLOneformRequest;
+import com.capitaworld.service.loans.model.retail.HLOnefromResponse;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 
 import org.slf4j.Logger;
@@ -197,5 +199,6 @@ public class CoApplicantController {
 		}
 
 	}
+	
 
 }

@@ -31,6 +31,9 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	@Query("select count(cd.id) from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId ORDER BY cd.id")
 	public Long getCoAppCountByApplicationAndUserId(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
 	
+	@Query("select count(cd.id) from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and (cd.isOneFormCompleted IS NULL or cd.isOneFormCompleted = false) and (cd.isCibilCompleted IS NULL or cd.isCibilCompleted = false)")
+	public Long checkPendingCoAppOnefrom(@Param("applicationId") Long applicationId);
+	
 	@Query("select cd.id from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId ORDER BY cd.id")
 	public List<Long> getCoAppIds(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
 	
@@ -38,6 +41,9 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	public Long getApplicantIdById(@Param("id") Long id);
 	
 	public CoApplicantDetail findByIdAndIsActive(Long id,Boolean isActive);
+	
+	@Query("select rt.firstName,rt.lastName,rt.isOneFormCompleted,rt.isCibilCompleted,rt.id from CoApplicantDetail rt where rt.applicationId.id =:applicationId and rt.isActive = true")
+	public List<Object[]> getBasicDetailsByAppId(@Param("applicationId") Long applicationId);
 
 
 }

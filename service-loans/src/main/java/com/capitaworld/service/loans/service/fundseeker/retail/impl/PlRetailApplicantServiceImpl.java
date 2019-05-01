@@ -83,7 +83,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             RetailApplicantDetail applicantDetail = null;
             
             if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalIdAndUserId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId(), finalUserId);
+            	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
             }else {
             	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
             }
@@ -245,20 +245,20 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         }
     }
 
-    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException {
+    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
-            if (applicantDetail == null) {
-                PLRetailApplicantRequest request = new PLRetailApplicantRequest();
-                
-                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
-                
-                if (applicationProposalMapping != null){
-                    logger.info("getByproposalId called successfully ");
-                }
-                return request;
-            }
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
+            if (applicantDetail == null) {
+                
+                
+//                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
+                
+//                if (applicationProposalMapping != null){
+//                    logger.info("getByproposalId called successfully ");
+//                }
+                return applicantRequest;
+            }
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
@@ -279,10 +279,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
             applicantRequest.setMobile(request.getMobile());*/
 
-            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
-            if(retailApplicantIncomeDetailList == null || retailApplicantIncomeDetailList.size() < 1) {
-            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
-            }
+            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationId(applicationId); 
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
 
             RetailApplicantIncomeRequest incomeRequest = null;
@@ -390,7 +387,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = null;
             if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalIdAndUserId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId(), finalUserId);
+            	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
             }else {
             	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
             }
@@ -574,8 +571,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             
             RetailApplicantDetail applicantDetail = null;
             if(applicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalIdAndUserId(applicantRequest.getApplicationId(), 
-            			applicantRequest.getProposalId(), finaluserId);
+            	applicantDetail = applicantRepository.findByProposalId(applicantRequest.getApplicationId(), 
+            			applicantRequest.getProposalId());
             }else {
             	applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
                         applicantRequest.getApplicationId());
