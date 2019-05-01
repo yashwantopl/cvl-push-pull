@@ -21,10 +21,15 @@ public class SbiWCRenewalController {
 
     @GetMapping(value = "/sbi/renewal/{applicationId}/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> save(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "userId") Long userId) {
-        //skip payment request
-        boolean isChangeDone = sbiWCRenewalService.doSbiRenewalChanges(applicationId,userId);
+         //skip payment request
+        Boolean isProceed = null;
+        boolean isMatchesDone = sbiWCRenewalService.callMatchEngine(applicationId);
+        if (isMatchesDone) {
+            boolean isPaymentSkip = sbiWCRenewalService.callSkipPayment(applicationId);
+            isProceed =true;
+        }
         LoansResponse response = new LoansResponse();
-        response.setData(isChangeDone);
+        response.setData(isProceed);
         response.setStatus(HttpStatus.OK.value());
         return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
     }

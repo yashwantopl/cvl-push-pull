@@ -57,7 +57,7 @@ public class LoansMain {
 
 	@Value("${dmsURL}")
 	String dmsUrl;
-
+	
 	@Value("${capitaworld.service.auth.url}")
 	String authUrl;
 
@@ -111,10 +111,11 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.itr.url}")
 	private String itrUrl;
-
+	
 	@Value("${capitaworld.service.gateway.url}")
 	private String gatewayUrl;
 
+	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
@@ -125,7 +126,7 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
 		return gatewayClient;
 	}
-
+	
 	@Bean
 	public DMSClient dmsMasterClient() {
 		DMSClient dmsClient = new DMSClient(dmsUrl);
@@ -258,7 +259,7 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
 	}
-
+	
 	@Bean
 	public AuthClient authClient() {
 		AuthClient authClient = new AuthClient(authUrl);

@@ -25,7 +25,6 @@ import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
@@ -59,9 +58,7 @@ public class DDRFormController {
 
 	@Autowired
 	private DMSClient dmsClient;
-	
-	@Autowired
-	private AuditComponentBankToCW auditComponentBankToCW;
+
 	/**
 	 * SAVE ALL DDR FIELDS EXCEPT FRAME
 	 * 
@@ -452,7 +449,6 @@ public class DDRFormController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
 	
 	/**
 	 * CHECK CUSTOMER DETAILS FILLED OR NOT IN CORPORATE TEASER VIEW WHILE APPROVE PROPOSAL FOR ONLY BOB BANK

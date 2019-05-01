@@ -153,9 +153,11 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	    Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
 	    logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
 	    Integer loanType = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
+	    Double existingLimits = 0.0d;
 	    List<String> loanTypes = null;
 	    if(loanType == 2) {// Working Capital
 	    	loanTypes = Arrays.asList(new String[]{"cash credit","overdraft","loan - commercial cash credit"});
+	    	 existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
 	    }else if(loanType == 1) { //Term Loan
 	    	loanTypes = Arrays.asList(new String[]{
 	    			"demand loan",
@@ -167,8 +169,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	    			"equipment financing (construction office medical)",
 	    			"property loan","others"
 	    	});
+			 existingLimits = financialArrangementDetailsRepository.getOutStandingAmount(applicationId, loanTypes);
 	    }
-		Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
+	//	Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
 		logger.info("existingLimits=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
 		arrangementsDetailRequest.setAmount(existingLimits);

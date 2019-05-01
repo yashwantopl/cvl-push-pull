@@ -119,7 +119,36 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 	
 	@Column(name="estimated_rental_income")
 	private Double estimatedRentalIncome;
+	
+	
+	//-------- START ADD NEW FIELDS Date:- 28th April 2019 Harshit
+	@Column(name = "prop_premise_name")
+	private String propPremiseName;
+	
+	@Column(name = "prop_street_name")
+	private String propStreetName;
+	
+	@Column(name = "prop_landmark")
+	private String propLandmark;
+	
+	@Column(name = "prop_country")
+	private Long propCountry;
 
+	@Column(name = "prop_state")
+	private Long propState;
+	
+	@Column(name = "prop_city")
+	private Long propCity;
+
+	@Column(name = "prop_pincode")
+	private Long propPincode;
+
+	@Column(name = "prop_district_mapping_id")
+	private Long propdistrictMappingId;	
+
+	//-------- END ADD NEW FIELDS Date:- 28th April 2019 Harshit
+	
+	
 	
 	public LoanApplicationMaster getApplicationId() {
 		return applicationId;
@@ -375,6 +404,70 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 
 	public void setEstimatedRentalIncome(Double estimatedRentalIncome) {
 		this.estimatedRentalIncome = estimatedRentalIncome;
+	}
+
+	public String getPropPremiseName() {
+		return propPremiseName;
+	}
+
+	public void setPropPremiseName(String propPremiseName) {
+		this.propPremiseName = propPremiseName;
+	}
+
+	public String getPropStreetName() {
+		return propStreetName;
+	}
+
+	public void setPropStreetName(String propStreetName) {
+		this.propStreetName = propStreetName;
+	}
+
+	public String getPropLandmark() {
+		return propLandmark;
+	}
+
+	public void setPropLandmark(String propLandmark) {
+		this.propLandmark = propLandmark;
+	}
+
+	public Long getPropCountry() {
+		return propCountry;
+	}
+
+	public void setPropCountry(Long propCountry) {
+		this.propCountry = propCountry;
+	}
+
+	public Long getPropState() {
+		return propState;
+	}
+
+	public void setPropState(Long propState) {
+		this.propState = propState;
+	}
+
+	public Long getPropCity() {
+		return propCity;
+	}
+
+	public void setPropCity(Long propCity) {
+		this.propCity = propCity;
+	}
+
+	public Long getPropPincode() {
+		return propPincode;
+	}
+
+	public void setPropPincode(Long propPincode) {
+		this.propPincode = propPincode;
+	}
+
+	public Long getPropdistrictMappingId() {
+		return propdistrictMappingId;
+	}
+
+	public void setPropdistrictMappingId(Long propdistrictMappingId) {
+		this.propdistrictMappingId = propdistrictMappingId;
 	}
 
 	
