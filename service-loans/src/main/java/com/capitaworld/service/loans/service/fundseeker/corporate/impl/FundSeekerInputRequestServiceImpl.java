@@ -648,14 +648,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			       if (CommonUtils.isObjectNullOrEmpty(response) || CommonUtils.isObjectNullOrEmpty(response.getData())) {
 			          logger.info("No Codes Found for UserId===>{}", fundSeekerInputRequestResponse.getUserId());
 			          
-			          List<String> userCampaignDetailsList = (List<String>) response.getData();
-			          if(!CommonUtils.isListNullOrEmpty(userCampaignDetailsList)){
-			        	  isMp = false;
-			          }
-			          else {
-			          
 			          isMp = true;
-			          }
+			        
+			       }
+			       else {
+			    	   List<String> userCampaignDetailsList = (List<String>) response.getData();
+				          if(!CommonUtils.isListNullOrEmpty(userCampaignDetailsList)){
+				        	  isMp = false;
+				          }
+				          else {
+				          
+				          isMp = true;
+				          }
 			       }
 			    } catch (Exception e) {
 			       logger.error("Error while Getting Campaign Codes using Users Client : ",e);
