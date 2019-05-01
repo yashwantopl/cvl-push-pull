@@ -23,9 +23,9 @@ public class SbiWCRenewalController {
     public ResponseEntity<LoansResponse> save(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "userId") Long userId) {
          //skip payment request
         Boolean isProceed = null;
-        boolean isMatchesDone = sbiWCRenewalService.callMatchEngine(applicationId);
+        boolean isMatchesDone = sbiWCRenewalService.callMatchEngine(applicationId,userId);
         if (isMatchesDone) {
-            boolean isPaymentSkip = sbiWCRenewalService.callSkipPayment(applicationId);
+            sbiWCRenewalService.callSkipPayment(applicationId);
             isProceed =true;
         }
         LoansResponse response = new LoansResponse();

@@ -50,29 +50,6 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
     @Autowired
     private ProductMasterRepository productMasterRepository;
 
-    private static Long orgId = null;
-    private static Long branchId = null;
-
-    @Override
-    public boolean doSbiRenewalChanges(Long application_id, Long userId) {
-        boolean isMatchesDone = callMatchEngine(application_id);
-        if (isMatchesDone){
-            boolean isConnectDone = callConnect(application_id,userId);
-            if (isConnectDone){
-                boolean isPaymentSkip = callSkipPayment(application_id);
-                if (isPaymentSkip){
-                    return true;
-                }else{
-                    return false;
-                }
-            }else{
-                return false;
-            }
-        }else {
-            return false;
-        }
-    }
-
     @Override
     public boolean callSkipPayment(Long application_id) {
         try {
@@ -87,33 +64,14 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
         }
     }
 
-
     @Override
-    public boolean callConnect(Long application_id,Long userId) {
-        try {
-            ConnectResponse postOneForm = connectClient.postPayment(application_id, userId, null);
-            if (postOneForm != null && postOneForm.getProceed() != null && postOneForm.getProceed().booleanValue()) {
-                branchId = postOneForm.getBranchId();
-                orgId = postOneForm.getOrgId();
-                return true;
-            }else{
-                return false;
-            }
-        } catch (ConnectException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean callMatchEngine(Long application_id) {
+    public boolean callMatchEngine(Long application_id, Long userId) {
         MatchRequest request = new MatchRequest();
         request.setApplicationId(application_id);
         request.setStage(CommonUtils.MatchesStages.ONE_FORM);
         try {
             ApplicationProductAuditRequest response = matchEngineClient.listSbiMatchesList(request);
             if (response != null) {//no matches found [proposal eligible]
-
                 //for update matches proposal detail entry
                 ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
                 mappingRequest.setApplicationId(response.getApplicationId());
@@ -126,9 +84,21 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
                 mappingRequest.setElRoi(response.getOfferedRoi());
                 mappingRequest.setElTenure(response.getMaxTenure());
                 mappingRequest.setUserId(response.getFpUserId());
-                mappingRequest.setUserOrgId(orgId);
-                mappingRequest.setBranchId(branchId);
+
+                //calling connect for fetch branch and org details.
+                ConnectResponse postOneForm = null;
+                try {
+                    postOneForm = connectClient.postPayment(application_id, userId, null);
+                } catch (ConnectException e1) {
+                    e1.printStackTrace();
+                }
+                if (postOneForm != null && postOneForm.getProceed() != null && postOneForm.getProceed().booleanValue()) {
+                    mappingRequest.setUserOrgId(postOneForm.getOrgId());
+                    mappingRequest.setBranchId(postOneForm.getBranchId());
+                }
+                //saving details in proposal details
                 ProposalMappingResponse proposalMappingResponse = proposalDetailsClient.savePoposalOnLoanSelection(mappingRequest);
+
 
                 //for loan details update call. [existing service re-used]
                 LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
@@ -137,11 +107,8 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
                 loanApplicationRequest.setTenure(response.getMaxTenure());
                 ProductMaster productMaster = productMasterRepository.getById(response.getFpProductId());
                 loanApplicationRequest.setProductId(productMaster.getProductId());
-                loanApplicationRequest.setNpOrgId(orgId);
-                boolean isLoanDetailsUpdated  = loanApplicationService.updateProductDetails(loanApplicationRequest);
-
-            }else{//matches found and return first object [proposal in-eligible]
-                System.out.println(response.getEmi());
+                loanApplicationRequest.setNpOrgId(postOneForm.getOrgId());
+                boolean isLoanDetailsUpdated = loanApplicationService.updateProductDetails(loanApplicationRequest);
             }
         } catch (MatchException e) {
             e.printStackTrace();
