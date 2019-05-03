@@ -1498,7 +1498,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		List<ProductMaster> results = null;
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 		
-			if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
+		if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
+		{
+			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+			} else {
+				results = productMasterRepository.getUserRetailProductList(userId);
+			}
+		}		
+		else
+		{
+			if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
 			{
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
@@ -1506,34 +1516,19 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					results = productMasterRepository.getUserRetailProductList(userId);
 				}
 			}
-		
+	
 			else
 			{
-
-
-		if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
-		{
-			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
-			} else {
-				results = productMasterRepository.getUserRetailProductList(userId);
-			}
-		}
-
-		else
-		{
-
-			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
-			} else {
-				results = productMasterRepository.getUserCorporateProductList(userId);
-			}
-
+	
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterRepository.getUserCorporateProductList(userId);
+				}
+	
 			}
 
 		}
-
-		
 		
 		for (ProductMaster productMaster : results) {
 			if(productMaster.getProductId()!=productId)
@@ -1545,6 +1540,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}
 			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 			BeanUtils.copyProperties(productMaster, productMasterRequest);
+			List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
+			productMasterRequest.setGstType(gstTypes);
 			productMasterRequests.add(productMasterRequest);
 		}
 		

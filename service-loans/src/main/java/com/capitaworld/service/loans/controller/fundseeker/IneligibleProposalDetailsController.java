@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.api.payment.gateway.exception.GatewayException;
+import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
@@ -34,6 +37,11 @@ public class IneligibleProposalDetailsController {
 
 	@Autowired
 	private IneligibleProposalDetailsService ineligibleProposalDetailsService;
+	
+	@Autowired
+	private GatewayClient gatewayClient;
+	
+
 /**
  * need to change the method sendMailToFsAndBankBranch of applicationId to proposalId
  * */
@@ -61,15 +69,22 @@ public class IneligibleProposalDetailsController {
 
 		Integer isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved == 2) {
-
-//        	Trigger mail  to fs and bank branch
-			Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
+		
+			//Trigger mail  to fs and bank branch
+			//This email check if the selected bank is (sbi and wc_renewal) or sidbi specific then this email shoot 			
+			Boolean isEligible = ineligibleProposalDetailsService.sendMailToFsAndBankBranchForSbiBankSpecific(
 					inEligibleProposalDetailsRequest.getApplicationId(),
 					inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
-			if (isSent) {
-				logger.info("Email sent to fs and branch");
-			} else {
-				logger.info("Error in sending email to fs and branch");
+			if(!isEligible) {
+				//If users is not from sbi and sidbi specific then this email shoot				
+				Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
+						inEligibleProposalDetailsRequest.getApplicationId(),
+						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
+				if (isSent) {
+					logger.info("Email sent to fs and branch");
+				} else {
+					logger.info("Error in sending email to fs and branch");
+				}
 			}
 
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),

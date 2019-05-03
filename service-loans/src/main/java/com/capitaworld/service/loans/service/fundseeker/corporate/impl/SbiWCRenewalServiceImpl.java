@@ -119,10 +119,11 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
                 loanApplicationRequest.setProductId(productMaster.getProductId());
                 loanApplicationRequest.setNpOrgId(postOneForm.getOrgId());
                 boolean isLoanDetailsUpdated = loanApplicationService.updateProductDetails(loanApplicationRequest);
+                return isLoanDetailsUpdated;
             }
         } catch (MatchException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 }
