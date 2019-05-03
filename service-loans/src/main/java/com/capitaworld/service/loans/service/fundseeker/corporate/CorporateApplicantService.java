@@ -9,6 +9,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -57,5 +58,5 @@ public interface CorporateApplicantService {
 
     public JSONObject getOrgAndPanByAppId(Long applicationId);
 
-    public String getOrganizationNameFromApplicationId(Long applicationId);
+    public Map getOrganizationNameFromApplicationId(Long applicationId);
 }
