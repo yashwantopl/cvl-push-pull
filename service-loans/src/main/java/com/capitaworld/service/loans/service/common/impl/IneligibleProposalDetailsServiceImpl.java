@@ -556,7 +556,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 									resp.getContactPersonNumber() != null ? resp.getContactPersonNumber() : "-");
 							notificationParams.put("branch_contact_email",resp.getContactPersonEmail()!= null ? resp.getContactPersonEmail() : "-");
 							// 16 is for SBI
-							if(userOrgId.equals(16)) {
+							if(userOrgId.equals(Long.valueOf(16))) {
 								notificationParams.put("smec_code", resp.getSmecCode()!= null?resp.getSmecCode():"NA");
 								notificationParams.put("smec_name", resp.getSmecName()!= null?resp.getSmecName():"NA");
 								notificationParams.put("smec_mobile", resp.getSmecMobile()!=null?resp.getSmecMobile():"NA");
