@@ -29,8 +29,6 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.workflow.WorkflowClient;
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -215,7 +213,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		try {
 			corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
 			//ADMIN OFFICE ADDRESS
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+			if(corporateFinalInfoRequest != null && !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
 				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber(),null) + "," : "");
 				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName(),null) + " " : "");
 				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark(),null) + " " : "");
@@ -232,7 +230,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				}
 			}
 			//REGISTERED OFFICE ADDRESS
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
+			if(corporateFinalInfoRequest != null &&  !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
 				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber(),null) + "," : "");
 				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getStreetName(),null) + " " : "");
 				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getLandMark(),null) + " " : "");
@@ -284,44 +282,52 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}*/
 		
 		//GST DATA
-		GSTR1Request gstr1Request = new GSTR1Request();
-		gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
-		gstr1Request.setApplicationId(applicationId);
-		try {
-
-			GstResponse response = gstClient.getCalculations(gstr1Request);
-			
-			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
-			int noOfCustomer = gstData.getNoOfCustomer().intValue();
-			map.put("noOfCustomer", noOfCustomer);
-			map.put("projectedSales", CommonUtils.convertValueRound(gstData.getProjectedSales()));
-			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}try {
-
-			CAMGSTData resp =null;		
-			GstResponse response = gstClient.detailCalculation(gstr1Request);
-			// STARTS HERE TOTAL MOM SALES------>
-			Double totalSales =0.0d;
-			DecimalFormat df = new DecimalFormat(".##");
-			if (!CommonUtils.isObjectNullOrEmpty(response) && (!CommonUtils.isObjectNullOrEmpty(response.getData()))) {
-				resp = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(),CAMGSTData.class);
-				if(resp.getMomSales() != null) {
-					List<MomSales> momSalesResp = resp.getMomSales();
-					 for (MomSales sales : momSalesResp) {
-					    	totalSales += Double.valueOf(sales.getValue());
-					}
-					map.put("totalMomSales", df.format(totalSales));
+				try {
+					GSTR1Request gstr1Request = new GSTR1Request();
+					gstr1Request.setApplicationId(applicationId);
+					gstr1Request.setUserId(userId);
+					gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+					GstResponse response = gstClient.getCalculations(gstr1Request);
+					GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
+					int noOfCustomer = gstData.getNoOfCustomer().intValue();
+					map.put("noOfCustomer", noOfCustomer);
+					map.put("projectedSales", CommonUtils.convertValueRound(gstData.getProjectedSales()));
+					map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
+				}catch(Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
-			//  ENDS HERE----> TOTAL MOM SALES------>
-			if(!CommonUtils.isObjectNullOrEmpty(response) && (!CommonUtils.isObjectNullOrEmpty(response.getData()))) {
-				map.put("gstDetailedResp",response.getData());
-			}
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
+				
+				try {
+					GSTR1Request req= new GSTR1Request();
+					req.setApplicationId(applicationId);
+					req.setUserId(userId);
+					req.setGstin(corporateApplicantRequest.getGstIn());	
+					CAMGSTData resp =null;
+					GstResponse response = gstClient.detailCalculation(req);
+					
+					DecimalFormat df = new DecimalFormat(".##");
+					if (!CommonUtils.isObjectNullOrEmpty(response)) {
+						for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+							resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+							Double totalSales =0.0d;
+							if(resp.getMomSales() != null) {
+								List<MomSales> momSalesResp = resp.getMomSales();
+								for (MomSales sales : momSalesResp) {
+									
+									totalSales += Double.valueOf(sales.getValue());
+								}
+								data.put("totalMomSales", df.format(totalSales));
+//							resp.setTotalMomSales(totalSales);
+							}
+						}
+						
+						
+						map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
+					}
+				
+				}catch(Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? simpleDateFormat.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
