@@ -1210,7 +1210,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 			
-			if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
+			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 			}
 		}catch (Exception e) {
