@@ -907,7 +907,7 @@ public class AsyncComponent {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getCityName(Long cityId) {
+	public String getCityName(Long cityId) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(cityId)) {
 				return null;
@@ -928,7 +928,7 @@ public class AsyncComponent {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getStateName(Integer stateId) {
+	public String getStateName(Integer stateId) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(stateId)) {
 				return null;
@@ -949,7 +949,7 @@ public class AsyncComponent {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getCountryName(Integer country) {
+	public String getCountryName(Integer country) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(country)) {
 				return null;
@@ -987,6 +987,22 @@ public class AsyncComponent {
 			logger.error("EXCEPTION THROW WHILE SAVE MATCHES JSON WHILE SUBMIT ONEFORM DETAILS : ",e);
 		}
 
+	}
+	
+	public String murgedAddress(String primiseNo,String landMark,String streetName,Long cityId,Long pincode,Long stateId) throws Exception {
+		String address="";
+		address=primiseNo;
+		if(primiseNo==null) {
+			address="";
+		}
+		address=!address.equals("") ? streetName!=null?address.concat(","+streetName):address.concat(""):address.concat(streetName);
+		address=!address.equals("") ? landMark!=null?address.concat(","+landMark):address.concat(""):address.concat(landMark);
+		String city = getCityName(cityId);	
+		address=!address.equals("") ? city!=null?address.concat(","+city):address.concat(""):address.concat(city);
+		String state = getStateName(Integer.valueOf(stateId.intValue()));
+		address=!address.equals("")  ? state!=null?address.concat(","+state):address.concat(""):address.concat(state);
+		address=!address.equals("")  ? pincode!=null?address.concat("-"+pincode):address.concat(""):address.concat(pincode.toString());
+		return address;
 	}
 
 }
