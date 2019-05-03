@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -644,9 +645,9 @@ public class CorporateApplicantController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			String name = applicantService.getOrganizationNameFromApplicationId(applicationId);
+			Map map = applicantService.getOrganizationNameFromApplicationId(applicationId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setData(name);
+			loansResponse.setData(map);
 			CommonDocumentUtils.endHook(logger, "get");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
