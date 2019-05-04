@@ -23,6 +23,9 @@ public interface PrimaryCorporateDetailRepository extends JpaRepository<PrimaryC
     public int updatedFinancialFieldsForUniformProduct(@Param("applicationId") Long applicationId,@Param("turnOverPrevFinYear") Double turnOverPrevFinYear,@Param("turnOverCurrFinYearTillMonth") Double turnOverCurrFinYearTillMonth,@Param("profitCurrFinYear") Double profitCurrFinYear,@Param("grossSales") Double grossSales);
 
     public PrimaryCorporateDetail findByApplicationIdId(Long applicationId);
+    
+
+
 }
 
 

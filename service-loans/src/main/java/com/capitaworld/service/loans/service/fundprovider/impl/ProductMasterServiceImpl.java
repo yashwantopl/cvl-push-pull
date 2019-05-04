@@ -1179,10 +1179,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public List<ProductMasterRequest> getProductByOrgId(Long orgId) {
 		logger.info("Start getProductByOrgId()");
-		List<Integer> productIdss = productMasterRepository.getProductsByOrgId(orgId);
-		logger.info("Product Ids =={}======>Provided By====>{}", productIdss, orgId);
-		List<ProductMasterRequest> response = new ArrayList<>(productIdss.size());
-		for (Integer productId : productIdss) {
+		List<Integer> productIds = productMasterRepository.getProductsByOrgId(orgId);
+		logger.info("Product Ids =={}======>Provided By====>{}", productIds, orgId);
+		List<ProductMasterRequest> response = new ArrayList<>(productIds.size());
+		for (Integer productId : productIds) {
 			com.capitaworld.service.loans.utils.CommonUtils.LoanType type = CommonUtils.LoanType
 					.getType(productId);
 			if (CommonUtils.isObjectNullOrEmpty(type)) {

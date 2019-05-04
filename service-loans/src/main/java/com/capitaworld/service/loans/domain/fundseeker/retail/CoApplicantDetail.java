@@ -125,6 +125,12 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "employment_status")
 	private Integer employmentStatus;
+	
+	@Column(name = "current_employment_status")
+	private Integer currentEmploymentStatus;
+	
+	@Column(name = "employment_status_other")
+	private String employmentStatusOther;
 
 	@Column(name = "entity_name")
 	private String entityName;
@@ -173,6 +179,9 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "monthly_income")
 	private Double monthlyIncome;
+	
+	@Column(name = "gross_monthly_income")
+	private Double grossMonthlyIncome;
 
 	@Column(name = "mother_name")
 	private String motherName;
@@ -397,6 +406,27 @@ public class CoApplicantDetail implements Serializable {
 	
 	@Column(name="is_one_form_completed")
 	private Boolean isOneFormCompleted;
+	
+	@Column(name="category")
+    private Integer category;
+    
+    @Column(name="networth")
+    private Double networth;
+    
+    @Column(name = "address_district_mapping_id")
+	private Long addressDistrictMappingId;
+    
+    @Column(name = "nationality")
+	private Integer nationality;
+    
+    @Column(name="employment_type")
+	private Integer employmentType;
+    
+    @Column(name="residence_since_year")
+    private Integer residenceSinceYear;
+
+    @Column(name="residence_since_month")
+    private Integer residenceSinceMonth;
 
 	public CoApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1392,6 +1422,86 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setIsItrManual(Boolean isItrManual) {
 		this.isItrManual = isItrManual;
+	}
+
+	public Integer getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
+	}
+
+	public String getEmploymentStatusOther() {
+		return employmentStatusOther;
+	}
+
+	public void setEmploymentStatusOther(String employmentStatusOther) {
+		this.employmentStatusOther = employmentStatusOther;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public Integer getCategory() {
+		return category;
+	}
+
+	public void setCategory(Integer category) {
+		this.category = category;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public Long getAddressDistrictMappingId() {
+		return addressDistrictMappingId;
+	}
+
+	public void setAddressDistrictMappingId(Long addressDistrictMappingId) {
+		this.addressDistrictMappingId = addressDistrictMappingId;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
+	}
+
+	public Integer getResidenceSinceYear() {
+		return residenceSinceYear;
+	}
+
+	public void setResidenceSinceYear(Integer residenceSinceYear) {
+		this.residenceSinceYear = residenceSinceYear;
+	}
+
+	public Integer getResidenceSinceMonth() {
+		return residenceSinceMonth;
+	}
+
+	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+		this.residenceSinceMonth = residenceSinceMonth;
 	}
 	
 	

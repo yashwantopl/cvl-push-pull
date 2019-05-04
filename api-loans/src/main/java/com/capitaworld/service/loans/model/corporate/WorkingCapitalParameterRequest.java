@@ -240,6 +240,29 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	
 
 	private Boolean wcReqCheck = false;
+	
+	//total limits
+	private List<Integer> loanArrangementIds;
+	
+	private BigDecimal minAdditionalLoan;
+
+	private BigDecimal maxAdditionalLoan;
+	
+	private BigDecimal minTotalLoan;
+
+	private BigDecimal maxTotalLoan;	
+	
+	private Boolean isConservativeRatioDisplay=false;
+
+	private Boolean isConservativeRatioMandatory=false;
+	
+	private BigDecimal maxConservativeRatio;
+	
+	private BigDecimal minConservativeRatio;
+	
+	private List<Integer> gstType;
+	
+	
 
 	
 
@@ -1406,5 +1429,88 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.newHistoricGrowth = newHistoricGrowth;
 	}
 
+	public List<Integer> getLoanArrangementIds() {
+		return loanArrangementIds;
+	}
+
+	public void setLoanArrangementIds(List<Integer> loanArrangementIds) {
+		this.loanArrangementIds = loanArrangementIds;
+	}
+
+	public BigDecimal getMinAdditionalLoan() {
+		return minAdditionalLoan;
+	}
+
+	public void setMinAdditionalLoan(BigDecimal minAdditionalLoan) {
+		this.minAdditionalLoan = minAdditionalLoan;
+	}
+
+	public BigDecimal getMaxAdditionalLoan() {
+		return maxAdditionalLoan;
+	}
+
+	public void setMaxAdditionalLoan(BigDecimal maxAdditionalLoan) {
+		this.maxAdditionalLoan = maxAdditionalLoan;
+	}
+
+	public BigDecimal getMinTotalLoan() {
+		return minTotalLoan;
+	}
+
+	public void setMinTotalLoan(BigDecimal minTotalLoan) {
+		this.minTotalLoan = minTotalLoan;
+	}
+
+	public BigDecimal getMaxTotalLoan() {
+		return maxTotalLoan;
+	}
+
+	public void setMaxTotalLoan(BigDecimal maxTotalLoan) {
+		this.maxTotalLoan = maxTotalLoan;
+	}
+
+	public Boolean getIsConservativeRatioDisplay() {
+		return isConservativeRatioDisplay;
+	}
+
+	public void setIsConservativeRatioDisplay(Boolean isConservativeRatioDisplay) {
+		this.isConservativeRatioDisplay = isConservativeRatioDisplay;
+	}
+
+	public Boolean getIsConservativeRatioMandatory() {
+		return isConservativeRatioMandatory;
+	}
+
+	public void setIsConservativeRatioMandatory(Boolean isConservativeRatioMandatory) {
+		this.isConservativeRatioMandatory = isConservativeRatioMandatory;
+	}
+
+	public BigDecimal getMaxConservativeRatio() {
+		return maxConservativeRatio;
+	}
+
+	public void setMaxConservativeRatio(BigDecimal maxConservativeRatio) {
+		this.maxConservativeRatio = maxConservativeRatio;
+	}
+
+	public BigDecimal getMinConservativeRatio() {
+		return minConservativeRatio;
+	}
+
+	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
+		this.minConservativeRatio = minConservativeRatio;
+	}
+
+	public List<Integer> getGstType() {
+		return gstType;
+	}
+
+	public void setGstType(List<Integer> gstType) {
+		this.gstType = gstType;
+	}
+
+	
+	
+	
 	
 }
