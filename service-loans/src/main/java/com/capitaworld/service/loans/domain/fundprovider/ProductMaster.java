@@ -297,6 +297,7 @@ public abstract class ProductMaster implements Serializable {
 		this.actionFor = actionFor;
 	}
 
+<<<<<<< HEAD
 	public Long getScoreModelIdCoAppId() {
 		return scoreModelIdCoAppId;
 	}
@@ -312,4 +313,11 @@ public abstract class ProductMaster implements Serializable {
 	public void setPurposeLoanModelId(Long purposeLoanModelId) {
 		this.purposeLoanModelId = purposeLoanModelId;
 	}
+=======
+
+	
+	
+	
+	
+>>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
 }

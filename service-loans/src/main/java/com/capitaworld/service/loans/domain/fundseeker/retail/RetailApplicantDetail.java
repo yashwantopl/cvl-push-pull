@@ -1935,6 +1935,76 @@ public class RetailApplicantDetail implements Serializable {
 	public Boolean getIsOneFormCompleted() {
 		return isOneFormCompleted;
 	}
+<<<<<<< HEAD
+=======
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+	public String getEmploymentStatusOther() {
+		return employmentStatusOther;
+	}
+
+	public void setEmploymentStatusOther(String employmentStatusOther) {
+		this.employmentStatusOther = employmentStatusOther;
+	}
+
+	public Integer getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public Double getAnnualIncomeOfSpouse() {
+		return annualIncomeOfSpouse;
+	}
+
+	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
+		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+
+	public Integer getCategory() {
+		return category;
+	}
+
+	public void setCategory(Integer category) {
+		this.category = category;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public Boolean getIsOneformPrimaryComplete() {
+		return isOneformPrimaryComplete;
+	}
+
+	public void setIsOneformPrimaryComplete(Boolean isOneformPrimaryComplete) {
+		this.isOneformPrimaryComplete = isOneformPrimaryComplete;
+	}
+>>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
 
 	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
 		this.isOneFormCompleted = isOneFormCompleted;
