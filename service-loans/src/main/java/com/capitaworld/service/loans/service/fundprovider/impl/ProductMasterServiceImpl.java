@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -234,6 +235,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
    
 	
+    private Integer [] productIds = { CommonUtils.LoanType.HOME_LOAN.getValue(),CommonUtils.LoanType.PERSONAL_LOAN.getValue()};
+    
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -977,9 +980,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			List<ProductMasterTemp> results = null;
 			if (userType == 1) {
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId);
+					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
 				} else {
-					results = productMasterTempRepository.getUserRetailProductList(userId);
+					results = productMasterTempRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
 				}
 				/*
 				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
@@ -1037,9 +1040,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			List<ProductMaster> results = null;
 			if (userType == 1) {
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
 				} else {
-					results = productMasterRepository.getUserRetailProductList(userId);
+					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
 				}
 				/*
 				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
@@ -1501,9 +1504,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
 		{
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
 			} else {
-				results = productMasterRepository.getUserRetailProductList(userId);
+				results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
 			}
 		}		
 		else
@@ -1511,9 +1514,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
 			{
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
 				} else {
-					results = productMasterRepository.getUserRetailProductList(userId);
+					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
 				}
 			}
 	

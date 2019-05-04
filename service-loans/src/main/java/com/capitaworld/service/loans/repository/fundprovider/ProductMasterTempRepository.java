@@ -52,11 +52,11 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2,15,16)")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true and productId  in (7)")
-	public List<ProductMasterTemp> getUserRetailProductList(@Param("userId") Long userId);
+	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved != true and pm.productId  IN (:productIds)")
+	public List<ProductMasterTemp> getUserRetailProductList(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
 	
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId and isCopied=false and productId  in (7)")
-	public List<ProductMasterTemp> getUserRetailProductListByOrgId(@Param("userOrgId") Long userOrgId);
+	@Query("select pm from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isCopied=false and pm.productId  IN (:productIds)")
+	public List<ProductMasterTemp> getUserRetailProductListByOrgId(@Param("userOrgId") Long userOrgId,@Param("productIds") List<Integer> productIds);
 	
 	@Query("from ProductMasterTemp pm where pm.userId =:userId and productId=:productId ")
 	public List<ProductMasterTemp> getUserProductListByProduct(@Param("userId") Long userId,@Param("productId") Integer productId);

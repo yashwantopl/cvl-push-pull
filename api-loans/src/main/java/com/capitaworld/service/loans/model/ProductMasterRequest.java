@@ -45,6 +45,10 @@ public class ProductMasterRequest implements Serializable {
 
 	private Long scoreModelId;
 
+	private Long scoreModelIdCoAppId;
+	
+	private Long purposeLoanModelId;
+
 	private Long businessTypeId;
 	
 	private Boolean isParameterFilled;
@@ -272,6 +276,22 @@ public class ProductMasterRequest implements Serializable {
 
 	public void setGstType(List<Integer> gstType) {
 		this.gstType = gstType;
+	}
+
+	public Long getScoreModelIdCoAppId() {
+		return scoreModelIdCoAppId;
+	}
+
+	public void setScoreModelIdCoAppId(Long scoreModelIdCoAppId) {
+		this.scoreModelIdCoAppId = scoreModelIdCoAppId;
+	}
+
+	public Long getPurposeLoanModelId() {
+		return purposeLoanModelId;
+	}
+
+	public void setPurposeLoanModelId(Long purposeLoanModelId) {
+		this.purposeLoanModelId = purposeLoanModelId;
 	}
 
 
