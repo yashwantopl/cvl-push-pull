@@ -239,7 +239,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object cibilConsumerReport;
     private List<Object> mcaCorpZipFile;
     private String cibilCmrScore;
-    
+    private String comercialPanNo;
     private String productServiceDesc;
     
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
@@ -2235,6 +2235,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setProductServiceDesc(String productServiceDesc) {
 		this.productServiceDesc = productServiceDesc;
+	}
+
+	public String getComercialPanNo() {
+		return comercialPanNo;
+	}
+
+	public void setComercialPanNo(String comercialPanNo) {
+		this.comercialPanNo = comercialPanNo;
 	}
 
 

@@ -261,7 +261,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndProposalIdAndUserId(toUserId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======>
-
+		
+		corporatePrimaryViewResponse.setComercialPanNo(corporateApplicantDetail.getPanNo()); 
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporatePrimaryViewResponse);

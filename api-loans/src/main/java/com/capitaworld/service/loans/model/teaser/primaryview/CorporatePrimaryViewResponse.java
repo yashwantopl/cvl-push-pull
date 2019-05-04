@@ -15,6 +15,7 @@ public class CorporatePrimaryViewResponse {
     private String organisationName;
     private String aboutUs;
     private String panNo;
+    private String comercialPanNo;
     private String websiteAddress;
     private String city;
     private String regOfficeCity;
@@ -1261,6 +1262,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setProductServiceDesc(String productServiceDesc) {
 		this.productServiceDesc = productServiceDesc;
+	}
+	public String getComercialPanNo() {
+		return comercialPanNo;
+	}
+	public void setComercialPanNo(String comercialPanNo) {
+		this.comercialPanNo = comercialPanNo;
 	}
 	
 	
