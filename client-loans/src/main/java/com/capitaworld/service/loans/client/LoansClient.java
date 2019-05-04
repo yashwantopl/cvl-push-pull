@@ -2495,6 +2495,7 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
+
 	
 	public LoansResponse getCorporateApplicantByProposalId(Long proposalId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_CORPORATE_BY_PROPOSAL_ID).concat("/" + proposalId);

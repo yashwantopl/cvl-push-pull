@@ -471,6 +471,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//GST DATA
 		try {
 			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setApplicationId(toApplicationId);
+			gstr1Request.setUserId(userId);
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
@@ -684,7 +686,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/* cmr details cibil */
 		
 		try {
-			map.put("cibilCmrScore", cibilClient.getCMRScore(applicationId));
+			String cmrScore= cibilClient.getCMRScore(applicationId);
+			map.put("cibilCmrScore", cmrScore != null ? cmrScore : "Not Found");
 		} catch (Exception e) {
 			
 			logger.error("error while getting cmr score : ",e);
@@ -720,7 +723,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
-			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? CommonUtils.convertValueRound(primaryCorporateRequest.getLoanAmount()) : " ");
+			map.put("loanAmt", applicationProposalMapping.getLoanAmount() != null ? applicationProposalMapping.getLoanAmount() : "-");
 			map.put("enhancementAmount", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getEnhancementAmount()) ? CommonUtils.convertValueRound(primaryCorporateRequest.getEnhancementAmount()) : " ");
 			//map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
 			map.put("promotorsContribution", CommonUtils.convertValueRound(primaryCorporateRequest.getPromoterContribution()));
@@ -1207,7 +1210,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 			
-			if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
+			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 			}
 		}catch (Exception e) {

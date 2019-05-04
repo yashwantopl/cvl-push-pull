@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,12 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
@@ -636,6 +632,27 @@ public class CorporateApplicantController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
+		}
+
+	}
+
+	@GetMapping(value = "/getOrgNameByAppId/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getOrgNameByAppId(@PathVariable("applicationId") Long applicationId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "get");
+			if (applicationId == null) {
+				logger.warn("Application id can not be null");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Map map = applicantService.getOrganizationNameFromApplicationId(applicationId);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(map);
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting organization name from application id ", e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 }

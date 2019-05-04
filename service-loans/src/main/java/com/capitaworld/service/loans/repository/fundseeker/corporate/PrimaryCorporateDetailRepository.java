@@ -24,8 +24,8 @@ public interface PrimaryCorporateDetailRepository extends JpaRepository<PrimaryC
 
     public PrimaryCorporateDetail findByApplicationIdId(Long applicationId);
     
-
-
+    @Query("select pd.purposeOfLoanId from PrimaryCorporateDetail pd where pd.applicationId.id =:applicationId")
+    public Integer getPurposeLoanId(@Param("applicationId") Long applicationId);
 }
 
 

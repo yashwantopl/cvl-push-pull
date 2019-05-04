@@ -102,12 +102,14 @@ public class CamReportPdfDetailsController {
 	 * cam generate for gateway
 	 * @return  byte[]
 	 * */
+
 	@GetMapping(value = "/getPrimaryDataInByteArray/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, 
 			@PathVariable(value = "proposalId") Long proposalId)  {
 
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectListNull(proposalId)) {
 				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
+
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
@@ -131,6 +133,7 @@ public class CamReportPdfDetailsController {
 		}
 
 	}
+
 	
 	@GetMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId,

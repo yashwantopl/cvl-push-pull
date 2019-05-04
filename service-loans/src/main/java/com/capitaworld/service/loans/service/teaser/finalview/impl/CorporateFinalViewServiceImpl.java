@@ -364,6 +364,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndProposalIdAndUserId(userId, toApplicationId,proposalMapId); // NEW BASED ON PROPOSAL MAP ID
 
+		corporateFinalViewResponse.setComercialPanNo(corporateApplicantDetail.getPanNo()); 
 		// SET VALUE TO RESPONSE
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporateFinalViewResponse);
@@ -716,6 +717,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
 			corporateFinalViewResponse.setIncrementalTurnover(primaryCorporateDetail.getIncrementalTurnover());
 			corporateFinalViewResponse.setIncrementalMargin(primaryCorporateDetail.getIncrementalMargin());
+			corporateFinalViewResponse.setProductServiceDesc(primaryCorporateDetail.getProductServiceDescription());
 						
 		
 		}
@@ -1197,7 +1199,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		
 		/*get cmr score cibil */	
 		try {
-			corporateFinalViewResponse.setCibilCmrScore(cibilClient.getCMRScore(toApplicationId));	
+			String cmrScore= cibilClient.getCMRScore(toApplicationId);
+			corporateFinalViewResponse.setCibilCmrScore(cmrScore != null ? cmrScore : "Not Found");	
 		} catch (Exception e) {
 			logger.error("error while CIBIL CMR score : ",e);
 		}

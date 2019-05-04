@@ -3,12 +3,13 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.EntityManager;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -31,10 +32,10 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
@@ -60,10 +61,11 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
-import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
@@ -221,8 +223,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     @Autowired
     private ProposalDetailsRepository proposalDetailsRepository;
     
+    
+    @Autowired
+    private EntityManager entityManager;
+    
+    @Autowired
+    private  FpGstTypeMappingRepository fpGstTypeMappingRepository;
+    
+    @Autowired
+    private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
    
-    private Integer [] productIds = { CommonUtils.LoanType.HOME_LOAN.getValue(),CommonUtils.LoanType.PERSONAL_LOAN.getValue()};
 	
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
@@ -246,7 +256,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 				return true;
 			} else {
-				ProductMasterTemp productMasterTemp = null;
+				ProductMasterTemp productMaster = null;
 				LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
 				WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
 						WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
@@ -256,33 +266,26 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 				switch (loanType) {
 				case WORKING_CAPITAL:
-					productMasterTemp = new WorkingCapitalParameterTemp();
+					productMaster = new WorkingCapitalParameterTemp();
 					break;
 				case TERM_LOAN:
 					if (addProductRequest.getBusinessTypeId() == 2) {
-						productMasterTemp = new NtbTermLoanParameterTemp();
+						productMaster = new NtbTermLoanParameterTemp();
 					} else {
-						productMasterTemp = new TermLoanParameterTemp();
+						productMaster = new TermLoanParameterTemp();
 					}
 					break;
 				case WCTL_LOAN:
-					productMasterTemp = new WcTlParameterTemp();
+					productMaster = new WcTlParameterTemp();
 					break;
 				case PERSONAL_LOAN:
-					productMasterTemp = new PersonalLoanParameterTemp();
+					productMaster = new PersonalLoanParameterTemp();
 					break;
-				case HOME_LOAN:
-					productMasterTemp = new HomeLoanParameterTemp();
-					break;
+
 				default:
 					break;
 				}
-				List<DataRequest> industrySecIdList = null;
-				List<DataRequest> secIdList=null;
-				List<DataRequest> geogaphicallyCountry=null;
-				List<DataRequest> geogaphicallyState=null;
-				List<DataRequest> geogaphicallyCity=null;
-				List<DataRequest> negativeIndList=null;
+				List<DataRequest> industrySecIdList = null,secIdList=null,geogaphicallyCountry=null,geogaphicallyState=null,geogaphicallyCity=null,negativeIndList=null;
 				if(!CommonUtils.isObjectNullOrEmpty(addProductRequest.getLoanId()))
 				{
 					switch (loanType) {
@@ -304,8 +307,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						}
 						//END set multiple value in temp
 						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id");
-						productMasterTemp = workingCapitalParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
+						productMaster = workingCapitalParameterTemp;
+						productMaster.setIsParameterFilled(true);
 						break;
 					case TERM_LOAN:
 						if (addProductRequest.getBusinessTypeId()==2) {
@@ -327,8 +330,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
 							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
-							productMasterTemp = ntbTermLoanParameterTemp;
-							productMasterTemp.setIsParameterFilled(true);
+							productMaster = ntbTermLoanParameterTemp;
+							productMaster.setIsParameterFilled(true);
 						} else {
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
@@ -347,8 +350,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
 							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
-							productMasterTemp = termLoanParameterTemp;
-							productMasterTemp.setIsParameterFilled(true);
+							productMaster = termLoanParameterTemp;
+							productMaster.setIsParameterFilled(true);
 						}
 						break;
 					case WCTL_LOAN:
@@ -369,8 +372,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							wcTlParameterRequest.setNewTolTnw(null);
 						}
 						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
-						productMasterTemp = wcTlParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
+						productMaster = wcTlParameterTemp;
+						productMaster.setIsParameterFilled(true);
 						break;
 					case PERSONAL_LOAN:
 
@@ -383,18 +386,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						//negativeIndList=personalLoanParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
 						BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameterTemp,"id");
-						productMasterTemp = personalLoanParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
+						productMaster = personalLoanParameterTemp;
+						productMaster.setIsParameterFilled(true);
 						break;
 
-					case HOME_LOAN:
-						HomeLoanParameterRequest homeLoanParameterRequest = homeLoanParameterService.getHomeLoanParameterRequest(addProductRequest.getLoanId());
-						geogaphicallyCountry=homeLoanParameterRequest.getCountryList();
-						geogaphicallyState=homeLoanParameterRequest.getStateList();
-						geogaphicallyCity=homeLoanParameterRequest.getCityList();
-						BeanUtils.copyProperties(homeLoanParameterRequest, productMasterTemp,"id");
-						productMasterTemp.setIsParameterFilled(true);
-						break;
 					default:
 						break;
 					}
@@ -406,32 +401,43 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					jobId = workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
 				}
 				
-				productMasterTemp.setJobId(jobId);
+				productMaster.setJobId(jobId);
 
-				productMasterTemp.setProductId(addProductRequest.getProductId());
-				productMasterTemp.setIsMatched(false);
-				productMasterTemp.setName(addProductRequest.getName());
-				productMasterTemp.setFpName(addProductRequest.getFpName());
-				productMasterTemp.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMaster.setProductId(addProductRequest.getProductId());
+				productMaster.setIsMatched(false);
+				productMaster.setName(addProductRequest.getName());
+				productMaster.setFpName(addProductRequest.getFpName());
+				productMaster.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMasterTemp.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMaster.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMasterTemp.setCreatedDate(new Date());
-				productMasterTemp.setModifiedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMaster.setCreatedDate(new Date());
+				productMaster.setModifiedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMasterTemp.setIsParameterFilled(false);
-				productMasterTemp.setModifiedDate(new Date());
+				productMaster.setIsParameterFilled(false);
+				productMaster.setModifiedDate(new Date());
 				// set business type id
-				productMasterTemp.setBusinessTypeId(addProductRequest.getBusinessTypeId());
-				productMasterTemp.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
-				productMasterTemp.setFinId(addProductRequest.getFinId());
-				productMasterTemp.setIsCopied(false);
-				productMasterTemp.setIsActive(true);
-				productMasterTemp.setUserOrgId(userOrgId);
-				productMasterTemp.setStatusId(1);
-				productMasterTemp.setProductCode(
+				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
+				productMaster.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
+				productMaster.setFinId(addProductRequest.getFinId());
+				productMaster.setIsCopied(false);
+				productMaster.setIsActive(true);
+				productMaster.setUserOrgId(userOrgId);
+				productMaster.setStatusId(1);
+				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
-				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMasterTemp);
+				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMaster);
+				
+				//save gst type for only WC
+				
+				if(loanType==LoanType.WORKING_CAPITAL)
+				{
+					fpGstTypeMappingTempRepository.inActiveMasterByFpProductId(productMaster2.getId());
+					if(!CommonUtils.isListNullOrEmpty(addProductRequest.getGstType()))
+						saveGstTypeTemp(productMaster2.getId(),addProductRequest.getGstType(),(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+							? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				}
+				
 				industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				// industry data save
 				if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
@@ -492,6 +498,25 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			logger.error("error while saveOrUpdate : ", e);
 			return false;
 		}
+	}
+
+	private void saveGstTypeTemp(Long id, List<Integer> gstType, Long userId) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
+		FpGstTypeMappingTemp fpGstTypeMappingTemp= null;
+		for (Integer dataRequest : gstType) {
+			fpGstTypeMappingTemp = new FpGstTypeMappingTemp();
+			fpGstTypeMappingTemp.setFpProductId(id);
+			fpGstTypeMappingTemp.setGstTypeId(dataRequest);
+			fpGstTypeMappingTemp.setCreatedBy(userId);
+			fpGstTypeMappingTemp.setModifiedBy(userId);
+			fpGstTypeMappingTemp.setCreatedDate(new Date());
+			fpGstTypeMappingTemp.setModifiedDate(new Date());
+			fpGstTypeMappingTemp.setIsActive(true);
+			// create by and update
+			fpGstTypeMappingTempRepository.save(fpGstTypeMappingTemp);
+		}
+		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
 	}
 
 	private void saveNegativeIndustryTemp(Long id, List<DataRequest> negativeIndList,Long userId) {
@@ -632,6 +657,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		
 	}
 
+	private void saveSectorTemp(List<DataRequest> secIdList,Long userId) {
+		// Do nothing because of X and Y.
+		
+	}
+
+	private void saveIndustryTemp(List<DataRequest> industrySecIdList,Long userId) {
+		// Do nothing because of X and Y.
+		
+	}
+
 	@Override
 	public ProductMaster getProductMaster(Long id) {
 		return productMasterRepository.findOne(id);
@@ -677,14 +712,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		for (ProductMaster master : results) {
 			ProductMasterRequest request = new ProductMasterRequest();
 			BeanUtils.copyProperties(master, request);
-			request.setIsMatched(!productMasterRepository.getMatchedAndActiveProduct(userId).isEmpty());
+			request.setIsMatched(productMasterRepository.getMatchedAndActiveProduct(userId).size() > 0 ? true : false);
 			requests.add(request);
 		}
 		CommonDocumentUtils.endHook(logger, "getList");
 		return requests;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
@@ -693,7 +727,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		try {
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(userId);
-			logger.info("Current user id ---------------------------------------------------> {}" , userId);
+			logger.info("Current user id ---------------------------------------------------> " + userId);
 			userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
 			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
@@ -719,12 +753,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			request.setIsMatched(matchCount > 0 ? true : false);
 			Long count = null;
 			if(basicDetailsRequest != null){
-				if (CommonUtils.UsersRoles.BO.equals(basicDetailsRequest.getRoleId()) || CommonUtils.UsersRoles.FP_CHECKER.equals(basicDetailsRequest.getRoleId())) {
+				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
-				}else if (CommonUtils.UsersRoles.HO.equals(basicDetailsRequest.getRoleId())) {
+				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
 					count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
 				}
-				else if (CommonUtils.UsersRoles.SMECC.equals(basicDetailsRequest.getRoleId())) // Hiren
+				else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.SMECC) // Hiren
 				{
 					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(),userResponse.getBranchList());
 				}
@@ -830,7 +864,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		return productDetailsResponse;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public FpProductDetails getProductDetails(Long productMappingId) throws LoansException {
 		try {
@@ -868,7 +901,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 			}
 			fpProductDetails.setTypeOfInvestment(LoanType.getById(productMaster.getProductId()).getValue());
-			List<String> countryname = new ArrayList<>();
+			List<String> countryname = new ArrayList<String>();
 			List<Long> countryList = geoCountry.getCountryByFpProductId(productMappingId);
 			if (!CommonUtils.isListNullOrEmpty(countryList)) {
 				OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
@@ -910,7 +943,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		if (!CommonUtils.isObjectNullOrEmpty(multipleFpPruductRequest)) {
 			for (Map<String, Object> obj : multipleFpPruductRequest.getDataList()) {
-				ProductMasterRequest productMasterRequest = MultipleJSONObjectHelper
+				ProductMasterRequest productMasterRequest = (ProductMasterRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, ProductMasterRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
@@ -944,13 +977,30 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			List<ProductMasterTemp> results = null;
 			if (userType == 1) {
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
+					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId);
 				} else {
-					results = productMasterTempRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
+					results = productMasterTempRepository.getUserRetailProductList(userId);
 				}
+				/*
+				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
+				 * (ProductMaster master : results) { if (master.getProductId()
+				 * == 3) { requests.add(homeLoanParameterService.
+				 * getHomeLoanParameterRequest(master. getId())); } else if
+				 * (master.getProductId() == 7) {
+				 * requests.add(personalLoanParameterService.
+				 * getPersonalLoanParameterRequest( master.getId())); } else if
+				 * (master.getProductId() == 12) {
+				 * requests.add(carLoanParameterService.
+				 * getCarLoanParameterRequest(master.getId( ))); } else if
+				 * (master.getProductId() == 13) {
+				 * requests.add(lapLoanParameterService.getLapParameterRequest(
+				 * master.getId())); } } }
+				 */
 				for (ProductMasterTemp productMaster : results) {
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
+					List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
+					productMasterRequest.setGstType(gstTypes);
 					productMasterRequests.add(productMasterRequest);
 				}
 			} else {
@@ -978,6 +1028,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				for (ProductMasterTemp productMaster : results) {
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
+					List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
+					productMasterRequest.setGstType(gstTypes);
 					productMasterRequests.add(productMasterRequest);
 				}
 			}
@@ -985,9 +1037,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			List<ProductMaster> results = null;
 			if (userType == 1) {
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
+					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
 				} else {
-					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
+					results = productMasterRepository.getUserRetailProductList(userId);
 				}
 				/*
 				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
@@ -1029,6 +1081,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			for (ProductMaster productMaster : results) {
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
+				List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
+				productMasterRequest.setGstType(gstTypes);
 				productMasterRequests.add(productMasterRequest);
 			}
 		}
@@ -1040,6 +1094,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		 * getMatchedAndActiveProduct(userId).size() > 0 ? true : false);
 		 * requests.add(request); }
 		 */
+		
 		CommonDocumentUtils.endHook(logger, "getListByUserType");
 
 		return productMasterRequests;
@@ -1114,7 +1169,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		return productMasterRequest;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<ChatDetails> getChatListByFpMappingId(Long mappingId) {
 		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
@@ -1123,7 +1177,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			List<LinkedHashMap<String, Object>> mappingRequestList = (List<LinkedHashMap<String, Object>>) proposalDetailsClient
 					.getFundSeekerChatList(mappingRequest).getDataList();
 			if (!CommonUtils.isListNullOrEmpty(mappingRequestList)) {
-				List<ChatDetails> chatDetailList = new ArrayList<>(mappingRequestList.size());
+				List<ChatDetails> chatDetailList = new ArrayList<ChatDetails>(mappingRequestList.size());
 				for (LinkedHashMap<String, Object> linkedHashMap : mappingRequestList) {
 					try {
 						ChatDetails chatDetails = new ChatDetails();
@@ -1158,6 +1212,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						}
 
 						chatDetailList.add(chatDetails);
+					} catch (IOException e) {
+						logger.error(CommonUtils.EXCEPTION,e);
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
@@ -1173,7 +1229,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public boolean isProductActive(Long productId) {
 		Long count = productMasterRepository.getActiveProductsById(productId);
-		return !CommonUtils.isObjectNullOrEmpty(count) && (count > 0);
+		if (!CommonUtils.isObjectNullOrEmpty(count) && (count > 0)) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -1184,7 +1243,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		List<ProductMasterRequest> response = new ArrayList<>(productIds.size());
 		for (Integer productId : productIds) {
 			com.capitaworld.service.loans.utils.CommonUtils.LoanType type = CommonUtils.LoanType
-					.getType(productId);
+					.getType(productId.intValue());
 			if (CommonUtils.isObjectNullOrEmpty(type)) {
 				continue;
 			}
@@ -1200,8 +1259,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Object getProductMasterWithAllData(Long id, Integer stage, Long role, Long userId) {
+
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
 			ProductMasterTemp master = productMasterTempRepository.findOne(id);
+
 			if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(), role, userId);
 			} else if (master.getProductId() == 2) {
@@ -1210,15 +1271,20 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else {
 					return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(), role, userId);
 				}
-			} else if (master.getProductId() == 7) {
+			} 
+			else if (master.getProductId() == 7) {
 				return personalLoanParameterService.getPersonalLoanParameterRequestTemp(master.getId(), role, userId);
-			} else if (master.getProductId() == 3) {
-				return homeLoanParameterService.getTemp(master.getId(), role, userId);
-			} else if (master.getProductId() == 16) {
+			}
+			/*
+				 * else if (master.getProductId() == 15) { return
+				 * unsecuredLoanParameterService.
+				 * getUnsecuredLoanParameterRequest(master.getId()); }
+				 */ else if (master.getProductId() == 16) {
 				return wcTlParameterService.getWcTlRequestTemp(master.getId(), role, userId);
 			}
 		} else {
 			ProductMaster master = productMasterRepository.findOne(id);
+
 			if (master.getProductId() == 3) {
 				return homeLoanParameterService.getHomeLoanParameterRequest(master.getId());
 			} else if (master.getProductId() == 7) {
@@ -1228,6 +1294,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			} else if (master.getProductId() == 13) {
 				return lapLoanParameterService.getLapParameterRequest(master.getId());
 			}
+
 			else if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameter(master.getId());
 			} else if (master.getProductId() == 2) {
@@ -1266,13 +1333,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
-				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+				}
+				 else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
 						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 						return personalLoanParameterService.saveMasterFromTempPl(mappingId);
-				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
-					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
-					return homeLoanParameterService.saveMasterFromTemp(mappingId);
-				}
+					}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 		return false;
@@ -1336,7 +1401,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			  productType = CommonUtils.LoanType.getType(productMasterTemp.getProductId()).getName();
 			}
 
-			if (WorkflowUtils.Action.SEND_FOR_APPROVAL.equals(workflowData.getActionId())) {
+			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL) {
 				int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(), 2);
 				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
@@ -1364,11 +1429,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					}
 					return true;
 				} else {
-					logger.info("could not updated in productMaster temp == >{}", workflowData.getJobId());
+					logger.info("could not updated in productMaster temp", workflowData.getJobId());
 					return false;
 
 				}
-			} else if (WorkflowUtils.Action.APPROVED.equals(workflowData.getActionId())) {
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED) {
 				Boolean result = saveCorporateMasterFromTemp(workflowData.getFpProductId());
 				if (result) {
 					WorkflowResponse workflowResponse = workflowClient.updateJob(request);
@@ -1385,7 +1450,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						return true;
 					}
 				}
-			} else if (WorkflowUtils.Action.SEND_BACK.equals(workflowData.getActionId())) {
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK) {
 				int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(), 3);
 				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
@@ -1400,7 +1465,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					}
 					return true;
 				} else {
-					logger.info("could not updated in productMaster temp =  {} ", workflowData.getJobId());
+					logger.info("could not updated in productMaster temp", workflowData.getJobId());
 					return false;
 
 				}
@@ -1415,19 +1480,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveRetailInTemp(RetailProduct retailProduct) {
+
 		CommonDocumentUtils.startHook(logger, SAVE_RETAIL_IN_TEMP);
-		if(!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
-			if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
-				PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
-				BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
-				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-				return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
-			}else if (retailProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue() ) {
-				HomeLoanParameterRequest homeLoanParameterRequest = (HomeLoanParameterRequest)retailProduct;
-				BeanUtils.copyProperties(retailProduct, homeLoanParameterRequest);
-				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-				return homeLoanParameterService.saveOrUpdateTemp(homeLoanParameterRequest);
-			}
+		if (!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId()) && retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
+					PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
+					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
+					CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
+					return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
 		return false;
@@ -1439,52 +1498,50 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		List<ProductMaster> results = null;
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 		
-			if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
-			{
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
-				} else {
-					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
-				}
-			}
-		
-			else
-			{
-
-
-		if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
+		if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
 		{
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
 			} else {
-				results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
+				results = productMasterRepository.getUserRetailProductList(userId);
 			}
-		}
-
+		}		
 		else
 		{
-
-			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
-			} else {
-				results = productMasterRepository.getUserCorporateProductList(userId);
+			if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
+			{
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterRepository.getUserRetailProductList(userId);
+				}
 			}
-
+	
+			else
+			{
+	
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterRepository.getUserCorporateProductList(userId);
+				}
+	
 			}
 
 		}
-
-		
 		
 		for (ProductMaster productMaster : results) {
-			if(!productId.equals(productMaster.getProductId()) )
+			if(productMaster.getProductId()!=productId)
 				continue;
+				
 			
 			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId()) && !businessId.toString().equals(productMaster.getBusinessTypeId().toString()) ) {
 				continue;
 			}
 			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 			BeanUtils.copyProperties(productMaster, productMasterRequest);
+			List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
+			productMasterRequest.setGstType(gstTypes);
 			productMasterRequests.add(productMasterRequest);
 		}
 		
@@ -1522,7 +1579,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			
 			WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 			
-			if (WorkflowUtils.Action.SEND_FOR_APPROVAL.equals(workflowData.getActionId()) && workflowResponse != null) {
+			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL && workflowResponse != null) {
 				
 				if(workflowData.getActionFor() == null) {
 					return false;
@@ -1542,7 +1599,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				
 				return true;
 				
-			} else if (WorkflowUtils.Action.APPROVED.equals(workflowData.getActionId()) && workflowResponse != null) {
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED  && workflowResponse != null) {
 								
 				if (workflowData.getStage() == 2 && productMaster != null) {
 					if(productMaster.getActionFor() == null) {
@@ -1561,7 +1618,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				}
 				return true;
 				
-			} else if (WorkflowUtils.Action.SEND_BACK.equals(workflowData.getActionId()) && workflowResponse != null) {
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK  && workflowResponse != null) {
 				if (workflowData.getStage() == 2 && productMaster != null) {
 					productMaster.setActiveInactiveJobId(null);
 					productMasterRepository.save(productMaster);

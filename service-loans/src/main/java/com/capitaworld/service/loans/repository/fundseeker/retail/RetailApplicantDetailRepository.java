@@ -18,7 +18,7 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	public List<Object[]> getNameAndLastUpdatedDate(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 	
-	@Query("select rt.firstName,rt.lastName,rt.isOneFormCompleted,rt.isCibilCompleted from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.isActive = true")
+	@Query("select rt.firstName,rt.lastName,rt.isOneFormCompleted,rt.isCibilCompleted,rt.isOneformPrimaryComplete from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.isActive = true")
 	public Object[] getBasicDetailsByAppId(@Param("applicationId") Long applicationId);
 	
 	@Query("from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId")

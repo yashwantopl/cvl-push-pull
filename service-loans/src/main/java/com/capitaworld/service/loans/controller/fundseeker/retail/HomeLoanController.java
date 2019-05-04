@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
+import com.capitaworld.service.loans.model.retail.HLOneformRequest;
+import com.capitaworld.service.loans.model.retail.HLOnefromResponse;
 import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
@@ -203,6 +206,85 @@ public class HomeLoanController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+		@RequestMapping(value = "oneForm/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> getOneFormList(@PathVariable("applicationId") Long applicationId) {
+			logger.info("Enter in get Onefrom List");
+			try {
+				if (applicationId == null) {
+					logger.warn("Application Id can not be empty ==>");
+					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),primaryHomeLoanService.getListForOneForm(applicationId)),HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+		@RequestMapping(value = "oneForm/profile/get", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> getOneFormProfileDetailsById(@RequestBody HLOnefromResponse hlOnefromResponse) {
+			logger.info("Enter in get Onefrom data by id");
+			try {
+				if (hlOnefromResponse.getApplicationId() == null) {
+					logger.warn("Application Id can not be empty ==>");
+					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),primaryHomeLoanService.getProfileDetailsById(hlOnefromResponse.getApplicationId(), hlOnefromResponse.getCoAppId())),HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+		@RequestMapping(value = "oneForm/profile/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> saveOneformProfile(@RequestBody HLOneformRequest hlOneformRequest,HttpServletRequest request) {
+			logger.info("Enter in save oneform details");
+			try {
+				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				if (hlOneformRequest.getApplicationId() == null || userId == null) {
+					logger.warn("Application Id or User Id can not be empty ==>");
+					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				hlOneformRequest.setUserId(userId);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),primaryHomeLoanService.saveProfileOneForm(hlOneformRequest)),HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return new ResponseEntity<>(new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+		@RequestMapping(value = "oneForm/loanReqDetails/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> getLoanReqDetails(@PathVariable("applicationId") Long applicationId) {
+			logger.info("Enter in Onefrom getLoanReqDetails");
+			try {
+				if (applicationId == null) {
+					logger.warn("Application Id can not be empty ==>");
+					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),primaryHomeLoanService.getOneformPrimaryDetails(applicationId)),HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+		@RequestMapping(value = "oneForm/loanReqDetails/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> saveLoanReqDetails(@RequestBody HLOneformPrimaryRes hlOneformPrimaryRes,HttpServletRequest request) {
+			logger.info("Enter in save loanReqDetails oneform details");
+			try {
+				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				if (hlOneformPrimaryRes.getApplicationId() == null || userId == null) {
+					logger.warn("Application Id or UserId can not be empty ==>");
+					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				hlOneformPrimaryRes.setUserId(userId);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),primaryHomeLoanService.saveOneformPrimaryDetails(hlOneformPrimaryRes)),HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return new ResponseEntity<>(new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 }

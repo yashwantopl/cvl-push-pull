@@ -557,6 +557,9 @@ public class RetailApplicantDetail implements Serializable {
     @Column(name="is_one_form_completed")
     private Boolean isOneFormCompleted;
     
+    @Column(name="is_oneform_primary_complete")
+    private Boolean isOneformPrimaryComplete;
+    
     @Column(name="is_cibil_completed")
     private Boolean isCibilCompleted;
     
@@ -1991,8 +1994,11 @@ public class RetailApplicantDetail implements Serializable {
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
+	public Boolean getIsOneformPrimaryComplete() {
+		return isOneformPrimaryComplete;
+	}
 
-
-
-
+	public void setIsOneformPrimaryComplete(Boolean isOneformPrimaryComplete) {
+		this.isOneformPrimaryComplete = isOneformPrimaryComplete;
+	}
 }

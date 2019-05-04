@@ -1,10 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -820,7 +817,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		logger.info("ENd Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
 		return obj;
 	}
-	
-	
 
+	@Override
+	public Map getOrganizationNameFromApplicationId(Long applicationId) {
+		Integer purposeOfLoanId = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
+		String organizationName = corporateApplicantDetailRepository.getOrganizationNameFromId(applicationId);
+		Map map = new HashMap();
+		map.put("organizationName",organizationName);
+		map.put("purposeOfLoanId",purposeOfLoanId);
+		return map;
+	}
 }

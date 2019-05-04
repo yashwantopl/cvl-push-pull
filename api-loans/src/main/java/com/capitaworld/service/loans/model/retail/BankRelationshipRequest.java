@@ -1,6 +1,10 @@
 package com.capitaworld.service.loans.model.retail;
 
-public class BankRelationshipRequest {
+import java.io.Serializable;
+
+public class BankRelationshipRequest implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private String bank;

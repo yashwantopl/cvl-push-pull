@@ -261,7 +261,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndProposalIdAndUserId(toUserId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======>
-
+		
+		corporatePrimaryViewResponse.setComercialPanNo(corporateApplicantDetail.getPanNo()); 
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporatePrimaryViewResponse);
@@ -578,7 +579,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setGstIn(
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
 							: null);
-
 			
 			if(primaryCorporateDetail.getAssessmentId()!=null) {
 				corporatePrimaryViewResponse.setPurposeOfLoan(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());	
@@ -597,6 +597,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
 							? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 							: null);
+			corporatePrimaryViewResponse.setProductServiceDesc(primaryCorporateDetail.getProductServiceDescription());
+			
 			
 			List<CollateralSecurityDetailRequest> collateralSecurityDetails = collateralSecurityDetailService.getData(applicationId);
 			corporatePrimaryViewResponse.setCollateralSecurityDetails(collateralSecurityDetails);
@@ -1024,7 +1026,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		/*get cmr score cibil */
 		
 		try {
-				corporatePrimaryViewResponse.setCibilCmrScore(cibilClient.getCMRScore(applicationId));	
+				String cmrScore= cibilClient.getCMRScore(applicationId);
+				corporatePrimaryViewResponse.setCibilCmrScore(cmrScore != null ? cmrScore : "Not Found");	
 			
 		} catch (Exception e) {
 			logger.info("Exception while get CIBIL CMR Score {}",e);

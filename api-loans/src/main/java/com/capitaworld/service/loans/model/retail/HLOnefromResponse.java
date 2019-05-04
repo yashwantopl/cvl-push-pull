@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -14,6 +15,10 @@ public class HLOnefromResponse implements Serializable {
 	private Long coAppId;
 	private Boolean isOneformComplete;
 	private Boolean isCibilComplete;
+	private Boolean isProfileComplete;
+	private Boolean isPrimaryComplete;
+	private List<HLOnefromResponse> resList;
+	
 	public String getName() {
 		return name;
 	}
@@ -43,6 +48,24 @@ public class HLOnefromResponse implements Serializable {
 	}
 	public void setIsCibilComplete(Boolean isCibilComplete) {
 		this.isCibilComplete = isCibilComplete;
+	}
+	public Boolean getIsProfileComplete() {
+		return isProfileComplete;
+	}
+	public void setIsProfileComplete(Boolean isProfileComplete) {
+		this.isProfileComplete = isProfileComplete;
+	}
+	public Boolean getIsPrimaryComplete() {
+		return isPrimaryComplete;
+	}
+	public void setIsPrimaryComplete(Boolean isPrimaryComplete) {
+		this.isPrimaryComplete = isPrimaryComplete;
+	}
+	public List<HLOnefromResponse> getResList() {
+		return resList;
+	}
+	public void setResList(List<HLOnefromResponse> resList) {
+		this.resList = resList;
 	}
 	
 	
