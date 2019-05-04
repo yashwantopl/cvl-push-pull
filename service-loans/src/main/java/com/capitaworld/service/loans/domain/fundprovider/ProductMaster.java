@@ -80,12 +80,6 @@ public abstract class ProductMaster implements Serializable {
 	@Column(name = "score_model_id")
 	private Long scoreModelId;
 	
-	@Column(name = "purpose_loan_model_id")
-	private Long purposeLoanModelId;
-	
-	@Column(name = "score_model_id_coapp_id")
-	private Long scoreModelIdCoAppId;	
-	
 	@Column(name = "business_type_id")
 	private Long businessTypeId;
 
@@ -297,27 +291,9 @@ public abstract class ProductMaster implements Serializable {
 		this.actionFor = actionFor;
 	}
 
-<<<<<<< HEAD
-	public Long getScoreModelIdCoAppId() {
-		return scoreModelIdCoAppId;
-	}
-
-	public void setScoreModelIdCoAppId(Long scoreModelIdCoAppId) {
-		this.scoreModelIdCoAppId = scoreModelIdCoAppId;
-	}
-
-	public Long getPurposeLoanModelId() {
-		return purposeLoanModelId;
-	}
-
-	public void setPurposeLoanModelId(Long purposeLoanModelId) {
-		this.purposeLoanModelId = purposeLoanModelId;
-	}
-=======
 
 	
 	
 	
 	
->>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
 }
