@@ -545,3 +545,5 @@ ALTER TABLE `scoring_sidbi`.`risk_grading` ADD COLUMN ltv DOUBLE;
 
 ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN ltv_scaling INT;
 ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN ltv_scaling INT;
+
+ALTER TABLE `loan_application`.`application_product_audit` ADD COLUMN ltv_scaling INT(2);
