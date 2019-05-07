@@ -157,6 +157,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
 			arrangementsDetail.setDirectorBackgroundDetail(new DirectorBackgroundDetail(directorId));
+			arrangementsDetail.setBureauOrCalculatedEmi(req.getEmi());
+			arrangementsDetail.setBureauOutstandingAmount(req.getOutstandingAmount());
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
 		return true;
