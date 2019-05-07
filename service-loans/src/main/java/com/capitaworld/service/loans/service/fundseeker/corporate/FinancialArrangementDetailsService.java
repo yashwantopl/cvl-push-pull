@@ -15,6 +15,8 @@ public interface FinancialArrangementDetailsService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId) throws LoansException;
+	
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListForProprietorship(Long id,Long userId) throws LoansException;
 
 	public List<FinancialArrangementsDetailRequest> getManuallyAddedFinancialArrangementDetailsList(Long applicationId);
 
