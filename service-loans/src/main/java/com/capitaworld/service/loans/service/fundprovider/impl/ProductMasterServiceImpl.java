@@ -1351,11 +1351,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
-				}
-				 else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
 						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 						return personalLoanParameterService.saveMasterFromTempPl(mappingId);
-					}
+				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
+					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
+					return homeLoanParameterService.saveMasterFromTemp(mappingId);
+				}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 		return false;
