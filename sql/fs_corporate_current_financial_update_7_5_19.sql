@@ -1,0 +1,1 @@
+ALTER TABLE `loan_application`.`fs_corporate_current_financial_arrangements_details` ADD COLUMN `bureau_outstanding_amount` DOUBLE NULL AFTER `collateral_security_amount`, ADD COLUMN `bureau_or_calculated_emi` DOUBLE NULL AFTER `bureau_outstanding_amount`;
