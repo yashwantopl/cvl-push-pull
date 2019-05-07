@@ -20,6 +20,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	
 	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL")
 	public List<FinancialArrangementsDetail> listSecurityCorporateDetailFromAppId(@Param("id")Long id);
+	
+	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NOT NULL")
+	public List<FinancialArrangementsDetail> listSecurityCorporateDetailFromAppIdForProprietorship(@Param("id")Long id);
 
 	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.isManuallyAdded = true and o.directorBackgroundDetail IS NULL")
 	public List<FinancialArrangementsDetail> getManuallyAddedFinancialDetail(@Param("id")Long id);

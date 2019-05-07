@@ -75,6 +75,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -85,6 +87,7 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
@@ -130,6 +133,10 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
+    
+    
+    @Autowired
+    private BankingRelationlRepository bankingRelationlRepository;
 
     @Autowired
     private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -178,6 +185,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private RetailApplicantDetailRepository retailApplicantDetailRepository;
+    
+    @Autowired
+    private CoApplicantDetailRepository coApplicantDetailRepository; 
 
     @Autowired
     private RetailApplicantIncomeRepository retailApplicantIncomeRepository;
@@ -201,6 +211,7 @@ public class ScoringServiceImpl implements ScoringService {
     private EligibilityClient eligibilityClient;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
+    private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
     private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
 
@@ -1217,15 +1228,51 @@ public class ScoringServiceImpl implements ScoringService {
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
         ScoringResponse scoringResponseMain = null;
+        RetailApplicantDetail retailApplicantDetail = null;
+        Long applicationId = null;
+        Long orgId = null;
+        List<Long> coAppIds = null;
+        List<Long> coAppITRUploadedIds = null;
+        Double netMonthlyIncome = 0.0d;
+        Double grossAnnualIncome = 0.0d;
 
-        List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
-
+        if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
+        	applicationId = scoringRequestLoansList.get(0).getApplicationId();
+        	retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+        	if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+                logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
+                return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+            }
+        	EligibilityResponse eligibilityResponse = null;
+			try {
+				eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+			} catch (EligibilityExceptions e) {
+				logger.error("Error while Getting MonthlyIncome Details == >{}",e);
+			}
+            if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
+                    && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+                List incomeList = (List) eligibilityResponse.getData();
+                if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(incomeList)){
+                    netMonthlyIncome = Double.valueOf(incomeList.get(0).toString());
+                    grossAnnualIncome = Double.valueOf(incomeList.get(8).toString());
+                }
+            }
+        }
+        List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
-        for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
+        for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
-            Long applicationId = scoringRequestLoans.getApplicationId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            Integer minBankRelationshipInMonths = null;
+            orgId = scoringRequestLoans.getOrgId();
+            if(orgId != null) {
+            	BankList bankEnum = BankList.fromOrgId(orgId.toString());
+            	if(bankEnum != null) {
+            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());	
+            	}
+            }
+            
 
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
@@ -1250,15 +1297,6 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
                 // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
-
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
-
-                if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
-                    logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
-                    LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-                    break;
-                }
 
 
                 if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
@@ -1378,29 +1416,77 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.MARITAL_STATUS:
             				try {
-                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getStatusId())) {
-                                    scoreParameterRetailRequest.setMaritalStatus(retailApplicantDetail.getStatusId().longValue());
-                                    scoreParameterRetailRequest.setMaritalStatus_p(true);
-                                }
+                                scoreParameterRetailRequest.setMaritalStatus((retailApplicantDetail.getStatusId() != null ? retailApplicantDetail.getStatusId().longValue() : null));
+                                scoreParameterRetailRequest.setMaritalStatus_p(retailApplicantDetail.getStatusId() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting MARITAL_STATUS parameter : ",e);
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB:
+            				scoreParameterRetailRequest.setEmployementType_p(retailApplicantDetail.getEmployedWithId() != null);
+            				scoreParameterRetailRequest.setEmploymentType((retailApplicantDetail.getEmployedWithId() != null  ? retailApplicantDetail.getEmployedWithId().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
+            				//Will Update is once Add in Oneform from FS Side
+            		        scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(null);
+            		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(null);
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
+            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getCurrentEmploymentStatus() != null);
+            				scoreParameterRetailRequest.setCurrentEmploymentStatus((retailApplicantDetail.getCurrentEmploymentStatus() != null  ? retailApplicantDetail.getCurrentEmploymentStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.MIN_BANKING_RELATIONSHIP:
+            				scoreParameterRetailRequest.setIsMinBankingRelationship_p(minBankRelationshipInMonths != null);
+            				scoreParameterRetailRequest.setMinBankingRelationship(minBankRelationshipInMonths);
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
+            				try {
+                                Long spouseEmployment = 3l; // No Spouse
+                                if(retailApplicantDetail.getSpouseEmployment() != null) {
+                                	spouseEmployment = retailApplicantDetail.getSpouseEmployment().longValue();                                	
+                                }
+                                scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
+                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
+                            } catch (Exception e) {
+                                logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
+                            }
             				break;
             			case ScoreParameter.Retail.HomeLoan.NO_OF_DEPENDANTS:
+            				try {
+                                scoreParameterRetailRequest.setNumberOfDependents((retailApplicantDetail.getNoOfDependent() != null ? retailApplicantDetail.getNoOfDependent() : null));
+                                scoreParameterRetailRequest.setNumberOfDependents_p(retailApplicantDetail.getNoOfDependent() != null);
+                            } catch (Exception e) {
+                                logger.error("error while getting NO_OF_DEPENDANTS parameter : ",e);
+                            }
             				break;
             			case ScoreParameter.Retail.HomeLoan.NO_OF_APPLICANTS:
+            				coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
+            	        	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
+            	        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId);
+            	        	}
+            	        	
+            				if(CommonUtils.isListNullOrEmpty(coAppIds)) {
+            					scoreParameterRetailRequest.setNoOfApplicantsType(ScoreParameter.NoOfApplicants.SINGLE);
+            				}else if(CommonUtils.isListNullOrEmpty(coAppITRUploadedIds)) {
+            					scoreParameterRetailRequest.setNoOfApplicantsType(ScoreParameter.NoOfApplicants.JOINT);
+            				}else if(!CommonUtils.isListNullOrEmpty(coAppITRUploadedIds)) {
+            					scoreParameterRetailRequest.setNoOfApplicantsType(ScoreParameter.NoOfApplicants.JOINT_WHERE_CO_APPLICANT_IS_EARNING);
+            				}
+            				scoreParameterRetailRequest.setIsNoOfApplicantsType_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.ANNUAL_INCOME:
+            				try {
+                                if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome)) {
+                                    scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
+                                    scoreParameterRetailRequest.setNetAnnualIncome_p(true);
+                                }
+                                if (!CommonUtils.isObjectNullOrEmpty(grossAnnualIncome)) {
+                                    scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12 * (100 / 70));
+                                }
+                                
+                            } catch (Exception e) {
+                                logger.error("error while getting ANNUAL_INCOME parameter : ",e);
+                            }
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             				break;
@@ -1434,38 +1520,23 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.LOAN_PURPOSE:
             				break;
-        				case ScoreParameter.Retail.HomeLoan.PUR_READY_BUILT_INDEPENDENT_HOUSE:
-        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_FLAT:
-        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_FLAT_ALLOTEE:
-        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_SITE:
-        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_RESIDETIAL_BUID:
-        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_EXPA_RES_BUILD:
-        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_PUR_RES_SITE:
-        	            case ScoreParameter.Retail.HomeLoan.REP_PUR_READY_BUILT_INDEPENDANT:
-        	            case ScoreParameter.Retail.HomeLoan.REP_REN_IMP_FLAT_HOUSE:
-        	            case ScoreParameter.Retail.HomeLoan.OTH_REF_EXCESS_MARGIN_PAID:
-        	            case ScoreParameter.Retail.HomeLoan.OTH_LOAN_REIMBURSEMENT_FLAT:
-            				break;
+//        				case ScoreParameter.Retail.HomeLoan.PUR_READY_BUILT_INDEPENDENT_HOUSE:
+//        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_FLAT:
+//        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_FLAT_ALLOTEE:
+//        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_SITE:
+//        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_RESIDETIAL_BUID:
+//        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_EXPA_RES_BUILD:
+//        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_PUR_RES_SITE:
+//        	            case ScoreParameter.Retail.HomeLoan.REP_PUR_READY_BUILT_INDEPENDANT:
+//        	            case ScoreParameter.Retail.HomeLoan.REP_REN_IMP_FLAT_HOUSE:
+//        	            case ScoreParameter.Retail.HomeLoan.OTH_REF_EXCESS_MARGIN_PAID:
+//        	            case ScoreParameter.Retail.HomeLoan.OTH_LOAN_REIMBURSEMENT_FLAT:
+//            				break;
                             default:
                                 break;
 
                         }
                     }
-
-                    Double grossAnnualIncome =0d;
-                    try {
-                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
-                        if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
-                            List monthlyIncomeList = (List) eligibilityResponse.getData();
-                            if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
-                                grossAnnualIncome = Double.valueOf(monthlyIncomeList.get(8).toString());
-                                scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome*12);
-                            }
-                        }
-                    } catch (EligibilityExceptions eligibilityExceptions) {
-                        logger.error("error while getting GROSS ANNUAL INCOME FROM ELIGIBILITY  : ",eligibilityExceptions);
-                    }
-
                     logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
 
                     logger.info("----------------------------END-------------------------------------------");

@@ -88,6 +88,18 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListForProprietorship(Long id, Long userId)
+			throws LoansException {
+		try {
+			return prepareObject(financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdForProprietorship(id));
+		}
+		catch (Exception e) {
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 
 	@Override
