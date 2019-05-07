@@ -996,6 +996,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 
 		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1, id, userId));
+		termLoanParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		logger.info("end getNtbTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
