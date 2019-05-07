@@ -1398,15 +1398,15 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
-            				Double cibil_score = null;
+            				Double cibilScore = null;
                             try {
                                 CibilRequest cibilRequest = new CibilRequest();
                                 cibilRequest.setPan(retailApplicantDetail.getPan());
                                 cibilRequest.setApplicationId(applicationId);
                                 CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                    cibil_score = Double.parseDouble(cibilResponse.getScore());
-                                    scoreParameterRetailRequest.setCibilScore(cibil_score);
+                                    cibilScore = Double.parseDouble(cibilResponse.getScore());
+                                    scoreParameterRetailRequest.setCibilScore(cibilScore);
                                     scoreParameterRetailRequest.setCibilScore_p(true);
                                 } 
                             } catch (Exception e) {
