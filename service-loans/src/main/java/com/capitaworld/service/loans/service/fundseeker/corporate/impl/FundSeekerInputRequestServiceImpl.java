@@ -456,7 +456,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			
 			List<FinancialArrangementsDetailRequest> resultList = financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId());
-			if(CommonUtils.isListNullOrEmpty(resultList) && !CommonUtils.isObjectNullOrEmpty(fsInputReq.getConstitutionId()) && fsInputReq.getConstitutionId() == 7) {
+			if(CommonUtils.isListNullOrEmpty(resultList) && !CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getConstitutionId()) && corpApplicantDetail.getConstitutionId() == 7) {
 				resultList = financialArrangementDetailsService.getFinancialArrangementDetailsListForProprietorship(fsInputReq.getApplicationId(), fsInputReq.getUserId());
 			} 
 			fsInputRes.setFinancialArrangementsDetailRequestsList(resultList);
