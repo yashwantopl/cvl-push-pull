@@ -7,6 +7,8 @@ public class ScoringRequestLoans {
     private Long fsDigit;
 
     private Long fpProductId;
+    
+    private Long orgId;
 
     /*private Long applicationId;*/
 
@@ -106,6 +108,14 @@ public class ScoringRequestLoans {
 
 	public void setEmi(Double emi) {
 		this.emi = emi;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	@Override
