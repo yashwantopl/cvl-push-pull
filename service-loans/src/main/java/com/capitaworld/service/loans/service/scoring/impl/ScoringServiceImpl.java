@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.api.eligibility.model.HLEligibilityRequest;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
@@ -1489,6 +1490,13 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
+            				HLEligibilityRequest hlEligibilityRequest = new HLEligibilityRequest();
+            				try {
+								eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
+							} catch (EligibilityExceptions e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOIR:
             				break;
@@ -1507,8 +1515,52 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
             				break;
             			case ScoreParameter.Retail.HomeLoan.CHECQUE_BOUNSE_LAST_1_MONTH:
+            				 try {
+                                 Double noOfChequeBounce = null;
+                                 ReportRequest reportRequest = new ReportRequest();
+                                 reportRequest.setApplicationId(applicationId);
+
+                                 AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                                 Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
+                                 if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {{
+                                         if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
+                                             noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
+                                         } else {
+                                             noOfChequeBounce = 0.0;
+                                         }
+                                     }
+                                 } else {
+                                     noOfChequeBounce = 0.0;
+                                 }
+                                 scoreParameterRetailRequest.setChequeBouncelast1Month(noOfChequeBounce);
+                                 scoreParameterRetailRequest.setIsChequeBounceLast1Month_p(true);
+            				 }catch(Exception e) {
+            					 logger.error("Error while Getting Cheque Bounse of Last 1 Month");
+            				 }
             				break;
             			case ScoreParameter.Retail.HomeLoan.CHECQUE_BOUNSE_LAST_6_MONTH:
+            				 try {
+                                 Double noOfChequeBounce = null;
+                                 ReportRequest reportRequest = new ReportRequest();
+                                 reportRequest.setApplicationId(applicationId);
+
+                                 AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                                 Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
+                                 if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {{
+                                         if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
+                                             noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
+                                         } else {
+                                             noOfChequeBounce = 0.0;
+                                         }
+                                     }
+                                 } else {
+                                     noOfChequeBounce = 0.0;
+                                 }
+                                 scoreParameterRetailRequest.setChequeBounce(noOfChequeBounce);
+                                 scoreParameterRetailRequest.setChequeBounce_p(true);
+            				 }catch(Exception e) {
+            					 logger.error("Error while Getting Cheque Bounse of Last 6 Month");
+            				 }
             				break;
             			case ScoreParameter.Retail.HomeLoan.DPD:
             				break;
