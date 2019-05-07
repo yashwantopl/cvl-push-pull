@@ -269,6 +269,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				coApplicantDetail.setModifiedBy(req.getUserId());
 				coApplicantDetail.setModifiedDate(new Date());
 				coApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
+				coApplicantDetail.setIsCibilCompleted(req.getIsCibilCompleted());
 				coApplicantDetailRepository.save(coApplicantDetail);
 				return true;
 			}
@@ -284,6 +285,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setModifiedBy(req.getUserId());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
+				retailApplicantDetail.setIsCibilCompleted(req.getIsCibilCompleted());
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 				
 				try {
