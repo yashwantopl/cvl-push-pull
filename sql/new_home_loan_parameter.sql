@@ -547,3 +547,5 @@ ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN ltv_scaling INT;
 ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN ltv_scaling INT;
 
 ALTER TABLE `loan_application`.`application_product_audit` ADD COLUMN ltv_scaling INT(2);
+
+ALTER TABLE `loan_eligibility`.`personal_loan_calculation` ADD COLUMN type_id INT(2);
