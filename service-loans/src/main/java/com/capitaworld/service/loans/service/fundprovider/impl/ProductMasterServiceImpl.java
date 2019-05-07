@@ -433,7 +433,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				
 				//save gst type for only WC
 				
-				if(loanType==LoanType.WORKING_CAPITAL)
+				if(loanType==LoanType.WORKING_CAPITAL || loanType==LoanType.TERM_LOAN || loanType==LoanType.WCTL_LOAN)
 				{
 					fpGstTypeMappingTempRepository.inActiveMasterByFpProductId(productMaster2.getId());
 					if(!CommonUtils.isListNullOrEmpty(addProductRequest.getGstType()))
