@@ -62,6 +62,7 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
@@ -1277,6 +1278,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			} 
 			else if (master.getProductId() == 7) {
 				return personalLoanParameterService.getPersonalLoanParameterRequestTemp(master.getId(), role, userId);
+			}else if (master.getProductId() == 3) {
+				return homeLoanParameterService.getTemp(master.getId(), role, userId);
 			}
 			/*
 				 * else if (master.getProductId() == 15) { return
@@ -1485,11 +1488,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public Boolean saveRetailInTemp(RetailProduct retailProduct) {
 
 		CommonDocumentUtils.startHook(logger, SAVE_RETAIL_IN_TEMP);
-		if (!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId()) && retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
-					PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
-					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-					return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
+		if(!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
+			if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
+				PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
+				BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
+				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
+				return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
+			}else if (retailProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue() ) {
+				HomeLoanParameterRequest homeLoanParameterRequest = (HomeLoanParameterRequest)retailProduct;
+				BeanUtils.copyProperties(retailProduct, homeLoanParameterRequest);
+				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
+				return homeLoanParameterService.saveOrUpdateTemp(homeLoanParameterRequest);
+			}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
 		return false;
