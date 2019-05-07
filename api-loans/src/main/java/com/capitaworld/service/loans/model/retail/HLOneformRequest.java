@@ -45,6 +45,7 @@ public class HLOneformRequest implements Serializable {
 	//======EMPLOYMENT DETAILS  
 	private Integer employmentType;
 	private Integer employmentStatus;
+	private Integer employmentSubStatus;
 	private String employedWithOther;
 	private String nameOfEmployer;
 	private Integer currentEmploymentStatus;
@@ -357,6 +358,12 @@ public class HLOneformRequest implements Serializable {
 	}
 	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
 		this.isOneFormCompleted = isOneFormCompleted;
+	}
+	public Integer getEmploymentSubStatus() {
+		return employmentSubStatus;
+	}
+	public void setEmploymentSubStatus(Integer employmentSubStatus) {
+		this.employmentSubStatus = employmentSubStatus;
 	}
 	
 	
