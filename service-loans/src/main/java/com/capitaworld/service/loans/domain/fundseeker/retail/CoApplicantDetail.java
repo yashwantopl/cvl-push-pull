@@ -126,6 +126,9 @@ public class CoApplicantDetail implements Serializable {
 	@Column(name = "employment_status")
 	private Integer employmentStatus;
 	
+	@Column(name = "employment_sub_status")
+	private Integer employmentSubStatus;
+	
 	@Column(name = "current_employment_status")
 	private Integer currentEmploymentStatus;
 	
@@ -1502,6 +1505,14 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
 		this.residenceSinceMonth = residenceSinceMonth;
+	}
+
+	public Integer getEmploymentSubStatus() {
+		return employmentSubStatus;
+	}
+
+	public void setEmploymentSubStatus(Integer employmentSubStatus) {
+		this.employmentSubStatus = employmentSubStatus;
 	}
 	
 	
