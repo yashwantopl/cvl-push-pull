@@ -869,7 +869,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+				
+				financialArrangementsDetailResponse.setBuerauOutStanding(financialArrangementsDetailRequest.getBureauOutstandingAmount());
 				financialArrangementsDetailResponse.setLcbgStatus(financialArrangementsDetailRequest.getLcBgStatus() != null ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
+				financialArrangementsDetailResponse.setEmi(financialArrangementsDetailRequest.getEmi());
+				financialArrangementsDetailResponse.setCollateralAmt(financialArrangementsDetailRequest.getCollateralSecurityAmount());
+				
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			corporateFinalViewResponse
