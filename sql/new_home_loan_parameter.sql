@@ -1,5 +1,5 @@
 -- Create New HomeLoan Temp Table
-CREATE TABLE `fp_home_loan_details_temp` (
+CREATE TABLE `loan_application`.`fp_home_loan_details_temp` (
   `fp_product_id` bigint(20) unsigned NOT NULL,
   `currency` int(2) DEFAULT NULL,
   `min_loan_amount` decimal(19,2) DEFAULT NULL,
@@ -209,7 +209,7 @@ CREATE TABLE `loan_application`.`retail_model`
 -- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN status_id INT(2) DEFAULT NULL;
 -- ALTER TABLE `loan_application`.`retail_model` ADD COLUMN approval_date DATETIME DEFAULT NULL;
 
-CREATE TABLE `home_loan_model` (
+CREATE TABLE `loan_application`.`home_loan_model` (
   `id` BIGINT(20) UNSIGNED NOT NULL,
   `is_pur_ready_built_house` BIT(1) DEFAULT NULL,
   `is_pur_ready_built_independent_house` BIT(1) DEFAULT NULL,
@@ -229,8 +229,7 @@ CREATE TABLE `home_loan_model` (
 
 ALTER TABLE `loan_application`.`retail_model` ADD COLUMN user_id BIGINT(20) DEFAULT NULL;
 
-ALTER TABLE `loan_application`.`retail_model` ADD COLUMN `retail_model_temp_ref_id` BIGINT(20) UNSIGNED NULL AFTER `user_id`, 
-ADD CONSTRAINT `retail_model_temp_id_fk` FOREIGN KEY (`retail_model_temp_ref_id`) REFERENCES `loan_application`.`retail_model_temp`(`id`); 
+
 
 -- Temp Table Queries --------------------------------
 
@@ -401,7 +400,7 @@ ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN is_copied BIT(1) D
 ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN is_edit BIT(1) DEFAULT NULL;
 ALTER TABLE `loan_application`.`retail_model_temp` ADD COLUMN status_id INT(2) DEFAULT NULL;
 
-CREATE TABLE `home_loan_model_temp` (
+CREATE TABLE `loan_application`.`home_loan_model_temp` (
   `id` BIGINT(20) UNSIGNED NOT NULL,
   `is_pur_ready_built_house` BIT(1) DEFAULT NULL,
   `is_pur_ready_built_independent_house` BIT(1) DEFAULT NULL,
@@ -547,3 +546,8 @@ ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN ltv_scaling INT;
 ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN ltv_scaling INT;
 
 ALTER TABLE `loan_application`.`application_product_audit` ADD COLUMN ltv_scaling INT(2);
+
+ALTER TABLE `loan_eligibility`.`personal_loan_calculation` ADD COLUMN type_id INT(2);
+
+ALTER TABLE `loan_application`.`retail_model` ADD COLUMN `retail_model_temp_ref_id` BIGINT(20) UNSIGNED NULL AFTER `user_id`, 
+ADD CONSTRAINT `retail_model_temp_id_fk` FOREIGN KEY (`retail_model_temp_ref_id`) REFERENCES `loan_application`.`retail_model_temp`(`id`); 
