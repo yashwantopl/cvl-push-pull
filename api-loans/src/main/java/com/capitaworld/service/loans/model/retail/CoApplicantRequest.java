@@ -82,6 +82,7 @@ public class CoApplicantRequest {
 	private Double residingMonth;
 	private String spouseName;
 	private Boolean isSpouseEmployed;
+	private Boolean isBankStatementCompleted;
 	
 	private Boolean addressSameAsApplicant;
 
@@ -647,4 +648,14 @@ public class CoApplicantRequest {
 	public void setModeOfReceipt(Integer modeOfReceipt) {
 		this.modeOfReceipt = modeOfReceipt;
 	}
+
+	public Boolean getIsBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setIsBankStatementCompleted(Boolean isBankStatementCompleted) {
+		this.isBankStatementCompleted = isBankStatementCompleted;
+	}
+	
+	
 }
