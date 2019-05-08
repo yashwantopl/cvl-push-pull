@@ -266,6 +266,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
 					coApplicantDetail.setBusinessStartDate(cal.getTime());
 				}
+				coApplicantDetail.setEmail(req.getEmail());
 				coApplicantDetail.setModifiedBy(req.getUserId());
 				coApplicantDetail.setModifiedDate(new Date());
 				coApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
@@ -282,6 +283,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
 					retailApplicantDetail.setBusinessStartDate(cal.getTime());
 				}
+				retailApplicantDetail.setEmail(req.getEmail());
 				retailApplicantDetail.setModifiedBy(req.getUserId());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
