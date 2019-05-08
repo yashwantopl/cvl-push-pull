@@ -53,6 +53,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDe
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.CommonUtils.APIFlags;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AlliedActivity;
 import com.capitaworld.service.oneform.enums.Assets;
@@ -1260,6 +1261,38 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+
+	@Override
+	public Boolean updateFlag(Long coAppId, Integer apiId, Boolean apiFlag, Long userId) {
+		logger.info("Enter in updateFlag()");
+		APIFlags apiFlagObj = CommonUtils.APIFlags.fromId(apiId);
+		if(apiFlag == null) {
+			logger.warn("Invalid Flag===>{}",apiId);
+			logger.info("Exit in updateFlag()");
+			return false;
+		}
+		int updatedRows = 0;
+		switch (apiFlagObj) {
+			case ITR:
+				updatedRows = coApplicantDetailRepository.updateITRFlag(userId, coAppId, apiFlag);
+				break;
+			case CIBIL:
+				updatedRows = coApplicantDetailRepository.updateCIBILFlag(userId, coAppId, apiFlag);
+				break;
+			case BANK_STATEMENT:
+				updatedRows = coApplicantDetailRepository.updateBankStatementFlag(userId, coAppId, apiFlag);
+				break;
+			case ONE_FORM:
+				updatedRows = coApplicantDetailRepository.updateOneFormFlag(userId, coAppId, apiFlag);
+				break;
+			default:
+				break;
+		}
+		
+		logger.info("updatedRows====>{}",updatedRows);
+		logger.info("Exit in updateFlag()");
+		return updatedRows > 0;
 	}
 
 	
