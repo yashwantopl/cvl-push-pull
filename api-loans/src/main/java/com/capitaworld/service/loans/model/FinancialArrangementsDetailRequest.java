@@ -56,6 +56,9 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	private String othersBankName;
 	
 	private Boolean isManuallyAdded;
+	
+	private Double bureauOutstandingAmount;
+	private Double bureauOrCalculatedEmi;
 
 	public Long getId() {
 		return id;
@@ -207,6 +210,22 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 
 	public void setCollateralSecurityAmount(Double collateralSecurityAmount) {
 		this.collateralSecurityAmount = collateralSecurityAmount;
+	}
+
+	public Double getBureauOutstandingAmount() {
+		return bureauOutstandingAmount;
+	}
+
+	public void setBureauOutstandingAmount(Double bureauOutstandingAmount) {
+		this.bureauOutstandingAmount = bureauOutstandingAmount;
+	}
+
+	public Double getBureauOrCalculatedEmi() {
+		return bureauOrCalculatedEmi;
+	}
+
+	public void setBureauOrCalculatedEmi(Double bureauOrCalculatedEmi) {
+		this.bureauOrCalculatedEmi = bureauOrCalculatedEmi;
 	}
 
 }

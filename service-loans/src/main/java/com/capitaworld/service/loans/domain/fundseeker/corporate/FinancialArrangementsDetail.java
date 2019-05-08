@@ -104,6 +104,12 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	@Column(name = "is_manually_added")
 	private Boolean isManuallyAdded;
+	
+	@Column(name = "bureau_outstanding_amount")
+	private Double bureauOutstandingAmount;
+	
+	@Column(name = "bureau_or_calculated_emi")
+	private Double bureauOrCalculatedEmi;
 
 	public FinancialArrangementsDetail() {
 		// Do nothing because of X and Y.
@@ -299,7 +305,22 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setCollateralSecurityAmount(Double collateralSecurityAmount) {
 		this.collateralSecurityAmount = collateralSecurityAmount;
 	}
-	
+
+	public Double getBureauOrCalculatedEmi() {
+		return bureauOrCalculatedEmi;
+	}
+
+	public void setBureauOrCalculatedEmi(Double bureauOrCalculatedEmi) {
+		this.bureauOrCalculatedEmi = bureauOrCalculatedEmi;
+	}
+
+	public Double getBureauOutstandingAmount() {
+		return bureauOutstandingAmount;
+	}
+
+	public void setBureauOutstandingAmount(Double bureauOutstandingAmount) {
+		this.bureauOutstandingAmount = bureauOutstandingAmount;
+	}
 	
 }
 
