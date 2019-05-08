@@ -393,7 +393,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setRepayment(hlOneformPrimaryRes.getRepayment());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setModifiedBy(hlOneformPrimaryRes.getUserId());
-				retailApplicantDetail.setIsOneformPrimaryComplete(true);
+				retailApplicantDetail.setIsOneformPrimaryComplete(hlOneformPrimaryRes.getIsOneformPrimaryComplete());
 				retailApplicantDetail.setSalaryMode(hlOneformPrimaryRes.getSalaryMode());
 				retailApplicantDetail.setSalaryBankName(hlOneformPrimaryRes.getSalaryBankName());
 				retailApplicantDetail.setIsOtherSalaryBank(hlOneformPrimaryRes.getIsOtherSalaryBank());
@@ -424,6 +424,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				prHlDetails.setPropertyPrice(hlOneformPrimaryRes.getPropertyPrice());
 				prHlDetails.setOldPropMonth(hlOneformPrimaryRes.getOldPropMonth());
 				prHlDetails.setOldPropYear(hlOneformPrimaryRes.getOldPropYear());
+				primaryHomeLoanDetailRepository.save(prHlDetails);
 			}
 			
 			
