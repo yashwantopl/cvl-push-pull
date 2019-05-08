@@ -10,6 +10,7 @@ import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailITRManualResponse;
 
 public interface RetailApplicantService {
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws LoansException;
@@ -33,4 +34,6 @@ public interface RetailApplicantService {
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws LoansException;
 	
 	public JSONObject getNameAndPanByAppId(Long applicationId);
+	
+	public RetailITRManualResponse getITRManualFormData(Long applicationId,Long coAppId);
 }
