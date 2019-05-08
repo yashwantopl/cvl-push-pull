@@ -418,9 +418,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 
 								 mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
-								 notificationParams.put("app_id", applicationId!=null?applicationId:"NA");
-
-
 								String[] bcc=null;
 								if(i==0)
 								{
@@ -484,10 +481,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								+ e);
 				isSent = false;
 			}
-			return isSent;
-		} else {
-			return isSent;
-		}
+		} 
+		
+		return isSent;
 	}
 
 	private Map<String, Object> getBankAndBranchDetails(Long userOrgId, Long branchId,
@@ -892,7 +888,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId) {
 		Object[] user = commonRepository.getUserCampainCodeByApplicationId(applicationId);
 		Boolean status=false;
-		if((user[0].equals("sbi") && Integer.valueOf(user[1].toString()).equals(2)) || user[0].equals("sidbi")) {
+		if((user[0].equals("sbi") && Integer.valueOf(user[1].toString()).equals(2))/* || user[0].equals("sidbi")*/) {
 			String[] bcc = {environment.getProperty("com.ineligible.email.bcc")};
 			Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
 			if(emailData!=null) {
