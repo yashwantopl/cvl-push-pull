@@ -1,0 +1,9 @@
+ALTER TABLE loan_application.`application_product_audit` ADD COLUMN fsDSCR DOUBLE;
+UPDATE loan_application.`application_product_audit` SET fsDSCR = 0.0
+ALTER TABLE loan_application.application_product_match_data ADD COLUMN isDSCRMatched BIT AFTER collateralCoverageNewValFP;
+ALTER TABLE loan_application.application_product_match_data ADD COLUMN fsDSCR VARCHAR(20) AFTER isDSCRMatched;
+ALTER TABLE loan_application.application_product_match_data ADD COLUMN minDSCRValFP VARCHAR(20) AFTER fsDSCR;
+ALTER TABLE loan_application.application_product_match_data ADD COLUMN maxDSCRValFP VARCHAR(20) AFTER minDSCRValFP;
+ALTER TABLE loan_application.application_product_match_data ADD COLUMN fpDSCR VARCHAR(20) AFTER maxDSCRValFP;
+ALTER TABLE loan_application.`application_product_match_data` ADD COLUMN isDSCRDisplay BIT AFTER isCollateralCoverageNewMandatory;
+ALTER TABLE loan_application.`application_product_match_data` ADD COLUMN isDSCRMandatory BIT AFTER isDSCRDisplay;
