@@ -97,11 +97,11 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
     public CorporateMcqRequest get(Long proposalId) throws LoansException {
         try {
             CorporateMcqDetail loanDetail = corporateMcqDetailRepository.getByProposalId(proposalId);
-            if (loanDetail == null) {
-                throw new NullPointerException("FinalTermLoanDetail not exist in DB with proposal Id==>" + proposalId);
-            }
             CorporateMcqRequest corporateMcqRequest = new CorporateMcqRequest();
-            BeanUtils.copyProperties(loanDetail, corporateMcqRequest);
+            if (loanDetail != null) {
+//                throw new NullPointerException("FinalTermLoanDetail not exist in DB with proposal Id==>" + proposalId);
+            	BeanUtils.copyProperties(loanDetail, corporateMcqRequest);
+            }
             //corporateMcqRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
             return corporateMcqRequest;
         } catch (Exception e) {
