@@ -88,6 +88,18 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListForProprietorship(Long id, Long userId)
+			throws LoansException {
+		try {
+			return prepareObject(financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppIdForProprietorship(id));
+		}
+		catch (Exception e) {
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 
 	@Override
@@ -112,6 +124,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setCreatedBy(userId);
 			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
+			arrangementsDetail.setBureauOrCalculatedEmi(req.getEmi());
+			arrangementsDetail.setBureauOutstandingAmount(req.getOutstandingAmount());
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
 		return true;
@@ -143,6 +157,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
 			arrangementsDetail.setDirectorBackgroundDetail(new DirectorBackgroundDetail(directorId));
+			arrangementsDetail.setBureauOrCalculatedEmi(req.getEmi());
+			arrangementsDetail.setBureauOutstandingAmount(req.getOutstandingAmount());
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
 		return true;

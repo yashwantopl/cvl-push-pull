@@ -202,8 +202,10 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		if(obj != null && obj.length > 0) {
 			Object[] objs = (Object[])obj[0];
 			HLOnefromResponse onefromResponse = setValueFromObj(objs, applicationId,false);
-			if(onefromResponse.getIsCibilComplete() && onefromResponse.getIsOneformComplete()) {
-				isOneformProfileCompl = true;
+			if(!CommonUtils.isObjectNullOrEmpty(onefromResponse.getIsCibilComplete()) && !CommonUtils.isObjectNullOrEmpty(onefromResponse.getIsOneformComplete())) {
+				if(onefromResponse.getIsCibilComplete() && onefromResponse.getIsOneformComplete()) {
+					isOneformProfileCompl = true;
+				}	
 			}
 			isOneformPrimaryCompl = CommonUtils.convertBoolean(objs[4]);
 			resList.add(onefromResponse);
@@ -211,10 +213,12 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		List<Object[]> objList = coApplicantDetailRepository.getBasicDetailsByAppId(applicationId);
 		for(Object[] objs : objList) {
 			HLOnefromResponse onefromResponse = setValueFromObj(objs, applicationId,true);
-			if(onefromResponse.getIsCibilComplete() && onefromResponse.getIsOneformComplete()) {
-				isOneformProfileCompl = true;
-			} else {
-				isOneformProfileCompl = false;
+			if(!CommonUtils.isObjectNullOrEmpty(onefromResponse.getIsCibilComplete()) && !CommonUtils.isObjectNullOrEmpty(onefromResponse.getIsOneformComplete())) {
+				if(onefromResponse.getIsCibilComplete() && onefromResponse.getIsOneformComplete()) {
+					isOneformProfileCompl = true;
+				} else {
+					isOneformProfileCompl = false;
+				}	
 			}
 			resList.add(onefromResponse);
 		}
@@ -265,6 +269,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				coApplicantDetail.setModifiedBy(req.getUserId());
 				coApplicantDetail.setModifiedDate(new Date());
 				coApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
+				coApplicantDetail.setIsCibilCompleted(req.getIsCibilCompleted());
 				coApplicantDetailRepository.save(coApplicantDetail);
 				return true;
 			}
@@ -280,6 +285,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setModifiedBy(req.getUserId());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
+				retailApplicantDetail.setIsCibilCompleted(req.getIsCibilCompleted());
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 				
 				try {

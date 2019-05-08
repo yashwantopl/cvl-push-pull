@@ -46,11 +46,11 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16)")
 	public List<ProductMaster> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMaster pm where pm.userId =:userId  and productId  in (7)")
-	public List<ProductMaster> getUserRetailProductList(@Param("userId") Long userId);
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId  in (:productIds)")
+	public List<ProductMaster> getUserRetailProductList(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
 	
-	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId  in (7)")
-	public List<ProductMaster> getUserRetailProductListByOrgId(@Param("userOrgId") Long userOrgId);
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId  in  (:productIds)")
+	public List<ProductMaster> getUserRetailProductListByOrgId(@Param("userOrgId") Long userOrgId,@Param("productIds") List<Integer> productIds);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and productId=:productId ")
 	public List<ProductMaster> getUserProductListByProduct(@Param("userId") Long userId,@Param("productId") Integer productId);

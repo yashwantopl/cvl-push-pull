@@ -49,6 +49,10 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     
     private Double emi;
     
+    private Double buerauEmi;
+    private Double buerauOutStanding;
+    private Double collateralAmt;
+    
    /* public String getFacilityNature() {
         return facilityNature;
     }
@@ -200,6 +204,30 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 
 	public void setFacilityNature(String facilityNature) {
 		this.facilityNature = facilityNature;
+	}
+
+	public Double getBuerauEmi() {
+		return buerauEmi;
+	}
+
+	public void setBuerauEmi(Double buerauEmi) {
+		this.buerauEmi = buerauEmi;
+	}
+
+	public Double getBuerauOutStanding() {
+		return buerauOutStanding;
+	}
+
+	public void setBuerauOutStanding(Double buerauOutStanding) {
+		this.buerauOutStanding = buerauOutStanding;
+	}
+
+	public Double getCollateralAmt() {
+		return collateralAmt;
+	}
+
+	public void setCollateralAmt(Double collateralAmt) {
+		this.collateralAmt = collateralAmt;
 	}
 
 	

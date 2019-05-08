@@ -7,6 +7,8 @@ public class ScoringRequestLoans {
     private Long fsDigit;
 
     private Long fpProductId;
+    
+    private Long orgId;
 
     /*private Long applicationId;*/
 
@@ -16,9 +18,16 @@ public class ScoringRequestLoans {
 	private Integer financialTypeIdProduct;
 
 	private Double emi;
+	
+	private Double roi;
 
 	private Long userId;
-
+	
+	private Double tenureFS;
+	private Double tenureScoring;
+	private Double ageFS;
+	private Double tenureFP;
+	
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
 
 	private ScoreParameterNTBRequest scoreParameterNTBRequest;
@@ -106,6 +115,54 @@ public class ScoringRequestLoans {
 
 	public void setEmi(Double emi) {
 		this.emi = emi;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
+	public Double getTenureFS() {
+		return tenureFS;
+	}
+
+	public void setTenureFS(Double tenureFS) {
+		this.tenureFS = tenureFS;
+	}
+
+	public Double getTenureScoring() {
+		return tenureScoring;
+	}
+
+	public void setTenureScoring(Double tenureScoring) {
+		this.tenureScoring = tenureScoring;
+	}
+
+	public Double getAgeFS() {
+		return ageFS;
+	}
+
+	public void setAgeFS(Double ageFS) {
+		this.ageFS = ageFS;
+	}
+
+	public Double getTenureFP() {
+		return tenureFP;
+	}
+
+	public void setTenureFP(Double tenureFP) {
+		this.tenureFP = tenureFP;
+	}
+
+	public Double getRoi() {
+		return roi;
+	}
+
+	public void setRoi(Double roi) {
+		this.roi = roi;
 	}
 
 	@Override

@@ -261,7 +261,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndProposalIdAndUserId(toUserId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======>
-
+		
+		corporatePrimaryViewResponse.setComercialPanNo(corporateApplicantDetail.getPanNo()); 
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporatePrimaryViewResponse);
@@ -774,6 +775,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				financialArrangementsDetailResponse.setLcbgStatus(financialArrangementsDetailRequest.getLcBgStatus() != null ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
 				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+				//financialArrangementsDetailResponse.setBuerauEmi(financialArrangementsDetailRequest.getBureauOrCalculatedEmi());
+				financialArrangementsDetailResponse.setEmi(financialArrangementsDetailRequest.getEmi());
+				financialArrangementsDetailResponse.setBuerauOutStanding(financialArrangementsDetailRequest.getBureauOutstandingAmount());
+				financialArrangementsDetailResponse.setCollateralAmt(financialArrangementsDetailRequest.getCollateralSecurityAmount());
+				
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			corporatePrimaryViewResponse
@@ -1463,44 +1469,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		/*if(loanApplicationMaster.getMcaCompanyId() != null) {
-			DocumentRequest documentRequestForMCAZip = new DocumentRequest();
-			documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
-			documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-			documentRequestForMCAZip.setProductDocumentMappingId(DocumentAlias.MCA_CORP_ZIP);
-			try {
-				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestForMCAZip);
-				corporatePrimaryViewResponse.setMcaCorpZipFile(documentResponse.getDataList());
-			} catch (DocumentException e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}	
-		}else {
-			logger.info("MCA Zip File Is Null...");
-		} */
-		
-		/* documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
-		   try {
-		   DocumentResponse documentResponse =
-		   dmsClient.listProductDocument(documentRequest);
-		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
-		   } catch (DocumentException e) {
-		   logger.error(CommonUtils.EXCEPTION,e);
-		   }
-		   List<Long> ids=new ArrayList<>();
-		   ids.add(354l);
-		   ids.add(358l);
-		   ids.add(365l);
-		   ids.add(406l);
-		   ZipRequest zipRequest=new ZipRequest();
-		   zipRequest.setApplicationId(toApplicationId);
-		   zipRequest.setProductDocumentMappingIds(ids);
-		   try {
-		   DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
-		   corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
-		   } catch (DocumentException e) {
-		   logger.error(CommonUtils.EXCEPTION,e);
-		   } */
-
 		return corporatePrimaryViewResponse;
 	}
 
