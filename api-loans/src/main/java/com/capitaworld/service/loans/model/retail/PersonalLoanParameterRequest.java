@@ -130,6 +130,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isEmpStatusMandatory= false;
 
 	private List<CreditRatingPlParameter> creditRatingSelectedList;
+	
+	private List<EmiNmiDetailRequest> emiNmiDetailRequestList;
 
 	private Object workflowData;
 
@@ -865,6 +867,14 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
 		this.multiplierIncomeType = multiplierIncomeType;
+	}
+	
+	public List<EmiNmiDetailRequest> getEmiNmiDetailRequestList() {
+		return emiNmiDetailRequestList;
+	}
+
+	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
+		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
 	}
 	
 	
