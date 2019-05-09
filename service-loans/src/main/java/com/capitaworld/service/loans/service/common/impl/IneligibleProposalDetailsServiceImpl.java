@@ -774,9 +774,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private void sendEmail(NotificationRequest notificationRequest) throws NotificationException {
-		logger.info("Inside send Email===>{}",notificationRequest.getNotifications().get(0).getTo());
 		notificationClient.send(notificationRequest);
-		logger.info("Outside send Email===>{}",notificationRequest.getNotifications().get(0).getTo());
 	}
 
 	@Override
