@@ -265,6 +265,19 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 
 	@Column(name = "emi_nmi_check")
 	private BigDecimal emiNmiCheck;
+	
+	@Column(name = "is_gross_income_range_display")
+	private Boolean isGrossIncomeRangeDisplay= false;
+
+	@Column(name = "is_gross_income_range_mandatory")
+	private Boolean isGrossIncomeRangeMandatory= false;
+	
+	@Column(name = "max_gross_income_range")
+	private Double maxGrossIncomeRange;
+
+	@Column(name = "min_gross_income_range")
+	private Double minGrossIncomeRange;
+
 
 
 	public ProductMaster getFpProductId() {
@@ -843,6 +856,41 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 		this.emiNmiCheck = emiNmiCheck;
 	}
 
+	public Boolean getIsGrossIncomeRangeDisplay() {
+		return isGrossIncomeRangeDisplay;
+	}
+
+	public void setIsGrossIncomeRangeDisplay(Boolean isGrossIncomeRangeDisplay) {
+		this.isGrossIncomeRangeDisplay = isGrossIncomeRangeDisplay;
+	}
+
+	public Boolean getIsGrossIncomeRangeMandatory() {
+		return isGrossIncomeRangeMandatory;
+	}
+
+	public void setIsGrossIncomeRangeMandatory(Boolean isGrossIncomeRangeMandatory) {
+		this.isGrossIncomeRangeMandatory = isGrossIncomeRangeMandatory;
+	}
+
+	public Double getMaxGrossIncomeRange() {
+		return maxGrossIncomeRange;
+	}
+
+	public void setMaxGrossIncomeRange(Double maxGrossIncomeRange) {
+		this.maxGrossIncomeRange = maxGrossIncomeRange;
+	}
+
+	public Double getMinGrossIncomeRange() {
+		return minGrossIncomeRange;
+	}
+
+	public void setMinGrossIncomeRange(Double minGrossIncomeRange) {
+		this.minGrossIncomeRange = minGrossIncomeRange;
+	}
+
+	
+	
+	
 
 	
 	
