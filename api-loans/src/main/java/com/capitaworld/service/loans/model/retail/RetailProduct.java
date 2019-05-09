@@ -170,6 +170,8 @@ public class RetailProduct extends ProductMasterRequest {
 	
 	private Integer assessmentMethodId;
 	
+	private List<EmiNmiDetailRequest> emiNmiDetailRequestList;
+	
 	
 	
 	private Boolean isBasedOnIncome = false;
@@ -837,19 +839,14 @@ public class RetailProduct extends ProductMasterRequest {
 	public void setMinGrossIncomeRange(Double minGrossIncomeRange) {
 		this.minGrossIncomeRange = minGrossIncomeRange;
 	}
-	
-	
 
+	public List<EmiNmiDetailRequest> getEmiNmiDetailRequestList() {
+		return emiNmiDetailRequestList;
+	}
 
-	
-	
-
-	
-	
-	
-	
-	
-	
+	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
+		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
+	}
 	
 
 }
