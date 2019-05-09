@@ -274,6 +274,12 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 
 	@Column(name = "min_gross_income_range")
 	private Double minGrossIncomeRange;
+	
+	@Column(name = "based_on_income_type ")
+	private Integer basedOnIncomeType;
+	
+	@Column(name = "multiplier_income_type ")
+	private Integer multiplierIncomeType;
 
 
 	public PersonalLoanParameterTemp() {
@@ -1069,6 +1075,31 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	}
 
 
+
+	public Integer getBasedOnIncomeType() {
+		return basedOnIncomeType;
+	}
+
+
+
+	public void setBasedOnIncomeType(Integer basedOnIncomeType) {
+		this.basedOnIncomeType = basedOnIncomeType;
+	}
+
+
+
+	public Integer getMultiplierIncomeType() {
+		return multiplierIncomeType;
+	}
+
+
+
+	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
+		this.multiplierIncomeType = multiplierIncomeType;
+	}
+
+
+	
 	
 	
 	

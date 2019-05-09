@@ -183,6 +183,10 @@ public class RetailProduct extends ProductMasterRequest {
 	private Boolean isEmiNmiCheck = false;
 
 	private BigDecimal emiNmiCheck;
+	
+	private Integer basedOnIncomeType;
+	
+	private Integer multiplierIncomeType;
 
 	public Long getFpProductId() {
 		return fpProductId;
@@ -840,6 +844,22 @@ public class RetailProduct extends ProductMasterRequest {
 		this.minGrossIncomeRange = minGrossIncomeRange;
 	}
 
+	public Integer getBasedOnIncomeType() {
+		return basedOnIncomeType;
+	}
+
+	public void setBasedOnIncomeType(Integer basedOnIncomeType) {
+		this.basedOnIncomeType = basedOnIncomeType;
+	}
+
+	public Integer getMultiplierIncomeType() {
+		return multiplierIncomeType;
+	}
+
+	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
+		this.multiplierIncomeType = multiplierIncomeType;
+	}
+	
 	public List<EmiNmiDetailRequest> getEmiNmiDetailRequestList() {
 		return emiNmiDetailRequestList;
 	}

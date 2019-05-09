@@ -278,6 +278,11 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name = "min_gross_income_range")
 	private Double minGrossIncomeRange;
 
+	@Column(name = "based_on_income_type ")
+	private Integer basedOnIncomeType;
+	
+	@Column(name = "multiplier_income_type ")
+	private Integer multiplierIncomeType;
 
 
 	public ProductMaster getFpProductId() {
@@ -887,6 +892,23 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	public void setMinGrossIncomeRange(Double minGrossIncomeRange) {
 		this.minGrossIncomeRange = minGrossIncomeRange;
 	}
+
+	public Integer getBasedOnIncomeType() {
+		return basedOnIncomeType;
+	}
+
+	public void setBasedOnIncomeType(Integer basedOnIncomeType) {
+		this.basedOnIncomeType = basedOnIncomeType;
+	}
+
+	public Integer getMultiplierIncomeType() {
+		return multiplierIncomeType;
+	}
+
+	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
+		this.multiplierIncomeType = multiplierIncomeType;
+	}
+
 
 	
 	
