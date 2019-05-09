@@ -21,6 +21,7 @@ public class HLOneformRequest implements Serializable {
 	private String lastName;
 	private String fatherName;
 	private String pan;
+	private String email;
 	private Integer genderId;
 	private Integer category;
 	private String mobile;
@@ -31,6 +32,7 @@ public class HLOneformRequest implements Serializable {
 	private Integer residentialStatus;
 	private Double networth;
 	private Boolean isOneFormCompleted;
+	private Boolean isCibilCompleted;
 	
 	//======CONTACT DETAILS
 	private String addressPremiseName;
@@ -364,6 +366,18 @@ public class HLOneformRequest implements Serializable {
 	}
 	public void setEmploymentSubStatus(Integer employmentSubStatus) {
 		this.employmentSubStatus = employmentSubStatus;
+	}
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

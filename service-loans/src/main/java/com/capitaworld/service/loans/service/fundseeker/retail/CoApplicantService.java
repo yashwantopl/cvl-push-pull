@@ -32,4 +32,7 @@ public interface CoApplicantService {
 	
 	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException;
 	
+	public Boolean updateFlag(Long directorId,Integer apiId,Boolean apiFlag,Long userId);
+	
+	
 }
