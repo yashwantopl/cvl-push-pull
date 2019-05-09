@@ -266,9 +266,11 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
 					coApplicantDetail.setBusinessStartDate(cal.getTime());
 				}
+				coApplicantDetail.setEmail(req.getEmail());
 				coApplicantDetail.setModifiedBy(req.getUserId());
 				coApplicantDetail.setModifiedDate(new Date());
 				coApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
+				coApplicantDetail.setIsCibilCompleted(req.getIsCibilCompleted());
 				coApplicantDetailRepository.save(coApplicantDetail);
 				return true;
 			}
@@ -281,9 +283,11 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
 					retailApplicantDetail.setBusinessStartDate(cal.getTime());
 				}
+				retailApplicantDetail.setEmail(req.getEmail());
 				retailApplicantDetail.setModifiedBy(req.getUserId());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
+				retailApplicantDetail.setIsCibilCompleted(req.getIsCibilCompleted());
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 				
 				try {
@@ -389,7 +393,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setRepayment(hlOneformPrimaryRes.getRepayment());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setModifiedBy(hlOneformPrimaryRes.getUserId());
-				retailApplicantDetail.setIsOneformPrimaryComplete(true);
+				retailApplicantDetail.setIsOneformPrimaryComplete(hlOneformPrimaryRes.getIsOneformPrimaryComplete());
 				retailApplicantDetail.setSalaryMode(hlOneformPrimaryRes.getSalaryMode());
 				retailApplicantDetail.setSalaryBankName(hlOneformPrimaryRes.getSalaryBankName());
 				retailApplicantDetail.setIsOtherSalaryBank(hlOneformPrimaryRes.getIsOtherSalaryBank());
@@ -420,6 +424,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				prHlDetails.setPropertyPrice(hlOneformPrimaryRes.getPropertyPrice());
 				prHlDetails.setOldPropMonth(hlOneformPrimaryRes.getOldPropMonth());
 				prHlDetails.setOldPropYear(hlOneformPrimaryRes.getOldPropYear());
+				primaryHomeLoanDetailRepository.save(prHlDetails);
 			}
 			
 			

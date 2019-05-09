@@ -37,6 +37,7 @@ import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
@@ -62,6 +63,7 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
@@ -259,7 +261,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 				return true;
 			} else {
-				ProductMasterTemp productMaster = null;
+				ProductMasterTemp productMasterTemp = null;
 				LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
 				WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
 						WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
@@ -269,20 +271,23 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 				switch (loanType) {
 				case WORKING_CAPITAL:
-					productMaster = new WorkingCapitalParameterTemp();
+					productMasterTemp = new WorkingCapitalParameterTemp();
 					break;
 				case TERM_LOAN:
 					if (addProductRequest.getBusinessTypeId() == 2) {
-						productMaster = new NtbTermLoanParameterTemp();
+						productMasterTemp = new NtbTermLoanParameterTemp();
 					} else {
-						productMaster = new TermLoanParameterTemp();
+						productMasterTemp = new TermLoanParameterTemp();
 					}
 					break;
 				case WCTL_LOAN:
-					productMaster = new WcTlParameterTemp();
+					productMasterTemp = new WcTlParameterTemp();
 					break;
 				case PERSONAL_LOAN:
-					productMaster = new PersonalLoanParameterTemp();
+					productMasterTemp = new PersonalLoanParameterTemp();
+					break;
+				case HOME_LOAN:
+					productMasterTemp = new HomeLoanParameterTemp();
 					break;
 
 				default:
@@ -310,8 +315,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						}
 						//END set multiple value in temp
 						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id");
-						productMaster = workingCapitalParameterTemp;
-						productMaster.setIsParameterFilled(true);
+						productMasterTemp = workingCapitalParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
 						break;
 					case TERM_LOAN:
 						if (addProductRequest.getBusinessTypeId()==2) {
@@ -333,8 +338,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
 							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
-							productMaster = ntbTermLoanParameterTemp;
-							productMaster.setIsParameterFilled(true);
+							productMasterTemp = ntbTermLoanParameterTemp;
+							productMasterTemp.setIsParameterFilled(true);
 						} else {
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
@@ -353,8 +358,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
 							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
-							productMaster = termLoanParameterTemp;
-							productMaster.setIsParameterFilled(true);
+							productMasterTemp = termLoanParameterTemp;
+							productMasterTemp.setIsParameterFilled(true);
 						}
 						break;
 					case WCTL_LOAN:
@@ -375,8 +380,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							wcTlParameterRequest.setNewTolTnw(null);
 						}
 						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
-						productMaster = wcTlParameterTemp;
-						productMaster.setIsParameterFilled(true);
+						productMasterTemp = wcTlParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
 						break;
 					case PERSONAL_LOAN:
 
@@ -389,8 +394,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						//negativeIndList=personalLoanParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
 						BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameterTemp,"id");
-						productMaster = personalLoanParameterTemp;
-						productMaster.setIsParameterFilled(true);
+						productMasterTemp = personalLoanParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
+						break;
+					case HOME_LOAN:
+						HomeLoanParameterRequest homeLoanParameterRequest = homeLoanParameterService.getHomeLoanParameterRequest(addProductRequest.getLoanId());
+						geogaphicallyCountry=homeLoanParameterRequest.getCountryList();
+						geogaphicallyState=homeLoanParameterRequest.getStateList();
+						geogaphicallyCity=homeLoanParameterRequest.getCityList();
+						BeanUtils.copyProperties(homeLoanParameterRequest, productMasterTemp,"id");
+						productMasterTemp.setIsParameterFilled(true);
 						break;
 
 					default:
@@ -404,32 +417,32 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					jobId = workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
 				}
 				
-				productMaster.setJobId(jobId);
+				productMasterTemp.setJobId(jobId);
 
-				productMaster.setProductId(addProductRequest.getProductId());
-				productMaster.setIsMatched(false);
-				productMaster.setName(addProductRequest.getName());
-				productMaster.setFpName(addProductRequest.getFpName());
-				productMaster.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMasterTemp.setProductId(addProductRequest.getProductId());
+				productMasterTemp.setIsMatched(false);
+				productMasterTemp.setName(addProductRequest.getName());
+				productMasterTemp.setFpName(addProductRequest.getFpName());
+				productMasterTemp.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMaster.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMasterTemp.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMaster.setCreatedDate(new Date());
-				productMaster.setModifiedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+				productMasterTemp.setCreatedDate(new Date());
+				productMasterTemp.setModifiedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				productMaster.setIsParameterFilled(false);
-				productMaster.setModifiedDate(new Date());
+				productMasterTemp.setIsParameterFilled(false);
+				productMasterTemp.setModifiedDate(new Date());
 				// set business type id
-				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
-				productMaster.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
-				productMaster.setFinId(addProductRequest.getFinId());
-				productMaster.setIsCopied(false);
-				productMaster.setIsActive(true);
-				productMaster.setUserOrgId(userOrgId);
-				productMaster.setStatusId(1);
-				productMaster.setProductCode(
+				productMasterTemp.setBusinessTypeId(addProductRequest.getBusinessTypeId());
+				productMasterTemp.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
+				productMasterTemp.setFinId(addProductRequest.getFinId());
+				productMasterTemp.setIsCopied(false);
+				productMasterTemp.setIsActive(true);
+				productMasterTemp.setUserOrgId(userOrgId);
+				productMasterTemp.setStatusId(1);
+				productMasterTemp.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
-				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMaster);
+				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMasterTemp);
 				
 				//save gst type for only WC
 				
@@ -1277,6 +1290,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			} 
 			else if (master.getProductId() == 7) {
 				return personalLoanParameterService.getPersonalLoanParameterRequestTemp(master.getId(), role, userId);
+			}else if (master.getProductId() == 3) {
+				return homeLoanParameterService.getTemp(master.getId(), role, userId);
 			}
 			/*
 				 * else if (master.getProductId() == 15) { return
@@ -1336,11 +1351,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
-				}
-				 else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
 						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 						return personalLoanParameterService.saveMasterFromTempPl(mappingId);
-					}
+				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
+					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
+					return homeLoanParameterService.saveMasterFromTemp(mappingId);
+				}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 		return false;
@@ -1485,11 +1502,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public Boolean saveRetailInTemp(RetailProduct retailProduct) {
 
 		CommonDocumentUtils.startHook(logger, SAVE_RETAIL_IN_TEMP);
-		if (!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId()) && retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
-					PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
-					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-					return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
+		if(!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
+			if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
+				PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
+				BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
+				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
+				return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
+			}else if (retailProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue() ) {
+				HomeLoanParameterRequest homeLoanParameterRequest = (HomeLoanParameterRequest)retailProduct;
+				BeanUtils.copyProperties(retailProduct, homeLoanParameterRequest);
+				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
+				return homeLoanParameterService.saveOrUpdateTemp(homeLoanParameterRequest);
+			}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
 		return false;
