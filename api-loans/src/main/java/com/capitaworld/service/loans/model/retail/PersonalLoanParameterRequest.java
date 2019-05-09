@@ -130,6 +130,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isEmpStatusMandatory= false;
 
 	private List<CreditRatingPlParameter> creditRatingSelectedList;
+	
+	private List<EmiNmiDetailRequest> emiNmiDetailRequestList;
 
 	private Object workflowData;
 
@@ -176,6 +178,10 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Double maxGrossIncomeRange;
 
 	private Double minGrossIncomeRange;
+	
+	private Integer basedOnIncomeType;
+	
+	private Integer multiplierIncomeType;
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -846,6 +852,32 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	public void setMinGrossIncomeRange(Double minGrossIncomeRange) {
 		this.minGrossIncomeRange = minGrossIncomeRange;
 	}
+
+	public Integer getBasedOnIncomeType() {
+		return basedOnIncomeType;
+	}
+
+	public void setBasedOnIncomeType(Integer basedOnIncomeType) {
+		this.basedOnIncomeType = basedOnIncomeType;
+	}
+
+	public Integer getMultiplierIncomeType() {
+		return multiplierIncomeType;
+	}
+
+	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
+		this.multiplierIncomeType = multiplierIncomeType;
+	}
+	
+	public List<EmiNmiDetailRequest> getEmiNmiDetailRequestList() {
+		return emiNmiDetailRequestList;
+	}
+
+	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
+		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
+	}
+	
+	
 
 	/*
 	 * public Integer getEmploymentId() { return employmentId; }
