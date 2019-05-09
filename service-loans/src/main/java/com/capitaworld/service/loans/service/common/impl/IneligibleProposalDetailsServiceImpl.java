@@ -62,6 +62,8 @@ import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
+import net.bytebuddy.agent.builder.AgentBuilder.RedefinitionStrategy.DiscoveryStrategy.Reiterating;
+
 /**
  * Created by KushalCW on 22-09-2018.
  */
@@ -882,96 +884,105 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Override
 	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId) {
-		Object[] user = commonRepository.getUserCampainCodeByApplicationId(applicationId);
 		Boolean status=false;
-		if((user[0].equals("sbi") && Integer.valueOf(user[1].toString()).equals(2))/* || user[0].equals("sidbi")*/) {
-			String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
-			Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
-			if(emailData!=null) {
-				String fsEmail = String.valueOf(emailData[0]);
-				String fsMobile = String.valueOf(emailData[1]);
-				String fsPrimiseNo = emailData[3]!=null?String.valueOf(emailData[3]):"";
-				String fsStreetName= emailData[4]!=null?String.valueOf(emailData[4]):"";
-				String fsLandMark= emailData[5]!=null?String.valueOf(emailData[5]):"";
-				Long fsCityId= Long.valueOf(String.valueOf(emailData[6]));
-				Long fsStateId= Long.valueOf(String.valueOf(emailData[7]));
-				String fsPincode= emailData[8]!=null?String.valueOf(emailData[8]):"";
-				Integer fsWcStatus= Integer.valueOf(String.valueOf(emailData[10]));
-				String fsName= String.valueOf(emailData[11]);
-				Long userId= Long.valueOf(String.valueOf(emailData[12]));
-				Integer proposOfLoanAmount= Integer.valueOf(String.valueOf(emailData[13]));
-				String address ="";
-				try {
-					address = asyncComp.murgedAddress(fsPrimiseNo, fsLandMark, fsStreetName, fsCityId, Long.valueOf(fsPincode), fsStateId);
-				} catch (Exception e) {
-					logger.error("Exception in murging address",e);
-				}
-				Map<String, Object> param =new HashMap<>();
-				try {
-					param = getBankAndBranchDetails(userOrgId, branchId, param);
-				}catch (Exception e) {
-					logger.error("Exception while getting bank and bank and branch details :",e);
-				}
-				param.put("fs_name", fsName);
-				param.put("noCode", true);
-				param.put("address", address);
-				String loanType="";
-				if(proposOfLoanAmount == 1) {
-					loanType = "Term Loan";
-				}else if(proposOfLoanAmount == 2){
-					loanType = "Working Capital";
-				}
-				param.put("loan_type", loanType);
-				String bankLogo = "";
-				try {
-					 bankLogo = gatewayClient.getBankLogoUrlByOrgId(userOrgId);
-					param.put("bank_url", bankLogo);
-				} catch (GatewayException e) {
-					logger.error("Exception while getting bank logo url for ineligible email",e); 
-				}
-				param.put("mobile_no", fsMobile);
-				
-				try {
-					UserResponse orgName = userClient.getOrgNameByOrgId(userOrgId);
-					UserOrganisationRequest request= MultipleJSONObjectHelper.getObjectFromMap((Map) orgName.getData(),UserOrganisationRequest.class);
-					param.put("org_name", request.getOrganisationName());
-				} catch (IOException e2) {
-					logger.error("Exception in getting user organisation name",e2);
-					param.put("org_name", "Bank");
-				}
-				if(fsEmail != null && fsMobile!=null && applicationId != null && bankLogo != "") {
-					String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
-					String[] cc = {String.valueOf(param.get("branch_contact_email"))};
-					try {
-						createNotificationForEmail(fsEmail, String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS, subject, applicationId, true, bcc,cc);
-					} catch (NotificationException e) {
-						logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
-					}
-				}
-				
-				UserResponse allBranchUsers = userClient.getAllBranchUsers(branchId);
-				if(!allBranchUsers.getListData().isEmpty()) {
-					List<Map<String,Object>> listData =(List<Map<String,Object>>) allBranchUsers.getListData();
-					for (int i = 0; i < listData.size(); i++) {
-						BranchUserResponse resp = new BranchUserResponse();
+		Object[] user = {}; 
+		try {
+			user = commonRepository.getUserCampainCodeByApplicationId(applicationId);
+		}catch (Exception e) {
+			return status;
+		}
+		if(user!=null) {
+			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2))/* || user[0].equals("sidbi")*/) {
+				String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
+				Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
+				if(emailData!=null) {
+					Integer buisnessTypeId= Integer.valueOf(String.valueOf(emailData[14]));
+					if(buisnessTypeId == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+						String fsEmail = String.valueOf(emailData[0]);
+						String fsMobile = String.valueOf(emailData[1]);
+						String fsPrimiseNo = emailData[3]!=null?String.valueOf(emailData[3]):"";
+						String fsStreetName= emailData[4]!=null?String.valueOf(emailData[4]):"";
+						String fsLandMark= emailData[5]!=null?String.valueOf(emailData[5]):"";
+						Long fsCityId= Long.valueOf(String.valueOf(emailData[6]));
+						Long fsStateId= Long.valueOf(String.valueOf(emailData[7]));
+						String fsPincode= emailData[8]!=null?String.valueOf(emailData[8]):"";
+						String fsName= String.valueOf(emailData[11]);
+						Long userId= Long.valueOf(String.valueOf(emailData[12]));
+						Integer proposOfLoanAmount= Integer.valueOf(String.valueOf(emailData[13]));
+						String address ="";
 						try {
-							resp = MultipleJSONObjectHelper.getObjectFromMap(listData.get(i), BranchUserResponse.class);
-						} catch (IOException e1) {
-							logger.error("Exception in getting branch user",e1);
+							address = asyncComp.murgedAddress(fsPrimiseNo, fsLandMark, fsStreetName, fsCityId, Long.valueOf(fsPincode), fsStateId);
+						} catch (Exception e) {
+							logger.error("Exception in murging address",e);
 						}
-						if(resp.getUserRole().equals("9") || resp.getUserRole().equals("5") || resp.getUserRole().equals("6")) {
-							param.put("bo_name", resp.getUserName()!=null?resp.getUserName():"Sir/Madam");
-							String subject = "Intimation of new proposal";
+						Map<String, Object> param =new HashMap<>();
+						try {
+							param = getBankAndBranchDetails(userOrgId, branchId, param);
+						}catch (Exception e) {
+							logger.error("Exception while getting bank and bank and branch details :",e);
+						}
+						param.put("fs_name", fsName);
+						param.put("noCode", true);
+						param.put("address", address);
+						String loanType="";
+						if(proposOfLoanAmount == 1) {
+							loanType = "Term Loan";
+						}else if(proposOfLoanAmount == 2){
+							loanType = "Working Capital";
+						}
+						param.put("loan_type", loanType);
+						String bankLogo = "";
+						try {
+							 bankLogo = gatewayClient.getBankLogoUrlByOrgId(userOrgId);
+							param.put("bank_url", bankLogo);
+						} catch (GatewayException e) {
+							logger.error("Exception while getting bank logo url for ineligible email",e); 
+						}
+						param.put("mobile_no", fsMobile);
+						
+						try {
+							UserResponse orgName = userClient.getOrgNameByOrgId(userOrgId);
+							UserOrganisationRequest request= MultipleJSONObjectHelper.getObjectFromMap((Map) orgName.getData(),UserOrganisationRequest.class);
+							param.put("org_name", request.getOrganisationName());
+						} catch (IOException e2) {
+							logger.error("Exception in getting user organisation name",e2);
+							param.put("org_name", "Bank");
+						}
+						if(fsEmail != null && fsMobile!=null && applicationId != null && bankLogo != "") {
+							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
+							String[] cc = {String.valueOf(param.get("branch_contact_email"))};
 							try {
-								createNotificationForEmail(resp.getEmail(), String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP, subject, applicationId, false, bcc,null);
+								createNotificationForEmail(fsEmail, String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS, subject, applicationId, true, bcc,cc);
 							} catch (NotificationException e) {
 								logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
-							} 
+							}
 						}
+						
+						UserResponse allBranchUsers = userClient.getAllBranchUsers(branchId);
+						if(!allBranchUsers.getListData().isEmpty()) {
+							List<Map<String,Object>> listData =(List<Map<String,Object>>) allBranchUsers.getListData();
+							for (int i = 0; i < listData.size(); i++) {
+								BranchUserResponse resp = new BranchUserResponse();
+								try {
+									resp = MultipleJSONObjectHelper.getObjectFromMap(listData.get(i), BranchUserResponse.class);
+								} catch (IOException e1) {
+									logger.error("Exception in getting branch user",e1);
+								}
+								if(resp.getUserRole().equals("9") || resp.getUserRole().equals("5") || resp.getUserRole().equals("6")) {
+									param.put("bo_name", resp.getUserName()!=null?resp.getUserName():"Sir/Madam");
+									String subject = "Intimation of new proposal";
+									try {
+										createNotificationForEmail(resp.getEmail(), String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP, subject, applicationId, false, bcc,null);
+									} catch (NotificationException e) {
+										logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
+									} 
+								}
+							}
+						}
+						status=true;
 					}
 				}
 			}
-			status=true;
 		}else {
 			logger.info("User is not from SBI bank specific and WC_renewal");
 		}
