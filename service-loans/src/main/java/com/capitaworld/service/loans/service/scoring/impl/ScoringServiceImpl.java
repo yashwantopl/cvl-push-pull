@@ -1261,6 +1261,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
+        HLEligibilityRequest hlEligibilityRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
@@ -1490,25 +1491,50 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
-            				HLEligibilityRequest hlEligibilityRequest = new HLEligibilityRequest();
+            			case ScoreParameter.Retail.HomeLoan.TENURE:
+            				hlEligibilityRequest = new HLEligibilityRequest();
+            				hlEligibilityRequest.setTenureFS(scoringRequestLoans.getTenureFS());
+            				hlEligibilityRequest.setTenureFP(scoringRequestLoans.getTenureFP());
+            				hlEligibilityRequest.setTenureScoring(scoringRequestLoans.getTenureScoring());
+            				hlEligibilityRequest.setAgeFS(scoringRequestLoans.getAgeFS());
+            				hlEligibilityRequest.setIncomeType(scoringRequestLoans.getIncomeType());
+            				hlEligibilityRequest.setNmi(scoringRequestLoans.getNmi());
+            				hlEligibilityRequest.setGmi(scoringRequestLoans.getGmi());
+            				hlEligibilityRequest.setIsSetGrossNetIncome(scoringRequestLoans.getIsSetGrossNetIncome());
+            				hlEligibilityRequest.setIsConsiderCoApp(scoringRequestLoans.getIsConsiderCoApp());
             				try {
-								eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
+								HLEligibilityRequest hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
+								if(hlEligibilityBasedOnIncome != null) {
+									if(hlEligibilityBasedOnIncome.getResult() != null) {
+										scoreParameterRetailRequest.setAvailableIncome(hlEligibilityBasedOnIncome.getResult());
+										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
+										scoreParameterRetailRequest.setEligibleTenure(hlEligibilityBasedOnIncome.getEligibleTenure());
+										scoreParameterRetailRequest.setIsEligibleTenure_p(true);
+									}
+								}
 							} catch (EligibilityExceptions e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
 							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOIR:
+            				//Pending as Per Rahul Khudai
             				break;
             			case ScoreParameter.Retail.HomeLoan.ADDI_INCOME_SPOUSE:
+	            				if(retailApplicantDetail.getAnnualIncomeOfSpouse() != null) {
+	            					scoreParameterRetailRequest.setSpouseIncome(retailApplicantDetail.getAnnualIncomeOfSpouse());
+	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
+	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.MON_INCOME_DEPENDANT:
+            				if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && retailApplicantDetail.getNoOfDependent() != null) {
+                                scoreParameterRetailRequest.setMonIncomePerDep(netMonthlyIncome / retailApplicantDetail.getNoOfDependent());
+                                scoreParameterRetailRequest.setIsMonIncomePerDep_p(true);
+                            }
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS:
+            				//Pending
             				break;
             			case ScoreParameter.Retail.HomeLoan.REPAYMENT_PERIOD:
-            				break;
-            			case ScoreParameter.Retail.HomeLoan.TENURE:
             				break;
             			case ScoreParameter.Retail.HomeLoan.AGE_PROPERTY:
             				break;
