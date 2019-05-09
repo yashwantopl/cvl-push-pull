@@ -426,7 +426,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc,null);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null);
 							}
 						}
 
@@ -716,7 +716,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc,String[] cc) throws NotificationException {
-		logger.info("Inside send notification===>{}" + toNo);
+		logger.info("Inside send notification===>{}" , toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
 		
@@ -737,6 +737,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notification.setParameters(mailParameters);
 		notification.setIsDynamic(notificationRequest.getIsDynamic());
 		notification.setCc(cc);
+		if(!CommonUtils.isObjectNullOrEmpty(bcc))
+		{
+			notification.setBcc(bcc);
+		}
+
 		// start attach CAM to Mail
 		try {
 			if(!isFundSeeker)
@@ -757,13 +762,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				{
 					logger.error("error while attaching cam report : ",e);
 				}
-	
-				if(!CommonUtils.isObjectNullOrEmpty(bcc))
-				{
-					notification.setBcc(bcc);
-					logger.info("BCC::"+bcc);
-				}
-	
 			}
 		}catch (Exception e) {
 			logger.error("Exception in getting cam for ineligible");
@@ -772,13 +770,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
-		logger.info("Outside send notification===>{}" + toNo);
+		logger.info("Outside send notification===>{}" , toNo);
 	}
 
 	private void sendEmail(NotificationRequest notificationRequest) throws NotificationException {
-		logger.info("Inside send Email===>{}");
 		notificationClient.send(notificationRequest);
-		logger.info("Outside send Email===>{}");
 	}
 
 	@Override
@@ -888,8 +884,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId) {
 		Object[] user = commonRepository.getUserCampainCodeByApplicationId(applicationId);
 		Boolean status=false;
-		if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2))/* || user[0].equals("sidbi")*/) {
-			String[] bcc = {environment.getProperty("com.ineligible.email.bcc")};
+		if((user[0].equals("sbi") && Integer.valueOf(user[1].toString()).equals(2))/* || user[0].equals("sidbi")*/) {
+			String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
 			Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
 			if(emailData!=null) {
 				String fsEmail = String.valueOf(emailData[0]);
