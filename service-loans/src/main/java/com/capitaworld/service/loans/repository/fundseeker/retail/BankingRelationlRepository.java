@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
-import com.capitaworld.service.loans.domain.fundseeker.retail.OtherCurrentAssetDetail;
 
 /**
  * @author jitesh
@@ -22,5 +21,8 @@ public interface BankingRelationlRepository extends JpaRepository<BankingRelatio
 	@Modifying
 	@Query("update BankingRelation pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
+	
+	@Query("select (YEAR(NOW()) - MIN(o.sinceYear)) * 12  from BankingRelation o where o.applicationId = :id and o.bank =:bankName and o.isActive = true")
+	public Integer getMinRelationshipInMonthByApplicationAndOrgName(@Param("id")Long id,@Param("bankName")String bankName);
 
 }

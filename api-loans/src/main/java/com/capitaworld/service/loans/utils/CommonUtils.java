@@ -125,6 +125,8 @@ public class CommonUtils {
 	public static final String MODIFIED_BY = "modifiedBy";
 	public static final String MODIFIED_DATE = "modifiedDate";
 	public static final String IS_ACTIVE = "isActive";
+	public static final String ENTRY_IN = "Entry in ";
+	public static final String EXIT_FROM = "Exit From ";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -531,6 +533,18 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
 	}
+	
+	public static final class ParameterTypes {
+		private ParameterTypes() {
+			// Do nothing because of X and Y.
+		}
+		public static final Integer CURRENT_EMPLOYMENT = 1;
+		public static final Integer RESIDENTIAL = 2;
+		public static final Integer BORROWER_TYPE = 3;
+		public static final Integer SALARY_MODE = 4;
+		public static final Integer BORROWER_SALARY_ACCOUNT = 5;
+	}
+	
 
 	public static final class InEligibleProposalStatus {
 		private InEligibleProposalStatus() {}
@@ -1439,6 +1453,7 @@ public enum APIFlags {
 		public static final int IN_PROGRESS = 2;
 		public static final int REVERTED = 3;
 		public static final int APPROVED = 4;
+		public static final int MODIFIED = 5;
 	}
 	
 	

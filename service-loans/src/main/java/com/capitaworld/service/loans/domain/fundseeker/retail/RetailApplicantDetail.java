@@ -134,6 +134,9 @@ public class RetailApplicantDetail implements Serializable {
 	@Column(name = "employment_status")
 	private Integer employmentStatus;
 	
+	@Column(name = "employment_sub_status")
+	private Integer employmentSubStatus;
+	
 	@Column(name = "employment_status_other")
 	private String employmentStatusOther;
 	
@@ -2001,6 +2004,14 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setIsOneformPrimaryComplete(Boolean isOneformPrimaryComplete) {
 		this.isOneformPrimaryComplete = isOneformPrimaryComplete;
+	}
+
+	public Integer getEmploymentSubStatus() {
+		return employmentSubStatus;
+	}
+
+	public void setEmploymentSubStatus(Integer employmentSubStatus) {
+		this.employmentSubStatus = employmentSubStatus;
 	}
 
 

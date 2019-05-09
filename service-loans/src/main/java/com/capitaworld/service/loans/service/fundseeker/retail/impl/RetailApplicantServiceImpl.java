@@ -1,11 +1,8 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +13,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.common.AddressRequest;
 import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailITRManualResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
@@ -31,13 +33,9 @@ import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIn
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Title;
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -67,10 +65,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	private OneFormClient oneFormClient;
 
 	@Autowired
-	private UsersClient usersClient;
+	private Environment environment;
 	
 	@Autowired
-	private Environment environment;
+	private CoApplicantDetailRepository coApplicantDetailRepository;
 	
 	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 
@@ -456,6 +454,48 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
 		}
 		return obj;
+	}
+	
+	public RetailITRManualResponse getITRManualFormData(Long applicationId,Long coAppId) {
+		
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+				RetailITRManualResponse res = new RetailITRManualResponse();
+				BeanUtils.copyProperties(applicantDetail, res);
+				res.setEmail(applicantDetail.getEmail());
+				res.setTelephone(applicantDetail.getMobile());
+				res.setPremiseNo(applicantDetail.getAddressPremiseName());
+				res.setLandmark(applicantDetail.getAddressLandmark());
+				res.setStreetName(applicantDetail.getAddressStreetName());
+				res.setCountryId(applicantDetail.getAddressCountry());
+				res.setStateId(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState()) ? applicantDetail.getAddressState().intValue() : null);
+				res.setCityId(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressCity()) ? applicantDetail.getAddressCity().longValue() : null);
+				res.setPincode(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressPincode()) ? applicantDetail.getAddressPincode().longValue() : null);
+				res.setDistId(applicantDetail.getAddressDistrictMappingId());
+				res.setDob(applicantDetail.getBirthDate());
+				return res;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+				RetailITRManualResponse res = new RetailITRManualResponse();
+				BeanUtils.copyProperties(applicantDetail, res);
+				res.setEmail(applicantDetail.getEmail());
+				res.setTelephone(applicantDetail.getMobile());
+				res.setPremiseNo(applicantDetail.getAddressPremiseName());
+				res.setLandmark(applicantDetail.getAddressLandmark());
+				res.setStreetName(applicantDetail.getAddressStreetName());
+				res.setCountryId(applicantDetail.getAddressCountry());
+				res.setStateId(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState()) ? applicantDetail.getAddressState().intValue() : null);
+				res.setCityId(applicantDetail.getAddressCity());
+				res.setPincode(applicantDetail.getAddressPincode());
+				res.setDistId(applicantDetail.getAddressDistrictMappingId());
+				res.setDob(applicantDetail.getBirthDate());
+				return res;
+			}
+		}
+		return null;
 	}
 
 }

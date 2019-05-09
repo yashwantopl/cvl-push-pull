@@ -44,6 +44,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
@@ -453,7 +454,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
 			}
-			fsInputRes.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId()));
+			
+			List<FinancialArrangementsDetailRequest> resultList = financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId());
+			if(CommonUtils.isListNullOrEmpty(resultList) && !CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getConstitutionId()) && corpApplicantDetail.getConstitutionId() == 7) {
+				resultList = financialArrangementDetailsService.getFinancialArrangementDetailsListForProprietorship(fsInputReq.getApplicationId(), fsInputReq.getUserId());
+			} 
+			fsInputRes.setFinancialArrangementsDetailRequestsList(resultList);
 			
 			fsInputRes.setCollateralSecurityList(collateralSecurityDetailService.getData(fsInputReq.getApplicationId()));
 			

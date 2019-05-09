@@ -229,12 +229,7 @@ public class CommonDocumentUtils {
 			return false;
 		}
 		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType
-			|| CommonUtils.UserType.NETWORK_PARTNER == userType 
-			|| CommonUtils.UserType.FUND_PROVIDER == userType) {
-			return true;
-		}
-		return false;
+		return (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.FUND_PROVIDER == userType);
 	}
 	
 }

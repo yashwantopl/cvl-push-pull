@@ -25,6 +25,8 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
@@ -42,6 +44,8 @@ import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
@@ -79,100 +83,109 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
-	
+
 	@Autowired
 	private IndustrySectorRepository industrySectorRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private GeographicalCountryRepository geographicalCountryRepository;
-	
+
 	@Autowired
 	private GeographicalStateRepository geographicalStateRepository;
-	
+
 	@Autowired
 	private GeographicalCityRepository geographicalCityRepository;
-	
+
 	@Autowired
 	private NegativeIndustryRepository negativeIndustryRepository;
-	
+
 	@Autowired
-	private TermLoanParameterTempRepository termLoanParameterTempRepository;  
-	
+	private TermLoanParameterTempRepository termLoanParameterTempRepository;
+
 	@Autowired
-	private NtbTermLoanParameterTempRepository ntbTermLoanParameterTempRepository; 
- 	
+	private NtbTermLoanParameterTempRepository ntbTermLoanParameterTempRepository;
+
 	@Autowired
-	private OneFormClient oneFormClient; 
-	
-	@Autowired	
+	private OneFormClient oneFormClient;
+
+	@Autowired
 	private IndustrySectorTempRepository industrySectorTempRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private GeographicalCountryTempRepository geographicalCountryTempRepository;
-	
+
 	@Autowired
 	private GeographicalStateTempRepository geographicalStateTempRepository;
-	
+
 	@Autowired
 	private GeographicalCityTempRepository geographicalCityTempRepository;
-	
+
 	@Autowired
 	private NegativeIndustryTempRepository negativeIndustryTempRepository;
-	
-    @Autowired
-    private WorkflowClient workflowClient;
+
+	@Autowired
+	private WorkflowClient workflowClient;
 
 	@Autowired
 	private MsmeValueMappingService msmeValueMappingService;
-	
+
 	@Autowired
-	private NtbParameterRepository ntbParameterRepository; 
-	
+	private NtbParameterRepository ntbParameterRepository;
+
 	@Autowired
 	private LoanArrangementMappingRepository loanArrangementMappingRepository;
-	
+
 	@Autowired
 	private LoanArrangementMappingTempRepository loanArrangementMappingTempRepository;
+
+	@Autowired
+	private FpGstTypeMappingRepository fpGstTypeMappingRepository;
+
+	@Autowired
+	private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
 		CommonDocumentUtils.startHook(logger, CommonUtils.SAVE_OR_UPDATE);
-		
-		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
+
+		TermLoanParameterTemp loanParameter = termLoanParameterTempRepository
+				.getTermLoanParameterTempByFpProductId(mappingId);
 		TermLoanParameter termLoanParameter = null;
 
-		if(loanParameter.getFpProductMappingId()!=null)
-		{
+		if (loanParameter.getFpProductMappingId() != null) {
 			termLoanParameter = termLoanParameterRepository.findOne(loanParameter.getFpProductMappingId());
 		}
 		if (termLoanParameter == null) {
-			termLoanParameter=new TermLoanParameter();
-			
+			termLoanParameter = new TermLoanParameter();
+
 		}
-		
-		
+
 		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-        loanParameter.setIsDeleted(false);
-        loanParameter.setIsEdit(false);
-        loanParameter.setIsCopied(true);
-        loanParameter.setIsApproved(true);
-        loanParameter.setApprovalDate(new Date());
-        termLoanParameterTempRepository.save(loanParameter);
-		
+		loanParameter.setIsDeleted(false);
+		loanParameter.setIsEdit(false);
+		loanParameter.setIsCopied(true);
+		loanParameter.setIsApproved(true);
+		loanParameter.setApprovalDate(new Date());
+		termLoanParameterTempRepository.save(loanParameter);
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
+			termLoanParameterRequest
+					.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
-		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
-		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
-		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
+			termLoanParameterRequest
+					.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
+
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, "id");
+		termLoanParameter
+				.setUserId(termLoanParameterRequest.getUserId() != null ? termLoanParameterRequest.getUserId() : null);
+		termLoanParameter.setProductId(
+				termLoanParameterRequest.getProductId() != null ? termLoanParameterRequest.getProductId() : null);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
 		termLoanParameter.setIsParameterFilled(true);
 		termLoanParameter.setJobId(termLoanParameterRequest.getJobId());
-		TermLoanParameter termLoanParameter2=termLoanParameterRepository.save(termLoanParameter);
+		TermLoanParameter termLoanParameter2 = termLoanParameterRepository.save(termLoanParameter);
 		termLoanParameterRequest.setId(termLoanParameter2.getId());
 		industrySectorRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		// industry data save
@@ -180,171 +193,165 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// Sector data save
 		saveSector(termLoanParameterRequest);
 		geographicalCountryRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
-		//country data save
+		// country data save
 		saveCountry(termLoanParameterRequest);
-		//state data save
+		// state data save
 		geographicalStateRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		saveState(termLoanParameterRequest);
-		//city data save
+		// city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		saveCity(termLoanParameterRequest);
-		//negative industry save
+		// negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
 		saveNegativeIndustry(termLoanParameterRequest);
 
-
-		//loan arrangements
+		// loan arrangements
 		loanArrangementMappingRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
 		saveLoanArrangements(termLoanParameterRequest);
-		
-		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,termLoanParameter2.getId());
-		logger.info(UPDATED_MSG,isUpdate);
+
+		// gst type
+		fpGstTypeMappingRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
+		saveLoanGstType(termLoanParameterRequest);
+
+		// Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, termLoanParameter2.getId());
+		logger.info(UPDATED_MSG, isUpdate);
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 
 	}
-
-	
 
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameter loanParameter = termLoanParameterRepository.getById(id);
-		if(loanParameter==null)
+		if (loanParameter == null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
-		
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+			termLoanParameterRequest.setMaxTenure(
+					termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
-		
-		List<Long> industryList = industrySectorRepository
-				.getIndustryByProductId(termLoanParameterRequest.getId());
+			termLoanParameterRequest.setMinTenure(
+					termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+
+		List<Long> industryList = industrySectorRepository.getIndustryByProductId(termLoanParameterRequest.getId());
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-		}
-		
-		List<Long> sectorList = industrySectorRepository
-				.getSectorByProductId(termLoanParameterRequest.getId());
-		if(!sectorList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
-			}
-			
-			termLoanParameterRequest.setSectorlist(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
-		}
 		}
 
-		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(termLoanParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+		List<Long> sectorList = industrySectorRepository.getSectorByProductId(termLoanParameterRequest.getId());
+		if (!sectorList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+
+				termLoanParameterRequest.setSectorlist(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-			
-			termLoanParameterRequest.setCountryList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
-		}
-		
-		
-		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(termLoanParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> countryList = geographicalCountryRepository
+				.getCountryByFpProductId(termLoanParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+
+				termLoanParameterRequest.setCountryList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-			
-			termLoanParameterRequest.setStateList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(termLoanParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> stateList = geographicalStateRepository.getStateByFpProductId(termLoanParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+
+				termLoanParameterRequest.setStateList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-			termLoanParameterRequest.setCityList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
+
+		List<Long> cityList = geographicalCityRepository.getCityByFpProductId(termLoanParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setCityList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
+			}
 		}
-		
-		
+
 		List<Long> negativeIndustryList = negativeIndustryRepository
 				.getIndustryByFpProductMasterId(termLoanParameterRequest.getId());
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
-		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, termLoanParameterRequest.getUserId()));
+		termLoanParameterRequest.setMsmeFundingIds(
+				msmeValueMappingService.getDataListFromFpProductId(2, id, termLoanParameterRequest.getUserId()));
+
+		termLoanParameterRequest.setLoanArrangementIds(
+				loanArrangementMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		
-		termLoanParameterRequest.setLoanArrangementIds(loanArrangementMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		return termLoanParameterRequest;
 	}
-	
+
 	private void saveIndustry(TermLoanParameterRequest termLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveIndustry");
 		IndustrySectorDetail industrySectorDetail = null;
@@ -380,11 +387,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveSector");
 	}
-	
+
 	private void saveCountry(TermLoanParameterRequest termLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveCountry");
-		
-		GeographicalCountryDetail geographicalCountryDetail= null;
+
+		GeographicalCountryDetail geographicalCountryDetail = null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetail();
 			geographicalCountryDetail.setCountryId(dataRequest.getId());
@@ -399,10 +406,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveCountry");
 	}
-	
+
 	private void saveState(TermLoanParameterRequest termLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveState");
-		GeographicalStateDetail geographicalStateDetail= null;
+		GeographicalStateDetail geographicalStateDetail = null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
 			geographicalStateDetail.setStateId(dataRequest.getId());
@@ -417,10 +424,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveState");
 	}
-	
+
 	private void saveCity(TermLoanParameterRequest termLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveCity");
-		GeographicalCityDetail geographicalCityDetail= null;
+		GeographicalCityDetail geographicalCityDetail = null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -438,7 +445,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	private void saveNegativeIndustry(TermLoanParameterRequest termLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
-		NegativeIndustry negativeIndustry= null;
+		NegativeIndustry negativeIndustry = null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getNegativeIndustryList()) {
 			negativeIndustry = new NegativeIndustry();
 			negativeIndustry.setFpProductMasterId(termLoanParameterRequest.getId());
@@ -452,235 +459,233 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			negativeIndustryRepository.save(negativeIndustry);
 		}
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustry");
-		
+
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService#saveMasterFromTempTl(java.lang.Long)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.capitaworld.service.loans.service.fundprovider.
+	 * TermLoanParameterService#saveMasterFromTempTl(java.lang.Long)
 	 */
 	@Override
 	public Boolean saveMasterFromTempTl(Long mappingId) throws LoansException {
 		try {
-			TermLoanParameterRequest  temp =  getTermLoanParameterRequestTemp(mappingId,null,null);
-			
-        return saveOrUpdate(temp,mappingId);
-			
-		}
-		catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+			TermLoanParameterRequest temp = getTermLoanParameterRequestTemp(mappingId, null, null);
+
+			return saveOrUpdate(temp, mappingId);
+
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION, e);
 			return false;
 		}
 	}
-	
+
 	@Override
-	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id,Long role,Long userId) {
+	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id, Long role, Long userId) {
 		CommonDocumentUtils.startHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
-		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(id);
-		if(loanParameter==null)
+		TermLoanParameterTemp loanParameter = termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(id);
+		if (loanParameter == null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
-		
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+			termLoanParameterRequest.setMaxTenure(
+					termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
-		
-		List<Long> industryList = industrySectorTempRepository
-				.getIndustryByProductId(termLoanParameterRequest.getId());
+			termLoanParameterRequest.setMinTenure(
+					termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+
+		List<Long> industryList = industrySectorTempRepository.getIndustryByProductId(termLoanParameterRequest.getId());
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-		}
-		
-		List<Long> sectorList = industrySectorTempRepository
-				.getSectorByProductId(termLoanParameterRequest.getId());
-		if(!sectorList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
-			
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
-			}
-			termLoanParameterRequest.setSectorlist(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
-		}
 		}
 
-		List<Long> countryList=geographicalCountryTempRepository.getCountryByFpProductId(termLoanParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-			
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+		List<Long> sectorList = industrySectorTempRepository.getSectorByProductId(termLoanParameterRequest.getId());
+		if (!sectorList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setSectorlist(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-			termLoanParameterRequest.setCountryList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
-		}
-		
-		
-		List<Long> stateList=geographicalStateTempRepository.getStateByFpProductId(termLoanParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> countryList = geographicalCountryTempRepository
+				.getCountryByFpProductId(termLoanParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setCountryList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-			
-			termLoanParameterRequest.setStateList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityTempRepository.getCityByFpProductId(termLoanParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> stateList = geographicalStateTempRepository.getStateByFpProductId(termLoanParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+
+				termLoanParameterRequest.setStateList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-			termLoanParameterRequest.setCityList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
+
+		List<Long> cityList = geographicalCityTempRepository.getCityByFpProductId(termLoanParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setCityList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
+			}
 		}
-		
-		
+
 		List<Long> negativeIndustryList = negativeIndustryTempRepository
 				.getIndustryByFpProductMasterId(termLoanParameterRequest.getId());
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
-				
+
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequestTemp");
-		
-		termLoanParameterRequest.setJobId(loanParameter.getJobId());
-		
-		//set workflow buttons
-		
-		 if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
-            WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),Arrays.asList(role), userId);
-            if (!CommonUtils.isObjectNullOrEmpty(workflowResponse) && !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
-                try {
-                    WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(), WorkflowJobsTrackerRequest.class);
-                    if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
-                    	termLoanParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
-                    } else {
-                        logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(), role);
-                    }
-                } catch (IOException e) {
-                    logger.error("Error While getting data from workflow {}", e);
-                }
-            }
-        } else {
-            logger.info("you set jobId or list of roleId NULL for calling workflow");
-        }
 
-		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
-		termLoanParameterRequest.setLoanArrangementIds(loanArrangementMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		termLoanParameterRequest.setJobId(loanParameter.getJobId());
+
+		// set workflow buttons
+
+		if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
+			WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),
+					Arrays.asList(role), userId);
+			if (!CommonUtils.isObjectNullOrEmpty(workflowResponse)
+					&& !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				try {
+					WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) workflowResponse.getData(),
+							WorkflowJobsTrackerRequest.class);
+					if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils
+							.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+						termLoanParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
+					} else {
+						logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(),
+								role);
+					}
+				} catch (IOException e) {
+					logger.error("Error While getting data from workflow {}", e);
+				}
+			}
+		} else {
+			logger.info("you set jobId or list of roleId NULL for calling workflow");
+		}
+
+		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1, id, userId));
+		termLoanParameterRequest.setLoanArrangementIds(
+				loanArrangementMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		termLoanParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		logger.info("end getTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
-	
+
 	@Override
 	public Boolean saveOrUpdateTemp(TermLoanParameterRequest termLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, CommonUtils.SAVE_OR_UPDATE);
-		
+
 		TermLoanParameterTemp termLoanParameter = null;
-		
-		if(termLoanParameterRequest.getAppstage()==1)
-		{
+
+		if (termLoanParameterRequest.getAppstage() == 1) {
 			termLoanParameter = termLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
-		}
-		else
-		{
-			
-			termLoanParameter = termLoanParameterTempRepository.getTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
-			
+		} else {
+
+			termLoanParameter = termLoanParameterTempRepository
+					.getTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
+
 		}
 
 		if (termLoanParameter == null) {
 			termLoanParameter = new TermLoanParameterTemp();
 			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		}
-		
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
+			termLoanParameterRequest
+					.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
-		
-		
-		if(termLoanParameterRequest.getAppstage()!=1)
-		{
-		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+			termLoanParameterRequest
+					.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
+
+		if (termLoanParameterRequest.getAppstage() != 1) {
+			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		}
-		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
-		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
-		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
+
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, "id");
+		termLoanParameter
+				.setUserId(termLoanParameterRequest.getUserId() != null ? termLoanParameterRequest.getUserId() : null);
+		termLoanParameter.setProductId(
+				termLoanParameterRequest.getProductId() != null ? termLoanParameterRequest.getProductId() : null);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
 		termLoanParameter.setIsParameterFilled(true);
-		
+
 		termLoanParameter.setStatusId(CommonUtils.Status.OPEN);
-        termLoanParameter.setIsApproved(false);
-        termLoanParameter.setIsDeleted(false);
-        termLoanParameter.setIsCopied(false);
-        termLoanParameter.setApprovalDate(null);
+		termLoanParameter.setIsApproved(false);
+		termLoanParameter.setIsDeleted(false);
+		termLoanParameter.setIsCopied(false);
+		termLoanParameter.setApprovalDate(null);
 		if (CommonUtils.isObjectNullOrEmpty(termLoanParameter.getJobId())) {
 			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
 					WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
@@ -692,8 +697,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 			termLoanParameter.setJobId(jobId);
 		}
-		
-		termLoanParameter=termLoanParameterTempRepository.save(termLoanParameter);
+
+		termLoanParameter = termLoanParameterTempRepository.save(termLoanParameter);
 		termLoanParameterRequest.setId(termLoanParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		// industry data save
@@ -701,36 +706,38 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// Sector data save
 		saveSectorTemp(termLoanParameterRequest);
 		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
-		//country data save
+		// country data save
 		saveCountryTemp(termLoanParameterRequest);
-		//state data save
+		// state data save
 		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveStateTemp(termLoanParameterRequest);
-		//city data save
+		// city data save
 		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveCityTemp(termLoanParameterRequest);
-		//negative industry save
+		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
-		
-		//loan arrangements
+
+		// loan arrangements
 		loanArrangementMappingTempRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
 		saveLoanArrangementsTemp(termLoanParameterRequest);
+		
+		
 
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(termLoanParameterRequest.getMsmeFundingIds(),termLoanParameterRequest.getId(), termLoanParameterRequest.getUserId());
-		logger.info(UPDATED_MSG,isUpdate);
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(
+				termLoanParameterRequest.getMsmeFundingIds(), termLoanParameterRequest.getId(),
+				termLoanParameterRequest.getUserId());
+		logger.info(UPDATED_MSG, isUpdate);
 
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 
 	}
-	
-	
-	
+
 	private void saveIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustryTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
-		logger.info(""+workingCapitalParameterRequest.getIndustrylist());
+		logger.info("" + workingCapitalParameterRequest.getIndustrylist());
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetailTemp();
 			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
@@ -763,10 +770,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		logger.info("end saveSectorTemp");
 	}
-	
+
 	private void saveCountryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		logger.info("save saveCountryTemp");
-		GeographicalCountryDetailTemp geographicalCountryDetail= null;
+		GeographicalCountryDetailTemp geographicalCountryDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetailTemp();
 			geographicalCountryDetail.setCountryId(dataRequest.getId());
@@ -781,10 +788,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		logger.info("end saveCountryTemp");
 	}
-	
+
 	private void saveStateTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveStateTemp");
-		GeographicalStateDetailTemp geographicalStateDetail= null;
+		GeographicalStateDetailTemp geographicalStateDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetailTemp();
 			geographicalStateDetail.setStateId(dataRequest.getId());
@@ -799,11 +806,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		logger.info("end saveStateTemp");
 	}
-	
+
 	private void saveCityTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveCityTemp");
 		List<GeographicalCityDetailTemp> list = new ArrayList<GeographicalCityDetailTemp>();
-		GeographicalCityDetailTemp geographicalCityDetail= null;
+		GeographicalCityDetailTemp geographicalCityDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetailTemp();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -814,16 +821,16 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			geographicalCityDetail.setModifiedDate(new Date());
 			geographicalCityDetail.setIsActive(true);
 			list.add(geographicalCityDetail);
-			
+
 		}
 		// create by and update
-					geographicalCityTempRepository.save(list);
+		geographicalCityTempRepository.save(list);
 		logger.info("end saveCityTemp");
 	}
 
 	private void saveNegativeIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
-		NegativeIndustryTemp negativeIndustry= null;
+		NegativeIndustryTemp negativeIndustry = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {
 			negativeIndustry = new NegativeIndustryTemp();
 			negativeIndustry.setFpProductMasterId(workingCapitalParameterRequest.getId());
@@ -837,213 +844,208 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			negativeIndustryTempRepository.save(negativeIndustry);
 		}
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustryTemp");
-		
+
 	}
-
-
 
 	@Override
 	public TermLoanParameterRequest getNtbTermLoanParameterRequestTemp(Long id, Long role, Long userId) {
 		CommonDocumentUtils.startHook(logger, "getNtbTermLoanParameterRequestTemp");
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
-		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(id);
-		if(loanParameter==null)
+		NtbTermLoanParameterTemp loanParameter = ntbTermLoanParameterTempRepository
+				.getNtbTermLoanParameterTempByFpProductId(id);
+		if (loanParameter == null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
-		
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
-			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+			termLoanParameterRequest.setMaxTenureNtb(
+					termLoanParameterRequest.getMaxTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
-			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
-		
-		List<Long> industryList = industrySectorTempRepository
-				.getIndustryByProductId(termLoanParameterRequest.getId());
+			termLoanParameterRequest.setMinTenureNtb(
+					termLoanParameterRequest.getMinTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+
+		List<Long> industryList = industrySectorTempRepository.getIndustryByProductId(termLoanParameterRequest.getId());
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-		}
-		
-		List<Long> sectorList = industrySectorTempRepository
-				.getSectorByProductId(termLoanParameterRequest.getId());
-		if(!sectorList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
-			}
-			termLoanParameterRequest.setSectorlist(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
-		}
 		}
 
-		List<Long> countryList=geographicalCountryTempRepository.getCountryByFpProductId(termLoanParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+		List<Long> sectorList = industrySectorTempRepository.getSectorByProductId(termLoanParameterRequest.getId());
+		if (!sectorList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setSectorlist(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-			termLoanParameterRequest.setCountryList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
-		}
-		
-		
-		List<Long> stateList=geographicalStateTempRepository.getStateByFpProductId(termLoanParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> countryList = geographicalCountryTempRepository
+				.getCountryByFpProductId(termLoanParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setCountryList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-			termLoanParameterRequest.setStateList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityTempRepository.getCityByFpProductId(termLoanParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> stateList = geographicalStateTempRepository.getStateByFpProductId(termLoanParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setStateList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
-			termLoanParameterRequest.setCityList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
+
+		List<Long> cityList = geographicalCityTempRepository.getCityByFpProductId(termLoanParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setCityList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
+			}
 		}
-		
-		
+
 		List<Long> negativeIndustryList = negativeIndustryTempRepository
 				.getIndustryByFpProductMasterId(termLoanParameterRequest.getId());
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getNtbTermLoanParameterRequestTemp");
-		
-		termLoanParameterRequest.setJobId(loanParameter.getJobId());
-		
-		//set workflow buttons
-		
-		 if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
-            WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),Arrays.asList(role), userId);
-            if (!CommonUtils.isObjectNullOrEmpty(workflowResponse) && !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
-                try {
-                    WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(), WorkflowJobsTrackerRequest.class);
-                    if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
-                    	termLoanParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
-                    } else {
-                        logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(), role);
-                    }
-                } catch (IOException e) {
-                    logger.error("Error While getting data from workflow {}", e);
-                }
-            }
-        } else {
-            logger.info("you set jobId or list of roleId NULL for calling workflow");
-        }
 
-		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
+		termLoanParameterRequest.setJobId(loanParameter.getJobId());
+
+		// set workflow buttons
+
+		if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
+			WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),
+					Arrays.asList(role), userId);
+			if (!CommonUtils.isObjectNullOrEmpty(workflowResponse)
+					&& !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				try {
+					WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) workflowResponse.getData(),
+							WorkflowJobsTrackerRequest.class);
+					if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils
+							.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+						termLoanParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
+					} else {
+						logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(),
+								role);
+					}
+				} catch (IOException e) {
+					logger.error("Error While getting data from workflow {}", e);
+				}
+			}
+		} else {
+			logger.info("you set jobId or list of roleId NULL for calling workflow");
+		}
+
+		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1, id, userId));
+		termLoanParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		logger.info("end getNtbTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
 
-
-
 	@Override
 	public Boolean saveOrUpdateNtbTemp(TermLoanParameterRequest termLoanParameterRequest) {
 		NtbTermLoanParameterTemp termLoanParameter = null;
-		
-		if(termLoanParameterRequest.getAppstage()==1)
-		{
+
+		if (termLoanParameterRequest.getAppstage() == 1) {
 			termLoanParameter = ntbTermLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
-			
-		}
-		else
-		{
-			
-			termLoanParameter = ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
-			
+
+		} else {
+
+			termLoanParameter = ntbTermLoanParameterTempRepository
+					.getNtbTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
+
 		}
 
 		if (termLoanParameter == null) {
 			termLoanParameter = new NtbTermLoanParameterTemp();
-			
+
 		}
-		
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
-			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().multiply(new BigDecimal("12")));
+			termLoanParameterRequest
+					.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().multiply(new BigDecimal("12")));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
-			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().multiply(new BigDecimal("12")));
-		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
-		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
-		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
-		
-		if(termLoanParameterRequest.getAppstage()!=1)
-		{
-		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+			termLoanParameterRequest
+					.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().multiply(new BigDecimal("12")));
+
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, "id");
+		termLoanParameter
+				.setUserId(termLoanParameterRequest.getUserId() != null ? termLoanParameterRequest.getUserId() : null);
+		termLoanParameter.setProductId(
+				termLoanParameterRequest.getProductId() != null ? termLoanParameterRequest.getProductId() : null);
+
+		if (termLoanParameterRequest.getAppstage() != 1) {
+			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		}
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
 		termLoanParameter.setIsParameterFilled(true);
-		
+
 		termLoanParameter.setStatusId(CommonUtils.Status.OPEN);
-        termLoanParameter.setIsApproved(false);
-        termLoanParameter.setIsDeleted(false);
-        termLoanParameter.setIsCopied(false);
-        termLoanParameter.setApprovalDate(null);
+		termLoanParameter.setIsApproved(false);
+		termLoanParameter.setIsDeleted(false);
+		termLoanParameter.setIsCopied(false);
+		termLoanParameter.setApprovalDate(null);
 		if (CommonUtils.isObjectNullOrEmpty(termLoanParameter.getJobId())) {
 			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
 					WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
@@ -1055,8 +1057,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 			termLoanParameter.setJobId(jobId);
 		}
-		
-		termLoanParameter=ntbTermLoanParameterTempRepository.save(termLoanParameter);
+
+		termLoanParameter = ntbTermLoanParameterTempRepository.save(termLoanParameter);
 		termLoanParameterRequest.setId(termLoanParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		// industry data save
@@ -1064,115 +1066,109 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// Sector data save
 		saveSectorTemp(termLoanParameterRequest);
 		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
-		//country data save
+		// country data save
 		saveCountryTemp(termLoanParameterRequest);
-		//state data save
+		// state data save
 		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveStateTemp(termLoanParameterRequest);
-		//city data save
+		// city data save
 		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveCityTemp(termLoanParameterRequest);
-		//negative industry save
+		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
 
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(termLoanParameterRequest.getMsmeFundingIds(),termLoanParameterRequest.getId(), termLoanParameterRequest.getUserId());
-		logger.info(UPDATED_MSG,isUpdate);
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(
+				termLoanParameterRequest.getMsmeFundingIds(), termLoanParameterRequest.getId(),
+				termLoanParameterRequest.getUserId());
+		logger.info(UPDATED_MSG, isUpdate);
 
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 	}
 
-
-
 	@Override
 	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws LoansException {
 		try {
-			TermLoanParameterRequest  temp =  getNtbTermLoanParameterRequestTemp(mappingId,null,null);
-			
-        return saveOrUpdateNtb(temp,mappingId);
-			
-		}
-		catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+			TermLoanParameterRequest temp = getNtbTermLoanParameterRequestTemp(mappingId, null, null);
+
+			return saveOrUpdateNtb(temp, mappingId);
+
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION, e);
 			return false;
 		}
 	}
 
-
-
 	@Override
 	public boolean saveOrUpdateNtb(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdateTmp");
-		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(mappingId);
-		
-		
-		
+		NtbTermLoanParameterTemp loanParameter = ntbTermLoanParameterTempRepository
+				.getNtbTermLoanParameterTempByFpProductId(mappingId);
+
 		NTBParameter termLoanParameter = null;
-		
-		if(loanParameter.getFpProductMappingId()!=null)
-		{
+
+		if (loanParameter.getFpProductMappingId() != null) {
 			termLoanParameter = ntbParameterRepository.findOne(loanParameter.getFpProductMappingId());
 		}
 		if (termLoanParameter == null) {
-			termLoanParameter=new NTBParameter();
-			
+			termLoanParameter = new NTBParameter();
+
 		}
 
-		
-		
-		
 		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-        loanParameter.setIsDeleted(false);
-        loanParameter.setIsEdit(false);
-        loanParameter.setIsCopied(true);
-        loanParameter.setIsApproved(true);
-        loanParameter.setApprovalDate(new Date());
-        ntbTermLoanParameterTempRepository.save(loanParameter);
-		
+		loanParameter.setIsDeleted(false);
+		loanParameter.setIsEdit(false);
+		loanParameter.setIsCopied(true);
+		loanParameter.setIsApproved(true);
+		loanParameter.setApprovalDate(new Date());
+		ntbTermLoanParameterTempRepository.save(loanParameter);
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
-			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().multiply(new BigDecimal("12")));
+			termLoanParameterRequest
+					.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().multiply(new BigDecimal("12")));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
-			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().multiply(new BigDecimal("12")));
-		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
-		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
-		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
-		
+			termLoanParameterRequest
+					.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().multiply(new BigDecimal("12")));
+
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, "id");
+		termLoanParameter
+				.setUserId(termLoanParameterRequest.getUserId() != null ? termLoanParameterRequest.getUserId() : null);
+		termLoanParameter.setProductId(
+				termLoanParameterRequest.getProductId() != null ? termLoanParameterRequest.getProductId() : null);
+
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
 		termLoanParameter.setIsParameterFilled(true);
 		termLoanParameter.setJobId(termLoanParameterRequest.getJobId());
-		NTBParameter ntbParameter=ntbParameterRepository.save(termLoanParameter);
+		NTBParameter ntbParameter = ntbParameterRepository.save(termLoanParameter);
 		termLoanParameterRequest.setId(ntbParameter.getId());
-		
+
 		industrySectorRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		// industry data save
 		saveIndustry(termLoanParameterRequest);
 		// Sector data save
 		saveSector(termLoanParameterRequest);
 		geographicalCountryRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
-		//country data save
+		// country data save
 		saveCountry(termLoanParameterRequest);
-		//state data save
+		// state data save
 		geographicalStateRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		saveState(termLoanParameterRequest);
-		//city data save
+		// city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		saveCity(termLoanParameterRequest);
-		//negative industry save
+		// negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
 		saveNegativeIndustry(termLoanParameterRequest);
 
-		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,ntbParameter.getId());
-		logger.info(UPDATED_MSG,isUpdate);
+		// Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, ntbParameter.getId());
+		logger.info(UPDATED_MSG, isUpdate);
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 	}
-
-
 
 	@Override
 	public TermLoanParameterRequest getNtbTermLoanParameterRequest(Long id) {
@@ -1181,141 +1177,132 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		NTBParameter loanParameter = ntbParameterRepository.getById(id);
-		if(loanParameter==null)
+		if (loanParameter == null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
-		
+
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
-			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+			termLoanParameterRequest.setMaxTenureNtb(
+					termLoanParameterRequest.getMaxTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
-			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
-		
-		List<Long> industryList = industrySectorRepository
-				.getIndustryByProductId(termLoanParameterRequest.getId());
+			termLoanParameterRequest.setMinTenureNtb(
+					termLoanParameterRequest.getMinTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+
+		List<Long> industryList = industrySectorRepository.getIndustryByProductId(termLoanParameterRequest.getId());
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-		}
-		
-		List<Long> sectorList = industrySectorRepository
-				.getSectorByProductId(termLoanParameterRequest.getId());
-		if(!sectorList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
-			}
-			
-			termLoanParameterRequest.setSectorlist(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
-		}
 		}
 
-		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(termLoanParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+		List<Long> sectorList = industrySectorRepository.getSectorByProductId(termLoanParameterRequest.getId());
+		if (!sectorList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+
+				termLoanParameterRequest.setSectorlist(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-			
-			termLoanParameterRequest.setCountryList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
-		}
-		
-		
-		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(termLoanParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> countryList = geographicalCountryRepository
+				.getCountryByFpProductId(termLoanParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+
+				termLoanParameterRequest.setCountryList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-			
-			termLoanParameterRequest.setStateList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(termLoanParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-			for(Object object:formResponse.getListData())
-			{
-				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
-				dataRequests.add(dataRequest);
+
+		List<Long> stateList = geographicalStateRepository.getStateByFpProductId(termLoanParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+
+				termLoanParameterRequest.setStateList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
-			termLoanParameterRequest.setCityList(dataRequests);
-			 
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
+
+		List<Long> cityList = geographicalCityRepository.getCityByFpProductId(termLoanParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				termLoanParameterRequest.setCityList(dataRequests);
+
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
+			}
 		}
-		
-		
+
 		List<Long> negativeIndustryList = negativeIndustryRepository
 				.getIndustryByFpProductMasterId(termLoanParameterRequest.getId());
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
-				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
-				for(Object object:formResponse.getListData())
-				{
-					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				List<DataRequest> dataRequests = new ArrayList<>(formResponse.getListData().size());
+				for (Object object : formResponse.getListData()) {
+					DataRequest dataRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) object, DataRequest.class);
 					dataRequests.add(dataRequest);
 				}
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
-		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, termLoanParameterRequest.getUserId()));
+		termLoanParameterRequest.setMsmeFundingIds(
+				msmeValueMappingService.getDataListFromFpProductId(2, id, termLoanParameterRequest.getUserId()));
 		CommonDocumentUtils.endHook(logger, "getNtbTermLoanParameterRequest");
 		return termLoanParameterRequest;
 	}
-	
+
 	private void saveLoanArrangements(TermLoanParameterRequest termLoanParameterRequest) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveLoanArrangements");
-		LoanArrangementMapping loanArrangementMapping= null;
+		LoanArrangementMapping loanArrangementMapping = null;
 		for (Integer dataRequest : termLoanParameterRequest.getLoanArrangementIds()) {
 			loanArrangementMapping = new LoanArrangementMapping();
 			loanArrangementMapping.setFpProductId(termLoanParameterRequest.getId());
@@ -1329,14 +1316,14 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			loanArrangementMappingRepository.save(loanArrangementMapping);
 		}
 		CommonDocumentUtils.endHook(logger, "saveLoanArrangements");
-		
+
 	}
-	
+
 	private void saveLoanArrangementsTemp(TermLoanParameterRequest termLoanParameterRequest) {
 		// TODO Auto-generated method stub
-		
+
 		CommonDocumentUtils.startHook(logger, "saveLoanArrangementsTemp");
-		LoanArrangementMappingTemp loanArrangementMapping= null;
+		LoanArrangementMappingTemp loanArrangementMapping = null;
 		for (Integer dataRequest : termLoanParameterRequest.getLoanArrangementIds()) {
 			loanArrangementMapping = new LoanArrangementMappingTemp();
 			loanArrangementMapping.setFpProductId(termLoanParameterRequest.getId());
@@ -1350,8 +1337,48 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			loanArrangementMappingTempRepository.save(loanArrangementMapping);
 		}
 		CommonDocumentUtils.endHook(logger, "saveLoanArrangementsTemp");
+
+	}
+	
+	private void saveLoanGstType(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
+		FpGstTypeMapping fpGstTypeMapping= null;
+		for (Integer dataRequest : termLoanParameterRequest.getGstType()) {
+			fpGstTypeMapping = new FpGstTypeMapping();
+			fpGstTypeMapping.setFpProductId(termLoanParameterRequest.getId());
+			fpGstTypeMapping.setGstTypeId(dataRequest);
+			fpGstTypeMapping.setCreatedBy(termLoanParameterRequest.getUserId());
+			fpGstTypeMapping.setModifiedBy(termLoanParameterRequest.getUserId());
+			fpGstTypeMapping.setCreatedDate(new Date());
+			fpGstTypeMapping.setModifiedDate(new Date());
+			fpGstTypeMapping.setIsActive(true);
+			// create by and update
+			fpGstTypeMappingRepository.save(fpGstTypeMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
+		
+	}
+	
+	private void saveLoanGstTypeTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
+		FpGstTypeMappingTemp fpGstTypeMappingTemp= null;
+		for (Integer dataRequest : termLoanParameterRequest.getGstType()) {
+			fpGstTypeMappingTemp = new FpGstTypeMappingTemp();
+			fpGstTypeMappingTemp.setFpProductId(termLoanParameterRequest.getId());
+			fpGstTypeMappingTemp.setGstTypeId(dataRequest);
+			fpGstTypeMappingTemp.setCreatedBy(termLoanParameterRequest.getUserId());
+			fpGstTypeMappingTemp.setModifiedBy(termLoanParameterRequest.getUserId());
+			fpGstTypeMappingTemp.setCreatedDate(new Date());
+			fpGstTypeMappingTemp.setModifiedDate(new Date());
+			fpGstTypeMappingTemp.setIsActive(true);
+			// create by and update
+			fpGstTypeMappingTempRepository.save(fpGstTypeMappingTemp);
+		}
+		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
 		
 	}
 
-	
+
 }

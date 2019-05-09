@@ -37,6 +37,10 @@ public class FinancialArrangementDetailResponseString implements Serializable{
 	private Object lcbgStatus;
 	
 	private String emi;
+	
+    private Double buerauEmi;
+    private Double buerauOutStanding;
+    private Double collateralAmt;
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;
@@ -132,6 +136,30 @@ public class FinancialArrangementDetailResponseString implements Serializable{
 
 	public void setEmi(String emi) {
 		this.emi = emi;
+	}
+
+	public Double getBuerauEmi() {
+		return buerauEmi;
+	}
+
+	public void setBuerauEmi(Double buerauEmi) {
+		this.buerauEmi = buerauEmi;
+	}
+
+	public Double getBuerauOutStanding() {
+		return buerauOutStanding;
+	}
+
+	public void setBuerauOutStanding(Double buerauOutStanding) {
+		this.buerauOutStanding = buerauOutStanding;
+	}
+
+	public Double getCollateralAmt() {
+		return collateralAmt;
+	}
+
+	public void setCollateralAmt(Double collateralAmt) {
+		this.collateralAmt = collateralAmt;
 	}
 	
 	
