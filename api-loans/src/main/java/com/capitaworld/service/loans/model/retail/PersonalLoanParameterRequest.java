@@ -176,6 +176,10 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Double maxGrossIncomeRange;
 
 	private Double minGrossIncomeRange;
+	
+	private Integer basedOnIncomeType;
+	
+	private Integer multiplierIncomeType;
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -846,6 +850,24 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	public void setMinGrossIncomeRange(Double minGrossIncomeRange) {
 		this.minGrossIncomeRange = minGrossIncomeRange;
 	}
+
+	public Integer getBasedOnIncomeType() {
+		return basedOnIncomeType;
+	}
+
+	public void setBasedOnIncomeType(Integer basedOnIncomeType) {
+		this.basedOnIncomeType = basedOnIncomeType;
+	}
+
+	public Integer getMultiplierIncomeType() {
+		return multiplierIncomeType;
+	}
+
+	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
+		this.multiplierIncomeType = multiplierIncomeType;
+	}
+	
+	
 
 	/*
 	 * public Integer getEmploymentId() { return employmentId; }
