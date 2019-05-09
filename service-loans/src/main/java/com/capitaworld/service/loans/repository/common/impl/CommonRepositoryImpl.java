@@ -26,7 +26,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public Object[] getEmailDataByApplicationId(Long applicationId) {
 		Query emailData = manager.createNativeQuery("SELECT u.email,u.`mobile`,cl.`application_id`,f.`registered_premise_number`,f.`registered_street_name`,f.`registered_land_mark`\r\n" + 
-				",f.`registered_city_id`,f.`registered_state_id`,f.`registered_pincode`,f.`registered_country_id`,cl.`wc_renewal_status`,f.`organisation_name`,cl.`user_id`,pri.`purpose_of_loan_id`\r\n" + 
+				",f.`registered_city_id`,f.`registered_state_id`,f.`registered_pincode`,f.`registered_country_id`,cl.`wc_renewal_status`,f.`organisation_name`,cl.`user_id`,pri.`purpose_of_loan_id`,cl.`business_type_id`\r\n" + 
 				"FROM connect.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`users` u ON u.user_id=cl.user_id\r\n" + 
 				"LEFT JOIN `loan_application`.`fs_corporate_applicant_details` f ON cl.`application_id` = f.`application_id`\r\n" + 
