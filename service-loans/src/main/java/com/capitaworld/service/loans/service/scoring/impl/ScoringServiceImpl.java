@@ -1694,7 +1694,8 @@ public class ScoringServiceImpl implements ScoringService {
             				if(retailApplicantDetail.getLoanPurpose() != null) {
             					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
             					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
-//            					scoreParameterRetailRequest.set
+            					scoreParameterRetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
+            					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
             				}
             				break;
                             default:
