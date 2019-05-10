@@ -1351,6 +1351,7 @@ public class ScoringServiceImpl implements ScoringService {
     					hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
     					if(hlEligibilityBasedOnIncome == null) {
     						logger.info("HL Eligibility Response Found NUll === > {}",hlEligibilityBasedOnIncome);
+    						continue;
     					}
 					} catch (EligibilityExceptions e2) {
 						logger.error("Error while Getting Calculation For HL == >{}",e2);
@@ -1717,14 +1718,12 @@ public class ScoringServiceImpl implements ScoringService {
                     }
                 }
             }
-
             scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
             scoringRequestList.add(scoringRequest);
         }
 
         try {
             scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
-
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
