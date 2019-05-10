@@ -200,7 +200,7 @@ public class RetailModelController {
 		}
 	}
 	
-	@PostMapping(value = "/hl/get_client/{modelId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/hl/get_client/{modelId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public HomeLoanModelRequest hlGetForClient(@PathVariable("modelId") Long modelId, HttpServletRequest request) {
 		try {
 			return homeLoanModelService.get(modelId, null, null);

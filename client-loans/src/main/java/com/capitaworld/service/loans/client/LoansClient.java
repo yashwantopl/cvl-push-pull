@@ -2579,7 +2579,7 @@ public class LoansClient {
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.POST, entity, HomeLoanModelRequest.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, HomeLoanModelRequest.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getHLModel :{} ",e);
 			return null;
