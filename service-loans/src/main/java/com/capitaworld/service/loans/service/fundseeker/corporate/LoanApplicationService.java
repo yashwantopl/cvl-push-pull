@@ -9,6 +9,8 @@ import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.common.*;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
+
+import com.capitaworld.service.loans.domain.common.PaymentGatewayAuditMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -16,6 +18,7 @@ import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -244,6 +247,8 @@ public interface LoanApplicationService {
 	public LoanApplicationRequest getBasicInformation(Long id);
  
 	public String getUserApplicationList(Long userId);
+	
+	public Boolean savePaymentGatewayAudit(PaymentRequest paymentRequest) throws LoansException;
   
 
 }
