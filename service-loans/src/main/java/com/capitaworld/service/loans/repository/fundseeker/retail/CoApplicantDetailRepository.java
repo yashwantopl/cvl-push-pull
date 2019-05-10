@@ -25,7 +25,7 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	public int inactiveCoApplicant(@Param("applicationId") Long applicationId,
 			@Param("id") Long id);
 
-	@Query("from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId ORDER BY cd.id")
+	@Query("from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and (cd.isItrSkip = false or cd.isItrSkip = null) and cd.applicationId.userId =:userId ORDER BY cd.id")
 	public List<CoApplicantDetail> getList(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
 	
 	@Query("select count(cd.id) from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId ORDER BY cd.id")
@@ -50,6 +50,22 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	
 	@Query("select rt.firstName,rt.lastName,rt.isOneFormCompleted,rt.isCibilCompleted,rt.id from CoApplicantDetail rt where rt.applicationId.id =:applicationId and rt.isActive = true")
 	public List<Object[]> getBasicDetailsByAppId(@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Query("update CoApplicantDetail pm set pm.isItrCompleted =:flag, pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateITRFlag(@Param("userId") Long userId,@Param("id") Long coAppId, @Param("flag") boolean flag);
+	
+	@Modifying
+	@Query("update CoApplicantDetail pm set pm.isCibilCompleted =:flag, pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateCIBILFlag(@Param("userId") Long userId,@Param("id") Long coAppId, @Param("flag") boolean flag);
+	
+	@Modifying
+	@Query("update CoApplicantDetail pm set pm.isBankStatementCompleted =:flag, pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateBankStatementFlag(@Param("userId") Long userId,@Param("id") Long coAppId, @Param("flag") boolean flag);
+	
+	@Modifying
+	@Query("update CoApplicantDetail pm set pm.isOneFormCompleted =:flag, pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateOneFormFlag(@Param("userId") Long userId,@Param("id") Long coAppId, @Param("flag") boolean flag);
 
 
 }

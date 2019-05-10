@@ -1,5 +1,9 @@
 package com.capitaworld.service.loans.model.score;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class ScoringRequestLoans {
 
     /*private Long scoringModelId;*/
@@ -27,6 +31,16 @@ public class ScoringRequestLoans {
 	private Double tenureScoring;
 	private Double ageFS;
 	private Double tenureFP;
+	private Integer incomeType;
+	private Double nmi;
+	private Double gmi;
+	
+	private List<Double> coAppIncomeArray;
+	private Double coApp1Income;
+	private Double coApp2Income;
+	private Double coApp3Income;
+	private Boolean isConsiderCoApp;
+	private Boolean isSetGrossNetIncome;
 	
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
 
@@ -163,6 +177,91 @@ public class ScoringRequestLoans {
 
 	public void setRoi(Double roi) {
 		this.roi = roi;
+	}
+
+	public List<Double> getCoAppIncomeArray() {
+		if(coAppIncomeArray == null) {
+			coAppIncomeArray = new ArrayList<Double>();
+		}
+		Collections.sort(coAppIncomeArray,Collections.reverseOrder());
+		return coAppIncomeArray;
+	}
+
+	public Double getCoApp1Income() {
+		return coApp1Income;
+	}
+
+	public void setCoApp1Income(Double coApp1Income) {
+		if(coApp1Income != null) {
+			getCoAppIncomeArray().add(coApp1Income);
+		}
+		this.coApp1Income = coApp1Income;
+	}
+
+	public Double getCoApp2Income() {
+		return coApp2Income;
+	}
+
+	public void setCoApp2Income(Double coApp2Income) {
+		if(coApp2Income != null) {
+			getCoAppIncomeArray().add(coApp2Income);
+		}
+		this.coApp2Income = coApp2Income;
+	}
+
+	public Double getCoApp3Income() {
+		return coApp3Income;
+	}
+
+	public void setCoApp3Income(Double coApp3Income) {
+		if(coApp3Income != null) {
+			getCoAppIncomeArray().add(coApp3Income);
+		}
+		this.coApp3Income = coApp3Income;
+	}
+
+	public Boolean getIsConsiderCoApp() {
+		return isConsiderCoApp;
+	}
+
+	public void setIsConsiderCoApp(Boolean isConsiderCoApp) {
+		this.isConsiderCoApp = isConsiderCoApp;
+	}
+
+	public Integer getIncomeType() {
+		return incomeType;
+	}
+
+	public void setIncomeType(Integer incomeType) {
+		this.incomeType = incomeType;
+	}
+
+	public Double getNmi() {
+		return nmi;
+	}
+
+	public void setNmi(Double nmi) {
+		this.nmi = nmi;
+	}
+
+	public Double getGmi() {
+		return gmi;
+	}
+
+	public void setGmi(Double gmi) {
+		this.gmi = gmi;
+	}
+
+	public void setCoAppIncomeArray(List<Double> coAppIncomeArray) {
+		this.coAppIncomeArray = coAppIncomeArray;
+	}
+
+	public Boolean getIsSetGrossNetIncome() {
+		return isSetGrossNetIncome;
+	}
+
+	public void setIsSetGrossNetIncome(Boolean isSetGrossNetIncome) {
+		this.isSetGrossNetIncome = isSetGrossNetIncome;
 	}
 
 	@Override

@@ -46,6 +46,7 @@ public class HLOneformPrimaryRes implements Serializable {
     private Integer salaryBankMonth;
     private Integer salaryBankYear;
     private Boolean isOtherSalaryBank;
+    private Boolean isOneformPrimaryComplete;
 	
 	
 	public Long getApplicationId() {
@@ -197,6 +198,12 @@ public class HLOneformPrimaryRes implements Serializable {
 	}
 	public void setIsOtherSalaryBank(Boolean isOtherSalaryBank) {
 		this.isOtherSalaryBank = isOtherSalaryBank;
+	}
+	public Boolean getIsOneformPrimaryComplete() {
+		return isOneformPrimaryComplete;
+	}
+	public void setIsOneformPrimaryComplete(Boolean isOneformPrimaryComplete) {
+		this.isOneformPrimaryComplete = isOneformPrimaryComplete;
 	}
 	
 	

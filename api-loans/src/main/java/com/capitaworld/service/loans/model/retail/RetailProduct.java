@@ -77,6 +77,14 @@ public class RetailProduct extends ProductMasterRequest {
 	private Boolean isMonthlyIncomeRangeDisplay= false;
 
 	private Boolean isMonthlyIncomeRangeMandatory= false;
+	
+	private Boolean isGrossIncomeRangeDisplay= false;
+
+	private Boolean isGrossIncomeRangeMandatory= false;
+	
+	private Double maxGrossIncomeRange;
+
+	private Double minGrossIncomeRange;
 
 	private Double minBureauScore;
 
@@ -162,6 +170,8 @@ public class RetailProduct extends ProductMasterRequest {
 	
 	private Integer assessmentMethodId;
 	
+	private List<EmiNmiDetailRequest> emiNmiDetailRequestList;
+	
 	
 	
 	private Boolean isBasedOnIncome = false;
@@ -173,6 +183,10 @@ public class RetailProduct extends ProductMasterRequest {
 	private Boolean isEmiNmiCheck = false;
 
 	private BigDecimal emiNmiCheck;
+	
+	private Integer basedOnIncomeType;
+	
+	private Integer multiplierIncomeType;
 
 	public Long getFpProductId() {
 		return fpProductId;
@@ -798,16 +812,61 @@ public class RetailProduct extends ProductMasterRequest {
 		this.emiNmiCheck = emiNmiCheck;
 	}
 
+	public Boolean getIsGrossIncomeRangeDisplay() {
+		return isGrossIncomeRangeDisplay;
+	}
 
-	
-	
+	public void setIsGrossIncomeRangeDisplay(Boolean isGrossIncomeRangeDisplay) {
+		this.isGrossIncomeRangeDisplay = isGrossIncomeRangeDisplay;
+	}
 
+	public Boolean getIsGrossIncomeRangeMandatory() {
+		return isGrossIncomeRangeMandatory;
+	}
+
+	public void setIsGrossIncomeRangeMandatory(Boolean isGrossIncomeRangeMandatory) {
+		this.isGrossIncomeRangeMandatory = isGrossIncomeRangeMandatory;
+	}
+
+	public Double getMaxGrossIncomeRange() {
+		return maxGrossIncomeRange;
+	}
+
+	public void setMaxGrossIncomeRange(Double maxGrossIncomeRange) {
+		this.maxGrossIncomeRange = maxGrossIncomeRange;
+	}
+
+	public Double getMinGrossIncomeRange() {
+		return minGrossIncomeRange;
+	}
+
+	public void setMinGrossIncomeRange(Double minGrossIncomeRange) {
+		this.minGrossIncomeRange = minGrossIncomeRange;
+	}
+
+	public Integer getBasedOnIncomeType() {
+		return basedOnIncomeType;
+	}
+
+	public void setBasedOnIncomeType(Integer basedOnIncomeType) {
+		this.basedOnIncomeType = basedOnIncomeType;
+	}
+
+	public Integer getMultiplierIncomeType() {
+		return multiplierIncomeType;
+	}
+
+	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
+		this.multiplierIncomeType = multiplierIncomeType;
+	}
 	
-	
-	
-	
-	
-	
+	public List<EmiNmiDetailRequest> getEmiNmiDetailRequestList() {
+		return emiNmiDetailRequestList;
+	}
+
+	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
+		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
+	}
 	
 
 }
