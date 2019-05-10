@@ -12,11 +12,14 @@ public class ScoringRequestLoans {
 
     private Long fpProductId;
     
+    private Long loanPurposeModelId;
+    
     private Long orgId;
 
     /*private Long applicationId;*/
 
     private Long scoringModelId;
+    private Long scoringModelCoAppId;
 	private Long applicationId;
 
 	private Integer financialTypeIdProduct;
@@ -262,6 +265,22 @@ public class ScoringRequestLoans {
 
 	public void setIsSetGrossNetIncome(Boolean isSetGrossNetIncome) {
 		this.isSetGrossNetIncome = isSetGrossNetIncome;
+	}
+
+	public Long getLoanPurposeModelId() {
+		return loanPurposeModelId;
+	}
+
+	public void setLoanPurposeModelId(Long loanPurposeModelId) {
+		this.loanPurposeModelId = loanPurposeModelId;
+	}
+
+	public Long getScoringModelCoAppId() {
+		return scoringModelCoAppId;
+	}
+
+	public void setScoringModelCoAppId(Long scoringModelCoAppId) {
+		this.scoringModelCoAppId = scoringModelCoAppId;
 	}
 
 	@Override
