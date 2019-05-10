@@ -171,7 +171,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	    Integer loanType = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
 	    Double existingLimits = 0.0d;
 	    List<String> loanTypes = null;
-	    if(loanType == 2) {// Working Capital
+	    if(loanType ==null){
+	    	   logger.info("=====RETAIL LOAN EMI ===============");
+	    }else if(loanType == 2) {// Working Capital
 	    	loanTypes = Arrays.asList(new String[]{"cash credit","overdraft","loan - commercial cash credit"});
 	    	 existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
 	    }else if(loanType == 1) { //Term Loan
