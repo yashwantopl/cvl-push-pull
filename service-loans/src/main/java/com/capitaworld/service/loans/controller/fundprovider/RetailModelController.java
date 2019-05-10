@@ -199,6 +199,16 @@ public class RetailModelController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@GetMapping(value = "/hl/get_client/{modelId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public HomeLoanModelRequest hlGetForClient(@PathVariable("modelId") Long modelId, HttpServletRequest request) {
+		try {
+			return homeLoanModelService.get(modelId, null, null);
+		} catch (Exception e) {
+			logger.error("Error while Getting Loan Purpose Model Details For HomeLoan Client==> {} ", e);
+			return null;
+		}
+	}
 
 	@PostMapping(value = "/update_status/{bti}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateStatus(@RequestBody WorkflowData workflowData,@PathVariable("bti") Integer businessTypeId,

@@ -170,6 +170,8 @@ public class RetailProduct extends ProductMasterRequest {
 	
 	private Integer assessmentMethodId;
 	
+	private List<EmiNmiDetailRequest> emiNmiDetailRequestList;
+	
 	
 	
 	private Boolean isBasedOnIncome = false;
@@ -858,19 +860,13 @@ public class RetailProduct extends ProductMasterRequest {
 		this.multiplierIncomeType = multiplierIncomeType;
 	}
 	
+	public List<EmiNmiDetailRequest> getEmiNmiDetailRequestList() {
+		return emiNmiDetailRequestList;
+	}
 
-	
-
-
-	
-	
-
-	
-	
-	
-	
-	
-	
+	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
+		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
+	}
 	
 
 }
