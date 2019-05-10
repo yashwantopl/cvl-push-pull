@@ -35,13 +35,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
-
 import com.capitaworld.connect.api.ConnectRequest;
-
-import com.capitaworld.client.payment.gateway.GatewayClient;
 
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
@@ -59,6 +55,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
+import com.capitaworld.service.loans.domain.common.PaymentGatewayAuditMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
@@ -100,6 +97,7 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
@@ -115,6 +113,7 @@ import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
+import com.capitaworld.service.loans.repository.common.PaymentGatewayAuditMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
@@ -475,6 +474,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanRepository loanRepository;
+	
+	@Autowired
+	private PaymentGatewayAuditMasterRepository paymentGatewayAuditMasterRepository;
 
 	@Autowired
 	private ApplicationProposalMappingService appPropMappService;
@@ -8244,5 +8246,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return (String) storedProcedureQuery.getOutputParameterValue("result");
 		
 	}
+	
+	//to save logs from billdesk
+	@Override
+	public Boolean savePaymentGatewayAudit(PaymentRequest paymentRequest) throws LoansException {
+		if(paymentRequest != null) {
+			logger.info("Start Saving All Payment gateway error logs");
+			PaymentGatewayAuditMaster paymentGatewayAuditMaster = new PaymentGatewayAuditMaster();
+			paymentGatewayAuditMaster.setApplicationId(paymentRequest.getApplicationId());
+			paymentGatewayAuditMaster.setUserId(paymentRequest.getUserId());
+			paymentGatewayAuditMaster.setName(paymentRequest.getNameOfEntity());
+			paymentGatewayAuditMaster.setEmail(paymentRequest.getEmailAddress());
+			paymentGatewayAuditMaster.setMobile(paymentRequest.getMobileNumber());
+			paymentGatewayAuditMaster.setCreatedDate(new Date());
+			paymentGatewayAuditMaster.setResponseParam(paymentRequest.getResponseParams());
+			paymentGatewayAuditMaster.setTxnId(paymentRequest.getTrxnId());
+			paymentGatewayAuditMaster.setTransactionType(paymentRequest.getTxnType());
+			paymentGatewayAuditMaster.setTransactionReferenceNumber(paymentRequest.getTxnReferenceNumber());
+			paymentGatewayAuditMaster.setStatus(paymentRequest.getStatus());
+			paymentGatewayAuditMasterRepository.save(paymentGatewayAuditMaster);
+			return true;
+		}
+		return false;
+	}
+	
 	
 }

@@ -260,6 +260,8 @@ public class LoansClient {
     private static final String GET_CORPORATE_BY_PROPOSAL_ID="/final_info/getByProposalId";
     private static final String GET_INPRINCIPLE_LIST_FOR_MULTIPLEBANNK="/proposal/inprincipleDataMulipleBank";
     private static final String GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK="/proposal/getDayDiffrenceForMultipleBank";
+    
+    private static final String SAVE_LOGS_OF_PAYMENT_GATEWAY = "/loan_application/savePaymentGatewayAuditLogs";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2583,6 +2585,21 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in getHLModel :{} ",e);
 			return null;
+		}
+	}
+	
+	public LoansResponse savePaymentGatewayAuditLogs(PaymentRequest paymentRequest) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_LOGS_OF_PAYMENT_GATEWAY);
+		logger.info("Save Payment Gateway Audit URL==>{}", url);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(REQ_AUTH, "true");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		try {
+			HttpEntity<PaymentRequest> entity = new HttpEntity<PaymentRequest>(paymentRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Throw Exception while calling gateway client for updatepayment ------------>",e);
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
