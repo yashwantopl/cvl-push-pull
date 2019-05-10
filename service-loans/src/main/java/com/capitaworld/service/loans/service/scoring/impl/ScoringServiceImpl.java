@@ -61,27 +61,25 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporat
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.HomeLoanModelRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateDirectorIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
+import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
@@ -132,13 +130,6 @@ public class ScoringServiceImpl implements ScoringService {
     private AssetsDetailsRepository assetsDetailsRepository;
 
     @Autowired
-    private BalanceSheetDetailRepository balanceSheetDetailRepository;
-
-    @Autowired
-    private ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
-    
-    
-    @Autowired
     private BankingRelationlRepository bankingRelationlRepository;
 
     @Autowired
@@ -169,9 +160,6 @@ public class ScoringServiceImpl implements ScoringService {
     private UsersClient usersClient;
 
     @Autowired
-    private ProductMasterRepository productMasterRepository;
-
-    @Autowired
     private ThirdPartyClient thirdPartyClient;
 
     @Autowired
@@ -196,9 +184,6 @@ public class ScoringServiceImpl implements ScoringService {
     private RetailApplicantIncomeRepository retailApplicantIncomeRepository;
 
     @Autowired
-    private LoanApplicationRepository loanApplicationRepository;
-
-    @Autowired
     private LoanApplicationService loanApplicationService;
 
     @Autowired
@@ -215,6 +200,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private EligibilityClient eligibilityClient;
+    
+    @Autowired
+	private HomeLoanModelService homeLoanModelService;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -1230,6 +1218,23 @@ public class ScoringServiceImpl implements ScoringService {
     }
     
     
+    private void setLoanPurposeModelFields(ScoreParameterRetailRequest parameterRetailRequest,HomeLoanModelRequest homeLoanModelRequest) {
+	    if(homeLoanModelRequest != null) {
+	    	parameterRetailRequest.setIsPurReadyBuiltHouse(homeLoanModelRequest.getIsPurReadyBuiltHouse());
+	    	parameterRetailRequest.setIsPurReadyBuiltIndependentHouse(homeLoanModelRequest.getIsPurReadyBuiltIndependentHouse());
+	    	parameterRetailRequest.setIsPurResidetialFlat(homeLoanModelRequest.getIsPurResidetialFlat());
+	    	parameterRetailRequest.setIsPurResidetialFlatAllotee(homeLoanModelRequest.getIsPurResidetialFlatAllotee());
+	    	parameterRetailRequest.setIsPurResidetialSite(homeLoanModelRequest.getIsPurResidetialSite());
+	    	parameterRetailRequest.setIsConstruResidetialBuid(homeLoanModelRequest.getIsConstruResidetialBuid());
+	    	parameterRetailRequest.setIsConstruExpaResBuild(homeLoanModelRequest.getIsConstruExpaResBuild());
+	    	parameterRetailRequest.setIsConstruPurResSite(homeLoanModelRequest.getIsConstruPurResSite());
+	    	parameterRetailRequest.setIsRepPurReadyBuiltIndependant(homeLoanModelRequest.getIsRepPurReadyBuiltIndependant());
+	    	parameterRetailRequest.setIsRepRenImpFlatHouse(homeLoanModelRequest.getIsRepRenImpFlatHouse());
+	    	parameterRetailRequest.setIsOthRefExcessMarginPaid(homeLoanModelRequest.getIsOthRefExcessMarginPaid());
+	    	parameterRetailRequest.setIsOthLoanReimbursementFlat(homeLoanModelRequest.getIsOthLoanReimbursementFlat());
+	    }
+    }
+    
     @Override
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
@@ -1241,7 +1246,8 @@ public class ScoringServiceImpl implements ScoringService {
         List<Long> coAppITRUploadedIds = null;
         Double netMonthlyIncome = 0.0d;
         Double grossAnnualIncome = 0.0d;
-        PrimaryHomeLoanDetail primaryHomeLoanDetail = null;
+        PrimaryHomeLoanDetail primaryHomLoanDetail = null;
+        Data bankStatementData = null;
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1251,8 +1257,8 @@ public class ScoringServiceImpl implements ScoringService {
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         	
-        	primaryHomeLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
-        	if (CommonUtils.isObjectNullOrEmpty(primaryHomeLoanDetail)) {
+        	primaryHomLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
+        	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                 return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
@@ -1270,14 +1276,24 @@ public class ScoringServiceImpl implements ScoringService {
                     grossAnnualIncome = Double.valueOf(incomeList.get(8).toString());
                 }
             }
+            try {
+                 ReportRequest reportRequest = new ReportRequest();
+                 reportRequest.setApplicationId(applicationId);
+                 AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                 bankStatementData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
+            }catch(Exception e) {
+            	logger.error("Error while getting Bank Statement Details");
+            }
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         HLEligibilityRequest hlEligibilityRequest = null;
+        HomeLoanModelRequest homeLoanModelRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            homeLoanModelRequest = homeLoanModelService.get(scoringRequestLoans.getLoanPurposeModelId(), null, null);
             Integer minBankRelationshipInMonths = null;
             orgId = scoringRequestLoans.getOrgId();
             if(orgId != null) {
@@ -1306,7 +1322,9 @@ public class ScoringServiceImpl implements ScoringService {
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
-                logger.info("----------------------------START RETAIL PL ------------------------------");
+                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
+                scoringRequest.setLoanPurposeModelId(homeLoanModelRequest.getId());
+                logger.info("----------------------------START RETAIL HL ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
@@ -1326,7 +1344,29 @@ public class ScoringServiceImpl implements ScoringService {
                     if (scoringResponse != null && scoringResponse.getDataList() != null) {
                         dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
                     }
-
+                	hlEligibilityRequest = new HLEligibilityRequest();
+    				hlEligibilityRequest.setTenureFS(scoringRequestLoans.getTenureFS());
+    				hlEligibilityRequest.setTenureFP(scoringRequestLoans.getTenureFP());
+    				hlEligibilityRequest.setTenureScoring(scoringRequestLoans.getTenureScoring());
+    				hlEligibilityRequest.setAgeFS(scoringRequestLoans.getAgeFS());
+    				hlEligibilityRequest.setIncomeType(scoringRequestLoans.getIncomeType());
+    				hlEligibilityRequest.setNmi(scoringRequestLoans.getNmi());
+    				hlEligibilityRequest.setGmi(scoringRequestLoans.getGmi());
+    				hlEligibilityRequest.setIsSetGrossNetIncome(scoringRequestLoans.getIsSetGrossNetIncome());
+    				hlEligibilityRequest.setIsConsiderCoApp(scoringRequestLoans.getIsConsiderCoApp());
+    				HLEligibilityRequest hlEligibilityBasedOnIncome = null; 
+    				
+    				try {
+    					hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
+    					if(hlEligibilityBasedOnIncome == null) {
+    						logger.info("HL Eligibility Response Found NUll === > {}",hlEligibilityBasedOnIncome);
+    						continue;
+    					}
+					} catch (EligibilityExceptions e2) {
+						logger.error("Error while Getting Calculation For HL == >{}",e2);
+						continue;
+					}
+                    
                     for (int i = 0; i < dataList.size(); i++) {
 
                         ModelParameterResponse modelParameterResponse = null;
@@ -1349,7 +1389,8 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
-                                       scoreParameterRetailRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(retailApplicantDetail.getBirthDate()).doubleValue()));
+                                	   long yearsDiff = ChronoUnit.YEARS.between(retailApplicantDetail.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), retailApplicantDetail.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                                       scoreParameterRetailRequest.setAge((double)yearsDiff);
                                        scoreParameterRetailRequest.setAge_p(true);
                                    }
                                } catch (Exception e) {
@@ -1436,14 +1477,22 @@ public class ScoringServiceImpl implements ScoringService {
                                 logger.error("error while getting MARITAL_STATUS parameter : ",e);
                             }
             				break;
+            				
+            			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_TYPE:
+            				try {
+            					scoreParameterRetailRequest.setEmployementType_p(retailApplicantDetail.getEmployedWithId() != null);
+                				scoreParameterRetailRequest.setEmploymentType((retailApplicantDetail.getEmployedWithId() != null  ? retailApplicantDetail.getEmployedWithId().longValue() : null));
+                            } catch (Exception e) {
+                                logger.error("error while getting MARITAL_STATUS parameter : ",e);
+                            }
+            				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB:
-            				scoreParameterRetailRequest.setEmployementType_p(retailApplicantDetail.getEmployedWithId() != null);
-            				scoreParameterRetailRequest.setEmploymentType((retailApplicantDetail.getEmployedWithId() != null  ? retailApplicantDetail.getEmployedWithId().longValue() : null));
+            				scoreParameterRetailRequest.setIsEmployementJobCat_p(retailApplicantDetail.getEmploymentStatus() != null);
+            				scoreParameterRetailRequest.setEmploymentTypeCatJob((retailApplicantDetail.getEmploymentStatus() != null  ? retailApplicantDetail.getEmploymentStatus() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
-            				//Will Update is once Add in Oneform from FS Side
-            		        scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(null);
-            		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(null);
+            		        scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentStatus() != null);
+            		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentStatus() != null  ? retailApplicantDetail.getEmploymentStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
             				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getCurrentEmploymentStatus() != null);
@@ -1490,32 +1539,24 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.ANNUAL_INCOME:
             				try {
-                                if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome)) {
-                                    scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
-                                    scoreParameterRetailRequest.setNetAnnualIncome_p(true);
-                                }
-                                if (!CommonUtils.isObjectNullOrEmpty(grossAnnualIncome)) {
-                                    scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12 * (100 / 70));
-                                }
-                                
+            					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
+            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
+            							scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
+            							scoreParameterRetailRequest.setNetAnnualIncome_p(true);
+            							scoreParameterRetailRequest.setGrossAnnualIncome(null);
+            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
+            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12 * (100 / 70));
+            							scoreParameterRetailRequest.setNetAnnualIncome(null);
+            							scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+            						}
+            					}
                             } catch (Exception e) {
                                 logger.error("error while getting ANNUAL_INCOME parameter : ",e);
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             			case ScoreParameter.Retail.HomeLoan.TENURE:
-            				hlEligibilityRequest = new HLEligibilityRequest();
-            				hlEligibilityRequest.setTenureFS(scoringRequestLoans.getTenureFS());
-            				hlEligibilityRequest.setTenureFP(scoringRequestLoans.getTenureFP());
-            				hlEligibilityRequest.setTenureScoring(scoringRequestLoans.getTenureScoring());
-            				hlEligibilityRequest.setAgeFS(scoringRequestLoans.getAgeFS());
-            				hlEligibilityRequest.setIncomeType(scoringRequestLoans.getIncomeType());
-            				hlEligibilityRequest.setNmi(scoringRequestLoans.getNmi());
-            				hlEligibilityRequest.setGmi(scoringRequestLoans.getGmi());
-            				hlEligibilityRequest.setIsSetGrossNetIncome(scoringRequestLoans.getIsSetGrossNetIncome());
-            				hlEligibilityRequest.setIsConsiderCoApp(scoringRequestLoans.getIsConsiderCoApp());
             				try {
-								HLEligibilityRequest hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
 								if(hlEligibilityBasedOnIncome != null) {
 									if(hlEligibilityBasedOnIncome.getResult() != null) {
 										scoreParameterRetailRequest.setAvailableIncome(hlEligibilityBasedOnIncome.getResult());
@@ -1524,7 +1565,7 @@ public class ScoringServiceImpl implements ScoringService {
 										scoreParameterRetailRequest.setIsEligibleTenure_p(true);
 									}
 								}
-							} catch (EligibilityExceptions e1) {
+							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
 							}
             				break;
@@ -1547,84 +1588,120 @@ public class ScoringServiceImpl implements ScoringService {
             				//Pending
             				break;
             			case ScoreParameter.Retail.HomeLoan.REPAYMENT_PERIOD:
+	            				if(retailApplicantDetail.getRepayment() != null) {
+	            					scoreParameterRetailRequest.setRepaymentPeriod(retailApplicantDetail.getRepayment());
+	            					scoreParameterRetailRequest.setIsRepaymentPeriod_p(true);
+	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AGE_PROPERTY:
-	            				if(primaryHomeLoanDetail.getOldPropYear() != null) {
-	            					
+	            				if(primaryHomLoanDetail.getOldPropYear() != null) {
+	            					scoreParameterRetailRequest.setAgeOfProperty(primaryHomLoanDetail.getOldPropYear());
+	            					scoreParameterRetailRequest.setIsAgeOfProperty_p(true);
 	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
+            				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
+	                             scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()));
+	                             scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
+       					 	}
+            				
             				break;
             			case ScoreParameter.Retail.HomeLoan.CHECQUE_BOUNSE_LAST_1_MONTH:
             				 try {
-                                 Double noOfChequeBounce = null;
-                                 ReportRequest reportRequest = new ReportRequest();
-                                 reportRequest.setApplicationId(applicationId);
-
-                                 AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-                                 Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
-                                 if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {{
-                                         if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
-                                             noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
-                                         } else {
-                                             noOfChequeBounce = 0.0;
-                                         }
-                                     }
-                                 } else {
-                                     noOfChequeBounce = 0.0;
-                                 }
-                                 scoreParameterRetailRequest.setChequeBouncelast1Month(noOfChequeBounce);
-                                 scoreParameterRetailRequest.setIsChequeBounceLast1Month_p(true);
+            					 if(bankStatementData != null && bankStatementData.getCheckBounceForLast1Month() != null) {
+            						 scoreParameterRetailRequest.setChequeBouncelast1Month(bankStatementData.getCheckBounceForLast1Month().doubleValue());
+                                     scoreParameterRetailRequest.setIsChequeBounceLast1Month_p(true);            						 
+            					 }
             				 }catch(Exception e) {
             					 logger.error("Error while Getting Cheque Bounse of Last 1 Month");
             				 }
             				break;
             			case ScoreParameter.Retail.HomeLoan.CHECQUE_BOUNSE_LAST_6_MONTH:
             				 try {
-                                 Double noOfChequeBounce = null;
-                                 ReportRequest reportRequest = new ReportRequest();
-                                 reportRequest.setApplicationId(applicationId);
-
-                                 AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-                                 Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
-                                 if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {{
-                                         if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
-                                             noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
-                                         } else {
-                                             noOfChequeBounce = 0.0;
-                                         }
-                                     }
-                                 } else {
-                                     noOfChequeBounce = 0.0;
-                                 }
-                                 scoreParameterRetailRequest.setChequeBounce(noOfChequeBounce);
-                                 scoreParameterRetailRequest.setChequeBounce_p(true);
+                               if(bankStatementData != null && bankStatementData.getCheckBounceForLast6Month() != null) {
+                            	   scoreParameterRetailRequest.setChequeBounce(bankStatementData.getCheckBounceForLast6Month().doubleValue());
+                                   scoreParameterRetailRequest.setChequeBounce_p(true);  
+                               }
             				 }catch(Exception e) {
             					 logger.error("Error while Getting Cheque Bounse of Last 6 Month");
             				 }
             				break;
             			case ScoreParameter.Retail.HomeLoan.DPD:
+            				try {
+                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
+                                    List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
+                                    Integer maxDPD = Collections.max(listDPD);
+                                    if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
+                                        scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                                    } else {
+                                        scoreParameterRetailRequest.setDpd(0.0);
+                                    }
+                                } else {
+                                    scoreParameterRetailRequest.setDpd(0.0);
+                                }
+                                scoreParameterRetailRequest.setDPD_p(true);
+                            } catch (Exception e) {
+                                logger.error("error while getting DPD parameter from CIBIL client : ",e);
+                            }
             				break;
             			case ScoreParameter.Retail.HomeLoan.LTV:
+            				if(primaryHomLoanDetail.getMarketValProp() != null) {
+                				try {
+    								if(hlEligibilityBasedOnIncome != null) {
+    									if(hlEligibilityBasedOnIncome.getResult() != null) {
+    										scoreParameterRetailRequest.setLtv((hlEligibilityBasedOnIncome.getResult() / primaryHomLoanDetail.getMarketValProp()) * 100);
+    										scoreParameterRetailRequest.setIsLTV_p(true);
+    									}
+    								}
+    							} catch (Exception e1) {
+    								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
+    							}
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMI_NMI_RATIO:
+            				try {
+								if(hlEligibilityBasedOnIncome != null) {
+									if(hlEligibilityBasedOnIncome.getResult() != null) {
+										Double monthlyRate = scoringRequestLoans.getRoi() / 100 / 12;
+										Double pmtCalculation = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, - (hlEligibilityRequest.getEligibleTenure() * 12))) * hlEligibilityBasedOnIncome.getResult();
+										scoreParameterRetailRequest.setEmi(pmtCalculation);
+										if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
+		            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
+		            							//As of now Not considering Co-Applicant
+												scoreParameterRetailRequest.setEmiNmi_p(true);
+												scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / hlEligibilityBasedOnIncome.getResult());
+		            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
+		            							scoreParameterRetailRequest.setEmiNmi_p(true);
+		            							scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / (grossAnnualIncome * 12 * (100 / 70)));
+		            						}
+		            					}
+									}
+								}
+							} catch (Exception e1) {
+								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
+							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT:
+            				if(retailApplicantDetail.getNetworth() != null) {
+                				try {
+    								if(hlEligibilityBasedOnIncome != null) {
+    									if(hlEligibilityBasedOnIncome.getResult() != null) {
+    										scoreParameterRetailRequest.setIsNetWorth_p(true);
+    										scoreParameterRetailRequest.setNetWorth(retailApplicantDetail.getNetworth() / hlEligibilityBasedOnIncome.getResult());
+    									}
+    								}
+    							} catch (Exception e1) {
+    								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
+    							}
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.LOAN_PURPOSE:
+            				if(retailApplicantDetail.getLoanPurpose() != null) {
+            					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
+            					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
+            				}
             				break;
-//        				case ScoreParameter.Retail.HomeLoan.PUR_READY_BUILT_INDEPENDENT_HOUSE:
-//        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_FLAT:
-//        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_FLAT_ALLOTEE:
-//        	            case ScoreParameter.Retail.HomeLoan.PUR_RESIDETIAL_SITE:
-//        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_RESIDETIAL_BUID:
-//        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_EXPA_RES_BUILD:
-//        	            case ScoreParameter.Retail.HomeLoan.CONSTRU_PUR_RES_SITE:
-//        	            case ScoreParameter.Retail.HomeLoan.REP_PUR_READY_BUILT_INDEPENDANT:
-//        	            case ScoreParameter.Retail.HomeLoan.REP_REN_IMP_FLAT_HOUSE:
-//        	            case ScoreParameter.Retail.HomeLoan.OTH_REF_EXCESS_MARGIN_PAID:
-//        	            case ScoreParameter.Retail.HomeLoan.OTH_LOAN_REIMBURSEMENT_FLAT:
-//            				break;
                             default:
                                 break;
 
@@ -1650,14 +1727,12 @@ public class ScoringServiceImpl implements ScoringService {
                     }
                 }
             }
-
             scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
             scoringRequestList.add(scoringRequest);
         }
 
         try {
             scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
-
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
