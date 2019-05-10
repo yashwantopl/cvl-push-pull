@@ -17,6 +17,8 @@ public class HLOneformPrimaryRes implements Serializable {
 	private Long userId;
 	private Double loanAmountRequired;
 	private Integer loanPurpose;
+	private Integer loanPurposeQueType;
+	private String loanPurposeQueValue;
 	private String loanPurposeOther;
 	private Integer tenureRequired;
 	private Integer repayment;
@@ -204,6 +206,18 @@ public class HLOneformPrimaryRes implements Serializable {
 	}
 	public void setIsOneformPrimaryComplete(Boolean isOneformPrimaryComplete) {
 		this.isOneformPrimaryComplete = isOneformPrimaryComplete;
+	}
+	public Integer getLoanPurposeQueType() {
+		return loanPurposeQueType;
+	}
+	public void setLoanPurposeQueType(Integer loanPurposeQueType) {
+		this.loanPurposeQueType = loanPurposeQueType;
+	}
+	public String getLoanPurposeQueValue() {
+		return loanPurposeQueValue;
+	}
+	public void setLoanPurposeQueValue(String loanPurposeQueValue) {
+		this.loanPurposeQueValue = loanPurposeQueValue;
 	}
 	
 	

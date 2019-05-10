@@ -322,6 +322,8 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			res.setLoanAmountRequired(retailApplicantDetail.getLoanAmountRequired());
 			res.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
 			res.setLoanPurposeOther(retailApplicantDetail.getLoanPurposeOther());
+			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
+			res.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
 			res.setTenureRequired(retailApplicantDetail.getTenureRequired());
 			res.setRepayment(retailApplicantDetail.getRepayment());
 			res.setSalaryMode(retailApplicantDetail.getSalaryMode());
@@ -389,6 +391,8 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setLoanAmountRequired(hlOneformPrimaryRes.getLoanAmountRequired());
 				retailApplicantDetail.setLoanPurpose(hlOneformPrimaryRes.getLoanPurpose());
 				retailApplicantDetail.setLoanPurposeOther(hlOneformPrimaryRes.getLoanPurposeOther());
+				retailApplicantDetail.setLoanPurposeQueType(hlOneformPrimaryRes.getLoanPurposeQueType());
+				retailApplicantDetail.setLoanPurposeQueValue(hlOneformPrimaryRes.getLoanPurposeQueValue());
 				retailApplicantDetail.setTenureRequired(hlOneformPrimaryRes.getTenureRequired());
 				retailApplicantDetail.setRepayment(hlOneformPrimaryRes.getRepayment());
 				retailApplicantDetail.setModifiedDate(new Date());
@@ -399,6 +403,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setIsOtherSalaryBank(hlOneformPrimaryRes.getIsOtherSalaryBank());
 				retailApplicantDetail.setSalaryBankYear(hlOneformPrimaryRes.getSalaryBankYear());
 				retailApplicantDetail.setSalaryBankMonth(hlOneformPrimaryRes.getSalaryBankMonth());
+				
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 				
 				//************************ SAVE PRIMARY DETAILS *****************************
