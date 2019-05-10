@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.api.payment.gateway.model.GatewayResponse;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -28,6 +29,7 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -2957,6 +2959,34 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	@RequestMapping(value = "/savePaymentGatewayAuditLogs", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<GatewayResponse> savePaymentGatewayAuditMaster(@RequestBody PaymentRequest paymentRequest,
+			HttpServletRequest request) {
+		try {
+			logger.info("start savePaymentGatewayAuditLogs()");
+				
+			if (CommonUtils.isObjectNullOrEmpty(paymentRequest.getApplicationId())) {
+				logger.error("AppId is null or Empty");
+				return new ResponseEntity<GatewayResponse>(
+						new GatewayResponse("Invalid Request, Application Id Null Or Empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean status = loanApplicationService.savePaymentGatewayAudit(paymentRequest);
+			logger.info("Response========>{}", status);
+
+			GatewayResponse response = new GatewayResponse(CommonUtils.PaymentStatus.SUCCESS, HttpStatus.OK.value());
+			response.setData(paymentRequest);
+			logger.info("end savePaymentGatewayAuditLogs");
+			return new ResponseEntity<GatewayResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while Saving Payment info==>{}", e);
+			return new ResponseEntity<GatewayResponse>(
+					new GatewayResponse( CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 
