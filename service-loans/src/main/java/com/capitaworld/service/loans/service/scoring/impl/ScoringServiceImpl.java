@@ -1344,28 +1344,29 @@ public class ScoringServiceImpl implements ScoringService {
                     if (scoringResponse != null && scoringResponse.getDataList() != null) {
                         dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
                     }
-                	hlEligibilityRequest = new HLEligibilityRequest();
-    				hlEligibilityRequest.setTenureFS(scoringRequestLoans.getTenureFS());
-    				hlEligibilityRequest.setTenureFP(scoringRequestLoans.getTenureFP());
-    				hlEligibilityRequest.setTenureScoring(scoringRequestLoans.getTenureScoring());
-    				hlEligibilityRequest.setAgeFS(scoringRequestLoans.getAgeFS());
-    				hlEligibilityRequest.setIncomeType(scoringRequestLoans.getIncomeType());
-    				hlEligibilityRequest.setNmi(scoringRequestLoans.getNmi());
-    				hlEligibilityRequest.setGmi(scoringRequestLoans.getGmi());
-    				hlEligibilityRequest.setIsSetGrossNetIncome(scoringRequestLoans.getIsSetGrossNetIncome());
-    				hlEligibilityRequest.setIsConsiderCoApp(scoringRequestLoans.getIsConsiderCoApp());
-    				HLEligibilityRequest hlEligibilityBasedOnIncome = null; 
-    				
-    				try {
-    					hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
-    					if(hlEligibilityBasedOnIncome == null) {
-    						logger.info("HL Eligibility Response Found NUll === > {}",hlEligibilityBasedOnIncome);
-    						continue;
-    					}
-					} catch (EligibilityExceptions e2) {
-						logger.error("Error while Getting Calculation For HL == >{}",e2);
-						continue;
-					}
+//                	hlEligibilityRequest = new HLEligibilityRequest();
+//    				hlEligibilityRequest.setTenureFS(scoringRequestLoans.getTenureFS());
+//    				hlEligibilityRequest.setTenureFP(scoringRequestLoans.getTenureFP());
+//    				hlEligibilityRequest.setTenureScoring(scoringRequestLoans.getTenureScoring());
+//    				hlEligibilityRequest.setAgeFS(scoringRequestLoans.getAgeFS());
+//    				hlEligibilityRequest.setIncomeType(scoringRequestLoans.getIncomeType());
+//    				hlEligibilityRequest.setNmi(netMonthlyIncome);
+//    				hlEligibilityRequest.setGmi(grossAnnualIncome);
+//    				hlEligibilityRequest.setIsSetGrossNetIncome(scoringRequestLoans.getIsSetGrossNetIncome());
+//    				hlEligibilityRequest.setIsConsiderCoApp(scoringRequestLoans.getIsConsiderCoApp());
+//    				hlEligibilityRequest.setFoir(scoringRequestLoans.getFoir());
+//    				HLEligibilityRequest hlEligibilityBasedOnIncome = null; 
+//    				
+//    				try {
+//    					hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
+//    					if(hlEligibilityBasedOnIncome == null) {
+//    						logger.info("HL Eligibility Response Found NUll === > {}",hlEligibilityBasedOnIncome);
+//    						continue;
+//    					}
+//					} catch (EligibilityExceptions e2) {
+//						logger.error("Error while Getting Calculation For HL == >{}",e2);
+//						continue;
+//					}
                     
                     for (int i = 0; i < dataList.size(); i++) {
 
@@ -1390,6 +1391,7 @@ public class ScoringServiceImpl implements ScoringService {
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
                                 	   long yearsDiff = ChronoUnit.YEARS.between(retailApplicantDetail.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), retailApplicantDetail.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                                	   logger.info("");
                                        scoreParameterRetailRequest.setAge((double)yearsDiff);
                                        scoreParameterRetailRequest.setAge_p(true);
                                    }
@@ -1545,7 +1547,7 @@ public class ScoringServiceImpl implements ScoringService {
             							scoreParameterRetailRequest.setNetAnnualIncome_p(true);
             							scoreParameterRetailRequest.setGrossAnnualIncome(null);
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12 * (100 / 70));
+            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome);
             							scoreParameterRetailRequest.setNetAnnualIncome(null);
             							scoreParameterRetailRequest.setNetAnnualIncome_p(false);
             						}
@@ -1557,13 +1559,11 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             			case ScoreParameter.Retail.HomeLoan.TENURE:
             				try {
-								if(hlEligibilityBasedOnIncome != null) {
-									if(hlEligibilityBasedOnIncome.getResult() != null) {
-										scoreParameterRetailRequest.setAvailableIncome(hlEligibilityBasedOnIncome.getResult());
+								if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
+										scoreParameterRetailRequest.setAvailableIncome(scoringRequestLoans.getElAmountBasedOnIncome());
 										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
-										scoreParameterRetailRequest.setEligibleTenure(hlEligibilityBasedOnIncome.getEligibleTenure());
+										scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
 										scoreParameterRetailRequest.setIsEligibleTenure_p(true);
-									}
 								}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1648,12 +1648,10 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.LTV:
             				if(primaryHomLoanDetail.getMarketValProp() != null) {
                 				try {
-    								if(hlEligibilityBasedOnIncome != null) {
-    									if(hlEligibilityBasedOnIncome.getResult() != null) {
-    										scoreParameterRetailRequest.setLtv((hlEligibilityBasedOnIncome.getResult() / primaryHomLoanDetail.getMarketValProp()) * 100);
-    										scoreParameterRetailRequest.setIsLTV_p(true);
-    									}
-    								}
+									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
+										scoreParameterRetailRequest.setLtv((scoringRequestLoans.getElAmountBasedOnIncome() / primaryHomLoanDetail.getMarketValProp()) * 100);
+										scoreParameterRetailRequest.setIsLTV_p(true);
+									}
     							} catch (Exception e1) {
     								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
     							}
@@ -1661,23 +1659,21 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMI_NMI_RATIO:
             				try {
-								if(hlEligibilityBasedOnIncome != null) {
-									if(hlEligibilityBasedOnIncome.getResult() != null) {
+									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										Double monthlyRate = scoringRequestLoans.getRoi() / 100 / 12;
-										Double pmtCalculation = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, - (hlEligibilityRequest.getEligibleTenure() * 12))) * hlEligibilityBasedOnIncome.getResult();
+										Double pmtCalculation = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, - (scoringRequestLoans.getEligibleTenure() * 12))) * scoringRequestLoans.getElAmountBasedOnIncome();
 										scoreParameterRetailRequest.setEmi(pmtCalculation);
 										if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
 		            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
 		            							//As of now Not considering Co-Applicant
 												scoreParameterRetailRequest.setEmiNmi_p(true);
-												scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / hlEligibilityBasedOnIncome.getResult());
+												scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / scoringRequestLoans.getElAmountBasedOnIncome());
 		            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
 		            							scoreParameterRetailRequest.setEmiNmi_p(true);
-		            							scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / (grossAnnualIncome * 12 * (100 / 70)));
+		            							scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / grossAnnualIncome);
 		            						}
 		            					}
 									}
-								}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
 							}
@@ -1685,12 +1681,10 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT:
             				if(retailApplicantDetail.getNetworth() != null) {
                 				try {
-    								if(hlEligibilityBasedOnIncome != null) {
-    									if(hlEligibilityBasedOnIncome.getResult() != null) {
-    										scoreParameterRetailRequest.setIsNetWorth_p(true);
-    										scoreParameterRetailRequest.setNetWorth(retailApplicantDetail.getNetworth() / hlEligibilityBasedOnIncome.getResult());
-    									}
-    								}
+									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
+										scoreParameterRetailRequest.setIsNetWorth_p(true);
+										scoreParameterRetailRequest.setNetWorth(retailApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountBasedOnIncome());
+									}
     							} catch (Exception e1) {
     								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
     							}
@@ -1700,6 +1694,7 @@ public class ScoringServiceImpl implements ScoringService {
             				if(retailApplicantDetail.getLoanPurpose() != null) {
             					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
             					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
+//            					scoreParameterRetailRequest.set
             				}
             				break;
                             default:
