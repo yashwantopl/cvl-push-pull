@@ -281,5 +281,23 @@ public class FinancialArrangementDetailsController {
 			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
+	
+	@PostMapping(value = "/getTotalEmiForSoftPing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTotalEmiForSoftPing(@RequestBody Long applicationId) {
+		try {
+			if (!CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				Double emi = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
+				LoansResponse loansResponse = new LoansResponse();
+				loansResponse.setMessage("Successfully get Data!");
+				loansResponse.setData(emi);
+				return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
 
 }

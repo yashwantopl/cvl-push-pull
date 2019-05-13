@@ -365,6 +365,10 @@ ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_market_
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN ltv_for_eligibility INTEGER(2) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_purpose_loan_display BIT(1) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_purpose_loan_mandatory BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_consider_income_of_co_app BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN no_of_co_app_or_gua INTEGER DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_no_of_co_app_or_gua_display BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_no_of_co_app_or_gua_mandatory BIT(1) DEFAULT NULL;
 
 
 
