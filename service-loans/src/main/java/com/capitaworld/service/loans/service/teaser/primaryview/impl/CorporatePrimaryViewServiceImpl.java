@@ -262,10 +262,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndProposalIdAndUserId(toUserId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======>
 		
-		corporatePrimaryViewResponse.setComercialPanNo(corporateApplicantDetail.getPanNo()); 
+		 
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporatePrimaryViewResponse);
+			corporatePrimaryViewResponse.setComercialPanNo(corporateApplicantDetail.getPanNo() != null ? corporateApplicantDetail.getPanNo() : "-");
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()))
 				corporatePrimaryViewResponse
 						.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
@@ -356,132 +357,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 			}
 			
-			/**
-			// set city
-			List<Long> cityList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-				cityList.add(corporateApplicantDetail.getRegisteredCityId());
-			if (!CommonUtils.isListNullOrEmpty(cityList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						corporatePrimaryViewResponse.setCity(masterResponse.getValue());
-						corporatePrimaryViewResponse.setRegOfficeCity(masterResponse.getValue());
-					} else {
-						corporatePrimaryViewResponse.setCity("NA");
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-
-			cityList.clear();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
-				cityList.add(corporateApplicantDetail.getAdministrativeCityId());
-			if (!CommonUtils.isListNullOrEmpty(cityList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						corporatePrimaryViewResponse.setAddOfficeCity(masterResponse.getValue());
-
-					} else {
-						corporatePrimaryViewResponse.setCity("NA");
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-
-			// set state
-			List<Long> stateList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-				stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
-			if (!CommonUtils.isListNullOrEmpty(stateList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						corporatePrimaryViewResponse.setState(masterResponse.getValue());
-						corporatePrimaryViewResponse.setRegOfficestate(masterResponse.getValue());
-					} else {
-						corporatePrimaryViewResponse.setState("NA");
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-
-			stateList.clear();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
-				stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-			if (!CommonUtils.isListNullOrEmpty(stateList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						corporatePrimaryViewResponse.setAddOfficestate(masterResponse.getValue());
-					} else {
-						corporatePrimaryViewResponse.setState("NA");
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-			// set country
-			List<Long> countryList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-				countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
-			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						corporatePrimaryViewResponse.setCountry(masterResponse.getValue());
-						corporatePrimaryViewResponse.setRegOfficecountry(masterResponse.getValue());
-					} else {
-						corporatePrimaryViewResponse.setCountry("NA");
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-
-			countryList.clear();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
-				countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId()));
-			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						corporatePrimaryViewResponse.setAddOfficecountry(masterResponse.getValue());
-					} else {
-						corporatePrimaryViewResponse.setCountry("NA");
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}*/
+		
 
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
@@ -1301,7 +1177,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				req.setApplicationId(toApplicationId);
 				req.setUserId(toUserId);
 				req.setGstin(corporateApplicantDetail.getGstIn());
+				
 				GstResponse response = gstClient.detailCalculation(req);
+				/*GstResponse gstBankComp = gstClient.getGSTDataForBankStatmentComaparison(req);*/
+				
 				if (response != null) {
 					
 					DecimalFormat df = new DecimalFormat(".##");
@@ -1326,6 +1205,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
 				}
+					/*if(gstBankComp!= null && gstBankComp.getData()!= null) {
+						corporatePrimaryViewResponse.setGstBankComp(gstBankComp);
+					}else {
+						logger.info("gst bank comparison Data is null for====>>"+applicationId);
+					}*/
 			/*}else {
 				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}*/
