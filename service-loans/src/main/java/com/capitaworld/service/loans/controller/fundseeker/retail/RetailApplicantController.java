@@ -321,14 +321,20 @@ public class RetailApplicantController {
 
 	
 	@RequestMapping(value = "/get_itr_manual_form_data", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getITRManualFormData(@RequestBody RetailITRManualResponse applicantRequest) {
+	public ResponseEntity<LoansResponse> getITRManualFormData(@RequestBody RetailITRManualResponse applicantRequest,HttpServletRequest request) {
 		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("UserID  can not be empty Application ID==>" + applicantRequest.getApplicationId());
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 			if (applicantRequest.getApplicationId() == null && applicantRequest.getCoAppId() == null) {
 				logger.warn("Application Id or COappId  can not be empty Application ID==>" + applicantRequest.getApplicationId());
 				return new ResponseEntity<>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),applicantService.getITRManualFormData(applicantRequest.getApplicationId(), applicantRequest.getCoAppId())),
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),applicantService.getITRManualFormData(applicantRequest.getApplicationId(), applicantRequest.getCoAppId(),userId)),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);

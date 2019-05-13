@@ -166,6 +166,11 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
 					res.setAddressPincode(coApplicantDetail.getAddressPincode().longValue());	
 				}
+				if(CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsItrSkip())) {
+					res.setIsItrSkip(false);
+				} else {
+					res.setIsItrSkip(coApplicantDetail.getIsItrSkip());	
+				}
 				res.setCoAppId(coAppId);
 			}
 		} else {
@@ -178,6 +183,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
 					res.setBusinessStartYear(cal.get(Calendar.YEAR));
 				}
+				res.setIsItrSkip(false);
 				return res;
 			}
 		}
