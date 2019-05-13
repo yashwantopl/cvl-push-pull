@@ -5,6 +5,8 @@ import java.util.List;
 public interface LoanRepository {
 
 	public Object[] getRoleIdAndBranchIdByUserId(Long userId);
+	
+	public String getMobileNumberByUserId(Long userId);	
 
 	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit);
 

@@ -24,6 +24,7 @@ import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailITRManualResponse;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -69,6 +70,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
+	
+	@Autowired
+	private LoanRepository loanRepository;
 	
 	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 
@@ -456,7 +460,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		return obj;
 	}
 	
-	public RetailITRManualResponse getITRManualFormData(Long applicationId,Long coAppId) {
+	public RetailITRManualResponse getITRManualFormData(Long applicationId,Long coAppId,Long userId) {
 		
 		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
@@ -464,7 +468,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				RetailITRManualResponse res = new RetailITRManualResponse();
 				BeanUtils.copyProperties(applicantDetail, res);
 				res.setEmail(applicantDetail.getEmail());
-				res.setTelephone(applicantDetail.getMobile());
+				if(CommonUtils.isObjectNullOrEmpty(applicantDetail.getMobile())) {
+					res.setTelephone(loanRepository.getMobileNumberByUserId(userId));					
+				} else {
+					res.setTelephone(applicantDetail.getMobile());
+				}
 				res.setPremiseNo(applicantDetail.getAddressPremiseName());
 				res.setLandmark(applicantDetail.getAddressLandmark());
 				res.setStreetName(applicantDetail.getAddressStreetName());
@@ -482,7 +490,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				RetailITRManualResponse res = new RetailITRManualResponse();
 				BeanUtils.copyProperties(applicantDetail, res);
 				res.setEmail(applicantDetail.getEmail());
-				res.setTelephone(applicantDetail.getMobile());
+				if(CommonUtils.isObjectNullOrEmpty(applicantDetail.getMobile())) {
+					res.setTelephone(loanRepository.getMobileNumberByUserId(userId));					
+				} else {
+					res.setTelephone(applicantDetail.getMobile());
+				}
 				res.setPremiseNo(applicantDetail.getAddressPremiseName());
 				res.setLandmark(applicantDetail.getAddressLandmark());
 				res.setStreetName(applicantDetail.getAddressStreetName());

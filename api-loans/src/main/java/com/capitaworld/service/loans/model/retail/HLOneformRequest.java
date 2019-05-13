@@ -72,6 +72,7 @@ public class HLOneformRequest implements Serializable {
 	//CO-APPLICANT 
 	private String nameOfEntity;
 	private Integer nationality;
+	private Boolean isItrSkip;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -378,6 +379,12 @@ public class HLOneformRequest implements Serializable {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public Boolean getIsItrSkip() {
+		return isItrSkip;
+	}
+	public void setIsItrSkip(Boolean isItrSkip) {
+		this.isItrSkip = isItrSkip;
 	}
 	
 	
