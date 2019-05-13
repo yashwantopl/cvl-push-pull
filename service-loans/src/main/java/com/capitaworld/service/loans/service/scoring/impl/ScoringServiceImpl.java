@@ -31,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.api.eligibility.model.HLEligibilityRequest;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
@@ -65,6 +64,7 @@ import com.capitaworld.service.loans.model.HomeLoanModelRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -203,6 +203,9 @@ public class ScoringServiceImpl implements ScoringService {
     
     @Autowired
 	private HomeLoanModelService homeLoanModelService;
+    
+    @Autowired
+    private LoanRepository loanRepository;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -1288,7 +1291,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
-        HLEligibilityRequest hlEligibilityRequest = null;
+//        HLEligibilityRequest hlEligibilityRequest = null;
         HomeLoanModelRequest homeLoanModelRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
@@ -1302,6 +1305,7 @@ public class ScoringServiceImpl implements ScoringService {
             	if(bankEnum != null) {
             		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());	
             	}
+            	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
             }
             
 
@@ -1473,7 +1477,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setCibilScore_p(true);
                                 } 
                             } catch (Exception e) {
-                                logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client : ",e);
+                                logger.error("error while getting BUREAU_SCORE parameter from CIBIL client : ",e);
                                 scoreParameterRetailRequest.setCibilScore_p(false);
                             }
             				break;
@@ -1591,7 +1595,18 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS:
-            				//Pending
+            				List<Double> incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
+            				logger.info("Income List From ITR for HL == >{}",incomeOfItrOf3Years);
+            				if(!CommonUtils.isListNullOrEmpty(incomeOfItrOf3Years)) {
+            					Double itrLastToLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
+            					Double itrLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 2);
+            					Double itrLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 3);
+            					if(incomeOfItrOf3Years.size() == 3) { //as if now considering 3 Years Compulsory
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ; 
+            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            					}
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.REPAYMENT_PERIOD:
 	            				if(retailApplicantDetail.getRepayment() != null) {
