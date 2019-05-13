@@ -6,3 +6,5 @@ ALTER TABLE `loan_application`.`payment_gateway_audit_master` ADD COLUMN `create
 ALTER TABLE `loan_application`.`payment_gateway_audit_master` CHANGE `id` `id` BIGINT(20) NOT NULL, ADD PRIMARY KEY (`id`); 
 
 ALTER TABLE `loan_application`.`payment_gateway_audit_master` CHANGE `id` `id` BIGINT(20) NOT NULL AUTO_INCREMENT; 
+
+ALTER TABLE `loan_application`.`payment_gateway_audit_master` ADD COLUMN `error_log` TEXT NULL AFTER `status`; 
