@@ -734,18 +734,18 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			throws LoansException {
 		try {
             RetailApplicantDetail applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
+            PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             if (applicantDetail == null) {
-                PLRetailApplicantRequest request = new PLRetailApplicantRequest();
+                
 //                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
 //                        userId);
-                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
-                if (applicationProposalMapping != null){
-                    logger.info("getByIdAndUserId called successfully");
-                }
-                return request;
+//                ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalId, true);
+//                if (applicationProposalMapping != null){
+//                    logger.info("getByIdAndUserId called successfully");
+//                }
+                return applicantRequest;
             }
             
-            PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
             applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
