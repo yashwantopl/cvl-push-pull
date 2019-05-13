@@ -5,6 +5,8 @@ import java.util.List;
 public interface LoanRepository {
 
 	public Object[] getRoleIdAndBranchIdByUserId(Long userId);
+	
+	public String getMobileNumberByUserId(Long userId);	
 
 	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit);
 
@@ -27,5 +29,7 @@ public interface LoanRepository {
 	public String getOfflineDetailsByAppId(Long applicationId);
 	
 	public String getOfflineStatusByAppId(Long applicationId);
+	
+	public List<Double> getIncomeOfItrOf3Years(Long applicationId);
 
 }

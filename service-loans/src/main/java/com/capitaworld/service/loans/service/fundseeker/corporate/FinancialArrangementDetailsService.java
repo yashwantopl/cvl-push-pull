@@ -31,6 +31,8 @@ public interface FinancialArrangementDetailsService {
 	public Double getTotalOfEmiByApplicationIdAndDirectorId(Long applicationId,Long directorId);
 
 	public Double getTotalEmiOfAllDirByApplicationId(Long applicationId);
+	
+	public Double getTotalEmiByApplicationIdSoftPing(Long applicationId);
 
 	public Boolean saveOrUpdateManuallyAddedLoans(List<FinancialArrangementsDetailRequest> finArrDetailRequest,Long applicationId,Long userId);
 
