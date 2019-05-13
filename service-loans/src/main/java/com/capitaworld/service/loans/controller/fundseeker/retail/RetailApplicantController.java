@@ -334,7 +334,7 @@ public class RetailApplicantController {
 				return new ResponseEntity<>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),applicantService.getITRManualFormData(applicantRequest.getApplicationId(), applicantRequest.getCoAppId(),userId)),
+			return new ResponseEntity<>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),applicantService.getITRManualFormData(applicantRequest.getApplicationId(), applicantRequest.getCoAppId(),userId)),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
