@@ -1598,11 +1598,12 @@ public class ScoringServiceImpl implements ScoringService {
             				List<Double> incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
             				logger.info("Income List From ITR for HL == >{}",incomeOfItrOf3Years);
             				if(!CommonUtils.isListNullOrEmpty(incomeOfItrOf3Years)) {
-            					Double itrLastToLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
-            					Double itrLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 2);
-            					Double itrLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 3);
             					if(incomeOfItrOf3Years.size() == 3) { //as if now considering 3 Years Compulsory
-            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ; 
+            						Double itrLastToLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
+                					Double itrLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 2);
+                					Double itrLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 3);
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
+            						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
             					}
