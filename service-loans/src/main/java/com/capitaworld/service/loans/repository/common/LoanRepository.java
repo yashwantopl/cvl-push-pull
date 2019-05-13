@@ -29,5 +29,7 @@ public interface LoanRepository {
 	public String getOfflineDetailsByAppId(Long applicationId);
 	
 	public String getOfflineStatusByAppId(Long applicationId);
+	
+	public List<Double> getIncomeOfItrOf3Years(Long applicationId);
 
 }
