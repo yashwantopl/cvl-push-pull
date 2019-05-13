@@ -1238,7 +1238,6 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
-        ScoringResponse scoringResponseMain = null;
         RetailApplicantDetail retailApplicantDetail = null;
         Long applicationId = null;
         Long orgId = null;
@@ -1275,6 +1274,8 @@ public class ScoringServiceImpl implements ScoringService {
                     netMonthlyIncome = Double.valueOf(incomeList.get(0).toString());
                     grossAnnualIncome = Double.valueOf(incomeList.get(8).toString());
                 }
+                logger.info("Net Monthly Income For ApplicationId======{}======>{}",applicationId,netMonthlyIncome);
+                logger.info("Gross Annual Income For ApplicationId======{}======>{}",applicationId,grossAnnualIncome);
             }
             try {
                  ReportRequest reportRequest = new ReportRequest();
@@ -1432,6 +1433,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.TOTAL_BUSI_PROFE_EXP:
             				if(retailApplicantDetail.getBusinessStartDate() != null) {
             					long diffYears = ChronoUnit.YEARS.between(retailApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            					logger.info("Total Business Experiance For HL==== > {}",diffYears);
             					scoreParameterRetailRequest.setTotalBusProfExperiance((int)diffYears);
             					scoreParameterRetailRequest.setIsTotalBusProfExperiance_p(true);
             				}
@@ -1447,7 +1449,10 @@ public class ScoringServiceImpl implements ScoringService {
     	                            Integer month = retailApplicantDetail.getResidenceSinceMonth();
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
     	                            String s = "01/" + month + "/" + year;
-    	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(Math.ceil(CommonUtils.getAgeFromBirthDate(simpleDateFormat.parse(s)).doubleValue()));
+    	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
+    	                            double ceil = Math.ceil(CommonUtils.getAgeFromBirthDate(simpleDateFormat.parse(s)).doubleValue());
+    	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",ceil);
+    	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(ceil);
     	                            scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);            						
             					}
             				} catch (Exception e) {
@@ -1461,6 +1466,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 cibilRequest.setPan(retailApplicantDetail.getPan());
                                 cibilRequest.setApplicationId(applicationId);
                                 CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+                                logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
                                     cibilScore = Double.parseDouble(cibilResponse.getScore());
                                     scoreParameterRetailRequest.setCibilScore(cibilScore);
@@ -1632,6 +1638,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
                                     List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
                                     Integer maxDPD = Collections.max(listDPD);
+                                    logger.info("Max DPD===>{}",maxDPD);
                                     if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
                                         scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
                                     } else {
@@ -1728,7 +1735,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
+            scoringClient.calculateScoreList(scoringRequestList);
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
