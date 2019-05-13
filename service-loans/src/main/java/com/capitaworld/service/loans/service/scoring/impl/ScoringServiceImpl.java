@@ -1561,7 +1561,9 @@ public class ScoringServiceImpl implements ScoringService {
             							scoreParameterRetailRequest.setNetAnnualIncome(null);
             							scoreParameterRetailRequest.setNetAnnualIncome_p(false);
             						}
-            					}
+            					}else {
+									logger.warn("Gross Or Net Income is Not Set By Lender ANNUAL_INCOME==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
+								}
                             } catch (Exception e) {
                                 logger.error("error while getting ANNUAL_INCOME parameter : ",e);
                             }
@@ -1574,6 +1576,8 @@ public class ScoringServiceImpl implements ScoringService {
 										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
 										scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
 										scoreParameterRetailRequest.setIsEligibleTenure_p(true);
+								}else {
+									logger.warn("Eligible Loan Amount Based on Income is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
 								}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1674,6 +1678,8 @@ public class ScoringServiceImpl implements ScoringService {
 									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										scoreParameterRetailRequest.setLtv((scoringRequestLoans.getElAmountBasedOnIncome() / primaryHomLoanDetail.getMarketValProp()) * 100);
 										scoreParameterRetailRequest.setIsLTV_p(true);
+									}else {
+										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
 									}
     							} catch (Exception e1) {
     								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1695,7 +1701,11 @@ public class ScoringServiceImpl implements ScoringService {
 		            							scoreParameterRetailRequest.setEmiNmi_p(true);
 		            							scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / grossAnnualIncome);
 		            						}
-		            					}
+		            					}else {
+											logger.warn("Gross Or Net Income is Not Set By Lender EMI_NMI_RATIO==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
+										}
+									}else {
+										logger.warn("Eligible Loan Amount Based on Income is not Set in EMI_NMI_RATIO==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
 									}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1707,6 +1717,8 @@ public class ScoringServiceImpl implements ScoringService {
 									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										scoreParameterRetailRequest.setIsNetWorth_p(true);
 										scoreParameterRetailRequest.setNetWorth(retailApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountBasedOnIncome());
+									}else {
+										logger.warn("Eligible Loan Amount Based on Income is not Set in APPLICANT_NW_TO_LOAN_AMOUNT==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
 									}
     							} catch (Exception e1) {
     								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
