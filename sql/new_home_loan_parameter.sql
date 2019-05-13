@@ -551,3 +551,4 @@ ALTER TABLE `loan_eligibility`.`personal_loan_calculation` ADD COLUMN type_id IN
 
 ALTER TABLE `loan_application`.`retail_model` ADD COLUMN `retail_model_temp_ref_id` BIGINT(20) UNSIGNED NULL AFTER `user_id`, 
 ADD CONSTRAINT `retail_model_temp_id_fk` FOREIGN KEY (`retail_model_temp_ref_id`) REFERENCES `loan_application`.`retail_model_temp`(`id`); 
+ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN ltv DOUBLE;

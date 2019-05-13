@@ -408,6 +408,12 @@ public class RetailApplicantDetail implements Serializable {
 
 	@Column(name="loan_purpose")
 	private Integer loanPurpose;
+	
+	@Column(name="loan_purpose_que_type")
+	private Integer loanPurposeQueType;
+	
+	@Column(name="loan_purpose_que_value")
+	private String loanPurposeQueValue;
 
 	@Column(name="loan_purpose_other")
 	private String loanPurposeOther;
@@ -2012,6 +2018,22 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setEmploymentSubStatus(Integer employmentSubStatus) {
 		this.employmentSubStatus = employmentSubStatus;
+	}
+
+	public Integer getLoanPurposeQueType() {
+		return loanPurposeQueType;
+	}
+
+	public void setLoanPurposeQueType(Integer loanPurposeQueType) {
+		this.loanPurposeQueType = loanPurposeQueType;
+	}
+
+	public String getLoanPurposeQueValue() {
+		return loanPurposeQueValue;
+	}
+
+	public void setLoanPurposeQueValue(String loanPurposeQueValue) {
+		this.loanPurposeQueValue = loanPurposeQueValue;
 	}
 
 

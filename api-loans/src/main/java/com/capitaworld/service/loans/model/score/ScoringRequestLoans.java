@@ -12,11 +12,14 @@ public class ScoringRequestLoans {
 
     private Long fpProductId;
     
+    private Long loanPurposeModelId;
+    
     private Long orgId;
 
     /*private Long applicationId;*/
 
     private Long scoringModelId;
+    private Long scoringModelCoAppId;
 	private Long applicationId;
 
 	private Integer financialTypeIdProduct;
@@ -28,12 +31,15 @@ public class ScoringRequestLoans {
 	private Long userId;
 	
 	private Double tenureFS;
+	private Double elAmountBasedOnIncome;
+	private Double elAmountOnAverageScoring;
 	private Double tenureScoring;
 	private Double ageFS;
 	private Double tenureFP;
 	private Integer incomeType;
 	private Double nmi;
 	private Double gmi;
+	private Double foir;
 	
 	private List<Double> coAppIncomeArray;
 	private Double coApp1Income;
@@ -41,6 +47,25 @@ public class ScoringRequestLoans {
 	private Double coApp3Income;
 	private Boolean isConsiderCoApp;
 	private Boolean isSetGrossNetIncome;
+	private Integer employmentType;
+	private Double marketValue;
+	private Double existingObligation;
+	private Double purCunsExpRepAndRenovCost;
+	private Double ltvScoring;
+	private Double loanAmountBorrower;
+	private Double maximumLoanAmountLender;
+	private Double eligibleTenure;
+	private Double timesMultiplier;
+	private Double monthlyObligation;
+	
+	private Integer noOfCoApplicantFP;
+	private Integer noOfCoApplicantFS;
+	private Integer incomeTypeMultiplier;
+	//Boolean Flags
+	private Boolean isSetTimesMultiplierIncome;
+	private Boolean isSetLTV;
+	private Boolean isSetPurCunsExpRepAndRenovCost;
+	private Boolean isSetMarketValue;
 	
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
 
@@ -262,6 +287,182 @@ public class ScoringRequestLoans {
 
 	public void setIsSetGrossNetIncome(Boolean isSetGrossNetIncome) {
 		this.isSetGrossNetIncome = isSetGrossNetIncome;
+	}
+
+	public Long getLoanPurposeModelId() {
+		return loanPurposeModelId;
+	}
+
+	public void setLoanPurposeModelId(Long loanPurposeModelId) {
+		this.loanPurposeModelId = loanPurposeModelId;
+	}
+
+	public Long getScoringModelCoAppId() {
+		return scoringModelCoAppId;
+	}
+
+	public void setScoringModelCoAppId(Long scoringModelCoAppId) {
+		this.scoringModelCoAppId = scoringModelCoAppId;
+	}
+
+	public Double getFoir() {
+		return foir;
+	}
+
+	public void setFoir(Double foir) {
+		this.foir = foir;
+	}
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
+	}
+
+	public Double getMarketValue() {
+		return marketValue;
+	}
+
+	public void setMarketValue(Double marketValue) {
+		this.marketValue = marketValue;
+	}
+
+	public Double getExistingObligation() {
+		return existingObligation;
+	}
+
+	public void setExistingObligation(Double existingObligation) {
+		this.existingObligation = existingObligation;
+	}
+
+	public Double getPurCunsExpRepAndRenovCost() {
+		return purCunsExpRepAndRenovCost;
+	}
+
+	public void setPurCunsExpRepAndRenovCost(Double purCunsExpRepAndRenovCost) {
+		this.purCunsExpRepAndRenovCost = purCunsExpRepAndRenovCost;
+	}
+
+	public Double getLtvScoring() {
+		return ltvScoring;
+	}
+
+	public void setLtvScoring(Double ltvScoring) {
+		this.ltvScoring = ltvScoring;
+	}
+
+	public Double getLoanAmountBorrower() {
+		return loanAmountBorrower;
+	}
+
+	public void setLoanAmountBorrower(Double loanAmountBorrower) {
+		this.loanAmountBorrower = loanAmountBorrower;
+	}
+
+	public Double getMaximumLoanAmountLender() {
+		return maximumLoanAmountLender;
+	}
+
+	public void setMaximumLoanAmountLender(Double maximumLoanAmountLender) {
+		this.maximumLoanAmountLender = maximumLoanAmountLender;
+	}
+
+	public Double getEligibleTenure() {
+		return eligibleTenure;
+	}
+
+	public void setEligibleTenure(Double eligibleTenure) {
+		this.eligibleTenure = eligibleTenure;
+	}
+
+	public Double getTimesMultiplier() {
+		return timesMultiplier;
+	}
+
+	public void setTimesMultiplier(Double timesMultiplier) {
+		this.timesMultiplier = timesMultiplier;
+	}
+
+	public Double getMonthlyObligation() {
+		return monthlyObligation;
+	}
+
+	public void setMonthlyObligation(Double monthlyObligation) {
+		this.monthlyObligation = monthlyObligation;
+	}
+
+	public Integer getNoOfCoApplicantFP() {
+		return noOfCoApplicantFP;
+	}
+
+	public void setNoOfCoApplicantFP(Integer noOfCoApplicantFP) {
+		this.noOfCoApplicantFP = noOfCoApplicantFP;
+	}
+
+	public Integer getNoOfCoApplicantFS() {
+		return noOfCoApplicantFS;
+	}
+
+	public void setNoOfCoApplicantFS(Integer noOfCoApplicantFS) {
+		this.noOfCoApplicantFS = noOfCoApplicantFS;
+	}
+
+	public Integer getIncomeTypeMultiplier() {
+		return incomeTypeMultiplier;
+	}
+
+	public void setIncomeTypeMultiplier(Integer incomeTypeMultiplier) {
+		this.incomeTypeMultiplier = incomeTypeMultiplier;
+	}
+
+	public Boolean getIsSetTimesMultiplierIncome() {
+		return isSetTimesMultiplierIncome;
+	}
+
+	public void setIsSetTimesMultiplierIncome(Boolean isSetTimesMultiplierIncome) {
+		this.isSetTimesMultiplierIncome = isSetTimesMultiplierIncome;
+	}
+
+	public Boolean getIsSetLTV() {
+		return isSetLTV;
+	}
+
+	public void setIsSetLTV(Boolean isSetLTV) {
+		this.isSetLTV = isSetLTV;
+	}
+
+	public Boolean getIsSetPurCunsExpRepAndRenovCost() {
+		return isSetPurCunsExpRepAndRenovCost;
+	}
+
+	public void setIsSetPurCunsExpRepAndRenovCost(Boolean isSetPurCunsExpRepAndRenovCost) {
+		this.isSetPurCunsExpRepAndRenovCost = isSetPurCunsExpRepAndRenovCost;
+	}
+
+	public Boolean getIsSetMarketValue() {
+		return isSetMarketValue;
+	}
+
+	public void setIsSetMarketValue(Boolean isSetMarketValue) {
+		this.isSetMarketValue = isSetMarketValue;
+	}
+
+	public Double getElAmountBasedOnIncome() {
+		return elAmountBasedOnIncome;
+	}
+
+	public void setElAmountBasedOnIncome(Double elAmountBasedOnIncome) {
+		this.elAmountBasedOnIncome = elAmountBasedOnIncome;
+	}
+
+	public Double getElAmountOnAverageScoring() {
+		return elAmountOnAverageScoring;
+	}
+
+	public void setElAmountOnAverageScoring(Double elAmountOnAverageScoring) {
+		this.elAmountOnAverageScoring = elAmountOnAverageScoring;
 	}
 
 	@Override
