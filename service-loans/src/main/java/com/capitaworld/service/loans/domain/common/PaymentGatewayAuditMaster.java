@@ -60,6 +60,17 @@ public class PaymentGatewayAuditMaster implements Serializable {
 	@Column(name = "status")
 	private String status;
 	
+	@Column(name = "error_log")
+	private String errorLog;
+	
+	public String getErrorLog() {
+		return errorLog;
+	}
+
+	public void setErrorLog(String errorLog) {
+		this.errorLog = errorLog;
+	}
+
 	public Long getId() {
 		return id;
 	}

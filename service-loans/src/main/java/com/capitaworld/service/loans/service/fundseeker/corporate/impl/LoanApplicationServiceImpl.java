@@ -8264,6 +8264,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			paymentGatewayAuditMaster.setTransactionType(paymentRequest.getTxnType());
 			paymentGatewayAuditMaster.setTransactionReferenceNumber(paymentRequest.getTxnReferenceNumber());
 			paymentGatewayAuditMaster.setStatus(paymentRequest.getStatus());
+			paymentGatewayAuditMaster.setErrorLog(paymentRequest.getErrorLog());
 			paymentGatewayAuditMasterRepository.save(paymentGatewayAuditMaster);
 			return true;
 		}
