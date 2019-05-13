@@ -151,6 +151,8 @@ public class CorporatePrimaryViewResponse {
     private String productServiceDesc;
     
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
+    
+    private Object gstBankComp;
    
 	public List<Object> getCibilReport() {
 		return cibilReport;
@@ -1268,6 +1270,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setComercialPanNo(String comercialPanNo) {
 		this.comercialPanNo = comercialPanNo;
+	}
+	public Object getGstBankComp() {
+		return gstBankComp;
+	}
+	public void setGstBankComp(Object gstBankComp) {
+		this.gstBankComp = gstBankComp;
 	}
 	
 	

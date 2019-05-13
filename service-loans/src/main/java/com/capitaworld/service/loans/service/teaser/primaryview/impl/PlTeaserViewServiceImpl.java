@@ -802,13 +802,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				LocalDate today = LocalDate.now();
 				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
 
-					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
+//					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
+//
+//			        Period age = Period.between(since, today);
+//			        int years = age.getYears();
+//			        int months = age.getMonths();
 
-			        Period age = Period.between(since, today);
-			        int years = age.getYears();
-			        int months = age.getMonths();
-
-					plRetailApplicantResponse.setSalaryAccountBankSince(years+" year "+months+" months");
+					plRetailApplicantResponse.setSalaryAccountBankSince(plRetailApplicantRequest.getSalaryBankYear()+" year "+plRetailApplicantRequest.getSalaryBankMonth()+" months");
 				}
 				
 				if(plRetailApplicantRequest.getResidenceSinceYear() !=null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
