@@ -6237,16 +6237,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return retailLoanObj.getId();
 		}
 		logger.info("Successfully get result");
-		retailLoanObj = new PrimaryPersonalLoanDetail();
+		if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
+			retailLoanObj = new PrimaryHomeLoanDetail();	
+			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.HOME_LOAN.getValue()));
+			retailLoanObj.setProductId(LoanType.HOME_LOAN.getValue());
+		} else {
+			retailLoanObj = new PrimaryPersonalLoanDetail();
+			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.PERSONAL_LOAN.getValue()));
+			retailLoanObj.setProductId(LoanType.PERSONAL_LOAN.getValue());
+		}
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);
 		retailLoanObj.setIsActive(true);
-		retailLoanObj.setApplicationCode(
-				applicationSequenceService.getApplicationSequenceNumber(LoanType.PERSONAL_LOAN.getValue()));
-		retailLoanObj.setProductId(LoanType.PERSONAL_LOAN.getValue());
 		retailLoanObj.setBusinessTypeId(businessTypeId);
 		retailLoanObj.setCurrencyId(Currency.RUPEES.getId());
 		retailLoanObj.setDenominationId(Denomination.ABSOLUTE.getId());

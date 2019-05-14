@@ -33,7 +33,7 @@ public class HLOneformPrimaryRes implements Serializable {
 	private Long propPincode;
 	private Long propdistrictMappingId;	
 	
-	private Double propertyPrice;
+	private Double marketValProp;
 	private Integer oldPropMonth;
 	private Integer oldPropYear;
 	
@@ -135,11 +135,11 @@ public class HLOneformPrimaryRes implements Serializable {
 	public void setPropdistrictMappingId(Long propdistrictMappingId) {
 		this.propdistrictMappingId = propdistrictMappingId;
 	}
-	public Double getPropertyPrice() {
-		return propertyPrice;
+	public Double getMarketValProp() {
+		return marketValProp;
 	}
-	public void setPropertyPrice(Double propertyPrice) {
-		this.propertyPrice = propertyPrice;
+	public void setMarketValProp(Double marketValProp) {
+		this.marketValProp = marketValProp;
 	}
 	public Integer getOldPropMonth() {
 		return oldPropMonth;
