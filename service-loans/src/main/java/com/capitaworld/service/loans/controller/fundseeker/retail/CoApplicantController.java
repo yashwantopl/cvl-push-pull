@@ -200,6 +200,22 @@ public class CoApplicantController {
 
 	}
 	
+	@RequestMapping(value = "/get_basic_details/{applicationId}/{coApplicantId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getBasicDetailsClient(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("coApplicantId") Long coApplicantId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "getBasicDetailsClient");
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(coApplicantService.getProfile(coApplicantId, applicationId));
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getBasicDetailsClient==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	@RequestMapping(value = "/update_flag", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateFlag(@RequestParam(value = "userId", required = false) Long userId,@RequestParam(value = "coAppId", required = true) Long coAppId,
 			@RequestParam(value = "apiId", required = true)Integer apiId,@RequestParam(value = "apiFlag", required = true)Boolean apiFlag) {
