@@ -23,10 +23,16 @@ public class PlTeaserViewResponse {
 	
 	private List<?> matchesList;
 
-
-
     private String organisationName;
-    private String aboutUs;
+    private String fpProductName;
+    private String scoringModelName;
+    public String getFpProductName() {
+		return fpProductName;
+	}
+	public void setFpProductName(String fpProductName) {
+		this.fpProductName = fpProductName;
+	}
+	private String aboutUs;
     private String panNo;
     private String websiteAddress;
     private String city;
@@ -1099,13 +1105,12 @@ public class PlTeaserViewResponse {
 	public void setProposalData(Object proposalData) {
 		this.proposalData = proposalData;
 	}
+	public String getScoringModelName() {
+		return scoringModelName;
+	}
+	public void setScoringModelName(String scoringModelName) {
+		this.scoringModelName = scoringModelName;
+	}
 
-
-    
-    
-    
-    
-    
-    
 
 }
