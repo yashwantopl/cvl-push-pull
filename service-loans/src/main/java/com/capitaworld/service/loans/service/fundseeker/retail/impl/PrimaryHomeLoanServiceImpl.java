@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +22,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
@@ -346,8 +346,9 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				res.setPropCountry(prHlDetails.getPropCountry());
 				res.setPropState(prHlDetails.getPropState());
 				res.setPropCity(prHlDetails.getPropCity());
+				res.setPropPincode(prHlDetails.getPropPincode());
 				res.setPropdistrictMappingId(prHlDetails.getPropdistrictMappingId());
-				res.setPropertyPrice(prHlDetails.getPropertyPrice());
+				res.setMarketValProp(prHlDetails.getMarketValProp());
 				res.setOldPropMonth(prHlDetails.getOldPropMonth());
 				res.setOldPropYear(prHlDetails.getOldPropYear());
 			}
@@ -431,11 +432,13 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				prHlDetails.setPropCountry(hlOneformPrimaryRes.getPropCountry());
 				prHlDetails.setPropState(hlOneformPrimaryRes.getPropState());
 				prHlDetails.setPropCity(hlOneformPrimaryRes.getPropCity());
+				prHlDetails.setPropPincode(hlOneformPrimaryRes.getPropPincode());
 				prHlDetails.setPropdistrictMappingId(hlOneformPrimaryRes.getPropdistrictMappingId());
-				prHlDetails.setPropertyPrice(hlOneformPrimaryRes.getPropertyPrice());
+				prHlDetails.setMarketValProp(hlOneformPrimaryRes.getMarketValProp());
 				prHlDetails.setOldPropMonth(hlOneformPrimaryRes.getOldPropMonth());
 				prHlDetails.setOldPropYear(hlOneformPrimaryRes.getOldPropYear());
-				primaryHomeLoanDetailRepository.save(prHlDetails);
+				prHlDetails = primaryHomeLoanDetailRepository.save(prHlDetails);
+				logger.info("Saved Successfully===============>" + prHlDetails.getId());
 			}
 			
 			
