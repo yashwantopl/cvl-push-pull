@@ -1438,7 +1438,7 @@ public class LoanApplicationController {
 					if (isMsmeUserFromGeneric) {
 						// In this case
 						Long createdId =null;
-						if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() == busineeTypeId){
+						if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() == busineeTypeId || CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId() == busineeTypeId){
 							createdId = loanApplicationService.createRetailLoan(clientId, isActive, busineeTypeId);
 						}else{
 							createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId);

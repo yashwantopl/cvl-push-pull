@@ -22,6 +22,8 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
+import com.capitaworld.service.loans.model.common.AddressRequest;
+import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
@@ -52,8 +54,8 @@ import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetail
 import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.APIFlags;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AlliedActivity;
 import com.capitaworld.service.oneform.enums.Assets;
@@ -1203,6 +1205,74 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 		} catch (Exception e) {
 			throw new LoansException("Error Occured while fetching CoApplicant Final Details");
+		}
+	}
+	
+	// Copied from retail applicant
+	@Override
+	public CibilFullFillOfferRequest getProfile(Long coApplicantId, Long applicationId) throws LoansException {
+		try {
+			logger.info("start Co-Applicant getProfile() method");
+			CoApplicantDetail applicantDetail = null;
+			applicantDetail = coApplicantDetailRepository.findByIdAndApplicationId(coApplicantId,applicationId);
+			if (applicantDetail == null) {
+				return null;
+			}
+			CibilFullFillOfferRequest cibilFullFillOfferRequest = new CibilFullFillOfferRequest();
+			cibilFullFillOfferRequest.setPan(applicantDetail.getPan());
+			cibilFullFillOfferRequest.setAdhaar(applicantDetail.getAadharNumber());
+			AddressRequest address = new AddressRequest();
+			address.setAddressType("01"); // PermenantType
+			if(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())){
+				address.setStreetAddress(applicantDetail.getAddressStreetName());
+				address.setPremiseNo(applicantDetail.getAddressPremiseName());
+				address.setLandMark(applicantDetail.getAddressLandmark());
+				if(applicantDetail.getAddressCity() != null) {
+					address.setCity(CommonDocumentUtils.getCity(Long.valueOf(applicantDetail.getAddressCity()), oneFormClient));
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressPincode())) {
+					address.setPostalCode(applicantDetail.getAddressPincode().toString());
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState())) {
+					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getAddressState().longValue(),
+							oneFormClient));
+				}
+			}else{
+				address.setStreetAddress(applicantDetail.getPermanentStreetName());
+				address.setPremiseNo(applicantDetail.getPermanentPremiseNumberName());
+				address.setLandMark(applicantDetail.getPermanentLandMark());
+				
+				if(applicantDetail.getPermanentCityId() != null) {
+					address.setCity(CommonDocumentUtils.getCity(Long.valueOf(applicantDetail.getPermanentCityId()), oneFormClient));
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())) {
+					address.setPostalCode(applicantDetail.getPermanentPincode().toString());
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
+					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getPermanentStateId().longValue(),
+							oneFormClient));
+				}	
+			}
+
+			cibilFullFillOfferRequest.setAddress(address);
+			cibilFullFillOfferRequest.setDateOfBirth(applicantDetail.getBirthDate());
+			cibilFullFillOfferRequest.setForName(applicantDetail.getFirstName());
+			cibilFullFillOfferRequest.setSurName(applicantDetail.getLastName());
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId())) {
+				cibilFullFillOfferRequest.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
+			}
+			cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getContactNo());
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())) {
+				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
+			}
+			cibilFullFillOfferRequest.setEmail(applicantDetail.getEmail());
+			cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getMobile());
+			logger.info("End Co-Applicant getProfile() method with Success Execution");
+			return cibilFullFillOfferRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Co-Applicant Basic profile for CIBIL : ",e);
+			logger.info("End Co-Applicant getProfile() method with FAILURE Execution");
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
