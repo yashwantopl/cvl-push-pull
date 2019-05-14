@@ -23,6 +23,7 @@ public class PaymentRequest implements Serializable {
 	private String appointmentTime;
 	private String emailAddress;
 	private String mobileNumber;
+
 	private Double paymentAmount;
 	private String purposeCode;
 	private String responseParams;
@@ -33,11 +34,35 @@ public class PaymentRequest implements Serializable {
     private Long userId;
     private String requestType;
     private Integer businessTypeId;
+    private String txnType;
+    private String txnReferenceNumber;
+    private String errorLog;
     
+
+	public String getTxnType() {
+		return txnType;
+	}
+
+	public void setTxnType(String txnType) {
+		this.txnType = txnType;
+	}
+
+	public String getTxnReferenceNumber() {
+		return txnReferenceNumber;
+	}
+
+	public void setTxnReferenceNumber(String txnReferenceNumber) {
+		this.txnReferenceNumber = txnReferenceNumber;
+	}
     
-    
-    
-    
+	public String getErrorLog() {
+		return errorLog;
+	}
+
+	public void setErrorLog(String errorLog) {
+		this.errorLog = errorLog;
+	}
+
 	public String getRequestType() {
 		return requestType;
 	}

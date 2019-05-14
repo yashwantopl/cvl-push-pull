@@ -20,6 +20,8 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.service.loans.domain.fundprovider.EmiNmiMapping;
+import com.capitaworld.service.loans.domain.fundprovider.EmiNmiMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.EmpStatusMappingDetail;
 import com.capitaworld.service.loans.domain.fundprovider.EmpStatusMappingDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.EmpWithMappingDetail;
@@ -38,7 +40,10 @@ import com.capitaworld.service.loans.domain.fundprovider.SalaryModeDetail;
 import com.capitaworld.service.loans.domain.fundprovider.SalaryModeDetailTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.retail.CreditRatingPlParameter;
+import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.EmiNmiMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.EmiNmiMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpEmpStatusRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpEmpStatusTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpEmpWithRepository;
@@ -122,6 +127,12 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 	@Autowired 
 	private FpRatingAgencyRepository fpRatingAgencyRepository;
 	
+	@Autowired
+	private EmiNmiMappingTempRepository emiNmiMappingTempRepository;
+	
+	@Autowired
+	private EmiNmiMappingRepository emiNmiMappingRepository;
+	
 	@Override
 	public boolean saveOrUpdate(PersonalLoanParameterRequest personalLoanParameterRequest,Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -177,7 +188,8 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		geographicalCityRepository.inActiveMappingByFpProductId(personalLoanParameterRequest.getId());
 		saveCity(personalLoanParameterRequest);
 
-		
+		emiNmiMappingRepository.inActiveByFpProductId(personalLoanParameterRequest.getId());
+		saveEmiNmi(personalLoanParameterRequest);
 
 		//save empwith
 		fpEmpWithRepository.inActiveEmpWithByFpProductId(personalLoanParameterRequest.getId());
@@ -325,6 +337,21 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 									
 						personalLoanParameterRequest.setEmpWithIds(empWithIds);
 				}
+				
+				//get emi nmi list
+				List<EmiNmiMapping> emiNmiMappings = emiNmiMappingRepository.getByFpProductId(personalLoanParameterRequest.getId());
+				List<EmiNmiDetailRequest> emiNmiDetailRequests = null;
+				if(emiNmiMappings != null) {
+					emiNmiDetailRequests = new ArrayList<>(emiNmiMappings.size());
+					
+					for(EmiNmiMapping emiMapping : emiNmiMappings) {
+						EmiNmiDetailRequest emiNmiDetailRequest = new EmiNmiDetailRequest();
+						BeanUtils.copyProperties(emiMapping, emiNmiDetailRequest);
+						emiNmiDetailRequests.add(emiNmiDetailRequest);
+					}
+				}
+				personalLoanParameterRequest.setEmiNmiDetailRequestList(emiNmiDetailRequests);
+				
 				
 				//get rating info
 				List<FpRatingValueMapping> ratingInfo = fpRatingAgencyRepository
@@ -532,6 +559,20 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 				personalLoanParameterRequest.setEmpWithIds(empWithIds);
 		}
 		
+		//get emi nmi list
+		List<EmiNmiMappingTemp> emiNmiMappingTemps= emiNmiMappingTempRepository.getByFpProductId(personalLoanParameterRequest.getId());
+		List<EmiNmiDetailRequest> emiNmiDetailRequests = null;
+		if(emiNmiMappingTemps != null) {
+			emiNmiDetailRequests = new ArrayList<>(emiNmiMappingTemps.size());
+			
+			for(EmiNmiMappingTemp emiMapping : emiNmiMappingTemps) {
+				EmiNmiDetailRequest emiNmiDetailRequest = new EmiNmiDetailRequest();
+				BeanUtils.copyProperties(emiMapping, emiNmiDetailRequest);
+				emiNmiDetailRequests.add(emiNmiDetailRequest);
+			}
+		}
+		personalLoanParameterRequest.setEmiNmiDetailRequestList(emiNmiDetailRequests);
+		
 		//get rating info
 		List<FpRatingValueMappingTemp> ratingInfo = fpRatingAgencyTempRepository
 				.getEmpWithByFpProductId(personalLoanParameterRequest.getId());
@@ -660,6 +701,9 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		//save empwith
 		fpEmpWithTempRepository.inActiveEmpWithByFpProductId(personalLoanParameterTemp.getId());
 		saveEmpWith(personalLoanParameterRequest);
+		
+		emiNmiMappingTempRepository.inActiveByFpProductId(personalLoanParameterTemp.getId());
+		saveEmiNmiTemp(personalLoanParameterRequest);
 		
 		//save empstatus
 		fpEmpStatusTempRepository.inActiveEmpStatusTempByFpProductId(personalLoanParameterTemp.getId());
@@ -820,6 +864,57 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		}
 		logger.info("end saveEmpWith");
 	}
+	
+	private void saveEmiNmiTemp(PersonalLoanParameterRequest personalLoanParameterRequest) {
+
+		logger.info("save saveEmiNmiTemp");
+		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmiNmiDetailRequestList()))
+		{
+			EmiNmiMappingTemp emiNmiMappingTemp= null;
+			for (EmiNmiDetailRequest emiNmiDetailRequest : personalLoanParameterRequest.getEmiNmiDetailRequestList()) {
+				emiNmiMappingTemp = new EmiNmiMappingTemp();
+				emiNmiMappingTemp.setMinIncome(emiNmiDetailRequest.getMinIncome());
+				emiNmiMappingTemp.setMaxIncome(emiNmiDetailRequest.getMaxIncome());
+				emiNmiMappingTemp.setEmiNmi(emiNmiDetailRequest.getEmiNmi());
+				emiNmiMappingTemp.setFpProductId(personalLoanParameterRequest.getId());
+				emiNmiMappingTemp.setCreatedBy(personalLoanParameterRequest.getUserId());
+				emiNmiMappingTemp.setModifiedBy(personalLoanParameterRequest.getUserId());
+				emiNmiMappingTemp.setCreatedDate(new Date());
+				emiNmiMappingTemp.setModifiedDate(new Date());
+				emiNmiMappingTemp.setActive(true);
+				
+				emiNmiMappingTempRepository.save(emiNmiMappingTemp);
+			}
+		}
+		logger.info("end saveEmiNmiTemp");
+	}
+	
+	
+	private void saveEmiNmi(PersonalLoanParameterRequest personalLoanParameterRequest) {
+
+		logger.info("save saveEmiNmi");
+		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmiNmiDetailRequestList()))
+		{
+			EmiNmiMapping emiNmiMapping= null;
+			for (EmiNmiDetailRequest emiNmiDetailRequest : personalLoanParameterRequest.getEmiNmiDetailRequestList()) {
+				emiNmiMapping = new EmiNmiMapping();
+				emiNmiMapping.setMinIncome(emiNmiDetailRequest.getMinIncome());
+				emiNmiMapping.setMaxIncome(emiNmiDetailRequest.getMaxIncome());
+				emiNmiMapping.setEmiNmi(emiNmiDetailRequest.getEmiNmi());
+				emiNmiMapping.setFpProductId(personalLoanParameterRequest.getId());
+				emiNmiMapping.setCreatedBy(personalLoanParameterRequest.getUserId());
+				emiNmiMapping.setModifiedBy(personalLoanParameterRequest.getUserId());
+				emiNmiMapping.setCreatedDate(new Date());
+				emiNmiMapping.setModifiedDate(new Date());
+				emiNmiMapping.setActive(true);
+				
+				emiNmiMappingRepository.save(emiNmiMapping);
+			}
+		}
+		logger.info("end saveEmiNmi");
+	}
+	
+	
 	
 	private void saveEmpWithMaster(PersonalLoanParameterRequest personalLoanParameterRequest) {
 

@@ -39,6 +39,18 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
+	
+	public String getMobileNumberByUserId(Long userId) {
+		try {
+			return  (String) entityManager
+					.createNativeQuery("SELECT mobile FROM users.`users` WHERE user_id =:userId")
+					.setParameter(CommonUtils.USER_ID, userId)
+					.getSingleResult();
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return null;
+	}
 
 	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndSearchString");
@@ -161,4 +173,13 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 		
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Double> getIncomeOfItrOf3Years(Long applicationId) {
+		return entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_applicant_income_details` appInc WHERE appInc.`application_id` = 8026 ORDER BY appInc.`year` DESC ", Double.class)
+				.setParameter("applicationId", applicationId)
+				.getResultList();
+	}
+	
 }

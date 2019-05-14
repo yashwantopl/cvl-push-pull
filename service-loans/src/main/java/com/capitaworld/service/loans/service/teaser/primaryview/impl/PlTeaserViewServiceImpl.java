@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import org.slf4j.Logger;
@@ -188,6 +189,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 	
 	@Autowired
 	ApplicationProposalMappingRepository applicationProposalMappingRepository;
+	
+	@Autowired
+	ProductMasterRepository productMasterRepository;
 	
 
 	@Override
@@ -761,6 +765,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 		}
 		
+		// Product Name
+		
+		if(productMappingId != null) {
+			String productName = productMasterRepository.getFpProductName(productMappingId);
+			if(productName != null) {
+				plTeaserViewResponse.setFpProductName(productName);
+			}
+		}
 		
 		// basic Details
 		
@@ -802,13 +814,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				LocalDate today = LocalDate.now();
 				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
 
-					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
+//					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
+//
+//			        Period age = Period.between(since, today);
+//			        int years = age.getYears();
+//			        int months = age.getMonths();
 
-			        Period age = Period.between(since, today);
-			        int years = age.getYears();
-			        int months = age.getMonths();
-
-					plRetailApplicantResponse.setSalaryAccountBankSince(years+" year "+months+" months");
+					plRetailApplicantResponse.setSalaryAccountBankSince(plRetailApplicantRequest.getSalaryBankYear()+" year "+plRetailApplicantRequest.getSalaryBankMonth()+" months");
 				}
 				
 				if(plRetailApplicantRequest.getResidenceSinceYear() !=null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
@@ -1009,6 +1021,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			if (proposalScoreResponse != null){
 				logger.info("getObjectFromMap called successfully");
 			}
+			plTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName());
 			plTeaserViewResponse.setDataList(scoringResponse.getDataList());
 			plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
 			plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());

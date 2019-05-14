@@ -365,6 +365,10 @@ ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_market_
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN ltv_for_eligibility INTEGER(2) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_purpose_loan_display BIT(1) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_purpose_loan_mandatory BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_consider_income_of_co_app BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN no_of_co_app_or_gua INTEGER DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_no_of_co_app_or_gua_display BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_no_of_co_app_or_gua_mandatory BIT(1) DEFAULT NULL;
 
 
 
@@ -551,3 +555,4 @@ ALTER TABLE `loan_eligibility`.`personal_loan_calculation` ADD COLUMN type_id IN
 
 ALTER TABLE `loan_application`.`retail_model` ADD COLUMN `retail_model_temp_ref_id` BIGINT(20) UNSIGNED NULL AFTER `user_id`, 
 ADD CONSTRAINT `retail_model_temp_id_fk` FOREIGN KEY (`retail_model_temp_ref_id`) REFERENCES `loan_application`.`retail_model_temp`(`id`); 
+ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN ltv DOUBLE;

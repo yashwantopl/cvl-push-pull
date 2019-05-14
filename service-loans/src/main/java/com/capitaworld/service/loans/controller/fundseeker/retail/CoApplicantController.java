@@ -200,5 +200,40 @@ public class CoApplicantController {
 
 	}
 	
+	@RequestMapping(value = "/update_flag", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateFlag(@RequestParam(value = "userId", required = false) Long userId,@RequestParam(value = "coAppId", required = true) Long coAppId,
+			@RequestParam(value = "apiId", required = true)Integer apiId,@RequestParam(value = "apiFlag", required = true)Boolean apiFlag) {
+		
+		// request must not be null
+		try {
+			logger.info("CoApplicant Id==>{}",coAppId);
+			logger.info("userId==>{}",userId);
+			logger.info("apiId==>{}",apiId);
+			logger.info("apiFlag==>{}",apiFlag);
+			
+			if (coAppId == null || apiFlag == null ) {
+				logger.warn("Something is NULL from coAppId Or APIFlag or Flag ==>");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean updateFlag = coApplicantService.updateFlag(coAppId, apiId, apiFlag, userId);
+			LoansResponse loansResponse = null;
+			if(updateFlag) {
+				loansResponse = new LoansResponse("Successfully Updated", HttpStatus.OK.value());				
+			}else {
+				loansResponse = new LoansResponse("Something goes wrong while updating API Flag", HttpStatus.OK.value());
+			}
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Updating Flag==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+	
 
 }

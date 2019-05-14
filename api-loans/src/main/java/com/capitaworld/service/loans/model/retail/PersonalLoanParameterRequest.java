@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -128,6 +130,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isEmpStatusMandatory= false;
 
 	private List<CreditRatingPlParameter> creditRatingSelectedList;
+	
+	private List<EmiNmiDetailRequest> emiNmiDetailRequestList;
 
 	private Object workflowData;
 
@@ -166,6 +170,18 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isEmiNmiCheck = false;
 
 	private BigDecimal emiNmiCheck;
+	
+	private Boolean isGrossIncomeRangeDisplay= false;
+
+	private Boolean isGrossIncomeRangeMandatory= false;
+	
+	private Double maxGrossIncomeRange;
+
+	private Double minGrossIncomeRange;
+	
+	private Integer basedOnIncomeType;
+	
+	private Integer multiplierIncomeType;
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -805,6 +821,64 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.emiNmiCheck = emiNmiCheck;
 	}
 
+	public Boolean getIsGrossIncomeRangeDisplay() {
+		return isGrossIncomeRangeDisplay;
+	}
+
+	public void setIsGrossIncomeRangeDisplay(Boolean isGrossIncomeRangeDisplay) {
+		this.isGrossIncomeRangeDisplay = isGrossIncomeRangeDisplay;
+	}
+
+	public Boolean getIsGrossIncomeRangeMandatory() {
+		return isGrossIncomeRangeMandatory;
+	}
+
+	public void setIsGrossIncomeRangeMandatory(Boolean isGrossIncomeRangeMandatory) {
+		this.isGrossIncomeRangeMandatory = isGrossIncomeRangeMandatory;
+	}
+
+	public Double getMaxGrossIncomeRange() {
+		return maxGrossIncomeRange;
+	}
+
+	public void setMaxGrossIncomeRange(Double maxGrossIncomeRange) {
+		this.maxGrossIncomeRange = maxGrossIncomeRange;
+	}
+
+	public Double getMinGrossIncomeRange() {
+		return minGrossIncomeRange;
+	}
+
+	public void setMinGrossIncomeRange(Double minGrossIncomeRange) {
+		this.minGrossIncomeRange = minGrossIncomeRange;
+	}
+
+	public Integer getBasedOnIncomeType() {
+		return basedOnIncomeType;
+	}
+
+	public void setBasedOnIncomeType(Integer basedOnIncomeType) {
+		this.basedOnIncomeType = basedOnIncomeType;
+	}
+
+	public Integer getMultiplierIncomeType() {
+		return multiplierIncomeType;
+	}
+
+	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
+		this.multiplierIncomeType = multiplierIncomeType;
+	}
+	
+	public List<EmiNmiDetailRequest> getEmiNmiDetailRequestList() {
+		return emiNmiDetailRequestList;
+	}
+
+	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
+		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
+	}
+	
+	
+
 	/*
 	 * public Integer getEmploymentId() { return employmentId; }
 	 * 
@@ -903,6 +977,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	 * isTotalJobExperienceMandatory) { this.isTotalJobExperienceMandatory =
 	 * isTotalJobExperienceMandatory; }
 	 */
+	
+	
 	
 	
 

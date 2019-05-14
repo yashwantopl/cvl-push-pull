@@ -171,7 +171,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	    Integer loanType = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
 	    Double existingLimits = 0.0d;
 	    List<String> loanTypes = null;
-	    if(loanType == 2) {// Working Capital
+	    if(loanType ==null){
+	    	   logger.info("=====RETAIL LOAN EMI ===============");
+	    }else if(loanType == 2) {// Working Capital
 	    	loanTypes = Arrays.asList(new String[]{"cash credit","overdraft","loan - commercial cash credit"});
 	    	 existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
 	    }else if(loanType == 1) { //Term Loan
@@ -221,6 +223,17 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 				"credit secured card","credit single - limited purpose card","corporate credit card","credit card - fleet",
 				"credit stored-value smart card","credit co-branded credit card","credit affinity credit card","credit charge card","credit commercial card","credit line - open"};
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiOfAllDirByApplicationId(applicationId,Arrays.asList(creditCards));
+		logger.info("getTotalEmiOfAllDirByApplicationId {} For Application Id = {}", totalEmi ,applicationId);
+		return totalEmi;
+	}
+	
+
+	@Override
+	public Double getTotalEmiByApplicationIdSoftPing(Long applicationId) {
+		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card","credit merchant card","credit premium card","credit retail card",
+				"credit secured card","credit single - limited purpose card","corporate credit card","credit card - fleet",
+				"credit stored-value smart card","credit co-branded credit card","credit affinity credit card","credit charge card","credit commercial card","credit line - open"};
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdSoftPing(applicationId,Arrays.asList(creditCards));
 		logger.info("getTotalEmiOfAllDirByApplicationId {} For Application Id = {}", totalEmi ,applicationId);
 		return totalEmi;
 	}

@@ -166,6 +166,11 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
 					res.setAddressPincode(coApplicantDetail.getAddressPincode().longValue());	
 				}
+				if(CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsItrSkip())) {
+					res.setIsItrSkip(false);
+				} else {
+					res.setIsItrSkip(coApplicantDetail.getIsItrSkip());	
+				}
 				res.setCoAppId(coAppId);
 			}
 		} else {
@@ -178,6 +183,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					res.setBusinessStartMonth(cal.get(Calendar.MONTH));
 					res.setBusinessStartYear(cal.get(Calendar.YEAR));
 				}
+				res.setIsItrSkip(false);
 				return res;
 			}
 		}
@@ -266,6 +272,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
 					coApplicantDetail.setBusinessStartDate(cal.getTime());
 				}
+				coApplicantDetail.setEmail(req.getEmail());
 				coApplicantDetail.setModifiedBy(req.getUserId());
 				coApplicantDetail.setModifiedDate(new Date());
 				coApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
@@ -282,6 +289,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 					cal.set(req.getBusinessStartYear(), req.getBusinessStartMonth(), 01);
 					retailApplicantDetail.setBusinessStartDate(cal.getTime());
 				}
+				retailApplicantDetail.setEmail(req.getEmail());
 				retailApplicantDetail.setModifiedBy(req.getUserId());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setIsOneFormCompleted(req.getIsOneFormCompleted());
@@ -320,6 +328,8 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			res.setLoanAmountRequired(retailApplicantDetail.getLoanAmountRequired());
 			res.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
 			res.setLoanPurposeOther(retailApplicantDetail.getLoanPurposeOther());
+			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
+			res.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
 			res.setTenureRequired(retailApplicantDetail.getTenureRequired());
 			res.setRepayment(retailApplicantDetail.getRepayment());
 			res.setSalaryMode(retailApplicantDetail.getSalaryMode());
@@ -387,16 +397,19 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setLoanAmountRequired(hlOneformPrimaryRes.getLoanAmountRequired());
 				retailApplicantDetail.setLoanPurpose(hlOneformPrimaryRes.getLoanPurpose());
 				retailApplicantDetail.setLoanPurposeOther(hlOneformPrimaryRes.getLoanPurposeOther());
+				retailApplicantDetail.setLoanPurposeQueType(hlOneformPrimaryRes.getLoanPurposeQueType());
+				retailApplicantDetail.setLoanPurposeQueValue(hlOneformPrimaryRes.getLoanPurposeQueValue());
 				retailApplicantDetail.setTenureRequired(hlOneformPrimaryRes.getTenureRequired());
 				retailApplicantDetail.setRepayment(hlOneformPrimaryRes.getRepayment());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setModifiedBy(hlOneformPrimaryRes.getUserId());
-				retailApplicantDetail.setIsOneformPrimaryComplete(true);
+				retailApplicantDetail.setIsOneformPrimaryComplete(hlOneformPrimaryRes.getIsOneformPrimaryComplete());
 				retailApplicantDetail.setSalaryMode(hlOneformPrimaryRes.getSalaryMode());
 				retailApplicantDetail.setSalaryBankName(hlOneformPrimaryRes.getSalaryBankName());
 				retailApplicantDetail.setIsOtherSalaryBank(hlOneformPrimaryRes.getIsOtherSalaryBank());
 				retailApplicantDetail.setSalaryBankYear(hlOneformPrimaryRes.getSalaryBankYear());
 				retailApplicantDetail.setSalaryBankMonth(hlOneformPrimaryRes.getSalaryBankMonth());
+				
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 				
 				//************************ SAVE PRIMARY DETAILS *****************************
@@ -422,6 +435,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				prHlDetails.setPropertyPrice(hlOneformPrimaryRes.getPropertyPrice());
 				prHlDetails.setOldPropMonth(hlOneformPrimaryRes.getOldPropMonth());
 				prHlDetails.setOldPropYear(hlOneformPrimaryRes.getOldPropYear());
+				primaryHomeLoanDetailRepository.save(prHlDetails);
 			}
 			
 			

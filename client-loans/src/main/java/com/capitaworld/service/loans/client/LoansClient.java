@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.GenerateTokenRequest;
+import com.capitaworld.service.loans.model.HomeLoanModelRequest;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -101,6 +102,7 @@ public class LoansClient {
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_UNIFORM = "/financial_arrangement_details/get_total_emi_sanction_amount_uniform";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS = "/financial_arrangement_details/getTotalEmiFromForAllDir";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING = "/financial_arrangement_details/getTotalEmiForSoftPing";
 
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
@@ -164,6 +166,7 @@ public class LoansClient {
 	private static final String GET_FULL_PRIMARY_PL = "/personal/primary/get_primary_info";
 	private static final String GET_FULL_PRIMARY_LAP = "/lap/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
+	private static final String GET_LOAN_PURPOSE_MODEL = "/model/hl/get_client/";
 	private static final String SAVE_ITR_RETAIL_APPLICANT_DETAILS = "/fs_retail_profile/profile/saveITRRes";
 	private static final String SAVE_ITR_RETAIL_CO_APPLICANT_DETAILS= "/co_applicant/profile/saveITRRes";
 	
@@ -258,6 +261,8 @@ public class LoansClient {
     private static final String GET_CORPORATE_BY_PROPOSAL_ID="/final_info/getByProposalId";
     private static final String GET_INPRINCIPLE_LIST_FOR_MULTIPLEBANNK="/proposal/inprincipleDataMulipleBank";
     private static final String GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK="/proposal/getDayDiffrenceForMultipleBank";
+    
+    private static final String SAVE_LOGS_OF_PAYMENT_GATEWAY = "/loan_application/savePaymentGatewayAuditLogs";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -899,6 +904,21 @@ public class LoansClient {
 	public LoansResponse getTotalEMIOfAllDir(Long applicationId) throws LoansException{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS);
 		logger.info("url for Getting getTotalEMIOfAllDir From Client=================>{}", url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getTotalEMIOfAllDir : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse getTotalEMISoftPing(Long applicationId) throws LoansException{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING);
+		logger.info("url for Getting getTotalEMISoftPing From Client=================>{}", url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -2566,6 +2586,35 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveSwitchExisting :{} ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	public HomeLoanModelRequest getHLModel(Long modelId) {
+		String url = loansBaseUrl.concat(GET_LOAN_PURPOSE_MODEL).concat("/" + modelId);
+		logger.info("URL in getHLModel : {}",url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, HomeLoanModelRequest.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getHLModel :{} ",e);
+			return null;
+		}
+	}
+	
+	public LoansResponse savePaymentGatewayAuditLogs(PaymentRequest paymentRequest) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_LOGS_OF_PAYMENT_GATEWAY);
+		logger.info("Save Payment Gateway Audit URL==>{}", url);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(REQ_AUTH, "true");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		try {
+			HttpEntity<PaymentRequest> entity = new HttpEntity<PaymentRequest>(paymentRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Throw Exception while calling gateway client for updatepayment ------------>",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}

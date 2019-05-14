@@ -35,5 +35,5 @@ public interface RetailApplicantService {
 	
 	public JSONObject getNameAndPanByAppId(Long applicationId);
 	
-	public RetailITRManualResponse getITRManualFormData(Long applicationId,Long coAppId);
+	public RetailITRManualResponse getITRManualFormData(Long applicationId,Long coAppId,Long userId);
 }
