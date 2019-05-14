@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.LoanPurposeAmountMappingRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -177,6 +178,7 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 //	private Double maxTimeConsiMonthGrssIncomeOthThnSalIndi;
 //	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay = false;
 //	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory = false;
+	List<LoanPurposeAmountMappingRequest> loanPurposeAmountMappingRequests = Collections.emptyList();
 
 	private Object workflowData;
 	
@@ -574,5 +576,14 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 
 	public void setWorkflowData(Object workflowData) {
 		this.workflowData = workflowData;
+	}
+
+	public List<LoanPurposeAmountMappingRequest> getLoanPurposeAmountMappingRequests() {
+		return loanPurposeAmountMappingRequests;
+	}
+
+	public void setLoanPurposeAmountMappingRequests(
+			List<LoanPurposeAmountMappingRequest> loanPurposeAmountMappingRequests) {
+		this.loanPurposeAmountMappingRequests = loanPurposeAmountMappingRequests;
 	}
 }

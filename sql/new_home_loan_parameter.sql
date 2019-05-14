@@ -556,3 +556,18 @@ ALTER TABLE `loan_eligibility`.`personal_loan_calculation` ADD COLUMN type_id IN
 ALTER TABLE `loan_application`.`retail_model` ADD COLUMN `retail_model_temp_ref_id` BIGINT(20) UNSIGNED NULL AFTER `user_id`, 
 ADD CONSTRAINT `retail_model_temp_id_fk` FOREIGN KEY (`retail_model_temp_ref_id`) REFERENCES `loan_application`.`retail_model_temp`(`id`); 
 ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN ltv DOUBLE;
+
+CREATE TABLE `loan_application`.`fp_loan_purpose_amount_mapping`
+( `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, 
+`fp_product_id` BIGINT(20) UNSIGNED NOT NULL, 
+`type` INT(2) UNSIGNED, 
+`is_active` BIT(1) DEFAULT b'1', 
+PRIMARY KEY (`id`), CONSTRAINT `fp_product_id_fk1` FOREIGN KEY (`fp_product_id`) REFERENCES `loan_application`.`fp_home_loan_details`(`fp_product_id`) ); 
+
+ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` ADD COLUMN MIN DOUBLE;
+ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` ADD COLUMN MAX DOUBLE;
+
+ALTER TABLE `loan_application`.`fp_product_master` MODIFY COLUMN purpose_loan_model_id BIGINT(20);
+ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN purpose_loan_model_id BIGINT(20);
+
+ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` DROP FOREIGN KEY `fp_product_id_fk1`; 
