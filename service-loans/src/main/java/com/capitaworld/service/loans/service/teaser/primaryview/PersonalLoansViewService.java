@@ -9,4 +9,6 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewR
  */
 public interface PersonalLoansViewService {
 	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long parseLong) throws LoansException;
+	
+	public RetailPrimaryViewResponse getHomeLoansPrimaryViewDetails(Long parseLong) throws LoansException;
 }

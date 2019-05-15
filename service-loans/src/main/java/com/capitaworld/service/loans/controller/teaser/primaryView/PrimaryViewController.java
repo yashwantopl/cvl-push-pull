@@ -249,6 +249,79 @@ public class PrimaryViewController {
 			}
 		}
 	}
+	
+	@GetMapping(value = "/HomeLoanTeaser/{toApplicationId}")
+	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfHomeLoans(
+			@PathVariable(value = "toApplicationId") Long toApplicationId,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		LoansResponse loansResponse = new LoansResponse();
+		// get user id from http servlet request
+		Long userId = null;
+		Integer userType = null;
+
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
+				// MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if (response != null && response.getData() != null) {
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
+								HttpStatus.OK);
+					}
+				} catch (Exception e) {
+					logger.warn(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.OK);
+				}
+			} else {
+				if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				} else if (CommonUtils.UserType.NETWORK_PARTNER == userType) {
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+				}
+			}
+
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		}
+
+		logger.info(USER_ID_MSG , userId , USER_TYPE_MSG , userType);
+
+		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		} else {
+			RetailPrimaryViewResponse personalLoansPrimaryViewResponse = null;
+			try {
+				personalLoansPrimaryViewResponse = personalLoansViewService.getHomeLoansPrimaryViewDetails(toApplicationId);
+				if (!CommonUtils.isObjectNullOrEmpty(personalLoansPrimaryViewResponse)) {
+					loansResponse.setData(personalLoansPrimaryViewResponse);
+					loansResponse.setMessage("Home Loans Primary Details");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				} else {
+					loansResponse.setMessage("No data found for Home Loan final view");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+				loansResponse.setData(personalLoansPrimaryViewResponse);
+				loansResponse.setMessage(e.getMessage());
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		}
+	}
 
 	@GetMapping(value = "/CarLoan/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCarLoan(
