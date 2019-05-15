@@ -731,7 +731,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("noOfDependent", plRetailApplicantRequest.getNoOfDependent());
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 			map.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValue(applicationProposalMapping.getLoanAmount()) : "-");
-			map.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? applicationProposalMapping.getTenure():"-");
+			map.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? CommonUtils.convertValueWithoutDecimal(applicationProposalMapping.getTenure()) :"-");
 
 
 			//KEY VERTICAL FUNDING
@@ -830,7 +830,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 //			BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 			
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-			
+			map.put("proposedEmi", proposalMappingRequestString.getEmi() != null ? CommonUtils.convertValue(proposalMappingRequestString.getEmi()) : "-");
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
