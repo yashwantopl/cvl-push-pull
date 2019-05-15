@@ -40,6 +40,7 @@ import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterTempRepository;
 import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.LoanPurposeAmountMappingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
@@ -82,6 +83,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 	@Autowired
 	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private LoanPurposeAmountMappingService loanPurposeAmountMappingService; 
 	
 	@Autowired
 	private WorkflowClient workflowClient;
@@ -173,6 +177,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		// Saving Mapping Current BORROWER_SALARY_ACCOUNT
 		fPParameterMappingService.inactiveAndSave(homeLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, homeLoanParameterRequest.getBorrSalAccIds());
+		
+		//Saving Loan Purpose Amount Mapping
+		loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), homeLoanParameterRequest.getId());
 
 		logger.info("saveOrUpdate Ends");
 		return true;
@@ -271,6 +278,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		homeLoanParameterRequest.setBorrSalAccIds(fPParameterMappingService
 				.getParameters(homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT));
 
+		//Getting Loan Purpose Amount Mapping
+		homeLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(homeLoanParameterRequest.getId()));
+		
 		CommonDocumentUtils.endHook(logger, "getHomeLoanParameterRequest");
 		return homeLoanParameterRequest;
 	}
@@ -438,6 +448,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		homeLoanParameterRequest.setBorrSalAccIds(fPParameterMappingService.getParametersTemp(
 				homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT));
 
+		//Getting Loan Purpose Amount Mapping
+		homeLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(homeLoanParameterRequest.getId()));
+		
 		//set workflow buttons
 		
 		 if (!CommonUtils.isObjectNullOrEmpty(homeLoanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
@@ -540,6 +553,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		// Saving Mapping Current BORROWER_SALARY_ACCOUNT
 		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, homeLoanParameterRequest.getBorrSalAccIds());
+		
+		//Saving Loan Purpose Amount Mapping
+		loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), homeLoanParameterRequest.getId());
 		logger.info("saveOrUpdateTemp End");
 		return true;
 	}
