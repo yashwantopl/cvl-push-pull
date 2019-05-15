@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.retail.HLOneformRequest;
@@ -33,6 +34,8 @@ public interface CoApplicantService {
 	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException;
 	
 	public Boolean updateFlag(Long directorId,Integer apiId,Boolean apiFlag,Long userId);
+	
+	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws LoansException;
 	
 	
 }
