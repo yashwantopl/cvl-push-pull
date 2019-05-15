@@ -11,6 +11,6 @@ public interface PrimaryHomeLoanDetailRepository extends JpaRepository<PrimaryHo
 	@Query("from PrimaryHomeLoanDetail hl where hl.applicationId.id =:applicationId and isActive=true and hl.applicationId.userId =:userId")
 	public PrimaryHomeLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
 	
-	@Query("from PrimaryHomeLoanDetail hl where hl.applicationId.id =:applicationId and isActive = true")
+	@Query("from PrimaryHomeLoanDetail hl where hl.applicationId.id =:applicationId")
 	public PrimaryHomeLoanDetail getByApplication(@Param("applicationId") Long applicationId);
 }

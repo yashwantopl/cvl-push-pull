@@ -464,7 +464,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		
 		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
-			if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 				RetailITRManualResponse res = new RetailITRManualResponse();
 				BeanUtils.copyProperties(applicantDetail, res);
 				res.setEmail(applicantDetail.getEmail());
@@ -486,7 +486,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 		} else {
 			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 				RetailITRManualResponse res = new RetailITRManualResponse();
 				BeanUtils.copyProperties(applicantDetail, res);
 				res.setEmail(applicantDetail.getEmail());
