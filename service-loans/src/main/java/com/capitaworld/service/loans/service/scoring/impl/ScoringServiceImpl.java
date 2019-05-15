@@ -1395,7 +1395,7 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
-                                	   long yearsDiff = ChronoUnit.YEARS.between(retailApplicantDetail.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), retailApplicantDetail.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                                	   long yearsDiff = ChronoUnit.YEARS.between(retailApplicantDetail.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),retailApplicantDetail.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                                 	   logger.info("");
                                        scoreParameterRetailRequest.setAge((double)yearsDiff);
                                        scoreParameterRetailRequest.setAge_p(true);
@@ -1492,8 +1492,8 @@ public class ScoringServiceImpl implements ScoringService {
             				
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_TYPE:
             				try {
-            					scoreParameterRetailRequest.setEmployementType_p(retailApplicantDetail.getEmployedWithId() != null);
-                				scoreParameterRetailRequest.setEmploymentType((retailApplicantDetail.getEmployedWithId() != null  ? retailApplicantDetail.getEmployedWithId().longValue() : null));
+            					scoreParameterRetailRequest.setEmployementType_p(retailApplicantDetail.getEmploymentType() != null);
+                				scoreParameterRetailRequest.setEmploymentType((retailApplicantDetail.getEmploymentType() != null  ? retailApplicantDetail.getEmploymentType().longValue() : null));
                             } catch (Exception e) {
                                 logger.error("error while getting MARITAL_STATUS parameter : ",e);
                             }
@@ -1503,8 +1503,8 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setEmploymentTypeCatJob((retailApplicantDetail.getEmploymentStatus() != null  ? retailApplicantDetail.getEmploymentStatus() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
-            		        scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentStatus() != null);
-            		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentStatus() != null  ? retailApplicantDetail.getEmploymentStatus().longValue() : null));
+            		        scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentSubStatus() != null);
+            		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentSubStatus() != null  ? retailApplicantDetail.getEmploymentSubStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
             				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getCurrentEmploymentStatus() != null);
@@ -1593,7 +1593,7 @@ public class ScoringServiceImpl implements ScoringService {
 	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.MON_INCOME_DEPENDANT:
-            				if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && retailApplicantDetail.getNoOfDependent() != null) {
+            				if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && retailApplicantDetail.getNoOfDependent() != null && retailApplicantDetail.getNoOfDependent() != 0) {
                                 scoreParameterRetailRequest.setMonIncomePerDep(netMonthlyIncome / retailApplicantDetail.getNoOfDependent());
                                 scoreParameterRetailRequest.setIsMonIncomePerDep_p(true);
                             }
