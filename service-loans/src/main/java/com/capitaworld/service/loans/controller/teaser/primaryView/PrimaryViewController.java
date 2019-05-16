@@ -250,6 +250,7 @@ public class PrimaryViewController {
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
+				logger.error("",e);
 				loansResponse.setData(hlPrimaryViewResponse);
 				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
