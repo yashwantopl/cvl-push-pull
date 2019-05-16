@@ -82,12 +82,16 @@ public class ProposalController {
 		logger.info(REQUEST_GET_SIZE+request.getSize());
 
 		Long userId = null;
+		Long userOrgId = null;
+
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
 			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
+		userOrgId = (Long) httpRequest.getAttribute(CommonUtils.USER_ORG_ID);
 		request.setUserId(userId);
+		request.setUserOrgId(userOrgId);
 		List proposalDetailsList=proposalService.basicInfoForSearch(request);
 		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		loansResponse.setListData(proposalDetailsList);
