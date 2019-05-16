@@ -52,9 +52,13 @@ public class PersistenceContext {
 	public DataSource dataSource() {
 		HikariDataSource dataSource = new HikariDataSource();
 		dataSource.setDriverClassName(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-        dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName()+environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-        dataSource.setUsername(DataSourceProvider.getUserName());
-        dataSource.setPassword(DataSourceProvider.getPassword());
+//        dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName() + environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+        dataSource.setJdbcUrl(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+//        dataSource.setUsername(DataSourceProvider.getUserName());
+//        dataSource.setPassword(DataSourceProvider.getPassword());
+        
+        dataSource.setUsername(environment.getProperty(PROPERTY_NAME_DATABASE_USERNAME));
+        dataSource.setPassword(environment.getProperty(PROPERTY_NAME_DATABASE_POSSWARD));
 		dataSource.setConnectionTestQuery("SELECT 1");
 		dataSource
 				.setMaximumPoolSize(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));

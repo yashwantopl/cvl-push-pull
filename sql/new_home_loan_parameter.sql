@@ -571,3 +571,15 @@ ALTER TABLE `loan_application`.`fp_product_master` MODIFY COLUMN purpose_loan_mo
 ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN purpose_loan_model_id BIGINT(20);
 
 ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` DROP FOREIGN KEY `fp_product_id_fk1`; 
+
+
+
+
+--------------Remain to Execute in Production ---------
+
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN management_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN financial_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN management_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN financial_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `loan_application`.`scoring_request_detail` ADD COLUMN co_app_id BIGINT(20);
+ALTER TABLE `scoring_sidbi`.`field_mapping` ADD COLUMN is_consider_co_app BIT(1);

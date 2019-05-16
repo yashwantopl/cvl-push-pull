@@ -16,6 +16,9 @@ public class ScoringRequestDetail implements Serializable {
 
     @Column(name="application_id")
     private Long applicationId;
+    
+    @Column(name="co_app_id")
+    private Long coAppId;
 
     @Column(name="request")
     private String request;
@@ -101,4 +104,12 @@ public class ScoringRequestDetail implements Serializable {
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
+
+	public Long getCoAppId() {
+		return coAppId;
+	}
+
+	public void setCoAppId(Long coAppId) {
+		this.coAppId = coAppId;
+	}
 }
