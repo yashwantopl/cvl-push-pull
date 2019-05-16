@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.LapPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
@@ -32,6 +33,7 @@ import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.HlTeaserViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.NtbTeaserViewService;
@@ -58,6 +60,9 @@ public class PrimaryViewController {
 
 	@Autowired
 	private HomeLoanPrimaryViewService homeLoanPrimaryViewService;
+	
+	@Autowired
+	private HlTeaserViewService hlTeaserViewService;
 
 	@Autowired
 	private PersonalLoansViewService personalLoansViewService;
@@ -105,9 +110,8 @@ public class PrimaryViewController {
 	private static final String MSG_USER_TYPE = " userType : ";
 
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> primaryViewHomeLoan(
-			@PathVariable(value = "toApplicationId") Long toApplicationId,
-			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+	public @ResponseBody ResponseEntity<LoansResponse> primaryViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		
 		LoansResponse loansResponse = new LoansResponse();
 		// get user id from http servlet request
 		Long userId = null;
@@ -175,6 +179,87 @@ public class PrimaryViewController {
 			}
 		}
 	}
+	
+	
+	@GetMapping(value = "/HlTeaserView/{toApplicationId}/{productMappingId}/{isFinalView}/{proposalId}")
+	public @ResponseBody ResponseEntity<LoansResponse> HlTeaserView(@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "productMappingId") Long productMappingId,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request,@PathVariable(value = "isFinalView") Boolean isFinalView,@PathVariable("proposalId") Long proposalId) {
+
+		logger.info("In HL View Ctrl of applicationId==>{}   productMappingId==>{}" , toApplicationId , productMappingId);
+
+		// GET USER ID AND USER TYPE
+		Long userId = null;
+		Integer userType = null;
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		}
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER) {
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if (response != null && response.getData() != null) {
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
+								HttpStatus.OK);
+					}
+				} catch (Exception e) {
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.OK);
+				}
+			} else {
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
+				}
+			}
+
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		}
+		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		} else {
+			LoansResponse loansResponse = new LoansResponse();
+			HlTeaserViewResponse hlPrimaryViewResponse = null;
+			try {
+				logger.info("GET HL PRIMARY TEASER VIEW OF USER OF APPLICATION ID==>{}  PRODUCT MAPPING ID==>{}  USER TYPE==>{}  USER ID==>{}" , 
+						toApplicationId, productMappingId ,userType ,userId);
+				hlPrimaryViewResponse = hlTeaserViewService.getHlTeaserView(toApplicationId, userType, userId,productMappingId, isFinalView, proposalId);
+				if (!CommonUtils.isObjectNullOrEmpty(hlPrimaryViewResponse)) {
+					logger.info("Response of Teaser View==>{}" , hlPrimaryViewResponse.toString());
+					loansResponse.setData(hlPrimaryViewResponse);
+					loansResponse.setMessage("HL Primary Details");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				} else {
+					loansResponse.setMessage("No data found for Hl final view");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error("",e);
+				loansResponse.setData(hlPrimaryViewResponse);
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		}
+	}
+	
+	
 
 	@GetMapping(value = "/PersonalLoan/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfPersonalLoans(

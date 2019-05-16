@@ -14,6 +14,8 @@ public class ScoringRequestLoans {
     
     private Long loanPurposeModelId;
     
+    private Long coApplicantId;
+    
     private Long orgId;
 
     /*private Long applicationId;*/
@@ -463,6 +465,14 @@ public class ScoringRequestLoans {
 
 	public void setElAmountOnAverageScoring(Double elAmountOnAverageScoring) {
 		this.elAmountOnAverageScoring = elAmountOnAverageScoring;
+	}
+
+	public Long getCoApplicantId() {
+		return coApplicantId;
+	}
+
+	public void setCoApplicantId(Long coApplicantId) {
+		this.coApplicantId = coApplicantId;
 	}
 
 	@Override
