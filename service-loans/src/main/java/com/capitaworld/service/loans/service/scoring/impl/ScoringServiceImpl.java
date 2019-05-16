@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.api.eligibility.utility.EligibilityUtils;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
@@ -1251,6 +1252,7 @@ public class ScoringServiceImpl implements ScoringService {
         Double grossAnnualIncome = 0.0d;
         PrimaryHomeLoanDetail primaryHomLoanDetail = null;
         Data bankStatementData = null;
+        Double totalEMI = 0.0d;
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1289,6 +1291,8 @@ public class ScoringServiceImpl implements ScoringService {
             }catch(Exception e) {
             	logger.error("Error while getting Bank Statement Details");
             }
+            
+            totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
@@ -1572,7 +1576,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             			case ScoreParameter.Retail.HomeLoan.TENURE:
             				try {
-								if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
+								if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setAvailableIncome(scoringRequestLoans.getElAmountBasedOnIncome());
 										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
 										scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
@@ -1585,7 +1589,24 @@ public class ScoringServiceImpl implements ScoringService {
 							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOIR:
-            				//Pending as Per Rahul Khudai
+            				if(totalEMI == null) {
+            					totalEMI = 0.0d;
+            				}
+            				Double totalObl = totalEMI + scoringRequestLoans.getElAmountOnAverageScoring();
+            				try {
+            					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
+            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
+            							scoreParameterRetailRequest.setToir(totalObl / (netMonthlyIncome * 12)); 
+            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
+            							scoreParameterRetailRequest.setToir(totalObl / grossAnnualIncome);
+            						}
+            						scoreParameterRetailRequest.setIsToir_p(true);
+            					}else {
+									logger.warn("Gross Or Net Income is Not Set By Lender TOIR==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
+								}
+                            } catch (Exception e) {
+                                logger.error("error while getting TOIR parameter : ",e);
+                            }
             				break;
             			case ScoreParameter.Retail.HomeLoan.ADDI_INCOME_SPOUSE:
 	            				if(retailApplicantDetail.getAnnualIncomeOfSpouse() != null) {
@@ -1676,11 +1697,12 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.LTV:
             				if(primaryHomLoanDetail.getMarketValProp() != null) {
                 				try {
-									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
-										scoreParameterRetailRequest.setLtv((scoringRequestLoans.getElAmountBasedOnIncome() / primaryHomLoanDetail.getMarketValProp()) * 100);
+									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
+										scoreParameterRetailRequest.setLtv(scoringRequestLoans.getElAmountOnAverageScoring());
+										scoreParameterRetailRequest.setMarketValueOfProp(primaryHomLoanDetail.getMarketValProp());
 										scoreParameterRetailRequest.setIsLTV_p(true);
 									}else {
-										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
 									}
     							} catch (Exception e1) {
     								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1689,24 +1711,23 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMI_NMI_RATIO:
             				try {
-									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
+									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										Double monthlyRate = scoringRequestLoans.getRoi() / 100 / 12;
-										Double pmtCalculation = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, - (scoringRequestLoans.getEligibleTenure() * 12))) * scoringRequestLoans.getElAmountBasedOnIncome();
+										Double pmtCalculation = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, - (scoringRequestLoans.getEligibleTenure() * 12))) * scoringRequestLoans.getElAmountOnAverageScoring();
 										scoreParameterRetailRequest.setEmi(pmtCalculation);
 										if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
 		            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
 		            							//As of now Not considering Co-Applicant
-												scoreParameterRetailRequest.setEmiNmi_p(true);
-												scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / scoringRequestLoans.getElAmountBasedOnIncome());
+												scoreParameterRetailRequest.setEmiNmiRatio(netMonthlyIncome * 12);
 		            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-		            							scoreParameterRetailRequest.setEmiNmi_p(true);
-		            							scoreParameterRetailRequest.setEmiNmiRatio(pmtCalculation / grossAnnualIncome);
+		            							scoreParameterRetailRequest.setEmiNmiRatio(grossAnnualIncome);
 		            						}
+		            						scoreParameterRetailRequest.setEmiNmi_p(true);
 		            					}else {
 											logger.warn("Gross Or Net Income is Not Set By Lender EMI_NMI_RATIO==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
 										}
 									}else {
-										logger.warn("Eligible Loan Amount Based on Income is not Set in EMI_NMI_RATIO==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+										logger.warn("Eligible Loan Amount Based on Income is not Set in EMI_NMI_RATIO==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
 									}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1715,11 +1736,11 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT:
             				if(retailApplicantDetail.getNetworth() != null) {
                 				try {
-									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
+									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setIsNetWorth_p(true);
-										scoreParameterRetailRequest.setNetWorth(retailApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountBasedOnIncome());
+										scoreParameterRetailRequest.setNetWorth(retailApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountOnAverageScoring());
 									}else {
-										logger.warn("Eligible Loan Amount Based on Income is not Set in APPLICANT_NW_TO_LOAN_AMOUNT==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+										logger.warn("Eligible Loan Amount Based on Income is not Set in APPLICANT_NW_TO_LOAN_AMOUNT==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
 									}
     							} catch (Exception e1) {
     								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1781,8 +1802,7 @@ public class ScoringServiceImpl implements ScoringService {
     
     
     @Override
-	public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringListForCoApplicant(
-			List<ScoringRequestLoans> scoringRequestLoansList) {
+	public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList) {
     	CoApplicantDetail coApplicantDetail = null;
         Long applicationId = null;
         Long coApplicantId = null;
@@ -1793,7 +1813,7 @@ public class ScoringServiceImpl implements ScoringService {
         Double grossAnnualIncome = 0.0d;
         PrimaryHomeLoanDetail primaryHomLoanDetail = null;
         Data coApplicantBankStatementData = null;
-
+        Double totalEMI = 0.0;
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	coApplicantId = scoringRequestLoansList.get(0).getCoApplicantId();
@@ -1833,6 +1853,7 @@ public class ScoringServiceImpl implements ScoringService {
             }catch(Exception e) {
             	logger.error("Error while getting Bank Statement Details");
             }
+            totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(coApplicantId,applicationId);
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
@@ -2059,7 +2080,24 @@ public class ScoringServiceImpl implements ScoringService {
 							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOIR:
-            				//Pending as Per Rahul Khudai
+            				if(totalEMI == null) {
+            					totalEMI = 0.0d;
+            				}
+            				Double totalObl = totalEMI + scoringRequestLoans.getElAmountOnAverageScoring();
+            				try {
+            					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
+            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
+            							scoreParameterRetailRequest.setToir(totalObl / (netMonthlyIncome * 12)); 
+            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
+            							scoreParameterRetailRequest.setToir(totalObl / grossAnnualIncome);
+            						}
+            						scoreParameterRetailRequest.setIsToir_p(true);
+            					}else {
+									logger.warn("Gross Or Net Income is Not Set By Lender TOIR==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
+								}
+                            } catch (Exception e) {
+                                logger.error("error while getting TOIR parameter : ",e);
+                            }
             				break;
             			case ScoreParameter.Retail.HomeLoan.ADDI_INCOME_SPOUSE:
             				//Not Available in Sheet Document
@@ -2139,11 +2177,11 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT:
             				if(coApplicantDetail.getNetworth() != null) {
                 				try {
-									if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
+									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setIsNetWorth_p(true);
-										scoreParameterRetailRequest.setNetWorth(coApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountBasedOnIncome());
+										scoreParameterRetailRequest.setNetWorth(coApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountOnAverageScoring());
 									}else {
-										logger.warn("Eligible Loan Amount Based on Income is not Set in APPLICANT_NW_TO_LOAN_AMOUNT==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+										logger.warn("Eligible Loan Amount Based on Income is not Set in APPLICANT_NW_TO_LOAN_AMOUNT==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
 									}
     							} catch (Exception e1) {
     								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
