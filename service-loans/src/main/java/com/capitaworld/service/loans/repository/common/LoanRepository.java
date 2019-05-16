@@ -32,4 +32,5 @@ public interface LoanRepository {
 	
 	public List<Double> getIncomeOfItrOf3Years(Long applicationId);
 
+	public List<Double> getIncomeOfItrOf3YearsOfCoApplicant(Long coAppId);
 }

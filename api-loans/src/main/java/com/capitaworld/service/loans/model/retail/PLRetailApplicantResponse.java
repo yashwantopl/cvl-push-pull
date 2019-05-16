@@ -49,6 +49,10 @@ public class PLRetailApplicantResponse implements Serializable {
     
     private String maritalStatus;
 
+    private String category;
+    private String fatherName;
+    private Integer residenceSinceYear;
+
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
     * Primary Fields
@@ -75,6 +79,8 @@ public class PLRetailApplicantResponse implements Serializable {
     private String salaryAccountBankName;
     private String salaryAccountBankSince;
     private Boolean isOtherSalaryAccBank;
+    private String nationality;
+    private Double annualIncomeOfSpouse;
 
     /*
     * Final
@@ -84,7 +90,47 @@ public class PLRetailApplicantResponse implements Serializable {
         // Do nothing because of X and Y.
     }
 
-    public Long getId() {
+    public String getCategory() {
+		return category;
+	}
+
+	public Double getAnnualIncomeOfSpouse() {
+		return annualIncomeOfSpouse;
+	}
+
+	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
+		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public Integer getResidenceSinceYear() {
+		return residenceSinceYear;
+	}
+
+	public void setResidenceSinceYear(Integer residenceSinceYear) {
+		this.residenceSinceYear = residenceSinceYear;
+	}
+
+	public Long getId() {
         return id;
     }
 

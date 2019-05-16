@@ -924,6 +924,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						param.put("fs_name", fsName);
 						param.put("noCode", true);
 						param.put("address", address);
+						if(user[0].equals("sbi")) {
+							param.put("isSBI", "true");
+						}
+						
 						String loanType="";
 						if(proposOfLoanAmount == 1) {
 							loanType = "Term Loan";
