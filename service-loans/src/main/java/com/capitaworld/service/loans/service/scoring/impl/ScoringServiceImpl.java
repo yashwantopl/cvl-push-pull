@@ -1555,7 +1555,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             			case ScoreParameter.Retail.HomeLoan.TENURE:
             				try {
-								if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
+								if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										scoreParameterRetailRequest.setAvailableIncome(scoringRequestLoans.getElAmountBasedOnIncome());
 										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
 										scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
