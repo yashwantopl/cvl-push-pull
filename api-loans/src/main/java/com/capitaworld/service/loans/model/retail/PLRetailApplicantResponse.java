@@ -52,6 +52,10 @@ public class PLRetailApplicantResponse implements Serializable {
     private String category;
     private String fatherName;
     private Integer residenceSinceYear;
+    private Date businessStartDate;
+    private Double networth;
+    private Double grossMonthlyIncome;
+    private String currentEmploymentStatus;
 
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
@@ -92,6 +96,38 @@ public class PLRetailApplicantResponse implements Serializable {
 
     public String getCategory() {
 		return category;
+	}
+
+	public String getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(String currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public Date getBusinessStartDate() {
+		return businessStartDate;
+	}
+
+	public void setBusinessStartDate(Date businessStartDate) {
+		this.businessStartDate = businessStartDate;
 	}
 
 	public Double getAnnualIncomeOfSpouse() {
