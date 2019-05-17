@@ -1365,6 +1365,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		return updatedRows > 0;
 	}
 
+	@Override
+	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException {
+		return coApplicantDetailRepository.getAllByApplicationId(applicationId);
+	}
+
 	
 	
 }
