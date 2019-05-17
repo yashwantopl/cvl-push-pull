@@ -1555,13 +1555,18 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             			case ScoreParameter.Retail.HomeLoan.TENURE:
             				try {
-								if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
+								if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										scoreParameterRetailRequest.setAvailableIncome(scoringRequestLoans.getElAmountBasedOnIncome());
 										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
-										scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
-										scoreParameterRetailRequest.setIsEligibleTenure_p(true);
 								}else {
-									logger.warn("Eligible Loan Amount Based on Income is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+									logger.warn("Eligible Loan Amount Based on Income is not Set in AVAILABLE_INCOME ==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+								}
+								
+								if(scoringRequestLoans.getEligibleTenure() != null) {
+									scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
+									scoreParameterRetailRequest.setIsEligibleTenure_p(true);
+								}else {
+									logger.warn("Eligible Tenure is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getEligibleTenure());
 								}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
