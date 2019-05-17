@@ -69,5 +69,7 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	@Query("update CoApplicantDetail pm set pm.isOneFormCompleted =:flag, pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
 	public int updateOneFormFlag(@Param("userId") Long userId,@Param("id") Long coAppId, @Param("flag") boolean flag);
 
+	@Query("FROM CoApplicantDetail cd WHERE cd.applicationId.id =:applicationId and cd.isActive = true ")
+	public List<CoApplicantDetail> getAllByApplicationId(@Param("applicationId") Long applicationId);
 
 }
