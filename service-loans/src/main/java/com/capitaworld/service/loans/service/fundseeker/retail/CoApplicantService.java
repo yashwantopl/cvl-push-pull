@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
@@ -16,6 +17,8 @@ public interface CoApplicantService {
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws LoansException;
 
 	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws LoansException;
+	
+	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException;
 
 	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException;
 
