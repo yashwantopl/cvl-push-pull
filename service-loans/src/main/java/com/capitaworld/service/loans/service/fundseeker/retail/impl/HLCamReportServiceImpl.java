@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -344,6 +345,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					}
 				}
 				
+				BeanUtils.copyProperties(coApplicantDetail, coApplicantRequest);
 				coApp.put("gender", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getGenderId()) ? Gender.getById(coApplicantDetail.getGenderId()).getValue(): "");
 				coApp.put("birthDate",!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())? simpleDateFormat.format(coApplicantDetail.getBirthDate()):"-");
 				coApp.put("employmentType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentType()) ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue() : "");
@@ -352,12 +354,11 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				//coApp.put("educationQualification", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEducationQualification()) ? EducationStatusRetailMst.getById(coApplicantDetail.getEducationQualification()).getValue() : "");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "");
 				coApp.put("residenceType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType()) ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue() : "");
-				//coApp.put("spouseEmployment", coApplicantDetail.getSpouseEmployment() != null ? SpouseEmploymentList.getById(coApplicantDetail.getSpouseEmployment()).getValue().toString() : "-");
 				//coApp.put("designation", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDesignation())? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
-				//coApp.put("noOfDependent", coApplicantDetail.getNoOfDependent());
 				//coApp.put("residenceSinceYearMonths", (coApplicantDetail.getResidenceSinceYear() !=null ? (coApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(coApplicantDetail.getResidenceSinceMonth()!= null ? (coApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 				coApp.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? applicationProposalMapping.getLoanAmount(): "-");
 				coApp.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? applicationProposalMapping.getTenure():"-");
+				coApp.put("retailCoApplicantProfile", CommonUtils.printFields(coApplicantRequest, null));
 
 				//KEY VERTICAL FUNDING
 				/*List<Long> keyVerticalFundingId = new ArrayList<>();
@@ -407,7 +408,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}*/
 				listMap.add(coApp);
 			}
-			map.put("retailCoApplicantProfile", CommonUtils.printFields(listMap, null));
+			map.put("retailCoApplicantDetails", CommonUtils.printFields(listMap, null));
 			} catch (Exception e) {
 				logger.error("Error while getting profile Details : ",e);
 			}
