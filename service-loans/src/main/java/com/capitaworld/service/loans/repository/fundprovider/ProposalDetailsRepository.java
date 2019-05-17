@@ -107,6 +107,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public ProposalDetails getProposalId(@Param("applicationId") Long applicationId);
     
     @Query("SELECT COUNT(p.applicationId) FROM ProposalDetails p WHERE p.applicationId=:applicationId")
-    public Integer getCountOfProposalDetailsByApplicationId(@Param("applicationId") Long applicationId); 
+    public Integer getCountOfProposalDetailsByApplicationId(@Param("applicationId") Long applicationId);
+
+    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.proposal_status_id In(5,11,13) AND user_org_id <>:userOrgId ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
+    public ProposalDetails getSanctionProposalByApplicationIdAndUserOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);
 }
 

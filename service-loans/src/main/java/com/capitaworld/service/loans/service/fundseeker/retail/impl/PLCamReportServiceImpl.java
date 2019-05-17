@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
+
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -667,6 +673,14 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
      	LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+
+		Long userOrgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationIdAndUserOrgId(applicationId, userOrgId);
+		IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationIdAndOrgId(applicationId, userOrgId);
+
+		if (!CommonUtils.isObjectNullOrEmpty(proposalDetails) || !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)) {
+			map.put("isSanctioned", "true");
+		}
 		
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {
