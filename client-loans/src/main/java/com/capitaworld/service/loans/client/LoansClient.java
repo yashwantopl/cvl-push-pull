@@ -121,6 +121,7 @@ public class LoansClient {
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
+	private static final String CO_APPLICANT_BASIC_DETAIL_URL = "/co_applicant/get_basic_details";
 	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
 	private static final String PRIMARY_INFORMATION = "/corporate_primary/primary/get";
 	private static final String STRING_TO_BINARY_ARRAY = "/convertToByteArray";
@@ -194,6 +195,7 @@ public class LoansClient {
 
 	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
 	private static final String CALCULATE_SCORING_RETAIL_HL_LIST = "/score/calculate_score/retail_hl_list";
+	private static final String CALCULATE_SCORING_RETAIL_HL_LIST_COAPPLICANT = "/score/calculate_score/retail_hl_list_coapplicant";
 
 	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCMADetailForEligibility/";
 	
@@ -1187,6 +1189,20 @@ public class LoansClient {
 			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
+	
+	public LoansResponse getCoApplicantBasicDetail(Long userId, Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(CO_APPLICANT_BASIC_DETAIL_URL).concat("/" + applicationId + "/" + userId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getBasicDetail : ",e);
+			throw new ExcelException(e.getCause().getMessage());
+		}
+	}
 
 	public LoansResponse getCoApplicantDetails(MobileLoanRequest mobileUserRequest) throws LoansException {
 		String url = loansBaseUrl.concat(MOBILE_GET_COAPPLICANT);
@@ -1827,6 +1843,20 @@ public class LoansClient {
 	
 	public LoansResponse calculateScoringRetailHLList(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
 		String url = loansBaseUrl.concat(CALCULATE_SCORING_RETAIL_HL_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<>(scoringRequestLoansList,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in calculateScoringRetailPLList : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse calculateScoringRetailHLListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_RETAIL_HL_LIST_COAPPLICANT);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");

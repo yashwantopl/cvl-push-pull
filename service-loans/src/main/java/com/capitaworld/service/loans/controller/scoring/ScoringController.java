@@ -72,6 +72,11 @@ public class ScoringController {
     public ResponseEntity<LoansResponse> calculateScoreRetailHL(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
         return scoringService.calculateRetailHomeLoanScoringList(scoringRequestLoansList);
     }
+    
+    @PostMapping(value = "/calculate_score/retail_hl_list_coapplicant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreRetailHLForCoApplicant(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+        return scoringService.calculateRetailHomeLoanScoringListForCoApplicant(scoringRequestLoansList);
+    }
 
     @RequestMapping(value = "/calculate_score/corporate/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> calculateScoreTest(@RequestBody ScoringRequestLoans scoringRequestLoans) {

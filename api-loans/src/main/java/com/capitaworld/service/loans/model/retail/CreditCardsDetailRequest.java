@@ -41,6 +41,8 @@ public class CreditCardsDetailRequest implements Serializable {
 	private String cardTypeString;
 	
 	private Boolean isManuallyAdded;
+	
+	private Long coApplicantId;
 
 	public Long getId() {
 		return id;
@@ -144,5 +146,13 @@ public class CreditCardsDetailRequest implements Serializable {
 
 	public void setIsManuallyAdded(Boolean isManuallyAdded) {
 		this.isManuallyAdded = isManuallyAdded;
+	}
+
+	public Long getCoApplicantId() {
+		return coApplicantId;
+	}
+
+	public void setCoApplicantId(Long coApplicantId) {
+		this.coApplicantId = coApplicantId;
 	}
 }

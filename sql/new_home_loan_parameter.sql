@@ -479,51 +479,51 @@ INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`i
 
 
 
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','80','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','81','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','82','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','83','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','84','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','85','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','86','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','87','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','88','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','89','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','90','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','91','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','92','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','93','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','94','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','95','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','96','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','97','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','98','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','99','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','100','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','101','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','102','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','103','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','104','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','105','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','106','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','107','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','108','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','109','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','110','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','111','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','112','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','113','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','114','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','115','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','116','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','117','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','118','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','119','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','120','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','121','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','122','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','123','5','3');
-INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`) VALUES (NOW(),b'1','124','5','3');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','80','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','81','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','82','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','83','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','84','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','85','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','86','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','87','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','88','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','89','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','90','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','91','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','92','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','93','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','94','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','95','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','96','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','97','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','98','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','99','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','100','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','101','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','102','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','103','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','104','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','105','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','106','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','107','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','108','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','109','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','110','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','111','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','112','5','3',b'1');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','113','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','114','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','115','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','116','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','117','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','118','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','119','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','120','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','121','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','122','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','123','5','3',b'0');
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','124','5','3',b'0');
 
 
 
@@ -556,3 +556,30 @@ ALTER TABLE `loan_eligibility`.`personal_loan_calculation` ADD COLUMN type_id IN
 ALTER TABLE `loan_application`.`retail_model` ADD COLUMN `retail_model_temp_ref_id` BIGINT(20) UNSIGNED NULL AFTER `user_id`, 
 ADD CONSTRAINT `retail_model_temp_id_fk` FOREIGN KEY (`retail_model_temp_ref_id`) REFERENCES `loan_application`.`retail_model_temp`(`id`); 
 ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN ltv DOUBLE;
+
+CREATE TABLE `loan_application`.`fp_loan_purpose_amount_mapping`
+( `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, 
+`fp_product_id` BIGINT(20) UNSIGNED NOT NULL, 
+`type` INT(2) UNSIGNED, 
+`is_active` BIT(1) DEFAULT b'1', 
+PRIMARY KEY (`id`), CONSTRAINT `fp_product_id_fk1` FOREIGN KEY (`fp_product_id`) REFERENCES `loan_application`.`fp_home_loan_details`(`fp_product_id`) ); 
+
+ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` ADD COLUMN MIN DOUBLE;
+ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` ADD COLUMN MAX DOUBLE;
+
+ALTER TABLE `loan_application`.`fp_product_master` MODIFY COLUMN purpose_loan_model_id BIGINT(20);
+ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN purpose_loan_model_id BIGINT(20);
+
+ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` DROP FOREIGN KEY `fp_product_id_fk1`; 
+
+
+
+
+--------------Remain to Execute in Production ---------
+
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN management_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN financial_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN management_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN financial_score_with_risk_weight_co_app DOUBLE;
+ALTER TABLE `loan_application`.`scoring_request_detail` ADD COLUMN co_app_id BIGINT(20);
+ALTER TABLE `scoring_sidbi`.`field_mapping` ADD COLUMN is_consider_co_app BIT(1);
