@@ -1253,6 +1253,8 @@ public class ScoringServiceImpl implements ScoringService {
         PrimaryHomeLoanDetail primaryHomLoanDetail = null;
         Data bankStatementData = null;
         Double totalEMI = 0.0d;
+        CibilScoreLogRequest cibilResponse = null;
+        CibilResponse cibilResponseDpd = null;
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1293,6 +1295,19 @@ public class ScoringServiceImpl implements ScoringService {
             }
             
             totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
+            
+            CibilRequest cibilRequest = new CibilRequest();
+            cibilRequest.setPan(retailApplicantDetail.getPan());
+            cibilRequest.setApplicationId(applicationId);
+            try {
+            	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+                cibilResponseDpd = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());	
+            }catch(Exception e) {
+            	logger.error("Error From CIBIL==>{}",e);
+            	
+            }
+            
+            
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
@@ -1450,10 +1465,6 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
             				Double cibilScore = null;
                             try {
-                                CibilRequest cibilRequest = new CibilRequest();
-                                cibilRequest.setPan(retailApplicantDetail.getPan());
-                                cibilRequest.setApplicationId(applicationId);
-                                CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
                                 logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
                                     cibilScore = Double.parseDouble(cibilResponse.getScore());
@@ -1660,9 +1671,8 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.DPD:
             				try {
-                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
-                                    List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponseDpd.getListData())) {
+                                    List<Integer> listDPD = (List<Integer>) cibilResponseDpd.getListData();
                                     Integer maxDPD = Collections.max(listDPD);
                                     logger.info("Max DPD===>{}",maxDPD);
                                     if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
