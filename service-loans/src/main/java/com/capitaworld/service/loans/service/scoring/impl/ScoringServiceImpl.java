@@ -1354,29 +1354,6 @@ public class ScoringServiceImpl implements ScoringService {
                     if (scoringResponse != null && scoringResponse.getDataList() != null) {
                         dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
                     }
-//                	hlEligibilityRequest = new HLEligibilityRequest();
-//    				hlEligibilityRequest.setTenureFS(scoringRequestLoans.getTenureFS());
-//    				hlEligibilityRequest.setTenureFP(scoringRequestLoans.getTenureFP());
-//    				hlEligibilityRequest.setTenureScoring(scoringRequestLoans.getTenureScoring());
-//    				hlEligibilityRequest.setAgeFS(scoringRequestLoans.getAgeFS());
-//    				hlEligibilityRequest.setIncomeType(scoringRequestLoans.getIncomeType());
-//    				hlEligibilityRequest.setNmi(netMonthlyIncome);
-//    				hlEligibilityRequest.setGmi(grossAnnualIncome);
-//    				hlEligibilityRequest.setIsSetGrossNetIncome(scoringRequestLoans.getIsSetGrossNetIncome());
-//    				hlEligibilityRequest.setIsConsiderCoApp(scoringRequestLoans.getIsConsiderCoApp());
-//    				hlEligibilityRequest.setFoir(scoringRequestLoans.getFoir());
-//    				HLEligibilityRequest hlEligibilityBasedOnIncome = null; 
-//    				
-//    				try {
-//    					hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
-//    					if(hlEligibilityBasedOnIncome == null) {
-//    						logger.info("HL Eligibility Response Found NUll === > {}",hlEligibilityBasedOnIncome);
-//    						continue;
-//    					}
-//					} catch (EligibilityExceptions e2) {
-//						logger.error("Error while Getting Calculation For HL == >{}",e2);
-//						continue;
-//					}
                     
                     for (int i = 0; i < dataList.size(); i++) {
 
@@ -1396,6 +1373,8 @@ public class ScoringServiceImpl implements ScoringService {
                         fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
                         fundSeekerInputRequest.setName(modelParameterResponse.getName());
 
+                        
+                        scoreParameterRetailRequest.setLoanAmtProposed(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
@@ -1916,6 +1895,8 @@ public class ScoringServiceImpl implements ScoringService {
                         fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
                         fundSeekerInputRequest.setName(modelParameterResponse.getName());
                         logger.info("Parameter For CoApplicant==>{}",modelParameterResponse.getName());
+                        
+                        scoreParameterRetailRequest.setLoanAmtProposed(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
