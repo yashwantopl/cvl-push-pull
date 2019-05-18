@@ -260,6 +260,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return applicantRequest;
             }
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
+            applicantRequest.setNetworth(applicantDetail.getNetworth());
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
             if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
