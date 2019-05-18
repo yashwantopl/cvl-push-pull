@@ -553,6 +553,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+            
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
@@ -904,6 +905,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	financialRequest = new FinancialArrangementsDetailRequest();
                 financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                 financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
+                financialRequest.setLoanType("Credit Card");
                 financialArrangementsDetailRequestList.add(financialRequest);
             }
             
