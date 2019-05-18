@@ -1667,7 +1667,6 @@ public class ScoringServiceImpl implements ScoringService {
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
             					}
-            					
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.REPAYMENT_PERIOD:
@@ -2200,6 +2199,7 @@ public class ScoringServiceImpl implements ScoringService {
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
             					}
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
             				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
