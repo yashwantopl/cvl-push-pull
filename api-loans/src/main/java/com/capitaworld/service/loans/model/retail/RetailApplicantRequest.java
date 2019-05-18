@@ -31,6 +31,7 @@ public class RetailApplicantRequest implements Serializable {
 	private String aadharNumber;
 	private String nameAsPerAadharCard;
 	private Double monthlyIncome;
+	private Double grossIncome;
 	private Address firstAddress;
 	private Address secondAddress;
 	private Boolean addressSameAs;
@@ -791,6 +792,15 @@ public class RetailApplicantRequest implements Serializable {
 	public void setLanLineNo(String lanLineNo) {
 		this.lanLineNo = lanLineNo;
 	}
-	
+
+
+	public Double getGrossIncome() {
+		return grossIncome;
+	}
+
+
+	public void setGrossIncome(Double grossIncome) {
+		this.grossIncome = grossIncome;
+	}
 	
 }
