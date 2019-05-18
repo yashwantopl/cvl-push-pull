@@ -39,6 +39,7 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
@@ -55,6 +56,7 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -210,6 +212,12 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	
 	@Autowired
 	private CommonService commonService;
+	
+	@Autowired
+	private AsyncComponent asyncComponent;
+
+	@Autowired
+	private CommonRepository commonRepo;
 	
 	
 	@Override
@@ -783,7 +791,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setResidenceType(coApplicantDetail.getResidenceType() != null ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setCategory(coApplicantDetail.getCategory()!=null?String.valueOf(CastCategory.getById(coApplicantDetail.getCategory())):" - ");
-				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setFatherName(coApplicantDetail.getFatherName()!=null ? coApplicantDetail.getFatherName(): "-");
 				plRetailApplicantResponse.setNationality(coApplicantDetail.getNationality()!=null ?ResidentialStatus.getById(coApplicantDetail.getNationality()).getValue(): "-");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
@@ -795,6 +802,23 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setCurrentEmploymentStatus(EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue());
 				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
 				
+				try {
+					ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
+					if (resNameAsPerITR != null) {
+						String coAppName = commonRepo.getCoApplicatantNameFromITR(coApplicantDetail.getId());
+						plRetailApplicantResponse.setCoApplicantNameAsPerITR(coAppName);
+					} else {
+						logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+					}
+				} catch (Exception e) {
+					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+				}
+				
+				try {
+					plRetailApplicantResponse.setAddress(asyncComponent.murgedAddress(coApplicantDetail.getAddressPremiseName(), coApplicantDetail.getAddressLandmark(), coApplicantDetail.getAddressStreetName(), Long.valueOf(coApplicantDetail.getAddressCity()), Long.valueOf(coApplicantDetail.getAddressPincode().toString()), Long.valueOf(coApplicantDetail.getAddressState())));
+				}catch (Exception e) {
+					logger.error("Error in getting address for coapplicant");
+				}
 				
 				//
 //				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(coApplicantDetail.getRetailApplicantIncomeRequestList());
