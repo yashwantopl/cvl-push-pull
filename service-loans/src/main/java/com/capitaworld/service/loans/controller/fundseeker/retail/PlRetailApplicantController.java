@@ -155,6 +155,17 @@ public class PlRetailApplicantController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping(value = "/getBankRelations/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId) {
+        try {
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(), plRetailApplicantService.getBankRelations(applicationId)), HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(CommonUtils.EXCEPTION,e);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping(value = "/primary/get/{applicationId}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId")  Long applicationId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
