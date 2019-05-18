@@ -206,6 +206,11 @@ public class HlTeaserViewResponse {
     
     private Object proposalData;
     
+    private Double propertyValue;
+    private String propertyAge;
+    
+    private Object propertyAdd;
+    
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1129,6 +1134,25 @@ public class HlTeaserViewResponse {
 	public void setScoringModelName(String scoringModelName) {
 		this.scoringModelName = scoringModelName;
 	}
+	public Double getPropertyValue() {
+		return propertyValue;
+	}
+	public void setPropertyValue(Double propertyValue) {
+		this.propertyValue = propertyValue;
+	}
+	public String getPropertyAge() {
+		return propertyAge;
+	}
+	public void setPropertyAge(String propertyAge) {
+		this.propertyAge = propertyAge;
+	}
+	public Object getPropertyAdd() {
+		return propertyAdd;
+	}
+	public void setPropertyAdd(Object propertyAdd) {
+		this.propertyAdd = propertyAdd;
+	}
+	
 
 
 }
