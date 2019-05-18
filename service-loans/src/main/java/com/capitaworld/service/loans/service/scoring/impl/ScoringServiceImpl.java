@@ -1836,8 +1836,6 @@ public class ScoringServiceImpl implements ScoringService {
         Long applicationId = null;
         Long coApplicantId = null;
         Long orgId = null;
-        List<Long> coAppIds = null;
-        List<Long> coAppITRUploadedIds = null;
         Double netMonthlyIncome = 0.0d;
         Double grossAnnualIncome = 0.0d;
         PrimaryHomeLoanDetail primaryHomLoanDetail = null;
