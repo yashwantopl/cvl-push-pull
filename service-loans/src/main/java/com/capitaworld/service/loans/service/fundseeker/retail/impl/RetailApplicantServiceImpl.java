@@ -203,24 +203,16 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public RetailApplicantRequest get(Long applicationId) throws LoansException {
 		try {
-//			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
 			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
-			/*if (applicantDetail == null) {
-				RetailApplicantRequest request = new RetailApplicantRequest();
-				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
-						userId);
-				request.setDetailsFilledCount(applicationMaster.getDetailsFilledCount());
-				return request;
-			}*/
+			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-			/*applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
-			applicantRequest.setGuarantors(guarantorService.getList(applicationId, userId));*/
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
+			applicantRequest.setGrossIncome(applicantDetail.getGrossMonthlyIncome());
 			if(applicantDetail.getQualifyingYear() != null){
 				Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getQualifyingYear());
 				applicantRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
@@ -232,6 +224,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantRequest.setBusinessStartYear(saperatedBusinessStartDate[2]);
 			}			
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+			applicantRequest.setBusinessTypeId(businessTypeId);
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Retail applicant details:-",e);

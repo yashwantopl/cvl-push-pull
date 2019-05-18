@@ -68,6 +68,7 @@ public class RetailApplicantRequest implements Serializable {
 	private Double annualTurnover;
 	
 	private Integer businessStartYear;
+	private Integer businessTypeId;
 	private Integer businessStartMonth;
 	private Integer currentJobMonth;
 	private Integer currentJobYear;
@@ -801,6 +802,16 @@ public class RetailApplicantRequest implements Serializable {
 
 	public void setGrossIncome(Double grossIncome) {
 		this.grossIncome = grossIncome;
+	}
+
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
 	}
 	
 }
