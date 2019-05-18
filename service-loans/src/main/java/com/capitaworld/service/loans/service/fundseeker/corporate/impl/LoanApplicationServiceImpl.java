@@ -8255,7 +8255,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			else if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
 			{
-				fullName +=retailApplicantDetail.getLastName();
+				fullName +=" " + retailApplicantDetail.getLastName();
 			}
 
 			basicDetailFS.setFullName(retailApplicantDetail.getFirstName() + retailApplicantDetail.getLastName());
