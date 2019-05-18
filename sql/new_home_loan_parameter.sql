@@ -572,11 +572,6 @@ ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN purpose_lo
 
 ALTER TABLE `loan_application`.`fp_loan_purpose_amount_mapping` DROP FOREIGN KEY `fp_product_id_fk1`; 
 
-
-
-
---------------Remain to Execute in Production ---------
-
 ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN management_score_with_risk_weight_co_app DOUBLE;
 ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN financial_score_with_risk_weight_co_app DOUBLE;
 ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN management_score_with_risk_weight_co_app DOUBLE;

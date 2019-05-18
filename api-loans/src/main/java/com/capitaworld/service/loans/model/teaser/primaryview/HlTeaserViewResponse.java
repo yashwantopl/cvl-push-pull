@@ -19,6 +19,10 @@ import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequ
  * @author nilay.darji
  *
  */
+/**
+ * @author mohammad.maaz
+ *
+ */
 public class HlTeaserViewResponse {
 	
 	private List<?> matchesList;
@@ -160,6 +164,8 @@ public class HlTeaserViewResponse {
 	
 	private Object retailApplicantDetail;
 	private Object retailApplicantIncomeDetails;
+	private Object retailCoApplicantDetail;
+	private Object retailCoApplicantIncomeDetails;
 	private Long userId;
 	
 	private Object presentAdd;
@@ -200,9 +206,26 @@ public class HlTeaserViewResponse {
     
     private Object proposalData;
     
+    private Double propertyValue;
+    private String propertyAge;
+    
+    private Object propertyAdd;
+    
     
 	public List<?> getMatchesList() {
 		return matchesList;
+	}
+	public Object getRetailCoApplicantIncomeDetails() {
+		return retailCoApplicantIncomeDetails;
+	}
+	public void setRetailCoApplicantIncomeDetails(Object retailCoApplicantIncomeDetails) {
+		this.retailCoApplicantIncomeDetails = retailCoApplicantIncomeDetails;
+	}
+	public Object getRetailCoApplicantDetail() {
+		return retailCoApplicantDetail;
+	}
+	public void setRetailCoApplicantDetail(Object retailCoApplicantDetail) {
+		this.retailCoApplicantDetail = retailCoApplicantDetail;
 	}
 	public void setMatchesList(List<?> matchesList) {
 		this.matchesList = matchesList;
@@ -1111,6 +1134,25 @@ public class HlTeaserViewResponse {
 	public void setScoringModelName(String scoringModelName) {
 		this.scoringModelName = scoringModelName;
 	}
+	public Double getPropertyValue() {
+		return propertyValue;
+	}
+	public void setPropertyValue(Double propertyValue) {
+		this.propertyValue = propertyValue;
+	}
+	public String getPropertyAge() {
+		return propertyAge;
+	}
+	public void setPropertyAge(String propertyAge) {
+		this.propertyAge = propertyAge;
+	}
+	public Object getPropertyAdd() {
+		return propertyAdd;
+	}
+	public void setPropertyAdd(Object propertyAdd) {
+		this.propertyAdd = propertyAdd;
+	}
+	
 
 
 }

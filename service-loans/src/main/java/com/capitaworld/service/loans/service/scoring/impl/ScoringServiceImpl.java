@@ -1253,6 +1253,8 @@ public class ScoringServiceImpl implements ScoringService {
         PrimaryHomeLoanDetail primaryHomLoanDetail = null;
         Data bankStatementData = null;
         Double totalEMI = 0.0d;
+        CibilScoreLogRequest cibilResponse = null;
+        CibilResponse cibilResponseDpd = null;
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1293,6 +1295,19 @@ public class ScoringServiceImpl implements ScoringService {
             }
             
             totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
+            
+            CibilRequest cibilRequest = new CibilRequest();
+            cibilRequest.setPan(retailApplicantDetail.getPan());
+            cibilRequest.setApplicationId(applicationId);
+            try {
+            	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+                cibilResponseDpd = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());	
+            }catch(Exception e) {
+            	logger.error("Error From CIBIL==>{}",e);
+            	
+            }
+            
+            
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
@@ -1354,29 +1369,6 @@ public class ScoringServiceImpl implements ScoringService {
                     if (scoringResponse != null && scoringResponse.getDataList() != null) {
                         dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
                     }
-//                	hlEligibilityRequest = new HLEligibilityRequest();
-//    				hlEligibilityRequest.setTenureFS(scoringRequestLoans.getTenureFS());
-//    				hlEligibilityRequest.setTenureFP(scoringRequestLoans.getTenureFP());
-//    				hlEligibilityRequest.setTenureScoring(scoringRequestLoans.getTenureScoring());
-//    				hlEligibilityRequest.setAgeFS(scoringRequestLoans.getAgeFS());
-//    				hlEligibilityRequest.setIncomeType(scoringRequestLoans.getIncomeType());
-//    				hlEligibilityRequest.setNmi(netMonthlyIncome);
-//    				hlEligibilityRequest.setGmi(grossAnnualIncome);
-//    				hlEligibilityRequest.setIsSetGrossNetIncome(scoringRequestLoans.getIsSetGrossNetIncome());
-//    				hlEligibilityRequest.setIsConsiderCoApp(scoringRequestLoans.getIsConsiderCoApp());
-//    				hlEligibilityRequest.setFoir(scoringRequestLoans.getFoir());
-//    				HLEligibilityRequest hlEligibilityBasedOnIncome = null; 
-//    				
-//    				try {
-//    					hlEligibilityBasedOnIncome = eligibilityClient.getHLEligibilityBasedOnIncome(hlEligibilityRequest);
-//    					if(hlEligibilityBasedOnIncome == null) {
-//    						logger.info("HL Eligibility Response Found NUll === > {}",hlEligibilityBasedOnIncome);
-//    						continue;
-//    					}
-//					} catch (EligibilityExceptions e2) {
-//						logger.error("Error while Getting Calculation For HL == >{}",e2);
-//						continue;
-//					}
                     
                     for (int i = 0; i < dataList.size(); i++) {
 
@@ -1396,6 +1388,8 @@ public class ScoringServiceImpl implements ScoringService {
                         fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
                         fundSeekerInputRequest.setName(modelParameterResponse.getName());
 
+                        
+                        scoreParameterRetailRequest.setLoanAmtProposed(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
@@ -1471,10 +1465,6 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
             				Double cibilScore = null;
                             try {
-                                CibilRequest cibilRequest = new CibilRequest();
-                                cibilRequest.setPan(retailApplicantDetail.getPan());
-                                cibilRequest.setApplicationId(applicationId);
-                                CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
                                 logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
                                     cibilScore = Double.parseDouble(cibilResponse.getScore());
@@ -1576,13 +1566,18 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             			case ScoreParameter.Retail.HomeLoan.TENURE:
             				try {
-								if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
+								if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										scoreParameterRetailRequest.setAvailableIncome(scoringRequestLoans.getElAmountBasedOnIncome());
 										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
-										scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
-										scoreParameterRetailRequest.setIsEligibleTenure_p(true);
 								}else {
-									logger.warn("Eligible Loan Amount Based on Income is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+									logger.warn("Eligible Loan Amount Based on Income is not Set in AVAILABLE_INCOME ==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
+								}
+								
+								if(scoringRequestLoans.getEligibleTenure() != null) {
+									scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
+									scoreParameterRetailRequest.setIsEligibleTenure_p(true);
+								}else {
+									logger.warn("Eligible Tenure is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getEligibleTenure());
 								}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -1626,8 +1621,43 @@ public class ScoringServiceImpl implements ScoringService {
             				if(!CommonUtils.isListNullOrEmpty(incomeOfItrOf3Years)) {
             					if(incomeOfItrOf3Years.size() == 3) { //as if now considering 3 Years Compulsory
             						Double itrLastToLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
+            						if(itrLastToLastToLastYearIncome == null ) {
+            							itrLastToLastToLastYearIncome = 0.0d;
+            						}
                 					Double itrLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 2);
+                					if(itrLastToLastYearIncome == null) {
+                						itrLastToLastYearIncome = 0.0d;
+                					}
                 					Double itrLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 3);
+                					
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
+            						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
+            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            					}else if(incomeOfItrOf3Years.size() == 2) { //as if now considering 2 Years Compulsory
+            						Double itrLastToLastToLastYearIncome = 0.0d;
+                					Double itrLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
+                					if(itrLastToLastYearIncome == null) {
+                						itrLastToLastYearIncome = 0.0d;
+                					}
+                					Double itrLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 2);
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
+            						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
+            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            					}else if(incomeOfItrOf3Years.size() == 1) { //as if now considering 1 Years Compulsory
+            						Double itrLastToLastToLastYearIncome = 0.0d;
+                					Double itrLastToLastYearIncome = 0.0d;
+                					Double itrLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
@@ -1676,9 +1706,8 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.DPD:
             				try {
-                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
-                                    List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponseDpd.getListData())) {
+                                    List<Integer> listDPD = (List<Integer>) cibilResponseDpd.getListData();
                                     Integer maxDPD = Collections.max(listDPD);
                                     logger.info("Max DPD===>{}",maxDPD);
                                     if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
@@ -1807,8 +1836,6 @@ public class ScoringServiceImpl implements ScoringService {
         Long applicationId = null;
         Long coApplicantId = null;
         Long orgId = null;
-        List<Long> coAppIds = null;
-        List<Long> coAppITRUploadedIds = null;
         Double netMonthlyIncome = 0.0d;
         Double grossAnnualIncome = 0.0d;
         PrimaryHomeLoanDetail primaryHomLoanDetail = null;
@@ -1916,6 +1943,8 @@ public class ScoringServiceImpl implements ScoringService {
                         fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
                         fundSeekerInputRequest.setName(modelParameterResponse.getName());
                         logger.info("Parameter For CoApplicant==>{}",modelParameterResponse.getName());
+                        
+                        scoreParameterRetailRequest.setLoanAmtProposed(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
@@ -2118,8 +2147,43 @@ public class ScoringServiceImpl implements ScoringService {
             				if(!CommonUtils.isListNullOrEmpty(incomeOfItrOf3YearsCoApplicant)) {
             					if(incomeOfItrOf3YearsCoApplicant.size() == 3) { //as if now considering 3 Years Compulsory
             						Double itrLastToLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
+            						if(itrLastToLastToLastYearIncome == null ) {
+            							itrLastToLastToLastYearIncome = 0.0d;
+            						}
                 					Double itrLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 2);
+                					if(itrLastToLastYearIncome == null) {
+                						itrLastToLastYearIncome = 0.0d;
+                					}
                 					Double itrLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 3);
+                					
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
+            						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
+            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            					}else if(incomeOfItrOf3YearsCoApplicant.size() == 2) { //as if now considering 2 Years Compulsory
+            						Double itrLastToLastToLastYearIncome = 0.0d;
+                					Double itrLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
+                					if(itrLastToLastYearIncome == null) {
+                						itrLastToLastYearIncome = 0.0d;
+                					}
+                					Double itrLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 2);
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
+            						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
+            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            					}else if(incomeOfItrOf3YearsCoApplicant.size() == 1) { //as if now considering 1 Years Compulsory
+            						Double itrLastToLastToLastYearIncome = 0.0d;
+                					Double itrLastToLastYearIncome = 0.0d;
+                					Double itrLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);

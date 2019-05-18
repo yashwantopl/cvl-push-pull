@@ -99,6 +99,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private String fatherName;
     private Double annualIncomeOfSpouse;
     private String nationality;
+    private Date businessStartDate;
+    private Double networth;
     
     public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
@@ -106,6 +108,22 @@ public class PLRetailApplicantRequest implements Serializable {
 
     public String getNationality() {
 		return nationality;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public Date getBusinessStartDate() {
+		return businessStartDate;
+	}
+
+	public void setBusinessStartDate(Date businessStartDate) {
+		this.businessStartDate = businessStartDate;
 	}
 
 	public void setNationality(String nationality) {
@@ -510,10 +528,6 @@ public class PLRetailApplicantRequest implements Serializable {
 		return spouseEmployment;
 	}
 
-	public Integer getNoOfDependent() {
-		return noOfDependent;
-	}
-
 	public Integer getDesignation() {
 		return designation;
 	}
@@ -528,10 +542,6 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setSpouseEmployment(Integer spouseEmployment) {
 		this.spouseEmployment = spouseEmployment;
-	}
-
-	public void setNoOfDependent(Integer noOfDependent) {
-		this.noOfDependent = noOfDependent;
 	}
 
 	public void setDesignation(Integer designation) {
@@ -610,6 +620,15 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.officeAddress = officeAddress;
 	}
 
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	
 	public String getFatherName() {
 		return fatherName;
 	}
