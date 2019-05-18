@@ -541,6 +541,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     	bankingRelations.setCreatedBy(userId);
     	bankingRelations.setCreatedDate(new Date());
     	bankingRelations.setIsActive(Boolean.TRUE);
+    	bankingRelations.setIsSalaryAccount(request.getIsSalaryAccount());
     	bankingRelations.setModifiedBy(userId);
     	bankingRelations.setModifiedDate(new Date());
     	bankingRelations.setSinceMonth(request.getSinceMonth());
@@ -567,6 +568,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+            
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
                 LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
@@ -918,6 +920,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	financialRequest = new FinancialArrangementsDetailRequest();
                 financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                 financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
+                financialRequest.setLoanType("Credit Card");
                 financialArrangementsDetailRequestList.add(financialRequest);
             }
             

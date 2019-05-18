@@ -156,10 +156,10 @@ public class PlRetailApplicantController {
         }
     }
     
-    @GetMapping(value = "/getBankRelations/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/primary/getBankRelations/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId) {
         try {
-            return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(), plRetailApplicantService.getBankRelations(applicationId)), HttpStatus.OK);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(), plRetailApplicantService.getBankRelations(applicationId)), HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
@@ -326,7 +326,7 @@ public class PlRetailApplicantController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId);
+            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getRetailBasicDetail(userId, applicationId);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(plRetailApplicantRequest);
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
