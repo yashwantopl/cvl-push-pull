@@ -528,10 +528,6 @@ public class PLRetailApplicantRequest implements Serializable {
 		return spouseEmployment;
 	}
 
-	public Integer getNoOfDependent() {
-		return noOfDependent;
-	}
-
 	public Integer getDesignation() {
 		return designation;
 	}
@@ -546,10 +542,6 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setSpouseEmployment(Integer spouseEmployment) {
 		this.spouseEmployment = spouseEmployment;
-	}
-
-	public void setNoOfDependent(Integer noOfDependent) {
-		this.noOfDependent = noOfDependent;
 	}
 
 	public void setDesignation(Integer designation) {
@@ -628,6 +620,15 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.officeAddress = officeAddress;
 	}
 
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	
 	public String getFatherName() {
 		return fatherName;
 	}
