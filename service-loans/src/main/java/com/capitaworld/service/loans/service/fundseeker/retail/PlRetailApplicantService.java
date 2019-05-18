@@ -28,5 +28,8 @@ public interface PlRetailApplicantService {
     
     public Boolean saveBankRelation(Long userId, Long applicationId, BankRelationshipRequest request);
     
+    public PLRetailApplicantRequest getRetailBasicDetail(Long userId, Long applicationId) throws LoansException;
+
     public List<BankRelationshipRequest> getBankRelations(Long applicationId);
+
 }
