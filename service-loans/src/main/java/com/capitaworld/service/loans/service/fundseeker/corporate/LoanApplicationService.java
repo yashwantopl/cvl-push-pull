@@ -254,4 +254,6 @@ public interface LoanApplicationService {
 	public List<MinMaxProductDetailRequest> getMinMaxProductDetail(Long applicationId);
 
 	public BasicDetailFS getBasicDetail(Long applicationId);
+
+	public Boolean updateLoanType(Long userId, Long applicationId, Long loanTypeId);
 }
