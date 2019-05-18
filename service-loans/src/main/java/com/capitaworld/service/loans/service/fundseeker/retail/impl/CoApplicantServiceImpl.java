@@ -1214,7 +1214,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		try {
 			logger.info("start Co-Applicant getProfile() method");
 			CoApplicantDetail applicantDetail = null;
-			applicantDetail = coApplicantDetailRepository.findByIdAndApplicationId(coApplicantId,applicationId);
+			applicantDetail = coApplicantDetailRepository.findByIdAndApplicationIdId(coApplicantId,applicationId);
 			if (applicantDetail == null) {
 				return null;
 			}
@@ -1363,6 +1363,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		logger.info("updatedRows====>{}",updatedRows);
 		logger.info("Exit in updateFlag()");
 		return updatedRows > 0;
+	}
+
+	@Override
+	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException {
+		return coApplicantDetailRepository.getAllByApplicationId(applicationId);
 	}
 
 	

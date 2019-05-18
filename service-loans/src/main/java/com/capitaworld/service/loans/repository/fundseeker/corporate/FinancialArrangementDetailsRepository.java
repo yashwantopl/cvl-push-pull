@@ -80,4 +80,7 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
 	public Double getTotalEmiByApplicationIdSoftPing(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType);
+	
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail.id =:coApplicantId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
+	public Double getTotalEmiByApplicationIdSoftPing(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType,@Param("coApplicantId") Long coApplicantId);
 }

@@ -49,6 +49,14 @@ public class PLRetailApplicantResponse implements Serializable {
     
     private String maritalStatus;
 
+    private String category;
+    private String fatherName;
+    private Integer residenceSinceYear;
+    private Date businessStartDate;
+    private Double networth;
+    private Double grossMonthlyIncome;
+    private String currentEmploymentStatus;
+
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
     * Primary Fields
@@ -75,6 +83,10 @@ public class PLRetailApplicantResponse implements Serializable {
     private String salaryAccountBankName;
     private String salaryAccountBankSince;
     private Boolean isOtherSalaryAccBank;
+    private String nationality;
+    private Double annualIncomeOfSpouse;
+    private String address;
+    private String coApplicantNameAsPerITR;
 
     /*
     * Final
@@ -84,7 +96,95 @@ public class PLRetailApplicantResponse implements Serializable {
         // Do nothing because of X and Y.
     }
 
-    public Long getId() {
+    public String getCategory() {
+		return category;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public String getCoApplicantNameAsPerITR() {
+		return coApplicantNameAsPerITR;
+	}
+
+	public void setCoApplicantNameAsPerITR(String coApplicantNameAsPerITR) {
+		this.coApplicantNameAsPerITR = coApplicantNameAsPerITR;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(String currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public Date getBusinessStartDate() {
+		return businessStartDate;
+	}
+
+	public void setBusinessStartDate(Date businessStartDate) {
+		this.businessStartDate = businessStartDate;
+	}
+
+	public Double getAnnualIncomeOfSpouse() {
+		return annualIncomeOfSpouse;
+	}
+
+	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
+		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public Integer getResidenceSinceYear() {
+		return residenceSinceYear;
+	}
+
+	public void setResidenceSinceYear(Integer residenceSinceYear) {
+		this.residenceSinceYear = residenceSinceYear;
+	}
+
+	public Long getId() {
         return id;
     }
 

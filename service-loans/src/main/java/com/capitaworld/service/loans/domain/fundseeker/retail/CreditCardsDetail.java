@@ -74,6 +74,9 @@ public class CreditCardsDetail implements Serializable {
 	
 	@Column(name = "card_limit")
 	private Long cardLimit;
+	
+	@Column(name = "co_applicant_id")
+	private Long coApplicantId;
 
 	public CreditCardsDetail() {
 		// Do nothing because of X and Y.
@@ -214,7 +217,14 @@ public class CreditCardsDetail implements Serializable {
 	public void setCardLimit(Long cardLimit) {
 		this.cardLimit = cardLimit;
 	}
-	
+
+	public Long getCoApplicantId() {
+		return coApplicantId;
+	}
+
+	public void setCoApplicantId(Long coApplicantId) {
+		this.coApplicantId = coApplicantId;
+	}
 	
 
 }

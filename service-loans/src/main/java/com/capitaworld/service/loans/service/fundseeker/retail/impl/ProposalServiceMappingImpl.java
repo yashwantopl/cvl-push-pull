@@ -2908,8 +2908,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
         else
         {
             if(request.getBranchId() != null){
-                result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId());
-            }else{
+				if ((!CommonUtils.isObjectNullOrEmpty(request.getIsSanctionByOtherBankReq())) && request.getIsSanctionByOtherBankReq())
+					result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId(), request.getUserOrgId());
+				else
+					result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId());
+			}else{
                 result = proposalDetailRepository.getAllProposalsForSearch(request.getFpProductId(), request.getProposalStatusId());
             }
         }
@@ -2969,7 +2972,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			response.setProductName(CommonUtils.convertString(obj[6]));
 			response.setCreatedDate(CommonUtils.convertDate(obj[7]));
 			response.setBusinessTypeId(CommonUtils.convertInteger(obj[8]));
-			if(response.getBusinessTypeId() == 3) {
+			if(response.getBusinessTypeId() == 3 || response.getBusinessTypeId() == 5 ) {
 				response.setOrgName(CommonUtils.convertString(obj[11]));
 			}
 			response.setProposalStatusId(CommonUtils.convertLong(obj[9]));

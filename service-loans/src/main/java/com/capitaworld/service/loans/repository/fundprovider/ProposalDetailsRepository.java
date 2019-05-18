@@ -79,6 +79,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT lm.applicationId,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,ApplicationProposalMapping lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and pd.branchId =:branchId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.applicationId and cap.applicationProposalMapping is null")
     public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchId") Long branchId);
 
+    @Query(value = "SELECT lm.applicationId,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,ApplicationProposalMapping lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and pd.branchId =:branchId and cap.applicationId.id = pd.applicationId and pd.userOrgId !=:userOrgId and pd.proposalStatusId IN (5,11,13) and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.applicationId and cap.applicationProposalMapping is null")
+    public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchId") Long branchId,@Param("userOrgId") Long userOrgId);
+
     @Query(value = "SELECT lm.applicationId,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,ApplicationProposalMapping lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.branchId IN :branchIdList and pd.isActive = true and cap.applicationId.id = pd.applicationId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.applicationId and cap.applicationProposalMapping is null")
     public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchIdList") List<Long> branchIdList);
 
@@ -104,6 +107,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public ProposalDetails getProposalId(@Param("applicationId") Long applicationId);
     
     @Query("SELECT COUNT(p.applicationId) FROM ProposalDetails p WHERE p.applicationId=:applicationId")
-    public Integer getCountOfProposalDetailsByApplicationId(@Param("applicationId") Long applicationId); 
+    public Integer getCountOfProposalDetailsByApplicationId(@Param("applicationId") Long applicationId);
+
+    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.proposal_status_id In(5,11,13) AND user_org_id <>:userOrgId ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
+    public ProposalDetails getSanctionProposalByApplicationIdAndUserOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);
 }
 

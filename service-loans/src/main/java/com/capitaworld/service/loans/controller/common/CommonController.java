@@ -1,9 +1,12 @@
 package com.capitaworld.service.loans.controller.common;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
+import com.capitaworld.service.loans.model.common.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
-import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
-import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -378,6 +378,59 @@ public class CommonController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting getDataForHunterForNTB==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+
+	@RequestMapping(value = "/getMinMaxProductDetail/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMinMaxProductDetail(@PathVariable("applicationId") Long applicationId,
+																HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		try {
+			logger.info("In getMinMaxProductDetail with Application ID : "+applicationId);
+			if (applicationId == null) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			List<MinMaxProductDetailRequest> minMaxProductDetailRequestList= applicationService.getMinMaxProductDetail(applicationId);
+			loansResponse.setListData(minMaxProductDetailRequestList);
+			logger.info("End getMinMaxProductDetail with Application ID : "+applicationId);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting getMinMaxProductDetail==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	@RequestMapping(value = "/getBasicDetailFS/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getBasicDetailFS(@PathVariable("applicationId") Long applicationId,
+																HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		try {
+			logger.info("In getBasicDetailFS with Application ID : "+applicationId);
+			if (applicationId == null) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			BasicDetailFS basicDetailFS=applicationService.getBasicDetail(applicationId);
+			loansResponse.setData(basicDetailFS);
+			logger.info("End getBasicDetailFS with Application ID : "+applicationId);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting getBasicDetailFS==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

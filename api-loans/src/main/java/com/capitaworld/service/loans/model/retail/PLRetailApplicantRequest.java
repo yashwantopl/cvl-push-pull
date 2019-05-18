@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author mohammad.maaz
+ *
+ */
 public class PLRetailApplicantRequest implements Serializable {
     // Common Fields
     private Long id;
@@ -21,6 +25,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String firstName;
     private String middleName;
     private String lastName;
+    
     private Integer genderId;
     private String pan;
     private String aadharNumber;
@@ -89,12 +94,43 @@ public class PLRetailApplicantRequest implements Serializable {
     private Integer salaryBankYear;
     private Boolean isOtherSalaryBank;
     
-
+    /*ForTeaser*/
+    private Integer category;
+    private String fatherName;
+    private Double annualIncomeOfSpouse;
+    private String nationality;
+    private Date businessStartDate;
+    private Double networth;
+    
     public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
     }
 
-    public Long getId() {
+    public String getNationality() {
+		return nationality;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public Date getBusinessStartDate() {
+		return businessStartDate;
+	}
+
+	public void setBusinessStartDate(Date businessStartDate) {
+		this.businessStartDate = businessStartDate;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
+	public Long getId() {
         return id;
     }
 
@@ -593,6 +629,60 @@ public class PLRetailApplicantRequest implements Serializable {
 	}
 
 	
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public Integer getCategory() {
+		return category;
+	}
+
+	public void setCategory(Integer category) {
+		this.category = category;
+	}
+
+	public Double getAnnualIncomeOfSpouse() {
+		return annualIncomeOfSpouse;
+	}
+
+	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
+		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+
+	@Override
+	public String toString() {
+		return "PLRetailApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
+				+ ", proposalId=" + proposalId + ", titleId=" + titleId + ", firstName=" + firstName + ", middleName="
+				+ middleName + ", lastName=" + lastName + ", genderId=" + genderId + ", pan=" + pan + ", aadharNumber="
+				+ aadharNumber + ", mobile=" + mobile + ", educationQualification=" + educationQualification
+				+ ", statusId=" + statusId + ", residenceType=" + residenceType + ", birthDate=" + birthDate
+				+ ", employmentType=" + employmentType + ", employmentWith=" + employmentWith + ", centralGovId="
+				+ centralGovId + ", stateGovId=" + stateGovId + ", psuId=" + psuId + ", corporateId=" + corporateId
+				+ ", eduInstId=" + eduInstId + ", nameOfEmployer=" + nameOfEmployer + ", employmentStatus="
+				+ employmentStatus + ", currentJobMonth=" + currentJobMonth + ", currentJobYear=" + currentJobYear
+				+ ", totalExperienceMonth=" + totalExperienceMonth + ", totalExperienceYear=" + totalExperienceYear
+				+ ", keyVerticalFunding=" + keyVerticalFunding + ", keyVerticalSector=" + keyVerticalSector
+				+ ", keyVerticalSubSector=" + keyVerticalSubSector + ", contactAddress=" + contactAddress
+				+ ", officeAddress=" + officeAddress + ", contactNo=" + contactNo + ", email=" + email
+				+ ", companyName=" + companyName + ", retailApplicantIncomeRequestList="
+				+ retailApplicantIncomeRequestList + ", loanAmountRequired=" + loanAmountRequired + ", loanPurpose="
+				+ loanPurpose + ", tenureRequired=" + tenureRequired + ", repayment=" + repayment + ", monthlyIncome="
+				+ monthlyIncome + ", financialArrangementsDetailRequestsList=" + financialArrangementsDetailRequestsList
+				+ ", creditCardsDetailRequestList=" + creditCardsDetailRequestList + ", bankingRelationshipList="
+				+ bankingRelationshipList + ", isApplicantDetailsFilled=" + isApplicantDetailsFilled
+				+ ", loanAmountRequiredString=" + loanAmountRequiredString + ", monthlyIncomeString="
+				+ monthlyIncomeString + ", addressCity=" + addressCity + ", addressCountry=" + addressCountry
+				+ ", addressState=" + addressState + ", spouseEmployment=" + spouseEmployment + ", noOfDependent="
+				+ noOfDependent + ", designation=" + designation + ", residenceSinceYear=" + residenceSinceYear
+				+ ", residenceSinceMonth=" + residenceSinceMonth + ", salaryMode=" + salaryMode + ", salaryBankName="
+				+ salaryBankName + ", salaryBankMonth=" + salaryBankMonth + ", salaryBankYear=" + salaryBankYear
+				+ ", isOtherSalaryBank=" + isOtherSalaryBank + ", category=" + category + ", fatherName=" + fatherName
+				+ ", annualIncomeOfSpouse=" + annualIncomeOfSpouse + "]";
+	}
     
     
 }
