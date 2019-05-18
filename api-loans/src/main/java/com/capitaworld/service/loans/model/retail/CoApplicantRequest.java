@@ -27,7 +27,7 @@ public class CoApplicantRequest {
 	private String companyName;
 	private Integer employedWithId;
 	private String employedWithOther;
-	private String entityName;
+	private String nameOfEntity;
 	private Integer industryTypeId;
 	private String industryTypeOther;
 	private Integer selfEmployedOccupationId;
@@ -85,6 +85,11 @@ public class CoApplicantRequest {
 	private Boolean isBankStatementCompleted;
 	
 	private Boolean addressSameAsApplicant;
+	private String fatherName;
+	private String mobile;
+	private Integer category;
+	private Integer nationality;
+	private Double networth;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -270,20 +275,20 @@ public class CoApplicantRequest {
 		this.employedWithOther = employedWithOther;
 	}
 
-	public String getEntityName() {
-		return entityName;
-	}
-
-	public void setEntityName(String entityName) {
-		this.entityName = entityName;
-	}
-
 	public Integer getIndustryTypeId() {
 		return industryTypeId;
 	}
 
 	public void setIndustryTypeId(Integer industryTypeId) {
 		this.industryTypeId = industryTypeId;
+	}
+
+	public String getNameOfEntity() {
+		return nameOfEntity;
+	}
+
+	public void setNameOfEntity(String nameOfEntity) {
+		this.nameOfEntity = nameOfEntity;
 	}
 
 	public String getIndustryTypeOther() {
@@ -657,5 +662,44 @@ public class CoApplicantRequest {
 		this.isBankStatementCompleted = isBankStatementCompleted;
 	}
 	
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Integer getCategory() {
+		return category;
+	}
+
+	public void setCategory(Integer category) {
+		this.category = category;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
 	
 }

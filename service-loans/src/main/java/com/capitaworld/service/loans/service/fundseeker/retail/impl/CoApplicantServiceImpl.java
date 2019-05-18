@@ -1214,7 +1214,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		try {
 			logger.info("start Co-Applicant getProfile() method");
 			CoApplicantDetail applicantDetail = null;
-			applicantDetail = coApplicantDetailRepository.findByIdAndApplicationId(coApplicantId,applicationId);
+			applicantDetail = coApplicantDetailRepository.findByIdAndApplicationIdId(coApplicantId,applicationId);
 			if (applicantDetail == null) {
 				return null;
 			}

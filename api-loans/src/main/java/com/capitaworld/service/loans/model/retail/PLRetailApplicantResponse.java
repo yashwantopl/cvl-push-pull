@@ -85,6 +85,8 @@ public class PLRetailApplicantResponse implements Serializable {
     private Boolean isOtherSalaryAccBank;
     private String nationality;
     private Double annualIncomeOfSpouse;
+    private String address;
+    private String coApplicantNameAsPerITR;
 
     /*
     * Final
@@ -96,6 +98,22 @@ public class PLRetailApplicantResponse implements Serializable {
 
     public String getCategory() {
 		return category;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public String getCoApplicantNameAsPerITR() {
+		return coApplicantNameAsPerITR;
+	}
+
+	public void setCoApplicantNameAsPerITR(String coApplicantNameAsPerITR) {
+		this.coApplicantNameAsPerITR = coApplicantNameAsPerITR;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public String getCurrentEmploymentStatus() {
