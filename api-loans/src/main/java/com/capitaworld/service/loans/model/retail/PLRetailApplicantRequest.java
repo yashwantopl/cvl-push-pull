@@ -100,8 +100,17 @@ public class PLRetailApplicantRequest implements Serializable {
     private Double annualIncomeOfSpouse;
     private String nationality;
     private Date businessStartDate;
+    private Double networth;
     
-    public PLRetailApplicantRequest() {
+    public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
     }
 
