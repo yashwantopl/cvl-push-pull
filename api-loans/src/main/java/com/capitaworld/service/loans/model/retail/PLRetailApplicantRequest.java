@@ -99,6 +99,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String fatherName;
     private Double annualIncomeOfSpouse;
     private String nationality;
+    private Date businessStartDate;
     
     public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
@@ -106,6 +107,14 @@ public class PLRetailApplicantRequest implements Serializable {
 
     public String getNationality() {
 		return nationality;
+	}
+
+	public Date getBusinessStartDate() {
+		return businessStartDate;
+	}
+
+	public void setBusinessStartDate(Date businessStartDate) {
+		this.businessStartDate = businessStartDate;
 	}
 
 	public void setNationality(String nationality) {
