@@ -1410,7 +1410,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceYear());
 
                                 if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth()))
-                                    totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth() / 12);
+                                    totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth()) / 12;
 
                                 scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                 scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -1425,7 +1425,7 @@ public class ScoringServiceImpl implements ScoringService {
                                  currentExperience += Double.valueOf(retailApplicantDetail.getCurrentJobYear());
 
                              if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobMonth()))
-                                 currentExperience += retailApplicantDetail.getCurrentJobMonth() / 12;
+                                 currentExperience += (retailApplicantDetail.getCurrentJobMonth() / 12);
 
                              scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
                              scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);
@@ -1965,7 +1965,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceYear());
 
                                 if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth()))
-                                    totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth() / 12);
+                                    totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth()) / 12;
 
                                 scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                 scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -1980,7 +1980,7 @@ public class ScoringServiceImpl implements ScoringService {
                                  currentExperience += Double.valueOf(coApplicantDetail.getCurrentJobYear());
 
                              if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()))
-                                 currentExperience += coApplicantDetail.getCurrentJobMonth() / 12;
+                                 currentExperience += (coApplicantDetail.getCurrentJobMonth() / 12);
 
                              scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
                              scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);
