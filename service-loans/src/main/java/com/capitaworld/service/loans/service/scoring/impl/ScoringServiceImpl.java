@@ -2154,14 +2154,52 @@ public class ScoringServiceImpl implements ScoringService {
             				if(!CommonUtils.isListNullOrEmpty(incomeOfItrOf3YearsCoApplicant)) {
             					if(incomeOfItrOf3YearsCoApplicant.size() == 3) { //as if now considering 3 Years Compulsory
             						Double itrLastToLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
+            						if(itrLastToLastToLastYearIncome == null ) {
+            							itrLastToLastToLastYearIncome = 0.0d;
+            						}
                 					Double itrLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 2);
+                					if(itrLastToLastYearIncome == null) {
+                						itrLastToLastYearIncome = 0.0d;
+                					}
                 					Double itrLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 3);
+                					
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
             					}
-            				}
+            					
+            					if(incomeOfItrOf3YearsCoApplicant.size() == 2) { //as if now considering 2 Years Compulsory
+            						Double itrLastToLastToLastYearIncome = 0.0d;
+                					Double itrLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
+                					if(itrLastToLastYearIncome == null) {
+                						itrLastToLastYearIncome = 0.0d;
+                					}
+                					Double itrLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 2);
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
+            						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
+            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            					}
+            					
+            					if(incomeOfItrOf3YearsCoApplicant.size() == 1) { //as if now considering 1 Years Compulsory
+            						Double itrLastToLastToLastYearIncome = 0.0d;
+                					Double itrLastToLastYearIncome = 0.0d;
+                					Double itrLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
+                					if(itrLastYearIncome == null) {
+                						itrLastYearIncome = 0.0;
+                					}
+            						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
+            						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
+            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            					}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
             				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
