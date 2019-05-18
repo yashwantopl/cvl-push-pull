@@ -541,6 +541,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     	bankingRelations.setCreatedBy(userId);
     	bankingRelations.setCreatedDate(new Date());
     	bankingRelations.setIsActive(Boolean.TRUE);
+    	bankingRelations.setIsSalaryAccount(request.getIsSalaryAccount());
     	bankingRelations.setModifiedBy(userId);
     	bankingRelations.setModifiedDate(new Date());
     	bankingRelations.setSinceMonth(request.getSinceMonth());
