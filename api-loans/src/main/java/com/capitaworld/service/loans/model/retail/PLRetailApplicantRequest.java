@@ -102,20 +102,20 @@ public class PLRetailApplicantRequest implements Serializable {
     private Date businessStartDate;
     private Double networth;
     
-    public Double getNetworth() {
-		return networth;
-	}
-
-	public void setNetworth(Double networth) {
-		this.networth = networth;
-	}
-
-	public PLRetailApplicantRequest() {
+    public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
     }
 
     public String getNationality() {
 		return nationality;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
 	}
 
 	public Date getBusinessStartDate() {
