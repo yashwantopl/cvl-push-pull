@@ -397,12 +397,8 @@ public class CommonController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-//			RecentProfileViewDetailResponse response = recentViewService.getLatestRecentViewDetailListByAppId(applicationId,
-//					userId);
-
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			List<MinMaxProductDetailRequest> minMaxProductDetailRequestList= applicationService.getMinMaxProductDetail(applicationId);
-			BasicDetailFS basicDetailFS=applicationService.getBasicDetail(applicationId);
 			loansResponse.setListData(minMaxProductDetailRequestList);
 			logger.info("End getMinMaxProductDetail with Application ID : "+applicationId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

@@ -8219,12 +8219,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(CommonUtils.isObjectNullOrEmpty(fsOrgId))
 			{
 				logger.info("User is not from Campaign. Application Id ==>"+applicationId);
-				minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetail(null);
+				minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetail();
 			}
 			else // User is from Campaign
 			{
 				logger.info("User is from Campaign. Application Id ==>"+applicationId + " Campaign Code ==>"+campaignCode);
-				minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetail(fsOrgId);
+				minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetailByOrgId(fsOrgId);
 			}
 
 			for(MinMaxProductDetail minMaxProductDetail:minMaxProductDetailList)
@@ -8255,7 +8255,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			else if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
 			{
-				fullName +=retailApplicantDetail.getLastName();
+				fullName +=" " + retailApplicantDetail.getLastName();
 			}
 
 			basicDetailFS.setFullName(retailApplicantDetail.getFirstName() + retailApplicantDetail.getLastName());
