@@ -2116,7 +2116,7 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setToir(totalObl / (netMonthlyIncome * 12)); 
+            							scoreParameterRetailRequest.setToir(totalObl / (netMonthlyIncome)); 
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
             							scoreParameterRetailRequest.setToir(totalObl / grossAnnualIncome);
             						}
@@ -2243,7 +2243,7 @@ public class ScoringServiceImpl implements ScoringService {
                 				try {
 									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setIsNetWorth_p(true);
-										scoreParameterRetailRequest.setNetWorth(coApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountOnAverageScoring());
+										scoreParameterRetailRequest.setNetWorth((coApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountOnAverageScoring()) * 100);
 									}else {
 										logger.warn("Eligible Loan Amount Based on Income is not Set in APPLICANT_NW_TO_LOAN_AMOUNT==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
 									}
