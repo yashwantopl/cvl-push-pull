@@ -473,8 +473,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		HLOneformPrimaryRes res=primaryHomeloanService.getOneformPrimaryDetails(toApplicationId);
 		if(primaryHlDetail != null) {
 			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getPropertyPrice() != null ? primaryHlDetail.getPropertyPrice() : 0);
-			hlTeaserViewResponse.setPropertyAge((primaryHlDetail.getOldPropYear()!= null? primaryHlDetail.getOldPropYear() >1 ? primaryHlDetail.getOldPropYear() +"years"  : "year" :"") + 
-												(primaryHlDetail.getOldPropMonth()!= null? primaryHlDetail.getOldPropMonth() > 1 ? primaryHlDetail.getOldPropMonth()+"months" : "month" :""));
+			hlTeaserViewResponse.setPropertyAge((primaryHlDetail.getOldPropYear()!= null ? primaryHlDetail.getOldPropYear() + (primaryHlDetail.getOldPropYear() >1 ? " years"  : " year") :"") + " " +
+												( primaryHlDetail.getOldPropMonth()!= null? primaryHlDetail.getOldPropMonth() + (primaryHlDetail.getOldPropMonth() > 1 ? " months" : " month") :""));
 		}
 		
 		if(res!= null) {
