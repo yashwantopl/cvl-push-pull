@@ -1637,9 +1637,7 @@ public class ScoringServiceImpl implements ScoringService {
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
-            					}
-            					
-            					if(incomeOfItrOf3Years.size() == 2) { //as if now considering 2 Years Compulsory
+            					}else if(incomeOfItrOf3Years.size() == 2) { //as if now considering 2 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
                 					if(itrLastToLastYearIncome == null) {
@@ -1653,9 +1651,7 @@ public class ScoringServiceImpl implements ScoringService {
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
-            					}
-            					
-            					if(incomeOfItrOf3Years.size() == 1) { //as if now considering 1 Years Compulsory
+            					}else if(incomeOfItrOf3Years.size() == 1) { //as if now considering 1 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = 0.0d;
                 					Double itrLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
@@ -2169,9 +2165,7 @@ public class ScoringServiceImpl implements ScoringService {
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
-            					}
-            					
-            					if(incomeOfItrOf3YearsCoApplicant.size() == 2) { //as if now considering 2 Years Compulsory
+            					}else if(incomeOfItrOf3YearsCoApplicant.size() == 2) { //as if now considering 2 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
                 					if(itrLastToLastYearIncome == null) {
@@ -2185,9 +2179,7 @@ public class ScoringServiceImpl implements ScoringService {
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
             						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
-            					}
-            					
-            					if(incomeOfItrOf3YearsCoApplicant.size() == 1) { //as if now considering 1 Years Compulsory
+            					}else if(incomeOfItrOf3YearsCoApplicant.size() == 1) { //as if now considering 1 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = 0.0d;
                 					Double itrLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
