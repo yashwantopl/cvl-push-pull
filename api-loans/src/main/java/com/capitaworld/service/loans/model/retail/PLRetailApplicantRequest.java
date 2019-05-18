@@ -121,14 +121,6 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.grossMonthlyIncome = grossMonthlyIncome;
 	}
 
-	public Double getNetworth() {
-		return networth;
-	}
-
-	public void setNetworth(Double networth) {
-		this.networth = networth;
-	}
-
 	public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
     }
