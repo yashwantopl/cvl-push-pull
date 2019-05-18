@@ -103,8 +103,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private Double networth;
     private Double grossMonthlyIncome;
     private String loanPurposeOther;
-    
-    public String getLoanPurposeOther() {
+
+  public String getLoanPurposeOther() {
 		return loanPurposeOther;
 	}
 
@@ -134,6 +134,14 @@ public class PLRetailApplicantRequest implements Serializable {
 
     public String getNationality() {
 		return nationality;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
 	}
 
 	public Date getBusinessStartDate() {
@@ -546,10 +554,6 @@ public class PLRetailApplicantRequest implements Serializable {
 		return spouseEmployment;
 	}
 
-	public Integer getNoOfDependent() {
-		return noOfDependent;
-	}
-
 	public Integer getDesignation() {
 		return designation;
 	}
@@ -564,10 +568,6 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setSpouseEmployment(Integer spouseEmployment) {
 		this.spouseEmployment = spouseEmployment;
-	}
-
-	public void setNoOfDependent(Integer noOfDependent) {
-		this.noOfDependent = noOfDependent;
 	}
 
 	public void setDesignation(Integer designation) {
@@ -646,6 +646,15 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.officeAddress = officeAddress;
 	}
 
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	
 	public String getFatherName() {
 		return fatherName;
 	}
