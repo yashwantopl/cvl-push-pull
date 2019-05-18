@@ -17,6 +17,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long clientId;
     private Long applicationId;
     private Long proposalId;
+    private Integer loanTypeId;
     
     /*
     * Profile Fields
@@ -101,8 +102,26 @@ public class PLRetailApplicantRequest implements Serializable {
     private String nationality;
     private Date businessStartDate;
     private Double networth;
-    
-    public PLRetailApplicantRequest() {
+    private Double grossMonthlyIncome;
+    private String loanPurposeOther;
+
+  public String getLoanPurposeOther() {
+		return loanPurposeOther;
+	}
+
+	public void setLoanPurposeOther(String loanPurposeOther) {
+		this.loanPurposeOther = loanPurposeOther;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
     }
 
@@ -651,6 +670,15 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
 		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+	
+
+	public Integer getLoanTypeId() {
+		return loanTypeId;
+	}
+
+	public void setLoanTypeId(Integer loanTypeId) {
+		this.loanTypeId = loanTypeId;
 	}
 
 	@Override

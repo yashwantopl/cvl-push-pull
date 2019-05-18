@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
+import java.util.List;
+
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
@@ -27,4 +29,7 @@ public interface PlRetailApplicantService {
     public Boolean saveBankRelation(Long userId, Long applicationId, BankRelationshipRequest request);
     
     public PLRetailApplicantRequest getRetailBasicDetail(Long userId, Long applicationId) throws LoansException;
+
+    public List<BankRelationshipRequest> getBankRelations(Long applicationId);
+
 }

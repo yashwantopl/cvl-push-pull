@@ -532,6 +532,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         }
     }
     
+    @Override
     public Boolean saveBankRelation(Long userId, Long applicationId, BankRelationshipRequest request) {
     	
     	BankingRelation bankingRelations = new BankingRelation();
@@ -548,6 +549,19 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     	bankingRelationlRepository.save(bankingRelations);
     	return Boolean.TRUE;
     }
+    
+    @Override
+    public List<BankRelationshipRequest> getBankRelations(Long applicationId) {
+    	List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+        List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+        BankRelationshipRequest bankRelationshipRequest = null;
+        for(BankingRelation bankingRelation : bankingRelations) {
+        	bankRelationshipRequest = new BankRelationshipRequest();
+        	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+        	bankRelationshipRequests.add(bankRelationshipRequest);
+        }
+    	return bankRelationshipRequests;
+    }
 
     @Override
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
@@ -556,10 +570,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
-                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
-                        userId);
+                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
                 if (applicationMaster != null){
                     logger.info("getByIdAndUserId called successfully");
+                    request.setLoanTypeId(applicationMaster.getProductId());
                 }
                 return request;
             }

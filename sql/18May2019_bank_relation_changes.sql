@@ -1,0 +1,1 @@
+ALTER TABLE `loan_application`.`fs_pl_banking_relation` ADD COLUMN `is_salary_account` BIT(1) NULL AFTER `is_active`; 
