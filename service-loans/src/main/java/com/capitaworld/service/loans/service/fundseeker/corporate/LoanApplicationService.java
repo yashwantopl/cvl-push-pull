@@ -249,6 +249,9 @@ public interface LoanApplicationService {
 	public String getUserApplicationList(Long userId);
 	
 	public Boolean savePaymentGatewayAudit(PaymentRequest paymentRequest) throws LoansException;
-  
 
+
+	public List<MinMaxProductDetailRequest> getMinMaxProductDetail(Long applicationId);
+
+	public BasicDetailFS getBasicDetail(Long applicationId);
 }

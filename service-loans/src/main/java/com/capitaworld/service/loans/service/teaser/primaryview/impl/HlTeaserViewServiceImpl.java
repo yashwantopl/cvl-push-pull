@@ -39,13 +39,15 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
@@ -54,11 +56,14 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -68,6 +73,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDeta
 import com.capitaworld.service.loans.service.fundseeker.retail.ObligationDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HlTeaserViewService;
@@ -198,6 +204,20 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	@Autowired
 	ProductMasterRepository productMasterRepository;
 	
+	@Autowired
+	PrimaryHomeLoanDetailRepository primaryHomeloanDetailsRepo;
+	
+	@Autowired
+	PrimaryHomeLoanService primaryHomeloanService;
+	
+	@Autowired
+	private CommonService commonService;
+	
+	@Autowired
+	private AsyncComponent asyncComponent;
+
+	@Autowired
+	private CommonRepository commonRepo;
 	
 	
 	@Override
@@ -281,7 +301,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
-				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus() != null ? 	EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() !=null ? (plRetailApplicantRequest.getTotalExperienceYear() +" year") : "") + " " + (plRetailApplicantRequest.getTotalExperienceMonth() != null ? (plRetailApplicantRequest.getTotalExperienceMonth() +" months") :  "" ));
@@ -445,6 +465,33 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		} catch (Exception e) {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
+		
+		//property details
+		
+		PrimaryHomeLoanDetail primaryHlDetail= primaryHomeloanDetailsRepo.getByApplication(toApplicationId);
+		HLOneformPrimaryRes res=primaryHomeloanService.getOneformPrimaryDetails(toApplicationId);
+		if(primaryHlDetail != null) {
+			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getPropertyPrice() != null ? primaryHlDetail.getPropertyPrice() : 0);
+			hlTeaserViewResponse.setPropertyAge((primaryHlDetail.getOldPropYear()!= null? primaryHlDetail.getOldPropYear() >1 ? primaryHlDetail.getOldPropYear() +"years"  : "year" :"") + 
+												(primaryHlDetail.getOldPropMonth()!= null? primaryHlDetail.getOldPropMonth() > 1 ? primaryHlDetail.getOldPropMonth()+"months" : "month" :""));
+		}
+		
+		if(res!= null) {
+			if(res.getPropCity() != null && res.getPropState() != null && res.getPropCountry() != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(res.getPropCity().longValue(), res.getPropState().intValue(), res.getPropCountry().intValue());
+				if(mapData != null) {
+					hlTeaserViewResponse.setPropertyAdd( (res.getPropPremiseName()!= null ? res.getPropPremiseName()+"," :"") + 
+														 (res.getPropStreetName()!= null ? res.getPropStreetName()+"," : "") + 
+														 (res.getPropLandmark() != null ? res.getPropLandmark()+"," : "") + 
+														 (mapData.get(CommonUtils.CITY_NAME).toString() != null ? mapData.get(CommonUtils.CITY_NAME).toString() +"," : "") + 
+														 (mapData.get(CommonUtils.STATE_NAME).toString() != null ? mapData.get(CommonUtils.STATE_NAME).toString() +"," : "") + 
+														 ((mapData.get(CommonUtils.COUNTRY_NAME).toString() != null ? mapData.get(CommonUtils.COUNTRY_NAME).toString() +"," : "")) + 
+														 (res.getPropPincode() != null ? res.getPropPincode() : "")
+														);
+				}
+			}
+		}
+		
 		
 		//PROPOSAL RESPONSE
 		try {
@@ -738,17 +785,41 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setAadharNumber(coApplicantDetail.getAadharNumber());
 				plRetailApplicantResponse.setMobile(coApplicantDetail.getMobile());
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
-//				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
-//				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithPL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? 	EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year") : "") + " " +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() !=null ? (coApplicantDetail.getTotalExperienceYear() +" year") : "") + " " + (coApplicantDetail.getTotalExperienceMonth() != null ? (coApplicantDetail.getTotalExperienceMonth() +" months") :  "" ));
 				plRetailApplicantResponse.setResidenceType(coApplicantDetail.getResidenceType() != null ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setCategory(coApplicantDetail.getCategory()!=null?String.valueOf(CastCategory.getById(coApplicantDetail.getCategory())):" - ");
-				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setFatherName(coApplicantDetail.getFatherName()!=null ? coApplicantDetail.getFatherName(): "-");
 				plRetailApplicantResponse.setNationality(coApplicantDetail.getNationality()!=null ?ResidentialStatus.getById(coApplicantDetail.getNationality()).getValue(): "-");
+				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
+				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
+				plRetailApplicantResponse.setEmploymentWith(EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue());
+				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
+				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
+				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
+				plRetailApplicantResponse.setCurrentEmploymentStatus(EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue());
+				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+				
+				try {
+					ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
+					if (resNameAsPerITR != null) {
+						String coAppName = commonRepo.getCoApplicatantNameFromITR(coApplicantDetail.getId());
+						plRetailApplicantResponse.setCoApplicantNameAsPerITR(coAppName);
+					} else {
+						logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+					}
+				} catch (Exception e) {
+					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+				}
+				
+				try {
+					plRetailApplicantResponse.setAddress(asyncComponent.murgedAddress(coApplicantDetail.getAddressPremiseName(), coApplicantDetail.getAddressLandmark(), coApplicantDetail.getAddressStreetName(), Long.valueOf(coApplicantDetail.getAddressCity()), Long.valueOf(coApplicantDetail.getAddressPincode().toString()), Long.valueOf(coApplicantDetail.getAddressState())));
+				}catch (Exception e) {
+					logger.error("Error in getting address for coapplicant");
+				}
+				
 				//
 //				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(coApplicantDetail.getRetailApplicantIncomeRequestList());
 				
