@@ -41,11 +41,12 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
@@ -59,6 +60,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Application
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -68,6 +71,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDeta
 import com.capitaworld.service.loans.service.fundseeker.retail.ObligationDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HlTeaserViewService;
@@ -198,6 +202,14 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	@Autowired
 	ProductMasterRepository productMasterRepository;
 	
+	@Autowired
+	PrimaryHomeLoanDetailRepository primaryHomeloanDetailsRepo;
+	
+	@Autowired
+	PrimaryHomeLoanService primaryHomeloanService;
+	
+	@Autowired
+	private CommonService commonService;
 	
 	
 	@Override
@@ -445,6 +457,33 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		} catch (Exception e) {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
+		
+		//property details
+		
+		PrimaryHomeLoanDetail primaryHlDetail= primaryHomeloanDetailsRepo.getByApplication(toApplicationId);
+		HLOneformPrimaryRes res=primaryHomeloanService.getOneformPrimaryDetails(toApplicationId);
+		if(primaryHlDetail != null) {
+			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getPropertyPrice() != null ? primaryHlDetail.getPropertyPrice() : 0);
+			hlTeaserViewResponse.setPropertyAge((primaryHlDetail.getOldPropYear()!= null? primaryHlDetail.getOldPropYear() >1 ? primaryHlDetail.getOldPropYear() +"years"  : "year" :"") + 
+												(primaryHlDetail.getOldPropMonth()!= null? primaryHlDetail.getOldPropMonth() > 1 ? primaryHlDetail.getOldPropMonth()+"months" : "month" :""));
+		}
+		
+		if(res!= null) {
+			if(res.getPropCity() != null && res.getPropState() != null && res.getPropCountry() != null) {
+				Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(res.getPropCity().longValue(), res.getPropState().intValue(), res.getPropCountry().intValue());
+				if(mapData != null) {
+					hlTeaserViewResponse.setPropertyAdd( (res.getPropPremiseName()!= null ? res.getPropPremiseName()+"," :"") + 
+														 (res.getPropStreetName()!= null ? res.getPropStreetName()+"," : "") + 
+														 (res.getPropLandmark() != null ? res.getPropLandmark()+"," : "") + 
+														 (mapData.get(CommonUtils.CITY_NAME).toString() != null ? mapData.get(CommonUtils.CITY_NAME).toString() +"," : "") + 
+														 (mapData.get(CommonUtils.STATE_NAME).toString() != null ? mapData.get(CommonUtils.STATE_NAME).toString() +"," : "") + 
+														 ((mapData.get(CommonUtils.COUNTRY_NAME).toString() != null ? mapData.get(CommonUtils.COUNTRY_NAME).toString() +"," : "")) + 
+														 (res.getPropPincode() != null ? res.getPropPincode() : "")
+														);
+				}
+			}
+		}
+		
 		
 		//PROPOSAL RESPONSE
 		try {
