@@ -103,6 +103,39 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
 
             applicantRepository.save(applicantDetail);
+            
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
+            if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
+                logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
+                for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+                    FinancialArrangementsDetail saveFinObj = null;
+                    if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                    }
+                    if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                        saveFinObj = new FinancialArrangementsDetail();
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE, "isActive");
+
+                        saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                        saveFinObj.setCreatedBy(userId);
+                        saveFinObj.setCreatedDate(new Date());
+                        saveFinObj.setIsActive(true);
+                    } else {
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE);
+                        saveFinObj.setModifiedBy(userId);
+                        saveFinObj.setModifiedDate(new Date());
+                    }
+                    
+                    if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
+                    	saveFinObj.setAmount(null);
+                    	saveFinObj.setEmi(null);
+                    }
+                    
+                    financialArrangementDetailsRepository.save(saveFinObj);
+                }
+            }
 
             // Updating Flag
             if(plRetailApplicantRequest.getProposalId() != null) {
@@ -260,6 +293,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return applicantRequest;
             }
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
+            applicantRequest.setNetworth(applicantDetail.getNetworth());
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
             if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
@@ -497,6 +531,23 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
+    
+    public Boolean saveBankRelation(Long userId, Long applicationId, BankRelationshipRequest request) {
+    	
+    	BankingRelation bankingRelations = new BankingRelation();
+    	bankingRelations.setApplicationId(applicationId);
+    	bankingRelations.setBank(request.getBank());
+    	bankingRelations.setCreatedBy(userId);
+    	bankingRelations.setCreatedDate(new Date());
+    	bankingRelations.setIsActive(Boolean.TRUE);
+    	bankingRelations.setModifiedBy(userId);
+    	bankingRelations.setModifiedDate(new Date());
+    	bankingRelations.setSinceMonth(request.getSinceMonth());
+    	bankingRelations.setSinceYear(request.getSinceYear());
+    	
+    	bankingRelationlRepository.save(bankingRelations);
+    	return Boolean.TRUE;
+    }
 
     @Override
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
@@ -504,10 +555,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
-                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
-                        userId);
+                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
                 if (applicationMaster != null){
                     logger.info("getByIdAndUserId called successfully");
+                    request.setLoanTypeId(applicationMaster.getProductId());
                 }
                 return request;
             }
@@ -518,10 +569,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
-            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
-            System.out.println("bankingRelations :"+bankingRelations.size());
-
             FinancialArrangementsDetailRequest financialRequest = null;
             for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
                 financialRequest = new FinancialArrangementsDetailRequest();
@@ -529,19 +576,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 financialArrangementsDetailRequestList.add(financialRequest);
             }
             applicantRequest.setFinancialArrangementsDetailRequestsList(financialArrangementsDetailRequestList);
-
-            BankRelationshipRequest bankRelationshipRequest = null;
-            for(BankingRelation bankingRelation : bankingRelations) {
-            	bankRelationshipRequest = new BankRelationshipRequest();
-            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
-            	bankRelationshipRequests.add(bankRelationshipRequest);
-            }
-            System.out.println("bankRelationshipRequests :"+bankRelationshipRequests.size());
-            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
-
+            
             List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
             List<CreditCardsDetailRequest> creditCardsDetailRequestList= new ArrayList<CreditCardsDetailRequest>(creditCardsDetailList.size());
-
             CreditCardsDetailRequest creditCardRequest = null;
             for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 creditCardRequest = new CreditCardsDetailRequest();
@@ -551,6 +588,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 creditCardsDetailRequestList.add(creditCardRequest);
             }
             applicantRequest.setCreditCardsDetailRequestList(creditCardsDetailRequestList);
+
+            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            BankRelationshipRequest bankRelationshipRequest = null;
+            for(BankingRelation bankingRelation : bankingRelations) {
+            	bankRelationshipRequest = new BankRelationshipRequest();
+            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	bankRelationshipRequests.add(bankRelationshipRequest);
+            }
+            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
 
             return applicantRequest;
         } catch (Exception e) {
@@ -816,4 +863,56 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
 	}
+	
+	public PLRetailApplicantRequest getRetailBasicDetail(Long userId, Long applicationId) throws LoansException {
+        try {
+            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+            PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
+            if (applicantDetail == null) {
+                return applicantRequest;
+            }
+            BeanUtils.copyProperties(applicantDetail, applicantRequest);
+            copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+
+            if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
+
+				LocalDate since = LocalDate.of(applicantRequest.getSalaryBankYear(), applicantRequest.getSalaryBankMonth(), 1);
+		        LocalDate today = LocalDate.now();
+
+		        Period age = Period.between(since, today);
+		        int years = age.getYears();
+		        int months = age.getMonths();
+
+				applicantRequest.setSalaryBankYear(years);
+				applicantRequest.setSalaryBankMonth(months);
+			}
+
+            
+            // financialArrangement data fetched and copy in beanUtil 
+
+            List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
+            FinancialArrangementsDetailRequest financialRequest = null;
+            for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
+                financialRequest = new FinancialArrangementsDetailRequest();
+                BeanUtils.copyProperties(financialDetail, financialRequest);
+                financialArrangementsDetailRequestList.add(financialRequest);
+            }
+            
+            List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+            for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
+            	financialRequest = new FinancialArrangementsDetailRequest();
+                financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
+                financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
+                financialArrangementsDetailRequestList.add(financialRequest);
+            }
+            
+            applicantRequest.setFinancialArrangementsDetailRequestsList(financialArrangementsDetailRequestList);
+            
+            return applicantRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Profile :- ",e);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
 }

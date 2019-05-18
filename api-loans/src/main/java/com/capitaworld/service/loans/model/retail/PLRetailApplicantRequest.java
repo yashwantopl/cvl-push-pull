@@ -17,6 +17,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long clientId;
     private Long applicationId;
     private Long proposalId;
+    private Integer loanTypeId;
     
     /*
     * Profile Fields
@@ -99,13 +100,49 @@ public class PLRetailApplicantRequest implements Serializable {
     private String fatherName;
     private Double annualIncomeOfSpouse;
     private String nationality;
-    
-    public PLRetailApplicantRequest() {
+    private Date businessStartDate;
+    private Double networth;
+    private Double grossMonthlyIncome;
+    private String loanPurposeOther;
+
+  public String getLoanPurposeOther() {
+		return loanPurposeOther;
+	}
+
+	public void setLoanPurposeOther(String loanPurposeOther) {
+		this.loanPurposeOther = loanPurposeOther;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
     }
 
     public String getNationality() {
 		return nationality;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public Date getBusinessStartDate() {
+		return businessStartDate;
+	}
+
+	public void setBusinessStartDate(Date businessStartDate) {
+		this.businessStartDate = businessStartDate;
 	}
 
 	public void setNationality(String nationality) {
@@ -510,10 +547,6 @@ public class PLRetailApplicantRequest implements Serializable {
 		return spouseEmployment;
 	}
 
-	public Integer getNoOfDependent() {
-		return noOfDependent;
-	}
-
 	public Integer getDesignation() {
 		return designation;
 	}
@@ -528,10 +561,6 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setSpouseEmployment(Integer spouseEmployment) {
 		this.spouseEmployment = spouseEmployment;
-	}
-
-	public void setNoOfDependent(Integer noOfDependent) {
-		this.noOfDependent = noOfDependent;
 	}
 
 	public void setDesignation(Integer designation) {
@@ -610,6 +639,15 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.officeAddress = officeAddress;
 	}
 
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	
 	public String getFatherName() {
 		return fatherName;
 	}
@@ -632,6 +670,15 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
 		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+	
+
+	public Integer getLoanTypeId() {
+		return loanTypeId;
+	}
+
+	public void setLoanTypeId(Integer loanTypeId) {
+		this.loanTypeId = loanTypeId;
 	}
 
 	@Override

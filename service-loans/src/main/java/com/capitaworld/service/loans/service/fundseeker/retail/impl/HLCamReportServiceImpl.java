@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -40,7 +42,6 @@ import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
-import com.capitaworld.service.loans.model.retail.PLRetailApplicantResponse;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
@@ -76,12 +77,11 @@ import com.capitaworld.service.oneform.enums.DesignationList;
 import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentCategory;
-import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LoanPurposePL;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
-import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
+import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
@@ -214,9 +214,15 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 			}
 			
+			LocalDate today = LocalDate.now();
+			if(plRetailApplicantRequest.getBirthDate() != null ) {
+				LocalDate birthday = LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(plRetailApplicantRequest.getBirthDate()));
+				map.put("ageOfApplicant",(today.getYear() - birthday.getYear()) + " years");
+			}
+			
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
-			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "");
+			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "");
 			map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentWith()) ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue() : "");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "");
 			map.put("retailApplicantProfile", CommonUtils.printFields(plRetailApplicantRequest, null));
@@ -229,7 +235,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 			map.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? applicationProposalMapping.getLoanAmount(): "-");
 			map.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? applicationProposalMapping.getTenure():"-");
-
+			map.put("operatingBusinessSince", plRetailApplicantRequest.getBusinessStartDate() != null ? simpleDateFormat.format(plRetailApplicantRequest.getBusinessStartDate()) :"");
 
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
@@ -346,20 +352,32 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				
 				BeanUtils.copyProperties(coApplicantDetail, coApplicantRequest);
+				LocalDate today = LocalDate.now();
+				if(coApplicantDetail.getBirthDate() != null ) {
+					LocalDate birthday = LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(coApplicantDetail.getBirthDate()));
+					coApp.put("ageOfApplicant",(today.getYear() - birthday.getYear()) + " years");
+				}
+				
 				coApp.put("gender", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getGenderId()) ? Gender.getById(coApplicantDetail.getGenderId()).getValue(): "");
 				coApp.put("birthDate",!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())? simpleDateFormat.format(coApplicantDetail.getBirthDate()):"-");
-				coApp.put("employmentType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentType()) ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue() : "");
+				coApp.put("employmentType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentType()) ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue() : "");
 				coApp.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId()) ? EmploymentWithPL.getById(coApplicantDetail.getEmployedWithId()).getValue() : "");
 				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "");
 				//coApp.put("educationQualification", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEducationQualification()) ? EducationStatusRetailMst.getById(coApplicantDetail.getEducationQualification()).getValue() : "");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "");
 				coApp.put("residenceType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType()) ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue() : "");
 				//coApp.put("designation", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDesignation())? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
-				//coApp.put("residenceSinceYearMonths", (coApplicantDetail.getResidenceSinceYear() !=null ? (coApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(coApplicantDetail.getResidenceSinceMonth()!= null ? (coApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				coApp.put("residenceSinceYearMonths", (coApplicantDetail.getResidenceSinceYear() != null ? (coApplicantDetail.getCurrentJobYear() != null ? (coApplicantDetail.getCurrentJobYear() + " year") : "")+ " " +(coApplicantDetail.getResidenceSinceMonth() != null ? (coApplicantDetail.getResidenceSinceMonth()+" months"):"") : ""));
+				coApp.put("noOfDependent", coApplicantDetail.getNoDependent() != null ? coApplicantDetail.getNoDependent() : null);
 				coApp.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? applicationProposalMapping.getLoanAmount(): "-");
 				coApp.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? applicationProposalMapping.getTenure():"-");
+				coApp.put("nationality", coApplicantDetail.getNationality() != null ? ResidentialStatus.getById(coApplicantDetail.getNationality()) : null);
+				coApp.put("grossMonthlyIncome", coApplicantDetail.getGrossMonthlyIncome() != null ? coApplicantDetail.getGrossMonthlyIncome() : null);
+				coApp.put("netMonthlyIncome", coApplicantDetail.getMonthlyIncome() != null ? coApplicantDetail.getMonthlyIncome() : null);
+				coApp.put("currentOccupation", coApplicantDetail.getOccupationId() != null ? OccupationNature.getById(coApplicantDetail.getOccupationId()) : "-");
+				coApp.put("operatingBusinessSince", coApplicantDetail.getBusinessStartDate() != null ? simpleDateFormat.format(coApplicantDetail.getBusinessStartDate()) : "-");
 				coApp.put("retailCoApplicantProfile", CommonUtils.printFields(coApplicantRequest, null));
-
+				
 				//KEY VERTICAL FUNDING
 				/*List<Long> keyVerticalFundingId = new ArrayList<>();
 				if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getKeyVerticalFunding()))
