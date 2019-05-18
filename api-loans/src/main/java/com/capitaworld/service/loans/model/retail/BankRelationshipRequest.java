@@ -12,6 +12,7 @@ public class BankRelationshipRequest implements Serializable {
 	private Integer sinceMonth;
 	private Integer from;
 	private Boolean isActive;
+	private Boolean isSalaryAccount;
 	
 	public Long getId() {
 		return id;
@@ -49,7 +50,11 @@ public class BankRelationshipRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	
-	
+	public Boolean getIsSalaryAccount() {
+		return isSalaryAccount;
+	}
+	public void setIsSalaryAccount(Boolean isSalaryAccount) {
+		this.isSalaryAccount = isSalaryAccount;
+	}
 	
 }
