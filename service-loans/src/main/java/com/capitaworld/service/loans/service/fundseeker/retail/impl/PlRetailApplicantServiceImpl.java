@@ -555,10 +555,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             if (applicantDetail == null) {
                 PLRetailApplicantRequest request = new PLRetailApplicantRequest();
-                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
-                        userId);
+                LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
                 if (applicationMaster != null){
                     logger.info("getByIdAndUserId called successfully");
+                    request.setLoanTypeId(applicationMaster.getProductId());
                 }
                 return request;
             }

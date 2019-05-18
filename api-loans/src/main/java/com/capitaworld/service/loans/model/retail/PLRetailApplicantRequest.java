@@ -17,6 +17,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long clientId;
     private Long applicationId;
     private Long proposalId;
+    private Integer loanTypeId;
     
     /*
     * Profile Fields
@@ -677,6 +678,15 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
 		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+	
+
+	public Integer getLoanTypeId() {
+		return loanTypeId;
+	}
+
+	public void setLoanTypeId(Integer loanTypeId) {
+		this.loanTypeId = loanTypeId;
 	}
 
 	@Override
