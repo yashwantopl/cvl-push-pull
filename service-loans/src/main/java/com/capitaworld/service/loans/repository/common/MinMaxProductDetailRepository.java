@@ -10,5 +10,8 @@ import java.util.List;
 public interface MinMaxProductDetailRepository extends JpaRepository<MinMaxProductDetail,Long> {
 
     @Query("from MinMaxProductDetail where orgId=:orgId and isActive=true")
-    public List<MinMaxProductDetail> listMinMaxProductDetail(@Param("orgId")Long orgId);
+    public List<MinMaxProductDetail> listMinMaxProductDetailByOrgId(@Param("orgId")Long orgId);
+
+    @Query("from MinMaxProductDetail where orgId IS NULL and isActive=true")
+    public List<MinMaxProductDetail> listMinMaxProductDetail();
 }
