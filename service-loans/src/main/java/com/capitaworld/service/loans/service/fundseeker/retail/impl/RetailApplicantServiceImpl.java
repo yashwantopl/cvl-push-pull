@@ -221,6 +221,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
+			applicantRequest.setGrossIncome(applicantDetail.getGrossMonthlyIncome());
 			if(applicantDetail.getQualifyingYear() != null){
 				Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getQualifyingYear());
 				applicantRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
