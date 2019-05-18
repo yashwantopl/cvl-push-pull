@@ -101,8 +101,34 @@ public class PLRetailApplicantRequest implements Serializable {
     private String nationality;
     private Date businessStartDate;
     private Double networth;
-    
-    public PLRetailApplicantRequest() {
+    private Double grossMonthlyIncome;
+    private String loanPurposeOther;
+
+  public String getLoanPurposeOther() {
+		return loanPurposeOther;
+	}
+
+	public void setLoanPurposeOther(String loanPurposeOther) {
+		this.loanPurposeOther = loanPurposeOther;
+	}
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public PLRetailApplicantRequest() {
         // Do nothing because of X and Y.
     }
 
