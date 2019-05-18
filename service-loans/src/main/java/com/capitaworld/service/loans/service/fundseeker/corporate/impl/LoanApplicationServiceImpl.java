@@ -8267,4 +8267,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return  basicDetailFS;
 	}
+
+	@Override
+	public Boolean updateLoanType(Long userId, Long applicationId, Long loanTypeId)
+	{
+		try {
+			LoanApplicationMaster loanApplicationMaster=loanApplicationRepository.findOne(applicationId);
+			loanApplicationMaster.setModifiedBy(userId);
+			loanApplicationMaster.setModifiedDate(new Date());
+			loanApplicationMaster.setProductId(loanTypeId.intValue());
+			loanApplicationRepository.save(loanApplicationMaster);
+			logger.info("Loan Type Updated");
+			return  true;
+		}
+		catch (Exception e)
+		{
+			logger.error("Erroe while Loan Type Update");
+			e.printStackTrace();
+			return  false;
+		}
+	}
 }
