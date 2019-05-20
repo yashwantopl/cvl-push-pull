@@ -416,7 +416,7 @@ public class CommonUtils {
 		private static final String[] PL_RETAIL_PROFILE = {"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber",
 				"mobile", "educationQualification", "statusId", "residenceType", "birthDate", "employmentType", "employmentWith", "centralGovId",
 				"stateGovId", "psuId", "corporateId", "eduInstId", "nameOfEmployer", "employmentStatus", "currentJobMonth", "currentJobYear",
-				"totalExperienceMonth", "totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactNo", "email" };
+				"totalExperienceMonth", "totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactNo", "email","id" };
 
 		public static String[] getPlRetailProfile() {
 			return PL_RETAIL_PROFILE;
