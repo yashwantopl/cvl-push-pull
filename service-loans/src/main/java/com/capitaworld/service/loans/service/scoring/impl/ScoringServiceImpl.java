@@ -1395,9 +1395,10 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
-                                	   long yearsDiff = ChronoUnit.YEARS.between(retailApplicantDetail.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),retailApplicantDetail.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                                	   logger.info("");
-                                       scoreParameterRetailRequest.setAge((double)yearsDiff);
+                                	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBirthDate());
+                                	   Double age = (((double) exactAge[0]) + (exactAge[1] / 12));
+                                	   logger.info("Age With Point == {}",age);
+                                       scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
                                    }
                                } catch (Exception e) {
@@ -1985,9 +1986,10 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
-                                	   long yearsDiff = ChronoUnit.YEARS.between(coApplicantDetail.getBirthDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),coApplicantDetail.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                                	   logger.info("");
-                                       scoreParameterRetailRequest.setAge((double)yearsDiff);
+                                	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBirthDate());
+                                	   Double age = (((double) exactAge[0]) + (exactAge[1] / 12));
+                                	   logger.info("Age With Point == {}",age);
+                                       scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
                                    }
                                } catch (Exception e) {
