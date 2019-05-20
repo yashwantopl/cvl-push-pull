@@ -299,7 +299,8 @@ public class ProductMasterController {
 		}
 	}
 	
-	@RequestMapping(value = "/getActiveInActiveList/{businessTypeId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	//@RequestMapping(value = "/getActiveInActiveList/{businessTypeId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getActiveInActiveList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getActiveInActiveList(HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId/*, @PathVariable(value = "businessTypeId") Long businessTypeId*/) {
         // request must not be null
 		CommonDocumentUtils.startHook(logger, GET_ACTIVE_INACTIVE_LIST);
