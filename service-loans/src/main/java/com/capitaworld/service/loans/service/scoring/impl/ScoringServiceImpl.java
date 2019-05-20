@@ -2249,7 +2249,8 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
             				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
-	                             scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()));
+            					Double value =  Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6; 
+            					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
 	                             scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
        					 	}
             				
