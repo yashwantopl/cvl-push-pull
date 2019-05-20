@@ -1467,9 +1467,10 @@ public class ScoringServiceImpl implements ScoringService {
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
     	                            String s = "01/" + month + "/" + year;
     	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
-    	                            double ceil = Math.ceil(CommonUtils.getAgeFromBirthDate(simpleDateFormat.parse(s)).doubleValue());
-    	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",ceil);
-    	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(ceil);
+    	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
+    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
+    	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",noStayLoc);
+    	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(noStayLoc);
     	                            scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);            						
             					}
             				} catch (Exception e) {
