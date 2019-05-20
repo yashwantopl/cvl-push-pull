@@ -1520,8 +1520,8 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setCurrentEmploymentStatus((retailApplicantDetail.getCurrentEmploymentStatus() != null  ? retailApplicantDetail.getCurrentEmploymentStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.MIN_BANKING_RELATIONSHIP:
-            				scoreParameterRetailRequest.setIsMinBankingRelationship_p(minBankRelationshipInMonths != null);
-            				scoreParameterRetailRequest.setMinBankingRelationship(minBankRelationshipInMonths);
+            				scoreParameterRetailRequest.setIsMinBankingRelationship_p(true);
+            				scoreParameterRetailRequest.setMinBankingRelationship(minBankRelationshipInMonths == null ? 0 : minBankRelationshipInMonths);
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
@@ -1566,7 +1566,7 @@ public class ScoringServiceImpl implements ScoringService {
             							scoreParameterRetailRequest.setNetAnnualIncome_p(true);
             							scoreParameterRetailRequest.setGrossAnnualIncome(null);
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome);
+            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12);
             							scoreParameterRetailRequest.setNetAnnualIncome(null);
             							scoreParameterRetailRequest.setNetAnnualIncome_p(false);
             						}
@@ -1988,7 +1988,7 @@ public class ScoringServiceImpl implements ScoringService {
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
                                 	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBirthDate());
-                                	   Double age = (((double) exactAge[0]) + ( (double)exactAge[1] / 12));
+                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12));
                                 	   logger.info("Age With Point == {}",age);
                                        scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
