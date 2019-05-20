@@ -152,8 +152,21 @@ public class PlRetailApplicantController {
 
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
-            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @GetMapping(value = "/primary/inactivateBankRelation/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveBankRelation(HttpServletRequest request, @PathVariable("id")  Long id) {
+    	try {
+    		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+    		plRetailApplicantService.inactivateBankRelation(id, userId);
+    		return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
+    		
+    	} catch (Exception e) {
+    		logger.error(CommonUtils.EXCEPTION,e);
+    		return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
     }
     
     @GetMapping(value = "/primary/getBankRelations/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)

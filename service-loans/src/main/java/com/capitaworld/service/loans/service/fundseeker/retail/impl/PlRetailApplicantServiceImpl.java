@@ -536,17 +536,27 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     public Boolean saveBankRelation(Long userId, Long applicationId, BankRelationshipRequest request) {
     	
     	BankingRelation bankingRelations = new BankingRelation();
-    	bankingRelations.setApplicationId(applicationId);
-    	bankingRelations.setBank(request.getBank());
     	bankingRelations.setCreatedBy(userId);
     	bankingRelations.setCreatedDate(new Date());
     	bankingRelations.setIsActive(Boolean.TRUE);
+    	bankingRelations.setApplicationId(applicationId);
+    	bankingRelations.setBank(request.getBank());
     	bankingRelations.setIsSalaryAccount(request.getIsSalaryAccount());
     	bankingRelations.setModifiedBy(userId);
     	bankingRelations.setModifiedDate(new Date());
     	bankingRelations.setSinceMonth(request.getSinceMonth());
     	bankingRelations.setSinceYear(request.getSinceYear());
     	
+    	bankingRelationlRepository.save(bankingRelations);
+    	return Boolean.TRUE;
+    }
+    
+    @Override
+    public Boolean inactivateBankRelation(Long id, Long userId) {
+    	BankingRelation bankingRelations = bankingRelationlRepository.findOne(id);
+    	bankingRelations.setIsActive(Boolean.FALSE);
+    	bankingRelations.setModifiedBy(userId);
+    	bankingRelations.setModifiedDate(new Date());
     	bankingRelationlRepository.save(bankingRelations);
     	return Boolean.TRUE;
     }
