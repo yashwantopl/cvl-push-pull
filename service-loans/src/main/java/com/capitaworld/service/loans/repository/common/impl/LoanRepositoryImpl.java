@@ -204,7 +204,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			}
 			return finalList;
 		}else {
-			return Collections.emptyList();;
+			return Collections.emptyList();
 		}
 	}
 	
