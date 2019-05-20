@@ -1463,7 +1463,7 @@ public class ScoringServiceImpl implements ScoringService {
             						Integer year = retailApplicantDetail.getResidenceSinceYear();
     	                            Integer month = retailApplicantDetail.getResidenceSinceMonth();
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    	                            String s = "01/" + mo nth + "/" + year;
+    	                            String s = "01/" + month + "/" + year;
     	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
     	                            double ceil = Math.ceil(CommonUtils.getAgeFromBirthDate(simpleDateFormat.parse(s)).doubleValue());
     	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",ceil);
@@ -1866,6 +1866,7 @@ public class ScoringServiceImpl implements ScoringService {
         Data coApplicantBankStatementData = null;
         Double totalEMI = 0.0;
         CibilScoreLogRequest cibilResponse = null;
+        CibilResponse cibilResponseDpdCoApp = null;
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	coApplicantId = scoringRequestLoansList.get(0).getCoApplicantId();
@@ -1883,7 +1884,12 @@ public class ScoringServiceImpl implements ScoringService {
         	CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(coApplicantDetail.getPan());
             cibilRequest.setApplicationId(applicationId);
-            cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+            try {
+            	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+                cibilResponseDpdCoApp = cibilClient.getDPDLastXMonth(applicationId,coApplicantDetail.getPan());            	
+            }catch(Exception e) {
+            	logger.error("Error in Getting CIBIL infor like DPD and Score == >{}",e);
+            }
         	
         	EligibilityResponse eligibilityResponse = null;
 			try {
@@ -2267,9 +2273,8 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.DPD:
             				try {
-                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,coApplicantDetail.getPan());
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
-                                    List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponseDpdCoApp) && !CommonUtils.isListNullOrEmpty(cibilResponseDpdCoApp.getListData())) {
+                                    List<Integer> listDPD = (List<Integer>) cibilResponseDpdCoApp.getListData();
                                     Integer maxDPD = Collections.max(listDPD);
                                     logger.info("Max DPD Of CoApplicant===>{}",maxDPD);
                                     if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
