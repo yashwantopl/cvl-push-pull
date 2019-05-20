@@ -1323,6 +1323,7 @@ public class ScoringServiceImpl implements ScoringService {
             if(orgId != null) {
             	BankList bankEnum = BankList.fromOrgId(orgId.toString());
             	if(bankEnum != null) {
+            		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
             		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());	
             	}
             	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
