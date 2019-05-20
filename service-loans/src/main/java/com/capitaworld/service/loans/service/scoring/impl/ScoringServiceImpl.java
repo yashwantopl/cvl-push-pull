@@ -1406,11 +1406,18 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.TOTAL_JOB_EXP:
             				try {
                                 Double totalExperience = 0.0;
-                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceYear()))
-                                    totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceYear());
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceYear())) {
+                                	totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceYear());
+                                	logger.info("totalExperience Year {}===>{}",retailApplicantDetail.getTotalExperienceYear());
+                                	
+                                }
 
-                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth()))
-                                    totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth()) / 12;
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth())) {
+                                	totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth()) / 12;
+                                	logger.info("totalExperience Month {}===>{}",retailApplicantDetail.getTotalExperienceMonth());
+                                }
+                                
+                                logger.info("totalExperience {}===>{}",totalExperience);
 
                                 scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                 scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -1421,12 +1428,15 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.CURRENT_JOB_EXP:
             				try {
             				 Double currentExperience = 0.0;
-                             if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobYear()))
-                                 currentExperience += Double.valueOf(retailApplicantDetail.getCurrentJobYear());
-
-                             if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobMonth()))
+                             if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobYear())) {
+                            	 currentExperience += Double.valueOf(retailApplicantDetail.getCurrentJobYear());
+                            	 logger.info("currentExperience Year {}===>{}",currentExperience);
+                             }
+                             if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobMonth())) {
                                  currentExperience += (retailApplicantDetail.getCurrentJobMonth() / 12);
-
+                            	 logger.info("currentExperience Month {}===>{}",(retailApplicantDetail.getCurrentJobMonth() / 12));	 
+                             }
+                             logger.info("currentExperience {}===>{}",currentExperience);
                              scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
                              scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);
                          } catch (Exception e) {
@@ -1584,16 +1594,12 @@ public class ScoringServiceImpl implements ScoringService {
 							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOIR:
-            				if(totalEMI == null) {
-            					totalEMI = 0.0d;
-            				}
-            				Double totalObl = totalEMI + scoringRequestLoans.getElAmountOnAverageScoring();
             				try {
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setToir(totalObl / (netMonthlyIncome * 12)); 
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / netMonthlyIncome)); 
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setToir(totalObl / grossAnnualIncome);
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / grossAnnualIncome);
             						}
             						scoreParameterRetailRequest.setIsToir_p(true);
             					}else {
@@ -1611,7 +1617,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.MON_INCOME_DEPENDANT:
             				if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && retailApplicantDetail.getNoOfDependent() != null && retailApplicantDetail.getNoOfDependent() != 0) {
-                                scoreParameterRetailRequest.setMonIncomePerDep(netMonthlyIncome / retailApplicantDetail.getNoOfDependent());
+                                scoreParameterRetailRequest.setMonIncomePerDep(netMonthlyIncome / (retailApplicantDetail.getNoOfDependent() + 1)); //1 is Applicant him/his self
                                 scoreParameterRetailRequest.setIsMonIncomePerDep_p(true);
                             }
             				break;
@@ -1679,8 +1685,10 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
             				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
-	                             scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()));
-	                             scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
+            					Double value =  Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
+            					logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",value);
+            					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
+	                            scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
        					 	}
             				
             				break;
@@ -1961,11 +1969,18 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.TOTAL_JOB_EXP:
             				try {
                                 Double totalExperience = 0.0;
-                                if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear()))
-                                    totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceYear());
+                                if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear())) {
+                                	totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceYear());                                	
+                                	logger.info("totalExperience Year {}===>{}",coApplicantDetail.getTotalExperienceYear());
+                                }
+                                
 
-                                if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth()))
-                                    totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth()) / 12;
+                                if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth())) {
+                                	totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth()) / 12;
+                                	logger.info("totalExperience Year Month ===>{}",coApplicantDetail.getTotalExperienceMonth());
+                                }
+                                    
+                                logger.info("totalExperience ===>{}",totalExperience);
 
                                 scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                 scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -1976,11 +1991,15 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.CURRENT_JOB_EXP:
             				try {
             				 Double currentExperience = 0.0;
-                             if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()))
-                                 currentExperience += Double.valueOf(coApplicantDetail.getCurrentJobYear());
+                             if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear())){
+                            	 currentExperience += Double.valueOf(coApplicantDetail.getCurrentJobYear());
+                            	 logger.info("CURRENT_JOB_EXP Year {}===>{}",coApplicantDetail.getCurrentJobYear());
+                             }
 
-                             if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()))
-                                 currentExperience += (coApplicantDetail.getCurrentJobMonth() / 12);
+                             if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth())) {
+                            	 currentExperience += (coApplicantDetail.getCurrentJobMonth() / 12);
+                            	 logger.info("CURRENT_JOB_EXP Month {}===>{}",coApplicantDetail.getCurrentJobMonth());
+                             }
 
                              scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
                              scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);
@@ -1991,7 +2010,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.TOTAL_BUSI_PROFE_EXP:
             				if(coApplicantDetail.getBusinessStartDate() != null) {
             					long diffYears = ChronoUnit.YEARS.between(coApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            					logger.info("Total Business Experiance For HL==== > {}",diffYears);
+            					logger.info("Total Business Experiance For HL CoApplicant==== > {}",diffYears);
             					scoreParameterRetailRequest.setTotalBusProfExperiance((int)diffYears);
             					scoreParameterRetailRequest.setIsTotalBusProfExperiance_p(true);
             				}
@@ -2007,7 +2026,7 @@ public class ScoringServiceImpl implements ScoringService {
     	                            Integer month = coApplicantDetail.getResidenceSinceMonth();
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
     	                            String s = "01/" + month + "/" + year;
-    	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
+    	                            logger.info("Starting Date of Staying in Current Location For HL CoApplicant==== > {}",s);
     	                            double ceil = Math.ceil(CommonUtils.getAgeFromBirthDate(simpleDateFormat.parse(s)).doubleValue());
     	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",ceil);
     	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(ceil);
@@ -2109,16 +2128,12 @@ public class ScoringServiceImpl implements ScoringService {
 							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOIR:
-            				if(totalEMI == null) {
-            					totalEMI = 0.0d;
-            				}
-            				Double totalObl = totalEMI + scoringRequestLoans.getElAmountOnAverageScoring();
             				try {
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setToir(totalObl / (netMonthlyIncome)); 
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / (netMonthlyIncome)); 
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setToir(totalObl / grossAnnualIncome);
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / grossAnnualIncome);
             						}
             						scoreParameterRetailRequest.setIsToir_p(true);
             					}else {

@@ -59,6 +59,7 @@ public class ScoringRequestLoans {
 	private Double eligibleTenure;
 	private Double timesMultiplier;
 	private Double monthlyObligation;
+	private Double finalEmiExistingObligationAndProposedObligation;
 	
 	private Integer noOfCoApplicantFP;
 	private Integer noOfCoApplicantFS;
@@ -473,6 +474,14 @@ public class ScoringRequestLoans {
 
 	public void setCoApplicantId(Long coApplicantId) {
 		this.coApplicantId = coApplicantId;
+	}
+
+	public Double getFinalEmiExistingObligationAndProposedObligation() {
+		return finalEmiExistingObligationAndProposedObligation;
+	}
+
+	public void setFinalEmiExistingObligationAndProposedObligation(Double finalEmiExistingObligationAndProposedObligation) {
+		this.finalEmiExistingObligationAndProposedObligation = finalEmiExistingObligationAndProposedObligation;
 	}
 
 	@Override
