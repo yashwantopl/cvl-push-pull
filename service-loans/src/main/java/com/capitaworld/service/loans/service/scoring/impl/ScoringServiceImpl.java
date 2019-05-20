@@ -1576,7 +1576,6 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
-            			case ScoreParameter.Retail.HomeLoan.TENURE:
             				try {
 								if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										scoreParameterRetailRequest.setAvailableIncome(scoringRequestLoans.getElAmountBasedOnIncome());
@@ -1584,16 +1583,17 @@ public class ScoringServiceImpl implements ScoringService {
 								}else {
 									logger.warn("Eligible Loan Amount Based on Income is not Set in AVAILABLE_INCOME ==== > {}",scoringRequestLoans.getElAmountBasedOnIncome());
 								}
-								
-								if(scoringRequestLoans.getEligibleTenure() != null) {
-									scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
-									scoreParameterRetailRequest.setIsEligibleTenure_p(true);
-								}else {
-									logger.warn("Eligible Tenure is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getEligibleTenure());
-								}
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
 							}
+            				break;
+            			case ScoreParameter.Retail.HomeLoan.TENURE:
+            				if(scoringRequestLoans.getEligibleTenure() != null) {
+								scoreParameterRetailRequest.setEligibleTenure(scoringRequestLoans.getEligibleTenure());
+								scoreParameterRetailRequest.setIsEligibleTenure_p(true);
+							}else {
+								logger.warn("Eligible Tenure is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getEligibleTenure());
+							}            				
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOIR:
             				try {
@@ -1912,7 +1912,7 @@ public class ScoringServiceImpl implements ScoringService {
                  reportRequest.setApplicationId(applicationId);
                  reportRequest.setCoApplicantId(coApplicantId);
                  AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-                 coApplicantBankStatementData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
+                                                                                                   
             }catch(Exception e) {
             	logger.error("Error while getting Bank Statement Details");
             }
