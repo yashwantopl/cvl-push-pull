@@ -1434,8 +1434,8 @@ public class ScoringServiceImpl implements ScoringService {
                             	 logger.info("currentExperience Year {}===>{}",currentExperience);
                              }
                              if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobMonth())) {
-                                 currentExperience += (retailApplicantDetail.getCurrentJobMonth() / 12);
-                            	 logger.info("currentExperience Month {}===>{}",(retailApplicantDetail.getCurrentJobMonth() / 12));	 
+                                 currentExperience += (retailApplicantDetail.getCurrentJobMonth().doubleValue() / 12);
+                            	 logger.info("currentExperience Month {}===>{}",retailApplicantDetail.getCurrentJobMonth().doubleValue());	 
                              }
                              logger.info("currentExperience {}===>{}",currentExperience);
                              scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
