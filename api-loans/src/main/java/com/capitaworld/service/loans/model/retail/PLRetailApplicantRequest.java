@@ -104,6 +104,11 @@ public class PLRetailApplicantRequest implements Serializable {
     private Double networth;
     private Double grossMonthlyIncome;
     private String loanPurposeOther;
+    
+    private Boolean isBasicInfoFilled;
+    private Boolean isEmploymentInfoFilled;
+    private Boolean isContactInfoFilled;
+    private Boolean isCreditInfoFilled;
 
   public String getLoanPurposeOther() {
 		return loanPurposeOther;
@@ -679,6 +684,38 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setLoanTypeId(Integer loanTypeId) {
 		this.loanTypeId = loanTypeId;
+	}
+	
+	public Boolean getIsBasicInfoFilled() {
+		return isBasicInfoFilled;
+	}
+
+	public Boolean getIsEmploymentInfoFilled() {
+		return isEmploymentInfoFilled;
+	}
+
+	public Boolean getIsContactInfoFilled() {
+		return isContactInfoFilled;
+	}
+
+	public Boolean getIsCreditInfoFilled() {
+		return isCreditInfoFilled;
+	}
+
+	public void setIsBasicInfoFilled(Boolean isBasicInfoFilled) {
+		this.isBasicInfoFilled = isBasicInfoFilled;
+	}
+
+	public void setIsEmploymentInfoFilled(Boolean isEmploymentInfoFilled) {
+		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
+	}
+
+	public void setIsContactInfoFilled(Boolean isContactInfoFilled) {
+		this.isContactInfoFilled = isContactInfoFilled;
+	}
+
+	public void setIsCreditInfoFilled(Boolean isCreditInfoFilled) {
+		this.isCreditInfoFilled = isCreditInfoFilled;
 	}
 
 	@Override
