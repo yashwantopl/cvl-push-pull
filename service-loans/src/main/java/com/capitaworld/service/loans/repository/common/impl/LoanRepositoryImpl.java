@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -177,17 +179,33 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Double> getIncomeOfItrOf3Years(Long applicationId) {
-		return entityManager.createNativeQuery("SELECT appInc.`year`,appInc.`salary_income` FROM `loan_application`.`fs_retail_applicant_income_details` appInc WHERE appInc.`application_id` =:applicationId AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
-				.setParameter("applicationId", applicationId)
-				.getResultList();
+		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_applicant_income_details` appInc WHERE appInc.`application_id` =:applicationId AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ").setParameter("applicationId", applicationId) .getResultList();
+//		if(!CommonUtils.isListNullOrEmpty(resultList)) {
+//			List<Double> finalList = new ArrayList<>(resultList.size());
+//			for(Object o : resultList) {
+//				finalList.add(Double.valueOf(o.toString()));
+//			}
+//			return finalList;
+//		}else {
+//			return Collections.emptyList();			
+//		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Double> getIncomeOfItrOf3YearsOfCoApplicant(Long coAppId) {
-		return entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
+		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
 				.setParameter("id", coAppId)
 				.getResultList();
+//		if(!CommonUtils.isListNullOrEmpty(resultList)) {
+//			List<Double> finalList = new ArrayList<>(resultList.size());
+//			for(Object o : resultList) {
+//				finalList.add(Double.valueOf(o.toString()));
+//			}
+//			return finalList;
+//		}else {
+//			return Collections.emptyList();
+//		}
 	}
 	
 }
