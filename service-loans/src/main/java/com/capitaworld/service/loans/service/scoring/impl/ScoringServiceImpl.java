@@ -113,6 +113,7 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Service
 @Transactional
@@ -1819,7 +1820,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                     logger.info("----------------------------END-------------------------------------------");
 
-                    Gson g = new Gson();
+                    Gson g = new GsonBuilder().serializeSpecialFloatingPointValues().create();
                     ScoringRequestDetail scoringRequestDetail = new ScoringRequestDetail();
 
                     try {
