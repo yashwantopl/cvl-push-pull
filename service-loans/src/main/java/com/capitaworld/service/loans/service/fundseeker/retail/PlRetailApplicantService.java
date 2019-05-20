@@ -31,5 +31,7 @@ public interface PlRetailApplicantService {
     public PLRetailApplicantRequest getRetailBasicDetail(Long userId, Long applicationId) throws LoansException;
 
     public List<BankRelationshipRequest> getBankRelations(Long applicationId);
+    
+    public Boolean inactivateBankRelation(Long id, Long userId);
 
 }
