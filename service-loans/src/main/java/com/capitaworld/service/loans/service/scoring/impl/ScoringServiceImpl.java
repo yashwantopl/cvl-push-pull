@@ -1599,9 +1599,9 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / netMonthlyIncome)); 
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / netMonthlyIncome); 
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / grossAnnualIncome);
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / grossAnnualIncome);
             						}
             						scoreParameterRetailRequest.setIsToir_p(true);
             					}else {
@@ -2155,9 +2155,9 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / (netMonthlyIncome)); 
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / netMonthlyIncome); 
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getFinalEmiExistingObligationAndProposedObligation() / grossAnnualIncome);
+            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / grossAnnualIncome);
             						}
             						scoreParameterRetailRequest.setIsToir_p(true);
             					}else {
