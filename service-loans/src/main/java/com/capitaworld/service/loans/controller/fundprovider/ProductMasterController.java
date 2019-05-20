@@ -300,7 +300,7 @@ public class ProductMasterController {
 	}
 	
 	@RequestMapping(value = "/getActiveInActiveList/{businessTypeId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> getActiveInActiveList(HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId, @PathVariable(value = "businessTypeId") Long businessTypeId) {
+    public ResponseEntity<LoansResponse> getActiveInActiveList(HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId/*, @PathVariable(value = "businessTypeId") Long businessTypeId*/) {
         // request must not be null
 		CommonDocumentUtils.startHook(logger, GET_ACTIVE_INACTIVE_LIST);
 		try {
@@ -317,7 +317,8 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
-            List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId, userOrgId, businessTypeId);
+            //List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId, userOrgId, businessTypeId);
+            List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId, userOrgId);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, GET_ACTIVE_INACTIVE_LIST);
