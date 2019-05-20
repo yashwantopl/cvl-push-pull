@@ -31,7 +31,7 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	
 	//public RetailApplicantDetail findOneByApplicationIdId(Long applicationId);
 	
-	@Query("from RetailApplicantDetail rt where rt.applicationProposalMapping.proposalId =:proposalId and rt.applicationId.id =:applicationId and rt.isActive = true")
+	@Query("from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationProposalMapping.proposalId =:proposalId and rt.isActive = true")
 	public RetailApplicantDetail findByProposalId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
 	
 //	@Query("from RetailApplicantDetail rt where rt.applicationProposalMapping.proposalId =:proposalId and rt.applicationId.id =:applicationId and rt.applicationProposalMapping.userId =:userId and rt.isActive = true")
