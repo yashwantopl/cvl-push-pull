@@ -1601,9 +1601,9 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / netMonthlyIncome); 
+            							scoreParameterRetailRequest.setToir((scoringRequestLoans.getEmi() / netMonthlyIncome) * 100); 
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / grossAnnualIncome);
+            							scoreParameterRetailRequest.setToir((scoringRequestLoans.getEmi() / grossAnnualIncome) * 100);
             						}
             						scoreParameterRetailRequest.setIsToir_p(true);
             					}else {
@@ -2158,9 +2158,9 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / netMonthlyIncome); 
+            							scoreParameterRetailRequest.setToir((scoringRequestLoans.getEmi() / netMonthlyIncome) * 100); 
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setToir(scoringRequestLoans.getEmi() / grossAnnualIncome);
+            							scoreParameterRetailRequest.setToir((scoringRequestLoans.getEmi() / grossAnnualIncome) * 100);
             						}
             						scoreParameterRetailRequest.setIsToir_p(true);
             					}else {
