@@ -156,7 +156,7 @@ public class PlRetailApplicantController {
         }
     }
     
-    @GetMapping(value = "/primary/inactivateBankRelation/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/primary/inactivateBankRelation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> saveBankRelation(HttpServletRequest request, @PathVariable("id")  Long id) {
     	try {
     		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
