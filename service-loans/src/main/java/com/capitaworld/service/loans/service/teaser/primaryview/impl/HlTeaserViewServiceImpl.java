@@ -287,7 +287,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		// basic Details
 		PLRetailApplicantResponse plRetailApplicantResponse = null;
 		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId);
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userid, toApplicationId, proposalId);
 			plRetailApplicantResponse = new PLRetailApplicantResponse();
 			if(plRetailApplicantRequest != null) {
 				
