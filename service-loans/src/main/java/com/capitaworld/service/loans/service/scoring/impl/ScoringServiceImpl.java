@@ -113,6 +113,7 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Service
 @Transactional
@@ -1659,8 +1660,10 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
-            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
-            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            						if(Double.isFinite(finalIncome)) {
+            							scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+                						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);            							
+            						}
             					}else if(incomeOfItrOf3Years.size() == 2) { //as if now considering 2 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = incomeOfItrOf3Years.get(incomeOfItrOf3Years.size() - 1);
@@ -1673,8 +1676,11 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
-            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
-            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            						if(Double.isFinite(finalIncome)) {
+            							scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+                						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);	
+            						}
+            						
             					}else if(incomeOfItrOf3Years.size() == 1) { //as if now considering 1 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = 0.0d;
@@ -1684,8 +1690,11 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
-            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
-            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            						if(Double.isFinite(finalIncome)) {
+                						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+                						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);	
+            						}
+            						
             					}
             				}
             				break;
@@ -1819,7 +1828,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                     logger.info("----------------------------END-------------------------------------------");
 
-                    Gson g = new Gson();
+                    Gson g = new GsonBuilder().serializeSpecialFloatingPointValues().create();
                     ScoringRequestDetail scoringRequestDetail = new ScoringRequestDetail();
 
                     try {
@@ -2218,8 +2227,10 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
-            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
-            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            						if(Double.isFinite(finalIncome)) {
+            							scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+                						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);            							
+            						}
             					}else if(incomeOfItrOf3YearsCoApplicant.size() == 2) { //as if now considering 2 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = incomeOfItrOf3YearsCoApplicant.get(incomeOfItrOf3YearsCoApplicant.size() - 1);
@@ -2232,8 +2243,10 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
-            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
-            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            						if(Double.isFinite(finalIncome)) {
+            							scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+                						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);            							
+            						}
             					}else if(incomeOfItrOf3YearsCoApplicant.size() == 1) { //as if now considering 1 Years Compulsory
             						Double itrLastToLastToLastYearIncome = 0.0d;
                 					Double itrLastToLastYearIncome = 0.0d;
@@ -2243,8 +2256,10 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
             						Double finalIncome =  ((((itrLastYearIncome - itrLastToLastYearIncome) / itrLastToLastYearIncome) * 100) +  (((itrLastToLastYearIncome - itrLastToLastToLastYearIncome) / itrLastToLastToLastYearIncome ) * 100)) / 2 ;
             						logger.info("Final Income After Calculation for HL == >{}",finalIncome);
-            						scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
-            						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);
+            						if(Double.isFinite(finalIncome)) {
+            							scoreParameterRetailRequest.setIncomeFromItr(finalIncome);
+                						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);            							
+            						}
             					}
             				}
             				break;
