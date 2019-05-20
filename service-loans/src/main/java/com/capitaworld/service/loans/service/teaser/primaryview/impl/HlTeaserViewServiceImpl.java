@@ -581,7 +581,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		logger.info(" for eligibility appid============>>{}" , toApplicationId);
 
 		try {
-			EligibilityResponse eligibilityResp = eligibilityClient.getRetailLoanData(eligibilityReq);
+			EligibilityResponse eligibilityResp = eligibilityClient.getHLLoanData(eligibilityReq);
 			hlTeaserViewResponse.setEligibilityDataObject(eligibilityResp.getData()!=null?eligibilityResp.getData():null);
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
