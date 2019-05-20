@@ -1988,7 +1988,7 @@ public class ScoringServiceImpl implements ScoringService {
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
                                 	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBirthDate());
-                                	   Double age = (((double) exactAge[0]) + (exactAge[1] / 12));
+                                	   Double age = (((double) exactAge[0]) + ( (double)exactAge[1] / 12));
                                 	   logger.info("Age With Point == {}",age);
                                        scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
