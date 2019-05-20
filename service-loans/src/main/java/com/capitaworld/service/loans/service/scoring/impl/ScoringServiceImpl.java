@@ -1446,6 +1446,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.TOTAL_BUSI_PROFE_EXP:
             				if(retailApplicantDetail.getBusinessStartDate() != null) {
+            					logger.info("retailApplicantDetail.getBusinessStartDate() For HL==== > {}",retailApplicantDetail.getBusinessStartDate());
             					long diffYears = ChronoUnit.YEARS.between(retailApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             					logger.info("Total Business Experiance For HL==== > {}",diffYears);
             					scoreParameterRetailRequest.setTotalBusProfExperiance((int)diffYears);
