@@ -1561,15 +1561,15 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.ANNUAL_INCOME:
             				try {
+            					scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
+            					scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12);
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
-            							scoreParameterRetailRequest.setNetAnnualIncome_p(true);
-            							scoreParameterRetailRequest.setGrossAnnualIncome(null);
+            							scoreParameterRetailRequest.setIsNMI_p(true);
+            							scoreParameterRetailRequest.setIsGMI_p(false);
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12);
-            							scoreParameterRetailRequest.setNetAnnualIncome(null);
-            							scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+            							scoreParameterRetailRequest.setIsNMI_p(false);
+            							scoreParameterRetailRequest.setIsGMI_p(true);
             						}
             					}else {
 									logger.warn("Gross Or Net Income is Not Set By Lender ANNUAL_INCOME==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
@@ -2136,15 +2136,15 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.ANNUAL_INCOME:
             				try {
+            					scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
+            					scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12);
             					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
             						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-            							scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
-            							scoreParameterRetailRequest.setNetAnnualIncome_p(true);
-            							scoreParameterRetailRequest.setGrossAnnualIncome(null);
+            							scoreParameterRetailRequest.setIsNMI_p(true);
+            							scoreParameterRetailRequest.setIsGMI_p(false);
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12);
-            							scoreParameterRetailRequest.setNetAnnualIncome(null);
-            							scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+            							scoreParameterRetailRequest.setIsNMI_p(false);
+            							scoreParameterRetailRequest.setIsGMI_p(true);
             						}
             					}else {
 									logger.warn("Gross Or Net Income is Not Set By Lender ANNUAL_INCOME==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
