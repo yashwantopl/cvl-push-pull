@@ -1580,6 +1580,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             				try {
+            					logger.info("Avalilable Income===>{}=== For ApplicationId ==>{}===>FpProductId===>{}",scoringRequestLoans.getElAmountBasedOnIncome(),applicationId,fpProductId);
 								if(scoringRequestLoans.getElAmountBasedOnIncome() != null) {
 										scoreParameterRetailRequest.setAvailableIncome(scoringRequestLoans.getElAmountBasedOnIncome());
 										scoreParameterRetailRequest.setIsAvailableIncome_p(true);
@@ -1782,7 +1783,7 @@ public class ScoringServiceImpl implements ScoringService {
 										if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
 		            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
 		            							//As of now Not considering Co-Applicant
-												scoreParameterRetailRequest.setEmiNmiRatio(netMonthlyIncome * 12);
+												scoreParameterRetailRequest.setEmiNmiRatio(netMonthlyIncome);
 		            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
 		            							scoreParameterRetailRequest.setEmiNmiRatio(grossAnnualIncome);
 		            						}
