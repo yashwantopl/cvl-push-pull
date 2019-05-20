@@ -1566,7 +1566,7 @@ public class ScoringServiceImpl implements ScoringService {
             							scoreParameterRetailRequest.setNetAnnualIncome_p(true);
             							scoreParameterRetailRequest.setGrossAnnualIncome(null);
             						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome);
+            							scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome * 12);
             							scoreParameterRetailRequest.setNetAnnualIncome(null);
             							scoreParameterRetailRequest.setNetAnnualIncome_p(false);
             						}
