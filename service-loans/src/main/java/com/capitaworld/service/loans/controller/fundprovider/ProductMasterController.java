@@ -299,10 +299,10 @@ public class ProductMasterController {
 		}
 	}
 	
+	//@RequestMapping(value = "/getActiveInActiveList/{businessTypeId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@RequestMapping(value = "/getActiveInActiveList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getActiveInActiveList(HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
-		// request must not be null
+    public ResponseEntity<LoansResponse> getActiveInActiveList(HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId/*, @PathVariable(value = "businessTypeId") Long businessTypeId*/) {
+        // request must not be null
 		CommonDocumentUtils.startHook(logger, GET_ACTIVE_INACTIVE_LIST);
 		try {
 			Long userId = null;
@@ -314,19 +314,20 @@ public class ProductMasterController {
 			if (userId == null) {
 				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, GET_ACTIVE_INACTIVE_LIST);
-				return new ResponseEntity<>(
+				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
-			List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId,userOrgId);
-			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            //List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId, userOrgId, businessTypeId);
+            List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId, userOrgId);
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, GET_ACTIVE_INACTIVE_LIST);
-			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Active InActive Products Details==>", e);
-			return new ResponseEntity<>(
+			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}

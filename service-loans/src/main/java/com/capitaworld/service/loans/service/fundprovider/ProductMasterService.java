@@ -26,8 +26,9 @@ public interface ProductMasterService {
 
 	public List<ProductMasterRequest> getList(Long userId,Long userOrgId);
 	
+	//public List<ProductMasterRequest> getActiveInActiveList(Long userId,Long userOrgId,Long businessTypeId);
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId,Long userOrgId);
-	
+
 	public List<ProductMasterRequest> getListByUserType(Long userId,Integer userType,Integer stage,Long userOrgId);
 
 	public String getUserNameByApplicationId(Long productId, Long userId);

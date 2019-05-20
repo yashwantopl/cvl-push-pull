@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 
 /**
@@ -23,6 +24,8 @@ public interface CreditCardsDetailRepository extends JpaRepository<CreditCardsDe
 
 	@Query("select o from CreditCardsDetail o where o.guarantorDetailId.id = :id and isActive = true")
 	public List<CreditCardsDetail> listCreditCardsFromGarrId(@Param("id")Long id);
+	
+	public CreditCardsDetail findByIdAndIsActive(Long id,Boolean isActive);
 	
 	@Modifying
 	@Query("update CreditCardsDetail o set o.isActive = false,o.modifiedDate = NOW() where o.applicantionId.id = :id and o.isActive = true")
