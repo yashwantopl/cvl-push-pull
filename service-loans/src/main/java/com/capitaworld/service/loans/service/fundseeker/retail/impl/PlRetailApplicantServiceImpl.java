@@ -108,6 +108,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
                 logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
                 for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+                	
                     FinancialArrangementsDetail saveFinObj = null;
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
@@ -129,6 +130,11 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
                     
                     if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
+                    	if(reqObj.getIsManuallyAdded() != null && reqObj.getIsManuallyAdded() == false) {
+                    		System.out.println("getIsManuallyAdded : false");
+                    		creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
+                    		saveFinObj.setIsManuallyAdded(false);
+                    	}
                     	saveFinObj.setAmount(null);
                     	saveFinObj.setEmi(null);
                     }
@@ -931,6 +937,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                 financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                 financialRequest.setLoanType("Credit Card");
+                financialRequest.setIsManuallyAdded(false);
                 financialArrangementsDetailRequestList.add(financialRequest);
             }
             
