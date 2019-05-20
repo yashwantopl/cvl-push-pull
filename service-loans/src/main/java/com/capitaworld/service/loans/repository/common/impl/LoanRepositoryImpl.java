@@ -177,7 +177,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Double> getIncomeOfItrOf3Years(Long applicationId) {
-		return entityManager.createNativeQuery("SELECT appInc.`year`,appInc.`salary_income` FROM `loan_application`.`fs_retail_applicant_income_details` appInc WHERE appInc.`application_id` =:applicationId AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
+		return entityManager.createNativeQuery("SELECT appInc.`year`,appInc.`salary_income` FROM `loan_application`.`fs_retail_applicant_income_details` appInc WHERE appInc.`application_id` =:applicationId AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ",Double.class)
 				.setParameter("applicationId", applicationId)
 				.getResultList();
 	}
@@ -185,7 +185,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Double> getIncomeOfItrOf3YearsOfCoApplicant(Long coAppId) {
-		return entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
+		return entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ",Double.class)
 				.setParameter("id", coAppId)
 				.getResultList();
 	}

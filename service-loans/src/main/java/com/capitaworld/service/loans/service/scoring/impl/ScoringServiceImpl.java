@@ -31,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.api.eligibility.utility.EligibilityUtils;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
