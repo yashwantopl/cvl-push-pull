@@ -183,6 +183,9 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name="user_credit_rating")
 	private Integer userCreditRating;
 	
+	@Column(name="based_on_type")
+	private Integer basedOnType;
+	
 	
 	
 	/*//FP NEW REQUIREMENT
@@ -908,6 +911,16 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	public void setMultiplierIncomeType(Integer multiplierIncomeType) {
 		this.multiplierIncomeType = multiplierIncomeType;
 	}
+
+	public Integer getBasedOnType() {
+		return basedOnType;
+	}
+
+	public void setBasedOnType(Integer basedOnType) {
+		this.basedOnType = basedOnType;
+	}
+	
+	
 
 
 	

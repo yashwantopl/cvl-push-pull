@@ -187,6 +187,11 @@ public class RetailProduct extends ProductMasterRequest {
 	private Integer basedOnIncomeType;
 	
 	private Integer multiplierIncomeType;
+	
+	private Integer basedOnType;
+	
+	
+	
 
 	public Long getFpProductId() {
 		return fpProductId;
@@ -867,6 +872,15 @@ public class RetailProduct extends ProductMasterRequest {
 	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
 		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
 	}
+
+	public Integer getBasedOnType() {
+		return basedOnType;
+	}
+
+	public void setBasedOnType(Integer basedOnType) {
+		this.basedOnType = basedOnType;
+	}
+
 	
 
 }
