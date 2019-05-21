@@ -90,24 +90,8 @@ public class CoApplicantIncomeServiceImpl implements CoApplicantIncomeService{
 	public List<RetailApplicantIncomeRequest> getAll(Long applicationId) {
 		List<CoApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByApplicationIdAndIsActive(applicationId,true);
 		List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(appIncomeDetailList.size());
-		RetailApplicantIncomeRequest appIncomeReq = null;
 		for(CoApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
-			appIncomeReq = new RetailApplicantIncomeRequest();
-			//FOR PL CAM
-			appIncomeReq.setSalaryIncomeString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncome()));
-			appIncomeReq.setIncomeRatioString(CommonUtils.convertValue(appIncomeDetail.getIncomeRatio()));
-			appIncomeReq.setHousePropertyString(CommonUtils.convertValue(appIncomeDetail.getHouseProperty()));
-			appIncomeReq.setCapitalGainString(CommonUtils.convertValue(appIncomeDetail.getCapitalGain()));
-			appIncomeReq.setPgbpString(CommonUtils.convertValue(appIncomeDetail.getPgbp()));
-			appIncomeReq.setOtherSourceString(CommonUtils.convertValue(appIncomeDetail.getOtherSource()));
-			
-			appIncomeReq.setSalaryIncomeGrossString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncomeGross()));
-			appIncomeReq.setCapitalGainGrossString(CommonUtils.convertValue(appIncomeDetail.getCapitalGainGross()));
-			appIncomeReq.setHousePropertyGrossString(CommonUtils.convertValue(appIncomeDetail.getHousePropertyGross()));
-			appIncomeReq.setOtherSourceGrossString(CommonUtils.convertValue(appIncomeDetail.getOtherSourceGross()));
-			appIncomeReq.setPgbpGrossString(CommonUtils.convertValue(appIncomeDetail.getPgbpGross()));
-			BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
-			appIncomeReqList.add(appIncomeReq);
+			appIncomeReqList.add(prepareObj(appIncomeDetail));
 		}
 		return appIncomeReqList;
 	}
@@ -140,6 +124,37 @@ public class CoApplicantIncomeServiceImpl implements CoApplicantIncomeService{
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+
+
+	@Override
+	public RetailApplicantIncomeRequest get(Long coApplicantId) {
+		CoApplicantIncomeDetail coAppObj = appIncomeRepository.findByIdAndIsActiveAndProposalIdIsNull(coApplicantId, true);
+		if(coAppObj == null) {
+			return null;
+		}
+		return prepareObj(coAppObj);
+	}
+	
+	private RetailApplicantIncomeRequest prepareObj(CoApplicantIncomeDetail appIncomeDetail){
+		RetailApplicantIncomeRequest appIncomeReq = new RetailApplicantIncomeRequest();
+		//FOR PL CAM
+		appIncomeReq.setSalaryIncomeString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncome()));
+		appIncomeReq.setIncomeRatioString(CommonUtils.convertValue(appIncomeDetail.getIncomeRatio()));
+		appIncomeReq.setHousePropertyString(CommonUtils.convertValue(appIncomeDetail.getHouseProperty()));
+		appIncomeReq.setCapitalGainString(CommonUtils.convertValue(appIncomeDetail.getCapitalGain()));
+		appIncomeReq.setPgbpString(CommonUtils.convertValue(appIncomeDetail.getPgbp()));
+		appIncomeReq.setOtherSourceString(CommonUtils.convertValue(appIncomeDetail.getOtherSource()));
+		
+		appIncomeReq.setSalaryIncomeGrossString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncomeGross()));
+		appIncomeReq.setCapitalGainGrossString(CommonUtils.convertValue(appIncomeDetail.getCapitalGainGross()));
+		appIncomeReq.setHousePropertyGrossString(CommonUtils.convertValue(appIncomeDetail.getHousePropertyGross()));
+		appIncomeReq.setOtherSourceGrossString(CommonUtils.convertValue(appIncomeDetail.getOtherSourceGross()));
+		appIncomeReq.setPgbpGrossString(CommonUtils.convertValue(appIncomeDetail.getPgbpGross()));
+		BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
+		return appIncomeReq;
+	}
+	
 
 
 	@Override

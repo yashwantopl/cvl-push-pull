@@ -19,6 +19,7 @@ public class CoApplicantRequest {
 	private String aadharNumber;
 	private String nameAsPerAadharCard;
 	private Double monthlyIncome;
+	private Double grossIncome;
 	private Integer currencyId;
 	private Address firstAddress;
 	private Address secondAddress;
@@ -39,6 +40,7 @@ public class CoApplicantRequest {
 	private Integer date;
 	private Integer month;
 	private Integer year;
+	private Integer businessTypeId;
 
 	private Boolean isCoApp1DetailsFilled;
 	private Boolean isCoApp2DetailsFilled;
@@ -67,6 +69,7 @@ public class CoApplicantRequest {
 	private Double remunerationPreviousYear;
 	private Double remunerationCurrentYear;
 	private Double annualTurnover;
+	private Double loanAmountRequired;
 	
 	private Double bonusPerAnnum;
 	private Double incentivePerAnnum;
@@ -701,5 +704,28 @@ public class CoApplicantRequest {
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
-	
+
+	public Double getGrossIncome() {
+		return grossIncome;
+	}
+
+	public void setGrossIncome(Double grossIncome) {
+		this.grossIncome = grossIncome;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Double getLoanAmountRequired() {
+		return loanAmountRequired;
+	}
+
+	public void setLoanAmountRequired(Double loanAmountRequired) {
+		this.loanAmountRequired = loanAmountRequired;
+	}
 }
