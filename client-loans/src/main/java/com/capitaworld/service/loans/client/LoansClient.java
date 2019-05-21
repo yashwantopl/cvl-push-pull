@@ -105,7 +105,7 @@ public class LoansClient {
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS = "/financial_arrangement_details/getTotalEmiFromForAllDir";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING = "/financial_arrangement_details/getTotalEmiForSoftPing";
-	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING = "/financial_arrangement_details/getTotalEmiForSoftPingForCoApplicant";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING_FOR_CO_APP = "/financial_arrangement_details/getTotalEmiForSoftPingForCoApplicant";
 
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
@@ -931,6 +931,21 @@ public class LoansClient {
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getTotalEMIOfAllDir : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse getTotalEMISoftPingForCoApplicant(Long coApplicant) throws LoansException{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING_FOR_CO_APP);
+		logger.info("url for Getting getTotalEMISoftPing From Client=================>{}", url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<>(coApplicant, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getTotalEMIOfAllDir : ",e);
