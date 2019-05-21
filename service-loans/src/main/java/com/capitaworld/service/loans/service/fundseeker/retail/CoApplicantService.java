@@ -18,6 +18,8 @@ public interface CoApplicantService {
 
 	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws LoansException;
 	
+	public CoApplicantRequest get(Long applicationId, Long coApplicantId);
+	
 	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException;
 
 	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException;

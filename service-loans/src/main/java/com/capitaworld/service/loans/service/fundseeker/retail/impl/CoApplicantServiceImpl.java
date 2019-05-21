@@ -1369,6 +1369,40 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException {
 		return coApplicantDetailRepository.getAllByApplicationId(applicationId);
 	}
+	
+	@Override
+	public CoApplicantRequest get(Long applicationId, Long coApplicantId) {
+		try {
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.findByIdAndApplicationIdId(coApplicantId, applicationId);
+			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+			if (applicantDetail == null) {
+				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + coApplicantId + " and ApplicationId==>" + applicationId);
+			}
+			CoApplicantRequest applicantRequest = new CoApplicantRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
+			applicantRequest.setDate(saperatedTime[0]);
+			applicantRequest.setMonth(saperatedTime[1]);
+			applicantRequest.setYear(saperatedTime[2]);
+			if(applicantDetail.getQualifyingYear() != null){
+				Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getQualifyingYear());
+				applicantRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
+				applicantRequest.setQualifyingYear(saperatedQualifyingYear[2]);
+			}
+			if(applicantDetail.getBusinessStartDate() != null){
+				Integer[] saperatedBusinessStartDate = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBusinessStartDate());
+				applicantRequest.setBusinessStartMonth(saperatedBusinessStartDate[1]);
+				applicantRequest.setBusinessStartYear(saperatedBusinessStartDate[2]);
+			}
+			applicantRequest.setBusinessTypeId(businessTypeId);
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting CoApplicant Retail Profile :- ",e);
+			return null;
+		}
+	}
 
 	
 	

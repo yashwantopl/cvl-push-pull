@@ -53,6 +53,7 @@ import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
@@ -121,7 +122,8 @@ public class LoansClient {
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
-	private static final String CO_APPLICANT_BASIC_DETAIL_URL = "/co_applicant/get_basic_details";
+	private static final String CO_APPLICANT_BASIC_DETAIL_URL_FOR_CIBIL = "/co_applicant/get_basic_details";
+	private static final String CO_APPLICANT_BASIC_DETAIL_URL = "/co_applicant/profile/get_for_client";
 	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
 	private static final String PRIMARY_INFORMATION = "/corporate_primary/primary/get";
 	private static final String STRING_TO_BINARY_ARRAY = "/convertToByteArray";
@@ -245,6 +247,7 @@ public class LoansClient {
     private static final String GET_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/get_income_details";
     private static final String GET_DIRECTOR_INCOME_LATEST_YEAR_DETAILS = "/corporate_director_income_details/get_income_details_latest_year";
     private static final String GET_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/get";
+    private static final String GET_RETAIL_APPLICANT_INCOME_DETAILS_FOR_CO_APPLICANT = "/retail_applicant_income/get_for_client";
     private static final String SAVE_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/saveAll";
     
     
@@ -1191,7 +1194,7 @@ public class LoansClient {
 	}
 	
 	public LoansResponse getCoApplicantBasicDetail(Long userId, Long applicationId) throws ExcelException {
-		String url = loansBaseUrl.concat(CO_APPLICANT_BASIC_DETAIL_URL).concat("/" + applicationId + "/" + userId);
+		String url = loansBaseUrl.concat(CO_APPLICANT_BASIC_DETAIL_URL_FOR_CIBIL).concat("/" + applicationId + "/" + userId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1200,6 +1203,20 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getBasicDetail : ",e);
+			throw new ExcelException(e.getCause().getMessage());
+		}
+	}
+	
+	public CoApplicantRequest getCoApplicantBasicDetailForCalculation(Long applicationId,Long coApplicantId) throws ExcelException {
+		String url = loansBaseUrl.concat(CO_APPLICANT_BASIC_DETAIL_URL).concat("/" + applicationId + "/" + coApplicantId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CoApplicantRequest.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getCoApplicantBasicDetailForCalculation : ",e);
 			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
@@ -2380,6 +2397,21 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getRetailApplicantIncomeDetails : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public RetailApplicantIncomeRequest getRetailApplicantIncomeDetailsOfCoApplicant(Long coApplicantId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_RETAIL_APPLICANT_INCOME_DETAILS_FOR_CO_APPLICANT).concat("/" + coApplicantId);
+		try {
+			logger.info("Enter in Get Retail Applicant Income Details---------->{}" , url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantIncomeRequest.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getRetailApplicantIncomeDetails : ",e);
 			throw new LoansException(e.getCause().getMessage());
