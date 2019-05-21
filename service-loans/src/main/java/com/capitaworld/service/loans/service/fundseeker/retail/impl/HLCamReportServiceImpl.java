@@ -304,7 +304,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
-			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.HL_COMPLETE.getId(), CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
 			}
