@@ -34,6 +34,8 @@ public interface FinancialArrangementDetailsService {
 	
 	public Double getTotalEmiByApplicationIdSoftPing(Long applicationId);
 	
+	public Double getTotalEmiByApplicationIdSoftPingForCoApplicant(Long applicationId);
+	
 	public Double getTotalEmiByApplicationIdSoftPing(Long coApplicantId,Long applicationId);
 
 	public Boolean saveOrUpdateManuallyAddedLoans(List<FinancialArrangementsDetailRequest> finArrDetailRequest,Long applicationId,Long userId);

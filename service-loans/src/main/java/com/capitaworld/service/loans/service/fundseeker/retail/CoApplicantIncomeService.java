@@ -14,7 +14,7 @@ public interface CoApplicantIncomeService {
 	
 	public List<RetailApplicantIncomeRequest> getAll(Long applicationId);
 	
-	public RetailApplicantIncomeRequest get(Long coApplicantId);
+	public List<RetailApplicantIncomeRequest> get(Long coApplicantId);
 
 	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId);
 	
