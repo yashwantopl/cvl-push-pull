@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
+import com.capitaworld.api.eligibility.model.RetailEligibilityRequest;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -303,7 +304,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
-			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.HL_COMPLETE.getId(), CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
 			}
@@ -718,9 +719,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				EligibililityRequest eligibilityReq=new EligibililityRequest();
 				eligibilityReq.setApplicationId(applicationId);
 				eligibilityReq.setFpProductMappingId(productId);
-				EligibilityResponse eligibilityResp= eligibilityClient.getRetailLoanData(eligibilityReq);
+				EligibilityResponse eligibilityResp= eligibilityClient.getHLLoanData(eligibilityReq);
 				if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
-				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), PersonalEligibilityRequest.class), new HashMap<>()));
+				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), RetailEligibilityRequest.class), new HashMap<>()));
 				}
 			}catch (Exception e) {
 				logger.error("Error while getting Eligibility data : ",e);
