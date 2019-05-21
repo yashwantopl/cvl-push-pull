@@ -1982,7 +1982,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
-                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
+//                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
                 scoringRequest.setLoanPurposeModelId(homeLoanModelRequest.getId());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
