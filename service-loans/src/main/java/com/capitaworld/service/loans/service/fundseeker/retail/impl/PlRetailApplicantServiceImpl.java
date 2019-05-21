@@ -854,6 +854,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             		int months = age.getMonths();
             		bankRelationshipRequest.setSinceYear(years);
             		bankRelationshipRequest.setSinceMonth(months);
+            		bankRelationshipRequest.setSinceWhen((bankRelationshipRequest.getSinceYear() != null ? bankRelationshipRequest.getSinceYear() +" year" : "") + " " +(bankRelationshipRequest.getSinceMonth() != null ? bankRelationshipRequest.getSinceMonth()+" months" :  "" ));
             	}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
