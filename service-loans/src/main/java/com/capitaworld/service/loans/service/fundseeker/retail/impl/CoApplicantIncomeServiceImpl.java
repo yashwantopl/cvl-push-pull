@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -128,12 +129,13 @@ public class CoApplicantIncomeServiceImpl implements CoApplicantIncomeService{
 
 
 	@Override
-	public RetailApplicantIncomeRequest get(Long coApplicantId) {
-		CoApplicantIncomeDetail coAppObj = appIncomeRepository.findByIdAndIsActiveAndProposalIdIsNull(coApplicantId, true);
-		if(coAppObj == null) {
-			return null;
+	public List<RetailApplicantIncomeRequest> get(Long coApplicantId) {
+		List<CoApplicantIncomeDetail> coAppObj = appIncomeRepository.findByIsActiveAndProposalIdIsNullAndCoAppId(true,coApplicantId);
+		List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(coAppObj.size());
+		for(CoApplicantIncomeDetail appIncomeDetail : coAppObj) {
+			appIncomeReqList.add(prepareObj(appIncomeDetail));
 		}
-		return prepareObj(coAppObj);
+		return appIncomeReqList;
 	}
 	
 	private RetailApplicantIncomeRequest prepareObj(CoApplicantIncomeDetail appIncomeDetail){
