@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,9 @@ public class RetailApplicantIncomeController {
 	
 	@Autowired
 	private RetailApplicantIncomeService applicantIncomeService;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;  
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -164,6 +168,17 @@ public class RetailApplicantIncomeController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+	
+	@RequestMapping(value = "/get_for_client/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<RetailApplicantIncomeRequest> getIncomeDetailsOfCoApplicant(@PathVariable("id") Long coApplicant){
+		logger.info("Enter in Get Retail Income Details By Co-App Id :- " + coApplicant);
+		try {
+			return new ResponseEntity<RetailApplicantIncomeRequest>(coApplicantIncomeService.get(coApplicant),HttpStatus.OK);	
+		} catch (Exception e) {
+			logger.error("Throw Exception while Get Retail Income Details For CoApplicant : {}",e);
+			return null;
+		}
 	}
 
 }

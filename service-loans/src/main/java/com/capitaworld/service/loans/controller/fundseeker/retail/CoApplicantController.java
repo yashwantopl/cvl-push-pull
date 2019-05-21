@@ -251,5 +251,14 @@ public class CoApplicantController {
 
 	}
 	
-
+	@RequestMapping(value = "${profile}/get_for_client/{applicationId}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CoApplicantRequest> get(@PathVariable("id") Long coApplicantId, @PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+		try {
+			return new ResponseEntity<CoApplicantRequest>(coApplicantService.get(applicationId, coApplicantId), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Co Applicant Profile Details==>", e);
+			return null;
+		}
+	}
+	
 }
