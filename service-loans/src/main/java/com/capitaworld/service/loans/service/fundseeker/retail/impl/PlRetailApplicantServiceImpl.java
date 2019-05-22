@@ -462,19 +462,24 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             List<BankingRelation> bankingRelations = new ArrayList<>();
             BankingRelation bankingRelation = null;
-            for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
-            	bankingRelation = new BankingRelation();
-            	BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
-            	bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
-            	if(bankRelationshipRequest.getId() == null) {
-            		bankingRelation.setCreatedBy(userId);
-                	bankingRelation.setCreatedDate(new Date());
-                	bankingRelation.setIsActive(true);
-            	}
-            	bankingRelation.setModifiedBy(userId);
-        		bankingRelation.setModifiedDate(new Date());
-            	bankingRelations.add(bankingRelation);
+
+            if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBankingRelationshipList()))
+            {
+                for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
+                    bankingRelation = new BankingRelation();
+                    BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
+                    bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
+                    if(bankRelationshipRequest.getId() == null) {
+                        bankingRelation.setCreatedBy(userId);
+                        bankingRelation.setCreatedDate(new Date());
+                        bankingRelation.setIsActive(true);
+                    }
+                    bankingRelation.setModifiedBy(userId);
+                    bankingRelation.setModifiedDate(new Date());
+                    bankingRelations.add(bankingRelation);
+                }
             }
+
             bankingRelationlRepository.save(bankingRelations);
 
             applicantRepository.save(applicantDetail);
