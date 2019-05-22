@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.api.ekyc.model.epf.request.EmployerDefaulterRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
 import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.users.client.UsersClient;
@@ -42,6 +45,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.EPFOAsyncComponent;
 import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
 
 @Service
@@ -75,6 +79,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private BankingRelationlRepository bankingRelationlRepository;
+    
+    @Autowired
+    private EPFOAsyncComponent epfoAsyncComponent;
 
     @Override
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
@@ -151,7 +158,15 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
                         finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
             }
-
+            EmployerRequest req = new EmployerRequest();
+            req.setApplicationId(plRetailApplicantRequest.getApplicationId());
+            String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
+            String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
+            req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
+            req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName()
+            		,name , applicantDetail.getMobile(), applicantDetail.getEmail()));
+            epfoAsyncComponent.callAPI(req);
+            
             return true;
 
         } catch (Exception e) {

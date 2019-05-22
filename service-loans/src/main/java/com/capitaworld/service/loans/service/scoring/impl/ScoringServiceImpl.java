@@ -1950,7 +1950,7 @@ public class ScoringServiceImpl implements ScoringService {
         HomeLoanModelRequest homeLoanModelRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
-            Long scoreModelId = scoringRequestLoans.getScoringModelId();
+            Long scoreModelId = scoringRequestLoans.getScoringModelCoAppId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
             homeLoanModelRequest = homeLoanModelService.get(scoringRequestLoans.getLoanPurposeModelId(), null, null);
 //            Integer minBankRelationshipInMonths = null;

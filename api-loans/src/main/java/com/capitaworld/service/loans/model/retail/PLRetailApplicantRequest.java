@@ -56,6 +56,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String contactNo;
     private String email;
     private String companyName;
+    private String kid; 
 
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
@@ -716,6 +717,14 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setIsCreditInfoFilled(Boolean isCreditInfoFilled) {
 		this.isCreditInfoFilled = isCreditInfoFilled;
+	}
+
+	public String getKid() {
+		return kid;
+	}
+
+	public void setKid(String kid) {
+		this.kid = kid;
 	}
 
 	@Override
