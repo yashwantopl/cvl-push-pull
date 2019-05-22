@@ -2909,7 +2909,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
         {
             if(request.getBranchId() != null){
 				if ((!CommonUtils.isObjectNullOrEmpty(request.getIsSanctionByOtherBankReq())) && request.getIsSanctionByOtherBankReq())
-					result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId(), request.getUserOrgId());
+					result = proposalDetailRepository.getSanctionByOtherBankProposalsForSearchWithBranch(request.getFpProductId(), request.getBranchId(), request.getUserOrgId());
 				else
 					result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId());
 			}else{
