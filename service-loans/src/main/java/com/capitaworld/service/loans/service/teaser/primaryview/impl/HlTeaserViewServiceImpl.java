@@ -44,6 +44,7 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
@@ -822,9 +823,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					logger.error("Error in getting address for coapplicant");
 				}
 				
-				//
-//				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(coApplicantDetail.getRetailApplicantIncomeRequestList());
-				
+				List<FinancialArrangementsDetailRequest> financeData = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId(), applicationId);
+				plRetailApplicantResponse.setFinancialArrangementsDetailRequestsList(financeData);
 				request.add(plRetailApplicantResponse);
 			}
 		}catch (Exception e) {
