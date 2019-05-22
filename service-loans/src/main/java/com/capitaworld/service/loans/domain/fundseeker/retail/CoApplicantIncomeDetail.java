@@ -29,6 +29,9 @@ public class CoApplicantIncomeDetail extends AuditActivity implements Serializab
 	@Column(name = "application_id")
 	private Long applicationId;
 	
+	@Column(name = "co_app_id")
+	private Long coAppId;
+	
 	@Column(name = "proposal_mapping_id")
 	private Long proposalId;
 	
@@ -242,6 +245,14 @@ public class CoApplicantIncomeDetail extends AuditActivity implements Serializab
 
 	public void setProposalId(Long proposalId) {
 		this.proposalId = proposalId;
+	}
+
+	public Long getCoAppId() {
+		return coAppId;
+	}
+
+	public void setCoAppId(Long coAppId) {
+		this.coAppId = coAppId;
 	}
 	
 }

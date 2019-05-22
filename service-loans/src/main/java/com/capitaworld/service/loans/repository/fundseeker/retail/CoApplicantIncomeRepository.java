@@ -12,7 +12,13 @@ public interface CoApplicantIncomeRepository extends JpaRepository<CoApplicantIn
 
 	public CoApplicantIncomeDetail findByIdAndIsActive(Long id,Boolean isActive);
 	
+	public CoApplicantIncomeDetail findByIdAndIsActiveAndProposalIdIsNull(Long id,Boolean isActive);
+	
+	public List<CoApplicantIncomeDetail> findByIsActiveAndProposalIdIsNullAndCoAppId(Boolean isActive,Long coAppId);
+	
 	public CoApplicantIncomeDetail findByApplicationIdAndYearAndIsActive(Long applicationId,Integer year,Boolean isActive);
+	
+	public CoApplicantIncomeDetail findByCoAppIdAndYearAndIsActive(Long coAppId,Integer year,Boolean isActive);
 	
 	public List<CoApplicantIncomeDetail> findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
 	

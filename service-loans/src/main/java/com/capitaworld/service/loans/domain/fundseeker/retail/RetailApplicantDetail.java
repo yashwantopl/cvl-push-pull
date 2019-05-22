@@ -578,7 +578,17 @@ public class RetailApplicantDetail implements Serializable {
     @Column(name="networth")
     private Double networth;
     
+    @Column(name="is_basic_info_filled")
+    private Boolean isBasicInfoFilled;
     
+    @Column(name="is_employment_info_filled")
+    private Boolean isEmploymentInfoFilled;
+    
+    @Column(name="is_contact_info_filled")
+    private Boolean isContactInfoFilled;
+    
+    @Column(name="is_credit_info_filled")
+    private Boolean isCreditInfoFilled;
     
     private String remarks;
 
@@ -2034,6 +2044,38 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setLoanPurposeQueValue(String loanPurposeQueValue) {
 		this.loanPurposeQueValue = loanPurposeQueValue;
+	}
+
+	public Boolean getIsBasicInfoFilled() {
+		return isBasicInfoFilled;
+	}
+
+	public Boolean getIsEmploymentInfoFilled() {
+		return isEmploymentInfoFilled;
+	}
+
+	public Boolean getIsContactInfoFilled() {
+		return isContactInfoFilled;
+	}
+
+	public Boolean getIsCreditInfoFilled() {
+		return isCreditInfoFilled;
+	}
+
+	public void setIsBasicInfoFilled(Boolean isBasicInfoFilled) {
+		this.isBasicInfoFilled = isBasicInfoFilled;
+	}
+
+	public void setIsEmploymentInfoFilled(Boolean isEmploymentInfoFilled) {
+		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
+	}
+
+	public void setIsContactInfoFilled(Boolean isContactInfoFilled) {
+		this.isContactInfoFilled = isContactInfoFilled;
+	}
+
+	public void setIsCreditInfoFilled(Boolean isCreditInfoFilled) {
+		this.isCreditInfoFilled = isCreditInfoFilled;
 	}
 
 

@@ -200,6 +200,8 @@ public class PlTeaserViewResponse {
     
     private Object proposalData;
     
+    private Object epfData;
+    
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1110,6 +1112,12 @@ public class PlTeaserViewResponse {
 	}
 	public void setScoringModelName(String scoringModelName) {
 		this.scoringModelName = scoringModelName;
+	}
+	public Object getEpfData() {
+		return epfData;
+	}
+	public void setEpfData(Object epfData) {
+		this.epfData = epfData;
 	}
 
 

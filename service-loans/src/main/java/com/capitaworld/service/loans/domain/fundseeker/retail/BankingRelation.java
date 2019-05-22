@@ -61,6 +61,9 @@ public class BankingRelation implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	@Column(name="is_salary_account")
+	private Boolean isSalaryAccount;
 
 	public Long getId() {
 		return id;
@@ -150,6 +153,12 @@ public class BankingRelation implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
-	
-	
+	public Boolean getIsSalaryAccount() {
+		return isSalaryAccount;
+	}
+
+	public void setIsSalaryAccount(Boolean isSalaryAccount) {
+		this.isSalaryAccount = isSalaryAccount;
+	}
+
 }

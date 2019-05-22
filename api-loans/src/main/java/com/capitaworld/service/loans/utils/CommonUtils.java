@@ -8,6 +8,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -17,10 +19,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.capitaworld.service.loans.exceptions.LoansException;
 
 public class CommonUtils {
 
@@ -413,7 +416,7 @@ public class CommonUtils {
 		private static final String[] PL_RETAIL_PROFILE = {"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber",
 				"mobile", "educationQualification", "statusId", "residenceType", "birthDate", "employmentType", "employmentWith", "centralGovId",
 				"stateGovId", "psuId", "corporateId", "eduInstId", "nameOfEmployer", "employmentStatus", "currentJobMonth", "currentJobYear",
-				"totalExperienceMonth", "totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactNo", "email" };
+				"totalExperienceMonth", "totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactNo", "email","id" };
 
 		public static String[] getPlRetailProfile() {
 			return PL_RETAIL_PROFILE;
@@ -675,6 +678,19 @@ public class CommonUtils {
 			return null;
 		}
 	}
+	
+	public static Integer []  getExactAgeFromDate(Date birtDate) {
+		  Calendar c = Calendar.getInstance();
+		  c.setTime(birtDate);
+		  int year = c.get(Calendar.YEAR);
+		  int month = c.get(Calendar.MONTH) + 1;
+		  int date = c.get(Calendar.DATE);
+		  LocalDate l1 = LocalDate.of(year, month, date);
+		  LocalDate now1 = LocalDate.now();
+		  Period diff1 = Period.between(l1, now1);
+		  return new Integer [] {diff1.getYears(),diff1.getMonths(),diff1.getDays()};
+	}
+	
 
 	public static final class TabType {
 		private TabType() {

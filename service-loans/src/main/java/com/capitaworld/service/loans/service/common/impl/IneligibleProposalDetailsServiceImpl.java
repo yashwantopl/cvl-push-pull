@@ -368,6 +368,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// Checker/Maker/BO
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
+					mailParameters.put("app_id", applicationId !=null ?applicationId : "NA");
 					subject = "Manual Application";
 					mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 							notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) != null ? notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) : "NA");
@@ -924,6 +925,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						param.put("fs_name", fsName);
 						param.put("noCode", true);
 						param.put("address", address);
+						if(user[0].equals("sbi")) {
+							param.put("isSBI", "true");
+						}
+						
 						String loanType="";
 						if(proposOfLoanAmount == 1) {
 							loanType = "Term Loan";

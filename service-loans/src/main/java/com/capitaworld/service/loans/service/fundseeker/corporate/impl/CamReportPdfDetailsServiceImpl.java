@@ -14,6 +14,10 @@ import java.util.TreeMap;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.repository.fundprovider.*;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,10 +89,6 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -316,6 +316,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private CollateralSecurityDetailService collateralSecurityDetailService;
 
+	@Autowired
+	ProposalDetailsRepository proposalDetailsRepository;
+
+	@Autowired
+	IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -328,6 +334,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
+
+		Long userOrgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationIdAndUserOrgId(applicationId, userOrgId);
+		IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationIdAndOrgId(applicationId, userOrgId);
+
+		if (!CommonUtils.isObjectNullOrEmpty(proposalDetails) || !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)) {
+			map.put("isSanctioned", "true");
+		}
+
 		DecimalFormat decim = new DecimalFormat("####");
 
         // CHANGES FOR NEW MULTIPLE BANKS----->

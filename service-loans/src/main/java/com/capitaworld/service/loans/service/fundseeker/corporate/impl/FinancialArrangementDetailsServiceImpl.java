@@ -237,6 +237,29 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		logger.info("getTotalEmiOfAllDirByApplicationId {} For Application Id = {}", totalEmi ,applicationId);
 		return totalEmi;
 	}
+	
+	
+	
+
+	@Override
+	public Double getTotalEmiByApplicationIdSoftPingForCoApplicant(Long coApplicantId) {
+		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card","credit merchant card","credit premium card","credit retail card",
+				"credit secured card","credit single - limited purpose card","corporate credit card","credit card - fleet",
+				"credit stored-value smart card","credit co-branded credit card","credit affinity credit card","credit charge card","credit commercial card","credit line - open"};
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByDirectorId(coApplicantId,Arrays.asList(creditCards));
+		logger.info("getTotalEmiOfAllDirByApplicationId {} For CoApplicant Id = {}", totalEmi ,coApplicantId);
+		return totalEmi;
+	}
+
+	@Override
+	public Double getTotalEmiByApplicationIdSoftPing(Long coApplicantId, Long applicationId) {
+		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card","credit merchant card","credit premium card","credit retail card",
+				"credit secured card","credit single - limited purpose card","corporate credit card","credit card - fleet",
+				"credit stored-value smart card","credit co-branded credit card","credit affinity credit card","credit charge card","credit commercial card","credit line - open"};
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdSoftPing(applicationId,Arrays.asList(creditCards),coApplicantId);
+		logger.info("getTotalEmiOfAllDirByApplicationId For CoApplicant {} For Application Id = {}", totalEmi ,applicationId);
+		return totalEmi;
+	}
 
 	/* (non-Javadoc)
 	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService#getFinancialArrangementDetailsListDirId(java.lang.Long, java.lang.Long)

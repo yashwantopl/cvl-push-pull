@@ -19,6 +19,7 @@ public class CoApplicantRequest {
 	private String aadharNumber;
 	private String nameAsPerAadharCard;
 	private Double monthlyIncome;
+	private Double grossMonthlyIncome;
 	private Integer currencyId;
 	private Address firstAddress;
 	private Address secondAddress;
@@ -27,7 +28,7 @@ public class CoApplicantRequest {
 	private String companyName;
 	private Integer employedWithId;
 	private String employedWithOther;
-	private String entityName;
+	private String nameOfEntity;
 	private Integer industryTypeId;
 	private String industryTypeOther;
 	private Integer selfEmployedOccupationId;
@@ -39,6 +40,7 @@ public class CoApplicantRequest {
 	private Integer date;
 	private Integer month;
 	private Integer year;
+	private Integer businessTypeId;
 
 	private Boolean isCoApp1DetailsFilled;
 	private Boolean isCoApp2DetailsFilled;
@@ -67,6 +69,7 @@ public class CoApplicantRequest {
 	private Double remunerationPreviousYear;
 	private Double remunerationCurrentYear;
 	private Double annualTurnover;
+	private Double loanAmountRequired;
 	
 	private Double bonusPerAnnum;
 	private Double incentivePerAnnum;
@@ -85,6 +88,11 @@ public class CoApplicantRequest {
 	private Boolean isBankStatementCompleted;
 	
 	private Boolean addressSameAsApplicant;
+	private String fatherName;
+	private String mobile;
+	private Integer category;
+	private Integer nationality;
+	private Double networth;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -270,20 +278,20 @@ public class CoApplicantRequest {
 		this.employedWithOther = employedWithOther;
 	}
 
-	public String getEntityName() {
-		return entityName;
-	}
-
-	public void setEntityName(String entityName) {
-		this.entityName = entityName;
-	}
-
 	public Integer getIndustryTypeId() {
 		return industryTypeId;
 	}
 
 	public void setIndustryTypeId(Integer industryTypeId) {
 		this.industryTypeId = industryTypeId;
+	}
+
+	public String getNameOfEntity() {
+		return nameOfEntity;
+	}
+
+	public void setNameOfEntity(String nameOfEntity) {
+		this.nameOfEntity = nameOfEntity;
 	}
 
 	public String getIndustryTypeOther() {
@@ -657,5 +665,68 @@ public class CoApplicantRequest {
 		this.isBankStatementCompleted = isBankStatementCompleted;
 	}
 	
-	
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Integer getCategory() {
+		return category;
+	}
+
+	public void setCategory(Integer category) {
+		this.category = category;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
+	}
+
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Double getLoanAmountRequired() {
+		return loanAmountRequired;
+	}
+
+	public void setLoanAmountRequired(Double loanAmountRequired) {
+		this.loanAmountRequired = loanAmountRequired;
+	}
 }
