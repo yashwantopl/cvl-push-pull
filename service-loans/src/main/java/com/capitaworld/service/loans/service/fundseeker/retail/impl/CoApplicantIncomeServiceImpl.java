@@ -35,6 +35,7 @@ public class CoApplicantIncomeServiceImpl implements CoApplicantIncomeService{
 
 	@Override
 	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws LoansException {
+		logger.info("Enter in Save CoApplicant Income Details.....>");
 		if(CommonUtils.isObjectNullOrEmpty(appIncomeReq.getCoAppId()) || CommonUtils.isObjectNullOrEmpty(appIncomeReq.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(appIncomeReq.getYear())) {
 			logger.info("ApplicationId or Year Null Or Empty !! ");
 			throw new LoansException("ApplicationId or Year or CoApp Null Or Empty");
@@ -49,14 +50,16 @@ public class CoApplicantIncomeServiceImpl implements CoApplicantIncomeService{
 			}
 			
 			if(appIncomeDetail == null || CommonUtils.isObjectNullOrEmpty(appIncomeDetail)) {
+				logger.info("Create New Object For Save CoAPplicant IncomeDetails ApplicationId====>" + appIncomeReq.getApplicationId() + "==== CoAPpId=====>" + appIncomeReq.getCoAppId());
 				appIncomeDetail = new CoApplicantIncomeDetail();
 				appIncomeDetail.setCreatedBy(appIncomeReq.getUserId());
 				appIncomeDetail.setCreatedDate(new Date());
 				appIncomeDetail.setIsActive(true);
 				appIncomeDetail.setApplicationId(appIncomeReq.getApplicationId());
-				appIncomeDetail.setCoAppId(appIncomeDetail.getCoAppId());
+				appIncomeDetail.setCoAppId(appIncomeReq.getCoAppId());
 				appIncomeDetail.setYear(appIncomeReq.getYear());
 			} else {
+				logger.info("EXISTING Object For Save CoAPplicant IncomeDetails ApplicationId====>" + appIncomeReq.getApplicationId() + "==== CoAPpId=====>" + appIncomeReq.getCoAppId());
 				appIncomeDetail.setModifiedBy(appIncomeReq.getUserId());
 				appIncomeDetail.setModifiedDate(new Date());
 				if(!CommonUtils.isObjectNullOrEmpty(appIncomeReq.getIsActive())) {
