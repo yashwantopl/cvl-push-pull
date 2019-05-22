@@ -1374,13 +1374,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	public CoApplicantRequest get(Long applicationId, Long coApplicantId) {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.findByIdAndApplicationIdId(coApplicantId, applicationId);
-			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
 			if (applicantDetail == null) {
 				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + coApplicantId + " and ApplicationId==>" + applicationId);
 			}
+			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+			Double loanAomunt = retailApplicantDetailRepository.getLoanAmountByApplicationId(applicationId);
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			applicantRequest.setLoanAmountRequired(loanAomunt);
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
