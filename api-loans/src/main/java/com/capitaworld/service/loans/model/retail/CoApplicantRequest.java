@@ -19,7 +19,7 @@ public class CoApplicantRequest {
 	private String aadharNumber;
 	private String nameAsPerAadharCard;
 	private Double monthlyIncome;
-	private Double grossIncome;
+	private Double grossMonthlyIncome;
 	private Integer currencyId;
 	private Address firstAddress;
 	private Address secondAddress;
@@ -705,12 +705,13 @@ public class CoApplicantRequest {
 		this.networth = networth;
 	}
 
-	public Double getGrossIncome() {
-		return grossIncome;
+
+	public Double getGrossMonthlyIncome() {
+		return grossMonthlyIncome;
 	}
 
-	public void setGrossIncome(Double grossIncome) {
-		this.grossIncome = grossIncome;
+	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
+		this.grossMonthlyIncome = grossMonthlyIncome;
 	}
 
 	public Integer getBusinessTypeId() {
