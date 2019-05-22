@@ -2,10 +2,11 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
+
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
@@ -13,9 +14,11 @@ import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.model.ddr.DDRRequest;
 import com.capitaworld.service.loans.model.ddr.DDRUploadRequest;
 
+
+
 public interface DDRFormService {
 
-	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws LoansException;
+	public void saveDDRForm(com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest ddrFormDetailsRequest) throws LoansException;
 	
 	public DDRRequest getMergeDDR(Long appId,Long userId) ;
 	
@@ -39,7 +42,7 @@ public interface DDRFormService {
 	public Boolean isDDRApproved(Long userId, Long applicationId) throws LoansException; // PREVIOUS
 	public Boolean isDDRApprovedByProposaId(Long proposalId) throws Exception; // NEW BASED ON PROPOSAL ID
 	
-	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
+	public com.capitaworld.service.loans.model.api_model.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
 	
 	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest);
 
