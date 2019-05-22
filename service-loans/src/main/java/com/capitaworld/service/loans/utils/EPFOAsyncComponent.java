@@ -35,7 +35,7 @@ public class EPFOAsyncComponent {
 		// Employment Verification
 		EmployerRequest reqEmpVer= new EmployerRequest();
 		reqEmpVer.setApplicationId(employerRequest.getApplicationId());
-		reqEmpVer.setEmployerVerificationRequest(new EmployerVerificationRequest(null,employerRequest.getEmployerVerificationRequest().getEmployerName(), employerRequest.getEmployerVerificationRequest().getEmployeeName(),employerRequest.getEmployerVerificationRequest().getMobile(),employerRequest.getEmployerVerificationRequest().getEmailId()));
+		reqEmpVer.setEmployerVerificationRequest(new EmployerVerificationRequest(employerRequest.getEmployerVerificationRequest().getEntityId(),employerRequest.getEmployerVerificationRequest().getEmployerName(), employerRequest.getEmployerVerificationRequest().getEmployeeName(),employerRequest.getEmployerVerificationRequest().getMobile(),employerRequest.getEmployerVerificationRequest().getEmailId()));
 		callAllAPIForData(reqEmpVer);
 		}
 		catch (Exception e) {
