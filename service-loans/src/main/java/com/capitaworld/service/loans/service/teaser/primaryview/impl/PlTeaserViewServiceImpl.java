@@ -5,7 +5,6 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,20 +14,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.ekyc.model.EkycResponse;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
@@ -56,6 +55,9 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
@@ -103,6 +105,7 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.users.model.EmployeeRequest;
 
 /**
  * @author nilay.darji
@@ -192,6 +195,11 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 	
 	@Autowired
 	ProductMasterRepository productMasterRepository;
+	
+	@Autowired
+	private EPFClient epfClient;
+	
+	
 	
 
 	@Override
@@ -404,6 +412,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		} catch (Exception e) {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
+		
+		/*get epfoData*/
+		EmployerRequest epfReq=new EmployerRequest();
+		epfReq.setApplicationId(toApplicationId);
+		EkycResponse epfRes=epfClient.getEpfData(epfReq);
+		if(epfRes != null && epfRes.getData()!= null) {
+			plTeaserViewResponse.setEpfData(epfRes.getData());
+		}else {
+			logger.info("epfo data is null for===>>"+toApplicationId);
+		}
+		 
 		
 		//PROPOSAL RESPONSE
 				try {

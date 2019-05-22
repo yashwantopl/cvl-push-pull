@@ -92,6 +92,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
+import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
@@ -1223,20 +1224,32 @@ public class ScoringServiceImpl implements ScoringService {
     }
     
     
-    private void setLoanPurposeModelFields(ScoreParameterRetailRequest parameterRetailRequest,HomeLoanModelRequest homeLoanModelRequest) {
+    private void setLoanPurposeModelFields(ScoreParameterRetailRequest parameterRetailRequest,HomeLoanModelRequest homeLoanModelRequest, RetailApplicantDetail  applicantDetail) {
 	    if(homeLoanModelRequest != null) {
-	    	parameterRetailRequest.setIsPurReadyBuiltHouse(homeLoanModelRequest.getIsPurReadyBuiltHouse());
-	    	parameterRetailRequest.setIsPurReadyBuiltIndependentHouse(homeLoanModelRequest.getIsPurReadyBuiltIndependentHouse());
-	    	parameterRetailRequest.setIsPurResidetialFlat(homeLoanModelRequest.getIsPurResidetialFlat());
-	    	parameterRetailRequest.setIsPurResidetialFlatAllotee(homeLoanModelRequest.getIsPurResidetialFlatAllotee());
-	    	parameterRetailRequest.setIsPurResidetialSite(homeLoanModelRequest.getIsPurResidetialSite());
-	    	parameterRetailRequest.setIsConstruResidetialBuid(homeLoanModelRequest.getIsConstruResidetialBuid());
-	    	parameterRetailRequest.setIsConstruExpaResBuild(homeLoanModelRequest.getIsConstruExpaResBuild());
-	    	parameterRetailRequest.setIsConstruPurResSite(homeLoanModelRequest.getIsConstruPurResSite());
-	    	parameterRetailRequest.setIsRepPurReadyBuiltIndependant(homeLoanModelRequest.getIsRepPurReadyBuiltIndependant());
-	    	parameterRetailRequest.setIsRepRenImpFlatHouse(homeLoanModelRequest.getIsRepRenImpFlatHouse());
-	    	parameterRetailRequest.setIsOthRefExcessMarginPaid(homeLoanModelRequest.getIsOthRefExcessMarginPaid());
-	    	parameterRetailRequest.setIsOthLoanReimbursementFlat(homeLoanModelRequest.getIsOthLoanReimbursementFlat());
+	    	if(LoanPurposeQuestion.PURCHASE_OF_READY_BUILT_HOUSE_FLAT_FROM_THE_EXISTING_OWNERS.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsPurReadyBuiltHouse(homeLoanModelRequest.getIsPurReadyBuiltHouse());	    			    		
+	    	}else if (LoanPurposeQuestion.PURCHASE_OF_READY_BUILT_INDEPENDENT_HOUSE.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsPurReadyBuiltIndependentHouse(homeLoanModelRequest.getIsPurReadyBuiltIndependentHouse());
+	    		parameterRetailRequest.setIsRepPurReadyBuiltIndependant(homeLoanModelRequest.getIsRepPurReadyBuiltIndependant());
+	    	}else if (LoanPurposeQuestion.PURCHASE_OF_RESIDENTIAL_FLAT_UNDER_CONSTRUCTION_DIRECTLY.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsPurResidetialFlat(homeLoanModelRequest.getIsPurResidetialFlat());	    		
+	    	}else if (LoanPurposeQuestion.PURCHASE_OF_RESIDENTIAL_FLAT_UNDER_CONSTRUCTION.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsPurResidetialFlatAllotee(homeLoanModelRequest.getIsPurResidetialFlatAllotee());
+	    	}else if (LoanPurposeQuestion.PURCHASE_OF_RESIDENTIAL_SITE_OR_PLOT_OF_LAND_TOGETHER.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsPurResidetialSite(homeLoanModelRequest.getIsPurResidetialSite());
+	    	}else if (LoanPurposeQuestion.CONSTRUCTION_OF_RESIDENTIAL_BUILDING_IN_THE_PLOT_OF_LAND.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsConstruResidetialBuid(homeLoanModelRequest.getIsConstruResidetialBuid());
+	    	}else if (LoanPurposeQuestion.EXPANSION_OF_EXISTING_PRE_OWNED_RESIDENTIAL_BUILDING.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsConstruExpaResBuild(homeLoanModelRequest.getIsConstruExpaResBuild());	    			    		
+	    	}else if (LoanPurposeQuestion.PURCHASE_OF_RESIDENTIAL_SITE_OR_PLOT_OF_LAND_TOGETHER_WITH_CONSTRUCTION_OF_HOUSE.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsConstruPurResSite(homeLoanModelRequest.getIsConstruPurResSite());	    			    			    		
+	    	}else if (LoanPurposeQuestion.REPAIRS_OF_EXISTING_PRE_OWNED_HOUSE_OR_FLAT.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsRepRenImpFlatHouse(homeLoanModelRequest.getIsRepRenImpFlatHouse());	    			    			    		
+	    	}else if (LoanPurposeQuestion.REFUND_OF_EXCESS_MARGIN_AMOUNT_PAID_FOR_PURCHASING_THE_HOUSE_THROUGH_NORMAL_BANKING_CHANNEL.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsOthRefExcessMarginPaid(homeLoanModelRequest.getIsOthRefExcessMarginPaid());	    		
+	    	}else if (LoanPurposeQuestion.LOAN_FOR_REIMBURSEMENT_OF_PURCHASE_PRICE_OF_RECENTLY_PURCHASED_HOUSE_FLAT.getId().equals(applicantDetail.getLoanPurposeQueType())) {
+	    		parameterRetailRequest.setIsOthLoanReimbursementFlat(homeLoanModelRequest.getIsOthLoanReimbursementFlat());	    		
+	    	}
 	    }
     }
     
@@ -1348,7 +1361,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
-                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
+//                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
                 scoringRequest.setLoanPurposeModelId(homeLoanModelRequest.getId());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
@@ -1818,6 +1831,7 @@ public class ScoringServiceImpl implements ScoringService {
             					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
             					scoreParameterRetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
             					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
+            					setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest,retailApplicantDetail);
             				}
             				break;
                             default:
@@ -1968,7 +1982,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
-                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
+//                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
                 scoringRequest.setLoanPurposeModelId(homeLoanModelRequest.getId());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 

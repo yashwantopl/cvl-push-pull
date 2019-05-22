@@ -239,6 +239,17 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 	
 	
+	
+
+	@Override
+	public Double getTotalEmiByApplicationIdSoftPingForCoApplicant(Long coApplicantId) {
+		String [] creditCards = {"credit card","secured credit card","kisan credit card","corporate credit card","credit merchant card","credit premium card","credit retail card",
+				"credit secured card","credit single - limited purpose card","corporate credit card","credit card - fleet",
+				"credit stored-value smart card","credit co-branded credit card","credit affinity credit card","credit charge card","credit commercial card","credit line - open"};
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByDirectorId(coApplicantId,Arrays.asList(creditCards));
+		logger.info("getTotalEmiOfAllDirByApplicationId {} For CoApplicant Id = {}", totalEmi ,coApplicantId);
+		return totalEmi;
+	}
 
 	@Override
 	public Double getTotalEmiByApplicationIdSoftPing(Long coApplicantId, Long applicationId) {

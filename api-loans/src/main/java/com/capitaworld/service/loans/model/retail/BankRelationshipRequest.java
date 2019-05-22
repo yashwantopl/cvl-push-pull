@@ -13,7 +13,14 @@ public class BankRelationshipRequest implements Serializable {
 	private Integer from;
 	private Boolean isActive;
 	private Boolean isSalaryAccount;
+	private String sinceWhen;
 	
+	public String getSinceWhen() {
+		return sinceWhen;
+	}
+	public void setSinceWhen(String sinceWhen) {
+		this.sinceWhen = sinceWhen;
+	}
 	public Long getId() {
 		return id;
 	}
