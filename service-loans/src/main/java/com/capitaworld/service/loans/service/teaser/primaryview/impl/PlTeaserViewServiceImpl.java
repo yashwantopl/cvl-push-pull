@@ -968,6 +968,16 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
 		
+		/*get epfoData*/
+		EmployerRequest epfReq=new EmployerRequest();
+		epfReq.setApplicationId(toApplicationId);
+		EkycResponse epfRes=epfClient.getEpfData(epfReq);
+		if(epfRes != null && epfRes.getData()!= null) {
+			plTeaserViewResponse.setEpfData(epfRes.getData());
+		}else {
+			logger.info("epfo data is null for===>>"+toApplicationId);
+		}
+		
 		//PROPOSAL RESPONSE
 		try {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
