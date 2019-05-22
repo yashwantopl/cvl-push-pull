@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
@@ -297,7 +298,12 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 				
 				try {
-					ConnectResponse connectResponse = connectClient.postOneForm(req.getApplicationId(), req.getUserId(), CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId());
+					ConnectRequest request = new ConnectRequest();
+					request.setApplicationId(req.getApplicationId());
+					request.setUserId(req.getUserId());
+					request.setBusinessTypeId(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId());
+					request.setPan(req.getPan());
+					ConnectResponse connectResponse = connectClient.postOneForm(request);
 					if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && connectResponse.getProceed()) {
 						return true;
 					}
