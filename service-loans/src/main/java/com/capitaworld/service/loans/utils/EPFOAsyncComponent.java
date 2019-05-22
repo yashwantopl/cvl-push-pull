@@ -37,7 +37,7 @@ public class EPFOAsyncComponent {
 		callAllAPIForData(reqEmpVer);
 		}
 		catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 	}
@@ -49,7 +49,7 @@ public class EPFOAsyncComponent {
 			epfClient.getVerifyEmployment(employerRequest);
 		}
 		catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		
