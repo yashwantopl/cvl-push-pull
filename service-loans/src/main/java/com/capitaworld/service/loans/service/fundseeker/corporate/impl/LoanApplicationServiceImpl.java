@@ -8253,7 +8253,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			{
 				fullName +=retailApplicantDetail.getFirstName();
 			}
-			else if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
+			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
 			{
 				fullName +=" " + retailApplicantDetail.getLastName();
 			}
