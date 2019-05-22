@@ -498,8 +498,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		//Co-Applicant FINANCIAL ARRANGEMENTS
 		try {	
 			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);	
-			List<List<FinancialArrangementDetailResponseString>> listMap = new ArrayList<List<FinancialArrangementDetailResponseString>>();	
+			List<Map<String , Object>> listMap = new ArrayList<Map<String,Object>>();	
 			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
+				Map<String, Object> map1 = new HashMap<String, Object>();
 				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId() , applicationId);	
 				List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();	
 				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {	
@@ -514,7 +515,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					//financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");	
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);	
 				}
-				listMap.add(financialArrangementsDetailResponseList);		
+				map1.put("financialDetails", !CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
+				listMap.add(map1);		
 			}
 			map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : " ");
          } catch (Exception e) {	
