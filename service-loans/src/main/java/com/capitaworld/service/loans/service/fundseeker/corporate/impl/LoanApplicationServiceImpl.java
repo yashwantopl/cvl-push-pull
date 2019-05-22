@@ -8258,7 +8258,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				fullName +=" " + retailApplicantDetail.getLastName();
 			}
 
-			basicDetailFS.setFullName(retailApplicantDetail.getFirstName() + retailApplicantDetail.getLastName());
+			basicDetailFS.setFullName(fullName);
+
+			LoanApplicationMaster loanApplicationMaster=loanApplicationRepository.getById(applicationId);
+
+			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId()))
+			{
+				basicDetailFS.setLoanTypeId(loanApplicationMaster.getProductId().longValue());
+			}
+
 		}
 		catch (Exception e)
 		{

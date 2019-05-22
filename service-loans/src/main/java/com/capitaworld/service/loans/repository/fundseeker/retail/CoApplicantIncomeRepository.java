@@ -18,6 +18,8 @@ public interface CoApplicantIncomeRepository extends JpaRepository<CoApplicantIn
 	
 	public CoApplicantIncomeDetail findByApplicationIdAndYearAndIsActive(Long applicationId,Integer year,Boolean isActive);
 	
+	public CoApplicantIncomeDetail findByCoAppIdAndYearAndIsActive(Long coAppId,Integer year,Boolean isActive);
+	
 	public List<CoApplicantIncomeDetail> findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
 	
 	@Query("select i from CoApplicantIncomeDetail i where i.applicationId =:applicationId and i.proposalId =:proposalId and i.isActive = true ")
