@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.ekyc.EPFClient;
+import com.capitaworld.client.ekyc.EkycClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
@@ -114,6 +116,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.gateway.url}")
 	private String gatewayUrl;
+	
+	@Value("${capitaworld.service.eky.url}")
+	private String ekycUrl;
 
 	
 	public static void main(String[] args) throws Exception {
@@ -125,6 +130,13 @@ public class LoansMain {
 		GatewayClient gatewayClient = new GatewayClient(gatewayUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
 		return gatewayClient;
+	}
+	
+	@Bean
+	public EPFClient epfClient() {
+		EPFClient epfClient = new EPFClient(ekycUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(epfClient);
+		return epfClient;
 	}
 	
 	@Bean
