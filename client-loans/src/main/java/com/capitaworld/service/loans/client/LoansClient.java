@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -104,6 +105,7 @@ public class LoansClient {
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_ALL_DIRS = "/financial_arrangement_details/getTotalEmiFromForAllDir";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING = "/financial_arrangement_details/getTotalEmiForSoftPing";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING_FOR_CO_APP = "/financial_arrangement_details/getTotalEmiForSoftPingForCoApplicant";
 
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
@@ -929,6 +931,21 @@ public class LoansClient {
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getTotalEMIOfAllDir : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse getTotalEMISoftPingForCoApplicant(Long coApplicant) throws LoansException{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING_FOR_CO_APP);
+		logger.info("url for Getting getTotalEMISoftPing From Client=================>{}", url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<>(coApplicant, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getTotalEMIOfAllDir : ",e);
@@ -2403,7 +2420,7 @@ public class LoansClient {
 		}
 	}
 	
-	public RetailApplicantIncomeRequest getRetailApplicantIncomeDetailsOfCoApplicant(Long coApplicantId) throws LoansException {
+	public List<RetailApplicantIncomeRequest> getRetailApplicantIncomeDetailsOfCoApplicant(Long coApplicantId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_RETAIL_APPLICANT_INCOME_DETAILS_FOR_CO_APPLICANT).concat("/" + coApplicantId);
 		try {
 			logger.info("Enter in Get Retail Applicant Income Details---------->{}" , url);
@@ -2411,7 +2428,8 @@ public class LoansClient {
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantIncomeRequest.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<RetailApplicantIncomeRequest>>() {
+            }).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getRetailApplicantIncomeDetails : ",e);
 			throw new LoansException(e.getCause().getMessage());

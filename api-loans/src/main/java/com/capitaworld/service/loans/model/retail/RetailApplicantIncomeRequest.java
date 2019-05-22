@@ -17,6 +17,7 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	
 	private Long id;
 	private Long applicationId;
+	private Long coAppId;
 	private Integer year;
 	private Double salaryIncome;
 	private Double incomeRatio;
@@ -277,6 +278,11 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	public void setOtherSourceGrossString(String otherSourceGrossString) {
 		this.otherSourceGrossString = otherSourceGrossString;
 	}
-	
+	public Long getCoAppId() {
+		return coAppId;
+	}
+	public void setCoAppId(Long coAppId) {
+		this.coAppId = coAppId;
+	}
 	
 }
