@@ -13,6 +13,8 @@ public interface CoApplicantIncomeService {
 	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList) throws LoansException;
 	
 	public List<RetailApplicantIncomeRequest> getAll(Long applicationId);
+	
+	public List<RetailApplicantIncomeRequest> get(Long coApplicantId);
 
 	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId);
 	
