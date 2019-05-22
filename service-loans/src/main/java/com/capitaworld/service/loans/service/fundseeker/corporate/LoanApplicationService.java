@@ -1,38 +1,35 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
-
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
-import com.capitaworld.service.loans.model.common.*;
-import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 
-import com.capitaworld.service.loans.domain.common.PaymentGatewayAuditMaster;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.api.payment.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.api_model.ProfileReqRes;
+import com.capitaworld.service.loans.model.common.BasicDetailFS;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
+import com.capitaworld.service.loans.model.common.MinMaxProductDetailRequest;
 import com.capitaworld.service.loans.model.common.ProposalList;
+import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.sidbi.integration.model.ProfileReqRes;
 
 public interface LoanApplicationService {
 
