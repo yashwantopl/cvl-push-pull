@@ -86,6 +86,7 @@ import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.enums.Title;
@@ -233,7 +234,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			map.put("retailApplicantProfile", CommonUtils.printFields(plRetailApplicantRequest, null));
 			map.put("educationQualification", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEducationQualification()) ? EducationStatusRetailMst.getById(plRetailApplicantRequest.getEducationQualification()).getValue() : "");
 			map.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getStatusId()) ? MaritalStatusMst.getById(plRetailApplicantRequest.getStatusId()).getValue() : "");
-			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "");
+			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "");
 			map.put("spouseEmployment", plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 			map.put("designation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getDesignation())? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 			map.put("noOfDependent", plRetailApplicantRequest.getNoOfDependent());
@@ -368,10 +369,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				coApp.put("employmentType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentType()) ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue() : "");
 				coApp.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId()) ? EmploymentWithPL.getById(coApplicantDetail.getEmployedWithId()).getValue() : "");
 				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "");
-				//coApp.put("educationQualification", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEducationQualification()) ? EducationStatusRetailMst.getById(coApplicantDetail.getEducationQualification()).getValue() : "");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "");
-				coApp.put("residenceType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType()) ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue() : "");
-				//coApp.put("designation", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDesignation())? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
+				coApp.put("residenceType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType()) ? ResidenceTypeHomeLoan.getById(coApplicantDetail.getResidenceType()).getValue() : "");
 				coApp.put("residenceSinceYearMonths", (coApplicantDetail.getResidenceSinceYear() != null ? (coApplicantDetail.getCurrentJobYear() != null ? (coApplicantDetail.getCurrentJobYear() + " year") : "")+ " " +(coApplicantDetail.getResidenceSinceMonth() != null ? (coApplicantDetail.getResidenceSinceMonth()+" months"):"") : ""));
 				coApp.put("noOfDependent", coApplicantDetail.getNoDependent() != null ? coApplicantDetail.getNoDependent() : null);
 				coApp.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? applicationProposalMapping.getLoanAmount(): "-");
@@ -383,53 +382,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				coApp.put("operatingBusinessSince", coApplicantDetail.getBusinessStartDate() != null ? simpleDateFormat.format(coApplicantDetail.getBusinessStartDate()) : "-");
 				coApp.put("retailCoApplicantProfile", CommonUtils.printFields(coApplicantRequest, null));
 				
-				//KEY VERTICAL FUNDING
-				/*List<Long> keyVerticalFundingId = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getKeyVerticalFunding()))
-					keyVerticalFundingId.add(coApplicantDetail.getKeyVerticalFunding());
-				if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
-					try {
-						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							map.put("keyVerticalFunding", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-						} else {
-							map.put("keyVerticalFunding", "-");
-						}
-						
-					} catch (Exception e) {
-						logger.error(CommonUtils.EXCEPTION,e);
-					}
-				}
-				//KEY VERTICAL SECTOR
-				List<Long> keyVerticalSectorId = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(coApplicantRequest.getKeyVerticalSector()))
-					keyVerticalSectorId.add(coApplicantRequest.getKeyVerticalSector());
-				try {
-					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(coApplicantRequest.getKeyVerticalSector());
-					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-					} else {
-						map.put("keyVerticalSector", "-");
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-				//KEY VERTICAL SUBSECTOR
-				try {
-					if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
-						OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(plRetailApplicantRequest.getKeyVerticalSubSector());
-						map.put("keyVerticalSubSector",StringEscapeUtils.escapeXml(oneFormResponse.getData().toString()));
-					}
-				} catch (Exception e) {
-					logger.error("error while getting key vertical sub-sector : ",e);
-				}*/
-				listMap.add(coApp);
+				listMap.add(coApp);		
 			}
 			map.put("retailCoApplicantDetails", CommonUtils.printFields(listMap, null));
 			} catch (Exception e) {
@@ -541,7 +494,36 @@ public class HLCamReportServiceImpl implements HLCamReportService{
         } catch (Exception e) {
             logger.error("Problem to get Data of Financial Arrangements Details {}", e);
         }	
-		//SCORING
+		
+		//Co-Applicant FINANCIAL ARRANGEMENTS
+		try {	
+			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);	
+			List<Map<String , Object>> listMap = new ArrayList<Map<String,Object>>();	
+			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
+				Map<String, Object> map1 = new HashMap<String, Object>();
+				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId() , applicationId);	
+				List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();	
+				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {	
+					FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();	
+					financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));	
+					financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());	
+					financialArrangementsDetailResponse.setAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));	
+					financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());	
+					financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());	
+					financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());	
+					financialArrangementsDetailResponse.setEmi(CommonUtils.convertValue(financialArrangementsDetailRequest.getEmi()));	
+					//financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");	
+					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);	
+				}
+				map1.put("financialDetails", !CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
+				listMap.add(map1);		
+			}
+			map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : " ");
+         } catch (Exception e) {	
+            logger.error("Problem to get Data of Financial Arrangements Details {}", e);	
+        }
+		
+		//SCORING for Applicant
 		try {
 			ScoringRequest scoringRequest = new ScoringRequest();
 			scoringRequest.setApplicationId(applicationId);
