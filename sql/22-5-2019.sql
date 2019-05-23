@@ -1,0 +1,1 @@
+ALTER TABLE loan_application.fs_retail_applicant_details  ADD COLUMN kid varchar(255);

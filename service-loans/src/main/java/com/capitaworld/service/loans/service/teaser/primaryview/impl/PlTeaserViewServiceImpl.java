@@ -749,7 +749,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		Long userid=applicationProposalMapping.getUserId();
 		plTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
 		plTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
-		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).toString()) + " Years");
+		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).intValue()) + " Years");
 		plTeaserViewResponse.setAppId(toApplicationId);
 		
 
@@ -968,6 +968,16 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
 		
+		/*get epfoData*/
+		EmployerRequest epfReq=new EmployerRequest();
+		epfReq.setApplicationId(toApplicationId);
+		EkycResponse epfRes=epfClient.getEpfData(epfReq);
+		if(epfRes != null && epfRes.getData()!= null) {
+			plTeaserViewResponse.setEpfData(epfRes.getData());
+		}else {
+			logger.info("epfo data is null for===>>"+toApplicationId);
+		}
+		
 		//PROPOSAL RESPONSE
 		try {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
@@ -1116,6 +1126,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setCastCategory(retailFinalInfo.getCastId() != null ? CastCategory.getById(retailFinalInfo.getCastId()).getValue().toString() : "-");
 					plTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
 					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
+					plTeaserViewResponse.setPreviousJobYear(retailFinalInfo.getPreviousJobYear() +" Years " + retailFinalInfo.getPreviousJobMonth() + " Months");
+					
 					if(retailFinalInfo.getDdoRemainingSerYrs() != null && retailFinalInfo.getDdoRemainingSerMonths() != null) {
 						LocalDate today = LocalDate.now();
 						LocalDate remainingYears = LocalDate.of(retailFinalInfo.getDdoRemainingSerYrs(), retailFinalInfo.getDdoRemainingSerMonths(), 1);

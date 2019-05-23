@@ -589,7 +589,11 @@ public class RetailApplicantDetail implements Serializable {
     
     @Column(name="is_credit_info_filled")
     private Boolean isCreditInfoFilled;
+
     
+    @Column(name="kid")
+    private String kid;
+
     private String remarks;
 
 
@@ -2078,6 +2082,15 @@ public class RetailApplicantDetail implements Serializable {
 		this.isCreditInfoFilled = isCreditInfoFilled;
 	}
 
+	public String getKid() {
+		return kid;
+	}
+
+	public void setKid(String kid) {
+		this.kid = kid;
+	}
+
+	
 
 
 

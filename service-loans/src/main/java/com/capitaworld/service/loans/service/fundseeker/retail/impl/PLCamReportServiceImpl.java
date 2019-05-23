@@ -11,27 +11,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
-import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.ekyc.model.EkycResponse;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
+import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -45,6 +46,7 @@ import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
@@ -166,6 +168,10 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+	
+
+	@Autowired
+	private EPFClient epfClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -567,7 +573,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("residentialStatus", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getResidentialStatus()) ? ResidentialStatus.getById(retailFinalInfo.getResidentialStatus()).getValue() : "");
 					map.put("castCategory", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getCastId()) ? CastCategory.getById(retailFinalInfo.getCastId()).getValue() : "");
 					map.put("diasablityType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDisabilityType()) ? DisabilityType.getById(retailFinalInfo.getDisabilityType()) : "");
-					map.put("ddoOrganizationType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDdoOrganizationType()) ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()) : "");
+					map.put("ddoOrganizationType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDdoOrganizationType()) ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue() : "");
 					map.put("retailFinalDetails", retailFinalInfo);
 					map.put("permanantAddCountry", StringEscapeUtils.escapeXml(getCountryName(retailFinalInfo.getPermanentAddress().getCountryId())));
 					map.put("permanantAddState", StringEscapeUtils.escapeXml(getStateName(retailFinalInfo.getPermanentAddress().getStateId())));
@@ -1015,7 +1021,15 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}catch (Exception e) {
 				logger.error("Error while getting scoring data : ",e);
 			}
-
+		/*get epfoData*/
+		EmployerRequest epfReq = new EmployerRequest();
+		epfReq.setApplicationId(applicationId);
+		EkycResponse epfRes = epfClient.getEpfData(epfReq);
+		if(epfRes != null && epfRes.getData()!= null) {
+			map.put("epfoData", epfRes.getData());
+		}else {
+			logger.info("epfoData is null for==>"+applicationId);
+		}
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(applicationId);

@@ -202,6 +202,8 @@ public class PlTeaserViewResponse {
     
     private Object epfData;
     
+    private String previousJobYear;
+    
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1119,6 +1121,11 @@ public class PlTeaserViewResponse {
 	public void setEpfData(Object epfData) {
 		this.epfData = epfData;
 	}
-
+	public String getPreviousJobYear() {
+		return previousJobYear;
+	}
+	public void setPreviousJobYear(String previousJobYear) {
+		this.previousJobYear = previousJobYear;
+	}
 
 }
