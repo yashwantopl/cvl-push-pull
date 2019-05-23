@@ -882,7 +882,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				// loan Details 
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
 				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
-				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
+				plRetailApplicantResponse.setTenureReq(plRetailApplicantRequest.getTenureRequired()!= null ? plRetailApplicantRequest.getTenureRequired() > 1 ? plRetailApplicantRequest.getTenureRequired() + " Years" : plRetailApplicantRequest.getTenureRequired() + " Year " : "" );
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
 				
@@ -969,14 +969,19 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 		
 		/*get epfoData*/
-		EmployerRequest epfReq=new EmployerRequest();
-		epfReq.setApplicationId(toApplicationId);
-		EkycResponse epfRes=epfClient.getEpfData(epfReq);
-		if(epfRes != null && epfRes.getData()!= null) {
-			plTeaserViewResponse.setEpfData(epfRes.getData());
-		}else {
-			logger.info("epfo data is null for===>>"+toApplicationId);
+		try {
+			EmployerRequest epfReq=new EmployerRequest();
+			epfReq.setApplicationId(toApplicationId);
+			EkycResponse epfRes=epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				plTeaserViewResponse.setEpfData(epfRes.getData());
+			}else {
+				logger.info("epfo data is null for===>>"+toApplicationId);
+			}
+		} catch (Exception e) {
+			logger.info("error"+e);
 		}
+		
 		
 		//PROPOSAL RESPONSE
 		try {
