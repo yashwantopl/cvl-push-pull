@@ -162,11 +162,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             req.setApplicationId(plRetailApplicantRequest.getApplicationId());
             String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
             String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
+            if(plRetailApplicantRequest.getKid()!=null) {
             req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
             req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName()
             		,name , applicantDetail.getMobile(), applicantDetail.getEmail()));
             epfoAsyncComponent.callAPI(req);
-            
+            }
             return true;
 
         } catch (Exception e) {

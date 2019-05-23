@@ -497,14 +497,17 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		
 		//Co-Applicant FINANCIAL ARRANGEMENTS
 		try {	
-			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);	
+			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);
+			CoApplicantRequest coApplicantRequest = new CoApplicantRequest();
 			List<Map<String , Object>> listMap = new ArrayList<Map<String,Object>>();	
 			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
+				copyAddressFromDomainToRequestOfCoApplicant(coApplicantDetail, coApplicantRequest);
+				BeanUtils.copyProperties(coApplicantDetail, coApplicantRequest);
 				Map<String, Object> map1 = new HashMap<String, Object>();
 				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId() , applicationId);	
 				List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();	
-				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {	
-					FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();	
+				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+					FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
 					financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));	
 					financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());	
 					financialArrangementsDetailResponse.setAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));	
@@ -516,6 +519,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);	
 				}
 				map1.put("financialDetails", !CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
+				map1.put("coAppDetail", CommonUtils.printFields(coApplicantRequest, null));
 				listMap.add(map1);		
 			}
 			map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : " ");
@@ -710,7 +714,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 		
 	//SCORING for Co-Applicant
-	try {
+	/*try {
 		ScoringRequest scoringRequest = new ScoringRequest();
 		scoringRequest.setApplicationId(applicationId);
 		scoringRequest.setFpProductId(productId);
@@ -894,14 +898,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						companyMap.put(Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT, CommonUtils.printFields(collect.get(0),null));
 					}
 					scoreResponse.add(companyMap);
-					/**map.put("scoringResp", scoreResponse);*/
+					*//**map.put("scoringResp", scoreResponse);*//*
 					listMap.add(scoreResponse);
 		}
 		map.put("scoringRespOfCoApplicant", !CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : " ");
 	}catch (Exception e) {
-		logger.error("Error while getting scoring data : ",e);
+		logger.error("Error while getting scoring data for CoApplicant : ",e);
 	}
-
+*/
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(applicationId);
