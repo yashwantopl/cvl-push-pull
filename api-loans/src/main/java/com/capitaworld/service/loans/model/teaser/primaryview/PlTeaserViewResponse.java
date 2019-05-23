@@ -203,6 +203,7 @@ public class PlTeaserViewResponse {
     private Object epfData;
     
     private String previousJobYear;
+    private String tenureReq;
     
     
 	public List<?> getMatchesList() {
@@ -1126,6 +1127,12 @@ public class PlTeaserViewResponse {
 	}
 	public void setPreviousJobYear(String previousJobYear) {
 		this.previousJobYear = previousJobYear;
+	}
+	public String getTenureReq() {
+		return tenureReq;
+	}
+	public void setTenureReq(String tenureReq) {
+		this.tenureReq = tenureReq;
 	}
 
 }
