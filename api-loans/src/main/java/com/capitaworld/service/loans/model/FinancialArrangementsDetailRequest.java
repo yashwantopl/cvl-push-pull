@@ -48,6 +48,7 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	
 	private Long directorId;
 
+	private String coAppName;
 	/*
 	 * SBI MSME Integration related fields
 	 * By Ravina
@@ -226,6 +227,14 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 
 	public void setBureauOrCalculatedEmi(Double bureauOrCalculatedEmi) {
 		this.bureauOrCalculatedEmi = bureauOrCalculatedEmi;
+	}
+
+	public String getCoAppName() {
+		return coAppName;
+	}
+
+	public void setCoAppName(String coAppName) {
+		this.coAppName = coAppName;
 	}
 
 }
