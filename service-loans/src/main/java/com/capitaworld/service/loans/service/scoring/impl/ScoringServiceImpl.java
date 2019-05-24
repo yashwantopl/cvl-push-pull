@@ -750,6 +750,8 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 List<String> bankStringsList=(List<String> )analyzerResponse.getData();
 
+                                logger.info("bankStringsList==>"+bankStringsList.size());
+
                                 if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
                                 {
                                     for (String bankName:bankStringsList)
