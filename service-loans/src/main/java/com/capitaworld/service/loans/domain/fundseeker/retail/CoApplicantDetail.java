@@ -430,6 +430,9 @@ public class CoApplicantDetail implements Serializable {
 
     @Column(name="residence_since_month")
     private Integer residenceSinceMonth;
+    
+    @Column(name="kid")
+    private String kid;
 
 	public CoApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -1513,6 +1516,14 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setEmploymentSubStatus(Integer employmentSubStatus) {
 		this.employmentSubStatus = employmentSubStatus;
+	}
+
+	public String getKid() {
+		return kid;
+	}
+
+	public void setKid(String kid) {
+		this.kid = kid;
 	}
 	
 	
