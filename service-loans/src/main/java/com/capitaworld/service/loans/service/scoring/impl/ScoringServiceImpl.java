@@ -15,6 +15,11 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -51,12 +56,6 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.ScoringRequestDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
@@ -209,6 +208,9 @@ public class ScoringServiceImpl implements ScoringService {
     
     @Autowired
     private LoanRepository loanRepository;
+
+    @Autowired
+    private ProductMasterRepository productMasterRepository;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -677,25 +679,13 @@ public class ScoringServiceImpl implements ScoringService {
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
-
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long applicationId = scoringRequestLoans.getApplicationId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
 
+            ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
 
-            ///////// Start Getting Old Request ///////
-
-
-            /*List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
-
-            ScoringRequestDetail scoringRequestDetailSaved = new ScoringRequestDetail();
-
-            if (scoringRequestDetailList.size() > 0) {
-                logger.info("Getting Old Scoring request Data for  =====> " + applicationId);
-                scoringRequestDetailSaved = scoringRequestDetailList.get(0);
-                Gson gson = new Gson();
-                scoreParameterRetailRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoreParameterRetailRequest.class);
-            }*/
+            ///////// Start Getting Individual Product Request ///////
 
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
@@ -711,7 +701,122 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
             }
 
-            ///////// End  Getting Old Request ///////
+
+            // start getting relation with bank and loan detail for concession in roi
+
+
+            Boolean isBorrowersHavingAccounts=false;
+            Boolean isBorrowersAvailingLoans=false;
+            Boolean isBorrowersHavingSalaryAccounts=false;
+            Boolean isBorrowersAvailingCreaditCards=false;
+
+
+            // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
+            BankList fsOrgObj=null;
+            List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
+
+            if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
+            {
+                for(BankingRelation bankingRelation:bankingRelationList)
+                {
+                    try {
+                        fsOrgObj = BankList.fromName(bankingRelation.getBank());
+                    }
+                    catch (Exception e)
+                    {
+                        logger.error("Other Bank Selected By User For Saving Account");
+                    }
+
+                    if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
+                    {
+                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId().toString()))
+                        {
+                            isBorrowersHavingAccounts=true;
+
+                            //  get Salary Account detail
+
+                            try {
+
+                                BankList fsOrgObjInner=null;
+                                ReportRequest reportRequest = new ReportRequest();
+                                reportRequest.setApplicationId(applicationId);
+
+                                AnalyzerResponse analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
+
+                                List<String> bankStringsList=(List<String> )analyzerResponse.getData();
+
+                                if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
+                                {
+                                    for (String bankName:bankStringsList)
+                                    {
+                                        try {
+                                            fsOrgObjInner = BankList.fromName(bankName);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            logger.error("Other Bank Selected By User For Saving Account");
+                                        }
+
+                                        if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId()))
+                                        {
+                                            isBorrowersHavingSalaryAccounts=true;
+                                        }
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                logger.error("error while getting Salary Account Detail: ",e);
+                            }
+
+                        }
+                    }
+                }
+            }
+
+
+            // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
+
+
+            List<FinancialArrangementsDetail> financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+
+            if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList))
+            {
+                for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
+                {
+                    try {
+                        fsOrgObj = BankList.fromName(financialArrangementsDetail.getFinancialInstitutionName());
+                    }
+                    catch (Exception e)
+                    {
+                        logger.error("Other Bank Selected By User For Loan Account");
+                    }
+
+                    if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
+                    {
+                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId().toString()))
+                        {
+                            isBorrowersAvailingLoans=true;
+
+                            //  get Credit Card Account detail
+                            if(financialArrangementsDetail.getLoanType().toString().equals(CommonUtils.CREDIT_CARD))
+                            {
+                                isBorrowersAvailingCreaditCards=true;
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersHavingAccounts);
+            scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
+            scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
+            scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
+
+
+            // End getting relation with bank and loan detail for concession in roi
+
+            ///////// End Getting Individual Product Request ///////
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
