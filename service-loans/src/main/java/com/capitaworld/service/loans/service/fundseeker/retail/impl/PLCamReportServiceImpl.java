@@ -859,7 +859,10 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
+			if(plRetailApplicantRequest.getLoanPurpose() != null) {
+				map.put("loanPurpose", plRetailApplicantRequest.getLoanPurpose() == LoanPurposePL.OTHERS.getId() ? "Other - "+plRetailApplicantRequest.getLoanPurposeOther() :  LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue());
+			}
+			
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
 			logger.error("Error while getting primary Details : ",e);
