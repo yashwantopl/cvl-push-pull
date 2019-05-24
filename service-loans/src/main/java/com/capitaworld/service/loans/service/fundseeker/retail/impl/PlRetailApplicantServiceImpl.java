@@ -920,6 +920,19 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
+            
+            if(applicantDetail.getPreviousJobYear() != null && applicantDetail.getPreviousJobMonth() != null) {
+            	LocalDate since = LocalDate.of(applicantDetail.getPreviousJobYear(), applicantDetail.getPreviousJobMonth(), 1);
+        		LocalDate today = LocalDate.now();
+        		Period age = Period.between(since, today);
+        		int years = age.getYears();
+        		int months = age.getMonths();
+        		applicantRequest.setPreviousJobYear(years);
+        		applicantRequest.setPreviousJobMonth(months);
+            }else {
+            	applicantRequest.setPreviousJobYear(null);
+            }
+            
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Final :- ",e);
