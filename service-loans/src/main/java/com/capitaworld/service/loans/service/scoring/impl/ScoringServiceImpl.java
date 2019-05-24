@@ -734,8 +734,9 @@ public class ScoringServiceImpl implements ScoringService {
                     if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
                     {
                         logger.info("Inside if");
-                        if(productMaster.getUserOrgId() == Long.parseLong(fsOrgObj.getOrgId()))
+                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId()))
                         {
+                            logger.info("isBorrowersHavingAccounts==>"+isBorrowersHavingAccounts);
                             isBorrowersHavingAccounts=true;
 
                             //  get Salary Account detail
