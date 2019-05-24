@@ -721,6 +721,7 @@ public class ScoringServiceImpl implements ScoringService {
                 {
                     try {
                         fsOrgObj = BankList.fromName(bankingRelation.getBank());
+                        logger.info("fsOrgObj.getOrgId() Having Account==>"+fsOrgObj.getOrgId());
                     }
                     catch (Exception e)
                     {
