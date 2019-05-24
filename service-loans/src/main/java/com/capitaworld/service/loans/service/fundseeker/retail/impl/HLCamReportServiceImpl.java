@@ -1128,11 +1128,11 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	        address.setPremiseNumber(from.getAddressPremiseName());
 	        address.setLandMark(from.getAddressLandmark());
 	        address.setStreetName(from.getAddressStreetName());
-	        address.setCityId(from.getAddressCity().longValue());
+	        address.setCityId(from.getAddressCity() != null ? from.getAddressCity().longValue() : null);
 	        address.setStateId(CommonUtils.isObjectNullOrEmpty(from.getAddressState()) ? null : from.getAddressState().intValue());
 	        address.setCountryId(from.getAddressCountry());
-	        address.setPincode(from.getAddressPincode().longValue());
-	        address.setDistrictMappingId(from.getAddressDistrictMappingId());
+	        address.setPincode(from.getAddressPincode() != null ? from.getAddressPincode().longValue() : null);
+	        address.setDistrictMappingId(from.getAddressDistrictMappingId() != null ? from.getAddressDistrictMappingId() : null);
 	        to.setFirstAddress(address);
 	        
 	        Address officeAddress = new Address();
