@@ -131,6 +131,8 @@ public class CommonUtils {
 	public static final String ENTRY_IN = "Entry in ";
 	public static final String EXIT_FROM = "Exit From ";
 
+	public static final String CREDIT_CARD = "Credit Card";
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class PaymentStatus{
