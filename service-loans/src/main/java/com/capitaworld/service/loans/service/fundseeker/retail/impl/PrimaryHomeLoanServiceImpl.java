@@ -4,7 +4,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +20,17 @@ import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantIncomeDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.HLOneformRequest;
 import com.capitaworld.service.loans.model.retail.HLOnefromResponse;
@@ -35,6 +40,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialAr
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantIncomeRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
@@ -70,6 +76,9 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	
 	@Autowired
     private BankingRelationlRepository bankingRelationlRepository;
+	
+	@Autowired
+	private CoApplicantIncomeRepository coAppIncomeRepo;
 	
 	@Override
 	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws LoansException {
@@ -343,6 +352,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			res.setIsOtherSalaryBank(retailApplicantDetail.getIsOtherSalaryBank());
 			res.setSalaryBankYear(retailApplicantDetail.getSalaryBankYear());
 			res.setSalaryBankMonth(retailApplicantDetail.getSalaryBankMonth());
+			res.setApplicantName(retailApplicantDetail.getFirstName()+" "+retailApplicantDetail.getLastName());
 			
 			PrimaryHomeLoanDetail prHlDetails = primaryHomeLoanDetailRepository.getByApplication(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(prHlDetails)) {
@@ -361,7 +371,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			
 			// GET EXISTING BANK DETAILS 
 			List<FinancialArrangementsDetail> finArngDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
-            List<FinancialArrangementsDetailRequest> finArngDetailReqList= new ArrayList<>(finArngDetailList.size());
+            List<FinancialArrangementsDetailRequest> finArngDetailReqList= new ArrayList<>();
 
             FinancialArrangementsDetailRequest finReq = null;
             for(FinancialArrangementsDetail financialDetail : finArngDetailList){
@@ -369,8 +379,26 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
                 BeanUtils.copyProperties(financialDetail, finReq);
                 finArngDetailReqList.add(finReq);
             }
+            
+            //GET COAPPLICANT FINANCIAL DETAILS
+            List<CoApplicantDetail> allCoApplicants = coApplicantDetailRepository.getAllByApplicationId(applicationId);
+            Map<Long, String> coAppFinaObj=new HashMap<>();
+            for (CoApplicantDetail coApplicantDetail : allCoApplicants) {
+            	coAppFinaObj.put(coApplicantDetail.getId(), coApplicantDetail.getFirstName()+" "+coApplicantDetail.getLastName());
+     
+            	List<FinancialArrangementsDetail> coAppFinancialDetails= financialArrangementDetailsRepository.listCoFinancialByCoAppId(coApplicantDetail.getId());
+            	for(FinancialArrangementsDetail financialDetail : coAppFinancialDetails){
+                    finReq = new FinancialArrangementsDetailRequest();
+                    BeanUtils.copyProperties(financialDetail, finReq);
+                    finReq.setDirectorId(financialDetail.getDirectorBackgroundDetail().getId());
+                    finArngDetailReqList.add(finReq);
+                }
+			}
             res.setFinArrangementsDetailList(finArngDetailReqList);
+            res.setCoAppFullNameAndCoAppId(coAppFinaObj);
 
+           
+			
             // GET BANK RELATIONSHIP DETAILS 
             List<BankRelationshipRequest> bankRelReqList = new ArrayList<>();
             List<BankingRelation> bankRel = bankingRelationlRepository.listBankRelationAppId(applicationId);
@@ -478,8 +506,14 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
                     if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
                         BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,CommonUtils.MODIFIED_DATE, "isActive");
-
-                        saveFinObj.setApplicationId(new LoanApplicationMaster(hlOneformPrimaryRes.getApplicationId()));
+                		if(reqObj.getDirectorId() == null) {
+                			saveFinObj.setApplicationId(new LoanApplicationMaster(hlOneformPrimaryRes.getApplicationId()));
+                		}else {
+                			CoApplicantDetail directorDetail = coApplicantDetailRepository.findByIdAndIsActive(reqObj.getDirectorId(), true);
+                			DirectorBackgroundDetail detail = new DirectorBackgroundDetail();
+                			BeanUtils.copyProperties(directorDetail, detail);
+                			saveFinObj.setDirectorBackgroundDetail(detail);
+                		}
                         saveFinObj.setCreatedBy(hlOneformPrimaryRes.getUserId());
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
