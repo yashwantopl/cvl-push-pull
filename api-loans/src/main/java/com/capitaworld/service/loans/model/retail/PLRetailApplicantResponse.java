@@ -89,6 +89,9 @@ public class PLRetailApplicantResponse implements Serializable {
     private String coApplicantNameAsPerITR;
     private String tenureReq;
     
+    private Object coAppItrXml;
+    private Object coAppItrPdf;
+    
 
     /*
     * Final
@@ -648,6 +651,21 @@ public class PLRetailApplicantResponse implements Serializable {
 		this.tenureReq = tenureReq;
 	}
 
+	public Object getCoAppItrXml() {
+		return coAppItrXml;
+	}
+
+	public void setCoAppItrXml(Object coAppItrXml) {
+		this.coAppItrXml = coAppItrXml;
+	}
+
+	public Object getCoAppItrPdf() {
+		return coAppItrPdf;
+	}
+
+	public void setCoAppItrPdf(Object coAppItrPdf) {
+		this.coAppItrPdf = coAppItrPdf;
+	}
 	
     
 	
