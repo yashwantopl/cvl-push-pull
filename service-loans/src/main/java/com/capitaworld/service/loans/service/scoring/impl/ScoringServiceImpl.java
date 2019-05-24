@@ -712,13 +712,14 @@ public class ScoringServiceImpl implements ScoringService {
 
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
-            BankList fsOrgObj=null;
+
             List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
 
             if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
             {
                 for(BankingRelation bankingRelation:bankingRelationList)
                 {
+                    BankList fsOrgObj=null;
                     try {
                         fsOrgObj = BankList.fromName(bankingRelation.getBank());
                         logger.info("fsOrgObj.getOrgId() Having Account==>"+fsOrgObj.getOrgId());
@@ -738,7 +739,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                             try {
 
-                                BankList fsOrgObjInner=null;
                                 ReportRequest reportRequest = new ReportRequest();
                                 reportRequest.setApplicationId(applicationId);
 
@@ -750,6 +750,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 {
                                     for (String bankName:bankStringsList)
                                     {
+                                        BankList fsOrgObjInner=null;
                                         try {
                                             fsOrgObjInner = BankList.fromName(bankName);
                                         }
@@ -784,6 +785,7 @@ public class ScoringServiceImpl implements ScoringService {
             {
                 for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
                 {
+                    BankList fsOrgObj=null;
                     try {
                         fsOrgObj = BankList.fromName(financialArrangementsDetail.getFinancialInstitutionName());
                     }
