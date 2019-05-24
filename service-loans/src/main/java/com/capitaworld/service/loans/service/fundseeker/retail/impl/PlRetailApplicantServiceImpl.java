@@ -162,11 +162,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             req.setApplicationId(plRetailApplicantRequest.getApplicationId());
             String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
             String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
+            if(plRetailApplicantRequest.getKid()!=null) {
             req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
             req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName()
             		,name , applicantDetail.getMobile(), applicantDetail.getEmail()));
             epfoAsyncComponent.callAPI(req);
-            
+            }
             return true;
 
         } catch (Exception e) {
@@ -615,8 +616,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
-            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
-            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
+            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getLoanAmountRequired()));
+            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getMonthlyIncome()));
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);

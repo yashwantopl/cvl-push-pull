@@ -749,7 +749,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		Long userid=applicationProposalMapping.getUserId();
 		plTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
 		plTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
-		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).toString()) + " Years");
+		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).intValue()) + " Years");
 		plTeaserViewResponse.setAppId(toApplicationId);
 		
 
@@ -882,7 +882,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				// loan Details 
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
 				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
-				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
+				plRetailApplicantResponse.setTenureReq(plRetailApplicantRequest.getTenureRequired()!= null ? plRetailApplicantRequest.getTenureRequired() > 1 ? plRetailApplicantRequest.getTenureRequired() + " Years" : plRetailApplicantRequest.getTenureRequired() + " Year " : "" );
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
 				
@@ -967,6 +967,21 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		} catch (Exception e) {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
+		
+		/*get epfoData*/
+		try {
+			EmployerRequest epfReq=new EmployerRequest();
+			epfReq.setApplicationId(toApplicationId);
+			EkycResponse epfRes=epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				plTeaserViewResponse.setEpfData(epfRes.getData());
+			}else {
+				logger.info("epfo data is null for===>>"+toApplicationId);
+			}
+		} catch (Exception e) {
+			logger.info("error"+e);
+		}
+		
 		
 		//PROPOSAL RESPONSE
 		try {
@@ -1116,6 +1131,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setCastCategory(retailFinalInfo.getCastId() != null ? CastCategory.getById(retailFinalInfo.getCastId()).getValue().toString() : "-");
 					plTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
 					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
+					plTeaserViewResponse.setPreviousJobYear(retailFinalInfo.getPreviousJobYear() +" Years " + retailFinalInfo.getPreviousJobMonth() + " Months");
+					
 					if(retailFinalInfo.getDdoRemainingSerYrs() != null && retailFinalInfo.getDdoRemainingSerMonths() != null) {
 						LocalDate today = LocalDate.now();
 						LocalDate remainingYears = LocalDate.of(retailFinalInfo.getDdoRemainingSerYrs(), retailFinalInfo.getDdoRemainingSerMonths(), 1);

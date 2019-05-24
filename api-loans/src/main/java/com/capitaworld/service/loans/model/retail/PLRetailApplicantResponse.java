@@ -87,6 +87,8 @@ public class PLRetailApplicantResponse implements Serializable {
     private Double annualIncomeOfSpouse;
     private String address;
     private String coApplicantNameAsPerITR;
+    private String tenureReq;
+    
 
     /*
     * Final
@@ -636,6 +638,14 @@ public class PLRetailApplicantResponse implements Serializable {
 
 	public void setBankRelationShipList(List<BankRelationshipRequest> bankRelationShipList) {
 		this.bankRelationShipList = bankRelationShipList;
+	}
+
+	public String getTenureReq() {
+		return tenureReq;
+	}
+
+	public void setTenureReq(String tenureReq) {
+		this.tenureReq = tenureReq;
 	}
 
 	

@@ -242,7 +242,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			map.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? applicationProposalMapping.getLoanAmount(): "-");
 			map.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? applicationProposalMapping.getTenure():"-");
 			map.put("operatingBusinessSince", plRetailApplicantRequest.getBusinessStartDate() != null ? simpleDateFormat.format(plRetailApplicantRequest.getBusinessStartDate()) :"");
-
+			map.put("applicantCategory", plRetailApplicantRequest.getCategory() != null ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : null);
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
@@ -375,11 +375,12 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				coApp.put("noOfDependent", coApplicantDetail.getNoDependent() != null ? coApplicantDetail.getNoDependent() : null);
 				coApp.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? applicationProposalMapping.getLoanAmount(): "-");
 				coApp.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? applicationProposalMapping.getTenure():"-");
-				coApp.put("nationality", coApplicantDetail.getNationality() != null ? ResidentialStatus.getById(coApplicantDetail.getNationality()) : null);
+				coApp.put("nationality", coApplicantDetail.getNationality() != null ? ResidentialStatus.getById(coApplicantDetail.getNationality()).getValue() : null);
 				coApp.put("grossMonthlyIncome", coApplicantDetail.getGrossMonthlyIncome() != null ? coApplicantDetail.getGrossMonthlyIncome() : null);
 				coApp.put("netMonthlyIncome", coApplicantDetail.getMonthlyIncome() != null ? coApplicantDetail.getMonthlyIncome() : null);
 				coApp.put("currentOccupation", coApplicantDetail.getOccupationId() != null ? OccupationNature.getById(coApplicantDetail.getOccupationId()) : "-");
 				coApp.put("operatingBusinessSince", coApplicantDetail.getBusinessStartDate() != null ? simpleDateFormat.format(coApplicantDetail.getBusinessStartDate()) : "-");
+				coApp.put("coApplicantCategory", coApplicantDetail.getCategory() != null ? CastCategory.getById(coApplicantDetail.getCategory()).getValue() : null);
 				coApp.put("retailCoApplicantProfile", CommonUtils.printFields(coApplicantRequest, null));
 				
 				listMap.add(coApp);		
@@ -497,14 +498,17 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		
 		//Co-Applicant FINANCIAL ARRANGEMENTS
 		try {	
-			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);	
+			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);
+			CoApplicantRequest coApplicantRequest = new CoApplicantRequest();
 			List<Map<String , Object>> listMap = new ArrayList<Map<String,Object>>();	
 			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
+				copyAddressFromDomainToRequestOfCoApplicant(coApplicantDetail, coApplicantRequest);
+				BeanUtils.copyProperties(coApplicantDetail, coApplicantRequest);
 				Map<String, Object> map1 = new HashMap<String, Object>();
 				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId() , applicationId);	
 				List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();	
-				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {	
-					FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();	
+				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+					FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
 					financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));	
 					financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());	
 					financialArrangementsDetailResponse.setAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));	
@@ -516,6 +520,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);	
 				}
 				map1.put("financialDetails", !CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
+				map1.put("coAppDetail", CommonUtils.printFields(coApplicantRequest, null));
 				listMap.add(map1);		
 			}
 			map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : " ");
@@ -710,7 +715,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 		
 	//SCORING for Co-Applicant
-	try {
+	/*try {
 		ScoringRequest scoringRequest = new ScoringRequest();
 		scoringRequest.setApplicationId(applicationId);
 		scoringRequest.setFpProductId(productId);
@@ -894,14 +899,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						companyMap.put(Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT, CommonUtils.printFields(collect.get(0),null));
 					}
 					scoreResponse.add(companyMap);
-					/**map.put("scoringResp", scoreResponse);*/
+					*//**map.put("scoringResp", scoreResponse);*//*
 					listMap.add(scoreResponse);
 		}
 		map.put("scoringRespOfCoApplicant", !CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : " ");
 	}catch (Exception e) {
-		logger.error("Error while getting scoring data : ",e);
+		logger.error("Error while getting scoring data for CoApplicant : ",e);
 	}
-
+*/
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(applicationId);
