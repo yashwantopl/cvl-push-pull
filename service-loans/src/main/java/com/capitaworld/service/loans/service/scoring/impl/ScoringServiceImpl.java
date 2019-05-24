@@ -722,21 +722,16 @@ public class ScoringServiceImpl implements ScoringService {
                     BankList fsOrgObj=null;
                     try {
                         fsOrgObj = BankList.fromName(bankingRelation.getBank());
-                        logger.info("fsOrgObj.getOrgId() Having Account==>"+fsOrgObj.getOrgId());
-                        logger.info("productMaster.getUserOrgId()==>"+productMaster.getUserOrgId());
-                        logger.info("fp_product_id==>"+fpProductId);
                     }
                     catch (Exception e)
                     {
-                        logger.error("Other Bank Selected By User For Saving Account");
+                        logger.error("Other Bank Selected By User For Account");
                     }
 
                     if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
                     {
-                        logger.info("Inside if");
                         if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId()))
                         {
-                            logger.info("isBorrowersHavingAccounts==>"+isBorrowersHavingAccounts);
                             isBorrowersHavingAccounts=true;
 
                             //  get Salary Account detail
@@ -750,8 +745,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 List<String> bankStringsList=(List<String> )analyzerResponse.getData();
 
-                                logger.info("bankStringsList==>"+bankStringsList.size());
-
                                 if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
                                 {
                                     for (String bankName:bankStringsList)
@@ -762,12 +755,12 @@ public class ScoringServiceImpl implements ScoringService {
                                         }
                                         catch (Exception e)
                                         {
-                                            logger.error("Other Bank Selected By User For Saving Account");
+                                            logger.error("Other Bank Selected By User For Salary Account");
                                         }
 
                                         if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId()))
                                         {
-                                            if(productMaster.getUserOrgId() == Long.parseLong(fsOrgObjInner.getOrgId()))
+                                            if(productMaster.getUserOrgId().toString().equals(fsOrgObjInner.getOrgId()))
                                             {
                                                 isBorrowersHavingSalaryAccounts=true;
                                             }
@@ -805,14 +798,16 @@ public class ScoringServiceImpl implements ScoringService {
 
                     if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
                     {
-                        if(productMaster.getUserOrgId() == Long.parseLong(fsOrgObj.getOrgId()))
+                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId()))
                         {
-                            isBorrowersAvailingLoans=true;
-
                             //  get Credit Card Account detail
                             if(financialArrangementsDetail.getLoanType().toString().equals(CommonUtils.CREDIT_CARD))
                             {
                                 isBorrowersAvailingCreaditCards=true;
+                            }
+                            else // get Loan Account Detail
+                            {
+                                isBorrowersAvailingLoans=true;
                             }
 
                         }
@@ -820,7 +815,7 @@ public class ScoringServiceImpl implements ScoringService {
                 }
             }
 
-            scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersHavingAccounts);
+            scoringRequest.setIsBorrowersHavingAccounts(isBorrowersHavingAccounts);
             scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
             scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
             scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
