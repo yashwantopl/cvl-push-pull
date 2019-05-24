@@ -733,7 +733,8 @@ public class ScoringServiceImpl implements ScoringService {
 
                     if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
                     {
-                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId().toString()))
+                        logger.info("Inside if");
+                        if(productMaster.getUserOrgId() == Long.parseLong(fsOrgObj.getOrgId()))
                         {
                             isBorrowersHavingAccounts=true;
 
@@ -763,7 +764,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                                         if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId()))
                                         {
-                                            isBorrowersHavingSalaryAccounts=true;
+                                            if(productMaster.getUserOrgId() == Long.parseLong(fsOrgObjInner.getOrgId()))
+                                            {
+                                                isBorrowersHavingSalaryAccounts=true;
+                                            }
                                         }
                                     }
                                 }
@@ -798,7 +802,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                     if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
                     {
-                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId().toString()))
+                        if(productMaster.getUserOrgId() == Long.parseLong(fsOrgObj.getOrgId()))
                         {
                             isBorrowersAvailingLoans=true;
 
