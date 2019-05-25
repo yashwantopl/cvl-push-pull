@@ -386,13 +386,13 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					coApp.put("ageOfApplicant",(today.getYear() - birthday.getYear()) + " years");
 				}
 				
-				/*if(coApplicantDetail.getResidenceSinceYear() != null && coApplicantDetail.getResidenceSinceMonth() != null) {
+				if(coApplicantDetail.getResidenceSinceYear() != null && coApplicantDetail.getResidenceSinceMonth() != null) {
 					LocalDate since = LocalDate.of(coApplicantDetail.getResidenceSinceYear(), coApplicantDetail.getResidenceSinceMonth(), 1);
 					LocalDate now = LocalDate.now();
 					Period sinceWhen = Period.between(since, now);
 					int years = sinceWhen.getYears();
 					coApplicantDetail.setResidenceSinceYear(years);
-				}*/
+				}
 				
 				coApp.put("gender", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getGenderId()) ? Gender.getById(coApplicantDetail.getGenderId()).getValue(): "");
 				coApp.put("birthDate",!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())? simpleDateFormat.format(coApplicantDetail.getBirthDate()):"-");
