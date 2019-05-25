@@ -302,8 +302,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
-				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
-				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus() != null ? 	EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
+				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentType() != null ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getCurrentEmploymentStatus()!= null ? 	EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + "" +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() !=null ? (plRetailApplicantRequest.getTotalExperienceYear() +" year") : "") + "" + (plRetailApplicantRequest.getTotalExperienceMonth() != null ? (plRetailApplicantRequest.getTotalExperienceMonth() +" months") :  "" ));
 				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue().toString() : "-");
@@ -320,6 +320,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
 				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(plRetailApplicantRequest.getRetailApplicantIncomeRequestList());
 				plRetailApplicantResponse.setBusinessStartDate(plRetailApplicantRequest.getBusinessStartDate());
+				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
+				plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getNationality());
 				
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
