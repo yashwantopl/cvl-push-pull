@@ -92,6 +92,7 @@ public class PLRetailApplicantResponse implements Serializable {
     private Object coAppItrXml;
     private Object coAppItrPdf;
     
+    private String OccupationHL;
 
     /*
     * Final
@@ -665,6 +666,14 @@ public class PLRetailApplicantResponse implements Serializable {
 
 	public void setCoAppItrPdf(Object coAppItrPdf) {
 		this.coAppItrPdf = coAppItrPdf;
+	}
+
+	public String getOccupationHL() {
+		return OccupationHL;
+	}
+
+	public void setOccupationHL(String occupationHL) {
+		OccupationHL = occupationHL;
 	}
 	
     
