@@ -110,6 +110,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Boolean isEmploymentInfoFilled;
     private Boolean isContactInfoFilled;
     private Boolean isCreditInfoFilled;
+    private Integer currentEmploymentStatus;
 
   public String getLoanPurposeOther() {
 		return loanPurposeOther;
@@ -756,6 +757,14 @@ public class PLRetailApplicantRequest implements Serializable {
 				+ salaryBankName + ", salaryBankMonth=" + salaryBankMonth + ", salaryBankYear=" + salaryBankYear
 				+ ", isOtherSalaryBank=" + isOtherSalaryBank + ", category=" + category + ", fatherName=" + fatherName
 				+ ", annualIncomeOfSpouse=" + annualIncomeOfSpouse + "]";
+	}
+
+	public Integer getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
 	}
     
     
