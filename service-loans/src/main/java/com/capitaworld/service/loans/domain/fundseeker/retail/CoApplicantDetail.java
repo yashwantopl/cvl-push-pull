@@ -433,9 +433,14 @@ public class CoApplicantDetail implements Serializable {
     
     @Column(name="kid")
     private String kid;
+    
+    @Column(name="designation")
+    private Integer designation;
+    
+    @Column(name="education_qualification")
+	private Integer educationQualification;
 
 	public CoApplicantDetail() {
-		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
@@ -1524,6 +1529,22 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setKid(String kid) {
 		this.kid = kid;
+	}
+
+	public Integer getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(Integer designation) {
+		this.designation = designation;
+	}
+
+	public Integer getEducationQualification() {
+		return educationQualification;
+	}
+
+	public void setEducationQualification(Integer educationQualification) {
+		this.educationQualification = educationQualification;
 	}
 	
 	
