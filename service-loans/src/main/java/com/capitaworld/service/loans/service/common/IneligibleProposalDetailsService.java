@@ -29,5 +29,7 @@ public interface IneligibleProposalDetailsService {
 	
 	public Boolean checkIsExistOfflineProposalByApplicationId(Long applicationId);
 
+	public Integer getBusinessTypeIdFromApplicationId(Long applicationId);
+
 
 }
