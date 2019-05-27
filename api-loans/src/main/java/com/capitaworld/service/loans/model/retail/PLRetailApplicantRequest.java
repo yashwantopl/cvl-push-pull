@@ -56,6 +56,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String contactNo;
     private String email;
     private String companyName;
+    private String kid; 
 
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
@@ -104,6 +105,12 @@ public class PLRetailApplicantRequest implements Serializable {
     private Double networth;
     private Double grossMonthlyIncome;
     private String loanPurposeOther;
+    
+    private Boolean isBasicInfoFilled;
+    private Boolean isEmploymentInfoFilled;
+    private Boolean isContactInfoFilled;
+    private Boolean isCreditInfoFilled;
+    private Integer currentEmploymentStatus;
 
   public String getLoanPurposeOther() {
 		return loanPurposeOther;
@@ -680,6 +687,46 @@ public class PLRetailApplicantRequest implements Serializable {
 	public void setLoanTypeId(Integer loanTypeId) {
 		this.loanTypeId = loanTypeId;
 	}
+	
+	public Boolean getIsBasicInfoFilled() {
+		return isBasicInfoFilled;
+	}
+
+	public Boolean getIsEmploymentInfoFilled() {
+		return isEmploymentInfoFilled;
+	}
+
+	public Boolean getIsContactInfoFilled() {
+		return isContactInfoFilled;
+	}
+
+	public Boolean getIsCreditInfoFilled() {
+		return isCreditInfoFilled;
+	}
+
+	public void setIsBasicInfoFilled(Boolean isBasicInfoFilled) {
+		this.isBasicInfoFilled = isBasicInfoFilled;
+	}
+
+	public void setIsEmploymentInfoFilled(Boolean isEmploymentInfoFilled) {
+		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
+	}
+
+	public void setIsContactInfoFilled(Boolean isContactInfoFilled) {
+		this.isContactInfoFilled = isContactInfoFilled;
+	}
+
+	public void setIsCreditInfoFilled(Boolean isCreditInfoFilled) {
+		this.isCreditInfoFilled = isCreditInfoFilled;
+	}
+
+	public String getKid() {
+		return kid;
+	}
+
+	public void setKid(String kid) {
+		this.kid = kid;
+	}
 
 	@Override
 	public String toString() {
@@ -710,6 +757,14 @@ public class PLRetailApplicantRequest implements Serializable {
 				+ salaryBankName + ", salaryBankMonth=" + salaryBankMonth + ", salaryBankYear=" + salaryBankYear
 				+ ", isOtherSalaryBank=" + isOtherSalaryBank + ", category=" + category + ", fatherName=" + fatherName
 				+ ", annualIncomeOfSpouse=" + annualIncomeOfSpouse + "]";
+	}
+
+	public Integer getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
 	}
     
     

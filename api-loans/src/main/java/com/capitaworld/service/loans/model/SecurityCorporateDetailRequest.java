@@ -1,10 +1,10 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-
 import java.lang.reflect.Field;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.api_model.AuditorRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * 
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SecurityCorporateDetailRequest implements Serializable {
+public class SecurityCorporateDetailRequest extends AuditorRequest implements Serializable {
 	/**
 	 * 
 	 */

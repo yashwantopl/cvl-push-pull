@@ -79,8 +79,27 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT lm.applicationId,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,ApplicationProposalMapping lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and pd.branchId =:branchId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.applicationId and cap.applicationProposalMapping is null")
     public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchId") Long branchId);
 
-    @Query(value = "SELECT lm.applicationId,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,ApplicationProposalMapping lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and pd.branchId =:branchId and cap.applicationId.id = pd.applicationId and pd.userOrgId !=:userOrgId and pd.proposalStatusId IN (5,11,13) and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.applicationId and cap.applicationProposalMapping is null")
-    public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchId") Long branchId,@Param("userOrgId") Long userOrgId);
+   @Query(value = "SELECT pd.application_id,fcd.organisation_name,apm.application_code,apm.business_type_id FROM proposal_details pd " +
+            "INNER JOIN fs_corporate_applicant_details fcd " +
+            "INNER JOIN application_proposal_mapping apm " +
+            "WHERE pd.is_active =TRUE AND pd.branch_id=:branchId " +
+            "AND pd.fp_product_id=:fpProductId " +
+            "AND pd.application_id IN (SELECT application_id FROM proposal_details WHERE proposal_status_id IN (5,11,13) AND user_org_id <>:userOrgId) " +
+            "AND pd.application_id = fcd.application_id " +
+            "AND pd.id = apm.proposal_id " +
+            "AND fcd.proposal_mapping_id = apm.proposal_id",nativeQuery = true)
+    public List<Object[]> getSanctionByOtherBankProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId, @Param("branchId") Long branchId, @Param("userOrgId") Long userOrgId);
+
+    @Query(value = "SELECT pd.application_id,fcd.organisation_name,apm.application_code,apm.business_type_id FROM proposal_details pd " +
+            "INNER JOIN fs_corporate_applicant_details fcd " +
+            "INNER JOIN application_proposal_mapping apm " +
+            "WHERE pd.is_active =TRUE " +
+            "AND pd.fp_product_id=:fpProductId " +
+            "AND pd.application_id IN (SELECT application_id FROM proposal_details WHERE proposal_status_id IN (5,11,13) AND user_org_id <>:userOrgId) " +
+            "AND pd.application_id = fcd.application_id " +
+            "AND pd.id = apm.proposal_id " +
+            "AND fcd.proposal_mapping_id = apm.proposal_id",nativeQuery = true)
+    public List<Object[]> getAllSanctionByOtherBankProposalsForSearch(@Param("fpProductId") Long fpProductId,@Param("userOrgId") Long userOrgId);
 
     @Query(value = "SELECT lm.applicationId,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,ApplicationProposalMapping lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.branchId IN :branchIdList and pd.isActive = true and cap.applicationId.id = pd.applicationId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.applicationId and cap.applicationProposalMapping is null")
     public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchIdList") List<Long> branchIdList);

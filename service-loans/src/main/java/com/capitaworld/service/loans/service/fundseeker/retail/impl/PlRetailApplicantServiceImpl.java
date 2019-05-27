@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.api.ekyc.model.epf.request.EmployerDefaulterRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
 import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.users.client.UsersClient;
@@ -42,6 +45,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.EPFOAsyncComponent;
 import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
 
 @Service
@@ -75,6 +79,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private BankingRelationlRepository bankingRelationlRepository;
+    
+    @Autowired
+    private EPFOAsyncComponent epfoAsyncComponent;
 
     @Override
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
@@ -108,6 +115,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
                 logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
                 for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+                	
                     FinancialArrangementsDetail saveFinObj = null;
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
@@ -129,6 +137,11 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
                     
                     if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
+                    	if(reqObj.getIsManuallyAdded() != null && reqObj.getIsManuallyAdded() == false) {
+                    		System.out.println("getIsManuallyAdded : false");
+                    		creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
+                    		saveFinObj.setIsManuallyAdded(false);
+                    	}
                     	saveFinObj.setAmount(null);
                     	saveFinObj.setEmi(null);
                     }
@@ -145,7 +158,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
                         finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
             }
-
+            EmployerRequest req = new EmployerRequest();
+            req.setApplicationId(plRetailApplicantRequest.getApplicationId());
+            String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
+            String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
+            if(plRetailApplicantRequest.getKid()!=null) {
+            req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
+            req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName()
+            		,name , applicantDetail.getMobile(), applicantDetail.getEmail()));
+            epfoAsyncComponent.callAPI(req);
+            }
             return true;
 
         } catch (Exception e) {
@@ -441,19 +463,24 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             List<BankingRelation> bankingRelations = new ArrayList<>();
             BankingRelation bankingRelation = null;
-            for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
-            	bankingRelation = new BankingRelation();
-            	BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
-            	bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
-            	if(bankRelationshipRequest.getId() == null) {
-            		bankingRelation.setCreatedBy(userId);
-                	bankingRelation.setCreatedDate(new Date());
-                	bankingRelation.setIsActive(true);
-            	}
-            	bankingRelation.setModifiedBy(userId);
-        		bankingRelation.setModifiedDate(new Date());
-            	bankingRelations.add(bankingRelation);
+
+            if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBankingRelationshipList()))
+            {
+                for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
+                    bankingRelation = new BankingRelation();
+                    BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
+                    bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
+                    if(bankRelationshipRequest.getId() == null) {
+                        bankingRelation.setCreatedBy(userId);
+                        bankingRelation.setCreatedDate(new Date());
+                        bankingRelation.setIsActive(true);
+                    }
+                    bankingRelation.setModifiedBy(userId);
+                    bankingRelation.setModifiedDate(new Date());
+                    bankingRelations.add(bankingRelation);
+                }
             }
+
             bankingRelationlRepository.save(bankingRelations);
 
             applicantRepository.save(applicantDetail);
@@ -536,17 +563,27 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     public Boolean saveBankRelation(Long userId, Long applicationId, BankRelationshipRequest request) {
     	
     	BankingRelation bankingRelations = new BankingRelation();
-    	bankingRelations.setApplicationId(applicationId);
-    	bankingRelations.setBank(request.getBank());
     	bankingRelations.setCreatedBy(userId);
     	bankingRelations.setCreatedDate(new Date());
     	bankingRelations.setIsActive(Boolean.TRUE);
+    	bankingRelations.setApplicationId(applicationId);
+    	bankingRelations.setBank(request.getBank());
     	bankingRelations.setIsSalaryAccount(request.getIsSalaryAccount());
     	bankingRelations.setModifiedBy(userId);
     	bankingRelations.setModifiedDate(new Date());
     	bankingRelations.setSinceMonth(request.getSinceMonth());
     	bankingRelations.setSinceYear(request.getSinceYear());
     	
+    	bankingRelationlRepository.save(bankingRelations);
+    	return Boolean.TRUE;
+    }
+    
+    @Override
+    public Boolean inactivateBankRelation(Long id, Long userId) {
+    	BankingRelation bankingRelations = bankingRelationlRepository.findOne(id);
+    	bankingRelations.setIsActive(Boolean.FALSE);
+    	bankingRelations.setModifiedBy(userId);
+    	bankingRelations.setModifiedDate(new Date());
     	bankingRelationlRepository.save(bankingRelations);
     	return Boolean.TRUE;
     }
@@ -579,8 +616,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
-            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
-            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
+            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getLoanAmountRequired()));
+            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getMonthlyIncome()));
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
@@ -809,8 +846,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return applicantRequest;
             }
             
-            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
-            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
+            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getLoanAmountRequired()));
+            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getMonthlyIncome()));
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
@@ -830,6 +867,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
             	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	if(bankingRelation.getSinceYear() !=null && bankingRelation.getSinceMonth() != null) {
+            		LocalDate since = LocalDate.of(bankingRelation.getSinceYear(), bankingRelation.getSinceMonth(), 1);
+            		LocalDate today = LocalDate.now();
+            		Period age = Period.between(since, today);
+            		int years = age.getYears();
+            		int months = age.getMonths();
+            		bankRelationshipRequest.setSinceYear(years);
+            		bankRelationshipRequest.setSinceMonth(months);
+            		bankRelationshipRequest.setSinceWhen((bankRelationshipRequest.getSinceYear() != null ? bankRelationshipRequest.getSinceYear() +" year" : "") + " " +(bankRelationshipRequest.getSinceMonth() != null ? bankRelationshipRequest.getSinceMonth()+" months" :  "" ));
+            	}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
             applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
@@ -873,6 +920,19 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
+            
+            if(applicantDetail.getPreviousJobYear() != null && applicantDetail.getPreviousJobMonth() != null) {
+            	LocalDate since = LocalDate.of(applicantDetail.getPreviousJobYear(), applicantDetail.getPreviousJobMonth(), 1);
+        		LocalDate today = LocalDate.now();
+        		Period age = Period.between(since, today);
+        		int years = age.getYears();
+        		int months = age.getMonths();
+        		applicantRequest.setPreviousJobYear(years);
+        		applicantRequest.setPreviousJobMonth(months);
+            }else {
+            	applicantRequest.setPreviousJobYear(null);
+            }
+            
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Final :- ",e);
@@ -921,6 +981,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                 financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                 financialRequest.setLoanType("Credit Card");
+                financialRequest.setIsManuallyAdded(false);
                 financialArrangementsDetailRequestList.add(financialRequest);
             }
             

@@ -5,7 +5,6 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,20 +14,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.ekyc.model.EkycResponse;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
@@ -56,6 +55,9 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
@@ -103,6 +105,7 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.users.model.EmployeeRequest;
 
 /**
  * @author nilay.darji
@@ -192,6 +195,11 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 	
 	@Autowired
 	ProductMasterRepository productMasterRepository;
+	
+	@Autowired
+	private EPFClient epfClient;
+	
+	
 	
 
 	@Override
@@ -404,6 +412,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		} catch (Exception e) {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
+		
+		/*get epfoData*/
+		EmployerRequest epfReq=new EmployerRequest();
+		epfReq.setApplicationId(toApplicationId);
+		EkycResponse epfRes=epfClient.getEpfData(epfReq);
+		if(epfRes != null && epfRes.getData()!= null) {
+			plTeaserViewResponse.setEpfData(epfRes.getData());
+		}else {
+			logger.info("epfo data is null for===>>"+toApplicationId);
+		}
+		 
 		
 		//PROPOSAL RESPONSE
 				try {
@@ -730,7 +749,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		Long userid=applicationProposalMapping.getUserId();
 		plTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
 		plTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
-		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).toString()) + " Years");
+		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).intValue()) + " Years");
 		plTeaserViewResponse.setAppId(toApplicationId);
 		
 
@@ -862,8 +881,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 				// loan Details 
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
-				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
-				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
+				if(plRetailApplicantRequest.getLoanPurpose() != null) {
+					plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose().equals(LoanPurposePL.OTHERS.getId()) ?  "Other - "+plRetailApplicantRequest.getLoanPurposeOther()  : LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString());
+				}else {
+					plTeaserViewResponse.setPurposeOfLoan("NA");
+				}
+				
+				plRetailApplicantResponse.setTenureReq(plRetailApplicantRequest.getTenureRequired()!= null ? plRetailApplicantRequest.getTenureRequired() > 1 ? plRetailApplicantRequest.getTenureRequired() + " Years" : plRetailApplicantRequest.getTenureRequired() + " Year " : "" );
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
 				
@@ -949,6 +973,21 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
 		
+		/*get epfoData*/
+		try {
+			EmployerRequest epfReq=new EmployerRequest();
+			epfReq.setApplicationId(toApplicationId);
+			EkycResponse epfRes=epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				plTeaserViewResponse.setEpfData(epfRes.getData());
+			}else {
+				logger.info("epfo data is null for===>>"+toApplicationId);
+			}
+		} catch (Exception e) {
+			logger.info("error"+e);
+		}
+		
+		
 		//PROPOSAL RESPONSE
 		try {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
@@ -1019,12 +1058,12 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 
 			if (proposalScoreResponse != null){
-				logger.info("getObjectFromMap called successfully");
+				plTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName());
+				plTeaserViewResponse.setDataList(scoringResponse.getDataList());
+				plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
+				plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());
 			}
-			plTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName());
-			plTeaserViewResponse.setDataList(scoringResponse.getDataList());
-			plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
-			plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());
+			
 		} catch (ScoringException | IOException e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -1097,6 +1136,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setCastCategory(retailFinalInfo.getCastId() != null ? CastCategory.getById(retailFinalInfo.getCastId()).getValue().toString() : "-");
 					plTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
 					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
+					
+					if(retailFinalInfo.getPreviousJobYear() != null) {
+						plTeaserViewResponse.setPreviousJobYear(retailFinalInfo.getPreviousJobYear() +" Years " + retailFinalInfo.getPreviousJobMonth() + " Months");
+					}else {
+						plTeaserViewResponse.setPreviousJobYear("-");
+					}
+					
+					
 					if(retailFinalInfo.getDdoRemainingSerYrs() != null && retailFinalInfo.getDdoRemainingSerMonths() != null) {
 						LocalDate today = LocalDate.now();
 						LocalDate remainingYears = LocalDate.of(retailFinalInfo.getDdoRemainingSerYrs(), retailFinalInfo.getDdoRemainingSerMonths(), 1);

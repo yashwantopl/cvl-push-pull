@@ -182,6 +182,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Integer basedOnIncomeType;
 	
 	private Integer multiplierIncomeType;
+	
+	private Integer basedOnType;
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -876,6 +878,15 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	public void setEmiNmiDetailRequestList(List<EmiNmiDetailRequest> emiNmiDetailRequestList) {
 		this.emiNmiDetailRequestList = emiNmiDetailRequestList;
 	}
+
+	public Integer getBasedOnType() {
+		return basedOnType;
+	}
+
+	public void setBasedOnType(Integer basedOnType) {
+		this.basedOnType = basedOnType;
+	}
+
 	
 	
 

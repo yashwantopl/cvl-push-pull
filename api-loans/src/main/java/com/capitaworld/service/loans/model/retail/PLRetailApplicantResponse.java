@@ -87,6 +87,12 @@ public class PLRetailApplicantResponse implements Serializable {
     private Double annualIncomeOfSpouse;
     private String address;
     private String coApplicantNameAsPerITR;
+    private String tenureReq;
+    
+    private Object coAppItrXml;
+    private Object coAppItrPdf;
+    
+    private String OccupationHL;
 
     /*
     * Final
@@ -638,6 +644,37 @@ public class PLRetailApplicantResponse implements Serializable {
 		this.bankRelationShipList = bankRelationShipList;
 	}
 
+	public String getTenureReq() {
+		return tenureReq;
+	}
+
+	public void setTenureReq(String tenureReq) {
+		this.tenureReq = tenureReq;
+	}
+
+	public Object getCoAppItrXml() {
+		return coAppItrXml;
+	}
+
+	public void setCoAppItrXml(Object coAppItrXml) {
+		this.coAppItrXml = coAppItrXml;
+	}
+
+	public Object getCoAppItrPdf() {
+		return coAppItrPdf;
+	}
+
+	public void setCoAppItrPdf(Object coAppItrPdf) {
+		this.coAppItrPdf = coAppItrPdf;
+	}
+
+	public String getOccupationHL() {
+		return OccupationHL;
+	}
+
+	public void setOccupationHL(String occupationHL) {
+		OccupationHL = occupationHL;
+	}
 	
     
 	

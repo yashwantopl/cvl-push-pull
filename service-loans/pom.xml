@@ -187,12 +187,6 @@
 			<artifactId>client-loans</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.capitaworld.sidbi.client.integration</groupId>
-			<artifactId>client-sidbi-integration</artifactId>
-			<version>0.0.1</version>
-		</dependency>
 		<dependency>
 
 			<groupId>com.capitaworld.mca</groupId>
@@ -228,7 +222,11 @@
 			<artifactId>commons-lib</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-
+		<dependency>
+ 			<groupId>com.capitaworld.client.ekyc</groupId>
+			<artifactId>client-ekyc</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

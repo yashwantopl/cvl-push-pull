@@ -281,6 +281,8 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	@Column(name = "multiplier_income_type ")
 	private Integer multiplierIncomeType;
 
+	@Column(name="based_on_type")
+	private Integer basedOnType;
 
 	public PersonalLoanParameterTemp() {
 		// Do nothing because of X and Y.
@@ -1098,6 +1100,19 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 		this.multiplierIncomeType = multiplierIncomeType;
 	}
 
+
+
+	public Integer getBasedOnType() {
+		return basedOnType;
+	}
+
+
+
+	public void setBasedOnType(Integer basedOnType) {
+		this.basedOnType = basedOnType;
+	}
+
+	
 
 	
 	
