@@ -12,7 +12,9 @@ import java.util.List;
  *
  */
 public class PLRetailApplicantRequest implements Serializable {
-    // Common Fields
+    
+	private static final long serialVersionUID = 1L;
+	// Common Fields
     private Long id;
     private Long clientId;
     private Long applicationId;
@@ -130,7 +132,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String employmentStatusOther;
     private String nameOfEntity;
     private Boolean isItrSkip;
-
+    
 
     public String getLoanPurposeOther() {
 		return loanPurposeOther;
