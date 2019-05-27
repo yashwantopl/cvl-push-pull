@@ -616,3 +616,4 @@ INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_m
 
 ALTER TABLE `scoring_sidbi`.`model_parameter_temp` ADD COLUMN addi_values VARCHAR(255);
 ALTER TABLE `scoring_sidbi`.`model_parameter` ADD COLUMN addi_values VARCHAR(255);
+UPDATE `scoring_sidbi`.`field_master` SET `type` = '2' WHERE `id` = '111';
