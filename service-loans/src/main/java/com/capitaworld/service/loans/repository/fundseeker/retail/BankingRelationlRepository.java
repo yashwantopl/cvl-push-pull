@@ -15,7 +15,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
  */
 public interface BankingRelationlRepository extends JpaRepository<BankingRelation, Long> {
 
-	@Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true and co_applicant_id =:coApplicantId")
+	@Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true and co_applicant_id =:coAppId")
 	public List<BankingRelation> listBankRelationAppId(@Param("id")Long id,@Param("coAppId") Long coApplicantId);
 
 	@Modifying
