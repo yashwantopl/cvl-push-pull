@@ -93,10 +93,24 @@ public class CoApplicantRequest {
 	private Integer category;
 	private Integer nationality;
 	private Double networth;
-	
-	
+	private Boolean isItrCompleted;
+	private Boolean isItrSkip;
+	private Boolean isItrManual;
+	private Boolean isOneFormCompleted;
 	private Integer designation;
 	private Integer educationQualification;
+
+	public CoApplicantRequest() {
+	}
+
+	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId) {
+		this.id = id;
+		this.applicationId = applicationId;
+		this.firstName = firstName;
+		this.relationshipWithApplicant = relationshipWithApplicant;
+		this.middleName = middleName;
+		this.lastName = lastName;
+	}
 
 	public Long getApplicationId() {
 		return applicationId;
