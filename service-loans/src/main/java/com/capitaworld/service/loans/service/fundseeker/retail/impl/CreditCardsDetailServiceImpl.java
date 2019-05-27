@@ -133,12 +133,15 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 				}
 				switch (applicantType) {
 				case CommonUtils.ApplicantType.APPLICANT:
+					creditCardsDetailRepository.inactive(applicationId);
 					crediCardsDetail.setApplicantionId(loanApplicationRepository.findOne(applicationId));
 					break;
 				case CommonUtils.ApplicantType.COAPPLICANT:
+					creditCardsDetailRepository.inactiveByCoApplicant(applicationId);
 					crediCardsDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(applicationId));
 					break;
 				case CommonUtils.ApplicantType.GARRANTOR:
+					creditCardsDetailRepository.inactiveByGuarantor(applicationId);
 					crediCardsDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(applicationId));
 					break;
 				default:
