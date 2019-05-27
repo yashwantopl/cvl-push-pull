@@ -4,18 +4,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.api.ekyc.model.epf.request.EmployerDefaulterRequest;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
-import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.retail.*;
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,15 +13,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerDefaulterRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantIncomeDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.HLOneformRequest;
+import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -40,9 +39,11 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDet
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.EPFOAsyncComponent;
 import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
+import com.capitaworld.service.users.client.UsersClient;
 
 @Service
 @Transactional
@@ -80,7 +81,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     private EPFOAsyncComponent epfoAsyncComponent;
 
     @Autowired
-    private  PrimaryHomeLoanServiceImpl homeLoanService;
+    private  PrimaryHomeLoanService homeLoanService;
 
     @Override
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
