@@ -52,9 +52,12 @@ public class PersistenceContext {
 	public DataSource dataSource() {
 		HikariDataSource dataSource = new HikariDataSource();
 		dataSource.setDriverClassName(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-        dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName()+environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+        /*dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName()+environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
         dataSource.setUsername(DataSourceProvider.getUserName());
-        dataSource.setPassword(DataSourceProvider.getPassword());
+        dataSource.setPassword(DataSourceProvider.getPassword());*/
+		dataSource.setJdbcUrl("jdbc:mysql://qa-db.cmfy4dp1cezg.ap-south-1.rds.amazonaws.com:3306/loan_application?useSSL=false");
+		dataSource.setUsername("dbsidbi");
+		dataSource.setPassword("qaaurora123");
 		dataSource.setConnectionTestQuery("SELECT 1");
 		dataSource
 				.setMaximumPoolSize(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));

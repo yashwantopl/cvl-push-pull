@@ -93,6 +93,10 @@ public class CoApplicantRequest {
 	private Integer category;
 	private Integer nationality;
 	private Double networth;
+	
+	
+	private Integer designation;
+	private Integer educationQualification;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -729,4 +733,22 @@ public class CoApplicantRequest {
 	public void setLoanAmountRequired(Double loanAmountRequired) {
 		this.loanAmountRequired = loanAmountRequired;
 	}
+
+	public Integer getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(Integer designation) {
+		this.designation = designation;
+	}
+
+	public Integer getEducationQualification() {
+		return educationQualification;
+	}
+
+	public void setEducationQualification(Integer educationQualification) {
+		this.educationQualification = educationQualification;
+	}
+	
+	
 }
