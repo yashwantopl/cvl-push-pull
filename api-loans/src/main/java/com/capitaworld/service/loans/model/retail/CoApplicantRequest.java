@@ -763,6 +763,38 @@ public class CoApplicantRequest {
 	public void setEducationQualification(Integer educationQualification) {
 		this.educationQualification = educationQualification;
 	}
-	
-	
+
+
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public Boolean getIsItrSkip() {
+		return isItrSkip;
+	}
+
+	public void setIsItrSkip(Boolean isItrSkip) {
+		this.isItrSkip = isItrSkip;
+	}
+
+	public Boolean getIsItrManual() {
+		return isItrManual;
+	}
+
+	public void setIsItrManual(Boolean isItrManual) {
+		this.isItrManual = isItrManual;
+	}
+
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
+	}
 }
