@@ -210,15 +210,18 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
 				.setParameter("id", coAppId)
 				.getResultList();
-//		if(!CommonUtils.isListNullOrEmpty(resultList)) {
-//			List<Double> finalList = new ArrayList<>(resultList.size());
-//			for(Object o : resultList) {
-//				finalList.add(Double.valueOf(o.toString()));
-//			}
-//			return finalList;
-//		}else {
-//			return Collections.emptyList();
-//		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean isITRUploaded(Long applicationId) {
+		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
+				.setParameter("applicationId", applicationId)
+				.getResultList();
+		if(!CommonUtils.isListNullOrEmpty(result)) {
+			return result.get(0);
+		}
+		return null;
 	}
 	
 }
