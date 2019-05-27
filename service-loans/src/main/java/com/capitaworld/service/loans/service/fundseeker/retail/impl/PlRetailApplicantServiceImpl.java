@@ -1,8 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantIncomeDetail;
@@ -27,7 +30,6 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
-import com.capitaworld.service.loans.model.retail.HLOneformRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
@@ -35,15 +37,14 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Application
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.EPFOAsyncComponent;
 import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
-import com.capitaworld.service.users.client.UsersClient;
 
 @Service
 @Transactional
@@ -55,9 +56,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
-
-    @Autowired
-    private UsersClient usersClient;
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
@@ -79,42 +77,94 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     
     @Autowired
     private EPFOAsyncComponent epfoAsyncComponent;
-
+    
     @Autowired
-    private  PrimaryHomeLoanService homeLoanService;
+    private CoApplicantDetailRepository coApplicantDetailRepository;
+
 
     @Override
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
-            if(plRetailApplicantRequest.getCoAppId() != null){
-                HLOneformRequest hlOneformRequest = new HLOneformRequest();
-                BeanUtils.copyProperties(plRetailApplicantRequest,hlOneformRequest);
-                return homeLoanService.saveProfileOneForm(hlOneformRequest);
-            }
-            Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
-            RetailApplicantDetail applicantDetail = null;
-            
-            if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
-            }else {
-            	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
-            }
-            
-            if (applicantDetail != null) {
-                applicantDetail.setModifiedBy(userId);
-                applicantDetail.setModifiedDate(new Date());
+        	Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
+            if(plRetailApplicantRequest.getCoAppId() == null){
+            	RetailApplicantDetail applicantDetail = null;
+                
+                if(plRetailApplicantRequest.getProposalId() != null) {
+                	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
+                }else {
+                	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
+                }
+                
+                if (applicantDetail != null) {
+                    applicantDetail.setModifiedBy(userId);
+                    applicantDetail.setModifiedDate(new Date());
+                } else {
+                    applicantDetail = new RetailApplicantDetail();
+                    applicantDetail.setCreatedBy(userId);
+                    applicantDetail.setCreatedDate(new Date());
+                    applicantDetail.setIsActive(true);
+                    applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                }
+
+                BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
+                copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
+
+                applicantRepository.save(applicantDetail);
+                
+                // Updating Flag
+                if(plRetailApplicantRequest.getProposalId() != null) {
+                	applicationProposalMappingRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getProposalId(),
+                            finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+                }else {
+                	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
+                            finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+                }
+                EmployerRequest req = new EmployerRequest();
+                req.setApplicationId(plRetailApplicantRequest.getApplicationId());
+                String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
+                String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
+                if(plRetailApplicantRequest.getKid()!=null) {
+                	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
+                	req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName(),name , applicantDetail.getMobile(), applicantDetail.getEmail()));
+                	epfoAsyncComponent.callAPI(req);
+                }
             } else {
-                applicantDetail = new RetailApplicantDetail();
-                applicantDetail.setCreatedBy(userId);
-                applicantDetail.setCreatedDate(new Date());
-                applicantDetail.setIsActive(true);
-                applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+            	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(plRetailApplicantRequest.getCoAppId(), true);
+    			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+    				BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id");
+    				
+    				if (plRetailApplicantRequest.getContactAddress() != null) {
+    					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
+    					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
+    					coApplicantDetail.setAddressLandmark(plRetailApplicantRequest.getContactAddress().getLandMark());
+    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getCityId())) {
+    						coApplicantDetail.setAddressCity(plRetailApplicantRequest.getContactAddress().getCityId().intValue());	
+    					}
+    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getStateId())) {
+    						coApplicantDetail.setAddressState(plRetailApplicantRequest.getContactAddress().getStateId().intValue());	
+    					}
+    					coApplicantDetail.setAddressCountry(plRetailApplicantRequest.getContactAddress().getCountryId());
+    					coApplicantDetail.setAddressDistrictMappingId(plRetailApplicantRequest.getContactAddress().getDistrictMappingId());
+    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())) {
+    						coApplicantDetail.setAddressPincode(BigInteger.valueOf(plRetailApplicantRequest.getContactAddress().getPincode()));	
+    					}
+    					
+    		        }
+    				if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+    					Calendar cal = Calendar.getInstance();
+    					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+    					coApplicantDetail.setBusinessStartDate(cal.getTime());
+    				}
+    				coApplicantDetail.setEmail(plRetailApplicantRequest.getEmail());
+    				coApplicantDetail.setModifiedBy(plRetailApplicantRequest.getUserId());
+    				coApplicantDetail.setModifiedDate(new Date());
+    				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
+    				coApplicantDetailRepository.save(coApplicantDetail);
+    				return true;
+    			}
             }
-
-            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
-            copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
-
-            applicantRepository.save(applicantDetail);
+            
+            
             
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
             if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
@@ -155,30 +205,44 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 }
             }
 
-            // Updating Flag
-            if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicationProposalMappingRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getProposalId(),
-                        finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
-            }else {
-            	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
-                        finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
-            }
-            EmployerRequest req = new EmployerRequest();
-            req.setApplicationId(plRetailApplicantRequest.getApplicationId());
-            String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
-            String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
-            if(plRetailApplicantRequest.getKid()!=null) {
-            req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
-            req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName()
-            		,name , applicantDetail.getMobile(), applicantDetail.getEmail()));
-            epfoAsyncComponent.callAPI(req);
-            }
             return true;
 
         } catch (Exception e) {
             logger.error("Error while Saving Retail Profile :- ",e);
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
+    }
+    
+    @Override
+    public PLRetailApplicantRequest getCoAppProfile(Long coAppId) {
+    	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+    	if(coApplicantDetail == null) {
+    		return null;
+    	}
+    	PLRetailApplicantRequest res = new PLRetailApplicantRequest();
+    	BeanUtils.copyProperties(coApplicantDetail,res);
+    	Address address = new Address();
+        address.setPremiseNumber(coApplicantDetail.getAddressPremiseName());
+        address.setLandMark(coApplicantDetail.getAddressLandmark());
+        address.setStreetName(coApplicantDetail.getAddressStreetName());
+        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressCity())) {
+        	address.setCityId(coApplicantDetail.getAddressCity().longValue());	 
+        }
+        address.setStateId(CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressState()) ? null : coApplicantDetail.getAddressState().intValue());
+        address.setCountryId(coApplicantDetail.getAddressCountry());
+        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
+        	address.setPincode(coApplicantDetail.getAddressPincode().longValue());	 
+        }
+        address.setDistrictMappingId(coApplicantDetail.getAddressDistrictMappingId());
+        res.setContactAddress(address);
+        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(coApplicantDetail.getBusinessStartDate());
+			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+			res.setBusinessStartYear(cal.get(Calendar.YEAR));
+		}
+    	return res;
+    	
     }
 
     @Override

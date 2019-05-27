@@ -114,6 +114,26 @@ public class PlRetailApplicantController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping(value = "/profile/getCoApp/{coAppId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getCoAppProfileById(@PathVariable("coAppId")  Long coAppId) {
+        try {
+            if (coAppId == null) {
+                logger.warn("CoAppId Require to get Retail CoApp Profile Details. Application Id ==> NULL");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getCoAppProfile(coAppId);
+            if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest)) {
+            	return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),plRetailApplicantRequest), HttpStatus.OK);
+            } else {
+            	return new ResponseEntity<LoansResponse>(new LoansResponse("No data available !!", HttpStatus.OK.value()), HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting Retail CoAPplicant Applicant Profile Details==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
     @PostMapping(value = "/primary/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

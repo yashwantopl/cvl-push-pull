@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.domain.fundseeker.retail;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import java.util.Date;
@@ -29,6 +30,10 @@ public class CoApplicantDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
+	
+	@OneToOne
+	@JoinColumn(name = "proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 
 	@Column(name = "aadhar_number")
 	private String aadharNumber;
@@ -439,6 +444,43 @@ public class CoApplicantDetail implements Serializable {
     
     @Column(name="education_qualification")
 	private Integer educationQualification;
+    
+	@Column(name="central_gov_id")
+	private Integer centralGovId;
+
+	@Column(name="state_gov_id")
+	private Integer stateGovId;
+
+	@Column(name="psu_id")
+	private Integer psuId;
+
+	@Column(name="bank_name_id")
+	private Integer bankNameId;
+	
+	@Column(name="insurance_name_id")
+	private Integer insuranceNameId;
+
+	@Column(name="edu_inst_id")
+	private Integer eduInstId;
+	
+	@Column(name = "name_of_employer")
+	private String nameOfEmployer;
+	
+	@Column(name="is_basic_info_filled")
+    private Boolean isBasicInfoFilled;
+    
+    @Column(name="is_employment_info_filled")
+    private Boolean isEmploymentInfoFilled;
+    
+    @Column(name="is_contact_info_filled")
+    private Boolean isContactInfoFilled;
+    
+    @Column(name="is_credit_info_filled")
+    private Boolean isCreditInfoFilled;
+	
+    @Column(name="employment_with")
+	private Integer employmentWith;
+	
 
 	public CoApplicantDetail() {
 	}
@@ -1545,6 +1587,110 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setEducationQualification(Integer educationQualification) {
 		this.educationQualification = educationQualification;
+	}
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
+
+	public Integer getCentralGovId() {
+		return centralGovId;
+	}
+
+	public void setCentralGovId(Integer centralGovId) {
+		this.centralGovId = centralGovId;
+	}
+
+	public Integer getStateGovId() {
+		return stateGovId;
+	}
+
+	public void setStateGovId(Integer stateGovId) {
+		this.stateGovId = stateGovId;
+	}
+
+	public Integer getPsuId() {
+		return psuId;
+	}
+
+	public void setPsuId(Integer psuId) {
+		this.psuId = psuId;
+	}
+
+	public Integer getBankNameId() {
+		return bankNameId;
+	}
+
+	public void setBankNameId(Integer bankNameId) {
+		this.bankNameId = bankNameId;
+	}
+
+	public Integer getInsuranceNameId() {
+		return insuranceNameId;
+	}
+
+	public void setInsuranceNameId(Integer insuranceNameId) {
+		this.insuranceNameId = insuranceNameId;
+	}
+
+	public Integer getEduInstId() {
+		return eduInstId;
+	}
+
+	public void setEduInstId(Integer eduInstId) {
+		this.eduInstId = eduInstId;
+	}
+
+	public String getNameOfEmployer() {
+		return nameOfEmployer;
+	}
+
+	public void setNameOfEmployer(String nameOfEmployer) {
+		this.nameOfEmployer = nameOfEmployer;
+	}
+
+	public Boolean getIsBasicInfoFilled() {
+		return isBasicInfoFilled;
+	}
+
+	public void setIsBasicInfoFilled(Boolean isBasicInfoFilled) {
+		this.isBasicInfoFilled = isBasicInfoFilled;
+	}
+
+	public Boolean getIsEmploymentInfoFilled() {
+		return isEmploymentInfoFilled;
+	}
+
+	public void setIsEmploymentInfoFilled(Boolean isEmploymentInfoFilled) {
+		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
+	}
+
+	public Boolean getIsContactInfoFilled() {
+		return isContactInfoFilled;
+	}
+
+	public void setIsContactInfoFilled(Boolean isContactInfoFilled) {
+		this.isContactInfoFilled = isContactInfoFilled;
+	}
+
+	public Boolean getIsCreditInfoFilled() {
+		return isCreditInfoFilled;
+	}
+
+	public void setIsCreditInfoFilled(Boolean isCreditInfoFilled) {
+		this.isCreditInfoFilled = isCreditInfoFilled;
+	}
+
+	public Integer getEmploymentWith() {
+		return employmentWith;
+	}
+
+	public void setEmploymentWith(Integer employmentWith) {
+		this.employmentWith = employmentWith;
 	}
 	
 	
