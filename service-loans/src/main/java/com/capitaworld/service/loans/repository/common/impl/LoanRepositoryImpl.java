@@ -1,8 +1,6 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -10,12 +8,12 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.repository.common.LoanRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Repository
 public class LoanRepositoryImpl implements LoanRepository {
@@ -26,7 +24,8 @@ public class LoanRepositoryImpl implements LoanRepository {
 	private static final String BRANCH_ID = "branchId";
 	private static final String LIST_LIMIT = "listLimit";
 	private static final String SEARCH_STRING = "searchString";
-
+	private static final String BUSI_TYPE_ID = "busiTypeId";
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -54,65 +53,77 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 
-	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit) {
+	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit,Long businessTypeId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
-	public List<Object[]> searchProposalForCheckerAndMaker(Long orgId,String searchString,Long branchId,Long listLimit) {
+	public List<Object[]> searchProposalForCheckerAndMaker(Long orgId,String searchString,Long branchId,Long listLimit,Long businessTypeId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndBranchAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
 		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
-	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit) {
+	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit,Long businessTypeId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndUserIdAndSearchString");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
+		storedProcedureQuery.setParameter(LIST_LIMIT,businessTypeId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
-	public Object[] fpDashBoardCountByOrgId(Long orgId) {
+	public Object[] fpDashBoardCountByOrgId(Long orgId,Long businessTypeId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 
-	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId) {
+	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId,Long businessTypeId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndBranchId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 
-	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId) {
+	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId,Long businessTypeId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndUserId");
 		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 
@@ -199,16 +210,15 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
 				.setParameter("id", coAppId)
 				.getResultList();
+//		if(!CommonUtils.isListNullOrEmpty(resultList)) {
+//			List<Double> finalList = new ArrayList<>(resultList.size());
+//			for(Object o : resultList) {
+//				finalList.add(Double.valueOf(o.toString()));
+//			}
+//			return finalList;
+//		}else {
+//			return Collections.emptyList();
+//		}
 	}
-
-	@Override
-	public Boolean isITRUploaded(Long applicationId) {
-		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
-				.setParameter("applicationId", applicationId)
-				.getResultList();
-		if(!CommonUtils.isListNullOrEmpty(result)) {
-			return result.get(0);
-		}
-		return null;
-	}
+	
 }
