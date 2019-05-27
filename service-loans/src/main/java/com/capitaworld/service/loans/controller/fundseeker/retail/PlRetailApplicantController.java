@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicant
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -174,7 +175,7 @@ public class PlRetailApplicantController {
     @GetMapping(value = "/primary/getBankRelations/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId,@RequestParam(value = "coAppId", required = false) Long coAppId) {
         try {
-            List<BankRelationshipRequest> bankRelations;
+            List<BankRelationshipRequest> bankRelations = new ArrayList<>();
             if(coAppId != null){
                 bankRelations = plRetailApplicantService.getBankRelations(applicationId,coAppId);
             } else {

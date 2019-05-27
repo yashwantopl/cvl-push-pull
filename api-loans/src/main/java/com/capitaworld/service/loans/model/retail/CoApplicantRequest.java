@@ -93,22 +93,10 @@ public class CoApplicantRequest {
 	private Integer category;
 	private Integer nationality;
 	private Double networth;
-	private Boolean isItrCompleted;
-	private Boolean isItrSkip;
-	private Boolean isItrManual;
-	private Boolean isOneFormCompleted;
-
-	public CoApplicantRequest() {
-	}
-
-	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId) {
-		this.id = id;
-		this.applicationId = applicationId;
-		this.firstName = firstName;
-		this.relationshipWithApplicant = relationshipWithApplicant;
-		this.middleName = middleName;
-		this.lastName = lastName;
-	}
+	
+	
+	private Integer designation;
+	private Integer educationQualification;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -746,35 +734,21 @@ public class CoApplicantRequest {
 		this.loanAmountRequired = loanAmountRequired;
 	}
 
-	public Boolean getIsItrCompleted() {
-		return isItrCompleted;
+	public Integer getDesignation() {
+		return designation;
 	}
 
-	public void setIsItrCompleted(Boolean isItrCompleted) {
-		this.isItrCompleted = isItrCompleted;
+	public void setDesignation(Integer designation) {
+		this.designation = designation;
 	}
 
-	public Boolean getIsItrSkip() {
-		return isItrSkip;
+	public Integer getEducationQualification() {
+		return educationQualification;
 	}
 
-	public void setIsItrSkip(Boolean isItrSkip) {
-		this.isItrSkip = isItrSkip;
+	public void setEducationQualification(Integer educationQualification) {
+		this.educationQualification = educationQualification;
 	}
-
-	public Boolean getIsItrManual() {
-		return isItrManual;
-	}
-
-	public void setIsItrManual(Boolean isItrManual) {
-		this.isItrManual = isItrManual;
-	}
-
-	public Boolean getIsOneFormCompleted() {
-		return isOneFormCompleted;
-	}
-
-	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
-		this.isOneFormCompleted = isOneFormCompleted;
-	}
+	
+	
 }
