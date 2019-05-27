@@ -2114,7 +2114,10 @@ public class ScoringServiceImpl implements ScoringService {
                         fundSeekerInputRequest.setName(modelParameterResponse.getName());
                         logger.info("Parameter For CoApplicant==>{}",modelParameterResponse.getName());
                         
-                        scoreParameterRetailRequest.setLoanAmtProposed(scoringRequestLoans.getElAmountOnAverageScoring());
+//                        scoreParameterRetailRequest.setLoanAmtProposed(scoringRequestLoans.getElAmountOnAverageScoring());
+                        scoreParameterRetailRequest.setNmi(netMonthlyIncome);
+						scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
+						scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
