@@ -401,7 +401,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			
             // GET BANK RELATIONSHIP DETAILS 
             List<BankRelationshipRequest> bankRelReqList = new ArrayList<>();
-            List<BankingRelation> bankRel = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
+            List<BankingRelation> bankRel = bankingRelationlRepository.listBankRelationAppId(applicationId);
             
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankRel) {

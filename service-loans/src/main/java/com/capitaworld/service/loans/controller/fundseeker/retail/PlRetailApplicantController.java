@@ -172,11 +172,11 @@ public class PlRetailApplicantController {
     }
     
     @GetMapping(value = "/primary/getBankRelations/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId,@RequestParam(value = "coApplicantId", required = false) Long coApplicantId) {
+    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId,@RequestParam(value = "coAppId", required = false) Long coAppId) {
         try {
             List<BankRelationshipRequest> bankRelations;
-            if(coApplicantId != null){
-                bankRelations = plRetailApplicantService.getBankRelations(applicationId,coApplicantId);
+            if(coAppId != null){
+                bankRelations = plRetailApplicantService.getBankRelations(applicationId,coAppId);
             } else {
                 bankRelations = plRetailApplicantService.getBankRelations(applicationId,null);
             }

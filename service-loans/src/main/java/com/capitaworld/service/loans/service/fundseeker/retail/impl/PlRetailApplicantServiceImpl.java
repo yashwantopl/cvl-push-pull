@@ -269,7 +269,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			}
 
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
@@ -406,7 +406,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			}
 
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
@@ -644,7 +644,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             applicantRequest.setCreditCardsDetailRequestList(creditCardsDetailRequestList);
 
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
@@ -854,7 +854,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
 
             FinancialArrangementsDetailRequest financialRequest = null;
             for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
