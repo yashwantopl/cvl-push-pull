@@ -1369,6 +1369,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException {
 		return coApplicantDetailRepository.getAllByApplicationId(applicationId);
 	}
+
+	@Override
+	public List<CoApplicantRequest> getCoApplicantListByApplicationId (Long applicationId) throws LoansException {
+		return coApplicantDetailRepository.getCoApplicantListByApplicationId(applicationId);
+	}
 	
 	@Override
 	public CoApplicantRequest get(Long applicationId, Long coApplicantId) {
@@ -1406,6 +1411,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		}
 	}
 
+	public CoApplicantRequest getCoApplicantDetails(Long applicationId, Long coApplicantId){
+		CoApplicantRequest applicantRequest = new CoApplicantRequest();
+		CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndApplicationIdId(coApplicantId, applicationId);
+		BeanUtils.copyProperties(coApplicantDetail,applicantRequest);
+		return applicantRequest;
+	}
 	
 	
 }

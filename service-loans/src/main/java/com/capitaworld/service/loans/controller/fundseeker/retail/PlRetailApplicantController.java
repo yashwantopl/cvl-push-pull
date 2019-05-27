@@ -25,6 +25,8 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicant
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/sbi_pl")
 public class PlRetailApplicantController {
@@ -170,9 +172,16 @@ public class PlRetailApplicantController {
     }
     
     @GetMapping(value = "/primary/getBankRelations/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId) {
+    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId,@RequestParam(value = "coApplicantId", required = false) Long coApplicantId) {
         try {
-            return new ResponseEntity<>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(), plRetailApplicantService.getBankRelations(applicationId)), HttpStatus.OK);
+            List<BankRelationshipRequest> bankRelations;
+            if(coApplicantId != null){
+                bankRelations = plRetailApplicantService.getBankRelations(applicationId,coApplicantId);
+            } else {
+                bankRelations = plRetailApplicantService.getBankRelations(applicationId,null);
+            }
+
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(), bankRelations), HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);

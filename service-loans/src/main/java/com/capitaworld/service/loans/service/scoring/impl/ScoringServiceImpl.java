@@ -713,7 +713,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
 
-            List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
 
             if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
             {

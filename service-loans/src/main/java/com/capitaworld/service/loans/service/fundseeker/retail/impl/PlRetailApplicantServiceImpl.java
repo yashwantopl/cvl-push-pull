@@ -269,7 +269,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			}
 
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
@@ -406,7 +406,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			}
 
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
@@ -573,6 +573,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     	bankingRelations.setModifiedDate(new Date());
     	bankingRelations.setSinceMonth(request.getSinceMonth());
     	bankingRelations.setSinceYear(request.getSinceYear());
+    	bankingRelations.setCoApplicantId(request.getCoApplicantId());
     	
     	bankingRelationlRepository.save(bankingRelations);
     	return Boolean.TRUE;
@@ -589,9 +590,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
     
     @Override
-    public List<BankRelationshipRequest> getBankRelations(Long applicationId) {
+    public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId) {
     	List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-        List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+        List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,coApplicantId);
         BankRelationshipRequest bankRelationshipRequest = null;
         for(BankingRelation bankingRelation : bankingRelations) {
         	bankRelationshipRequest = new BankRelationshipRequest();
@@ -643,7 +644,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             applicantRequest.setCreditCardsDetailRequestList(creditCardsDetailRequestList);
 
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
@@ -853,7 +854,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId,null);
 
             FinancialArrangementsDetailRequest financialRequest = null;
             for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
