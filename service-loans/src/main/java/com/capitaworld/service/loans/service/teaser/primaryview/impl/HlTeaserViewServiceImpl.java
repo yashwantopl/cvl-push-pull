@@ -99,6 +99,7 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
+import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
@@ -127,14 +128,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 	private static final String DISTRICT_ID_IS_NULL_MSG = "District id is null";
 
-	@Autowired
-	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
-	@Autowired
-	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -167,9 +164,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	private RetailApplicantIncomeService retailApplicantIncomeService;
 	
 	@Autowired
-	private CorporateFinalInfoService corporateFinalInfoService;
-	
-	@Autowired
 	private PincodeDateService pincodeDateService;
 	
 	@Autowired
@@ -189,9 +183,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailService;
-	
-	@Autowired
-	private ConnectClient connectClient;
 	
 	@Autowired
 	private ITRClient itrClient;
@@ -302,8 +293,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
-				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
-				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus() != null ? 	EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
+				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentType() != null ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setCurrentEmploymentStatus(plRetailApplicantRequest.getCurrentEmploymentStatus()!= null ? 	EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
+				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus()!= null ? 	OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + "" +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() !=null ? (plRetailApplicantRequest.getTotalExperienceYear() +" year") : "") + "" + (plRetailApplicantRequest.getTotalExperienceMonth() != null ? (plRetailApplicantRequest.getTotalExperienceMonth() +" months") :  "" ));
 				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue().toString() : "-");
@@ -320,7 +312,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
 				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(plRetailApplicantRequest.getRetailApplicantIncomeRequestList());
 				plRetailApplicantResponse.setBusinessStartDate(plRetailApplicantRequest.getBusinessStartDate());
-				
+				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
+				plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getNationality());
+				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
@@ -385,6 +380,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+				plRetailApplicantResponse.setTenureReq(plRetailApplicantRequest.getTenureRequired()!= null ? plRetailApplicantRequest.getTenureRequired() > 1 ? plRetailApplicantRequest.getTenureRequired() + " Years" : plRetailApplicantRequest.getTenureRequired() + " Year " : "" );
 				
 				//set existing financial data if not null 
 				
@@ -410,9 +406,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 				//KEY VERTICAL FUNDING
 				List<Long> keyVerticalFundingId = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
+				if (plRetailApplicantRequest.getKeyVerticalFunding() != null)
 					keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
-				if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+				if (keyVerticalFundingId != null && keyVerticalFundingId.size() !=0) {
 					try {
 						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
@@ -430,26 +426,29 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				
 				//KEY VERTICAL SECTOR
 				List<Long> keyVerticalSectorId = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
+				if (plRetailApplicantRequest.getKeyVerticalSector() != null && keyVerticalFundingId.size() != 0) {
 					keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
-				try {
-					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
-					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						hlTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
-					} else {
-						logger.warn("key vertical sector is null");
+					try {
+						OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+						SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+						OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							hlTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
+						} else {
+							logger.warn("key vertical sector is null");
+						}
+					} catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
 				}
+					
+				
 				
 				//KEY VERTICAL SUBSECTOR
 				try {
-					if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
+					if (plRetailApplicantRequest.getKeyVerticalSubSector() != null  && keyVerticalFundingId.size() !=0) {
 						OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(plRetailApplicantRequest.getKeyVerticalSubSector());
 						hlTeaserViewResponse.setKeyVericalSubsector(oneFormResponse.getData().toString());
 					}
@@ -473,7 +472,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		PrimaryHomeLoanDetail primaryHlDetail= primaryHomeloanDetailsRepo.getByApplication(toApplicationId);
 		HLOneformPrimaryRes res=primaryHomeloanService.getOneformPrimaryDetails(toApplicationId);
 		if(primaryHlDetail != null) {
-			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getPropertyPrice() != null ? primaryHlDetail.getPropertyPrice() : 0);
+			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getMarketValProp() != null ? primaryHlDetail.getMarketValProp() : 0);
 			hlTeaserViewResponse.setPropertyAge((primaryHlDetail.getOldPropYear()!= null ? primaryHlDetail.getOldPropYear() + (primaryHlDetail.getOldPropYear() >1 ? " years"  : " year") :"") + " " +
 												( primaryHlDetail.getOldPropMonth()!= null? primaryHlDetail.getOldPropMonth() + (primaryHlDetail.getOldPropMonth() > 1 ? " months" : " month") :""));
 		}
@@ -545,6 +544,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			if (!CommonUtils.isListNullOrEmpty(hashMaps)) {
 				for (HashMap<String, Object> hashMap : hashMaps) {
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
+					
 					datas.add(data);
 				}
 			}
@@ -780,6 +780,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			for (CoApplicantDetail coApplicantDetail : coApplicantList) {
 				PLRetailApplicantResponse plRetailApplicantResponse=new PLRetailApplicantResponse();
 				
+				plRetailApplicantResponse.setCoAppId(coApplicantDetail.getId());
 				plRetailApplicantResponse.setFullName((coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") +" "+ (coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") +" "+ (coApplicantDetail.getLastName() != null ?  coApplicantDetail.getLastName() : ""));
 				plRetailApplicantResponse.setGender(coApplicantDetail.getGenderId() != null ? Gender.getById(coApplicantDetail.getGenderId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setBirthDate(coApplicantDetail.getBirthDate());
@@ -826,6 +827,28 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				List<FinancialArrangementsDetailRequest> financeData = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId(), applicationId);
 				plRetailApplicantResponse.setFinancialArrangementsDetailRequestsList(financeData);
 				
+				
+				/*get coApplicant Scoring */
+				
+				ScoringRequest scoringRequest = new ScoringRequest();
+				scoringRequest.setApplicationId(applicationId);
+				scoringRequest.setFpProductId(coApplicantDetail.getId());
+
+				try {
+					ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+					ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
+
+					if (proposalScoreResponse != null){
+						logger.info("getObjectFromMap called successfully");
+						plRetailApplicantResponse.setScoringModelName(proposalScoreResponse.getScoringModelName()!=null?proposalScoreResponse.getScoringModelName():" - ");
+						plRetailApplicantResponse.setDataList(scoringResponse.getDataList()!=null?scoringResponse.getDataList():" - ");
+						plRetailApplicantResponse.setDataObject(scoringResponse.getDataObject()!=null?scoringResponse.getDataObject():" - ");
+						plRetailApplicantResponse.setScoringResponseList(scoringResponse.getScoringResponseList()!=null?scoringResponse.getScoringResponseList():" - ");
+					}
+				} catch (ScoringException | IOException e1) {
+					logger.error(CommonUtils.EXCEPTION,e1);
+				}
 				
 
 				/*get itrXml and ItrPdf as per coApplicant Id*/

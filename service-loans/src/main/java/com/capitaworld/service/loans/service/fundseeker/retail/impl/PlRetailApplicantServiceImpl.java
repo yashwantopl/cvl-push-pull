@@ -12,6 +12,7 @@ import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
 import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.retail.*;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -31,11 +32,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantIncomeDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
-import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
-import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -83,9 +79,17 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     @Autowired
     private EPFOAsyncComponent epfoAsyncComponent;
 
+    @Autowired
+    private  PrimaryHomeLoanServiceImpl homeLoanService;
+
     @Override
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
+            if(plRetailApplicantRequest.getCoAppId() != null){
+                HLOneformRequest hlOneformRequest = new HLOneformRequest();
+                BeanUtils.copyProperties(plRetailApplicantRequest,hlOneformRequest);
+                return homeLoanService.saveProfileOneForm(hlOneformRequest);
+            }
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = null;
             
@@ -573,6 +577,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     	bankingRelations.setModifiedDate(new Date());
     	bankingRelations.setSinceMonth(request.getSinceMonth());
     	bankingRelations.setSinceYear(request.getSinceYear());
+    	bankingRelations.setCoApplicantId(request.getCoApplicantId());
     	
     	bankingRelationlRepository.save(bankingRelations);
     	return Boolean.TRUE;
@@ -589,9 +594,14 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
     
     @Override
-    public List<BankRelationshipRequest> getBankRelations(Long applicationId) {
+    public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId) {
     	List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-        List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+        List<BankingRelation> bankingRelations = new ArrayList<>();
+    	if(coApplicantId != null) {
+            bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId, coApplicantId);
+        } else{
+            bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+        }
         BankRelationshipRequest bankRelationshipRequest = null;
         for(BankingRelation bankingRelation : bankingRelations) {
         	bankRelationshipRequest = new BankRelationshipRequest();
@@ -846,8 +856,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return applicantRequest;
             }
             
-            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
-            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
+            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getLoanAmountRequired()));
+            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getMonthlyIncome()));
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);

@@ -22,6 +22,8 @@ public interface CoApplicantService {
 	
 	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException;
 
+	public List<CoApplicantRequest> getCoApplicantListByApplicationId(Long applicationId) throws LoansException;
+
 	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException;
 
 	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException;
@@ -41,6 +43,8 @@ public interface CoApplicantService {
 	public Boolean updateFlag(Long directorId,Integer apiId,Boolean apiFlag,Long userId);
 	
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws LoansException;
+
+	public CoApplicantRequest getCoApplicantDetails(Long applicationId, Long coApplicantId);
 	
 	
 }

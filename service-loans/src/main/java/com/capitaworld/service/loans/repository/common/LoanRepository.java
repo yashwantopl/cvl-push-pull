@@ -8,23 +8,25 @@ public interface LoanRepository {
 	
 	public String getMobileNumberByUserId(Long userId);	
 
-	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit);
+	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit,Long businessTypeId);
 
-	public List<Object[]> searchProposalForCheckerAndMaker(Long orgId,String searchString,Long branchId,Long listLimit);
+	public List<Object[]> searchProposalForCheckerAndMaker(Long orgId,String searchString,Long branchId,Long listLimit,Long businessTypeId);
 
-	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit);
+	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit,Long businessTypeId);
 
-	public Object[] fpDashBoardCountByOrgId(Long orgId);
+	public Object[] fpDashBoardCountByOrgId(Long orgId,Long businessTypeId);
 
-	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId);
+	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId,Long businessTypeId);
 
-	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId);
+	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId,Long businessTypeId);
 
 	public String getGSTINByAppId(Long applicationId);
 
 	public String getCommonPropertiesValue(String key);
 	
 	public Long getOfflineCountByAppId(Long applicationId);
+	
+	public Boolean isITRUploaded(Long applicationId);
 	
 	public String getOfflineDetailsByAppId(Long applicationId);
 	
