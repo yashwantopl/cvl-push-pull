@@ -26,6 +26,8 @@ public interface LoanRepository {
 	
 	public Long getOfflineCountByAppId(Long applicationId);
 	
+	public Double getRetailLoanAmountByApplicationId(Long applicationId);
+	
 	public Boolean isITRUploaded(Long applicationId);
 	
 	public Boolean isITRUploadedForCoApp(Long applicationId,Long coAppId);

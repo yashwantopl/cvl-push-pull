@@ -262,5 +262,16 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Double getRetailLoanAmountByApplicationId(Long applicationId) {
+		List<Double> result = (List<Double>)entityManager.createNativeQuery("SELECT app.`loan_amount_required` FROM `loan_application`.`fs_retail_applicant_details` app WHERE app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+				.setParameter("applicationId", applicationId)
+				.getResultList();
+		if(!CommonUtils.isListNullOrEmpty(result)) {
+			return result.get(0);
+		}
+		return null;
+	}
 }

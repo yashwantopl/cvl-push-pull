@@ -1706,7 +1706,10 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.ANNUAL_INCOME:
             			case ScoreParameter.Retail.HomeLoan.EMI_NMI_RATIO:
+            				//Already Set NMI and GMI Above Before Switch Starts
+            				break;
             			case ScoreParameter.Retail.HomeLoan.EMI_NMI:
+            				scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
             				//Already Set NMI and GMI Above Before Switch Starts
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
@@ -2005,6 +2008,7 @@ public class ScoringServiceImpl implements ScoringService {
         CibilResponse cibilResponseDpdCoApp = null;
         Data bankStatementData = null;
         Boolean itrSkippedForCoApp = null;
+        Double loanAmount = 0.0d;
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	coApplicantId = scoringRequestLoansList.get(0).getCoApplicantId();
@@ -2061,27 +2065,16 @@ public class ScoringServiceImpl implements ScoringService {
             
             //ITR and bank Statement Checking
             itrSkippedForCoApp = loanRepository.isITRSkippedForCoApp(applicationId, coApplicantId);
+            loanAmount = loanRepository.getRetailLoanAmountByApplicationId(applicationId);
+            
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
 //        HLEligibilityRequest hlEligibilityRequest = null;
-        HomeLoanModelRequest homeLoanModelRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelCoAppId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
-//            homeLoanModelRequest = homeLoanModelService.get(scoringRequestLoans.getLoanPurposeModelId(), null, null);
-//            Integer minBankRelationshipInMonths = null;
-//            orgId = scoringRequestLoans.getOrgId();
-//            if(orgId != null) {
-//            	BankList bankEnum = BankList.fromOrgId(orgId.toString());
-//            	if(bankEnum != null) {
-//            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());	
-//            	}
-//            	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
-//            }
-            
-
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -2100,15 +2093,12 @@ public class ScoringServiceImpl implements ScoringService {
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
-//                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
-                scoringRequest.setLoanPurposeModelId(homeLoanModelRequest.getId());
+                scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
                 // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
-
-
                 if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
                     // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
                 	List<ModelParameterResponse> listFieldByBusinessTypeIdForCoApplicant = Collections.emptyList();
@@ -2268,27 +2258,22 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.DESIGNATION:
             				try {
-//                                scoreParameterRetailRequest.setDesignation((coApplicantDetail.getDesignation() != null ? coApplicantDetail.getDesignation().longValue() : null));
-//                                scoreParameterRetailRequest.setDesignation_p(coApplicantDetail.getDesignation() != null);
+                                scoreParameterRetailRequest.setDesignation((coApplicantDetail.getDesignation() != null ? coApplicantDetail.getDesignation().longValue() : null));
+                                scoreParameterRetailRequest.setDesignation_p(coApplicantDetail.getDesignation() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting DESIGNATION parameter : ",e);
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.EDUCATION_QUALIFICATION:
             				try {
-//                                scoreParameterRetailRequest.setEducationQualification((coApplicantDetail.getEducationQualification() != null ? coApplicantDetail.getEducationQualification().longValue() : null));
-//                                scoreParameterRetailRequest.setDesignation_p(coApplicantDetail.getEducationQualification() != null);
+                                scoreParameterRetailRequest.setEducationQualification((coApplicantDetail.getEducationQualification() != null ? coApplicantDetail.getEducationQualification().longValue() : null));
+                                scoreParameterRetailRequest.setDesignation_p(coApplicantDetail.getEducationQualification() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting EDUCATION_QUALIFICATION parameter : ",e);
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.ANNUAL_INCOME:
-            				try {
-            					scoreParameterRetailRequest.setNmi(netMonthlyIncome);
-								scoreParameterRetailRequest.setGmi(grossMonthlyIncome);            			
-                            } catch (Exception e) {
-                                logger.error("error while getting ANNUAL_INCOME parameter : ",e);
-                            }
+            				//Already Set NMI and GMI Above Before Switch Starts
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             				try {
@@ -2463,14 +2448,18 @@ public class ScoringServiceImpl implements ScoringService {
         				}
         				break;
         			case ScoreParameter.Retail.HomeLoan.LOAN_TO_INCOME_RATIO:
-//    					scoreParameterRetailRequest.setLoanAmtProposed(loan);
+    					scoreParameterRetailRequest.setLoanAmtProposed(loanAmount);
     					scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
         				break;
         			case ScoreParameter.Retail.HomeLoan.INCOME_TO_INSTALLMENT_RATIO:
     					scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
         				break;
-                            default:
-                                break;
+        			case ScoreParameter.Retail.HomeLoan.EMI_NMI:
+        				scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
+        				//Already Set NMI and GMI Above Before Switch Starts
+        				break;
+                        default:
+                         break;
 
                         }
                     }
