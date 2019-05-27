@@ -33,6 +33,7 @@ public class CommonUtils {
 	public static final String PROPOSAL_MAPPING_ID = "proposalMappingId";
 	public static final String USER_TYPE = "userType";
 	public static final String USER_ORG_ID = "userOrgId";
+	public static final String BUSINESS_TYPE_ID = "businessTypeId";
 	public static final String CITY_NAME = "cityName";
 	public static final String STATE_NAME = "stateName";
 	public static final String COUNTRY_NAME = "countryName";

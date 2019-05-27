@@ -2932,7 +2932,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return finalList;
 	}
 
-	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest) {
+	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest,Long businessTypeId) {
 		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
 		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
 		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
@@ -2940,17 +2940,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			return Collections.emptyList();
 		}
 		if(roleId == 9) {//CHECKER AND MAKER
-			List<Object[]> objList = loanRepository.searchProposalForCheckerAndMaker(loginOrgId, reportRequest.getValue(), branchId,reportRequest.getNumber().longValue());
+			List<Object[]> objList = loanRepository.searchProposalForCheckerAndMaker(loginOrgId, reportRequest.getValue(), branchId,reportRequest.getNumber().longValue(),businessTypeId);
 			if(objList.size() > 0) {
 				return setValue(objList, false);
 			}
 		} else if(roleId == 5) {//HO
-			List<Object[]> objList = loanRepository.searchProposalForHO(loginOrgId, reportRequest.getValue(),reportRequest.getNumber().longValue());
+			List<Object[]> objList = loanRepository.searchProposalForHO(loginOrgId, reportRequest.getValue(),reportRequest.getNumber().longValue(),businessTypeId);
 			if(objList.size() > 0) {
 				return setValue(objList, true);
 			}
 		} else if(roleId == 12) {//SMECC
-			List<Object[]> objList = loanRepository.searchProposalForSMECC(loginOrgId, reportRequest.getValue(),loginUserId,reportRequest.getNumber().longValue());
+			List<Object[]> objList = loanRepository.searchProposalForSMECC(loginOrgId, reportRequest.getValue(),loginUserId,reportRequest.getNumber().longValue(),businessTypeId);
 			if(objList.size() > 0) {
 				return setValue(objList, true);
 			}
@@ -2986,7 +2986,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return responseList;
 	}
 
-	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId) {
+	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId,Long businessTypeId) {
 		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
 		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
 		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
@@ -2995,11 +2995,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		Object[] count = null;
 		if(roleId == 9) {//FP CHECKER
-			count = loanRepository.fpDashBoardCountByOrgIdAndBranchId(loginOrgId, branchId);
+			count = loanRepository.fpDashBoardCountByOrgIdAndBranchId(loginOrgId, branchId,businessTypeId);
 		} else if(roleId == 5){//HO
-			count = loanRepository.fpDashBoardCountByOrgId(loginOrgId);
+			count = loanRepository.fpDashBoardCountByOrgId(loginOrgId,businessTypeId);
 		} else if(roleId == 12){//SMECC
-			count = loanRepository.fpDashBoardCountByOrgIdAndUserId(loginOrgId, loginUserId);
+			count = loanRepository.fpDashBoardCountByOrgIdAndUserId(loginOrgId, loginUserId,businessTypeId);
 		}
 		if(count != null) {
 			Map<String , Double> map = new HashMap<>();
