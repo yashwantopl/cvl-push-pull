@@ -416,8 +416,12 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					LocalDate since = LocalDate.of(coApplicantDetail.getResidenceSinceYear(), coApplicantDetail.getResidenceSinceMonth(), 1);
 					LocalDate now = LocalDate.now();
 					Period sinceWhen = Period.between(since, now);
-					int years = sinceWhen.getYears();
-					coApplicantDetail.setResidenceSinceYear(years);
+					Integer years = sinceWhen.getYears();
+					Integer months = sinceWhen.getMonths();
+					
+					coApp.put("residenceSinceYearMonths", (years!= null ?  years+ " years" : "")+ " " +(months != null ? months+" months":""));
+				}else {
+					coApp.put("residenceSinceYearMonths", coApplicantDetail.getResidenceSinceMonth() != null ? coApplicantDetail.getResidenceSinceMonth()+" months":"");
 				}
 
 				coApp.put("gender", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getGenderId()) ? Gender.getById(coApplicantDetail.getGenderId()).getValue(): "");
@@ -427,7 +431,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "");
 				coApp.put("residenceType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType()) ? ResidenceTypeHomeLoan.getById(coApplicantDetail.getResidenceType()).getValue() : "");
-				coApp.put("residenceSinceYearMonths", (coApplicantDetail.getResidenceSinceYear() != null ? coApplicantDetail.getResidenceSinceYear() + " years" : "")+ " " +(coApplicantDetail.getResidenceSinceMonth() != null ? coApplicantDetail.getResidenceSinceMonth()+" months":""));
 				coApp.put("noOfDependent", coApplicantDetail.getNoDependent() != null ? coApplicantDetail.getNoDependent() : null);
 				coApp.put("designation", coApplicantDetail.getDesignation() != null ? DesignationList.getById(coApplicantDetail.getDesignation()).getValue() : "-");
 				coApp.put("educationQualification", coApplicantDetail.getEducationQualification() != null ? EducationStatusRetailMst.getById(coApplicantDetail.getEducationQualification()).getValue() : "-");
