@@ -736,8 +736,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 	
 	@Override
-	//public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId, Long businessTypeId) {
-	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
+	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId, Long businessTypeId) {
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
 		UserResponse userResponse=null;
 		BranchBasicDetailsRequest basicDetailsRequest = null;
@@ -753,8 +752,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-			//results = productMasterRepository.getUserProductActiveList(userOrgId,businessTypeId);
-			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
+			results = productMasterRepository.getUserProductActiveList(userOrgId,businessTypeId);
+//			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
 		} else {
 			results = productMasterRepository.getUserProductList(userId);
 		}
