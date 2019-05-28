@@ -797,7 +797,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		
 		PLRetailApplicantResponse plRetailApplicantResponse = null;
 		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId);
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId, proposalId);
 			plRetailApplicantResponse = new PLRetailApplicantResponse();
 			if(plRetailApplicantRequest != null) {
 				

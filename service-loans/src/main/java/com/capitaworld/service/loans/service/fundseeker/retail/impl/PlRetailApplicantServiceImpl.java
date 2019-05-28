@@ -369,7 +369,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         }
     }
 
-    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId) throws LoansException {
+    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
@@ -404,7 +404,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
             applicantRequest.setMobile(request.getMobile());*/
 
-            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationId(applicationId); 
+            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList = null;
+            if(proposalId != null) {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+            }else {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationId(applicationId);
+            }
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
 
             RetailApplicantIncomeRequest incomeRequest = null;
