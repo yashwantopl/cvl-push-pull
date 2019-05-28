@@ -1640,7 +1640,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB:
             				if(retailApplicantDetail.getEmploymentType() != null && OccupationNature.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())) {
             					scoreParameterRetailRequest.setIsEmployementJobCat_p(retailApplicantDetail.getEmploymentWith() != null);
-                				scoreParameterRetailRequest.setEmploymentTypeCatJob((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith() : null));            					
+                				scoreParameterRetailRequest.setEmploymentTypeCatJob(retailApplicantDetail.getEmploymentWith());            					
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
