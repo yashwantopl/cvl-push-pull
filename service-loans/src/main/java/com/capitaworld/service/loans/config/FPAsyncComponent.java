@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
@@ -3242,9 +3243,9 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToFSWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-			logger.info("Into sending Mail to FS when Checker sanction loan");
+			logger.info("Into sending Mail to FS when Checker sanction loan for :{}",loanSanctionDomainOld.getApplicationId());
 			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
-			Map<String, Object> mailParameters = new HashMap<String, Object>();
+			Map<String, Object> mailParameters = new HashMap<>();
 			ProposalMappingResponse proposal = proposalDetailsClient.getProposalByApplicationIdAndUserOrgId(loanSanctionDomainOld.getOrgId(),loanSanctionDomainOld.getApplicationId());
 			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ProposalMappingRequest.class);
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
@@ -3280,37 +3281,18 @@ public class FPAsyncComponent {
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
 			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 			mailParameters.put("processing_fees",loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "");
-			mailParameters.put(CommonUtils.LITERAL_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
-							: "NA");
+			mailParameters.put(CommonUtils.LITERAL_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 			mailParameters.put(PARAMETERS_INTEREST_RATE,loanSanctionDomainOld.getRoi() != null ? loanSanctionDomainOld.getRoi() : "");
 			mailParameters.put("tenure",loanSanctionDomainOld.getTenure() != null ? loanSanctionDomainOld.getTenure() : "");
 			mailParameters.put("date",form.format(loanSanctionDomainOld.getSanctionDate()) != null
-							? form.format(loanSanctionDomainOld.getSanctionDate())
-							: "");
+							? form.format(loanSanctionDomainOld.getSanctionDate()): "");
 			mailParameters.put("remarks",loanSanctionDomainOld.getRemark() != null ? loanSanctionDomainOld.getRemark() : "");
 
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;
-			List<DirectorBackgroundDetailRequest> NTBResponse = null;
-			if (applicationRequest.getBusinessTypeId() == 2) {
-				NTBResponse = directorBackgroundDetailsService
-						.getDirectorBasicDetailsListForNTB(loanSanctionDomainOld.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
-					int isMainDirector = 0;
-					for (DirectorBackgroundDetailRequest director : NTBResponse) {
-						if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
-							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : PARAMETERS_SIR_MADAM;
-							isMainDirector = 1;
-						}
-					}
-					if (isMainDirector == 0) {
-						fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
-								: PARAMETERS_SIR_MADAM;
-					}
-				} else {
-					fsName = PARAMETERS_SIR_MADAM;
-				}
+			if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()) {
+				fsName = getFsNameForNTB(loanSanctionDomainOld, fsName);
 			} else {
 				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : PARAMETERS_SIR_MADAM;
 			}
@@ -3325,7 +3307,6 @@ public class FPAsyncComponent {
 			}
 
 			UsersRequest fs = null;
-
 			if (fsResponse != null && !CommonUtils.isObjectNullOrEmpty(fsResponse) ) {
 				fs = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) fsResponse.getData(),
 						UsersRequest.class);
@@ -3336,13 +3317,6 @@ public class FPAsyncComponent {
 			if (fs != null && !CommonUtils.isObjectNullOrEmpty(fs) && !CommonUtils.isObjectNullOrEmpty(fs.getEmail())) {
 				String toIds = fs.getEmail();
 				logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
-
-				/*
-				 * // ====================== MAIL TO MAKER old code======================
-				 * createNotificationForEmail(toIds, workflowRequest.getUserId().toString(),
-				 * parameters, NotificationAlias.MAIL_MKR_DDR_APPROVE, NotificationType.EMAIL,
-				 * subjcet);
-				 */
 				// ====================== MAIL TO MAKER by new code ======================
 				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 				createNotificationForEmail(toIds, applicationRequest.getUserId().toString(), mailParameters,
@@ -3376,6 +3350,28 @@ public class FPAsyncComponent {
 			logger.error("An exception getting while sending mail to FS when Checker sanction loan=============>{}",e);
 		}
 
+	}
+
+	private String getFsNameForNTB(LoanSanctionDomain loanSanctionDomainOld, String fsName) throws LoansException {
+		List<DirectorBackgroundDetailRequest> NTBResponse;
+		NTBResponse = directorBackgroundDetailsService
+				.getDirectorBasicDetailsListForNTB(loanSanctionDomainOld.getApplicationId());
+		if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+			int isMainDirector = 0;
+			for (DirectorBackgroundDetailRequest director : NTBResponse) {
+				if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
+					fsName = director.getDirectorsName() != null ? director.getDirectorsName() : PARAMETERS_SIR_MADAM;
+					isMainDirector = 1;
+				}
+			}
+			if (isMainDirector == 0) {
+				fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
+						: PARAMETERS_SIR_MADAM;
+			}
+		} else {
+			fsName = PARAMETERS_SIR_MADAM;
+		}
+		return fsName;
 	}
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 											Long templateId, String emailSubject) throws NotificationException {

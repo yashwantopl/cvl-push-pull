@@ -3699,8 +3699,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (directorBackgroundDetail != null) {
 					return directorBackgroundDetail.getDirectorsName();
 				}
-			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
-					.getId()) {
+			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() ||
+					applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
