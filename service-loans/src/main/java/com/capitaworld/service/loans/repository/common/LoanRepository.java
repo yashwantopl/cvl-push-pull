@@ -26,6 +26,16 @@ public interface LoanRepository {
 	
 	public Long getOfflineCountByAppId(Long applicationId);
 	
+	public Double getRetailLoanAmountByApplicationId(Long applicationId);
+	
+	public Boolean isITRUploaded(Long applicationId);
+	
+	public Boolean isITRUploadedForCoApp(Long applicationId,Long coAppId);
+	
+	public Boolean isITRSkippedForCoApp(Long applicationId, Long coAppId);
+	
+	public Boolean isITRMannualForCoApp(Long applicationId, Long coAppId);
+	
 	public String getOfflineDetailsByAppId(Long applicationId);
 	
 	public String getOfflineStatusByAppId(Long applicationId);

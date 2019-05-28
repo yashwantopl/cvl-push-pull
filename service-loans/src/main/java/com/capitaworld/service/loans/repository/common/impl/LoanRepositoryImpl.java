@@ -210,15 +210,68 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
 				.setParameter("id", coAppId)
 				.getResultList();
-//		if(!CommonUtils.isListNullOrEmpty(resultList)) {
-//			List<Double> finalList = new ArrayList<>(resultList.size());
-//			for(Object o : resultList) {
-//				finalList.add(Double.valueOf(o.toString()));
-//			}
-//			return finalList;
-//		}else {
-//			return Collections.emptyList();
-//		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean isITRUploaded(Long applicationId) {
+		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
+				.setParameter("applicationId", applicationId)
+				.getResultList();
+		if(!CommonUtils.isListNullOrEmpty(result)) {
+			return result.get(0);
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean isITRUploadedForCoApp(Long applicationId, Long coAppId) {
+		List<Long> result = (List<Long>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_completed` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+				.setParameter("applicationId", applicationId)
+				.setParameter("id", coAppId)
+				.getResultList();
+		if(!CommonUtils.isListNullOrEmpty(result)) {
+			return result.get(0) > 0;
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean isITRSkippedForCoApp(Long applicationId, Long coAppId) {
+		List<Long> result = (List<Long>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_skip` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+				.setParameter("applicationId", applicationId)
+				.setParameter("id", coAppId)
+				.getResultList();
+		if(!CommonUtils.isListNullOrEmpty(result)) {
+			return result.get(0) > 0;
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean isITRMannualForCoApp(Long applicationId, Long coAppId) {
+		List<Long> result = (List<Long>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_manual` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+				.setParameter("applicationId", applicationId)
+				.setParameter("id", coAppId)
+				.getResultList();
+		if(!CommonUtils.isListNullOrEmpty(result)) {
+			return result.get(0) > 0;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Double getRetailLoanAmountByApplicationId(Long applicationId) {
+		List<Double> result = (List<Double>)entityManager.createNativeQuery("SELECT app.`loan_amount_required` FROM `loan_application`.`fs_retail_applicant_details` app WHERE app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+				.setParameter("applicationId", applicationId)
+				.getResultList();
+		if(!CommonUtils.isListNullOrEmpty(result)) {
+			return result.get(0);
+		}
+		return null;
+	}
 }

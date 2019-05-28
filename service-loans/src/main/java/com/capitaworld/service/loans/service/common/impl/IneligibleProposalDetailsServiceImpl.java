@@ -13,6 +13,7 @@ import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,6 +135,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
     
     @Autowired
 	private Environment environment;
+
+    @Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -993,5 +997,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		}
 		return status;
 	}
-	
+
+	public Integer getBusinessTypeIdFromApplicationId(Long applicationId){
+		return loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+	}
 }

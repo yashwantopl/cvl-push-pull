@@ -14,6 +14,10 @@ public interface PlRetailApplicantService {
     
     public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException;
 
+    public PLRetailApplicantRequest getCoAppProfile(Long coAppId);
+    
+    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId) throws LoansException;
+
     public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException;
 
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException;

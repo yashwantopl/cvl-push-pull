@@ -12,7 +12,9 @@ import java.util.List;
  *
  */
 public class PLRetailApplicantRequest implements Serializable {
-    // Common Fields
+    
+	private static final long serialVersionUID = 1L;
+	// Common Fields
     private Long id;
     private Long clientId;
     private Long applicationId;
@@ -42,6 +44,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private Integer psuId;
     private Integer corporateId;
     private Integer eduInstId;
+    private Integer bankNameId;
+    private Integer insuranceNameId;
     private String nameOfEmployer;
     private Integer employmentStatus;
     private Integer currentJobMonth;
@@ -130,7 +134,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String employmentStatusOther;
     private String nameOfEntity;
     private Boolean isItrSkip;
-
+    
 
     public String getLoanPurposeOther() {
 		return loanPurposeOther;
@@ -884,7 +888,23 @@ public class PLRetailApplicantRequest implements Serializable {
         this.nameOfEntity = nameOfEntity;
     }
 
-    @Override
+    public Integer getBankNameId() {
+		return bankNameId;
+	}
+
+	public void setBankNameId(Integer bankNameId) {
+		this.bankNameId = bankNameId;
+	}
+
+	public Integer getInsuranceNameId() {
+		return insuranceNameId;
+	}
+
+	public void setInsuranceNameId(Integer insuranceNameId) {
+		this.insuranceNameId = insuranceNameId;
+	}
+
+	@Override
 	public String toString() {
 		return "PLRetailApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
 				+ ", proposalId=" + proposalId + ", titleId=" + titleId + ", firstName=" + firstName + ", middleName="

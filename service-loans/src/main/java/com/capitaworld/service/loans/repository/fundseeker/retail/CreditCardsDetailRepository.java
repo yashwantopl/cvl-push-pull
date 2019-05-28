@@ -30,5 +30,13 @@ public interface CreditCardsDetailRepository extends JpaRepository<CreditCardsDe
 	@Modifying
 	@Query("update CreditCardsDetail o set o.isActive = false,o.modifiedDate = NOW() where o.applicantionId.id = :id and o.isActive = true")
 	public int inactive(@Param("id") Long id);
+	
+	@Modifying
+	@Query("update CreditCardsDetail o set o.isActive = false,o.modifiedDate = NOW() where o.coApplicantDetailId.id = :id and o.isActive = true")
+	public int inactiveByCoApplicant(@Param("id") Long id);
+	
+	@Modifying
+	@Query("update CreditCardsDetail o set o.isActive = false,o.modifiedDate = NOW() where o.guarantorDetailId.id = :id and o.isActive = true")
+	public int inactiveByGuarantor(@Param("id") Long id);
 
 }
