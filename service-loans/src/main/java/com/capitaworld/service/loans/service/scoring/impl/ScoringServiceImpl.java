@@ -1653,8 +1653,8 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
-            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getCurrentEmploymentStatus() != null);
-            				scoreParameterRetailRequest.setCurrentEmploymentStatus((retailApplicantDetail.getCurrentEmploymentStatus() != null  ? retailApplicantDetail.getCurrentEmploymentStatus().longValue() : null));
+            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getEmploymentStatus() != null);
+            				scoreParameterRetailRequest.setCurrentEmploymentStatus((retailApplicantDetail.getEmploymentStatus() != null  ? retailApplicantDetail.getEmploymentStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.MIN_BANKING_RELATIONSHIP:
             				scoreParameterRetailRequest.setIsMinBankingRelationship_p(true);
@@ -2257,8 +2257,8 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
-            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(coApplicantDetail.getCurrentEmploymentStatus() != null);
-            				scoreParameterRetailRequest.setCurrentEmploymentStatus((coApplicantDetail.getCurrentEmploymentStatus() != null  ? coApplicantDetail.getCurrentEmploymentStatus().longValue() : null));
+            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(coApplicantDetail.getEmploymentStatus() != null);
+            				scoreParameterRetailRequest.setCurrentEmploymentStatus((coApplicantDetail.getEmploymentStatus() != null  ? coApplicantDetail.getEmploymentStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.MIN_BANKING_RELATIONSHIP:
             				//Not Available in Sheet Document
