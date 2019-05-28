@@ -483,7 +483,7 @@ public class ProposalController {
 		}
 	}
 
-	@RequestMapping(value = "/fpDashboardProposalCont", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/fpDashboardProposalCont/{businessTypeId}", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> fpDashboardProposalCont(@PathVariable("businessTypeId") Long businessTypeId,HttpServletRequest httpServletRequest) {
 
 		Long userOrgId = Long.parseLong(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString());
