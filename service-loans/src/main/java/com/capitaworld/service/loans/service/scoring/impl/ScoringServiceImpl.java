@@ -1638,12 +1638,17 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB:
-            				scoreParameterRetailRequest.setIsEmployementJobCat_p(retailApplicantDetail.getEmploymentWith() != null);
-            				scoreParameterRetailRequest.setEmploymentTypeCatJob((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith() : null));
+            				if(retailApplicantDetail.getEmploymentType() != null && OccupationNature.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            					scoreParameterRetailRequest.setIsEmployementJobCat_p(retailApplicantDetail.getEmploymentWith() != null);
+                				scoreParameterRetailRequest.setEmploymentTypeCatJob((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith() : null));            					
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
-            		        scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
-            		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));
+            				if(retailApplicantDetail.getEmploymentType() != null && !OccupationNature.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())
+            						 && !OccupationNature.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            					scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
+                		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));            					
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
             				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getCurrentEmploymentStatus() != null);
