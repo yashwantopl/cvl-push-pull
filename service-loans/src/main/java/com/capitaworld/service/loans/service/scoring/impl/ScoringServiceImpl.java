@@ -1672,7 +1672,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.NO_OF_DEPENDANTS:
             				try {
-                                scoreParameterRetailRequest.setNumberOfDependents((retailApplicantDetail.getNoOfDependent() != null ? retailApplicantDetail.getNoOfDependent() : null));
+                                scoreParameterRetailRequest.setNumberOfDependents(retailApplicantDetail.getNoOfDependent());
                                 scoreParameterRetailRequest.setNumberOfDependents_p(retailApplicantDetail.getNoOfDependent() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting NO_OF_DEPENDANTS parameter : ",e);
@@ -2266,7 +2266,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.NO_OF_DEPENDANTS:
             				try {
-                                scoreParameterRetailRequest.setNumberOfDependents((coApplicantDetail.getNoDependent() != null ? coApplicantDetail.getNoDependent() : null));
+                                scoreParameterRetailRequest.setNumberOfDependents(coApplicantDetail.getNoDependent());
                                 scoreParameterRetailRequest.setNumberOfDependents_p(coApplicantDetail.getNoDependent() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting NO_OF_DEPENDANTS parameter : ",e);
