@@ -1705,8 +1705,11 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setIsNoOfApplicantsType_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.ANNUAL_INCOME:
+            				//Already Set NMI and GMI and EMI Above Before Switch Starts
+            				break;
             			case ScoreParameter.Retail.HomeLoan.EMI_NMI_RATIO:
-            				//Already Set NMI and GMI Above Before Switch Starts
+            				//Already Set NMI and GMI and EMI Above Before Switch Starts
+            				scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMI_NMI:
             				scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
