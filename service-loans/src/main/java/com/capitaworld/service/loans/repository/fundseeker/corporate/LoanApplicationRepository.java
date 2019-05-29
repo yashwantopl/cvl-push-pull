@@ -360,4 +360,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
    	@Query("update LoanApplicationMaster lm set lm.isPrimaryLocked =:isPrimaryLocked where lm.id =:applicationId and lm.userId =:userId and lm.isActive = true")
    	public int setIsPrimaryLocked(@Param("applicationId") Long applicationId, @Param("userId") Long userId,
    			@Param("isPrimaryLocked") Boolean isPrimaryLocked);
+
+	/*For select on on Loan Type*/
+	@Modifying
+	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType where application_id=:applicationId", nativeQuery = true)
+	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
 }
