@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -35,6 +36,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -159,6 +161,9 @@ public class FPAsyncComponent {
 	@Autowired
 	private Environment environment;
 
+	@Autowired
+	private RetailApplicantDetailRepository retailDetailRepo;
+	
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	private static final String PSB_URL= "https://www.psbloansin59minutes.com";
@@ -554,8 +559,6 @@ public class FPAsyncComponent {
 		}
 	}
 
-	// ==========================================================================================================
-
 	//====Sending Mail to HO after FS receives In-principle Approval=======changed for the multiple bank=
 	@Async
 	public void sendEmailToHOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp, PaymentRequest paymentRequest,
@@ -907,9 +910,6 @@ public class FPAsyncComponent {
 			logger.info("Mail to BO after In-principle to FS is disabled==========>");
 		}
 	}
-/*===============================================================================================================================*/
-
-
 
 	// ====================Sending Mail to Maker and all Makers and Checkers when maker accepts Proposal==========
 	@Async
@@ -1956,7 +1956,7 @@ public class FPAsyncComponent {
 			logger.error("Throw exception while sending mail to Checker/HO/BO when Maker Assign DDR to Checker : ",e);
 		}
 	}
-	// changed
+	
 	@Async
 	public void sendMailWhenMakerReAssignDDRToChecker(NhbsApplicationRequest request, Date lastModifiedDate) {
 		logger.info("Enter in sending mail to Checker/HO/BO When Maker Reassign DDR To Checker");
@@ -3352,6 +3352,30 @@ public class FPAsyncComponent {
 		}
 		return fsName;
 	}
+	
+	@Async
+	public void sendEmailToFsWhenSubProductOfRetailSelectedByUser(LoanApplicationMaster loansMaster) {
+		logger.info("Inside sending email of product selected for :{}",loansMaster.getId());
+		if (!CommonUtils.isObjectNullOrEmpty(loansMaster) && (loansMaster.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() || loansMaster.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId())) {
+			try {
+				 RetailApplicantDetail retailApp = retailDetailRepo.findByApplicationId(loansMaster.getId());
+				 String fsName=retailApp.getFirstName()!=null?retailApp.getFirstName().concat(retailApp.getLastName()!=null?retailApp.getLastName():""):"";
+				 String productName = CommonUtils.LoanType.getType(loansMaster.getProductId()).getName();
+				 UserResponse userResp = userClient.getEmailMobile(loansMaster.getUserId());
+				 UsersRequest userReq=MultipleJSONObjectHelper.getObjectFromMap((Map) userResp.getData(), UsersRequest.class);
+				 Map<String, Object>param=new HashMap<>();
+				 param.put("user_name", fsName);
+				 param.put(PARAMETERS_PRODUCT_NAME, productName);
+				 String subject = productName+" selected for application";
+
+				 createNotificationForEmail(userReq.getEmail(), String.valueOf(loansMaster.getUserId()), param, NotificationAlias.PL_EMAIL_FS_PRODUCT_SELECTED_SUB_PRODUCT, subject);
+				 sendSMSNotification(String.valueOf(loansMaster.getUserId()), param, NotificationAlias.SMS_FS_SUB_PRODUCT_SELECTED_FOR_RETAIL, userReq.getMobile());
+			} catch (Exception e) {
+				logger.error("Exception in sending email when sub product of retail selected:{}",e);
+			} 
+		}
+	}
+
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 											Long templateId, String emailSubject) throws NotificationException {
 		logger.info("Inside send notification===>{}" , toNo);
@@ -3436,8 +3460,6 @@ if(!CommonUtils.isObjectNullOrEmpty(bcc))
 		logger.info("Outside send notification===>{}" + toNo);
 	}*/
 
-
-
 	private void createNotificationForEmailForFundProvider(String toNo, String userId, Map<String, Object> mailParameters,
 														   Long templateId, String emailSubject,Long applicationId,Map<String, Object> proposalresp,String bcc[]) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
@@ -3498,7 +3520,7 @@ if(!CommonUtils.isObjectNullOrEmpty(bcc))
 
 	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to)
 			throws NotificationException {
-		logger.info("Inside send SMS===>{}");
+		logger.info("Inside send SMS===>{}",to);
 		NotificationRequest req = new NotificationRequest();
 		req.setClientRefId(userId);
 		Notification notification = new Notification();
@@ -3510,7 +3532,7 @@ if(!CommonUtils.isObjectNullOrEmpty(bcc))
 		req.addNotification(notification);
 
 		sendEmail(req);
-		logger.info("Outside send SMS===>{}");
+		logger.info("Outside send SMS===>{}",to);
 
 	}
 
