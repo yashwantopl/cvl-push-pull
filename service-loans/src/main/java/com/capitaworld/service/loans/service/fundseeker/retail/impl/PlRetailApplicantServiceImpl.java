@@ -131,7 +131,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             } else {
             	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(plRetailApplicantRequest.getCoAppId(), true);
     			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
-    				BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id");
+    				BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
     				
     				if (plRetailApplicantRequest.getContactAddress() != null) {
     					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
@@ -177,23 +177,24 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
                     if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
-                                CommonUtils.MODIFIED_DATE, "isActive");
-
-                        saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
+                        if(plRetailApplicantRequest.getCoAppId() != null){
+                        	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                        	saveFinObj.setDirectorBackgroundDetail(plRetailApplicantRequest.getCoAppId());
+                        } else {
+                        	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                        }
                         saveFinObj.setCreatedBy(userId);
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
-                                CommonUtils.MODIFIED_DATE);
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
                     
                     if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
                     	if(reqObj.getIsManuallyAdded() != null && reqObj.getIsManuallyAdded() == false) {
-                    		System.out.println("getIsManuallyAdded : false");
                     		creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
                     		saveFinObj.setIsManuallyAdded(false);
                     	}
@@ -240,6 +241,24 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			cal.setTime(coApplicantDetail.getBusinessStartDate());
 			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
 			res.setBusinessStartYear(cal.get(Calendar.YEAR));
+		}
+        try {
+        	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, coApplicantDetail.getApplicationId().getId(), true);
+            if(retailFinancialDetailsList != null) {
+            	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+                FinancialArrangementsDetailRequest retailFinReq=null;
+                for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+                	retailFinReq =new FinancialArrangementsDetailRequest();
+                	BeanUtils.copyProperties(finArDetails, retailFinReq);
+                	retailFinancialDetailsReq.add(retailFinReq);
+                }
+                res.setFinancialArrangementsDetailRequestsList(retailFinancialDetailsReq);
+            	
+            }else {
+				logger.warn("FinancialArrangementData is Null while get for COapplicants");
+			}
+		} catch (Exception e) {
+			logger.error("=======>>>>> Error while fetching FinancialArrangementDetails while coapplicant <<<<<<<=========",e);
 		}
     	return res;
     	
