@@ -486,7 +486,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 //			BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 			
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-			
+			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
@@ -1063,6 +1063,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				eligibilityReq.setFpProductMappingId(productId);
 				EligibilityResponse eligibilityResp= eligibilityClient.getHLLoanData(eligibilityReq);
 				if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
+					map.put("assLimitsNetMonthlyIncome",CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)eligibilityResp.getData()).get("netMonthlyIncome")));
+					map.put("assLimitsGrossMonthlyIncome",CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)eligibilityResp.getData()).get("grossMonthlyIncome")));
 					map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), RetailEligibilityRequest.class), new HashMap<>()));
 				}
 			}catch (Exception e) {
