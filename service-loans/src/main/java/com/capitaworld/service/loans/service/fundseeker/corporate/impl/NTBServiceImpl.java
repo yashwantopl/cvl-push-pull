@@ -162,7 +162,7 @@ public class NTBServiceImpl implements NTBService {
     public List<FinancialArrangementsDetailRequest> getFinancialDetails(Long applicationId, Long directorId) throws LoansException {
         logger.info("Entry in getFinancialDetails() for applicationId : " + applicationId + " directorId : " + directorId);
         try{
-            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(directorId, applicationId, true);
+            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(directorId, applicationId, true);
             List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(finArngDetailList.size());
 
             FinancialArrangementsDetailRequest finArrngDetailReq = null;
@@ -194,7 +194,7 @@ public class NTBServiceImpl implements NTBService {
                         saveFinObj = new FinancialArrangementsDetail();
                         BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
 
-                        saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
+                        saveFinObj.setDirectorBackgroundDetail(directorId);
                         saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
                         saveFinObj.setCreatedBy(userId);
                         saveFinObj.setCreatedDate(new Date());

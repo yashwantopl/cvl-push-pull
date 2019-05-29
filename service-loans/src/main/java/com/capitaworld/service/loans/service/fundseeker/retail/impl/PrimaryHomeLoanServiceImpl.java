@@ -346,13 +346,15 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
 			res.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
 			res.setTenureRequired(retailApplicantDetail.getTenureRequired());
-			res.setRepayment(retailApplicantDetail.getRepayment());
+			/*res.setRepayment(retailApplicantDetail.getRepayment());
 			res.setSalaryMode(retailApplicantDetail.getSalaryMode());
 			res.setSalaryBankName(retailApplicantDetail.getSalaryBankName());
 			res.setIsOtherSalaryBank(retailApplicantDetail.getIsOtherSalaryBank());
 			res.setSalaryBankYear(retailApplicantDetail.getSalaryBankYear());
 			res.setSalaryBankMonth(retailApplicantDetail.getSalaryBankMonth());
-			res.setApplicantName(retailApplicantDetail.getFirstName()+" "+retailApplicantDetail.getLastName());
+			res.setApplicantName(retailApplicantDetail.getFirstName()+" "+retailApplicantDetail.getLastName());*/
+			res.setNetMonthlyIncome(retailApplicantDetail.getMonthlyIncome());
+			res.setGrossMonthlyIncome(retailApplicantDetail.getGrossMonthlyIncome());
 			
 			PrimaryHomeLoanDetail prHlDetails = primaryHomeLoanDetailRepository.getByApplication(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(prHlDetails)) {
@@ -369,7 +371,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				res.setOldPropYear(prHlDetails.getOldPropYear());
 			}
 			
-			// GET EXISTING BANK DETAILS 
+			/*// GET EXISTING BANK DETAILS 
 			List<FinancialArrangementsDetail> finArngDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
             List<FinancialArrangementsDetailRequest> finArngDetailReqList= new ArrayList<>();
 
@@ -390,7 +392,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
             	for(FinancialArrangementsDetail financialDetail : coAppFinancialDetails){
                     finReq = new FinancialArrangementsDetailRequest();
                     BeanUtils.copyProperties(financialDetail, finReq);
-                    finReq.setDirectorId(financialDetail.getDirectorBackgroundDetail().getId());
+                    finReq.setDirectorId(financialDetail.getDirectorBackgroundDetail());
                     finArngDetailReqList.add(finReq);
                 }
 			}
@@ -409,7 +411,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
             	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
             	bankRelReqList.add(bankRelationshipRequest);
             }
-            res.setBankRelationshipList(bankRelReqList);
+            res.setBankRelationshipList(bankRelReqList);*/
 
 			return res;
 		}
@@ -439,11 +441,13 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setModifiedBy(hlOneformPrimaryRes.getUserId());
 				retailApplicantDetail.setIsOneformPrimaryComplete(hlOneformPrimaryRes.getIsOneformPrimaryComplete());
-				retailApplicantDetail.setSalaryMode(hlOneformPrimaryRes.getSalaryMode());
+				retailApplicantDetail.setMonthlyIncome(hlOneformPrimaryRes.getNetMonthlyIncome());
+				retailApplicantDetail.setGrossMonthlyIncome(hlOneformPrimaryRes.getGrossMonthlyIncome());
+				/*retailApplicantDetail.setSalaryMode(hlOneformPrimaryRes.getSalaryMode());
 				retailApplicantDetail.setSalaryBankName(hlOneformPrimaryRes.getSalaryBankName());
 				retailApplicantDetail.setIsOtherSalaryBank(hlOneformPrimaryRes.getIsOtherSalaryBank());
 				retailApplicantDetail.setSalaryBankYear(hlOneformPrimaryRes.getSalaryBankYear());
-				retailApplicantDetail.setSalaryBankMonth(hlOneformPrimaryRes.getSalaryBankMonth());
+				retailApplicantDetail.setSalaryBankMonth(hlOneformPrimaryRes.getSalaryBankMonth());*/
 				
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 				
@@ -472,11 +476,10 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				prHlDetails.setOldPropMonth(hlOneformPrimaryRes.getOldPropMonth());
 				prHlDetails.setOldPropYear(hlOneformPrimaryRes.getOldPropYear());
 				prHlDetails = primaryHomeLoanDetailRepository.save(prHlDetails);
-				logger.info("Saved Successfully===============>" + prHlDetails.getId());
 			}
 			
 			
-			// ****************************** SAVE BANK RELATION DETAILS ***********************
+			/*// ****************************** SAVE BANK RELATION DETAILS ***********************
 			List<BankingRelation> bankingRelations = new ArrayList<>();
 			BankingRelation bankingRelation = null;
 	        for(BankRelationshipRequest bankRelationshipRequest : hlOneformPrimaryRes.getBankRelationshipList()) {
@@ -512,7 +515,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
                 			CoApplicantDetail directorDetail = coApplicantDetailRepository.findByIdAndIsActive(reqObj.getDirectorId(), true);
                 			DirectorBackgroundDetail detail = new DirectorBackgroundDetail();
                 			BeanUtils.copyProperties(directorDetail, detail);
-                			saveFinObj.setDirectorBackgroundDetail(detail);
+                			saveFinObj.setDirectorBackgroundDetail(reqObj.getDirectorId());
                 		}
                         saveFinObj.setCreatedBy(hlOneformPrimaryRes.getUserId());
                         saveFinObj.setCreatedDate(new Date());
@@ -524,7 +527,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
                     }
                     financialArrangementDetailsRepository.save(saveFinObj);
                 }
-            }
+            }*/
 	        return true;
 		} catch (Exception e) {
 			logger.error("Exception while save Oneform Loan Requirement details===> {}",e);

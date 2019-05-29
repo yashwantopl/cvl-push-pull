@@ -15,11 +15,6 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
-import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -56,15 +51,24 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.ScoringRequestDetail;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.HomeLoanModelRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -91,8 +95,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
-import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
-import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
@@ -1540,7 +1543,7 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					Double totalExperience = 0.0;
             					if(retailApplicantDetail.getEmploymentType() != null) {
-            						if(OccupationNature.BUSINESS.equals(retailApplicantDetail.getEmploymentType())){
+            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.equals(retailApplicantDetail.getEmploymentType())){
             							if(retailApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("retailApplicantDetail.getBusinessStartDate() For HL==== > {}",retailApplicantDetail.getBusinessStartDate());
                         					totalExperience = Double.valueOf(ChronoUnit.YEARS.between(retailApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
@@ -1638,21 +1641,20 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB:
-            				if(retailApplicantDetail.getEmploymentType() != null && OccupationNature.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            				if(retailApplicantDetail.getEmploymentType() != null && OccupationNatureNTB.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())) {
             					scoreParameterRetailRequest.setIsEmployementJobCat_p(retailApplicantDetail.getEmploymentWith() != null);
                 				scoreParameterRetailRequest.setEmploymentTypeCatJob(retailApplicantDetail.getEmploymentWith());            					
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
-            				if(retailApplicantDetail.getEmploymentType() != null && !OccupationNature.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())
-            						 && !OccupationNature.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            				if(retailApplicantDetail.getEmploymentType() != null && !OccupationNatureNTB.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())) {
             					scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
                 		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));            					
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
-            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getCurrentEmploymentStatus() != null);
-            				scoreParameterRetailRequest.setCurrentEmploymentStatus((retailApplicantDetail.getCurrentEmploymentStatus() != null  ? retailApplicantDetail.getCurrentEmploymentStatus().longValue() : null));
+            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(retailApplicantDetail.getEmploymentStatus() != null);
+            				scoreParameterRetailRequest.setCurrentEmploymentStatus((retailApplicantDetail.getEmploymentStatus() != null  ? retailApplicantDetail.getEmploymentStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.MIN_BANKING_RELATIONSHIP:
             				scoreParameterRetailRequest.setIsMinBankingRelationship_p(true);
@@ -2144,7 +2146,7 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					Double totalExperience = 0.0;
             					if(coApplicantDetail.getEmploymentType() != null) {
-            						if(OccupationNature.BUSINESS.equals(coApplicantDetail.getEmploymentType())){
+            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.equals(coApplicantDetail.getEmploymentType())){
             							if(coApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("coApplicantDetail.getBusinessStartDate() For HL==== > {}",coApplicantDetail.getBusinessStartDate());
                         					totalExperience = Double.valueOf(ChronoUnit.YEARS.between(coApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
@@ -2243,21 +2245,20 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB:
-            				if(coApplicantDetail.getEmploymentType() != null && OccupationNature.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())) {
+            				if(coApplicantDetail.getEmploymentType() != null && OccupationNatureNTB.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())) {
             					scoreParameterRetailRequest.setIsEmployementJobCat_p(coApplicantDetail.getEmploymentWith() != null);
                 				scoreParameterRetailRequest.setEmploymentTypeCatJob(coApplicantDetail.getEmploymentWith());            					
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
-            				if(coApplicantDetail.getEmploymentType() != null && !OccupationNature.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())
-            						 && !OccupationNature.OTHERS.getId().equals(coApplicantDetail.getEmploymentType())) {
+            				if(coApplicantDetail.getEmploymentType() != null && !OccupationNatureNTB.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())) {
             					scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
                 		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));            					
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
-            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(coApplicantDetail.getCurrentEmploymentStatus() != null);
-            				scoreParameterRetailRequest.setCurrentEmploymentStatus((coApplicantDetail.getCurrentEmploymentStatus() != null  ? coApplicantDetail.getCurrentEmploymentStatus().longValue() : null));
+            				scoreParameterRetailRequest.setIsCurrentEmploymentStatus_p(coApplicantDetail.getEmploymentStatus() != null);
+            				scoreParameterRetailRequest.setCurrentEmploymentStatus((coApplicantDetail.getEmploymentStatus() != null  ? coApplicantDetail.getEmploymentStatus().longValue() : null));
             				break;
             			case ScoreParameter.Retail.HomeLoan.MIN_BANKING_RELATIONSHIP:
             				//Not Available in Sheet Document

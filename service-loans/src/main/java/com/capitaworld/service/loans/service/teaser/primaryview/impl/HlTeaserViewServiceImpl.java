@@ -27,7 +27,6 @@ import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -60,13 +59,10 @@ import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewRespon
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
@@ -315,6 +311,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
 				plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getNationality());
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+				
 
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
@@ -322,7 +319,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 				
 				/*Co Applicant Details*/
-				List<PLRetailApplicantResponse> coApplicationDetails = getCoApplicationDetails(toApplicationId);
+				List<PLRetailApplicantResponse> coApplicationDetails = getCoApplicationDetails(toApplicationId,productMappingId);
 				hlTeaserViewResponse.setRetailCoApplicantDetail(coApplicationDetails);
 				
 				LocalDate today = LocalDate.now();
@@ -423,7 +420,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
-				
 				//KEY VERTICAL SECTOR
 				List<Long> keyVerticalSectorId = new ArrayList<>();
 				if (plRetailApplicantRequest.getKeyVerticalSector() != null && keyVerticalFundingId.size() != 0) {
@@ -443,9 +439,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
-					
-				
-				
 				//KEY VERTICAL SUBSECTOR
 				try {
 					if (plRetailApplicantRequest.getKeyVerticalSubSector() != null  && keyVerticalFundingId.size() !=0) {
@@ -455,20 +448,14 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				} catch (Exception e) {
 					logger.warn("key vertical subSector is null ");
 				}
-				
-				
 				hlTeaserViewResponse.setRetailApplicantDetail(plRetailApplicantResponse);
-				
 			}else {
 				logger.warn("retailApplicantDetail is null");
 			}
-			
 		} catch (Exception e) {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
-		
 		//property details
-		
 		PrimaryHomeLoanDetail primaryHlDetail= primaryHomeloanDetailsRepo.getByApplication(toApplicationId);
 		HLOneformPrimaryRes res=primaryHomeloanService.getOneformPrimaryDetails(toApplicationId);
 		if(primaryHlDetail != null) {
@@ -492,8 +479,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				}
 			}
 		}
-		
-		
 		//PROPOSAL RESPONSE
 		try {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
@@ -544,12 +529,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			if (!CommonUtils.isListNullOrEmpty(hashMaps)) {
 				for (HashMap<String, Object> hashMap : hashMaps) {
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
-					
 					datas.add(data);
 				}
 			}
 			hlTeaserViewResponse.setBankData(datas);
-		
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
@@ -561,11 +544,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 		try {
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
-					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
-
+			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 			if (proposalScoreResponse != null){
-				logger.info("getObjectFromMap called successfully");
 				hlTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName()!=null?proposalScoreResponse.getScoringModelName():" - ");
 				hlTeaserViewResponse.setDataList(scoringResponse.getDataList()!=null?scoringResponse.getDataList():" - ");
 				hlTeaserViewResponse.setDataObject(scoringResponse.getDataObject()!=null?scoringResponse.getDataObject():" - ");
@@ -773,7 +753,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 
 
-	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId) throws LoansException {
+	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId , Long productMappingId) throws LoansException {
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
 			List<CoApplicantDetail> coApplicantList = coAppService.getCoApplicantList(applicationId);
@@ -805,7 +785,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
 				plRetailApplicantResponse.setCurrentEmploymentStatus(EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue());
 				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
-				
+				plRetailApplicantResponse.setDesignation(coApplicantDetail.getDesignation()!= null ? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
+				/*itr call for name as per Itr*/ 
 				try {
 					ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
 					if (resNameAsPerITR != null) {
@@ -826,33 +807,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				
 				List<FinancialArrangementsDetailRequest> financeData = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId(), applicationId);
 				plRetailApplicantResponse.setFinancialArrangementsDetailRequestsList(financeData);
-				
-				
-				/*get coApplicant Scoring */
-				
-				ScoringRequest scoringRequest = new ScoringRequest();
-				scoringRequest.setApplicationId(applicationId);
-				scoringRequest.setFpProductId(coApplicantDetail.getId());
-
-				try {
-					ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-					ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
-							(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
-
-					if (proposalScoreResponse != null){
-						logger.info("getObjectFromMap called successfully");
-						plRetailApplicantResponse.setScoringModelName(proposalScoreResponse.getScoringModelName()!=null?proposalScoreResponse.getScoringModelName():" - ");
-						plRetailApplicantResponse.setDataList(scoringResponse.getDataList()!=null?scoringResponse.getDataList():" - ");
-						plRetailApplicantResponse.setDataObject(scoringResponse.getDataObject()!=null?scoringResponse.getDataObject():" - ");
-						plRetailApplicantResponse.setScoringResponseList(scoringResponse.getScoringResponseList()!=null?scoringResponse.getScoringResponseList():" - ");
-					}
-				} catch (ScoringException | IOException e1) {
-					logger.error(CommonUtils.EXCEPTION,e1);
-				}
-				
 
 				/*get itrXml and ItrPdf as per coApplicant Id*/
-				
 				DocumentRequest coAppDocReq = new DocumentRequest();
 				coAppDocReq.setCoApplicantId(coApplicantDetail.getId());
 				coAppDocReq.setUserType(DocumentAlias.UERT_TYPE_CO_APPLICANT);
@@ -877,5 +833,4 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		}
 		return request;
 	}
-	
 }

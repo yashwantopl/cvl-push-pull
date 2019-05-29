@@ -8389,6 +8389,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationMaster.setModifiedDate(new Date());
 			loanApplicationMaster.setProductId(loanTypeId.intValue());
 			loanApplicationRepository.save(loanApplicationMaster);
+			loanApplicationRepository.updateLoanType(applicationId,loanTypeId);
 			logger.info("Loan Type Updated");
 			return  true;
 		}
