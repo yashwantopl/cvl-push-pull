@@ -390,7 +390,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+        	RetailApplicantDetail applicantDetail = null;
+        	if(proposalId != null) {
+        		applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
+        	}else {
+        		applicantDetail = applicantRepository.findByApplicationId(applicationId);
+        	}
+            
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             if (applicantDetail == null) {
                 
