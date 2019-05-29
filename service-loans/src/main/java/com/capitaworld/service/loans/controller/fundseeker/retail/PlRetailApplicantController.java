@@ -119,7 +119,7 @@ public class PlRetailApplicantController {
     public ResponseEntity<LoansResponse> getCoAppProfileById(@PathVariable("coAppId")  Long coAppId) {
         try {
             if (coAppId == null) {
-                logger.warn("CoAppId Require to get Retail CoApp Profile Details. Application Id ==> NULL");
+                logger.warn("CoAppId Require to get Retail CoApp Profile Details. CoAppId==> NULL");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 

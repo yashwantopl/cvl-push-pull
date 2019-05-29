@@ -390,7 +390,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
             	for(FinancialArrangementsDetail financialDetail : coAppFinancialDetails){
                     finReq = new FinancialArrangementsDetailRequest();
                     BeanUtils.copyProperties(financialDetail, finReq);
-                    finReq.setDirectorId(financialDetail.getDirectorBackgroundDetail().getId());
+                    finReq.setDirectorId(financialDetail.getDirectorBackgroundDetail());
                     finArngDetailReqList.add(finReq);
                 }
 			}
@@ -509,10 +509,10 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
                 		if(reqObj.getDirectorId() == null) {
                 			saveFinObj.setApplicationId(new LoanApplicationMaster(hlOneformPrimaryRes.getApplicationId()));
                 		}else {
-                			CoApplicantDetail directorDetail = coApplicantDetailRepository.findByIdAndIsActive(reqObj.getDirectorId(), true);
+                			/*CoApplicantDetail directorDetail = coApplicantDetailRepository.findByIdAndIsActive(reqObj.getDirectorId(), true);
                 			DirectorBackgroundDetail detail = new DirectorBackgroundDetail();
-                			BeanUtils.copyProperties(directorDetail, detail);
-                			saveFinObj.setDirectorBackgroundDetail(detail);
+                			BeanUtils.copyProperties(directorDetail, detail);*/
+                			saveFinObj.setDirectorBackgroundDetail(reqObj.getDirectorId());
                 		}
                         saveFinObj.setCreatedBy(hlOneformPrimaryRes.getUserId());
                         saveFinObj.setCreatedDate(new Date());
