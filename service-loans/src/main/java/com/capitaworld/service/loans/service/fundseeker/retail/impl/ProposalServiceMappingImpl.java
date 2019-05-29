@@ -2728,7 +2728,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						SchedulerDataMultipleBankRequest schedulerDataMultipleBankRequest = new SchedulerDataMultipleBankRequest();
 						schedulerDataMultipleBankRequest.setUserId(connectRequest1.getUserId());
 						schedulerDataMultipleBankRequest.setApplicationId(connectRequest1.getApplicationId());
-						if(connectRequest1.getStageId().equals(4) && connectRequest1.getStatus().equals(6)){
+						if((connectRequest1.getStageId().equals(4) || connectRequest1.getStageId().equals(207)) && connectRequest1.getStatus().equals(6)){
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
