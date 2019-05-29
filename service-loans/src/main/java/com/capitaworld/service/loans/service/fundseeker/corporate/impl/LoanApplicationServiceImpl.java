@@ -397,6 +397,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private PincodeDateService pincodeDateService;
+	
+	private FPAsyncComponent fpAsyncComp;
 
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
@@ -8391,6 +8393,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRepository.save(loanApplicationMaster);
 			loanApplicationRepository.updateLoanType(applicationId,loanTypeId);
 			logger.info("Loan Type Updated");
+			fpAsyncComp.sendEmailToFsWhenSubProductOfRetailSelectedByUser(loanApplicationMaster);
 			return  true;
 		}
 		catch (Exception e)
