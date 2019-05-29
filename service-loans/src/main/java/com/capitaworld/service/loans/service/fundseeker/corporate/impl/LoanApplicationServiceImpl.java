@@ -6246,7 +6246,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return retailLoanObj.getId();
 		}
 		logger.info("Successfully get result");
-		if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
+		/*if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 			retailLoanObj = new PrimaryHomeLoanDetail();	
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.HOME_LOAN.getValue()));
 			retailLoanObj.setProductId(LoanType.HOME_LOAN.getValue());
@@ -6254,7 +6254,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			retailLoanObj = new PrimaryPersonalLoanDetail();
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.PERSONAL_LOAN.getValue()));
 			retailLoanObj.setProductId(LoanType.PERSONAL_LOAN.getValue());
-		}
+		}*/
+		retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		retailLoanObj.setCreatedBy(userId);
