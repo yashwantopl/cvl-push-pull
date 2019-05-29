@@ -1025,13 +1025,17 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				logger.error("Error while getting scoring data : ",e);
 			}
 		/*get epfoData*/
-		EmployerRequest epfReq = new EmployerRequest();
-		epfReq.setApplicationId(applicationId);
-		EkycResponse epfRes = epfClient.getEpfData(epfReq);
-		if(epfRes != null && epfRes.getData()!= null) {
-			map.put("epfoData", epfRes.getData());
-		}else {
-			logger.info("epfoData is null for==>"+applicationId);
+		try {
+			EmployerRequest epfReq = new EmployerRequest();
+			epfReq.setApplicationId(applicationId);
+			EkycResponse epfRes = epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				map.put("epfoData", epfRes.getData());
+			}else {
+				logger.info("epfoData is null for==>"+applicationId);
+			}
+		} catch (Exception e) {
+			logger.info("",e);
 		}
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 				ReportRequest reportRequest = new ReportRequest();
