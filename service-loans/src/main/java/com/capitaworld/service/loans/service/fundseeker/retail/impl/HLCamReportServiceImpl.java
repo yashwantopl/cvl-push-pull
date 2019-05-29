@@ -1063,8 +1063,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				eligibilityReq.setFpProductMappingId(productId);
 				EligibilityResponse eligibilityResp= eligibilityClient.getHLLoanData(eligibilityReq);
 				if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
-					map.put("assLimitsNetMonthlyIncome",CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)eligibilityResp.getData()).get("netMonthlyIncome")));
-					map.put("assLimitsGrossMonthlyIncome",CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)eligibilityResp.getData()).get("grossMonthlyIncome")));
 					map.put("assLimits",CommonUtils.convertToValueForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), RetailEligibilityRequest.class), new HashMap<>()));
 				}
 			}catch (Exception e) {
