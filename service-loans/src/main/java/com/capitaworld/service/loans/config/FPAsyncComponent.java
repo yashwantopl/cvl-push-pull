@@ -1553,10 +1553,13 @@ public class FPAsyncComponent {
 		String mobile = signUpUser.getMobile();
 		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
 		mailParameter.put(CommonUtils.PARAMETERS_ADDRESS, address);
-		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
-		if("Personal Loan".equals(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString())){
-			emailSubject = "Maker Assigned - For Quick Personal Loan Approval ";
+		String emailSubject = "";
+		if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+			emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
+		}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() || applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
+			emailSubject = "Maker Assigned - For Quick "+proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()+" Approval ";			
 		}
+		
 		try {
 			if(fsName!=null&& address!=null&&mobile!=null&&assignedMakerName!=null&&applicationRequest.getId()!=null) {
 				mailParameter.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
