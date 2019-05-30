@@ -1570,6 +1570,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
+                scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
@@ -1705,12 +1706,14 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
             				Double cibilScore = null;
                             try {
-                                logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                    cibilScore = Double.parseDouble(cibilResponse.getScore());
-                                    scoreParameterRetailRequest.setCibilScore(cibilScore);
-                                    scoreParameterRetailRequest.setCibilScore_p(true);
-                                } 
+                            	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
+                            		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
+                                        cibilScore = Double.parseDouble(cibilResponse.getScore());
+                                        scoreParameterRetailRequest.setCibilScore(cibilScore);
+                                        scoreParameterRetailRequest.setCibilScore_p(true);
+                                    }                            		
+                            	}
                             } catch (Exception e) {
                                 logger.error("error while getting BUREAU_SCORE parameter from CIBIL client : ",e);
                                 scoreParameterRetailRequest.setCibilScore_p(false);
@@ -2176,7 +2179,12 @@ public class ScoringServiceImpl implements ScoringService {
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelCoAppId();
+            if(scoreModelId == null) {
+            	scoreModelId = scoringRequestLoans.getScoringModelId();
+            }
+            logger.info("Scoring model Id For CoApp===>{}",scoreModelId);
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            logger.info("Fp Product Id For CoApp===>{}",fpProductId);
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -2196,6 +2204,7 @@ public class ScoringServiceImpl implements ScoringService {
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
+                scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
