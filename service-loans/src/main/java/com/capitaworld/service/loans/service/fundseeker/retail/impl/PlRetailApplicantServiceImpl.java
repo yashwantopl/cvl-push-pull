@@ -105,6 +105,11 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setIsActive(true);
                     applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                 }
+                if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+					applicantDetail.setBusinessStartDate(cal.getTime());
+				}
 
                 BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                 copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
@@ -280,6 +285,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
+            if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+    			Calendar cal = Calendar.getInstance();
+    			cal.setTime(applicantDetail.getBusinessStartDate());
+    			applicantRequest.setBusinessStartMonth(cal.get(Calendar.MONTH));
+    			applicantRequest.setBusinessStartYear(cal.get(Calendar.YEAR));
+    		}
             /*UserResponse userResponse = usersClient.getEmailMobile(userId);
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
