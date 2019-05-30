@@ -1115,4 +1115,23 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
+	
+	@Override
+	public boolean checkCoAppProfileBeforeSelectHL(Long applicationId) {
+		List<CoApplicantDetail> coAppIdList = coApplicantDetailRepository.getAllByApplicationId(applicationId);
+		if(!coAppIdList.isEmpty()) {
+			for(CoApplicantDetail coApp : coAppIdList) {
+				if((CommonUtils.isObjectNullOrEmpty(coApp.getIsBankStatementCompleted()) || !coApp.getIsBankStatementCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsItrCompleted()) || !coApp.getIsItrCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsCibilCompleted()) || !coApp.getIsCibilCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsBasicInfoFilled()) || !coApp.getIsBasicInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsEmploymentInfoFilled()) || !coApp.getIsEmploymentInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsContactInfoFilled()) || !coApp.getIsContactInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsOneFormCompleted()) || !coApp.getIsOneFormCompleted())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }
