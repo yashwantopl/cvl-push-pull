@@ -98,15 +98,20 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 if (applicantDetail != null) {
                     applicantDetail.setModifiedBy(userId);
                     applicantDetail.setModifiedDate(new Date());
+                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                 } else {
                     applicantDetail = new RetailApplicantDetail();
+                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                     applicantDetail.setCreatedBy(userId);
                     applicantDetail.setCreatedDate(new Date());
                     applicantDetail.setIsActive(true);
                     applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                 }
-
-                BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
+                if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+					applicantDetail.setBusinessStartDate(cal.getTime());
+				}
                 copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
                 applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
                 applicantRepository.save(applicantDetail);
@@ -279,7 +284,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-
+            
+            if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+    			Calendar cal = Calendar.getInstance();
+    			cal.setTime(applicantDetail.getBusinessStartDate());
+    			applicantRequest.setBusinessStartMonth(cal.get(Calendar.MONTH));
+    			applicantRequest.setBusinessStartYear(cal.get(Calendar.YEAR));
+    		}
             /*UserResponse userResponse = usersClient.getEmailMobile(userId);
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
@@ -1054,6 +1065,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
+            if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+    			Calendar cal = Calendar.getInstance();
+    			cal.setTime(applicantDetail.getBusinessStartDate());
+    			applicantRequest.setBusinessStartMonth(cal.get(Calendar.MONTH));
+    			applicantRequest.setBusinessStartYear(cal.get(Calendar.YEAR));
+    		}
+            
             if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
 
 				LocalDate since = LocalDate.of(applicantRequest.getSalaryBankYear(), applicantRequest.getSalaryBankMonth(), 1);
@@ -1097,4 +1115,23 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
+	
+	@Override
+	public boolean checkCoAppProfileBeforeSelectHL(Long applicationId) {
+		List<CoApplicantDetail> coAppIdList = coApplicantDetailRepository.getAllByApplicationId(applicationId);
+		if(!coAppIdList.isEmpty()) {
+			for(CoApplicantDetail coApp : coAppIdList) {
+				if((CommonUtils.isObjectNullOrEmpty(coApp.getIsBankStatementCompleted()) || !coApp.getIsBankStatementCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsItrCompleted()) || !coApp.getIsItrCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsCibilCompleted()) || !coApp.getIsCibilCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsBasicInfoFilled()) || !coApp.getIsBasicInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsEmploymentInfoFilled()) || !coApp.getIsEmploymentInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsContactInfoFilled()) || !coApp.getIsContactInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsOneFormCompleted()) || !coApp.getIsOneFormCompleted())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }
