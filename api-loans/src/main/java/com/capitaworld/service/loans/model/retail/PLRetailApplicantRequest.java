@@ -12,7 +12,9 @@ import java.util.List;
  *
  */
 public class PLRetailApplicantRequest implements Serializable {
-    // Common Fields
+    
+	private static final long serialVersionUID = 1L;
+	// Common Fields
     private Long id;
     private Long clientId;
     private Long applicationId;
@@ -42,6 +44,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private Integer psuId;
     private Integer corporateId;
     private Integer eduInstId;
+    private Integer bankNameId;
+    private Integer insuranceNameId;
     private String nameOfEmployer;
     private Integer employmentStatus;
     private Integer currentJobMonth;
@@ -110,8 +114,29 @@ public class PLRetailApplicantRequest implements Serializable {
     private Boolean isEmploymentInfoFilled;
     private Boolean isContactInfoFilled;
     private Boolean isCreditInfoFilled;
+    private Integer currentEmploymentStatus;
+    private Long coAppId;
+    private Long userId;
+    private Integer residentialStatus;
+    private Boolean isOneFormCompleted;
+    private Boolean isCibilCompleted;
 
-  public String getLoanPurposeOther() {
+    private String addressPremiseName;
+    private String addressStreetName;
+    private String addressLandmark;
+    private Long addressDistrictMappingId;
+    private Long addressPincode;
+
+    private Integer employmentSubStatus;
+    private String employedWithOther;
+    private Integer businessStartMonth;
+    private Integer businessStartYear;
+    private String employmentStatusOther;
+    private String nameOfEntity;
+    private Boolean isItrSkip;
+    
+
+    public String getLoanPurposeOther() {
 		return loanPurposeOther;
 	}
 
@@ -727,6 +752,158 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.kid = kid;
 	}
 
+    public Boolean getIsOneFormCompleted() {
+        return isOneFormCompleted;
+    }
+
+    public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+        this.isOneFormCompleted = isOneFormCompleted;
+    }
+
+    public Boolean getIsCibilCompleted() {
+        return isCibilCompleted;
+    }
+
+    public void setIsCibilCompleted(Boolean isCibilCompleted) {
+        this.isCibilCompleted = isCibilCompleted;
+    }
+
+    public Boolean getIsItrSkip() {
+        return isItrSkip;
+    }
+
+    public void setIsItrSkip(Boolean isItrSkip) {
+        this.isItrSkip = isItrSkip;
+    }
+
+    public Long getCoAppId() {
+        return coAppId;
+    }
+
+    public void setCoAppId(Long coAppId) {
+        this.coAppId = coAppId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getAddressPremiseName() {
+        return addressPremiseName;
+    }
+
+    public void setAddressPremiseName(String addressPremiseName) {
+        this.addressPremiseName = addressPremiseName;
+    }
+
+    public String getAddressStreetName() {
+        return addressStreetName;
+    }
+
+    public void setAddressStreetName(String addressStreetName) {
+        this.addressStreetName = addressStreetName;
+    }
+
+    public String getAddressLandmark() {
+        return addressLandmark;
+    }
+
+    public void setAddressLandmark(String addressLandmark) {
+        this.addressLandmark = addressLandmark;
+    }
+
+    public Long getAddressDistrictMappingId() {
+        return addressDistrictMappingId;
+    }
+
+    public void setAddressDistrictMappingId(Long addressDistrictMappingId) {
+        this.addressDistrictMappingId = addressDistrictMappingId;
+    }
+
+    public Long getAddressPincode() {
+        return addressPincode;
+    }
+
+    public void setAddressPincode(Long addressPincode) {
+        this.addressPincode = addressPincode;
+    }
+
+    public Integer getEmploymentSubStatus() {
+        return employmentSubStatus;
+    }
+
+    public void setEmploymentSubStatus(Integer employmentSubStatus) {
+        this.employmentSubStatus = employmentSubStatus;
+    }
+
+    public String getEmployedWithOther() {
+        return employedWithOther;
+    }
+
+    public void setEmployedWithOther(String employedWithOther) {
+        this.employedWithOther = employedWithOther;
+    }
+
+    public Integer getBusinessStartMonth() {
+        return businessStartMonth;
+    }
+
+    public void setBusinessStartMonth(Integer businessStartMonth) {
+        this.businessStartMonth = businessStartMonth;
+    }
+
+    public Integer getBusinessStartYear() {
+        return businessStartYear;
+    }
+
+    public void setBusinessStartYear(Integer businessStartYear) {
+        this.businessStartYear = businessStartYear;
+    }
+
+    public String getEmploymentStatusOther() {
+        return employmentStatusOther;
+    }
+
+    public void setEmploymentStatusOther(String employmentStatusOther) {
+        this.employmentStatusOther = employmentStatusOther;
+    }
+
+    public Integer getResidentialStatus() {
+        return residentialStatus;
+    }
+
+    public void setResidentialStatus(Integer residentialStatus) {
+        this.residentialStatus = residentialStatus;
+    }
+
+    public String getNameOfEntity() {
+        return nameOfEntity;
+    }
+
+    public void setNameOfEntity(String nameOfEntity) {
+        this.nameOfEntity = nameOfEntity;
+    }
+
+    public Integer getBankNameId() {
+		return bankNameId;
+	}
+
+	public void setBankNameId(Integer bankNameId) {
+		this.bankNameId = bankNameId;
+	}
+
+	public Integer getInsuranceNameId() {
+		return insuranceNameId;
+	}
+
+	public void setInsuranceNameId(Integer insuranceNameId) {
+		this.insuranceNameId = insuranceNameId;
+	}
+
 	@Override
 	public String toString() {
 		return "PLRetailApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
@@ -756,6 +933,14 @@ public class PLRetailApplicantRequest implements Serializable {
 				+ salaryBankName + ", salaryBankMonth=" + salaryBankMonth + ", salaryBankYear=" + salaryBankYear
 				+ ", isOtherSalaryBank=" + isOtherSalaryBank + ", category=" + category + ", fatherName=" + fatherName
 				+ ", annualIncomeOfSpouse=" + annualIncomeOfSpouse + "]";
+	}
+
+	public Integer getCurrentEmploymentStatus() {
+		return currentEmploymentStatus;
+	}
+
+	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
+		this.currentEmploymentStatus = currentEmploymentStatus;
 	}
     
     

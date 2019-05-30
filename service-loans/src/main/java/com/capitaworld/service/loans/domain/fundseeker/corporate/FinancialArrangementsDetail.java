@@ -85,9 +85,8 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name = "security_details")
 	private String securityDetails;
 	
-	@ManyToOne
-	@JoinColumn(name = "director_id")
-	private DirectorBackgroundDetail directorBackgroundDetail;
+	@Column(name = "director_id")
+	private Long directorBackgroundDetail;
 
 	@Column(name = "collateral_security_amount")
 	private Double collateralSecurityAmount;
@@ -243,11 +242,11 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.emi = emi;
 	}
 
-	public DirectorBackgroundDetail getDirectorBackgroundDetail() {
+	public Long getDirectorBackgroundDetail() {
 		return directorBackgroundDetail;
 	}
 
-	public void setDirectorBackgroundDetail(DirectorBackgroundDetail directorBackgroundDetail) {
+	public void setDirectorBackgroundDetail(Long directorBackgroundDetail) {
 		this.directorBackgroundDetail = directorBackgroundDetail;
 	}
 

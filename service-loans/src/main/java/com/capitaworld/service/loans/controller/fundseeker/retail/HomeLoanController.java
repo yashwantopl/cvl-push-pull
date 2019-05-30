@@ -281,7 +281,7 @@ public class HomeLoanController {
 					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 				hlOneformPrimaryRes.setUserId(userId);
-				return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),primaryHomeLoanService.saveOneformPrimaryDetails(hlOneformPrimaryRes)),HttpStatus.OK);
+				return new ResponseEntity<>(new LoansResponse("Data Saved Successfully !!", HttpStatus.OK.value(),primaryHomeLoanService.saveOneformPrimaryDetails(hlOneformPrimaryRes)),HttpStatus.OK);
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 				return new ResponseEntity<>(new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);

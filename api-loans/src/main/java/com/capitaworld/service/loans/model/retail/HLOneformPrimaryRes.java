@@ -233,7 +233,6 @@ public class HLOneformPrimaryRes implements Serializable {
 	public void setApplicantName(String applicantName) {
 		this.applicantName = applicantName;
 	}
-
 	
 	
 	

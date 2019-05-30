@@ -462,11 +462,13 @@ public class ProposalController {
 		}
 	}
 	@RequestMapping(value = "/searchProposals", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getHomeCounter(@RequestBody ReportRequest reportRequest ,HttpServletRequest httpServletRequest) {
+	public ResponseEntity<LoansResponse> searchProposals(@RequestBody ReportRequest reportRequest ,HttpServletRequest httpServletRequest) {
 
 		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(reportRequest.getValue())) {
+		Long businessTypeId = reportRequest.getBusinessTypeId();
+		logger.info("========>>>>>>>>>>>>>>>>>>>>>>|||||||||||||||| businessTypeId ||||||||||{}",businessTypeId);
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(reportRequest.getValue())|| CommonUtils.isObjectNullOrEmpty(businessTypeId)) {
 			logger.info(BAD_REQUEST_MSG);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -474,24 +476,24 @@ public class ProposalController {
 			reportRequest.setNumber(10);
 		}
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.searchProposalByAppCode(userId, userOrgId, reportRequest)), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.searchProposalByAppCode(userId, userOrgId, reportRequest,businessTypeId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@RequestMapping(value = "/fpDashboardProposalCont", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> fpDashboardProposalCont(HttpServletRequest httpServletRequest) {
+	@RequestMapping(value = "/fpDashboardProposalCont/{businessTypeId}", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> fpDashboardProposalCont(@PathVariable("businessTypeId") Long businessTypeId,HttpServletRequest httpServletRequest) {
 
-		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId)) {
+		Long userOrgId = Long.parseLong(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString());
+		Long userId = Long.parseLong(httpServletRequest.getAttribute(CommonUtils.USER_ID).toString());
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(businessTypeId)) {
 			logger.info(BAD_REQUEST_MSG);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.getFpDashBoardCount(userId, userOrgId)), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.getFpDashBoardCount(userId, userOrgId,businessTypeId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);

@@ -736,8 +736,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 	
 	@Override
-	//public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId, Long businessTypeId) {
-	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
+	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId, Long businessTypeId) {
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
 		UserResponse userResponse=null;
 		BranchBasicDetailsRequest basicDetailsRequest = null;
@@ -753,8 +752,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-			//results = productMasterRepository.getUserProductActiveList(userOrgId,businessTypeId);
-			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
+			results = productMasterRepository.getUserProductActiveList(userOrgId,businessTypeId);
+//			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
 		} else {
 			results = productMasterRepository.getUserProductList(userId);
 		}
@@ -840,39 +839,25 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (fpMappingId != null) {
 				ProductMaster userProduct = null;
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					userProduct = productMasterRepository.getUserProductByOrgId(fpMappingId, userOrgId);
+//					userProduct = productMasterRepository.getUserProductByOrgId(fpMappingId, userOrgId);
+					userProduct = productMasterRepository.getUserProductByOrgId(fpMappingId, userOrgId,usrResponse.getLastAccessBusinessTypeId());
 				} else if (!CommonUtils.isObjectNullOrEmpty(userId)) {
-					userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
+//					userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
+					userProduct = productMasterRepository.getUserProduct(fpMappingId, userId,usrResponse.getLastAccessBusinessTypeId());
 				} else {
-					userProduct = productMasterRepository.findByIdAndIsActive(fpMappingId, true);
+//					userProduct = productMasterRepository.findByIdAndIsActive(fpMappingId, true);
+					userProduct = productMasterRepository.findByIdAndIsActiveAndBusinessTypeId(fpMappingId, true,usrResponse.getLastAccessBusinessTypeId());
 				}
-				productDetailsResponse.setProductId(userProduct.getProductId());
-				productDetailsResponse.setProductMappingId(fpMappingId);
-				productDetailsResponse.setMessage("Proposal Details Sent");
-				productDetailsResponse.setStatus(HttpStatus.OK.value());
-			} else {
-				List<ProductMaster> userProductList = null;
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					userProductList = productMasterRepository.getUserProductListByOrgId(userOrgId);
-				} else {
-					userProductList = productMasterRepository.getUserProductList(userId);
-				}
-				if (!CommonUtils.isListNullOrEmpty(userProductList)) {
-					ProductMaster productMaster = userProductList.get(0);
-					productDetailsResponse.setProductId(productMaster.getProductId());
-					productDetailsResponse.setProductMappingId(productMaster.getId());
+				if (CommonUtils.isObjectNullOrEmpty(userProduct)) {
+					getProguctDetail(userId, userOrgId, usrResponse, productDetailsResponse);
+				}else {
+					productDetailsResponse.setProductId(userProduct.getProductId());
+					productDetailsResponse.setProductMappingId(fpMappingId);
 					productDetailsResponse.setMessage("Proposal Details Sent");
 					productDetailsResponse.setStatus(HttpStatus.OK.value());
-					UsersRequest req = new UsersRequest();
-					req.setId(productMaster.getId());
-					usersClient.setLastAccessApplicant(req);
-				} else {
-					UsersRequest req = new UsersRequest();
-					req.setId(null);
-					usersClient.setLastAccessApplicant(req);
-					productDetailsResponse.setMessage("Something went wrong");
-					productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 				}
+			} else {
+				getProguctDetail(userId, userOrgId, usrResponse, productDetailsResponse);
 			}
 		} else {
 			productDetailsResponse.setMessage("Something went wrong");
@@ -880,6 +865,43 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 
 		return productDetailsResponse;
+	}
+
+	/**
+	 * @author vijay.chauhan
+	 * @param userId
+	 * @param userOrgId
+	 * @param usrResponse
+	 * @param productDetailsResponse
+	 */
+	private void getProguctDetail(Long userId, Long userOrgId, UserResponse usrResponse,ProductDetailsResponse productDetailsResponse) {
+		List<ProductMaster> userProductList = null;
+		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+//					userProductList = productMasterRepository.getUserProductListByOrgId(userOrgId);
+			userProductList = productMasterRepository.getUserProductListByOrgId(userOrgId,usrResponse.getLastAccessBusinessTypeId());
+		} else {
+//					userProductList = productMasterRepository.getUserProductList(userId);
+			userProductList = productMasterRepository.getUserProductList(userId,usrResponse.getLastAccessBusinessTypeId());
+		}
+		if (!CommonUtils.isListNullOrEmpty(userProductList)) {
+			ProductMaster productMaster = userProductList.get(0);
+			productDetailsResponse.setProductId(productMaster.getProductId());
+			productDetailsResponse.setProductMappingId(productMaster.getId());
+			productDetailsResponse.setMessage("Proposal Details Sent");
+			productDetailsResponse.setStatus(HttpStatus.OK.value());
+			UsersRequest req = new UsersRequest();
+			logger.info("-->>>>|||||||||||productMaster.getId()={}",productMaster.getId());
+			req.setId(userId);
+			req.setLastAccessApplicantId(productMaster.getId());
+			usersClient.setLastAccessApplicant(req);
+		} else {
+			UsersRequest req = new UsersRequest();
+			req.setId(userId);
+			req.setLastAccessApplicantId(null);
+			usersClient.setLastAccessApplicant(req);
+			productDetailsResponse.setMessage("Something went wrong");
+			productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		}
 	}
 
 	@Override

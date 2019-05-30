@@ -4,6 +4,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author nilay.darji
+ *
+ */
 public class RetailProposalDetails {
 
 	private String name;
@@ -28,6 +32,8 @@ public class RetailProposalDetails {
 	private Integer businessTypeId;
 	
 	private Long fpProductid;
+	
+	private Integer productId;
 	
 	private Date lastStatusActionDate;
 	
@@ -163,7 +169,15 @@ public class RetailProposalDetails {
 	public void setProposalStatus(Long proposalStatus) {
 		this.proposalStatus = proposalStatus;
 	}
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
 	
-	
+	  
 	
 }
