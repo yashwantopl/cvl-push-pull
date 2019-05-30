@@ -160,7 +160,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     				coApplicantDetail.setModifiedDate(new Date());
     				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
     				coApplicantDetailRepository.save(coApplicantDetail);
-    				return true;
     			}
             }
             
