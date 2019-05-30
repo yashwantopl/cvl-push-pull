@@ -46,5 +46,8 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	@Query("select count(rt.applicationId.id) from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId and rt.isActive = true and (rt.firstName != NULL and rt.firstName != '') ")
 	public Long hasAlreadyApplied(@Param("userId") Long userId,
 								  @Param("applicationId") Long applicationId);
+	
+	@Query("select rt.grossMonthlyIncome,rt.monthlyIncome from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.isActive = true and rt.applicationProposalMapping.proposalId IS NULL")
+	public Object[] getGrossAndMonthlyIncome(@Param("applicationId") Long applicationId);
 
 }
