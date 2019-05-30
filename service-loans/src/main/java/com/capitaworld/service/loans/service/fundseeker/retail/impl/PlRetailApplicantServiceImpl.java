@@ -108,7 +108,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
                 BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                 copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
-
+                applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
                 applicantRepository.save(applicantDetail);
                 
                 // Updating Flag
@@ -160,7 +160,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     				coApplicantDetail.setModifiedDate(new Date());
     				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
     				coApplicantDetailRepository.save(coApplicantDetail);
-    				return true;
     			}
             }
             
