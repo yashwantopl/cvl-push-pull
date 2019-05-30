@@ -98,22 +98,20 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 if (applicantDetail != null) {
                     applicantDetail.setModifiedBy(userId);
                     applicantDetail.setModifiedDate(new Date());
+                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                 } else {
                     applicantDetail = new RetailApplicantDetail();
+                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                     applicantDetail.setCreatedBy(userId);
                     applicantDetail.setCreatedDate(new Date());
                     applicantDetail.setIsActive(true);
                     applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                 }
-                logger.info("BusinessStartMonth==========>" + plRetailApplicantRequest.getBusinessStartMonth() + "===============BusinessStartYear==========> " +plRetailApplicantRequest.getBusinessStartYear());
                 if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
-                	logger.info("Set Business Type Start Date");
 					Calendar cal = Calendar.getInstance();
 					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
 					applicantDetail.setBusinessStartDate(cal.getTime());
 				}
-
-                BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                 copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
                 applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
                 applicantRepository.save(applicantDetail);
