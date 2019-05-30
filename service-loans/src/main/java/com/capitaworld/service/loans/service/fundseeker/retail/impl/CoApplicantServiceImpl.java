@@ -1384,7 +1384,16 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
 			Double loanAomunt = retailApplicantDetailRepository.getLoanAmountByApplicationId(applicationId);
+			Object[] grossAndMonthlyIncome = retailApplicantDetailRepository.getGrossAndMonthlyIncome(applicationId);
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
+			if(!CommonUtils.isObjectNullOrEmpty(grossAndMonthlyIncome)) {
+				if(!CommonUtils.isObjectNullOrEmpty(grossAndMonthlyIncome[0])) {
+					applicantRequest.setGrossMonthlyIncome(Double.valueOf(grossAndMonthlyIncome[0].toString()));
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(grossAndMonthlyIncome[1])) {
+					applicantRequest.setMonthlyIncome(Double.valueOf(grossAndMonthlyIncome[1].toString()));
+				}
+			}
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 			applicantRequest.setLoanAmountRequired(loanAomunt);

@@ -619,3 +619,8 @@ ALTER TABLE `scoring_sidbi`.`model_parameter` ADD COLUMN addi_values VARCHAR(255
 UPDATE `scoring_sidbi`.`field_master` SET `type` = '2' WHERE `id` = '111';
 UPDATE `scoring_sidbi`.`field_master` fm SET fm.`is_active` = FALSE WHERE fm.`is_active` = TRUE AND fm.`id` IN (113,114,115,116,117,118,119,120,121,122,123,124);
 UPDATE `scoring_sidbi`.`field_mapping` fm SET fm.`is_active` = FALSE WHERE fm.`is_active` = TRUE AND fm.`field_master_id` IN (113,114,115,116,117,118,119,120,121,122,123,124);
+
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN is_women_applicant BIT(1);
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN new_women_applicant DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN is_women_applicant BIT(1);
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN new_women_applicant DOUBLE;
