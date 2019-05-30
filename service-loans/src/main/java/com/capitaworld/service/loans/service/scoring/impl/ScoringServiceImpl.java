@@ -1940,8 +1940,8 @@ public class ScoringServiceImpl implements ScoringService {
 	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
-            				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
-            					Double value =  Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
+            				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
+            					Double value = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
             					logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",value);
             					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
 	                            scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
@@ -2477,7 +2477,7 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
-            				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
+            				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
             					Double value =  Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6; 
             					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
 	                             scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
