@@ -19,6 +19,7 @@ public class RetailApplicantRequest implements Serializable {
 	private Long clientId;
 	private Long applicationId;
 	private Long userId;
+	private Integer productId;
 
 	// Primary Fields
 	private Integer titleId;
@@ -812,6 +813,16 @@ public class RetailApplicantRequest implements Serializable {
 
 	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
+	}
+
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
 	
 }

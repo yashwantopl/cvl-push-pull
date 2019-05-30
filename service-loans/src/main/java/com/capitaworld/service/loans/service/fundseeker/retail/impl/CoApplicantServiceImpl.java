@@ -1382,18 +1382,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			if (applicantDetail == null) {
 				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + coApplicantId + " and ApplicationId==>" + applicationId);
 			}
-			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+			Integer productId = loanApplicationRepository.getProductIdByApplicationId(applicationId);
 			Double loanAomunt = retailApplicantDetailRepository.getLoanAmountByApplicationId(applicationId);
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
-//			Object[] grossAndMonthlyIncome = retailApplicantDetailRepository.getGrossAndMonthlyIncome(applicationId);
-//			if(!CommonUtils.isObjectNullOrEmpty(grossAndMonthlyIncome)) {
-//				if(!CommonUtils.isObjectNullOrEmpty(grossAndMonthlyIncome[0])) {
-//					applicantRequest.setGrossMonthlyIncome(Double.valueOf(grossAndMonthlyIncome[0].toString()));
-//				}
-//				if(!CommonUtils.isObjectNullOrEmpty(grossAndMonthlyIncome[1])) {
-//					applicantRequest.setMonthlyIncome(Double.valueOf(grossAndMonthlyIncome[1].toString()));
-//				}
-//			}
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 			applicantRequest.setLoanAmountRequired(loanAomunt);
@@ -1411,7 +1402,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				applicantRequest.setBusinessStartMonth(saperatedBusinessStartDate[1]);
 				applicantRequest.setBusinessStartYear(saperatedBusinessStartDate[2]);
 			}
-			applicantRequest.setBusinessTypeId(businessTypeId);
+			applicantRequest.setProductId(productId);
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {

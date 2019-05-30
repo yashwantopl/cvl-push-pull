@@ -41,6 +41,7 @@ public class CoApplicantRequest {
 	private Integer month;
 	private Integer year;
 	private Integer businessTypeId;
+	private Integer productId;
 
 	private Boolean isCoApp1DetailsFilled;
 	private Boolean isCoApp2DetailsFilled;
@@ -796,5 +797,13 @@ public class CoApplicantRequest {
 
 	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
 		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
 }
