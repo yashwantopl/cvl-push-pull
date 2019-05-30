@@ -105,7 +105,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setIsActive(true);
                     applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                 }
+                logger.info("BusinessStartMonth==========>" + plRetailApplicantRequest.getBusinessStartMonth() + "===============BusinessStartYear==========> " +plRetailApplicantRequest.getBusinessStartYear());
                 if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+                	logger.info("Set Business Type Start Date");
 					Calendar cal = Calendar.getInstance();
 					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
 					applicantDetail.setBusinessStartDate(cal.getTime());
