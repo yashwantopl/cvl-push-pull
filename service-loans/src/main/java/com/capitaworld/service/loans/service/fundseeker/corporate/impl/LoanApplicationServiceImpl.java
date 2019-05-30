@@ -397,6 +397,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private PincodeDateService pincodeDateService;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComp;
 
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
@@ -3699,8 +3702,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (directorBackgroundDetail != null) {
 					return directorBackgroundDetail.getDirectorsName();
 				}
-			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
-					.getId()) {
+			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() ||
+					applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
@@ -6244,7 +6247,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return retailLoanObj.getId();
 		}
 		logger.info("Successfully get result");
-		if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
+		/*if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 			retailLoanObj = new PrimaryHomeLoanDetail();	
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.HOME_LOAN.getValue()));
 			retailLoanObj.setProductId(LoanType.HOME_LOAN.getValue());
@@ -6252,7 +6255,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			retailLoanObj = new PrimaryPersonalLoanDetail();
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.PERSONAL_LOAN.getValue()));
 			retailLoanObj.setProductId(LoanType.PERSONAL_LOAN.getValue());
-		}
+		}*/
+		retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		retailLoanObj.setCreatedBy(userId);
@@ -8389,7 +8393,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationMaster.setModifiedDate(new Date());
 			loanApplicationMaster.setProductId(loanTypeId.intValue());
 			loanApplicationRepository.save(loanApplicationMaster);
+			loanApplicationRepository.updateLoanType(applicationId,loanTypeId);
 			logger.info("Loan Type Updated");
+			fpAsyncComp.sendEmailToFsWhenSubProductOfRetailSelectedByUser(loanApplicationMaster);
 			return  true;
 		}
 		catch (Exception e)

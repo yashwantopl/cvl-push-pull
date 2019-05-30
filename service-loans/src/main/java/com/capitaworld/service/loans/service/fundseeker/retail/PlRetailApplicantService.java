@@ -12,7 +12,9 @@ public interface PlRetailApplicantService {
 
     public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws LoansException;
     
-    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId) throws LoansException;
+    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException;
+
+    public PLRetailApplicantRequest getCoAppProfile(Long coAppId);
 
     public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException;
 
@@ -30,8 +32,10 @@ public interface PlRetailApplicantService {
     
     public PLRetailApplicantRequest getRetailBasicDetail(Long userId, Long applicationId) throws LoansException;
 
-    public List<BankRelationshipRequest> getBankRelations(Long applicationId);
+    public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId);
     
     public Boolean inactivateBankRelation(Long id, Long userId);
+    
+    public boolean checkCoAppProfileBeforeSelectHL(Long applicationId);
 
 }

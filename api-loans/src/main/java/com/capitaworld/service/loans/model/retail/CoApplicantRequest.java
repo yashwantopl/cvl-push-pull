@@ -41,6 +41,7 @@ public class CoApplicantRequest {
 	private Integer month;
 	private Integer year;
 	private Integer businessTypeId;
+	private Integer productId;
 
 	private Boolean isCoApp1DetailsFilled;
 	private Boolean isCoApp2DetailsFilled;
@@ -93,6 +94,24 @@ public class CoApplicantRequest {
 	private Integer category;
 	private Integer nationality;
 	private Double networth;
+	private Boolean isItrCompleted;
+	private Boolean isItrSkip;
+	private Boolean isItrManual;
+	private Boolean isOneFormCompleted;
+	private Integer designation;
+	private Integer educationQualification;
+
+	public CoApplicantRequest() {
+	}
+
+	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId) {
+		this.id = id;
+		this.applicationId = applicationId;
+		this.firstName = firstName;
+		this.relationshipWithApplicant = relationshipWithApplicant;
+		this.middleName = middleName;
+		this.lastName = lastName;
+	}
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -728,5 +747,63 @@ public class CoApplicantRequest {
 
 	public void setLoanAmountRequired(Double loanAmountRequired) {
 		this.loanAmountRequired = loanAmountRequired;
+	}
+
+	public Integer getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(Integer designation) {
+		this.designation = designation;
+	}
+
+	public Integer getEducationQualification() {
+		return educationQualification;
+	}
+
+	public void setEducationQualification(Integer educationQualification) {
+		this.educationQualification = educationQualification;
+	}
+
+
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public Boolean getIsItrSkip() {
+		return isItrSkip;
+	}
+
+	public void setIsItrSkip(Boolean isItrSkip) {
+		this.isItrSkip = isItrSkip;
+	}
+
+	public Boolean getIsItrManual() {
+		return isItrManual;
+	}
+
+	public void setIsItrManual(Boolean isItrManual) {
+		this.isItrManual = isItrManual;
+	}
+
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
 }

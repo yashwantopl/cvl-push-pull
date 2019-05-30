@@ -27,7 +27,6 @@ import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -60,13 +59,10 @@ import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewRespon
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
@@ -101,6 +97,7 @@ import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
@@ -128,14 +125,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 	private static final String DISTRICT_ID_IS_NULL_MSG = "District id is null";
 
-	@Autowired
-	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
-	@Autowired
-	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -168,9 +161,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	private RetailApplicantIncomeService retailApplicantIncomeService;
 	
 	@Autowired
-	private CorporateFinalInfoService corporateFinalInfoService;
-	
-	@Autowired
 	private PincodeDateService pincodeDateService;
 	
 	@Autowired
@@ -190,9 +180,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailService;
-	
-	@Autowired
-	private ConnectClient connectClient;
 	
 	@Autowired
 	private ITRClient itrClient;
@@ -249,7 +236,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.HL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId());
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
@@ -301,9 +288,11 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
-				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				/*employment type*/
+				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
-				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentType() != null ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				/*employment with*/
+				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentStatus() != null ? EmploymentCategory.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue().toString() : "-");
 				plRetailApplicantResponse.setCurrentEmploymentStatus(plRetailApplicantRequest.getCurrentEmploymentStatus()!= null ? 	EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus()!= null ? 	OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + "" +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
@@ -325,6 +314,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
 				plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getNationality());
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+				
 
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
@@ -332,7 +322,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 				
 				/*Co Applicant Details*/
-				List<PLRetailApplicantResponse> coApplicationDetails = getCoApplicationDetails(toApplicationId);
+				List<PLRetailApplicantResponse> coApplicationDetails = getCoApplicationDetails(toApplicationId,productMappingId);
 				hlTeaserViewResponse.setRetailCoApplicantDetail(coApplicationDetails);
 				
 				LocalDate today = LocalDate.now();
@@ -416,9 +406,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 				//KEY VERTICAL FUNDING
 				List<Long> keyVerticalFundingId = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
+				if (plRetailApplicantRequest.getKeyVerticalFunding() != null)
 					keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
-				if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+				if (keyVerticalFundingId != null && keyVerticalFundingId.size() !=0) {
 					try {
 						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
@@ -433,49 +423,42 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
-				
 				//KEY VERTICAL SECTOR
 				List<Long> keyVerticalSectorId = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
+				if (plRetailApplicantRequest.getKeyVerticalSector() != null && keyVerticalFundingId.size() != 0) {
 					keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
-				try {
-					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
-					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						hlTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
-					} else {
-						logger.warn("key vertical sector is null");
+					try {
+						OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+						SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+						OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							hlTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
+						} else {
+							logger.warn("key vertical sector is null");
+						}
+					} catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
 				}
-				
 				//KEY VERTICAL SUBSECTOR
 				try {
-					if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
+					if (plRetailApplicantRequest.getKeyVerticalSubSector() != null  && keyVerticalFundingId.size() !=0) {
 						OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(plRetailApplicantRequest.getKeyVerticalSubSector());
 						hlTeaserViewResponse.setKeyVericalSubsector(oneFormResponse.getData().toString());
 					}
 				} catch (Exception e) {
 					logger.warn("key vertical subSector is null ");
 				}
-				
-				
 				hlTeaserViewResponse.setRetailApplicantDetail(plRetailApplicantResponse);
-				
 			}else {
 				logger.warn("retailApplicantDetail is null");
 			}
-			
 		} catch (Exception e) {
 			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
-		
 		//property details
-		
 		PrimaryHomeLoanDetail primaryHlDetail= primaryHomeloanDetailsRepo.getByApplication(toApplicationId);
 		HLOneformPrimaryRes res=primaryHomeloanService.getOneformPrimaryDetails(toApplicationId);
 		if(primaryHlDetail != null) {
@@ -499,8 +482,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				}
 			}
 		}
-		
-		
 		//PROPOSAL RESPONSE
 		try {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
@@ -555,7 +536,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				}
 			}
 			hlTeaserViewResponse.setBankData(datas);
-		
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
@@ -567,11 +547,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 		try {
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
-					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
-
+			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 			if (proposalScoreResponse != null){
-				logger.info("getObjectFromMap called successfully");
 				hlTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName()!=null?proposalScoreResponse.getScoringModelName():" - ");
 				hlTeaserViewResponse.setDataList(scoringResponse.getDataList()!=null?scoringResponse.getDataList():" - ");
 				hlTeaserViewResponse.setDataObject(scoringResponse.getDataObject()!=null?scoringResponse.getDataObject():" - ");
@@ -642,6 +619,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		// pl final view details filled from here
 		if (isFinal) {	
 			try {
+				
 				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinalByProposalId(userId, toApplicationId, proposalId);
 				if(retailFinalInfo != null) {
 					hlTeaserViewResponse.setReligion(retailFinalInfo.getReligion() != null ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue().toString() : "-");
@@ -779,13 +757,14 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 
 
-	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId) throws LoansException {
+	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId , Long productMappingId) throws LoansException {
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
 			List<CoApplicantDetail> coApplicantList = coAppService.getCoApplicantList(applicationId);
 			for (CoApplicantDetail coApplicantDetail : coApplicantList) {
 				PLRetailApplicantResponse plRetailApplicantResponse=new PLRetailApplicantResponse();
 				
+				plRetailApplicantResponse.setCoAppId(coApplicantDetail.getId());
 				plRetailApplicantResponse.setFullName((coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") +" "+ (coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") +" "+ (coApplicantDetail.getLastName() != null ?  coApplicantDetail.getLastName() : ""));
 				plRetailApplicantResponse.setGender(coApplicantDetail.getGenderId() != null ? Gender.getById(coApplicantDetail.getGenderId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setBirthDate(coApplicantDetail.getBirthDate());
@@ -810,7 +789,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
 				plRetailApplicantResponse.setCurrentEmploymentStatus(EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue());
 				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
-				
+				plRetailApplicantResponse.setDesignation(coApplicantDetail.getDesignation()!= null ? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
+				/*itr call for name as per Itr*/ 
 				try {
 					ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
 					if (resNameAsPerITR != null) {
@@ -831,11 +811,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				
 				List<FinancialArrangementsDetailRequest> financeData = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId(), applicationId);
 				plRetailApplicantResponse.setFinancialArrangementsDetailRequestsList(financeData);
-				
-				
 
 				/*get itrXml and ItrPdf as per coApplicant Id*/
-				
 				DocumentRequest coAppDocReq = new DocumentRequest();
 				coAppDocReq.setCoApplicantId(coApplicantDetail.getId());
 				coAppDocReq.setUserType(DocumentAlias.UERT_TYPE_CO_APPLICANT);
@@ -860,5 +837,4 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		}
 		return request;
 	}
-	
 }

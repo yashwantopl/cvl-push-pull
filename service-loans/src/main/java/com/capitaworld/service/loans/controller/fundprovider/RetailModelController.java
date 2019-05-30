@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.service.loans.model.HomeLoanModelRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.RetailModelRequest;
@@ -140,7 +142,7 @@ public class RetailModelController {
 				homeLoanModelRequest.setClientId(clientId);
 			}
 			logger.info(CommonUtils.EXIT_FROM + METHOD_CREATE);
-			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),homeLoanModelService.saveToTemp(homeLoanModelRequest)), HttpStatus.OK);
+			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESSFULLY_UPDATED, HttpStatus.OK.value(),homeLoanModelService.saveToTemp(homeLoanModelRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving Loan Purpose Model Details==> {} ", e);
 			logger.info(CommonUtils.EXIT_FROM + METHOD_CREATE_WITH_ERROR );
@@ -225,7 +227,13 @@ public class RetailModelController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			workflowData.setUserId(userId);
-			return new ResponseEntity<>(new LoansResponse("Successfully Status Updated", HttpStatus.OK.value(),retailModelService.processWorkflow(workflowData, businessTypeId)), HttpStatus.OK);
+			String msg = null;
+			if (WorkflowUtils.Action.SEND_FOR_APPROVAL.equals(workflowData.getActionId())) {
+				msg = "Purpose of Loan Model sent for approval";
+			}if (WorkflowUtils.Action.SEND_BACK.equals(workflowData.getActionId())) {
+				msg = "Scoring Model is successfully sent back";
+			}
+			return new ResponseEntity<>(new LoansResponse(msg, HttpStatus.OK.value(),retailModelService.processWorkflow(workflowData, businessTypeId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while Updating Workflow Process==> {} ", e);
 			return new ResponseEntity<>(

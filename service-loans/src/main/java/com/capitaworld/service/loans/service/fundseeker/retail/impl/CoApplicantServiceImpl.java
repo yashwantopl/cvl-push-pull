@@ -1369,6 +1369,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException {
 		return coApplicantDetailRepository.getAllByApplicationId(applicationId);
 	}
+
+	@Override
+	public List<CoApplicantRequest> getCoApplicantListByApplicationId (Long applicationId) throws LoansException {
+		return coApplicantDetailRepository.getCoApplicantListByApplicationId(applicationId);
+	}
 	
 	@Override
 	public CoApplicantRequest get(Long applicationId, Long coApplicantId) {
@@ -1377,7 +1382,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			if (applicantDetail == null) {
 				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + coApplicantId + " and ApplicationId==>" + applicationId);
 			}
-			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+			Integer productId = loanApplicationRepository.getProductIdByApplicationId(applicationId);
 			Double loanAomunt = retailApplicantDetailRepository.getLoanAmountByApplicationId(applicationId);
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
@@ -1397,7 +1402,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				applicantRequest.setBusinessStartMonth(saperatedBusinessStartDate[1]);
 				applicantRequest.setBusinessStartYear(saperatedBusinessStartDate[2]);
 			}
-			applicantRequest.setBusinessTypeId(businessTypeId);
+			applicantRequest.setProductId(productId);
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
@@ -1406,6 +1411,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		}
 	}
 
+	public CoApplicantRequest getCoApplicantDetails(Long applicationId, Long coApplicantId){
+		CoApplicantRequest applicantRequest = new CoApplicantRequest();
+		CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndApplicationIdId(coApplicantId, applicationId);
+		BeanUtils.copyProperties(coApplicantDetail,applicantRequest);
+		return applicantRequest;
+	}
 	
 	
 }

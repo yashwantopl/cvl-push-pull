@@ -479,6 +479,7 @@ INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`i
 
 
 
+
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','80','5','3',b'1');
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','81','5','3',b'1');
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','82','5','3',b'1');
@@ -524,6 +525,7 @@ INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_m
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','122','5','3',b'0');
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','123','5','3',b'0');
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','124','5','3',b'0');
+
 
 
 
@@ -578,3 +580,50 @@ ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN management_score_with_ris
 ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN financial_score_with_risk_weight_co_app DOUBLE;
 ALTER TABLE `loan_application`.`scoring_request_detail` ADD COLUMN co_app_id BIGINT(20);
 ALTER TABLE `scoring_sidbi`.`field_mapping` ADD COLUMN is_consider_co_app BIT(1);
+
+
+
+
+===========================================Changes==========================
+UPDATE `scoring_sidbi`.`field_master` SET `name` = 'TOTAL_WORK_EXP_HL' WHERE `id` = '81';
+UPDATE `scoring_sidbi`.`field_master` SET `is_active` = b'0' WHERE `id` = '83';
+UPDATE `scoring_sidbi`.`field_master` SET `is_active` = b'0' WHERE `id` = '98';
+UPDATE `scoring_sidbi`.`field_master` SET `is_active` = b'0' WHERE `id` = '102';
+UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'0' WHERE `id` = '220';
+UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'0' WHERE `id` = '235';
+UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'0' WHERE `id` = '239';
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(125,'DESIGNATION_HL',2,NOW(),TRUE);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','125','5','3',b'1');
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(126,'EDUCATION_QUALIFICATION_HL',2,NOW(),TRUE);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','126','5','3',b'1');
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(127,'INCOME_PROOF_HL',2,NOW(),TRUE);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','127','5','3',b'1');
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(128,'EMI_NMI_HL',1,NOW(),TRUE);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','128','5','3',b'1');
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(129,'LOAN_TO_INCOME_RATIO_HL',1,NOW(),TRUE);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','129','5','3',b'1');
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(130,'INCOME_TO_INSTALLMENT_RATIO_HL',1,NOW(),TRUE);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','130','5','3',b'1');
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(131,'AVG_EOD_BALANCE_HL',1,NOW(),TRUE);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','131','5','3',b'1');
+
+ALTER TABLE `scoring_sidbi`.`model_parameter_temp` ADD COLUMN addi_values VARCHAR(255);
+ALTER TABLE `scoring_sidbi`.`model_parameter` ADD COLUMN addi_values VARCHAR(255);
+UPDATE `scoring_sidbi`.`field_master` SET `type` = '2' WHERE `id` = '111';
+UPDATE `scoring_sidbi`.`field_master` fm SET fm.`is_active` = FALSE WHERE fm.`is_active` = TRUE AND fm.`id` IN (113,114,115,116,117,118,119,120,121,122,123,124);
+UPDATE `scoring_sidbi`.`field_mapping` fm SET fm.`is_active` = FALSE WHERE fm.`is_active` = TRUE AND fm.`field_master_id` IN (113,114,115,116,117,118,119,120,121,122,123,124);
+
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN is_women_applicant BIT(1);
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN new_women_applicant DOUBLE;
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN is_women_applicant BIT(1);
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN new_women_applicant DOUBLE;
+ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN new_women_applicant DOUBLE;
+ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN is_fs_women_applicant BIT(1);
+ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN is_fp_women_applicant BIT(1);

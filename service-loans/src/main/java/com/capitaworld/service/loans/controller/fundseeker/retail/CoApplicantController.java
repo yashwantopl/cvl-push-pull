@@ -13,12 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
@@ -258,6 +253,36 @@ public class CoApplicantController {
 		} catch (Exception e) {
 			logger.error("Error while getting Co Applicant Profile Details==>", e);
 			return null;
+		}
+	}
+
+	@GetMapping(value = "/getCoApplicantList/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCoApplicantList(@PathVariable("applicationId") Long applicationId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "getCoApplicantList");
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(coApplicantService.getCoApplicantListByApplicationId(applicationId));
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getBasicDetailsClient==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/getCoApplicantDetails/{applicationId}/{coApplicantId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCoApplicantDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("coApplicantId") Long coApplicantId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "getCoApplicantList");
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(coApplicantService.getCoApplicantDetails(applicationId,coApplicantId));
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getBasicDetailsClient==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
