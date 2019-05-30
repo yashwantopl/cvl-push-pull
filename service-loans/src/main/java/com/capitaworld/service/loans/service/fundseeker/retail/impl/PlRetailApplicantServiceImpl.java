@@ -284,7 +284,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-
+            
             if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
     			Calendar cal = Calendar.getInstance();
     			cal.setTime(applicantDetail.getBusinessStartDate());
@@ -1065,6 +1065,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
+            if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+    			Calendar cal = Calendar.getInstance();
+    			cal.setTime(applicantDetail.getBusinessStartDate());
+    			applicantRequest.setBusinessStartMonth(cal.get(Calendar.MONTH));
+    			applicantRequest.setBusinessStartYear(cal.get(Calendar.YEAR));
+    		}
+            
             if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
 
 				LocalDate since = LocalDate.of(applicantRequest.getSalaryBankYear(), applicantRequest.getSalaryBankMonth(), 1);
