@@ -35,5 +35,7 @@ public interface PlRetailApplicantService {
     public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId);
     
     public Boolean inactivateBankRelation(Long id, Long userId);
+    
+    public boolean checkCoAppProfileBeforeSelectHL(Long applicationId);
 
 }
