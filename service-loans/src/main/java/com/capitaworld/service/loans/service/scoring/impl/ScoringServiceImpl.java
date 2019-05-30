@@ -41,6 +41,7 @@ import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.exceptions.AnalyzerException;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.MonthlyDetail;
@@ -95,6 +96,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
+import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -1369,7 +1371,8 @@ public class ScoringServiceImpl implements ScoringService {
 //	    }
 //    }
     
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
         RetailApplicantDetail retailApplicantDetail = null;
@@ -1385,6 +1388,10 @@ public class ScoringServiceImpl implements ScoringService {
         Double totalEMI = 0.0d;
         CibilScoreLogRequest cibilResponse = null;
         CibilResponse cibilResponseDpd = null;
+        List<BankingRelation> bankingRelationList = null;
+        List<String> bankStringsList = null;
+        List<FinancialArrangementsDetail> financialArrangementsDetailList = null;
+        Boolean isWomenApplicant = false;
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1394,6 +1401,7 @@ public class ScoringServiceImpl implements ScoringService {
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         	
+        	isWomenApplicant = Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId());       	
         	primaryHomLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
         	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
@@ -1438,11 +1446,26 @@ public class ScoringServiceImpl implements ScoringService {
             }
             //Getting is Itr Mannual Filed
             isItrMannualFilled = loanRepository.isITRUploaded(applicationId);
+            
+            //Checking Flags of Bank Account Related
+            bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            
+            //Getting Banks List 
+            ReportRequest reportRequest = new ReportRequest();
+            reportRequest.setApplicationId(applicationId);
+            AnalyzerResponse analyzerResponse;
+			try {
+				analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
+				bankStringsList = (List<String> )analyzerResponse.getData();
+			} catch (AnalyzerException e) {
+				logger.error("Error while Getting bankList from Analyzer ===> {}",e);
+			}
+			
+			//Getting All Loans
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
-//        HLEligibilityRequest hlEligibilityRequest = null;
-//        HomeLoanModelRequest homeLoanModelRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
@@ -1459,7 +1482,73 @@ public class ScoringServiceImpl implements ScoringService {
             	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
             }
             
+            
+            Boolean isBorrowersHavingAccounts = false;
+            Boolean isBorrowersAvailingLoans = false;
+            Boolean isBorrowersHavingSalaryAccounts = false;
+            Boolean isBorrowersAvailingCreaditCards = false;
 
+            // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
+            if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList)){
+                for(BankingRelation bankingRelation : bankingRelationList){
+                    BankList fsOrgObj = null;
+                    try {
+                        fsOrgObj = BankList.fromName(bankingRelation.getBank());
+                    }
+                    catch (Exception e){
+                        logger.error("Other Bank Selected By User For Account == >{}",e);
+                    }
+
+                    if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId())){
+                        if(fsOrgObj.getOrgId().equals(orgId)){
+                            isBorrowersHavingAccounts = true;
+                            //  get Salary Account detail
+                            try {
+                                if(!CommonUtils.isObjectNullOrEmpty(bankStringsList)){
+                                    for (String bankName:bankStringsList){
+                                        BankList fsOrgObjInner = null;
+                                        try {
+                                            fsOrgObjInner = BankList.fromName(bankName);
+                                        }
+                                        catch (Exception e){
+                                            logger.error("Other Bank Selected By User For Salary Account == >{}",e);
+                                        }
+                                        if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId())){
+                                            if(fsOrgObjInner.getOrgId().equals(orgId)){
+                                                isBorrowersHavingSalaryAccounts = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting Salary Account Detail: {}",e);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
+            if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList)){
+                for(FinancialArrangementsDetail financialArrangementsDetail : financialArrangementsDetailList){
+                    BankList fsOrgObj = null;
+                    try {
+                        fsOrgObj = BankList.fromName(financialArrangementsDetail.getFinancialInstitutionName());
+                    }
+                    catch (Exception e){
+                        logger.error("Other Bank Selected By User For Loan Account===>{}",e);
+                    }
+                    if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId())){
+                        if(fsOrgObj.getOrgId().equals(orgId)){
+                            if(financialArrangementsDetail.getLoanType().toString().equals(CommonUtils.CREDIT_CARD)){
+                                isBorrowersAvailingCreaditCards = true;
+                            }else {// get Loan Account Detail
+                                isBorrowersAvailingLoans = true;
+                            }
+                        }
+                    }
+                }
+            }
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -1473,12 +1562,14 @@ public class ScoringServiceImpl implements ScoringService {
             } else {
                 scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
             }
+            scoringRequest.setIsBorrowersHavingAccounts(isBorrowersHavingAccounts);
+            scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
+            scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
+            scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
+            scoringRequest.setIsWomenApplicant(isWomenApplicant);
 
             ///////// End  Getting Old Request ///////
-
-            if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
-                scoreParameterRetailRequest= new ScoreParameterRetailRequest();
-//                setLoanPurposeModelFields(scoreParameterRetailRequest, homeLoanModelRequest);
+                scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
@@ -1981,7 +2072,6 @@ public class ScoringServiceImpl implements ScoringService {
                         logger.error(CommonUtils.EXCEPTION,e);
                     }
                 }
-            }
             scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
             scoringRequestList.add(scoringRequest);
         }
