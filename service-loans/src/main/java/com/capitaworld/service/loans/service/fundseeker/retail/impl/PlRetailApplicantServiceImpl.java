@@ -108,7 +108,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
                 BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                 copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
-
+                applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
                 applicantRepository.save(applicantDetail);
                 
                 // Updating Flag
