@@ -219,7 +219,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
@@ -756,7 +756,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
