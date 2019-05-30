@@ -398,6 +398,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private PincodeDateService pincodeDateService;
 	
+	@Autowired
 	private FPAsyncComponent fpAsyncComp;
 
 	@Autowired
