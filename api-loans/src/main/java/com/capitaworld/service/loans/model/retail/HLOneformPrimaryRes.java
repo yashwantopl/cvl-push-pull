@@ -53,9 +53,6 @@ public class HLOneformPrimaryRes implements Serializable {
     private Boolean isOneformPrimaryComplete;
 	private String applicantName;
 	
-	private Double grossMonthlyIncome;
-	private Double netMonthlyIncome;
-	
 	public Long getApplicationId() {
 		return applicationId;
 	}
@@ -236,20 +233,6 @@ public class HLOneformPrimaryRes implements Serializable {
 	public void setApplicantName(String applicantName) {
 		this.applicantName = applicantName;
 	}
-	public Double getGrossMonthlyIncome() {
-		return grossMonthlyIncome;
-	}
-	public void setGrossMonthlyIncome(Double grossMonthlyIncome) {
-		this.grossMonthlyIncome = grossMonthlyIncome;
-	}
-	public Double getNetMonthlyIncome() {
-		return netMonthlyIncome;
-	}
-	public void setNetMonthlyIncome(Double netMonthlyIncome) {
-		this.netMonthlyIncome = netMonthlyIncome;
-	}
-	
-
 	
 	
 	
