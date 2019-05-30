@@ -2106,7 +2106,7 @@ public class ScoringServiceImpl implements ScoringService {
         Long orgId = null;
         Double netMonthlyIncome = 0.0d;
         Double grossMonthlyIncome = 0.0d;
-        PrimaryHomeLoanDetail primaryHomLoanDetail = null;
+//        PrimaryHomeLoanDetail primaryHomLoanDetail = null;
         Data coApplicantBankStatementData = null;
         Double totalEMI = 0.0;
         CibilScoreLogRequest cibilResponse = null;
@@ -2125,10 +2125,10 @@ public class ScoringServiceImpl implements ScoringService {
         	
 //        	primaryHomLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
 //        	primaryHomLoanDetail.getReq
-        	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
-                logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
-                return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-            }
+//        	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
+//                logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
+//                return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+//            }
         	CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(coApplicantDetail.getPan());
             cibilRequest.setApplicationId(applicationId);
