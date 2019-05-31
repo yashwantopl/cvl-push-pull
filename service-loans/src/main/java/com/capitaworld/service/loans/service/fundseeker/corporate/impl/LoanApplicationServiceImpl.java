@@ -8323,7 +8323,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.error(CommonUtils.EXCEPTION+e.getMessage(), e);
 			}
 
-			//User is Not from Campaign
+			minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetail();
+			/*//User is Not from Campaign
 			if(CommonUtils.isObjectNullOrEmpty(fsOrgId))
 			{
 				logger.info("User is not from Campaign. Application Id ==>"+applicationId);
@@ -8333,7 +8334,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			{
 				logger.info("User is from Campaign. Application Id ==>"+applicationId + " Campaign Code ==>"+campaignCode);
 				minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetailByOrgId(fsOrgId);
-			}
+			}*/
 
 			for(MinMaxProductDetail minMaxProductDetail:minMaxProductDetailList)
 			{
