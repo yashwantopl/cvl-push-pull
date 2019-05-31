@@ -268,7 +268,7 @@ public class FPAsyncComponent {
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-						&& applicationRequest.getBusinessTypeId() == 3){
+						&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())){
 					address = applicationRequest.getAddress();
 				}
 				else{
@@ -446,7 +446,7 @@ public class FPAsyncComponent {
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-						&& applicationRequest.getBusinessTypeId() == 3){
+						&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())){
 					address = applicationRequest.getAddress();
 				}
 				else{
@@ -624,7 +624,7 @@ public class FPAsyncComponent {
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-						&& applicationRequest.getBusinessTypeId() == 3){
+						&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())){
 					address = applicationRequest.getAddress();
 				}
 				else{
@@ -800,7 +800,7 @@ public class FPAsyncComponent {
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-						&& applicationRequest.getBusinessTypeId() == 3){
+						&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())){
 					address = applicationRequest.getAddress();
 				}
 				else{
@@ -1003,7 +1003,7 @@ public class FPAsyncComponent {
 
 			//	when proposal belongs to PL
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& (applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) || applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()))){
+					&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())){
 				fsName=applicationRequest.getUserName();
 				address=applicationRequest.getAddress();
 				RetailApplicantRequest retailApplicantRequest = retailapplicantService.get(request.getApplicationId());
@@ -1556,7 +1556,7 @@ public class FPAsyncComponent {
 		String emailSubject = "";
 		if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
 			emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
-		}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() || applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
+		}else if (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()){
 			emailSubject = "Maker Assigned - For Quick "+proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()+" Approval ";			
 		}
 		
@@ -1723,7 +1723,7 @@ public class FPAsyncComponent {
 				}
 			}
 			else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& applicationRequest.getBusinessTypeId() == 3){
+					&& (CommonUtils.LoanType.PERSONAL_LOAN.getValue() == applicationRequest.getProductId() || CommonUtils.LoanType.HOME_LOAN.getValue() == applicationRequest.getProductId())){
 				address = applicationRequest.getAddress();
 			}
 			parameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
@@ -2118,7 +2118,7 @@ public class FPAsyncComponent {
 				}
 			}
 			else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& applicationRequest.getBusinessTypeId() == 3){
+					&& (CommonUtils.LoanType.PERSONAL_LOAN.getValue() == applicationRequest.getProductId() || CommonUtils.LoanType.HOME_LOAN.getValue() == applicationRequest.getProductId())){
 				address = applicationRequest.getAddress();
 			}
 
@@ -3356,7 +3356,7 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToFsWhenSubProductOfRetailSelectedByUser(LoanApplicationMaster loansMaster) {
 		logger.info("Inside sending email of product selected for :{}",loansMaster.getId());
-		if (!CommonUtils.isObjectNullOrEmpty(loansMaster) && (loansMaster.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() || loansMaster.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId())) {
+		if (!CommonUtils.isObjectNullOrEmpty(loansMaster) && (loansMaster.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || loansMaster.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())) {
 			try {
 				 RetailApplicantDetail retailApp = retailDetailRepo.findByApplicationId(loansMaster.getId());
 				 String fsName=retailApp.getFirstName()!=null?retailApp.getFirstName().concat(retailApp.getLastName()!=null?retailApp.getLastName():""):"";
