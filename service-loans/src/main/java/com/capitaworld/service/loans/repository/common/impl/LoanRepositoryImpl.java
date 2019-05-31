@@ -227,12 +227,12 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRUploadedForCoApp(Long applicationId, Long coAppId) {
-		List<Long> result = (List<Long>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_completed` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_completed` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.setParameter("id", coAppId)
 				.getResultList();
 		if(!CommonUtils.isListNullOrEmpty(result)) {
-			return result.get(0) > 0;
+			return result.get(0) != null ? result.get(0).longValue() > 0 : false;
 		}
 		return null;
 	}
@@ -240,12 +240,12 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRSkippedForCoApp(Long applicationId, Long coAppId) {
-		List<Long> result = (List<Long>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_skip` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_skip` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.setParameter("id", coAppId)
 				.getResultList();
 		if(!CommonUtils.isListNullOrEmpty(result)) {
-			return result.get(0) > 0;
+			return result.get(0) != null ? result.get(0).longValue() > 0 : false;
 		}
 		return null;
 	}
@@ -253,12 +253,12 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRMannualForCoApp(Long applicationId, Long coAppId) {
-		List<Long> result = (List<Long>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_manual` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_manual` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.setParameter("id", coAppId)
 				.getResultList();
 		if(!CommonUtils.isListNullOrEmpty(result)) {
-			return result.get(0) > 0;
+			return result.get(0) != null ? result.get(0).longValue() > 0 : false;
 		}
 		return null;
 	}

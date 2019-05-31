@@ -355,7 +355,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
-			Date inPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.HL_COMPLETE.getId(), CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId());
+			Date inPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? simpleDateFormat.format(inPrincipleDate):"-");
 			}
@@ -1124,6 +1124,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
+					retailMap.put("officeAddPremise", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getPremiseNumber()) ? CommonUtils.printFields(retailFinalInfo.getOfficeAddress().getPremiseNumber(),null) + "," : "");
+					retailMap.put("officeAddStreetName", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getStreetName()) ? CommonUtils.printFields(retailFinalInfo.getOfficeAddress().getStreetName(),null) + "," : "");
+					retailMap.put("officeAddLandmark", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getLandMark()) ? CommonUtils.printFields(retailFinalInfo.getOfficeAddress().getLandMark(),null) + "," : "");
 					retailMap.put("officeAddCountry", StringEscapeUtils.escapeXml(getCountryName(retailFinalInfo.getOfficeAddress().getCountryId())));
 					retailMap.put("officeAddState", StringEscapeUtils.escapeXml(getStateName(retailFinalInfo.getOfficeAddress().getStateId())));
 					retailMap.put("officeAddCity", StringEscapeUtils.escapeXml(getCityName(retailFinalInfo.getOfficeAddress().getCityId())));

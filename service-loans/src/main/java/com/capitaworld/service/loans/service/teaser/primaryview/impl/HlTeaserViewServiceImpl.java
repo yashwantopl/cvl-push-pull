@@ -236,7 +236,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.HL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId());
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
@@ -619,6 +619,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		// pl final view details filled from here
 		if (isFinal) {	
 			try {
+				
 				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinalByProposalId(userId, toApplicationId, proposalId);
 				if(retailFinalInfo != null) {
 					hlTeaserViewResponse.setReligion(retailFinalInfo.getReligion() != null ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue().toString() : "-");
@@ -786,7 +787,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
-				plRetailApplicantResponse.setCurrentEmploymentStatus(EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue());
+				plRetailApplicantResponse.setCurrentEmploymentStatus(coApplicantDetail.getCurrentEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
 				plRetailApplicantResponse.setDesignation(coApplicantDetail.getDesignation()!= null ? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
 				/*itr call for name as per Itr*/ 

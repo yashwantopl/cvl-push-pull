@@ -1570,6 +1570,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
+                scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
@@ -1634,7 +1635,9 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					Double totalExperience = 0.0;
             					if(retailApplicantDetail.getEmploymentType() != null) {
-            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.equals(retailApplicantDetail.getEmploymentType())){
+            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.equals(retailApplicantDetail.getEmploymentType())
+            								|| OccupationNatureNTB.SELF_EMPLOYED_PROFESSIONAL.equals(retailApplicantDetail.getEmploymentType())
+            								|| OccupationNatureNTB.AGRICULTURIST.equals(retailApplicantDetail.getEmploymentType())){
             							if(retailApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("retailApplicantDetail.getBusinessStartDate() For HL==== > {}",retailApplicantDetail.getBusinessStartDate());
                         					totalExperience = Double.valueOf(ChronoUnit.YEARS.between(retailApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
@@ -1703,12 +1706,14 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
             				Double cibilScore = null;
                             try {
-                                logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                    cibilScore = Double.parseDouble(cibilResponse.getScore());
-                                    scoreParameterRetailRequest.setCibilScore(cibilScore);
-                                    scoreParameterRetailRequest.setCibilScore_p(true);
-                                } 
+                            	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
+                            		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
+                                        cibilScore = Double.parseDouble(cibilResponse.getScore());
+                                        scoreParameterRetailRequest.setCibilScore(cibilScore);
+                                        scoreParameterRetailRequest.setCibilScore_p(true);
+                                    }                            		
+                            	}
                             } catch (Exception e) {
                                 logger.error("error while getting BUREAU_SCORE parameter from CIBIL client : ",e);
                                 scoreParameterRetailRequest.setCibilScore_p(false);
@@ -1940,8 +1945,8 @@ public class ScoringServiceImpl implements ScoringService {
 	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
-            				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
-            					Double value =  Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
+            				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
+            					Double value = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
             					logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",value);
             					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
 	                            scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
@@ -2101,7 +2106,7 @@ public class ScoringServiceImpl implements ScoringService {
         Long orgId = null;
         Double netMonthlyIncome = 0.0d;
         Double grossMonthlyIncome = 0.0d;
-        PrimaryHomeLoanDetail primaryHomLoanDetail = null;
+//        PrimaryHomeLoanDetail primaryHomLoanDetail = null;
         Data coApplicantBankStatementData = null;
         Double totalEMI = 0.0;
         CibilScoreLogRequest cibilResponse = null;
@@ -2120,10 +2125,10 @@ public class ScoringServiceImpl implements ScoringService {
         	
 //        	primaryHomLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
 //        	primaryHomLoanDetail.getReq
-        	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
-                logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
-                return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-            }
+//        	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
+//                logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
+//                return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+//            }
         	CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(coApplicantDetail.getPan());
             cibilRequest.setApplicationId(applicationId);
@@ -2174,7 +2179,12 @@ public class ScoringServiceImpl implements ScoringService {
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelCoAppId();
+            if(scoreModelId == null) {
+            	scoreModelId = scoringRequestLoans.getScoringModelId();
+            }
+            logger.info("Scoring model Id For CoApp===>{}",scoreModelId);
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            logger.info("Fp Product Id For CoApp===>{}",fpProductId);
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -2194,6 +2204,7 @@ public class ScoringServiceImpl implements ScoringService {
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
+                scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
@@ -2236,7 +2247,10 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					Double totalExperience = 0.0;
             					if(coApplicantDetail.getEmploymentType() != null) {
-            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.equals(coApplicantDetail.getEmploymentType())){
+            						scoreParameterRetailRequest.setWorkingExperience_p(true);
+            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.equals(coApplicantDetail.getEmploymentType())
+            								|| OccupationNatureNTB.SELF_EMPLOYED_PROFESSIONAL.equals(coApplicantDetail.getEmploymentType())
+            								|| OccupationNatureNTB.AGRICULTURIST.equals(coApplicantDetail.getEmploymentType())){
             							if(coApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("coApplicantDetail.getBusinessStartDate() For HL==== > {}",coApplicantDetail.getBusinessStartDate());
                         					totalExperience = Double.valueOf(ChronoUnit.YEARS.between(coApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
@@ -2255,7 +2269,6 @@ public class ScoringServiceImpl implements ScoringService {
                                         }
                                         logger.info("totalExperience {}===>{}",totalExperience);
                                         scoreParameterRetailRequest.setWorkingExperience(totalExperience);
-                                        scoreParameterRetailRequest.setWorkingExperience_p(true);
                 					}
             					}
                             } catch (Exception e) {
@@ -2477,7 +2490,7 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
-            				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit() != null) {
+            				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
             					Double value =  Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6; 
             					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
 	                             scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
