@@ -3356,7 +3356,7 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToFsWhenSubProductOfRetailSelectedByUser(LoanApplicationMaster loansMaster) {
 		logger.info("Inside sending email of product selected for :{}",loansMaster.getId());
-		if (!CommonUtils.isObjectNullOrEmpty(loansMaster) && (loansMaster.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() || loansMaster.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId())) {
+		if (!CommonUtils.isObjectNullOrEmpty(loansMaster) && (loansMaster.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || loansMaster.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())) {
 			try {
 				 RetailApplicantDetail retailApp = retailDetailRepo.findByApplicationId(loansMaster.getId());
 				 String fsName=retailApp.getFirstName()!=null?retailApp.getFirstName().concat(retailApp.getLastName()!=null?retailApp.getLastName():""):"";
