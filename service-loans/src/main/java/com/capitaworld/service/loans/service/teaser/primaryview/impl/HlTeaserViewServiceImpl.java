@@ -787,7 +787,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
-				plRetailApplicantResponse.setCurrentEmploymentStatus(EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue());
+				plRetailApplicantResponse.setCurrentEmploymentStatus(coApplicantDetail.getCurrentEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
 				plRetailApplicantResponse.setDesignation(coApplicantDetail.getDesignation()!= null ? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
 				/*itr call for name as per Itr*/ 
