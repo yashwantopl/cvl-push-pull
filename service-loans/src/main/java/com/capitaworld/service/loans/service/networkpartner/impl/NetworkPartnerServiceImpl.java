@@ -1132,13 +1132,13 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
             //List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchIdAndFpProductId(branchId,request.getFpProductId());
 				if(request.getDdrStatusId()==CommonUtils.DdrStatus.SUBMITTED){
-					applicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.ASSIGNED_TO_CHECKER);
+					applicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.ASSIGNED_TO_CHECKER,request.getBusinessTypeId());
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
-					applicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.APPROVED);
+					applicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.APPROVED,request.getBusinessTypeId());
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
-					applicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerReverted(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.REVERTED);
+					applicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerReverted(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.REVERTED,request.getBusinessTypeId());
                 }else{
-					applicationIdList = applicationProposalMappingRepository.getFPCheckerProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.OPEN,request.getUserId(),branchId,request.getFpProductId());
+					applicationIdList = applicationProposalMappingRepository.getFPCheckerProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.OPEN,request.getUserId(),branchId,request.getFpProductId(),request.getBusinessTypeId());
 				}
 			//applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 		}else{
@@ -1377,45 +1377,45 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			//List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
 			List<BigInteger> newApplicationIdList = null;
 			if(environment.getRequiredProperty(isPaymentBypass).equals("true")) {
-				logger.info("In payment bypass" + " \nRequest details Application status" + CommonUtils.ApplicationStatus.OPEN + " ORGID: " + npOrgId +" branch id: " + branchId);
-				newApplicationIdList = applicationProposalMappingRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,CommonUtils.PaymentStatus.BYPASS,branchId);
+				//logger.info("In payment bypass" + " \nRequest details Application status" + CommonUtils.ApplicationStatus.OPEN + " ORGID: " + npOrgId +" branch id: " + branchId);
+				newApplicationIdList = applicationProposalMappingRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,CommonUtils.PaymentStatus.BYPASS,branchId,nhbsApplicationRequest.getBusinessTypeId());
 			}
 			else {
-				logger.info("In payment");
-				logger.info("In payment " + " \nRequest details Application status" + CommonUtils.ApplicationStatus.OPEN + " ORGID: " + npOrgId +" branch id: " + branchId);
-				newApplicationIdList = applicationProposalMappingRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,CommonUtils.PaymentStatus.SUCCESS,branchId);
+				//logger.info("In payment");
+				//logger.info("In payment " + " \nRequest details Application status" + CommonUtils.ApplicationStatus.OPEN + " ORGID: " + npOrgId +" branch id: " + branchId);
+				newApplicationIdList = applicationProposalMappingRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,CommonUtils.PaymentStatus.SUCCESS,branchId,nhbsApplicationRequest.getBusinessTypeId());
 			}
-			logger.info("Applications found from database :: " + newApplicationIdList.size());
+			//logger.info("Applications found from database :: " + newApplicationIdList.size());
 			//newApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("newProposalCount", newApplicationIdList.size());
 
-			List<BigInteger> assignedToMakerApplicationIdList = applicationProposalMappingRepository.getFPAssignedTabPropsByNPUserIdCount(CommonUtils.ApplicationStatus.ASSIGNED,CommonUtils.ApplicationStatus.REVERTED,CommonUtils.ApplicationStatus.SUBMITTED,nhbsApplicationRequest.getUserId(),branchId);
+			List<BigInteger> assignedToMakerApplicationIdList = applicationProposalMappingRepository.getFPAssignedTabPropsByNPUserIdCount(CommonUtils.ApplicationStatus.ASSIGNED,CommonUtils.ApplicationStatus.REVERTED,CommonUtils.ApplicationStatus.SUBMITTED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getBusinessTypeId());
 			//assignedToMakerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("pendingProposalCount", assignedToMakerApplicationIdList.size());
 
-			List<BigInteger> assignedToCheckerApplicationIdList = applicationProposalMappingRepository.getFPMakerAssignedAndAssginedToCheckerCount(CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER,nhbsApplicationRequest.getUserId(),branchId);
+			List<BigInteger> assignedToCheckerApplicationIdList = applicationProposalMappingRepository.getFPMakerAssignedAndAssginedToCheckerCount(CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getBusinessTypeId());
 			//assignedToCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("assignedToCheckerProposalCount", assignedToCheckerApplicationIdList.size());
 
-			List<BigInteger> allOtherApplicationIdList = applicationProposalMappingRepository.getFPProposalsWithOthersCount(CommonUtils.ApplicationStatus.ASSIGNED,nhbsApplicationRequest.getUserId(),branchId);
+			List<BigInteger> allOtherApplicationIdList = applicationProposalMappingRepository.getFPProposalsWithOthersCount(CommonUtils.ApplicationStatus.ASSIGNED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getBusinessTypeId());
 			//allOtherApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("allOtherProposalCount", allOtherApplicationIdList.size());
 
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()){
 			//List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchIdAndFpProductId(branchId,nhbsApplicationRequest.getFpProductId());
-			List<BigInteger> assignedTocheckerApplicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.SUBMITTED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId(), ApplicationStatus.ASSIGNED_TO_CHECKER);
+			List<BigInteger> assignedTocheckerApplicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.SUBMITTED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId(), ApplicationStatus.ASSIGNED_TO_CHECKER,nhbsApplicationRequest.getBusinessTypeId());
 			//assignedTocheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("assignedToCheckerProposalCount", assignedTocheckerApplicationIdList.size());
 
-			List<BigInteger> approvedByCheckerApplicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.APPROVED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId(), ApplicationStatus.APPROVED);
+			List<BigInteger> approvedByCheckerApplicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.APPROVED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId(), ApplicationStatus.APPROVED,nhbsApplicationRequest.getBusinessTypeId());
 			//approvedByCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("approvedByCheckerPropsalCount", approvedByCheckerApplicationIdList.size());
 
-			List<BigInteger> revertedByCheckerApplicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerRevertedCount(CommonUtils.DdrStatus.REVERTED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId(), ApplicationStatus.REVERTED);
+			List<BigInteger> revertedByCheckerApplicationIdList = applicationProposalMappingRepository.getFPAssignedToCheckerRevertedCount(CommonUtils.DdrStatus.REVERTED,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId(), ApplicationStatus.REVERTED,nhbsApplicationRequest.getBusinessTypeId());
 			//revertedByCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("revertedByCheckerPropsalCount", revertedByCheckerApplicationIdList.size());
 
-			List<BigInteger> allOtherCheckerApplicationIdList = applicationProposalMappingRepository.getFPCheckerProposalsWithOthersCount(CommonUtils.ApplicationStatus.OPEN,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId());
+			List<BigInteger> allOtherCheckerApplicationIdList = applicationProposalMappingRepository.getFPCheckerProposalsWithOthersCount(CommonUtils.ApplicationStatus.OPEN,nhbsApplicationRequest.getUserId(),branchId,nhbsApplicationRequest.getFpProductId(),nhbsApplicationRequest.getBusinessTypeId());
 			//allOtherCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("allOtherProposalCount", allOtherCheckerApplicationIdList.size());
 
