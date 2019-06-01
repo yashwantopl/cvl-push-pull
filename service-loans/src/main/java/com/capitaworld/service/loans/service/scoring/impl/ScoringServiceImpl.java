@@ -2390,7 +2390,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.EDUCATION_QUALIFICATION:
             				try {
                                 scoreParameterRetailRequest.setEducationQualification((coApplicantDetail.getEducationQualification() != null ? coApplicantDetail.getEducationQualification().longValue() : null));
-                                scoreParameterRetailRequest.setDesignation_p(coApplicantDetail.getEducationQualification() != null);
+                                scoreParameterRetailRequest.setEducationQualifaction_p(coApplicantDetail.getEducationQualification() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting EDUCATION_QUALIFICATION parameter : ",e);
                             }
