@@ -109,13 +109,24 @@ public class CoApplicantRequest {
 	public CoApplicantRequest() {
 	}
 
-	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId) {
+	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled) {
 		this.id = id;
 		this.applicationId = applicationId;
 		this.firstName = firstName;
 		this.relationshipWithApplicant = relationshipWithApplicant;
 		this.middleName = middleName;
 		this.lastName = lastName;
+		this.isItrCompleted = isItrCompleted;
+		this.isItrSkip = isItrSkip;
+		this.isItrManual = isItrManual;
+		this.isCibilCompleted = isCibilCompleted;
+		this.isBankStatementCompleted = isBankStatementCompleted;
+		this.isOneFormCompleted = isOneFormCompleted;
+		this.isBasicInfoFilled = isBasicInfoFilled;
+		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
+		this.isContactInfoFilled = isContactInfoFilled;
+		this.isCreditInfoFilled = isCreditInfoFilled;
+
 	}
 
 	public Long getApplicationId() {
