@@ -141,6 +141,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
                     coApplicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
                     coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
+                    coApplicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+                    coApplicantDetail.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment());
     				if (plRetailApplicantRequest.getContactAddress() != null) {
     					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
     					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
