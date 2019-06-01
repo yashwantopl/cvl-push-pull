@@ -589,9 +589,9 @@ UPDATE `scoring_sidbi`.`field_master` SET `name` = 'TOTAL_WORK_EXP_HL' WHERE `id
 UPDATE `scoring_sidbi`.`field_master` SET `is_active` = b'0' WHERE `id` = '83';
 UPDATE `scoring_sidbi`.`field_master` SET `is_active` = b'0' WHERE `id` = '98';
 UPDATE `scoring_sidbi`.`field_master` SET `is_active` = b'0' WHERE `id` = '102';
-UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'0' WHERE `id` = '220';
-UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'0' WHERE `id` = '235';
-UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'0' WHERE `id` = '239';
+UPDATE `scoring_sidbi`.`field_mapping` fm SET fm.`is_active` = b'0' WHERE fm.`field_master_id` = 83;
+UPDATE `scoring_sidbi`.`field_mapping` fm SET fm.`is_active` = b'0' WHERE fm.`field_master_id` = 98;
+UPDATE `scoring_sidbi`.`field_mapping` fm SET fm.`is_active` = b'0' WHERE fm.`field_master_id` = 102;
 
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`,`type`,`created_date`,`is_active`) VALUES(125,'DESIGNATION_HL',2,NOW(),TRUE);
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_date`,`is_active`,`field_master_id`,`business_type_id`,`financial_type_id`,`is_consider_co_app`) VALUES (NOW(),b'1','125','5','3',b'1');
