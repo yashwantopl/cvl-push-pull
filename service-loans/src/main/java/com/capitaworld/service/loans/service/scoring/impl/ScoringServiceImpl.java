@@ -2031,7 +2031,7 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.INCOME_PROOF:
-	            				if(isItrMannualFilled == null || !isItrMannualFilled) {
+	            				if(isItrMannualFilled == null || isItrMannualFilled) {
 	            					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.BANK_STATEMENT);	
 	            				}else {
 	            					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.IT_RETURN_AND_BANK_STATEMENT);
