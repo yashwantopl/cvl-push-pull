@@ -1617,6 +1617,7 @@ public class ScoringServiceImpl implements ScoringService {
                         scoreParameterRetailRequest.setNmi(netMonthlyIncome);
 						scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 						scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
+						scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
@@ -2032,9 +2033,9 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.INCOME_PROOF:
 	            				if(isItrMannualFilled == null || !isItrMannualFilled) {
-	            					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.BANK_STATEMENT);	
+	            					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.IT_RETURN_AND_BANK_STATEMENT);	
 	            				}else {
-	            					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.IT_RETURN_AND_BANK_STATEMENT);
+	            					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.BANK_STATEMENT);
 	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_EOD_BALANCE:
@@ -2230,6 +2231,7 @@ public class ScoringServiceImpl implements ScoringService {
                         scoreParameterRetailRequest.setNmi(netMonthlyIncome);
 						scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 						scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
+						scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
