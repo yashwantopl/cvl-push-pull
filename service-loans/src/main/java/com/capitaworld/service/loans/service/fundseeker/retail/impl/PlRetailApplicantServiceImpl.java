@@ -168,6 +168,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     				coApplicantDetail.setModifiedDate(new Date());
     				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
     				coApplicantDetailRepository.save(coApplicantDetail);
+    				EmployerRequest req = new EmployerRequest();
+	                req.setApplicationId(plRetailApplicantRequest.getApplicationId());
+	                req.setCoAppId(plRetailApplicantRequest.getCoAppId());
+	                String middleName = !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())? coApplicantDetail.getMiddleName():"";
+	                String name=coApplicantDetail.getFirstName()+ " "+ middleName  +" "+ coApplicantDetail.getLastName();
+	                if(plRetailApplicantRequest.getKid()!=null) {
+	                	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
+	                	req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), coApplicantDetail.getCompanyName(),name , coApplicantDetail.getMobile(), coApplicantDetail.getEmail()));
+	                	epfoAsyncComponent.callAPI(req);
+	                }
     			}
             }
             
