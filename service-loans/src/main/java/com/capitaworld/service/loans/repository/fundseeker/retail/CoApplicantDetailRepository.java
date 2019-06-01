@@ -73,7 +73,7 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	@Query("FROM CoApplicantDetail cd WHERE cd.applicationId.id =:applicationId and cd.isActive = true ")
 	public List<CoApplicantDetail> getAllByApplicationId(@Param("applicationId") Long applicationId);
 
-	@Query("SELECT new com.capitaworld.service.loans.model.retail.CoApplicantRequest(cd.id,cd.firstName,cd.middleName,cd.lastName,cd.relationshipWithApplicant,cd.applicationId.id,cd.isItrCompleted,cd.isItrSkip.cd.isItrManual,cd.isCibilCompleted,cd.isBankStatementCompleted,cd.isOneFormCompleted,cd.isBasicInfoFilled,cd.isEmploymentInfoFilled,cd.isContactInfoFilled,cd.isCreditInfoFilled) FROM CoApplicantDetail cd WHERE cd.applicationId.id =:applicationId and cd.isActive = true ")
+	@Query("SELECT new com.capitaworld.service.loans.model.retail.CoApplicantRequest(cd.id,cd.firstName,cd.middleName,cd.lastName,cd.relationshipWithApplicant,cd.applicationId.id,cd.isItrCompleted,cd.isItrSkip,cd.isItrManual,cd.isCibilCompleted,cd.isBankStatementCompleted,cd.isOneFormCompleted,cd.isBasicInfoFilled,cd.isEmploymentInfoFilled,cd.isContactInfoFilled,cd.isCreditInfoFilled) FROM CoApplicantDetail cd WHERE cd.applicationId.id =:applicationId and cd.isActive = true ")
 	public List<CoApplicantRequest> getCoApplicantListByApplicationId(@Param("applicationId") Long applicationId);
 
 }
