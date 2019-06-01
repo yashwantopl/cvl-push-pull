@@ -1617,6 +1617,7 @@ public class ScoringServiceImpl implements ScoringService {
                         scoreParameterRetailRequest.setNmi(netMonthlyIncome);
 						scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 						scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
+						scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
@@ -2230,6 +2231,7 @@ public class ScoringServiceImpl implements ScoringService {
                         scoreParameterRetailRequest.setNmi(netMonthlyIncome);
 						scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 						scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
+						scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
                         switch (modelParameterResponse.getName()) {
                         case ScoreParameter.Retail.HomeLoan.AGE:
                         	   try {
