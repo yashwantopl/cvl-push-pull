@@ -310,7 +310,8 @@ public class NhbsController {
             if(CommonUtils.isObjectNullOrEmpty(userId) ||
 					(CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationStatusId()) && CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getDdrStatusId()))||
                     CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString()) ||
-                    CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getFpProductId())){
+                    CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getFpProductId()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getBusinessTypeId())){
                 logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
                 logger.warn("applicationStatusId or ddrStatusId can not be empty ==>" + nhbsApplicationRequest.getApplicationStatusId());
                 logger.warn(USER_ROLE_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getUserRoleIdString());
@@ -338,7 +339,8 @@ public class NhbsController {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if(CommonUtils.isObjectNullOrEmpty(userId) ||
 					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
-					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString())){
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getBusinessTypeId())){
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
 				logger.warn(USER_ROLE_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getUserRoleIdString());
 				return new ResponseEntity<LoansResponse>(
