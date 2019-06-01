@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Repository
 public class CommonRepositoryImpl  implements CommonRepository {
@@ -42,6 +45,22 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		Query nameData = manager.createNativeQuery("SELECT it.`name` FROM `itr_api`.`itr_home_loan_tracking` it WHERE it.co_app_id=:coAppId");
 		nameData.setParameter("coAppId", coAppId);
 		return (String) nameData.getSingleResult();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.repository.common.CommonRepository#getAdminMakerDetails(java.lang.Long)
+	 */
+	@Override
+	public List<Object[]> getBranchUserDetailsBasedOnRoleId(Long orgId,Integer roleId) {
+		return manager.createNativeQuery("SELECT  u.email,u.mobile,fp.first_name,fp.last_name,fp.`organization_name` ,u.user_id AS UserId FROM users.`users` u LEFT JOIN users.`fund_provider_details` fp ON u.user_id=fp.user_id WHERE  u.user_org_id=:orgId AND u.user_role_id =:roleId").setParameter("orgId", orgId).setParameter("roleId", roleId).getResultList();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.repository.common.CommonRepository#getFpFullName(java.lang.Long)
+	 */
+	@Override
+	public Object[] getFpFullName(Long userId) {
+		return (Object[]) manager.createNativeQuery("SELECT fp.`first_name`,fp.`last_name` FROM users.`fund_provider_details` fp WHERE  fp.user_id=:userId").setParameter("userId", userId).getSingleResult();
 	}
 
 }
