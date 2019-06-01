@@ -769,6 +769,7 @@ public class CommonUtils {
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/error".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
