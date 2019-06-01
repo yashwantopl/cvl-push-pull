@@ -2978,13 +2978,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			response.setCreatedDate(CommonUtils.convertDate(obj[7]));
 			response.setBusinessTypeId(CommonUtils.convertInteger(obj[8]));
 			if(response.getBusinessTypeId() == 3 || response.getBusinessTypeId() == 5 ) {
-				response.setOrgName(CommonUtils.convertString(obj[11]));
+				response.setApplicantName(CommonUtils.convertString(obj[11]));
 			}
 			response.setProposalStatusId(CommonUtils.convertLong(obj[9]));
 			response.setProductId(CommonUtils.convertInteger(obj[10]));
 			if(setBranch) {
-				response.setBranchName(CommonUtils.convertString(obj[11]));
-				response.setBranchCode(CommonUtils.convertString(obj[12]));
+				response.setBranchName(CommonUtils.convertString(obj[12]));
+				response.setBranchCode(CommonUtils.convertString(obj[13]));
 			}
 			responseList.add(response);
 		}

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -55,6 +56,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			logger.warn("Refresh Token  --------> " + refreshToken);
 			logger.warn("Login Token -----------> " + loginToken);
 			logger.warn("Bad Request, If any one of from the above four is null or empty");
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.sendRedirect("/loans/error");
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return false;
 		}
 
@@ -64,6 +68,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		if (!authResponse.isAuthenticate()) {
 			logger.warn("Unauthorized Request, Access token expire or invalid");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.sendRedirect("/loans/error");
 			return false;
 		}
 		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());

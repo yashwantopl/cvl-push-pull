@@ -29,14 +29,16 @@ public class EPFOAsyncComponent {
 		// Defaulters Call
 		EmployerRequest req= new EmployerRequest();
 		req.setApplicationId(employerRequest.getApplicationId());
+		req.setCoAppId(employerRequest.getCoAppId());
 		req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(employerRequest.getEmployerDefaulterRequest().getKid()));
 		callAllAPIForData(req);
 		
 		// Employment Verification
-		EmployerRequest reqEmpVer= new EmployerRequest();
-		reqEmpVer.setApplicationId(employerRequest.getApplicationId());
-		reqEmpVer.setEmployerVerificationRequest(new EmployerVerificationRequest(employerRequest.getEmployerVerificationRequest().getEntityId(),employerRequest.getEmployerVerificationRequest().getEmployerName(), employerRequest.getEmployerVerificationRequest().getEmployeeName(),employerRequest.getEmployerVerificationRequest().getMobile(),employerRequest.getEmployerVerificationRequest().getEmailId()));
-		callAllAPIForData(reqEmpVer);
+		req = new EmployerRequest();
+		req.setApplicationId(employerRequest.getApplicationId());
+		req.setCoAppId(employerRequest.getCoAppId());
+		req.setEmployerVerificationRequest(new EmployerVerificationRequest(employerRequest.getEmployerVerificationRequest().getEntityId(),employerRequest.getEmployerVerificationRequest().getEmployerName(), employerRequest.getEmployerVerificationRequest().getEmployeeName(),employerRequest.getEmployerVerificationRequest().getMobile(),employerRequest.getEmployerVerificationRequest().getEmailId()));
+		callAllAPIForData(req);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

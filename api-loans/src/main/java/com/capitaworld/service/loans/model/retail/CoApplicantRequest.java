@@ -98,19 +98,35 @@ public class CoApplicantRequest {
 	private Boolean isItrSkip;
 	private Boolean isItrManual;
 	private Boolean isOneFormCompleted;
+	private Boolean isBasicInfoFilled;
+	private Boolean isEmploymentInfoFilled;
+	private Boolean isContactInfoFilled;
+	private Boolean isCreditInfoFilled;
+	private Boolean isCibilCompleted;
 	private Integer designation;
 	private Integer educationQualification;
 
 	public CoApplicantRequest() {
 	}
 
-	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId) {
+	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled) {
 		this.id = id;
 		this.applicationId = applicationId;
 		this.firstName = firstName;
 		this.relationshipWithApplicant = relationshipWithApplicant;
 		this.middleName = middleName;
 		this.lastName = lastName;
+		this.isItrCompleted = isItrCompleted;
+		this.isItrSkip = isItrSkip;
+		this.isItrManual = isItrManual;
+		this.isCibilCompleted = isCibilCompleted;
+		this.isBankStatementCompleted = isBankStatementCompleted;
+		this.isOneFormCompleted = isOneFormCompleted;
+		this.isBasicInfoFilled = isBasicInfoFilled;
+		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
+		this.isContactInfoFilled = isContactInfoFilled;
+		this.isCreditInfoFilled = isCreditInfoFilled;
+
 	}
 
 	public Long getApplicationId() {
@@ -805,5 +821,45 @@ public class CoApplicantRequest {
 
 	public void setProductId(Integer productId) {
 		this.productId = productId;
+	}
+
+	public Boolean getIsBasicInfoFilled() {
+		return isBasicInfoFilled;
+	}
+
+	public void setIsBasicInfoFilled(Boolean isBasicInfoFilled) {
+		this.isBasicInfoFilled = isBasicInfoFilled;
+	}
+
+	public Boolean getIsEmploymentInfoFilled() {
+		return isEmploymentInfoFilled;
+	}
+
+	public void setIsEmploymentInfoFilled(Boolean isEmploymentInfoFilled) {
+		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
+	}
+
+	public Boolean getIsContactInfoFilled() {
+		return isContactInfoFilled;
+	}
+
+	public void setIsContactInfoFilled(Boolean isContactInfoFilled) {
+		this.isContactInfoFilled = isContactInfoFilled;
+	}
+
+	public Boolean getIsCreditInfoFilled() {
+		return isCreditInfoFilled;
+	}
+
+	public void setIsCreditInfoFilled(Boolean isCreditInfoFilled) {
+		this.isCreditInfoFilled = isCreditInfoFilled;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
 	}
 }
