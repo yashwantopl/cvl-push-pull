@@ -22,6 +22,8 @@ public interface LoanRepository {
 
 	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId,Long businessTypeId);
 
+	public Object[] fetchFpDashbordCountByRoleSP(Long orgId,Long userId,Long businessTypeId,Long branchId);
+
 	public String getGSTINByAppId(Long applicationId);
 
 	public String getCommonPropertiesValue(String key);

@@ -145,6 +145,19 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 
+	public Object[] fetchFpDashbordCountByRoleSP(Long orgId,Long userId,Long businessTypeId,Long branchId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("fetchFpDashbordCountByRoleSP");
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
+		return (Object[]) storedProcedureQuery.getSingleResult();
+	}
+
 	public String getGSTINByAppId(Long applicationId) {
 		return  (String) entityManager
 				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId order by id desc limit 1")
