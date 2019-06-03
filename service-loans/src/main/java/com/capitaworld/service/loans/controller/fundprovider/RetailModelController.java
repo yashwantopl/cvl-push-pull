@@ -227,10 +227,10 @@ public class RetailModelController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			workflowData.setUserId(userId);
-			String msg = null;
+			String msg = "Model Successfully sent to Checker";
 			if (WorkflowUtils.Action.SEND_FOR_APPROVAL.equals(workflowData.getActionId())) {
 				msg = "Purpose of Loan Model sent for approval";
-			}if (WorkflowUtils.Action.SEND_BACK.equals(workflowData.getActionId())) {
+			}else if (WorkflowUtils.Action.SEND_BACK.equals(workflowData.getActionId())) {
 				msg = "Scoring Model is successfully sent back";
 			}
 			return new ResponseEntity<>(new LoansResponse(msg, HttpStatus.OK.value(),retailModelService.processWorkflow(workflowData, businessTypeId)), HttpStatus.OK);
