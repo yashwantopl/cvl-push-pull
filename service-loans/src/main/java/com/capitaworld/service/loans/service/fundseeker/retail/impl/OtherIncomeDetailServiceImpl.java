@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +48,9 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
@@ -76,6 +80,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 
+				otherIncomeDetail.setProposalId(applicationProposalMappingRepository.findOne(frameRequest.getProposalMappingId()));
 				otherIncomeDetail.setModifiedBy(frameRequest.getUserId());
 				otherIncomeDetail.setModifiedDate(new Date());
 				otherIncomeDetailRepository.save(otherIncomeDetail);
@@ -91,12 +96,12 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 	}
 
 	@Override
-	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType) throws LoansException {
+	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType,Long proposalId) throws LoansException {
 		try {
 			List<OtherIncomeDetail> otherIncomeDetails;
 			switch (applicationType) {
 			case CommonUtils.ApplicantType.APPLICANT:
-				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromAppId(id);
+				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromAppId(id,proposalId);
 				break;
 			case CommonUtils.ApplicantType.COAPPLICANT:
 				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromCoAppId(id);

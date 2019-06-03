@@ -14,8 +14,8 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.OtherIncomeDetail;
  */
 public interface OtherIncomeDetailRepository extends JpaRepository<OtherIncomeDetail, Long> {
 
-	@Query("select o from OtherIncomeDetail o where o.applicationId.id = :id and o.isActive = true")
-	public List<OtherIncomeDetail> listOtherIncomeFromAppId(@Param("id")Long id);
+	@Query("select o from OtherIncomeDetail o where o.applicationId.id = :id and o.proposalId.proposalId=:proposalId and o.isActive = true")
+	public List<OtherIncomeDetail> listOtherIncomeFromAppId(@Param("id")Long id,@Param("proposalId")Long proposalId);
 
 	@Query("select o from OtherIncomeDetail o where o.coApplicantDetailId.id = :id and o.isActive = true")
 	public List<OtherIncomeDetail> listOtherIncomeFromCoAppId(@Param("id")Long id);

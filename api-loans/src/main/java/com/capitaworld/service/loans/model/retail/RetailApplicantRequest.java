@@ -39,6 +39,7 @@ public class RetailApplicantRequest implements Serializable {
 	private List<CoApplicantRequest> coApplicants = Collections.emptyList();
 	private List<GuarantorRequest> guarantors = Collections.emptyList();
 	private String companyName;
+	private Integer employmentType;
 	private Integer employedWithId;
 	private String employedWithOther;
 	private String entityName;
@@ -78,7 +79,8 @@ public class RetailApplicantRequest implements Serializable {
 	private Integer previousJobYear;
 	private Integer totalExperienceMonth;
 	private Integer totalExperienceYear;
-	
+	private Integer designation;
+
 	
 	private Boolean isApplicantDetailsFilled;
 	private String detailsFilledCount;
@@ -105,10 +107,15 @@ public class RetailApplicantRequest implements Serializable {
 	private Long addressState;
 	private Integer addressCountry;
 	private Double loanAmountRequired;
-	
+
 	private String email;
 	private String lanLineNo;
-	
+	private Integer residenceType;
+	private Integer residenceSinceYear;
+	private Integer residenceSinceMonth;
+	private Double networth;
+	private String nationality;
+
 	private List<RetailApplicantIncomeRequest> incomeDetailsList;
 	
 
@@ -813,5 +820,60 @@ public class RetailApplicantRequest implements Serializable {
 	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
 	}
-	
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
+	}
+
+	public Integer getResidenceType() {
+		return residenceType;
+	}
+
+	public void setResidenceType(Integer residenceType) {
+		this.residenceType = residenceType;
+	}
+
+	public Integer getResidenceSinceYear() {
+		return residenceSinceYear;
+	}
+
+	public void setResidenceSinceYear(Integer residenceSinceYear) {
+		this.residenceSinceYear = residenceSinceYear;
+	}
+
+	public Integer getResidenceSinceMonth() {
+		return residenceSinceMonth;
+	}
+
+	public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+		this.residenceSinceMonth = residenceSinceMonth;
+	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
+	public Integer getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(Integer designation) {
+		this.designation = designation;
+	}
 }

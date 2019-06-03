@@ -14,6 +14,6 @@ public interface OtherIncomeDetailService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
-	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType) throws LoansException;
+	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType,Long proposalId) throws LoansException;
 
 }

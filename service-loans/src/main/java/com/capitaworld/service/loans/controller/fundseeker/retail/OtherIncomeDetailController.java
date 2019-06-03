@@ -105,8 +105,8 @@ public class OtherIncomeDetailController {
 
 	}
 
-	@RequestMapping(value = "/getList/{applicationType}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,
+	@RequestMapping(value = "/getList/{applicationType}/{id}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,@PathVariable Long proposalId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
@@ -123,7 +123,7 @@ public class OtherIncomeDetailController {
 			}
 
 			List<OtherIncomeDetailRequest> response = otherIncomeDetailService.getOtherIncomeDetailList(id,
-					applicationType);
+					applicationType,proposalId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			Integer currencyId = null;
