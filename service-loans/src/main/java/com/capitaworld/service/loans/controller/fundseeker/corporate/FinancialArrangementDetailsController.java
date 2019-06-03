@@ -174,7 +174,7 @@ public class FinancialArrangementDetailsController {
 				logger.info("Going to Save Company Financial Information");
 				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId);	
 			}else {
-				logger.info("Going to Save Director or Partner Financial Information");
+				logger.info("Going to Save Director or Partner Financial Information For Director===>{}",directorId);
 				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId,directorId);
 			}
 			
