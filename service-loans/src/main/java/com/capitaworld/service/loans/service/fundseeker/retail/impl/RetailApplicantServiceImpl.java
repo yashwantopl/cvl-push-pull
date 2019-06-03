@@ -209,6 +209,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
+			applicantRequest.setDob(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
