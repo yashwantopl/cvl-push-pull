@@ -1530,7 +1530,7 @@ public class ScoringServiceImpl implements ScoringService {
                                             logger.error("Other Bank Selected By User For Salary Account == >{}",e);
                                         }
                                         if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId())){
-                                            if(Integer.valueOf(fsOrgObjInner.getOrgId()).equals(orgId)){
+                                            if(Long.valueOf(fsOrgObjInner.getOrgId()).equals(orgId)){
                                                 isBorrowersHavingSalaryAccounts = true;
                                             }
                                         }
