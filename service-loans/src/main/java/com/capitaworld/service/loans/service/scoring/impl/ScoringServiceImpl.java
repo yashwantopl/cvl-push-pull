@@ -1516,7 +1516,7 @@ public class ScoringServiceImpl implements ScoringService {
                     }
 
                     if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId())){
-                        if(fsOrgObj.getOrgId().equals(orgId)){
+                        if(Long.valueOf(fsOrgObj.getOrgId()).equals(orgId)){
                             isBorrowersHavingAccounts = true;
                             //  get Salary Account detail
                             try {
@@ -1555,7 +1555,7 @@ public class ScoringServiceImpl implements ScoringService {
                         logger.error("Other Bank Selected By User For Loan Account===>{}",e);
                     }
                     if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId())){
-                        if(fsOrgObj.getOrgId().equals(orgId)){
+                        if(Long.valueOf(fsOrgObj.getOrgId()).equals(orgId)){
                             if(financialArrangementsDetail.getLoanType().toString().equals(CommonUtils.CREDIT_CARD)){
                                 isBorrowersAvailingCreaditCards = true;
                             }else {// get Loan Account Detail
