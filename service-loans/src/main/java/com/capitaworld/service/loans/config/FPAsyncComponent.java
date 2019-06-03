@@ -9,9 +9,12 @@ import java.util.Map;
 
 import com.capitaworld.api.payment.gateway.model.GatewayResponse;
 import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundprovider.RetailModelRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.RetailModel;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
@@ -67,6 +71,11 @@ import com.capitaworld.service.users.model.UsersRequest;
 
 @Component
 public class FPAsyncComponent {
+
+	/**
+	 * 
+	 */
+	private static final String LOAN_TYPE = "loan_type";
 
 	private static final String SIR_MADAM = "Sir/Madam";
 
@@ -157,6 +166,12 @@ public class FPAsyncComponent {
 
 	@Autowired
 	private GatewayClient gatewayClient;
+	
+	@Autowired
+	private RetailModelRepository retailModelRepo;
+	
+	@Autowired
+	private CommonRepository commonRepo;
 	
 	@Autowired
 	private Environment environment;
@@ -3374,6 +3389,92 @@ public class FPAsyncComponent {
 				logger.error("Exception in sending email when sub product of retail selected:{}",e);
 			} 
 		}
+	}
+	
+	@Async
+	public void sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(Long makerUserId,Long retailModelId,Long workFlowAction,Boolean toAdminMaker) {
+		logger.info("Inside sending email and sms of when purpose of loan Revert beck :{}",makerUserId);
+		if (!CommonUtils.isObjectNullOrEmpty(makerUserId)) {
+			try {
+				UserResponse userResp = userClient.getUserBasicDetails(makerUserId);
+				UsersRequest userReq= MultipleJSONObjectHelper.getObjectFromMap((Map) userResp.getData(), UsersRequest.class);
+				
+				Map<String, Object>param=new HashMap<>();
+				RetailModel retailModel = retailModelRepo.findById(retailModelId);
+				String modelName=retailModel.getName()!=null?retailModel.getName():"";
+				param.put("purpose_of_loan_model_name", modelName);
+				param.put(PARAMETERS_CHECKER_NAME, "CHecker");
+				if(retailModel.getBusinessTypeId() !=null && retailModel.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId())
+					 param.put(LOAN_TYPE, "Personal Loan");
+				else if(retailModel.getBusinessTypeId() !=null && retailModel.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId())
+					 param.put(LOAN_TYPE, "Home Loan");
+				else
+					 param.put(LOAN_TYPE, "Retail Loan");
+				 String subject = "";
+				// Mail to Admin Makers	when purpose of loan approved or reverted	
+				if(toAdminMaker) {
+					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),10);
+					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
+					for (UsersRequest req:adminMakerList) {
+						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():"Sir/Madam";
+						 param.put("user_name", fpName);
+						
+						 if(workFlowAction == WorkflowUtils.Action.APPROVED) {
+							 subject = "New purpose of loan model "+modelName+" Approved";
+							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED, subject);
+							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED, userReq.getMobile());
+						 }else if(workFlowAction == WorkflowUtils.Action.SEND_BACK){
+							 subject = "Intimation: Re-Sent Purpose of loan Model - "+modelName+" – For Modification";
+							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERTED, subject);
+							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERT_BECK, userReq.getMobile());
+						 }
+					}
+				}else {
+					Object[] fpFullName = commonRepo.getFpFullName(makerUserId);
+					String makerName=fpFullName[0]!=null?String.valueOf(fpFullName[0])+" "+fpFullName[1]!=null?String.valueOf(fpFullName[1]):"Maker":"Maker";
+					param.put(PARAMETERS_MAKER_NAME, makerName);
+					
+					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),11);
+					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
+					//	Mail to Admin Checker where pusrpose of loan created or purpose of loan approved after send back
+					for (UsersRequest req : adminMakerList) {
+						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():"Sir/Madam";
+						 param.put("user_name", fpName);
+						
+						if(workFlowAction == WorkflowUtils.Action.PENDING) {
+							 subject = "Intimation: New Purpose of Loan module - "+modelName;
+							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED, subject);
+							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED, userReq.getMobile());
+						 }else if(workFlowAction == WorkflowUtils.Action.SEND_FOR_APPROVAL){
+							 subject = "Intimation: Re-sent Purpose of loan module  - "+modelName;
+							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMINCHECKER_PURPOSE_OF_LOAN_RE_APPROVAL, subject);
+							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_RE_APPROVAL_BY_MAKER, userReq.getMobile());
+						 }
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Exception in sending email and sms of when purpose of loan approved:{}",e);
+			} 
+		}
+	}
+
+	private List<UsersRequest> extractObjectListToUserRequest(List<Object[]> userList){
+		List<UsersRequest> userReq=new ArrayList<>();
+		for (Object[] obj: userList) {
+			UsersRequest req=new UsersRequest();
+			req.setEmail(String.valueOf(obj[0]));
+			req.setMobile(String.valueOf(obj[1]));
+			if(null != obj[2] && null != obj[3]) {
+				req.setFirstName(String.valueOf(obj[2]));
+				req.setLastName(String.valueOf(obj[3]));
+			}else {
+				req.setFirstName(String.valueOf(obj[4]));
+				req.setLastName("");
+			}
+			req.setUserId(Long.parseLong(String.valueOf(obj[5])));
+			userReq.add(req);
+		}
+		return userReq;
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,

@@ -136,6 +136,13 @@ public class HlTeaserViewResponse {
     private Double propertyValue;
     private String propertyAge;
     private Object propertyAdd;
+    
+    
+    private String motherName;
+    private String fatherName;
+    private String educationStatus;
+    private String educationYear;
+    
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -798,6 +805,18 @@ public class HlTeaserViewResponse {
 	}
 	public void setOtherCurruntAssetDetail(Object otherCurruntAssetDetail) {
 		this.otherCurruntAssetDetail = otherCurruntAssetDetail;
+	}
+	public String getMotherName() {
+		return motherName;
+	}
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+	public String getFatherName() {
+		return fatherName;
+	}
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
 	}
 
 }
