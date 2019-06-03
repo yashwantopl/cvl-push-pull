@@ -5,9 +5,11 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +35,9 @@ import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
+import com.capitaworld.service.loans.model.retail.RetailOnformBasicInfoReq;
+import com.capitaworld.service.loans.model.retail.RetailOnformContactInfoReq;
+import com.capitaworld.service.loans.model.retail.RetailOnformEmploymentInfoReq;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -1151,5 +1156,170 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			}
 		}
 		return true;
+	}
+	
+	public RetailOnformBasicInfoReq getOneformBasicInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
+				BeanUtils.copyProperties(coApplicantDetail, res);
+				return res;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
+				BeanUtils.copyProperties(applicantDetail, res);
+				return res;	
+			}
+		}
+		return null;
+	}
+	
+	public RetailOnformEmploymentInfoReq getOneformEmploymentInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				RetailOnformEmploymentInfoReq res = new RetailOnformEmploymentInfoReq();
+				BeanUtils.copyProperties(coApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())) {
+	    			Calendar cal = Calendar.getInstance();
+	    			cal.setTime(coApplicantDetail.getBusinessStartDate());
+	    			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
+	    		}
+				return res;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformEmploymentInfoReq res = new RetailOnformEmploymentInfoReq();
+				BeanUtils.copyProperties(applicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+	    			Calendar cal = Calendar.getInstance();
+	    			cal.setTime(applicantDetail.getBusinessStartDate());
+	    			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
+	    		}
+				return res;	
+			}
+		}
+		return null;
+	}
+
+	public RetailOnformContactInfoReq getOneformContactInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
+				BeanUtils.copyProperties(coApplicantDetail, res);
+				Address address = new Address();
+		        address.setPremiseNumber(coApplicantDetail.getAddressPremiseName());
+		        address.setLandMark(coApplicantDetail.getAddressLandmark());
+		        address.setStreetName(coApplicantDetail.getAddressStreetName());
+		        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressCity())) {
+		        	address.setCityId(coApplicantDetail.getAddressCity().longValue());	 
+		        }
+		        address.setStateId(CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressState()) ? null : coApplicantDetail.getAddressState().intValue());
+		        address.setCountryId(coApplicantDetail.getAddressCountry());
+		        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
+		        	address.setPincode(coApplicantDetail.getAddressPincode().longValue());	 
+		        }
+		        address.setDistrictMappingId(coApplicantDetail.getAddressDistrictMappingId());
+		        res.setContactAddress(address);
+				return res;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
+				BeanUtils.copyProperties(applicantDetail, res);
+				Address address = new Address();
+		        address.setPremiseNumber(applicantDetail.getAddressPremiseName());
+		        address.setLandMark(applicantDetail.getAddressLandmark());
+		        address.setStreetName(applicantDetail.getAddressStreetName());
+		        if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressCity())) {
+		        	address.setCityId(applicantDetail.getAddressCity().longValue());	 
+		        }
+		        address.setStateId(CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState()) ? null : applicantDetail.getAddressState().intValue());
+		        address.setCountryId(applicantDetail.getAddressCountry());
+		        if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressPincode())) {
+		        	address.setPincode(applicantDetail.getAddressPincode().longValue());	 
+		        }
+		        address.setDistrictMappingId(applicantDetail.getAddressDistrictMappingId());
+		        res.setContactAddress(address);
+				return res;	
+			}
+		}
+		return null;
+	}
+	
+	public List<FinancialArrangementsDetailRequest> getOneformCreditInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			try {
+	        	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, applicationId, true);
+	            if(retailFinancialDetailsList != null) {
+	            	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+	                FinancialArrangementsDetailRequest retailFinReq=null;
+	                for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+	                	retailFinReq =new FinancialArrangementsDetailRequest();
+	                	BeanUtils.copyProperties(finArDetails, retailFinReq);
+	                	retailFinancialDetailsReq.add(retailFinReq);
+	                }
+	                return retailFinancialDetailsReq;
+	            }
+			} catch (Exception e) {
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails while coapplicant <<<<<<<=========",e);
+			}	
+		} else {
+			 try {
+            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
+                if(retailFinancialDetailsList != null) {
+                	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+                    FinancialArrangementsDetailRequest retailFinReq=null;
+                    for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+                    	retailFinReq =new FinancialArrangementsDetailRequest();
+                    	BeanUtils.copyProperties(finArDetails, retailFinReq);
+                    	retailFinancialDetailsReq.add(retailFinReq);
+                    }
+                    return retailFinancialDetailsReq;
+                }
+			} catch (Exception e) {
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
+			}
+		}
+		return Collections.emptyList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject getApplicantAndCoAppOneFormInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				JSONObject json = new JSONObject();
+				json.put("isBasicInfoFilled", coApplicantDetail.getIsBasicInfoFilled());
+				json.put("isEmploymentInfoFilled",coApplicantDetail.getIsEmploymentInfoFilled());
+				json.put("isCreditInfoFilled",coApplicantDetail.getIsCreditInfoFilled());
+				json.put("isContactInfoFilled",coApplicantDetail.getIsContactInfoFilled());
+				json.put("isCibilCompleted",coApplicantDetail.getIsCibilCompleted());
+				json.put("isOneFormCompleted",coApplicantDetail.getIsOneFormCompleted());
+				return json;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
+				JSONObject json = new JSONObject();
+				json.put("isBasicInfoFilled",applicantDetail.getIsBasicInfoFilled());
+				json.put("isEmploymentInfoFilled",applicantDetail.getIsEmploymentInfoFilled());
+				json.put("isCreditInfoFilled",applicantDetail.getIsCreditInfoFilled());
+				json.put("isContactInfoFilled",applicantDetail.getIsContactInfoFilled());
+				json.put("isCibilCompleted",applicantDetail.getIsCibilCompleted());
+				json.put("isOneFormCompleted",applicantDetail.getIsOneFormCompleted());
+				return json;
+			}
+		}
+		return null;
 	}
 }
