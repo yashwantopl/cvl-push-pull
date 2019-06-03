@@ -14,6 +14,8 @@ public interface LoanRepository {
 
 	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit,Long businessTypeId);
 
+	public List<Object[]> getSerachProposalListByRoleSP(Long orgId,String searchString,Long userId,Long listLimit,Long businessTypeId,Long branchId);
+
 	public Object[] fpDashBoardCountByOrgId(Long orgId,Long businessTypeId);
 
 	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId,Long businessTypeId);
