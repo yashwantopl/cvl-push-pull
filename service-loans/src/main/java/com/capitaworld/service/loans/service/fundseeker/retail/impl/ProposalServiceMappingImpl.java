@@ -2987,13 +2987,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			return null;
 		}
 		Object[] count = null;
-		if(roleId == 9) {//FP CHECKER
-			count = loanRepository.fpDashBoardCountByOrgIdAndBranchId(loginOrgId, branchId,businessTypeId);
-		} else if(roleId == 5){//HO
-			count = loanRepository.fpDashBoardCountByOrgId(loginOrgId,businessTypeId);
-		} else if(roleId == 12){//SMECC
-			count = loanRepository.fpDashBoardCountByOrgIdAndUserId(loginOrgId, loginUserId,businessTypeId);
-		}
+		count = loanRepository.fetchFpDashbordCountByRoleSP(loginOrgId, loginUserId,businessTypeId,branchId);
 		if(count != null) {
 			Map<String , Double> map = new HashMap<>();
 			map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));
