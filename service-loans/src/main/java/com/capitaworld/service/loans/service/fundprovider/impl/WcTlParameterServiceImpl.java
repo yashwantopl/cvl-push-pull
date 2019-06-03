@@ -330,6 +330,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				msmeValueMappingService.getDataListFromFpProductId(2, id, wcTlParameterRequest.getUserId()));
 		wcTlParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
+		wcTlParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return wcTlParameterRequest;
 	}
