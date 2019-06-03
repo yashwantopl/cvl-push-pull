@@ -92,7 +92,25 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
-		storedProcedureQuery.setParameter(LIST_LIMIT,businessTypeId);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+
+	@Override
+	public List<Object[]> getSerachProposalListByRoleSP(Long orgId, String searchString, Long userId, Long listLimit, Long businessTypeId, Long branchId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("getSerachProposalListByRoleSP");
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
@@ -124,6 +142,19 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		return (Object[]) storedProcedureQuery.getSingleResult();
+	}
+
+	public Object[] fetchFpDashbordCountByRoleSP(Long orgId,Long userId,Long businessTypeId,Long branchId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("fetchFpDashbordCountByRoleSP");
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 
@@ -273,5 +304,12 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return result.get(0);
 		}
 		return null;
+	}
+
+	//1/6/2019...................
+	@Override
+	public List<Object[]> getTypeSelectionData() {
+		return (List<Object[]>) entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE")
+				.getResultList();
 	}
 }

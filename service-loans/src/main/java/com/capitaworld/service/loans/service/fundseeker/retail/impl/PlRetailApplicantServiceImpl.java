@@ -113,6 +113,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 					applicantDetail.setBusinessStartDate(cal.getTime());
 				}
                 copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
+                applicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
                 applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
                 applicantRepository.save(applicantDetail);
                 
@@ -137,7 +138,11 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(plRetailApplicantRequest.getCoAppId(), true);
     			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
     				BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
-    				
+                    coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
+                    coApplicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
+                    coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
+                    coApplicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+                    coApplicantDetail.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment());
     				if (plRetailApplicantRequest.getContactAddress() != null) {
     					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
     					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
@@ -165,6 +170,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     				coApplicantDetail.setModifiedDate(new Date());
     				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
     				coApplicantDetailRepository.save(coApplicantDetail);
+    				EmployerRequest req = new EmployerRequest();
+	                req.setApplicationId(plRetailApplicantRequest.getApplicationId());
+	                req.setCoAppId(plRetailApplicantRequest.getCoAppId());
+	                String middleName = !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())? coApplicantDetail.getMiddleName():"";
+	                String name=coApplicantDetail.getFirstName()+ " "+ middleName  +" "+ coApplicantDetail.getLastName();
+	                if(plRetailApplicantRequest.getKid()!=null) {
+	                	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
+	                	req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), coApplicantDetail.getCompanyName(),name , coApplicantDetail.getMobile(), coApplicantDetail.getEmail()));
+	                	epfoAsyncComponent.callAPI(req);
+	                }
     			}
             }
             
@@ -226,6 +241,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     	}
     	PLRetailApplicantRequest res = new PLRetailApplicantRequest();
     	BeanUtils.copyProperties(coApplicantDetail,res);
+        res.setResidentialStatus(coApplicantDetail.getNationality());
+        res.setNoOfDependent(coApplicantDetail.getNoDependent());
+        res.setSalaryMode(coApplicantDetail.getModeOfReceipt());
     	Address address = new Address();
         address.setPremiseNumber(coApplicantDetail.getAddressPremiseName());
         address.setLandMark(coApplicantDetail.getAddressLandmark());
