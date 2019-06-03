@@ -2944,21 +2944,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
 			return Collections.emptyList();
 		}
-		if(roleId == 9) {//CHECKER AND MAKER
-			List<Object[]> objList = loanRepository.searchProposalForCheckerAndMaker(loginOrgId, reportRequest.getValue(), branchId,reportRequest.getNumber().longValue(),businessTypeId);
-			if(objList.size() > 0) {
-				return setValue(objList, false);
-			}
-		} else if(roleId == 5) {//HO
-			List<Object[]> objList = loanRepository.searchProposalForHO(loginOrgId, reportRequest.getValue(),reportRequest.getNumber().longValue(),businessTypeId);
-			if(objList.size() > 0) {
-				return setValue(objList, true);
-			}
-		} else if(roleId == 12) {//SMECC
-			List<Object[]> objList = loanRepository.searchProposalForSMECC(loginOrgId, reportRequest.getValue(),loginUserId,reportRequest.getNumber().longValue(),businessTypeId);
-			if(objList.size() > 0) {
-				return setValue(objList, true);
-			}
+		List<Object[]> objList = loanRepository.getSerachProposalListByRoleSP(loginOrgId, reportRequest.getValue(),loginUserId,reportRequest.getNumber().longValue(),businessTypeId,branchId);
+		if(objList.size() > 0) {
+			return setValue(objList, true);
 		}
 		return Collections.emptyList();
 	}
@@ -2999,13 +2987,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			return null;
 		}
 		Object[] count = null;
-		if(roleId == 9) {//FP CHECKER
-			count = loanRepository.fpDashBoardCountByOrgIdAndBranchId(loginOrgId, branchId,businessTypeId);
-		} else if(roleId == 5){//HO
-			count = loanRepository.fpDashBoardCountByOrgId(loginOrgId,businessTypeId);
-		} else if(roleId == 12){//SMECC
-			count = loanRepository.fpDashBoardCountByOrgIdAndUserId(loginOrgId, loginUserId,businessTypeId);
-		}
+		count = loanRepository.fetchFpDashbordCountByRoleSP(loginOrgId, loginUserId,businessTypeId,branchId);
 		if(count != null) {
 			Map<String , Double> map = new HashMap<>();
 			map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));
