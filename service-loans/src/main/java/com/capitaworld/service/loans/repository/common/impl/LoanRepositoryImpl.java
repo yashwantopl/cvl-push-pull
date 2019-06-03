@@ -92,7 +92,25 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
-		storedProcedureQuery.setParameter(LIST_LIMIT,businessTypeId);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+
+	@Override
+	public List<Object[]> getSerachProposalListByRoleSP(Long orgId, String searchString, Long userId, Long listLimit, Long businessTypeId, Long branchId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("getSerachProposalListByRoleSP");
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BUSI_TYPE_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
+		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
