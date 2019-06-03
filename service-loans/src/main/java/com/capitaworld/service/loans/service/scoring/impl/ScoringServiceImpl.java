@@ -1478,7 +1478,7 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 			
 			//Getting All Loans
-			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
@@ -1530,7 +1530,7 @@ public class ScoringServiceImpl implements ScoringService {
                                             logger.error("Other Bank Selected By User For Salary Account == >{}",e);
                                         }
                                         if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId())){
-                                            if(fsOrgObjInner.getOrgId().equals(orgId)){
+                                            if(Integer.valueOf(fsOrgObjInner.getOrgId()).equals(orgId)){
                                                 isBorrowersHavingSalaryAccounts = true;
                                             }
                                         }
