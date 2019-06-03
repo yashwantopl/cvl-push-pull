@@ -292,4 +292,11 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
+
+	//1/6/2019...................
+	@Override
+	public List<Object[]> getTypeSelectionData() {
+		return (List<Object[]>) entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE")
+				.getResultList();
+	}
 }
