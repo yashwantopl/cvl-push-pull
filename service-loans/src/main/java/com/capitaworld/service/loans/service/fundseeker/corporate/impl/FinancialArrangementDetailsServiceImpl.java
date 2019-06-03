@@ -150,6 +150,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			Long userId, Long directorId) {
 		int inactivatedRow = financialArrangementDetailsRepository.inActive(userId, applicationId,directorId);
 		logger.info("inactivatedRow=============>{} ==>for Director Id===>{}",inactivatedRow,directorId);
+		logger.info("Existing Loans Size=============>{} ==>for Director Id===>{}",existingLoanDetailRequest != null ? existingLoanDetailRequest.size() : null,directorId);
 		for (FinancialArrangementsDetailRequest req : existingLoanDetailRequest) {
 			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
 			BeanUtils.copyProperties(req, arrangementsDetail);
