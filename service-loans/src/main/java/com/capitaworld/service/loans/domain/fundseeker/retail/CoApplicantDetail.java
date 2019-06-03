@@ -480,6 +480,12 @@ public class CoApplicantDetail implements Serializable {
 	
     @Column(name="employment_with")
 	private Integer employmentWith;
+
+	@Column(name="spouse_employment")
+	private Integer spouseEmployment;
+
+	@Column(name = "annual_income_of_spouse")
+	private Double annualIncomeOfSpouse;
 	
 
 	public CoApplicantDetail() {
@@ -1692,7 +1698,20 @@ public class CoApplicantDetail implements Serializable {
 	public void setEmploymentWith(Integer employmentWith) {
 		this.employmentWith = employmentWith;
 	}
-	
-	
-	
+
+	public Integer getSpouseEmployment() {
+		return spouseEmployment;
+	}
+
+	public void setSpouseEmployment(Integer spouseEmployment) {
+		this.spouseEmployment = spouseEmployment;
+	}
+
+	public Double getAnnualIncomeOfSpouse() {
+		return annualIncomeOfSpouse;
+	}
+
+	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
+		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
 }

@@ -25,6 +25,7 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.model.api_model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,11 +109,6 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
-import com.capitaworld.service.loans.model.api_model.CorporateProfileRequest;
-import com.capitaworld.service.loans.model.api_model.FinanceMeansDetailRequest;
-import com.capitaworld.service.loans.model.api_model.GuarantorsCorporateDetailRequest;
-import com.capitaworld.service.loans.model.api_model.ProfileReqRes;
-import com.capitaworld.service.loans.model.api_model.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.common.BasicDetailFS;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
@@ -8406,4 +8402,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return  false;
 		}
 	}
+	//1/6/2019........................
+
+	@Override
+	public List<LoantypeSelectionResponse> getTypeSelectionData() {
+		List<Object[]> responseList = loanRepository.getTypeSelectionData();
+		List<LoantypeSelectionResponse> selectionList = new ArrayList<>();
+		for(Object[] obj : responseList) {
+//			System.out.print("============>" +obj.toString());
+			LoantypeSelectionResponse  response = new LoantypeSelectionResponse();
+			response.setType(obj[0].toString());
+			response.setDescription((String)obj[1]);
+			response.setBusinessTypeId((int)obj[2]);
+			response.setImgPath((String)obj[3]);
+			selectionList.add(response);
+			System.out.print("============>" +response.getType());
+		}
+		return selectionList;
+	}
+
+
 }

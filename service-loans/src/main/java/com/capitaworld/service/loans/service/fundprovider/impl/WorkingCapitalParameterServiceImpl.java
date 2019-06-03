@@ -385,7 +385,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			}
 		}
 		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, workingCapitalParameterRequest.getUserId()));
-		
+		workingCapitalParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setLoanArrangementIds(loanArrangementMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
