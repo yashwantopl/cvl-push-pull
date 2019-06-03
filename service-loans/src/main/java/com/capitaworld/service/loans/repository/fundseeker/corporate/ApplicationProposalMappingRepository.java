@@ -185,4 +185,8 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 
     @Query(nativeQuery = true,value="SELECT b.business_type_id FROM `loan_application`.`application_proposal_mapping` b WHERE b.user_id=:userId ORDER BY b.created_date DESC LIMIT 1")
     public Integer getBusinessIdByUserId(@Param("userId") Long userId);
+
+    @Modifying
+    @Query("delete from ApplicationProposalMapping where applicationId=:applicationId and fpProductId=:fpProductId")
+    public Integer deleteByApplicationIdAndFpProductId(@Param("applicationId")Long applicationId,@Param("fpProductId")Long fpProductId);
 }

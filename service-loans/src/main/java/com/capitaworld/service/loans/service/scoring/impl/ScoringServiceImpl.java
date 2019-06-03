@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
@@ -1155,7 +1156,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
                                     Double monthlyIncome = 0d;
-                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                    EligibililityRequest eligibililityRequest = new EligibililityRequest();
+                    				eligibililityRequest.setApplicationId(applicationId);
+                    				eligibililityRequest.setIsIncomeCalculate(false);
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
                                     if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
                                             && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                                         List monthlyIncomeList = (List) eligibilityResponse.getData();
@@ -1182,7 +1186,10 @@ public class ScoringServiceImpl implements ScoringService {
                                     try {
                                         Double netMonthlyIncome = 0d;
                                         //Double emi = scoringRequestLoans.getEmi();
-                                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                        EligibililityRequest eligibililityRequest = new EligibililityRequest();
+                        				eligibililityRequest.setApplicationId(applicationId);
+                        				eligibililityRequest.setIsIncomeCalculate(false);
+                                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
                                         if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
                                                 && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                                             List monthlyIncomeList = (List) eligibilityResponse.getData();
@@ -1261,7 +1268,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
                                     Double monthlyIncome = 0d;
-                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                                    EligibililityRequest eligibililityRequest = new EligibililityRequest();
+                      				eligibililityRequest.setApplicationId(applicationId);
+                      				eligibililityRequest.setIsIncomeCalculate(false);
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
                                     if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                                         List monthlyIncomeList = (List) eligibilityResponse.getData();
                                         if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
@@ -1290,7 +1300,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                     Double grossAnnualIncome =0d;
                     try {
-                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+                    	EligibililityRequest eligibililityRequest = new EligibililityRequest();
+          				eligibililityRequest.setApplicationId(applicationId);
+          				eligibililityRequest.setIsIncomeCalculate(false);
+                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
                         if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                             List monthlyIncomeList = (List) eligibilityResponse.getData();
                             if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
@@ -1409,7 +1422,10 @@ public class ScoringServiceImpl implements ScoringService {
             }
         	EligibilityResponse eligibilityResponse = null;
 			try {
-				eligibilityResponse = eligibilityClient.getMonthlyIncome(applicationId);
+				EligibililityRequest eligibililityRequest = new EligibililityRequest();
+				eligibililityRequest.setApplicationId(applicationId);
+				eligibililityRequest.setIsIncomeCalculate(false);
+				eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
 			} catch (EligibilityExceptions e) {
 				logger.error("Error while Getting MonthlyIncome Details == >{}",e);
 			}
