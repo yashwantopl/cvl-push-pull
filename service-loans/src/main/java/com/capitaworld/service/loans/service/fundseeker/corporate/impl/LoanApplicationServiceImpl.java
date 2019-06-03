@@ -6286,10 +6286,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
-			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
+			Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndFpProductId(proposalDetails.getApplicationId(),proposalDetails.getFpProductId());
+			if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
+				logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
+			}
+			/*ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				applicationProposalMapping = new ApplicationProposalMapping();
-			}
+			}*/
+			ApplicationProposalMapping applicationProposalMapping = new ApplicationProposalMapping();
 			applicationProposalMapping.setProposalId(proposalDetails.getId());
 			applicationProposalMapping.setApplicationId(proposalDetails.getApplicationId());
 			applicationProposalMapping.setLoanAmount(loanApplicationRequest.getAmount());
