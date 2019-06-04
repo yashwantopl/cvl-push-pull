@@ -1406,6 +1406,7 @@ public class ScoringServiceImpl implements ScoringService {
         List<String> bankStringsList = null;
         List<FinancialArrangementsDetail> financialArrangementsDetailList = null;
         Boolean isWomenApplicant = false;
+        List<Double> incomeOfItrOf3Years = null;
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1480,6 +1481,11 @@ public class ScoringServiceImpl implements ScoringService {
 			
 			//Getting All Loans
 			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
+			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
+			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
+        	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
+        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId);
+        	}
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
@@ -1812,11 +1818,6 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.HomeLoan.NO_OF_APPLICANTS:
-            				coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
-            	        	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
-            	        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId);
-            	        	}
-            	        	
             				if(CommonUtils.isListNullOrEmpty(coAppIds)) {
             					scoreParameterRetailRequest.setNoOfApplicantsType(ScoreParameter.NoOfApplicants.SINGLE);
             				}else if(CommonUtils.isListNullOrEmpty(coAppITRUploadedIds)) {
@@ -1855,22 +1856,6 @@ public class ScoringServiceImpl implements ScoringService {
 								logger.warn("Eligible Tenure is not Set in AVAILABLE_INCOME TENURE==== > {}",scoringRequestLoans.getEligibleTenure());
 							}            				
             				break;
-//            			case ScoreParameter.Retail.HomeLoan.TOIR:
-//            				try {
-//            					if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
-//            						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-//            							scoreParameterRetailRequest.setToir((scoringRequestLoans.getEmi() / netMonthlyIncome) * 100); 
-//            						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-//            							scoreParameterRetailRequest.setToir((scoringRequestLoans.getEmi() / grossAnnualIncome) * 100);
-//            						}
-//            						scoreParameterRetailRequest.setIsToir_p(true);
-//            					}else {
-//									logger.warn("Gross Or Net Income is Not Set By Lender TOIR==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
-//								}
-//                            } catch (Exception e) {
-//                                logger.error("error while getting TOIR parameter : ",e);
-//                            }
-//            				break;
             			case ScoreParameter.Retail.HomeLoan.ADDI_INCOME_SPOUSE:
 	            				if(retailApplicantDetail.getAnnualIncomeOfSpouse() != null) {
 	            					scoreParameterRetailRequest.setSpouseIncome(retailApplicantDetail.getAnnualIncomeOfSpouse());
@@ -1880,27 +1865,8 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.MON_INCOME_DEPENDANT:
             				scoreParameterRetailRequest.setNoOfDependants(retailApplicantDetail.getNoOfDependent());
             				scoreParameterRetailRequest.setIsMonIncomePerDep_p(true);
-//            				if (scoringRequestLoans.getIsSetGrossNetIncome() != null && scoringRequestLoans.getIsSetGrossNetIncome()) {
-//        						if (scoringRequestLoans.getIncomeType() == null || scoringRequestLoans.getIncomeType() == 2) { // Net Monthly Income
-//        							if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && retailApplicantDetail.getNoOfDependent() != null && retailApplicantDetail.getNoOfDependent() != 0) {
-//                                        scoreParameterRetailRequest.setMonIncomePerDep(netMonthlyIncome / (retailApplicantDetail.getNoOfDependent() + 1)); //1 is Applicant him/his self
-//                                    }else {
-//                                    	scoreParameterRetailRequest.setMonIncomePerDep(netMonthlyIncome / 1); //1 is Applicant him/his self
-//                                    }        							 
-//        						} else if (scoringRequestLoans.getIncomeType() == 1) { // Gross Monthly Income
-//        							if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && retailApplicantDetail.getNoOfDependent() != null && retailApplicantDetail.getNoOfDependent() != 0) {
-//                                        scoreParameterRetailRequest.setMonIncomePerDep(grossMonthlyIncome / (retailApplicantDetail.getNoOfDependent() + 1)); //1 is Applicant him/his self
-//                                    }else {
-//                                    	scoreParameterRetailRequest.setMonIncomePerDep(grossMonthlyIncome / 1); //1 is Applicant him/his self
-//                                    }
-//        						}
-//        						scoreParameterRetailRequest.setIsMonIncomePerDep_p(true);
-//        					}else {
-//								logger.warn("MON_INCOME_DEPENDANT is Not Set By Lender TOIR==== > {}",scoringRequestLoans.getIsSetGrossNetIncome());
-//							}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS:
-            				List<Double> incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
             				logger.info("Income List From ITR for HL == >{}==>ApplicationId==>{}",incomeOfItrOf3Years,applicationId);
             				if(!CommonUtils.isListNullOrEmpty(incomeOfItrOf3Years)) {
             					if(incomeOfItrOf3Years.size() == 3) { //as if now considering 3 Years Compulsory
@@ -2124,7 +2090,8 @@ public class ScoringServiceImpl implements ScoringService {
         CibilResponse cibilResponseDpdCoApp = null;
         Data bankStatementData = null;
         Boolean itrSkippedForCoApp = null;
-        Double loanAmount = 0.0d;
+        List<Double> incomeOfItrOf3YearsCoApplicant = null;
+//        Double loanAmount = 0.0d;
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	coApplicantId = scoringRequestLoansList.get(0).getCoApplicantId();
@@ -2188,7 +2155,8 @@ public class ScoringServiceImpl implements ScoringService {
             
             //ITR and bank Statement Checking
             itrSkippedForCoApp = loanRepository.isITRSkippedForCoApp(applicationId, coApplicantId);
-            loanAmount = loanRepository.getRetailLoanAmountByApplicationId(applicationId);
+//            loanAmount = loanRepository.getRetailLoanAmountByApplicationId(applicationId);
+            incomeOfItrOf3YearsCoApplicant = loanRepository.getIncomeOfItrOf3YearsOfCoApplicant(coApplicantId);
             
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
@@ -2458,7 +2426,6 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setIsMonIncomePerDep_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS:
-            				List<Double> incomeOfItrOf3YearsCoApplicant = loanRepository.getIncomeOfItrOf3YearsOfCoApplicant(coApplicantId);
             				logger.info("Income List From ITR for HL For CoApplicant == >{}",incomeOfItrOf3YearsCoApplicant);
             				if(!CommonUtils.isListNullOrEmpty(incomeOfItrOf3YearsCoApplicant)) {
             					if(incomeOfItrOf3YearsCoApplicant.size() == 3) { //as if now considering 3 Years Compulsory
