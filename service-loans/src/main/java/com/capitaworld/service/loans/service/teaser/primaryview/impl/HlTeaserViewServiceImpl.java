@@ -20,11 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.ekyc.model.EkycResponse;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -207,6 +210,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 	@Autowired
 	private CommonRepository commonRepo;
+	
+	@Autowired
+	private EPFClient epfClient;
 	
 	
 	@Override
@@ -518,9 +524,21 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				logger.warn("..........::::::::----->>retailApplicantIncomeDetail is null<<-----:::::::::.....");	
 			}
 		} catch (Exception e) {
-			logger.error("..........::::::::----->> Error while calling PL Income Details <<-----:::::::::.....",e);
+			logger.error("..........::::::::----->> Error while calling HL Income Details <<-----:::::::::.....",e);
 		}
-		
+		/*get epfoData*/
+		try {
+			EmployerRequest epfReq=new EmployerRequest();
+			epfReq.setApplicationId(toApplicationId);
+			EkycResponse epfRes=epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				hlTeaserViewResponse.setEpfData(epfRes.getData());
+			}else {
+				logger.info("epfo data is null for===>>"+toApplicationId);
+			}
+		} catch (Exception e) {
+			logger.info("error"+e);
+		}
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);
@@ -773,6 +791,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setPan(coApplicantDetail.getPan());
 				plRetailApplicantResponse.setAadharNumber(coApplicantDetail.getAadharNumber());
 				plRetailApplicantResponse.setMobile(coApplicantDetail.getMobile());
+				plRetailApplicantResponse.setCompanyName(coApplicantDetail.getCompanyName());
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? 	EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year") : "") + "" +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 

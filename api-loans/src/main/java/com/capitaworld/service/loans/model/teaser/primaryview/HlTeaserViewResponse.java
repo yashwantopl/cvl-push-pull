@@ -143,6 +143,8 @@ public class HlTeaserViewResponse {
     private String educationStatus;
     private String educationYear;
     
+    private Object epfData;
+    
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -817,6 +819,24 @@ public class HlTeaserViewResponse {
 	}
 	public void setFatherName(String fatherName) {
 		this.fatherName = fatherName;
+	}
+	public String getEducationStatus() {
+		return educationStatus;
+	}
+	public void setEducationStatus(String educationStatus) {
+		this.educationStatus = educationStatus;
+	}
+	public String getEducationYear() {
+		return educationYear;
+	}
+	public void setEducationYear(String educationYear) {
+		this.educationYear = educationYear;
+	}
+	public Object getEpfData() {
+		return epfData;
+	}
+	public void setEpfData(Object epfData) {
+		this.epfData = epfData;
 	}
 
 }
