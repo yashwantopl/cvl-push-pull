@@ -20,6 +20,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long applicationId;
     private Long proposalId;
     private Integer loanTypeId;
+    private Integer type;
     
     /*
     * Profile Fields
@@ -941,6 +942,14 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
 		this.currentEmploymentStatus = currentEmploymentStatus;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
     
     
