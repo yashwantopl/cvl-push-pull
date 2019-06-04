@@ -143,6 +143,18 @@ public class CommonUtils {
 		public static final String FAILED = "Failed";
 		public static final String BYPASS = "ByPass";
 	}
+	
+	/**
+	 *  Date :- 04/06/2018
+	 * @author harshit
+	 *	USED FOR SAVE AND GET ONEFROM DETAILS ON FS RETAIL JOURNEY 
+	 */
+	public static final class RetailOneformType {
+		public static final int CONTACT_INFO = 2;
+		public static final int EMPLOYMENT_INFO = 3;
+		public static final int CREDIT_INFO = 4;
+		public static final int BASIC_INFO = 1;
+	}
 
 	public static final class UsersRoles {
 		private UsersRoles(){
@@ -429,6 +441,12 @@ public class CommonUtils {
 		private static final String[] PL_RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome" };
 
 		public static String[] getPlRetailPrimary() {
+			return PL_RETAIL_PRIMARY;
+		}
+		
+		private static final String[] RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","createdBy","createdDate","isActive","applicationId","modifiedBy","modifiedDate"};
+
+		public static String[] getRetailPrimary() {
 			return PL_RETAIL_PRIMARY;
 		}
 
