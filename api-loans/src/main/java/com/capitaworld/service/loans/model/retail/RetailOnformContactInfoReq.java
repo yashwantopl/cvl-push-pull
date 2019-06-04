@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.capitaworld.service.loans.model.Address;
 
@@ -23,6 +24,8 @@ public class RetailOnformContactInfoReq implements Serializable {
     private Integer residenceSinceYear;
     private Integer residenceSinceMonth;
     private Integer type;
+    private String pan;
+    private Date birthDate;
     
     
 	public Long getId() {
@@ -90,6 +93,18 @@ public class RetailOnformContactInfoReq implements Serializable {
 	}
 	public void setType(Integer type) {
 		this.type = type;
+	}
+	public String getPan() {
+		return pan;
+	}
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+	public Date getBirthDate() {
+		return birthDate;
+	}
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
 	}
     
     

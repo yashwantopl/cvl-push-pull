@@ -40,6 +40,10 @@ public class RetailOnformBasicInfoReq implements Serializable {
     private String nationality;
     private Double networth;
     private Boolean isBasicInfoFilled;
+    private Boolean isItrSkip;
+    
+    
+    
 	public Long getId() {
 		return id;
 	}
@@ -213,6 +217,12 @@ public class RetailOnformBasicInfoReq implements Serializable {
 	}
 	public void setIsBasicInfoFilled(Boolean isBasicInfoFilled) {
 		this.isBasicInfoFilled = isBasicInfoFilled;
+	}
+	public Boolean getIsItrSkip() {
+		return isItrSkip;
+	}
+	public void setIsItrSkip(Boolean isItrSkip) {
+		this.isItrSkip = isItrSkip;
 	}
     
 
