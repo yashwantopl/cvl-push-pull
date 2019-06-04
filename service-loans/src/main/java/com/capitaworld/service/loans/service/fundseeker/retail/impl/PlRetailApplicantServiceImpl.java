@@ -111,7 +111,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                 }
                 
-                if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.BASIC_INFO) {
+                if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.BASIC_INFO) {
                     applicantDetail.setTitleId(plRetailApplicantRequest.getTitleId());
                     applicantDetail.setFirstName(plRetailApplicantRequest.getFirstName());
                     applicantDetail.setMiddleName(plRetailApplicantRequest.getMiddleName());
@@ -136,13 +136,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setNationality(plRetailApplicantRequest.getNationality());
                     applicantDetail.setNetworth(plRetailApplicantRequest.getNetworth());
                     applicantDetail.setIsBasicInfoFilled(plRetailApplicantRequest.getIsBasicInfoFilled());
-                } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
+                } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
                 	applicantDetail.setIsContactInfoFilled(plRetailApplicantRequest.getIsContactInfoFilled());
                 	applicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
                 	applicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
                 	applicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
                 	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);	
-                } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
+                } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
                 	applicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
                 	applicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
                 	applicantDetail.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith());
@@ -176,7 +176,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	applicantDetail.setEmployedWithOther(plRetailApplicantRequest.getEmployedWithOther());
                 	applicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
                 	updateEkycIdForApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), applicantDetail);
-                }  else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
+                }  else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
                 	saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
                 } else {
                 	BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailPrimary());
@@ -201,7 +201,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             } else {
             	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(plRetailApplicantRequest.getCoAppId(), true);
     			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
-    				if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.BASIC_INFO) {
+    				if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.BASIC_INFO) {
                         coApplicantDetail.setTitleId(plRetailApplicantRequest.getTitleId());
                         coApplicantDetail.setFirstName(plRetailApplicantRequest.getFirstName());
                         coApplicantDetail.setMiddleName(plRetailApplicantRequest.getMiddleName());
@@ -225,7 +225,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                         coApplicantDetail.setNetworth(plRetailApplicantRequest.getNetworth());
                         coApplicantDetail.setIsBasicInfoFilled(plRetailApplicantRequest.getIsBasicInfoFilled());
                         
-                    } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
+                    } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
                     	coApplicantDetail.setIsContactInfoFilled(plRetailApplicantRequest.getIsContactInfoFilled());
                     	coApplicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
                     	coApplicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
@@ -247,7 +247,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         					}
         					
         		        }
-                    } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
+                    } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
                     	coApplicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
                     	coApplicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
                     	coApplicantDetail.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith());
@@ -276,7 +276,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     	coApplicantDetail.setEmployedWithOther(plRetailApplicantRequest.getEmployedWithOther());
                     	coApplicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
                     	updateEkycIdForCoApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), coApplicantDetail);
-                    }  else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
+                    }  else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
                     	saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
                     } else {
                     	BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
@@ -1313,6 +1313,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
 				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
 				BeanUtils.copyProperties(coApplicantDetail, res);
+				res.setIsItrSkip(coApplicantDetail.getIsItrSkip());
 				return res;
 			}
 		} else {
@@ -1379,6 +1380,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 		        }
 		        address.setDistrictMappingId(coApplicantDetail.getAddressDistrictMappingId());
 		        res.setContactAddress(address);
+		        res.setPan(coApplicantDetail.getPan());
+		        res.setBirthDate(coApplicantDetail.getBirthDate());
 				return res;
 			}
 		} else {
@@ -1400,6 +1403,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 		        }
 		        address.setDistrictMappingId(applicantDetail.getAddressDistrictMappingId());
 		        res.setContactAddress(address);
+		        res.setPan(applicantDetail.getPan());
+		        res.setBirthDate(applicantDetail.getBirthDate());
 				return res;	
 			}
 		}
