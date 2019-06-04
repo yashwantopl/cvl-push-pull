@@ -1320,7 +1320,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
-				BeanUtils.copyProperties(applicantDetail, res);
+				BeanUtils.copyProperties(applicantDetail, res );
 				return res;	
 			}
 		}
