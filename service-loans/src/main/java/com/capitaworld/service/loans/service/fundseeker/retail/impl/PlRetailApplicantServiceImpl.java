@@ -123,6 +123,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setEducationQualification(plRetailApplicantRequest.getEducationQualification());
                     applicantDetail.setStatusId(plRetailApplicantRequest.getStatusId());
                     applicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
+                    applicantDetail.setResidentialStatus(plRetailApplicantRequest.getResidentialStatus());
                     applicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
                     applicantDetail.setContactNo(plRetailApplicantRequest.getContactNo());
                     applicantDetail.setEmail(plRetailApplicantRequest.getEmail());
@@ -177,6 +178,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	applicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
                 	updateEkycIdForApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), applicantDetail);
                 }  else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
+                	applicantDetail.setIsCreditInfoFilled(plRetailApplicantRequest.getIsCreditInfoFilled());
                 	saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
                 } else {
                 	BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailPrimary());
