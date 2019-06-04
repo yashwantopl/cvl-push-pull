@@ -2149,7 +2149,7 @@ public class ScoringServiceImpl implements ScoringService {
             	logger.error("Error in Getting CIBIL infor like DPD and Score == >{}",e);
             }
         	
-            List<Object[]> monthlyIncomeForCoApplicant = Collections.emptyList();
+            EligibilityResponse monthlyIncomeForCoApplicant = null;
             Object[] incomeFromEligibility = null;
 			try {
 				List<Long> coAppIds = new ArrayList<>(1);
@@ -2158,14 +2158,24 @@ public class ScoringServiceImpl implements ScoringService {
 			} catch (EligibilityExceptions e) {
 				logger.error("Error while Getting MonthlyIncome Details == >{}",e);
 			}
-			if(!CommonUtils.isListNullOrEmpty(monthlyIncomeForCoApplicant)) {
-				incomeFromEligibility = monthlyIncomeForCoApplicant.get(0);
+			if(!CommonUtils.isObjectNullOrEmpty(monthlyIncomeForCoApplicant) 
+					&& monthlyIncomeForCoApplicant.getStatus() == HttpStatus.OK.value() 
+					&& !CommonUtils.isListNullOrEmpty(monthlyIncomeForCoApplicant.getListData())
+					&& !CommonUtils.isObjectNullOrEmpty(monthlyIncomeForCoApplicant.getListData().get(0))) {
+				try {
+					incomeFromEligibility = (Object [])monthlyIncomeForCoApplicant.getListData().get(0);
+					logger.info("incomeFromEligibility===============>{}",incomeFromEligibility);
+				}catch(Exception e) {
+					logger.error("Error while Casting Object of CoApplicant Income====>{}",e);
+				}
 				if(!CommonUtils.isObjectNullOrEmpty(incomeFromEligibility)) {
 					netMonthlyIncome = Double.valueOf(incomeFromEligibility[0].toString());
                     grossMonthlyIncome = Double.valueOf(incomeFromEligibility[8].toString());
                     logger.info("Net Monthly Income For ApplicationId and CoApplicant Id======{}======>{}====>{}",applicationId,netMonthlyIncome,coApplicantId);
                     logger.info("Gross Annual Income For ApplicationId and CoApplicant Id======{}======>{}====>{}",applicationId,grossMonthlyIncome,coApplicantId);
 				}
+			}else {
+				logger.info("Something is NULL From EligibilityResponse===============>{}",monthlyIncomeForCoApplicant);
 			}
             try {
                  ReportRequest reportRequest = new ReportRequest();
