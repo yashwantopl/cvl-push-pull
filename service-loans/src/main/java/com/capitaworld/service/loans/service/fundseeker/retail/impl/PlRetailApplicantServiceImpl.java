@@ -123,6 +123,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setEducationQualification(plRetailApplicantRequest.getEducationQualification());
                     applicantDetail.setStatusId(plRetailApplicantRequest.getStatusId());
                     applicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
+                    applicantDetail.setResidentialStatus(plRetailApplicantRequest.getResidentialStatus());
                     applicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
                     applicantDetail.setContactNo(plRetailApplicantRequest.getContactNo());
                     applicantDetail.setEmail(plRetailApplicantRequest.getEmail());

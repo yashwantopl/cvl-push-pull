@@ -41,6 +41,7 @@ public class RetailOnformBasicInfoReq implements Serializable {
     private Double networth;
     private Boolean isBasicInfoFilled;
     private Boolean isItrSkip;
+    private Integer residentialStatus;
     
     
     
@@ -223,6 +224,12 @@ public class RetailOnformBasicInfoReq implements Serializable {
 	}
 	public void setIsItrSkip(Boolean isItrSkip) {
 		this.isItrSkip = isItrSkip;
+	}
+	public Integer getResidentialStatus() {
+		return residentialStatus;
+	}
+	public void setResidentialStatus(Integer residentialStatus) {
+		this.residentialStatus = residentialStatus;
 	}
     
 
