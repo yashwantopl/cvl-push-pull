@@ -103,23 +103,91 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 if (applicantDetail != null) {
                     applicantDetail.setModifiedBy(userId);
                     applicantDetail.setModifiedDate(new Date());
-                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                 } else {
                     applicantDetail = new RetailApplicantDetail();
-                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
                     applicantDetail.setCreatedBy(userId);
                     applicantDetail.setCreatedDate(new Date());
                     applicantDetail.setIsActive(true);
                     applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                 }
-                if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
-					applicantDetail.setBusinessStartDate(cal.getTime());
-				}
-                copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
-                applicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
-                applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+                
+                if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.BASIC_INFO) {
+                    applicantDetail.setTitleId(plRetailApplicantRequest.getTitleId());
+                    applicantDetail.setFirstName(plRetailApplicantRequest.getFirstName());
+                    applicantDetail.setMiddleName(plRetailApplicantRequest.getMiddleName());
+                    applicantDetail.setLastName(plRetailApplicantRequest.getLastName());
+                    applicantDetail.setGenderId(plRetailApplicantRequest.getGenderId());
+                    applicantDetail.setPan(plRetailApplicantRequest.getPan());
+                    applicantDetail.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
+                    applicantDetail.setMobile(plRetailApplicantRequest.getMobile());
+                    applicantDetail.setEducationQualification(plRetailApplicantRequest.getEducationQualification());
+                    applicantDetail.setStatusId(plRetailApplicantRequest.getStatusId());
+                    applicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
+                    applicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
+                    applicantDetail.setContactNo(plRetailApplicantRequest.getContactNo());
+                    applicantDetail.setEmail(plRetailApplicantRequest.getEmail());
+                    applicantDetail.setCompanyName(plRetailApplicantRequest.getCompanyName());
+                    applicantDetail.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment());
+                    applicantDetail.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
+                    applicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
+                    applicantDetail.setCategory(plRetailApplicantRequest.getCategory());
+                    applicantDetail.setFatherName(plRetailApplicantRequest.getFatherName());
+                    applicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+                    applicantDetail.setNationality(plRetailApplicantRequest.getNationality());
+                    applicantDetail.setNetworth(plRetailApplicantRequest.getNetworth());
+                    applicantDetail.setIsBasicInfoFilled(plRetailApplicantRequest.getIsBasicInfoFilled());
+                } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
+                	applicantDetail.setIsContactInfoFilled(plRetailApplicantRequest.getIsContactInfoFilled());
+                	applicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
+                	applicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
+                	applicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
+                	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);	
+                } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
+                	applicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
+                	applicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
+                	applicantDetail.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith());
+                	applicantDetail.setCentralGovId(plRetailApplicantRequest.getCentralGovId());
+                	applicantDetail.setStateGovId(plRetailApplicantRequest.getStateGovId());
+                	applicantDetail.setPsuId(plRetailApplicantRequest.getPsuId());
+                	applicantDetail.setCorporateId(plRetailApplicantRequest.getCorporateId());
+                	applicantDetail.setEduInstId(plRetailApplicantRequest.getEduInstId());
+                	applicantDetail.setBankNameId(plRetailApplicantRequest.getBankNameId());
+                	applicantDetail.setInsuranceNameId(plRetailApplicantRequest.getInsuranceNameId());
+                	applicantDetail.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+                	applicantDetail.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus());
+                	applicantDetail.setCompanyName(plRetailApplicantRequest.getCompanyName());
+                	applicantDetail.setDesignation(plRetailApplicantRequest.getDesignation());
+                	applicantDetail.setGrossMonthlyIncome(plRetailApplicantRequest.getGrossMonthlyIncome());
+                	applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+                	applicantDetail.setLoanPurposeOther(plRetailApplicantRequest.getLoanPurposeOther());
+                	applicantDetail.setKeyVerticalFunding(plRetailApplicantRequest.getKeyVerticalFunding());
+                	applicantDetail.setKeyVerticalSector(plRetailApplicantRequest.getKeyVerticalSector());
+                	applicantDetail.setKeyVerticalSubSector(plRetailApplicantRequest.getKeyVerticalSubSector());
+                	if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+    					Calendar cal = Calendar.getInstance();
+    					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+    					applicantDetail.setBusinessStartDate(cal.getTime());
+    				}
+                	applicantDetail.setSalaryMode(plRetailApplicantRequest.getSalaryMode());
+                	applicantDetail.setCurrentJobMonth(plRetailApplicantRequest.getCurrentJobMonth());
+                	applicantDetail.setCurrentJobYear(plRetailApplicantRequest.getCurrentJobYear());
+                	applicantDetail.setTotalExperienceMonth(plRetailApplicantRequest.getTotalExperienceMonth());
+                	applicantDetail.setTotalExperienceYear(plRetailApplicantRequest.getTotalExperienceYear());
+                	applicantDetail.setEmployedWithOther(plRetailApplicantRequest.getEmployedWithOther());
+                	applicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
+                	updateEkycIdForApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), applicantDetail);
+                }  else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
+                	saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
+                } else {
+                	BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailPrimary());
+                	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);	
+                	if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+    					Calendar cal = Calendar.getInstance();
+    					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+    					applicantDetail.setBusinessStartDate(cal.getTime());
+    				}
+                	updateEkycIdForApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), applicantDetail);
+                }
                 applicantRepository.save(applicantDetail);
                 
                 // Updating Flag
@@ -130,111 +198,192 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
                             finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
                 }
-                EmployerRequest req = new EmployerRequest();
-                req.setApplicationId(plRetailApplicantRequest.getApplicationId());
-                String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
-                String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
-                if(plRetailApplicantRequest.getKid()!=null) {
-                	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
-                	req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName(),name , applicantDetail.getMobile(), applicantDetail.getEmail()));
-                	epfoAsyncComponent.callAPI(req);
-                }
             } else {
             	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(plRetailApplicantRequest.getCoAppId(), true);
     			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
-    				BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
-                    coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
-                    coApplicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
-                    coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
-                    coApplicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
-                    coApplicantDetail.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment());
-    				if (plRetailApplicantRequest.getContactAddress() != null) {
-    					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
-    					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
-    					coApplicantDetail.setAddressLandmark(plRetailApplicantRequest.getContactAddress().getLandMark());
-    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getCityId())) {
-    						coApplicantDetail.setAddressCity(plRetailApplicantRequest.getContactAddress().getCityId().intValue());	
-    					}
-    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getStateId())) {
-    						coApplicantDetail.setAddressState(plRetailApplicantRequest.getContactAddress().getStateId().intValue());	
-    					}
-    					coApplicantDetail.setAddressCountry(plRetailApplicantRequest.getContactAddress().getCountryId());
-    					coApplicantDetail.setAddressDistrictMappingId(plRetailApplicantRequest.getContactAddress().getDistrictMappingId());
-    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())) {
-    						coApplicantDetail.setAddressPincode(BigInteger.valueOf(plRetailApplicantRequest.getContactAddress().getPincode()));	
-    					}
-    					
-    		        }
-    				if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
-    					Calendar cal = Calendar.getInstance();
-    					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
-    					coApplicantDetail.setBusinessStartDate(cal.getTime());
-    				}
-    				coApplicantDetail.setEmail(plRetailApplicantRequest.getEmail());
+    				if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.BASIC_INFO) {
+                        coApplicantDetail.setTitleId(plRetailApplicantRequest.getTitleId());
+                        coApplicantDetail.setFirstName(plRetailApplicantRequest.getFirstName());
+                        coApplicantDetail.setMiddleName(plRetailApplicantRequest.getMiddleName());
+                        coApplicantDetail.setLastName(plRetailApplicantRequest.getLastName());
+                        coApplicantDetail.setGenderId(plRetailApplicantRequest.getGenderId());
+                        coApplicantDetail.setPan(plRetailApplicantRequest.getPan());
+                        coApplicantDetail.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
+                        coApplicantDetail.setMobile(plRetailApplicantRequest.getMobile());
+                        coApplicantDetail.setEducationQualification(plRetailApplicantRequest.getEducationQualification());
+                        coApplicantDetail.setStatusId(plRetailApplicantRequest.getStatusId());
+                        coApplicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
+                        coApplicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
+                        coApplicantDetail.setContactNo(plRetailApplicantRequest.getContactNo());
+                        coApplicantDetail.setEmail(plRetailApplicantRequest.getEmail());
+                        coApplicantDetail.setCompanyName(plRetailApplicantRequest.getCompanyName());
+                        coApplicantDetail.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment());
+                        coApplicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
+                        coApplicantDetail.setCategory(plRetailApplicantRequest.getCategory());
+                        coApplicantDetail.setFatherName(plRetailApplicantRequest.getFatherName());
+                        coApplicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+                        coApplicantDetail.setNetworth(plRetailApplicantRequest.getNetworth());
+                        coApplicantDetail.setIsBasicInfoFilled(plRetailApplicantRequest.getIsBasicInfoFilled());
+                        
+                    } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
+                    	coApplicantDetail.setIsContactInfoFilled(plRetailApplicantRequest.getIsContactInfoFilled());
+                    	coApplicantDetail.setResidenceType(plRetailApplicantRequest.getResidenceType());
+                    	coApplicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
+                    	coApplicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
+                    	if (plRetailApplicantRequest.getContactAddress() != null) {
+        					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
+        					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
+        					coApplicantDetail.setAddressLandmark(plRetailApplicantRequest.getContactAddress().getLandMark());
+        					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getCityId())) {
+        						coApplicantDetail.setAddressCity(plRetailApplicantRequest.getContactAddress().getCityId().intValue());	
+        					}
+        					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getStateId())) {
+        						coApplicantDetail.setAddressState(plRetailApplicantRequest.getContactAddress().getStateId().intValue());	
+        					}
+        					coApplicantDetail.setAddressCountry(plRetailApplicantRequest.getContactAddress().getCountryId());
+        					coApplicantDetail.setAddressDistrictMappingId(plRetailApplicantRequest.getContactAddress().getDistrictMappingId());
+        					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())) {
+        						coApplicantDetail.setAddressPincode(BigInteger.valueOf(plRetailApplicantRequest.getContactAddress().getPincode()));	
+        					}
+        					
+        		        }
+                    } else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
+                    	coApplicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
+                    	coApplicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
+                    	coApplicantDetail.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith());
+                    	coApplicantDetail.setCentralGovId(plRetailApplicantRequest.getCentralGovId());
+                    	coApplicantDetail.setStateGovId(plRetailApplicantRequest.getStateGovId());
+                    	coApplicantDetail.setPsuId(plRetailApplicantRequest.getPsuId());
+                    	//coApplicantDetail.setCorporateId(plRetailApplicantRequest.getCorporateId());
+                    	coApplicantDetail.setEduInstId(plRetailApplicantRequest.getEduInstId());
+                    	coApplicantDetail.setBankNameId(plRetailApplicantRequest.getBankNameId());
+                    	coApplicantDetail.setInsuranceNameId(plRetailApplicantRequest.getInsuranceNameId());
+                    	coApplicantDetail.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+                    	coApplicantDetail.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus());
+                    	coApplicantDetail.setCompanyName(plRetailApplicantRequest.getCompanyName());
+                    	coApplicantDetail.setDesignation(plRetailApplicantRequest.getDesignation());
+                    	coApplicantDetail.setGrossMonthlyIncome(plRetailApplicantRequest.getGrossMonthlyIncome());
+                    	coApplicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+                    	if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+        					Calendar cal = Calendar.getInstance();
+        					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+        					coApplicantDetail.setBusinessStartDate(cal.getTime());
+        				}
+                    	coApplicantDetail.setCurrentJobMonth(plRetailApplicantRequest.getCurrentJobMonth());
+                    	coApplicantDetail.setCurrentJobYear(plRetailApplicantRequest.getCurrentJobYear());
+                    	coApplicantDetail.setTotalExperienceMonth(plRetailApplicantRequest.getTotalExperienceMonth());
+                    	coApplicantDetail.setTotalExperienceYear(plRetailApplicantRequest.getTotalExperienceYear());
+                    	coApplicantDetail.setEmployedWithOther(plRetailApplicantRequest.getEmployedWithOther());
+                    	coApplicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
+                    	updateEkycIdForCoApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), coApplicantDetail);
+                    }  else if(plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
+                    	saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
+                    } else {
+                    	BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
+                    	if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+        					Calendar cal = Calendar.getInstance();
+        					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+        					coApplicantDetail.setBusinessStartDate(cal.getTime());
+        				}
+                    	if (plRetailApplicantRequest.getContactAddress() != null) {
+        					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
+        					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
+        					coApplicantDetail.setAddressLandmark(plRetailApplicantRequest.getContactAddress().getLandMark());
+        					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getCityId())) {
+        						coApplicantDetail.setAddressCity(plRetailApplicantRequest.getContactAddress().getCityId().intValue());	
+        					}
+        					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getStateId())) {
+        						coApplicantDetail.setAddressState(plRetailApplicantRequest.getContactAddress().getStateId().intValue());	
+        					}
+        					coApplicantDetail.setAddressCountry(plRetailApplicantRequest.getContactAddress().getCountryId());
+        					coApplicantDetail.setAddressDistrictMappingId(plRetailApplicantRequest.getContactAddress().getDistrictMappingId());
+        					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())) {
+        						coApplicantDetail.setAddressPincode(BigInteger.valueOf(plRetailApplicantRequest.getContactAddress().getPincode()));	
+        					}
+        					
+        		        }
+                    	updateEkycIdForCoApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), coApplicantDetail);
+                    }
     				coApplicantDetail.setModifiedBy(plRetailApplicantRequest.getUserId());
     				coApplicantDetail.setModifiedDate(new Date());
     				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
+    				coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
+    				coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
     				coApplicantDetailRepository.save(coApplicantDetail);
-    				EmployerRequest req = new EmployerRequest();
-	                req.setApplicationId(plRetailApplicantRequest.getApplicationId());
-	                req.setCoAppId(plRetailApplicantRequest.getCoAppId());
-	                String middleName = !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())? coApplicantDetail.getMiddleName():"";
-	                String name=coApplicantDetail.getFirstName()+ " "+ middleName  +" "+ coApplicantDetail.getLastName();
-	                if(plRetailApplicantRequest.getKid()!=null) {
-	                	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
-	                	req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), coApplicantDetail.getCompanyName(),name , coApplicantDetail.getMobile(), coApplicantDetail.getEmail()));
-	                	epfoAsyncComponent.callAPI(req);
-	                }
     			}
             }
-            
-            
-            
-            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
-            if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
-                logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
-                for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
-                	
-                    FinancialArrangementsDetail saveFinObj = null;
-                    if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                        saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
-                        saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
-                        if(plRetailApplicantRequest.getCoAppId() != null){
-                        	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
-                        	saveFinObj.setDirectorBackgroundDetail(plRetailApplicantRequest.getCoAppId());
-                        } else {
-                        	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
-                        }
-                        saveFinObj.setCreatedBy(userId);
-                        saveFinObj.setCreatedDate(new Date());
-                        saveFinObj.setIsActive(true);
-                    } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE);
-                        saveFinObj.setModifiedBy(userId);
-                        saveFinObj.setModifiedDate(new Date());
-                    }
-                    
-                    if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
-                    	if(reqObj.getIsManuallyAdded() != null && reqObj.getIsManuallyAdded() == false) {
-                    		creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
-                    		saveFinObj.setIsManuallyAdded(false);
-                    	}
-                    	saveFinObj.setAmount(null);
-                    	saveFinObj.setEmi(null);
-                    }
-                    
-                    financialArrangementDetailsRepository.save(saveFinObj);
-                }
-            }
-
             return true;
 
         } catch (Exception e) {
             logger.error("Error while Saving Retail Profile :- ",e);
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
+    
+    private void updateEkycIdForApplicant(Long applicationId,String kid,RetailApplicantDetail applicantDetail) {
+    	EmployerRequest req = new EmployerRequest();
+        req.setApplicationId(applicationId);
+        String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
+        String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
+        if(kid != null) {
+        	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(kid));
+        	req.setEmployerVerificationRequest(new EmployerVerificationRequest(kid, applicantDetail.getCompanyName(),name , applicantDetail.getMobile(), applicantDetail.getEmail()));
+        	epfoAsyncComponent.callAPI(req);
+        }
+    }
+
+    private void updateEkycIdForCoApplicant(Long applicationId,String kid,CoApplicantDetail coApplicantDetail) {
+    	EmployerRequest req = new EmployerRequest();
+        req.setApplicationId(applicationId);
+        req.setCoAppId(coApplicantDetail.getId());
+        String middleName = !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())? coApplicantDetail.getMiddleName():"";
+        String name=coApplicantDetail.getFirstName()+ " "+ middleName  +" "+ coApplicantDetail.getLastName();
+        if(kid != null) {
+        	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(kid));
+        	req.setEmployerVerificationRequest(new EmployerVerificationRequest(kid, coApplicantDetail.getCompanyName(),name , coApplicantDetail.getMobile(), coApplicantDetail.getEmail()));
+        	epfoAsyncComponent.callAPI(req);
+        }
+    }
+    
+    private void saveFinancialArrangementDetails(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) {
+    	List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
+        if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
+            logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
+            for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+            	
+                FinancialArrangementsDetail saveFinObj = null;
+                if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                    saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                }
+                if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                    saveFinObj = new FinancialArrangementsDetail();
+                    BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
+                    if(plRetailApplicantRequest.getCoAppId() != null){
+                    	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                    	saveFinObj.setDirectorBackgroundDetail(plRetailApplicantRequest.getCoAppId());
+                    } else {
+                    	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                    }
+                    saveFinObj.setCreatedBy(userId);
+                    saveFinObj.setCreatedDate(new Date());
+                    saveFinObj.setIsActive(true);
+                } else {
+                    BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE);
+                    saveFinObj.setModifiedBy(userId);
+                    saveFinObj.setModifiedDate(new Date());
+                }
+                
+                if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
+                	if(reqObj.getIsManuallyAdded() != null && reqObj.getIsManuallyAdded() == false) {
+                		creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
+                		saveFinObj.setIsManuallyAdded(false);
+                	}
+                	saveFinObj.setAmount(null);
+                	saveFinObj.setEmi(null);
+                }
+                
+                financialArrangementDetailsRepository.save(saveFinObj);
+            }
         }
     }
     

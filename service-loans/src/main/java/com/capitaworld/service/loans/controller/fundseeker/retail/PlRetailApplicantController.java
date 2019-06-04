@@ -414,25 +414,25 @@ public class PlRetailApplicantController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value());
-            if(contactInfoReq.getType() == 1) {//BASIC INFO
+            if(contactInfoReq.getType() == CommonUtils.RetailOneformType.BASIC_INFO) {//BASIC INFO
             	RetailOnformBasicInfoReq oneformBasicInfo = plRetailApplicantService.getOneformBasicInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
             	if(oneformBasicInfo != null) {
             		loansResponse.setData(oneformBasicInfo);
             		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             	}
-            } else if(contactInfoReq.getType() == 2) {//CONTACT INFO
+            } else if(contactInfoReq.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {//CONTACT INFO
             	RetailOnformContactInfoReq oneformContactInfo = plRetailApplicantService.getOneformContactInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
             	if(oneformContactInfo != null) {
             		loansResponse.setData(oneformContactInfo);
             		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             	}
-            } else if(contactInfoReq.getType() == 3) {//EMPLOYMENT INFO
+            } else if(contactInfoReq.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {//EMPLOYMENT INFO
             	RetailOnformEmploymentInfoReq oneformEmploymentInfo = plRetailApplicantService.getOneformEmploymentInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
             	if(oneformEmploymentInfo != null) {
             		loansResponse.setData(oneformEmploymentInfo);
             		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             	}
-            } else if(contactInfoReq.getType() == 4) {//CREADIT INFO
+            } else if(contactInfoReq.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {//CREADIT INFO
             	List<FinancialArrangementsDetailRequest> oneformCreditInfo = plRetailApplicantService.getOneformCreditInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
             	if(oneformCreditInfo != null) {
             		loansResponse.setData(oneformCreditInfo);
