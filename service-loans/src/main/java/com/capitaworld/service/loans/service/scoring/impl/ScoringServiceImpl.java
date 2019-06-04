@@ -2054,7 +2054,6 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.LOAN_TO_INCOME_RATIO:
-        					scoreParameterRetailRequest.setLoanAmtProposed(retailApplicantDetail.getLoanAmountRequired());
         					scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.INCOME_TO_INSTALLMENT_RATIO:
@@ -2567,7 +2566,6 @@ public class ScoringServiceImpl implements ScoringService {
         				}
         				break;
         			case ScoreParameter.Retail.HomeLoan.LOAN_TO_INCOME_RATIO:
-    					scoreParameterRetailRequest.setLoanAmtProposed(loanAmount);
     					scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
         				break;
         			case ScoreParameter.Retail.HomeLoan.INCOME_TO_INSTALLMENT_RATIO:
