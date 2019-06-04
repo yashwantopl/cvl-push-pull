@@ -2186,7 +2186,6 @@ public class ScoringServiceImpl implements ScoringService {
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         Integer minBankRelationshipInMonths = null;
-        bankingRelationlRepository.listBankRelationAppId(applicationId);
 //        HLEligibilityRequest hlEligibilityRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
