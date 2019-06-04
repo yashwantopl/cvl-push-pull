@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.eligibility.exceptions.EligibilityExceptions;
+import com.capitaworld.api.eligibility.model.CoApplicantEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
@@ -2149,8 +2150,8 @@ public class ScoringServiceImpl implements ScoringService {
             	logger.error("Error in Getting CIBIL infor like DPD and Score == >{}",e);
             }
         	
-            EligibilityResponse monthlyIncomeForCoApplicant = null;
-            Object[] incomeFromEligibility = null;
+            List<CoApplicantEligibilityRequest> monthlyIncomeForCoApplicant = null;
+            CoApplicantEligibilityRequest incomeFromEligibility = null;
 			try {
 				List<Long> coAppIds = new ArrayList<>(1);
 				coAppIds.add(coApplicantId);
@@ -2158,19 +2159,16 @@ public class ScoringServiceImpl implements ScoringService {
 			} catch (EligibilityExceptions e) {
 				logger.error("Error while Getting MonthlyIncome Details == >{}",e);
 			}
-			if(!CommonUtils.isObjectNullOrEmpty(monthlyIncomeForCoApplicant) 
-					&& monthlyIncomeForCoApplicant.getStatus() == HttpStatus.OK.value() 
-					&& !CommonUtils.isListNullOrEmpty(monthlyIncomeForCoApplicant.getListData())
-					&& !CommonUtils.isObjectNullOrEmpty(monthlyIncomeForCoApplicant.getListData().get(0))) {
+			if(!CommonUtils.isListNullOrEmpty(monthlyIncomeForCoApplicant)) {
 				try {
-					incomeFromEligibility = (Object [])monthlyIncomeForCoApplicant.getListData().get(0);
+					incomeFromEligibility = monthlyIncomeForCoApplicant.get(0);
 					logger.info("incomeFromEligibility===============>{}",incomeFromEligibility);
 				}catch(Exception e) {
 					logger.error("Error while Casting Object of CoApplicant Income====>{}",e);
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(incomeFromEligibility)) {
-					netMonthlyIncome = Double.valueOf(incomeFromEligibility[0].toString());
-                    grossMonthlyIncome = Double.valueOf(incomeFromEligibility[8].toString());
+					netMonthlyIncome = Double.valueOf(incomeFromEligibility.getNetMonthlyIncome());
+                    grossMonthlyIncome = Double.valueOf(incomeFromEligibility.getGrossMonthlyIncome());
                     logger.info("Net Monthly Income For ApplicationId and CoApplicant Id======{}======>{}====>{}",applicationId,netMonthlyIncome,coApplicantId);
                     logger.info("Gross Annual Income For ApplicationId and CoApplicant Id======{}======>{}====>{}",applicationId,grossMonthlyIncome,coApplicantId);
 				}
