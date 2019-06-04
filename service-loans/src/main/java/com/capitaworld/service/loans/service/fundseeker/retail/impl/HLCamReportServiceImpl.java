@@ -200,17 +200,17 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
-			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress())) {
-				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getPremiseNumber(),null) + "," : "");
-				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getStreetName(),null) + "," : "");
-				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getLandMark()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getLandMark(),null) + "," : "");
-				map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(plRetailApplicantRequest.getContactAddress().getCountryId())));
-				map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(plRetailApplicantRequest.getContactAddress().getStateId())));
-				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(plRetailApplicantRequest.getContactAddress().getCityId())));
-				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())?plRetailApplicantRequest.getContactAddress().getPincode() : "");
+			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest)) {
+				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressPremiseName()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressPremiseName(),null) + "," : "");
+				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressStreetName(),null) + "," : "");
+				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressLandmark()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressLandmark(),null) + "," : "");
+				map.put("registeredAddCountry", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressCountry()) ? StringEscapeUtils.escapeXml(getCountryName(plRetailApplicantRequest.getAddressCountry().intValue())) : "");
+				map.put("registeredAddState", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressState()) ? StringEscapeUtils.escapeXml(getStateName(plRetailApplicantRequest.getAddressState().intValue())) : "");
+				map.put("registeredAddCity", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressCity()) ? StringEscapeUtils.escapeXml(getCityName(plRetailApplicantRequest.getAddressCity())) : "");
+				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressPincode())?plRetailApplicantRequest.getAddressPincode() : "");
 				try {
-					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getDistrictMappingId())) {
-						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(plRetailApplicantRequest.getContactAddress().getDistrictMappingId()),null));				
+					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressDistrictMappingId())) {
+						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(plRetailApplicantRequest.getAddressDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
