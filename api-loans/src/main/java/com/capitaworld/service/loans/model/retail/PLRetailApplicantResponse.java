@@ -69,7 +69,6 @@ public class PLRetailApplicantResponse implements Serializable {
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
     private List<CreditCardsDetailRequest> creditCardsDetailRequestList;
     private List<BankRelationshipRequest> bankRelationShipList;
-    	
     private Boolean isApplicantDetailsFilled;
     
     //FOR PL CAM REPORT
@@ -88,12 +87,10 @@ public class PLRetailApplicantResponse implements Serializable {
     private String address;
     private String coApplicantNameAsPerITR;
     private String tenureReq;
-    
+    private String companyName;
     private Object coAppItrXml;
     private Object coAppItrPdf;
-    
     private String OccupationHL;
-    
     private String scoringModelName;
     private Object dataList;
     private Object dataObject;
@@ -719,6 +716,14 @@ public class PLRetailApplicantResponse implements Serializable {
 
 	public void setCoAppId(Long coAppId) {
 		this.coAppId = coAppId;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 	
     
