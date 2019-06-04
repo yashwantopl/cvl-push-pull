@@ -1189,6 +1189,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 	    			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
 	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
 	    		}
+				res.setBirthDate(coApplicantDetail.getBirthDate());
 				return res;
 			}
 		} else {
@@ -1202,6 +1203,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 	    			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
 	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
 	    		}
+				res.setBirthDate(applicantDetail.getBirthDate());
 				return res;	
 			}
 		}

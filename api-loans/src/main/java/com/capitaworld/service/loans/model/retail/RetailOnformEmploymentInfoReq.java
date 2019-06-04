@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author harshit
@@ -43,6 +44,17 @@ public class RetailOnformEmploymentInfoReq implements Serializable {
     private Integer totalExperienceMonth;
     private Integer totalExperienceYear;
     private String employedWithOther;
+    private Date birthDate;
+    
+    
+    
+    
+	public Date getBirthDate() {
+		return birthDate;
+	}
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
+	}
 	public Long getId() {
 		return id;
 	}
