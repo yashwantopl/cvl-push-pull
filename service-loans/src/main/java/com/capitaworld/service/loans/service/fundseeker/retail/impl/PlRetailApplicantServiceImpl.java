@@ -1316,6 +1316,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
 				BeanUtils.copyProperties(coApplicantDetail, res);
 				res.setIsItrSkip(coApplicantDetail.getIsItrSkip());
+				res.setResidentialStatus(coApplicantDetail.getNationality());
+				res.setNoOfDependent(coApplicantDetail.getNoDependent());
 				return res;
 			}
 		} else {
@@ -1342,6 +1344,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
 	    		}
 				res.setBirthDate(coApplicantDetail.getBirthDate());
+				res.setSalaryMode(coApplicantDetail.getModeOfReceipt());
 				return res;
 			}
 		} else {
