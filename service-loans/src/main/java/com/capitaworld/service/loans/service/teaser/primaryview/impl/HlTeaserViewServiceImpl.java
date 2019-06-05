@@ -296,18 +296,19 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				/*employment type*/
+				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
 				if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 2) {
-					plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
 				}else if (plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 5) {
-					plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
 				}else if (plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 4) {
-					plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? EmploymentWithRetail.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithRetail.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
 				}
 				
 				
 				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
 				/*employment with*/
-				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentStatus() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue().toString() : "-");
+				/*plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentStatus() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue().toString() : "-");*/
 				plRetailApplicantResponse.setCurrentEmploymentStatus(plRetailApplicantRequest.getCurrentEmploymentStatus()!= null ? 	EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus()!= null ? 	OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + "" +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
