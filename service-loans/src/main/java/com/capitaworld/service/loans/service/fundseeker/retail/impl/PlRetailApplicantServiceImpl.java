@@ -271,6 +271,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
         					coApplicantDetail.setBusinessStartDate(cal.getTime());
         				}
+                    	coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
                     	coApplicantDetail.setCurrentJobMonth(plRetailApplicantRequest.getCurrentJobMonth());
                     	coApplicantDetail.setCurrentJobYear(plRetailApplicantRequest.getCurrentJobYear());
                     	coApplicantDetail.setTotalExperienceMonth(plRetailApplicantRequest.getTotalExperienceMonth());
