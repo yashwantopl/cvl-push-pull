@@ -248,8 +248,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())) {
         						coApplicantDetail.setAddressPincode(BigInteger.valueOf(plRetailApplicantRequest.getContactAddress().getPincode()));	
         					}
-        					
         		        }
+                    	coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
                     } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
                     	coApplicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
                     	coApplicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
@@ -310,7 +310,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
     				coApplicantDetail.setModifiedBy(plRetailApplicantRequest.getUserId());
     				coApplicantDetail.setModifiedDate(new Date());
-    				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
     				coApplicantDetailRepository.save(coApplicantDetail);
     			}
             }
