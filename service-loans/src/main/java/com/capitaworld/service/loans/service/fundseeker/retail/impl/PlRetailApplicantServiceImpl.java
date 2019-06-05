@@ -311,8 +311,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     				coApplicantDetail.setModifiedBy(plRetailApplicantRequest.getUserId());
     				coApplicantDetail.setModifiedDate(new Date());
     				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
-    				coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
-    				coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
     				coApplicantDetailRepository.save(coApplicantDetail);
     			}
             }
