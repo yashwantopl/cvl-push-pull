@@ -14,7 +14,11 @@ public interface ReferenceRetailDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
+	public Boolean saveOrUpdateCoApplicant(FrameRequest frameRequest) throws LoansException;
+
 	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailList(Long id, int applicationType) throws LoansException;
 
 	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailListByPropsalId(Long proposalId, int applicationType) throws LoansException;
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailListByPropsalIdAndCoAppId(Long proposalId, Long coAppId) throws LoansException;
 }
