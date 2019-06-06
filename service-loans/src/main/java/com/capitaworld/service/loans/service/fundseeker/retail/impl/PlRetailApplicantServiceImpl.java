@@ -281,7 +281,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     	coApplicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
                     	updateEkycIdForCoApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), coApplicantDetail);
                     }  else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
-                    	saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
+                        coApplicantDetail.setIsCreditInfoFilled(plRetailApplicantRequest.getIsCreditInfoFilled());
+    				    saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
                     } else {
                     	BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
                     	if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
