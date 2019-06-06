@@ -256,7 +256,7 @@ public class NhbsController {
 
 			if(CommonUtils.isObjectNullOrEmpty(applicationRequest) ||
 					CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserRoleIdString()) ||
-					(CommonUtils.isObjectNullOrEmpty(applicationRequest.getApplicationStatusId()) && CommonUtils.isObjectNullOrEmpty(applicationRequest.getDdrStatusId()))){
+					(CommonUtils.isObjectNullOrEmpty(applicationRequest.getApplicationStatusId()) && CommonUtils.isObjectNullOrEmpty(applicationRequest.getDdrStatusId()) && CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId()))){
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}

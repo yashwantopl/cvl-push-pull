@@ -15,16 +15,19 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
  */
 public interface BankingRelationlRepository extends JpaRepository<BankingRelation, Long> {
 
-	@Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true")
+	@Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true and o.coApplicantId IS NULL")
 	public List<BankingRelation> listBankRelationAppId(@Param("id")Long id);
 
-    @Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true and co_applicant_id =:coAppId")
+    @Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true and o.coApplicantId =:coAppId")
     public List<BankingRelation> listBankRelationAppId(@Param("id")Long id,@Param("coAppId") Long coApplicantId);
 	@Modifying
 	@Query("update BankingRelation pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 	
-	@Query("select (((YEAR(NOW()) - MIN(o.sinceYear)) * 12) + o.sinceMonth)  from BankingRelation o where o.applicationId = :id and o.bank =:bankName and o.isActive = true")
+	@Query("select (((YEAR(NOW()) - MIN(o.sinceYear)) * 12) + o.sinceMonth)  from BankingRelation o where o.applicationId = :id and o.bank =:bankName and o.isActive = true and o.coApplicantId IS NULL")
 	public Integer getMinRelationshipInMonthByApplicationAndOrgName(@Param("id")Long id,@Param("bankName")String bankName);
+	
+	@Query("select (((YEAR(NOW()) - MIN(o.sinceYear)) * 12) + o.sinceMonth)  from BankingRelation o where o.applicationId = :id and o.bank =:bankName and o.isActive = true and o.coApplicantId =:coAppId")
+	public Integer getMinRelationshipInMonthByApplicationAndOrgNameAndCoApplicantId(@Param("id")Long id,@Param("bankName")String bankName,@Param("coAppId")Long coAppId);
 
 }
