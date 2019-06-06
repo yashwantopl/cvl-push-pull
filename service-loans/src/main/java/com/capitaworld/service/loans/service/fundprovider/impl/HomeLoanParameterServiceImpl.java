@@ -181,6 +181,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		fPParameterMappingService.inactiveAndSave(homeLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.EMPLOYMENT_WITH, homeLoanParameterRequest.getEmploymentWithIds());
 		
+		fPParameterMappingService.inactiveAndSave(homeLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, homeLoanParameterRequest.getSelfEmployedWithIds());
+		
 		//Saving Loan Purpose Amount Mapping
 		loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), homeLoanParameterRequest.getId());
 
@@ -283,6 +286,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		
 		homeLoanParameterRequest.setEmploymentWithIds(fPParameterMappingService
 				.getParameters(homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.EMPLOYMENT_WITH));
+		
+		homeLoanParameterRequest.setSelfEmployedWithIds(fPParameterMappingService
+				.getParameters(homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH));
 
 		//Getting Loan Purpose Amount Mapping
 		homeLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(homeLoanParameterRequest.getId()));
@@ -456,6 +462,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		
 		homeLoanParameterRequest.setEmploymentWithIds(fPParameterMappingService.getParametersTemp(
 				homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.EMPLOYMENT_WITH));
+		
+		homeLoanParameterRequest.setSelfEmployedWithIds(fPParameterMappingService.getParametersTemp(
+				homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH));
 
 		//Getting Loan Purpose Amount Mapping
 		homeLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(homeLoanParameterRequest.getId()));
@@ -565,6 +574,9 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		
 		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.EMPLOYMENT_WITH, homeLoanParameterRequest.getEmploymentWithIds());
+		
+		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, homeLoanParameterRequest.getSelfEmployedWithIds());
 		
 		//Saving Loan Purpose Amount Mapping
 		loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), homeLoanParameterRequest.getId());
