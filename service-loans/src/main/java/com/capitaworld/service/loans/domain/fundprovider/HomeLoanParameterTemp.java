@@ -182,6 +182,13 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "is_employment_with_mandatory")
 	private Boolean isEmploymentWithMandatory = false;
 	
+	
+	// Eligibile Professional From
+	@Column(name = "is_self_employed_with_display")
+	private Boolean isSelfEmployedWithDisplay = false;
+	@Column(name = "is_self_employed_with_mandatory")
+	private Boolean isSelfEmployedWithMandatory = false;
+	
 	// Loan to Value (LTV) %
 	@Column(name = "min_ltv")
 	private Double minLtv;
@@ -1077,5 +1084,22 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setIsEmploymentWithMandatory(Boolean isEmploymentWithMandatory) {
 		this.isEmploymentWithMandatory = isEmploymentWithMandatory;
 	}
-		
+
+	public Boolean getIsSelfEmployedWithDisplay() {
+		return isSelfEmployedWithDisplay;
+	}
+
+
+	public void setIsSelfEmployedWithDisplay(Boolean isSelfEmployedWithDisplay) {
+		this.isSelfEmployedWithDisplay = isSelfEmployedWithDisplay;
+	}
+
+
+	public Boolean getIsSelfEmployedWithMandatory() {
+		return isSelfEmployedWithMandatory;
+	}
+
+	public void setIsSelfEmployedWithMandatory(Boolean isSelfEmployedWithMandatory) {
+		this.isSelfEmployedWithMandatory = isSelfEmployedWithMandatory;
+	}
 }
