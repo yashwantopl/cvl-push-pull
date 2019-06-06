@@ -87,7 +87,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getClientId()) ? userId : finalHomeLoanDetailRequest.getClientId());
             FinalHomeLoanCoApplicantDetail finalHomeLoanDetailTmp = finalHomeLoanCoAppDetailRepository
-                    .getByApplicationAndProposalId(finalHomeLoanDetailRequest.getApplicationId(), finalHomeLoanDetailRequest.getProposalId());
+                    .getByApplicationAndProposalIdAndCoAppId(finalHomeLoanDetailRequest.getApplicationId(), finalHomeLoanDetailRequest.getProposalId(),finalHomeLoanDetailRequest.getCoApplicantId());
             if (finalHomeLoanDetailTmp == null) {
                 finalHomeLoanDetailTmp = new FinalHomeLoanCoApplicantDetail();
                 finalHomeLoanDetailTmp.setCreatedBy(userId);
@@ -285,8 +285,8 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             finalHomeLoanDetailRequest.setApplicationId(applicationId);
             finalHomeLoanDetailRequest.setProposalId(proposalId);
             finalHomeLoanDetailRequest.setCoApplicantId(coAppId);
-            FinalHomeLoanCoApplicantDetail finalHomeLoanDetail = finalHomeLoanCoAppDetailRepository.getByApplicationAndProposalId(applicationId,
-                    proposalId);
+            FinalHomeLoanCoApplicantDetail finalHomeLoanDetail = finalHomeLoanCoAppDetailRepository.getByApplicationAndProposalIdAndCoAppId(applicationId,
+                    proposalId,coAppId);
             if (finalHomeLoanDetail == null) {
                 finalHomeLoanDetail = new FinalHomeLoanCoApplicantDetail();
                 addOneformDetails(finalHomeLoanDetailRequest);
@@ -332,7 +332,6 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                 return finalHomeLoanDetailRequest;
             }
             BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
-            finalHomeLoanDetail.setEmployeeType(finalHomeLoanDetailRequest.getEmployeeType());
             Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
             finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
             finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());

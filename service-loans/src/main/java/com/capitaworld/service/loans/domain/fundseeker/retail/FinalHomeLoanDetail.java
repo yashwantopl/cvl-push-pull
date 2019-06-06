@@ -11,8 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -39,6 +37,9 @@ public class FinalHomeLoanDetail implements Serializable {
 	@JoinColumn(name = "proposal_mapping_id")
 	private ApplicationProposalMapping proposalId;
 
+	@Column(name="name")
+	private String name;
+
 	@Column(name="father_full_name")
 	private String fatherFullName;
 
@@ -57,10 +58,10 @@ public class FinalHomeLoanDetail implements Serializable {
 	@Column(name="place_of_birth")
 	private String placeOfBirth;
 
-	@Column(name="no_of_childeren")
-	private Integer noOfChilderen;
+	@Column(name="no_of_children")
+	private Integer noOfChildren;
 
-		@Column(name="permanent_premise_no")
+	@Column(name="permanent_premise_no")
 	private Integer permanentPremiseNo;
 
 	@Column(name="permanent_street_name")
@@ -150,6 +151,9 @@ public class FinalHomeLoanDetail implements Serializable {
 	@Column(name="modified_by")
 	private Long modifiedBy;
 
+	@Column(name="status_id")
+	private Integer statusId;
+
 	public Long getId() {
 		return id;
 	}
@@ -222,12 +226,12 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.placeOfBirth = placeOfBirth;
 	}
 
-	public Integer getNoOfChilderen() {
-		return noOfChilderen;
+	public Integer getNoOfChildren() {
+		return noOfChildren;
 	}
 
-	public void setNoOfChilderen(Integer noOfChilderen) {
-		this.noOfChilderen = noOfChilderen;
+	public void setNoOfChildren(Integer noOfChildren) {
+		this.noOfChildren = noOfChildren;
 	}
 
 	public Integer getPermanentPremiseNo() {
@@ -468,5 +472,21 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	public void setModifiedBy(Long modifiedBy) {
 		this.modifiedBy = modifiedBy;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
 	}
 }

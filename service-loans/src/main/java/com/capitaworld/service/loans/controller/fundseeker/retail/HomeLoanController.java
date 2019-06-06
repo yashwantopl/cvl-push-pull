@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.model.retail.*;
+import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanCoAppService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class HomeLoanController {
 
 	@Autowired
 	private FinalHomeLoanService finalHomeLoanService;
+
+	@Autowired
+	private FinalHomeLoanCoAppService finalHomeLoanCoAppService;
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(
@@ -146,6 +150,76 @@ public class HomeLoanController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving Final Home Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "${final}/saveCoApp", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCoAppFinal(@RequestBody FinalHomeLoanCoApplicantDetailRequest finalHomeLoanDetailRequest,
+												   HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			// request must not be null
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				finalHomeLoanDetailRequest.setClientId(clientId);
+			}
+
+			if (finalHomeLoanDetailRequest == null) {
+				logger.warn("finalHomeLoanDetailRequest Object can not be empty ==>" + finalHomeLoanDetailRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			if (finalHomeLoanDetailRequest.getApplicationId() == null) {
+				logger.warn("Application ID must not be empty ==>" + finalHomeLoanDetailRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			boolean response = finalHomeLoanCoAppService.saveOrUpdate(finalHomeLoanDetailRequest, userId);
+			if (response) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saving Final Home Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "${final}/getCoApp/{coAppId}/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCoAppFinal(@PathVariable("coAppId") Long coAppId,@PathVariable("applicationId") Long applicationId,@PathVariable("proposalId") Long proposalId,
+												  HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (applicationId == null) {
+				logger.warn("ID Require to get Final Home Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			FinalHomeLoanCoApplicantDetailRequest response = finalHomeLoanCoAppService.get(coAppId,applicationId, userId,proposalId);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Final home Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

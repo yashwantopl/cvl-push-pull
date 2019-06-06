@@ -59,6 +59,7 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 	private String currencyValue;
 	private String finalFilledCount;
 	private Boolean sameAsPermanentAddress;
+	private Integer statusId;
 
 	public Long getId() {
 		return id;
@@ -394,5 +395,13 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 
 	public void setCoApplicantId(Long coApplicantId) {
 		this.coApplicantId = coApplicantId;
+	}
+
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
 	}
 }

@@ -146,6 +146,9 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 	@Column(name="co_applicant_id")
 	private Long coApplicantId;
 
+	@Column(name = "status_id")
+	private Integer statusId;
+
 	public Long getId() {
 		return id;
 	}
@@ -480,5 +483,13 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
 	}
 }

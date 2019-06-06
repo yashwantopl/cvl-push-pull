@@ -162,6 +162,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 		finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
 		finalHomeLoanDetailRequest.setEducationalQualification(EducationStatusRetailMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
 		finalHomeLoanDetailRequest.setEmployeeType(retailApplicantDetail.getEmploymentType());
+		finalHomeLoanDetailRequest.setStatusId(retailApplicantDetail.getStatusId());
 	}
 
     private void addEmployementDetails(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest) {
@@ -296,21 +297,38 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 		try {
 			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(applicationId,
 					proposalId);
-            if (finalHomeLoanDetail == null) {
-                finalHomeLoanDetail = new FinalHomeLoanDetail();
-                finalHomeLoanDetail.setCreatedBy(userId);
-                finalHomeLoanDetail.setCreatedDate(new Date());
-                finalHomeLoanDetail.setIsActive(true);
-                finalHomeLoanDetail
-                        .setApplicationId(new LoanApplicationMaster(applicationId));
-                finalHomeLoanDetail.setProposalId(new ApplicationProposalMapping(proposalId));
-            }
 			FinalHomeLoanDetailRequest finalHomeLoanDetailRequest = new FinalHomeLoanDetailRequest();
 			finalHomeLoanDetailRequest.setApplicationId(applicationId);
 			finalHomeLoanDetailRequest.setProposalId(proposalId);
-			finalHomeLoanDetailRequest.setEmployeeType(finalHomeLoanDetailRequest.getEmployeeType());
+            if (finalHomeLoanDetail == null) {
+                finalHomeLoanDetail = new FinalHomeLoanDetail();
+				addOneformDetails(finalHomeLoanDetailRequest);
+            }else{
+				if (finalHomeLoanDetail.getCorrespondencePremiseNo() != null) {
+					Address permanentAddress = new Address();
+					permanentAddress.setPremiseNumber(String.valueOf(finalHomeLoanDetail.getPermanentPremiseNo()));
+					permanentAddress.setStreetName(finalHomeLoanDetail.getPermanentStreetName());
+					permanentAddress.setCityId(Long.valueOf(finalHomeLoanDetail.getPermanentCity()));
+					permanentAddress.setStateId(finalHomeLoanDetail.getPermanentState());
+					permanentAddress.setCountryId(finalHomeLoanDetail.getPermanentCountry());
+					permanentAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getPermanentPinCode()));
+					permanentAddress.setLandMark(finalHomeLoanDetail.getPermanentLandmark());
+				}
 
-			addOneformDetails(finalHomeLoanDetailRequest);
+				if (finalHomeLoanDetail.getCorrespondencePremiseNo() != null) {
+					Address correspondenceAddress = new Address();
+					correspondenceAddress.setPremiseNumber(String.valueOf(finalHomeLoanDetail.getCorrespondencePremiseNo()));
+					correspondenceAddress.setStreetName(finalHomeLoanDetail.getCorrespondenceStreetName());
+					correspondenceAddress.setCityId(Long.valueOf(finalHomeLoanDetail.getCorrespondenceCity()));
+					correspondenceAddress.setStateId(finalHomeLoanDetail.getCorrespondenceState());
+					correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCity());
+					correspondenceAddress.setLandMark(finalHomeLoanDetail.getCorrespondenceLandmark());
+					correspondenceAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getCorrespondencePinCode()));
+					finalHomeLoanDetailRequest.setCorrespondenceAddress(correspondenceAddress);
+				}
+				finalHomeLoanDetailRequest.setEmployeeType(finalHomeLoanDetail.getEmployeeType());
+			}
+			//finalHomeLoanDetailRequest.setEmployeeType(finalHomeLoanDetailRequest.getEmployeeType());
 			addEmployementDetails(finalHomeLoanDetailRequest);
             addPropertyDetails(finalHomeLoanDetailRequest);
             addBankAccDetails(finalHomeLoanDetailRequest);
@@ -330,17 +348,6 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 				return finalHomeLoanDetailRequest;
 			}
 			BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
-            if (finalHomeLoanDetail.getCorrespondencePremiseNo() != null) {
-                Address correspondenceAddress = new Address();
-                correspondenceAddress.setPremiseNumber(String.valueOf(finalHomeLoanDetail.getCorrespondencePremiseNo()));
-                correspondenceAddress.setStreetName(finalHomeLoanDetail.getCorrespondenceStreetName());
-                correspondenceAddress.setCityId(Long.valueOf(finalHomeLoanDetail.getCorrespondenceCity()));
-                correspondenceAddress.setStateId(finalHomeLoanDetail.getCorrespondenceState());
-                correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCity());
-                correspondenceAddress.setLandMark(finalHomeLoanDetail.getCorrespondenceLandmark());
-                correspondenceAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getCorrespondencePinCode()));
-                finalHomeLoanDetailRequest.setCorrespondenceAddress(correspondenceAddress);
-            }
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());

@@ -81,7 +81,6 @@ import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentCategory;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
-import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
@@ -1116,7 +1115,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					retailMap.put("caste", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getCastId()) ? CastCategory.getById(retailFinalInfo.getCastId()).getValue() : "-");
 					retailMap.put("noOfChildren", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getNoChildren()) ? retailFinalInfo.getNoChildren() : "-");
 					retailMap.put("diasablityType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDisabilityType()) ? DisabilityType.getById(retailFinalInfo.getDisabilityType()) : "");
-					retailMap.put("ddoOrganizationType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDdoOrganizationType()) ? EmploymentWithRetail.getById(retailFinalInfo.getDdoOrganizationType()) : "");
 					retailMap.put("permanantAddCountry", StringEscapeUtils.escapeXml(getCountryName(retailFinalInfo.getPermanentAddress().getCountryId())));
 					retailMap.put("permanantAddState", StringEscapeUtils.escapeXml(getStateName(retailFinalInfo.getPermanentAddress().getStateId())));
 					retailMap.put("permanantAddCity", StringEscapeUtils.escapeXml(getCityName(retailFinalInfo.getPermanentAddress().getCityId())));
