@@ -2944,7 +2944,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
 			return Collections.emptyList();
 		}
-		if (roleId == CommonUtils.UsersRoles.ADMIN_CHECKER || roleId == CommonUtils.UsersRoles.SMECC || roleId == CommonUtils.UsersRoles.HO) {
+		if (roleId == CommonUtils.UsersRoles.FP_CHECKER || roleId == CommonUtils.UsersRoles.SMECC || roleId == CommonUtils.UsersRoles.HO) {
 			List<Object[]> objList = loanRepository.getSerachProposalListByRoleSP(loginOrgId, reportRequest.getValue(), loginUserId, reportRequest.getNumber().longValue(), businessTypeId, branchId);
 			if (objList.size() > 0) {
 				return setValue(objList, true);
