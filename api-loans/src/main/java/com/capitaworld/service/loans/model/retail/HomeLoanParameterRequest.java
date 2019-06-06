@@ -48,53 +48,18 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isNetMonthlyIncomeRangeDisplay = false;
 	private Boolean isNetMonthlyIncomeRangeMandatory = false;
 
-	// Age of Applicant (Yrs.)
-	// private Double minAge;
-	// private Double maxAge;
-	// private Boolean isAgeDisplay = false;
-	// private Boolean isAgeMandatory = false;
-
-	// Tenure of Loan (Yrs.)
-	// private Double minTenure;
-	// private Double maxTenure;
-	// private Boolean isTenureDisplay = false;
-	// private Boolean isTenureMandatory = false;
-
 	// Purpose Loan
 	private Boolean isPurposeLoanDisplay = false;
 	private Boolean isPurposeLoanMandatory = false;
 
-	// Geographical Market Focus
-	// private Boolean isGeographicalDisplay = false;
-	// private Boolean isGeographicalMandatory = false;
-	// private List<DataRequest> countryList = Collections.emptyList();
-	// private List<DataRequest> stateList = Collections.emptyList();
-	// private List<DataRequest> cityList = Collections.emptyList();
-
-	// Minimum Bureau Score
-	// private Integer minBureauScore;
-	// private Integer maxBureauScore;
-	// private Boolean isBureauScoreDisplay = false;
-	// private Boolean isBureauScoreMandatory = false;
-
-	// Maximum DPDs (Satisfactory with No Default: DPD) (Days) (Past 12 Months)
 	private Integer maxDpds;
 	private Boolean isDpdsDisplay = false;
 	private Boolean isDpdsMandatory = false;
 
-	// Risk Model
-//	private Double minRiskScoreRetail;
-	// private Boolean isRiskScoreRetailDisplay=false;
-	// private Boolean isRiskScoreRetailMandatory=false;
 	private Double minRiskScoreModelCoApp;
 	private Boolean isRiskScoreRetailCoAppDisplay = false;
 	private Boolean isRiskScoreRetailCoAppMandatory = false;
 
-	// Total Job Experience (Yrs.)
-	// private Integer minTotalJobExperience;
-	// private Integer maxTotalJobExperience;
-	// private Boolean isTotalJobExperienceDisplay = false;
-	// private Boolean isTotalJobExperienceMandatory = false;
 
 	// Total Current Job Experience (Yrs.)
 	private Integer minCurrentJobExperience;
@@ -112,12 +77,6 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isLoanPurposeDisplay = false;
 	private Boolean isLoanPurposeMandatory = false;
 
-	// Loan Amount (Rs.)
-	// private Double maxLoanAmount;
-	// private Double minLoanAmount;
-	// private Boolean isLoanAmountDisplay = false;
-	// private Boolean isLoanAmountMandatory = false;
-
 	// Residential Status
 	private List<Integer> residentialStatusIds = Collections.emptyList();
 	private Boolean isResidentialStatusDisplay = false;
@@ -128,20 +87,15 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isBorrowerTypeDisplay = false;
 	private Boolean isBorrowerTypeMandatory = false;
 
-	// Minimum Banking Relationship (Months)
-	// private Integer minBankRelationship;
-	// private Boolean isBankRelationshipDisplay = false;
-	// private Boolean isBankRelationshipMandatory = false;
-
-	// Mode of Salary
-	// private List<Integer> salaryModeIds = Collections.emptyList();
-	// private Boolean isSalaryModeDisplay = false;
-	// private Boolean isSalaryModeMandatory = false;
-
 	// Borrower Salary Account From
 	private List<Integer> borrSalAccIds = Collections.emptyList();
 	private Boolean isBorrSalAccDisplay = false;
 	private Boolean isBorrSalAccMandatory = false;
+	
+	// Borrower Salary Account From
+	private List<Integer> employmentWithIds = Collections.emptyList();
+	private Boolean isEmploymentWithDisplay = false;
+	private Boolean isEmploymentWithMandatory = false;
 
 	// Loan to Value (LTV) %
 	private Double minLtv;
@@ -149,35 +103,6 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isLtvDisplay = false;
 	private Boolean isLtvMandatory = false;
 
-	// Minimum % of Gross Monthly Income as Take Home Pay
-//	private Double minGrssMonIncomeAsHomePaySalIndiv;
-//	private Boolean isGrssMonIncomeAsHomePaySalIndivDisplay = false;
-//	private Boolean isGrssMonIncomeAsHomePaySalIndivMandatory = false;
-//
-//	// Maximum % of Net Income as Permissible EMI
-//	private Double maxNetIncomePermissEMISalIndiv;
-//	private Boolean isNetIncomePermissEMISalIndivDisplay = false;
-//	private Boolean isNetIncomePermissEMISalIndivMandatory = false;
-//
-//	// Maximum Number of Times of Gross Monthly Income to be considered 
-//	private Double maxTimeConsiMonthGrssIncomeSalIndiv;
-//	private Boolean isTimeConsiMonthGrssIncomeSalIndivDisplay = false;
-//	private Boolean isTimeConsiMonthGrssIncomeSalIndivMandatory = false;
-//
-//	// Minimum % of Gross Monthly Income as Take Home Pay
-//	private Double maxGrssMonIncomeAsHomePayOthThnSalIndi;
-//	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiDisplay = false;
-//	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiMandatory = false;
-//
-//	// Maximum % of Net Income as Permissible EMI
-//	private Double maxNetIncomePermissEMIOthThnSalIndi;
-//	private Boolean isNetIncomePermissEMIOthThnSalIndiDisplay = false;
-//	private Boolean isNetIncomePermissEMIOthThnSalIndiMandatory = false;
-//
-//	// Maximum Number of Times of Gross Monthly Income to be considered 
-//	private Double maxTimeConsiMonthGrssIncomeOthThnSalIndi;
-//	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay = false;
-//	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory = false;
 	List<LoanPurposeAmountMappingRequest> loanPurposeAmountMappingRequests = Collections.emptyList();
 
 	private Object workflowData;
@@ -586,4 +511,29 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 			List<LoanPurposeAmountMappingRequest> loanPurposeAmountMappingRequests) {
 		this.loanPurposeAmountMappingRequests = loanPurposeAmountMappingRequests;
 	}
+
+	public List<Integer> getEmploymentWithIds() {
+		return employmentWithIds;
+	}
+
+	public void setEmploymentWithIds(List<Integer> employmentWithIds) {
+		this.employmentWithIds = employmentWithIds;
+	}
+
+	public Boolean getIsEmploymentWithDisplay() {
+		return isEmploymentWithDisplay;
+	}
+
+	public void setIsEmploymentWithDisplay(Boolean isEmploymentWithDisplay) {
+		this.isEmploymentWithDisplay = isEmploymentWithDisplay;
+	}
+
+	public Boolean getIsEmploymentWithMandatory() {
+		return isEmploymentWithMandatory;
+	}
+
+	public void setIsEmploymentWithMandatory(Boolean isEmploymentWithMandatory) {
+		this.isEmploymentWithMandatory = isEmploymentWithMandatory;
+	}
+	
 }
