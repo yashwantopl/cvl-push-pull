@@ -96,6 +96,10 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private List<Integer> employmentWithIds = Collections.emptyList();
 	private Boolean isEmploymentWithDisplay = false;
 	private Boolean isEmploymentWithMandatory = false;
+	
+	private List<Integer> selfEmployedWithIds = Collections.emptyList();
+	private Boolean isSelfEmployedWithDisplay = false;
+	private Boolean isSelfEmployedWithMandatory = false;
 
 	// Loan to Value (LTV) %
 	private Double minLtv;
@@ -535,5 +539,28 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	public void setIsEmploymentWithMandatory(Boolean isEmploymentWithMandatory) {
 		this.isEmploymentWithMandatory = isEmploymentWithMandatory;
 	}
-	
+
+	public List<Integer> getSelfEmployedWithIds() {
+		return selfEmployedWithIds;
+	}
+
+	public void setSelfEmployedWithIds(List<Integer> selfEmployedWithIds) {
+		this.selfEmployedWithIds = selfEmployedWithIds;
+	}
+
+	public Boolean getIsSelfEmployedWithDisplay() {
+		return isSelfEmployedWithDisplay;
+	}
+
+	public void setIsSelfEmployedWithDisplay(Boolean isSelfEmployedWithDisplay) {
+		this.isSelfEmployedWithDisplay = isSelfEmployedWithDisplay;
+	}
+
+	public Boolean getIsSelfEmployedWithMandatory() {
+		return isSelfEmployedWithMandatory;
+	}
+
+	public void setIsSelfEmployedWithMandatory(Boolean isSelfEmployedWithMandatory) {
+		this.isSelfEmployedWithMandatory = isSelfEmployedWithMandatory;
+	}
 }

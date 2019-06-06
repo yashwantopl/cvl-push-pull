@@ -58,7 +58,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			logger.warn("Bad Request, If any one of from the above four is null or empty");
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			response.sendRedirect("/loans/error");
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return false;
 		}
 

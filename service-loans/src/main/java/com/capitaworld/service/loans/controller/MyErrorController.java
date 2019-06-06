@@ -26,7 +26,7 @@ public class MyErrorController implements ErrorController {
     @RequestMapping(value = {"/error"})
     public ModelAndView handleError(HttpServletRequest httpServletRequest,HttpServletResponse response) {
         Object status = httpServletRequest.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        System.out.println(response.getStatus());
+        //System.out.println(response.getStatus());
         ModelAndView modelAndView = new ModelAndView();
         if (status != null) {
             Integer statusCode = Integer.valueOf(status.toString());
