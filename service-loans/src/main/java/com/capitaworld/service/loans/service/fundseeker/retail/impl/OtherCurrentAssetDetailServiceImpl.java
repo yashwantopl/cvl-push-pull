@@ -126,6 +126,24 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 	}
 
 	@Override
+	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailListByProposalIdAndCoAppId(Long proposalId,
+																						   Long coAppId) throws LoansException {
+		List<OtherCurrentAssetDetail> otherCurrentAssetDetails;
+
+		otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromProposalIdAndCoAppId(proposalId,coAppId);
+		List<OtherCurrentAssetDetailRequest> otherCurrentAssetRequests = new ArrayList<OtherCurrentAssetDetailRequest>();
+
+		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
+			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
+			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValue(detail.getAssetValue()));
+			otherCurrentAssetRequest.setAssetType(!CommonUtils.isObjectNullOrEmpty(detail.getAssetTypesId()) ? StringEscapeUtils.escapeXml(Assets.getById(detail.getAssetTypesId()).getValue()) : "");
+			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
+			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
+		}
+		return otherCurrentAssetRequests;
+	}
+
+	@Override
 	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailListByProposalId(Long proposalId,
 			int applicationType) throws LoansException {
 		List<OtherCurrentAssetDetail> otherCurrentAssetDetails;
@@ -154,6 +172,37 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
 		}
 		return otherCurrentAssetRequests;
+	}
+
+	@Override
+	public Boolean saveOrUpdateCoApplicant(FrameRequest frameRequest) throws LoansException {
+		try {
+			for (Map<String, Object> obj : frameRequest.getDataList()) {
+				OtherCurrentAssetDetailRequest otherCurrentAssetDetailRequest = (OtherCurrentAssetDetailRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, OtherCurrentAssetDetailRequest.class);
+				OtherCurrentAssetDetail otherCurrentAssetDetail = new OtherCurrentAssetDetail();
+				BeanUtils.copyProperties(otherCurrentAssetDetailRequest, otherCurrentAssetDetail);
+				if (otherCurrentAssetDetailRequest.getId() == null) {
+					otherCurrentAssetDetail.setCreatedBy(frameRequest.getUserId());
+					otherCurrentAssetDetail.setCreatedDate(new Date());
+				}
+				otherCurrentAssetDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				otherCurrentAssetDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(frameRequest.getCoApplicantId()));
+
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true);
+				otherCurrentAssetDetail.setApplicationProposalMapping(applicationProposalMapping);
+				otherCurrentAssetDetail.setModifiedBy(frameRequest.getUserId());
+				otherCurrentAssetDetail.setModifiedDate(new Date());
+				otherCurrentAssetDetailRepository.save(otherCurrentAssetDetail);
+			}
+			return true;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception  in save otherCurrentAssetDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
 	}
 
 }

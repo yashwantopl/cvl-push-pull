@@ -135,6 +135,28 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 	}
 
 	@Override
+	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailListByProposalIdCoAppId(Long proposalId,
+																					 Long coAppId) throws LoansException {
+		try {
+			List<BankAccountHeldDetail> existingLoanDetails;
+			existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromProposalIdAndCoAppId(proposalId,coAppId);
+			List<BankAccountHeldDetailsRequest> existingLoanDetailRequests = new ArrayList<BankAccountHeldDetailsRequest>();
+
+			for (BankAccountHeldDetail detail : existingLoanDetails) {
+				BankAccountHeldDetailsRequest existingLoanDetailRequest = new BankAccountHeldDetailsRequest();
+				existingLoanDetailRequest.setAccountTypeString(!CommonUtils.isObjectNullOrEmpty(detail.getAccountType()) ? AccountType.getById(detail.getAccountType()).getValue() : "");
+				BeanUtils.copyProperties(detail, existingLoanDetailRequest);
+				existingLoanDetailRequests.add(existingLoanDetailRequest);
+			}
+			return existingLoanDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in getting bankAccountHeldDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	@Override
 	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailListByProposalId(Long proposalId,
 			int applicationType) throws LoansException {
 		try {
@@ -171,4 +193,47 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 		}
 	}
 
+
+	@Override
+	public Boolean saveOrUpdateCoAppDetails(FrameRequest frameRequest) throws LoansException {
+		try {
+			for (Map<String, Object> obj : frameRequest.getDataList()) {
+				BankAccountHeldDetailsRequest bankAccountHeldDetailRequest = (BankAccountHeldDetailsRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, BankAccountHeldDetailsRequest.class);
+				BankAccountHeldDetail bankAccountHeldDetail = new BankAccountHeldDetail();
+				BeanUtils.copyProperties(bankAccountHeldDetailRequest, bankAccountHeldDetail);
+				if (bankAccountHeldDetailRequest.getId() == null) {
+					bankAccountHeldDetail.setCreatedBy(frameRequest.getUserId());
+					bankAccountHeldDetail.setCreatedDate(new Date());
+				}
+				switch (frameRequest.getApplicantType()) {
+					case CommonUtils.ApplicantType.APPLICANT:
+						bankAccountHeldDetail
+								.setApplicantId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+						break;
+					case CommonUtils.ApplicantType.COAPPLICANT:
+						bankAccountHeldDetail.setCoApplicantDetailId(
+								coApplicantDetailRepository.findOne(frameRequest.getCoApplicantId()));
+						break;
+					case CommonUtils.ApplicantType.GARRANTOR:
+						bankAccountHeldDetail
+								.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
+						break;
+					default:
+						throw new LoansException();
+				}
+
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true);
+
+				bankAccountHeldDetail.setApplicationProposalMapping(applicationProposalMapping);
+				bankAccountHeldDetail.setModifiedBy(frameRequest.getUserId());
+				bankAccountHeldDetail.setModifiedDate(new Date());
+				bankAccountHeldDetailRepository.save(bankAccountHeldDetail);
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Exception  in save bankAccountHeldDetail  :-", e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }

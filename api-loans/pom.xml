@@ -103,7 +103,7 @@
 			<version>${org.slf4j-version}</version>
 		</dependency>
 
-	</dependencies>
+    </dependencies>
 	<version>1.0.1</version>
 	<groupId>com.capitaworld.api.loans</groupId>
 </project>

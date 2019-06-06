@@ -226,6 +226,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                         coApplicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
                         coApplicantDetail.setNetworth(plRetailApplicantRequest.getNetworth());
                         coApplicantDetail.setIsBasicInfoFilled(plRetailApplicantRequest.getIsBasicInfoFilled());
+                        coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
                         
                     } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
                     	coApplicantDetail.setIsContactInfoFilled(plRetailApplicantRequest.getIsContactInfoFilled());
@@ -247,8 +248,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())) {
         						coApplicantDetail.setAddressPincode(BigInteger.valueOf(plRetailApplicantRequest.getContactAddress().getPincode()));	
         					}
-        					
         		        }
+                    	coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
                     } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
                     	coApplicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
                     	coApplicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
@@ -271,6 +272,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
         					coApplicantDetail.setBusinessStartDate(cal.getTime());
         				}
+                    	coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
                     	coApplicantDetail.setCurrentJobMonth(plRetailApplicantRequest.getCurrentJobMonth());
                     	coApplicantDetail.setCurrentJobYear(plRetailApplicantRequest.getCurrentJobYear());
                     	coApplicantDetail.setTotalExperienceMonth(plRetailApplicantRequest.getTotalExperienceMonth());
@@ -279,7 +281,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     	coApplicantDetail.setBirthDate(plRetailApplicantRequest.getBirthDate());
                     	updateEkycIdForCoApplicant(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getKid(), coApplicantDetail);
                     }  else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CREDIT_INFO) {
-                    	saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
+                        coApplicantDetail.setIsCreditInfoFilled(plRetailApplicantRequest.getIsCreditInfoFilled());
+    				    saveFinancialArrangementDetails(plRetailApplicantRequest, finalUserId);
                     } else {
                     	BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
                     	if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
@@ -308,9 +311,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
     				coApplicantDetail.setModifiedBy(plRetailApplicantRequest.getUserId());
     				coApplicantDetail.setModifiedDate(new Date());
-    				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
-    				coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
-    				coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
     				coApplicantDetailRepository.save(coApplicantDetail);
     			}
             }
@@ -1316,6 +1316,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
 				BeanUtils.copyProperties(coApplicantDetail, res);
 				res.setIsItrSkip(coApplicantDetail.getIsItrSkip());
+				res.setResidentialStatus(coApplicantDetail.getNationality());
+				res.setNoOfDependent(coApplicantDetail.getNoDependent());
 				return res;
 			}
 		} else {
@@ -1342,6 +1344,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
 	    		}
 				res.setBirthDate(coApplicantDetail.getBirthDate());
+				res.setSalaryMode(coApplicantDetail.getModeOfReceipt());
 				return res;
 			}
 		} else {
