@@ -632,3 +632,8 @@ ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_employment_w
 ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_employment_with_mandatory BIT(1);
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_employment_with_display BIT(1);
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_employment_with_mandatory BIT(1);
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_self_employed_with_display BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_self_employed_with_mandatory BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_self_employed_with_display BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_self_employed_with_mandatory BIT(1);
