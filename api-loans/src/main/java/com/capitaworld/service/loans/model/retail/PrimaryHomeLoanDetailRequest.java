@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -82,6 +84,30 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 	private Integer propertyUsed;
 	
 	private Double estimatedRentalIncome;
+	
+	private String propPremiseName;
+	
+	private String propStreetName;
+	
+	private String propLandmark;
+	
+	private Long propCountry;
+
+	private Long propState;
+	
+	private Long propCity;
+
+	private Long propPincode;
+
+	private Long propdistrictMappingId;	
+	
+	// HL Loan Requirement 
+	private Double loanAmountRequired;
+	private Integer loanPurpose;
+	private Integer loanPurposeQueType;
+	private String loanPurposeQueValue;
+	private String loanPurposeOther;
+	private Integer tenureRequired;
 	
 	public Double getArea() {
 		return area;
@@ -339,8 +365,116 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 		this.estimatedRentalIncome = estimatedRentalIncome;
 	}
 
+	public Long getPropCountry() {
+		return propCountry;
+	}
 
-	
-	
+	public void setPropCountry(Long propCountry) {
+		this.propCountry = propCountry;
+	}
+
+	public Long getPropCity() {
+		return propCity;
+	}
+
+	public void setPropCity(Long propCity) {
+		this.propCity = propCity;
+	}
+
+	public String getPropPremiseName() {
+		return propPremiseName;
+	}
+
+	public void setPropPremiseName(String propPremiseName) {
+		this.propPremiseName = propPremiseName;
+	}
+
+	public String getPropStreetName() {
+		return propStreetName;
+	}
+
+	public void setPropStreetName(String propStreetName) {
+		this.propStreetName = propStreetName;
+	}
+
+	public String getPropLandmark() {
+		return propLandmark;
+	}
+
+	public void setPropLandmark(String propLandmark) {
+		this.propLandmark = propLandmark;
+	}
+
+	public Long getPropState() {
+		return propState;
+	}
+
+	public void setPropState(Long propState) {
+		this.propState = propState;
+	}
+
+	public Long getPropPincode() {
+		return propPincode;
+	}
+
+	public void setPropPincode(Long propPincode) {
+		this.propPincode = propPincode;
+	}
+
+	public Long getPropdistrictMappingId() {
+		return propdistrictMappingId;
+	}
+
+	public void setPropdistrictMappingId(Long propdistrictMappingId) {
+		this.propdistrictMappingId = propdistrictMappingId;
+	}
+
+	public Double getLoanAmountRequired() {
+		return loanAmountRequired;
+	}
+
+	public void setLoanAmountRequired(Double loanAmountRequired) {
+		this.loanAmountRequired = loanAmountRequired;
+	}
+
+	public Integer getLoanPurpose() {
+		return loanPurpose;
+	}
+
+	public void setLoanPurpose(Integer loanPurpose) {
+		this.loanPurpose = loanPurpose;
+	}
+
+	public Integer getLoanPurposeQueType() {
+		return loanPurposeQueType;
+	}
+
+	public void setLoanPurposeQueType(Integer loanPurposeQueType) {
+		this.loanPurposeQueType = loanPurposeQueType;
+	}
+
+	public String getLoanPurposeQueValue() {
+		return loanPurposeQueValue;
+	}
+
+	public void setLoanPurposeQueValue(String loanPurposeQueValue) {
+		this.loanPurposeQueValue = loanPurposeQueValue;
+	}
+
+	public String getLoanPurposeOther() {
+		return loanPurposeOther;
+	}
+
+	public void setLoanPurposeOther(String loanPurposeOther) {
+		this.loanPurposeOther = loanPurposeOther;
+	}
+
+	public Integer getTenureRequired() {
+		return tenureRequired;
+	}
+
+	public void setTenureRequired(Integer tenureRequired) {
+		this.tenureRequired = tenureRequired;
+	}
 
 }

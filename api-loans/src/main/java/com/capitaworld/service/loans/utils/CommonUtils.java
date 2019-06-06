@@ -568,6 +568,7 @@ public class CommonUtils {
 		public static final Integer BORROWER_TYPE = 3;
 		public static final Integer SALARY_MODE = 4;
 		public static final Integer BORROWER_SALARY_ACCOUNT = 5;
+		public static final Integer EMPLOYMENT_WITH = 6;
 	}
 	
 
