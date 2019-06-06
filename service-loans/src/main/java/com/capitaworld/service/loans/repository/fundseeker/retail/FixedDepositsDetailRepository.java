@@ -23,7 +23,10 @@ public interface FixedDepositsDetailRepository extends JpaRepository<FixedDeposi
 	@Query("select o from FixedDepositsDetail o where o.guarantorDetailId.id = :id and o.isActive = true")
 	public List<FixedDepositsDetail> listFixedDepositsFromGarrId(@Param("id")Long id);
 	
-	@Query("select o from FixedDepositsDetail o where o.applicationProposalMapping.proposalId = :proposalId and o.isActive = true")
+	@Query("select o from FixedDepositsDetail o where o.applicationProposalMapping.proposalId = :proposalId and o.coApplicantDetailId=null and o.isActive = true")
 	public List<FixedDepositsDetail> listFixedDepositsFromProposalId(@Param("proposalId") Long proposalId);
+
+	@Query("select o from FixedDepositsDetail o where o.applicationProposalMapping.proposalId = :proposalId and o.coApplicantDetailId.id =:coAppId and o.isActive = true")
+	public List<FixedDepositsDetail> listFixedDepositsFromProposalIdAndCoAppId(@Param("proposalId") Long proposalId,@Param("coAppId")Long coAppId);
 
 }
