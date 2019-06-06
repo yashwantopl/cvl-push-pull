@@ -284,7 +284,7 @@ public class ReferenceRetailDetailsController {
 	}
 
 	@RequestMapping(value = "/getListCoApplicant/{id}/{proposalId}/{coAppId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getListCoApplicant(@PathVariable Long id, @PathVariable int applicationType, @PathVariable Long proposalId,@PathVariable Long coAppId,
+	public ResponseEntity<LoansResponse> getListCoApplicant(@PathVariable Long id, @PathVariable Long proposalId,@PathVariable Long coAppId,
 												 @RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
