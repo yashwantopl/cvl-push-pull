@@ -304,7 +304,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
                 finalHomeLoanDetail = new FinalHomeLoanDetail();
 				addOneformDetails(finalHomeLoanDetailRequest);
             }else{
-				if (finalHomeLoanDetail.getCorrespondencePremiseNo() != null) {
+				if (finalHomeLoanDetail.getPermanentPremiseNo() != null) {
 					Address permanentAddress = new Address();
 					permanentAddress.setPremiseNumber(String.valueOf(finalHomeLoanDetail.getPermanentPremiseNo()));
 					permanentAddress.setStreetName(finalHomeLoanDetail.getPermanentStreetName());
@@ -313,6 +313,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 					permanentAddress.setCountryId(finalHomeLoanDetail.getPermanentCountry());
 					permanentAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getPermanentPinCode()));
 					permanentAddress.setLandMark(finalHomeLoanDetail.getPermanentLandmark());
+					finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
 				}
 
 				if (finalHomeLoanDetail.getCorrespondencePremiseNo() != null) {
