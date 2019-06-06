@@ -281,7 +281,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
-			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
 			}
@@ -701,7 +701,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				}
 			}
 			
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId);
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId, proposalId);
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
 			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress())) {
 				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getPremiseNumber(),null) + "," : "");
@@ -816,7 +816,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
-			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
 			}
@@ -859,7 +859,10 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
+			if(plRetailApplicantRequest.getLoanPurpose() != null) {
+				map.put("loanPurpose", plRetailApplicantRequest.getLoanPurpose() == LoanPurposePL.OTHERS.getId() ? "Other - "+plRetailApplicantRequest.getLoanPurposeOther() :  LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue());
+			}
+			
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
 			logger.error("Error while getting primary Details : ",e);
@@ -1022,13 +1025,17 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				logger.error("Error while getting scoring data : ",e);
 			}
 		/*get epfoData*/
-		EmployerRequest epfReq = new EmployerRequest();
-		epfReq.setApplicationId(applicationId);
-		EkycResponse epfRes = epfClient.getEpfData(epfReq);
-		if(epfRes != null && epfRes.getData()!= null) {
-			map.put("epfoData", epfRes.getData());
-		}else {
-			logger.info("epfoData is null for==>"+applicationId);
+		try {
+			EmployerRequest epfReq = new EmployerRequest();
+			epfReq.setApplicationId(applicationId);
+			EkycResponse epfRes = epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				map.put("epfoData", epfRes.getData());
+			}else {
+				logger.info("epfoData is null for==>"+applicationId);
+			}
+		} catch (Exception e) {
+			logger.info("",e);
 		}
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 				ReportRequest reportRequest = new ReportRequest();

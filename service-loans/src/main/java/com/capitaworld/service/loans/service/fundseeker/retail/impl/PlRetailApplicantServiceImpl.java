@@ -1,20 +1,15 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.api.ekyc.model.epf.request.EmployerDefaulterRequest;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
-import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,13 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerDefaulterRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantIncomeDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
@@ -36,10 +35,14 @@ import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
+import com.capitaworld.service.loans.model.retail.RetailOnformBasicInfoReq;
+import com.capitaworld.service.loans.model.retail.RetailOnformContactInfoReq;
+import com.capitaworld.service.loans.model.retail.RetailOnformEmploymentInfoReq;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
@@ -58,9 +61,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
-
-    @Autowired
-    private UsersClient usersClient;
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
@@ -82,34 +82,113 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     
     @Autowired
     private EPFOAsyncComponent epfoAsyncComponent;
+    
+    @Autowired
+    private CoApplicantDetailRepository coApplicantDetailRepository;
+
 
     @Override
     public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
-            Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
-            RetailApplicantDetail applicantDetail = null;
-            
-            if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
-            }else {
-            	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
-            }
-            
-            if (applicantDetail != null) {
-                applicantDetail.setModifiedBy(userId);
-                applicantDetail.setModifiedDate(new Date());
+        	Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
+            if(plRetailApplicantRequest.getCoAppId() == null){
+            	RetailApplicantDetail applicantDetail = null;
+                
+                if(plRetailApplicantRequest.getProposalId() != null) {
+                	applicantDetail = applicantRepository.findByProposalId(plRetailApplicantRequest.getApplicationId(), plRetailApplicantRequest.getProposalId());
+                }else {
+                	applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
+                }
+                
+                if (applicantDetail != null) {
+                    applicantDetail.setModifiedBy(userId);
+                    applicantDetail.setModifiedDate(new Date());
+                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
+                } else {
+                    applicantDetail = new RetailApplicantDetail();
+                    BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
+                    applicantDetail.setCreatedBy(userId);
+                    applicantDetail.setCreatedDate(new Date());
+                    applicantDetail.setIsActive(true);
+                    applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                }
+                if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+					applicantDetail.setBusinessStartDate(cal.getTime());
+				}
+                copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
+                applicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
+                applicantDetail.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+                applicantRepository.save(applicantDetail);
+                
+                // Updating Flag
+                if(plRetailApplicantRequest.getProposalId() != null) {
+                	applicationProposalMappingRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getProposalId(),
+                            finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+                }else {
+                	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
+                            finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+                }
+                EmployerRequest req = new EmployerRequest();
+                req.setApplicationId(plRetailApplicantRequest.getApplicationId());
+                String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
+                String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
+                if(plRetailApplicantRequest.getKid()!=null) {
+                	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
+                	req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName(),name , applicantDetail.getMobile(), applicantDetail.getEmail()));
+                	epfoAsyncComponent.callAPI(req);
+                }
             } else {
-                applicantDetail = new RetailApplicantDetail();
-                applicantDetail.setCreatedBy(userId);
-                applicantDetail.setCreatedDate(new Date());
-                applicantDetail.setIsActive(true);
-                applicantDetail.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+            	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(plRetailApplicantRequest.getCoAppId(), true);
+    			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+    				BeanUtils.copyProperties(plRetailApplicantRequest, coApplicantDetail,"applicationId","userId","id","createdDate","createdBy","applicationProposalMapping");
+                    coApplicantDetail.setNationality(plRetailApplicantRequest.getResidentialStatus());
+                    coApplicantDetail.setNoDependent(plRetailApplicantRequest.getNoOfDependent());
+                    coApplicantDetail.setModeOfReceipt(plRetailApplicantRequest.getSalaryMode());
+                    coApplicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+                    coApplicantDetail.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment());
+    				if (plRetailApplicantRequest.getContactAddress() != null) {
+    					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
+    					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
+    					coApplicantDetail.setAddressLandmark(plRetailApplicantRequest.getContactAddress().getLandMark());
+    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getCityId())) {
+    						coApplicantDetail.setAddressCity(plRetailApplicantRequest.getContactAddress().getCityId().intValue());	
+    					}
+    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getStateId())) {
+    						coApplicantDetail.setAddressState(plRetailApplicantRequest.getContactAddress().getStateId().intValue());	
+    					}
+    					coApplicantDetail.setAddressCountry(plRetailApplicantRequest.getContactAddress().getCountryId());
+    					coApplicantDetail.setAddressDistrictMappingId(plRetailApplicantRequest.getContactAddress().getDistrictMappingId());
+    					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPincode())) {
+    						coApplicantDetail.setAddressPincode(BigInteger.valueOf(plRetailApplicantRequest.getContactAddress().getPincode()));	
+    					}
+    					
+    		        }
+    				if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartMonth()) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBusinessStartYear())) {
+    					Calendar cal = Calendar.getInstance();
+    					cal.set(plRetailApplicantRequest.getBusinessStartYear(), plRetailApplicantRequest.getBusinessStartMonth(), 01);
+    					coApplicantDetail.setBusinessStartDate(cal.getTime());
+    				}
+    				coApplicantDetail.setEmail(plRetailApplicantRequest.getEmail());
+    				coApplicantDetail.setModifiedBy(plRetailApplicantRequest.getUserId());
+    				coApplicantDetail.setModifiedDate(new Date());
+    				coApplicantDetail.setIsOneFormCompleted(plRetailApplicantRequest.getIsOneFormCompleted());
+    				coApplicantDetailRepository.save(coApplicantDetail);
+    				EmployerRequest req = new EmployerRequest();
+	                req.setApplicationId(plRetailApplicantRequest.getApplicationId());
+	                req.setCoAppId(plRetailApplicantRequest.getCoAppId());
+	                String middleName = !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())? coApplicantDetail.getMiddleName():"";
+	                String name=coApplicantDetail.getFirstName()+ " "+ middleName  +" "+ coApplicantDetail.getLastName();
+	                if(plRetailApplicantRequest.getKid()!=null) {
+	                	req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
+	                	req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), coApplicantDetail.getCompanyName(),name , coApplicantDetail.getMobile(), coApplicantDetail.getEmail()));
+	                	epfoAsyncComponent.callAPI(req);
+	                }
+    			}
             }
-
-            BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailPrimary());
-            copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
-
-            applicantRepository.save(applicantDetail);
+            
+            
             
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
             if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
@@ -122,23 +201,24 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
                     if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
-                                CommonUtils.MODIFIED_DATE, "isActive");
-
-                        saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
+                        if(plRetailApplicantRequest.getCoAppId() != null){
+                        	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                        	saveFinObj.setDirectorBackgroundDetail(plRetailApplicantRequest.getCoAppId());
+                        } else {
+                        	saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
+                        }
                         saveFinObj.setCreatedBy(userId);
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
-                                CommonUtils.MODIFIED_DATE);
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
                     
                     if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
                     	if(reqObj.getIsManuallyAdded() != null && reqObj.getIsManuallyAdded() == false) {
-                    		System.out.println("getIsManuallyAdded : false");
                     		creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
                     		saveFinObj.setIsManuallyAdded(false);
                     	}
@@ -150,30 +230,65 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 }
             }
 
-            // Updating Flag
-            if(plRetailApplicantRequest.getProposalId() != null) {
-            	applicationProposalMappingRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getProposalId(),
-                        finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
-            }else {
-            	loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
-                        finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
-            }
-            EmployerRequest req = new EmployerRequest();
-            req.setApplicationId(plRetailApplicantRequest.getApplicationId());
-            String middleName = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())? applicantDetail.getMiddleName():"";
-            String name=applicantDetail.getFirstName()+ " "+ middleName  +" "+ applicantDetail.getLastName();
-            if(plRetailApplicantRequest.getKid()!=null) {
-            req.setEmployerDefaulterRequest(new EmployerDefaulterRequest(plRetailApplicantRequest.getKid()));
-            req.setEmployerVerificationRequest(new EmployerVerificationRequest(plRetailApplicantRequest.getKid(), applicantDetail.getCompanyName()
-            		,name , applicantDetail.getMobile(), applicantDetail.getEmail()));
-            epfoAsyncComponent.callAPI(req);
-            }
             return true;
 
         } catch (Exception e) {
             logger.error("Error while Saving Retail Profile :- ",e);
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
+    }
+    
+    @Override
+    public PLRetailApplicantRequest getCoAppProfile(Long coAppId) {
+    	CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+    	if(coApplicantDetail == null) {
+    		return null;
+    	}
+    	PLRetailApplicantRequest res = new PLRetailApplicantRequest();
+    	BeanUtils.copyProperties(coApplicantDetail,res);
+        res.setResidentialStatus(coApplicantDetail.getNationality());
+        res.setNoOfDependent(coApplicantDetail.getNoDependent());
+        res.setSalaryMode(coApplicantDetail.getModeOfReceipt());
+    	Address address = new Address();
+        address.setPremiseNumber(coApplicantDetail.getAddressPremiseName());
+        address.setLandMark(coApplicantDetail.getAddressLandmark());
+        address.setStreetName(coApplicantDetail.getAddressStreetName());
+        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressCity())) {
+        	address.setCityId(coApplicantDetail.getAddressCity().longValue());	 
+        }
+        address.setStateId(CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressState()) ? null : coApplicantDetail.getAddressState().intValue());
+        address.setCountryId(coApplicantDetail.getAddressCountry());
+        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
+        	address.setPincode(coApplicantDetail.getAddressPincode().longValue());	 
+        }
+        address.setDistrictMappingId(coApplicantDetail.getAddressDistrictMappingId());
+        res.setContactAddress(address);
+        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(coApplicantDetail.getBusinessStartDate());
+			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+			res.setBusinessStartYear(cal.get(Calendar.YEAR));
+		}
+        try {
+        	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, coApplicantDetail.getApplicationId().getId(), true);
+            if(retailFinancialDetailsList != null) {
+            	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+                FinancialArrangementsDetailRequest retailFinReq=null;
+                for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+                	retailFinReq =new FinancialArrangementsDetailRequest();
+                	BeanUtils.copyProperties(finArDetails, retailFinReq);
+                	retailFinancialDetailsReq.add(retailFinReq);
+                }
+                res.setFinancialArrangementsDetailRequestsList(retailFinancialDetailsReq);
+            	
+            }else {
+				logger.warn("FinancialArrangementData is Null while get for COapplicants");
+			}
+		} catch (Exception e) {
+			logger.error("=======>>>>> Error while fetching FinancialArrangementDetails while coapplicant <<<<<<<=========",e);
+		}
+    	return res;
+    	
     }
 
     @Override
@@ -192,7 +307,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-
+            
+            if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+    			Calendar cal = Calendar.getInstance();
+    			cal.setTime(applicantDetail.getBusinessStartDate());
+    			applicantRequest.setBusinessStartMonth(cal.get(Calendar.MONTH));
+    			applicantRequest.setBusinessStartYear(cal.get(Calendar.YEAR));
+    		}
             /*UserResponse userResponse = usersClient.getEmailMobile(userId);
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
@@ -300,9 +421,15 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         }
     }
 
-    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId) throws LoansException {
+    public PLRetailApplicantRequest getProfileByProposalId(Long userId, Long applicationId, Long proposalId) throws LoansException {
         try {
-            RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+        	RetailApplicantDetail applicantDetail = null;
+        	if(proposalId != null) {
+        		applicantDetail = applicantRepository.findByProposalId(applicationId, proposalId);
+        	}else {
+        		applicantDetail = applicantRepository.findByApplicationId(applicationId);
+        	}
+            
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             if (applicantDetail == null) {
                 
@@ -335,7 +462,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
             applicantRequest.setMobile(request.getMobile());*/
 
-            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationId(applicationId); 
+            List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList = null;
+            if(proposalId != null) {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+            }else {
+            	retailApplicantIncomeDetailList = retailApplicantIncomeRepository.findByApplicationId(applicationId);
+            }
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
 
             RetailApplicantIncomeRequest incomeRequest = null;
@@ -573,6 +705,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     	bankingRelations.setModifiedDate(new Date());
     	bankingRelations.setSinceMonth(request.getSinceMonth());
     	bankingRelations.setSinceYear(request.getSinceYear());
+    	bankingRelations.setCoApplicantId(request.getCoApplicantId());
     	
     	bankingRelationlRepository.save(bankingRelations);
     	return Boolean.TRUE;
@@ -589,9 +722,14 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
     
     @Override
-    public List<BankRelationshipRequest> getBankRelations(Long applicationId) {
+    public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId) {
     	List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
-        List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+        List<BankingRelation> bankingRelations = new ArrayList<>();
+    	if(coApplicantId != null) {
+            bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId, coApplicantId);
+        } else{
+            bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+        }
         BankRelationshipRequest bankRelationshipRequest = null;
         for(BankingRelation bankingRelation : bankingRelations) {
         	bankRelationshipRequest = new BankRelationshipRequest();
@@ -846,8 +984,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return applicantRequest;
             }
             
-            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
-            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
+            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getLoanAmountRequired()));
+            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValueWithoutDecimal(applicantDetail.getMonthlyIncome()));
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
@@ -920,6 +1058,19 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
+            
+            if(applicantDetail.getPreviousJobYear() != null && applicantDetail.getPreviousJobMonth() != null) {
+            	LocalDate since = LocalDate.of(applicantDetail.getPreviousJobYear(), applicantDetail.getPreviousJobMonth(), 1);
+        		LocalDate today = LocalDate.now();
+        		Period age = Period.between(since, today);
+        		int years = age.getYears();
+        		int months = age.getMonths();
+        		applicantRequest.setPreviousJobYear(years);
+        		applicantRequest.setPreviousJobMonth(months);
+            }else {
+            	applicantRequest.setPreviousJobYear(null);
+            }
+            
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Final :- ",e);
@@ -937,6 +1088,13 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
+            if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+    			Calendar cal = Calendar.getInstance();
+    			cal.setTime(applicantDetail.getBusinessStartDate());
+    			applicantRequest.setBusinessStartMonth(cal.get(Calendar.MONTH));
+    			applicantRequest.setBusinessStartYear(cal.get(Calendar.YEAR));
+    		}
+            
             if(applicantRequest.getSalaryBankYear() !=null && applicantRequest.getSalaryBankMonth()!= null) {
 
 				LocalDate since = LocalDate.of(applicantRequest.getSalaryBankYear(), applicantRequest.getSalaryBankMonth(), 1);
@@ -980,4 +1138,188 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
+	
+	@Override
+	public boolean checkCoAppProfileBeforeSelectHL(Long applicationId) {
+		List<CoApplicantDetail> coAppIdList = coApplicantDetailRepository.getAllByApplicationId(applicationId);
+		if(!coAppIdList.isEmpty()) {
+			for(CoApplicantDetail coApp : coAppIdList) {
+				if((CommonUtils.isObjectNullOrEmpty(coApp.getIsBankStatementCompleted()) || !coApp.getIsBankStatementCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsItrCompleted()) || !coApp.getIsItrCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsCibilCompleted()) || !coApp.getIsCibilCompleted())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsBasicInfoFilled()) || !coApp.getIsBasicInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsEmploymentInfoFilled()) || !coApp.getIsEmploymentInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsContactInfoFilled()) || !coApp.getIsContactInfoFilled())
+						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsOneFormCompleted()) || !coApp.getIsOneFormCompleted())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public RetailOnformBasicInfoReq getOneformBasicInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
+				BeanUtils.copyProperties(coApplicantDetail, res);
+				return res;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformBasicInfoReq res = new RetailOnformBasicInfoReq();
+				BeanUtils.copyProperties(applicantDetail, res);
+				return res;	
+			}
+		}
+		return null;
+	}
+	
+	public RetailOnformEmploymentInfoReq getOneformEmploymentInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				RetailOnformEmploymentInfoReq res = new RetailOnformEmploymentInfoReq();
+				BeanUtils.copyProperties(coApplicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())) {
+	    			Calendar cal = Calendar.getInstance();
+	    			cal.setTime(coApplicantDetail.getBusinessStartDate());
+	    			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
+	    		}
+				return res;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformEmploymentInfoReq res = new RetailOnformEmploymentInfoReq();
+				BeanUtils.copyProperties(applicantDetail, res);
+				if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate())) {
+	    			Calendar cal = Calendar.getInstance();
+	    			cal.setTime(applicantDetail.getBusinessStartDate());
+	    			res.setBusinessStartMonth(cal.get(Calendar.MONTH));
+	    			res.setBusinessStartYear(cal.get(Calendar.YEAR));
+	    		}
+				return res;	
+			}
+		}
+		return null;
+	}
+
+	public RetailOnformContactInfoReq getOneformContactInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
+				BeanUtils.copyProperties(coApplicantDetail, res);
+				Address address = new Address();
+		        address.setPremiseNumber(coApplicantDetail.getAddressPremiseName());
+		        address.setLandMark(coApplicantDetail.getAddressLandmark());
+		        address.setStreetName(coApplicantDetail.getAddressStreetName());
+		        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressCity())) {
+		        	address.setCityId(coApplicantDetail.getAddressCity().longValue());	 
+		        }
+		        address.setStateId(CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressState()) ? null : coApplicantDetail.getAddressState().intValue());
+		        address.setCountryId(coApplicantDetail.getAddressCountry());
+		        if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAddressPincode())) {
+		        	address.setPincode(coApplicantDetail.getAddressPincode().longValue());	 
+		        }
+		        address.setDistrictMappingId(coApplicantDetail.getAddressDistrictMappingId());
+		        res.setContactAddress(address);
+				return res;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
+				BeanUtils.copyProperties(applicantDetail, res);
+				Address address = new Address();
+		        address.setPremiseNumber(applicantDetail.getAddressPremiseName());
+		        address.setLandMark(applicantDetail.getAddressLandmark());
+		        address.setStreetName(applicantDetail.getAddressStreetName());
+		        if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressCity())) {
+		        	address.setCityId(applicantDetail.getAddressCity().longValue());	 
+		        }
+		        address.setStateId(CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState()) ? null : applicantDetail.getAddressState().intValue());
+		        address.setCountryId(applicantDetail.getAddressCountry());
+		        if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressPincode())) {
+		        	address.setPincode(applicantDetail.getAddressPincode().longValue());	 
+		        }
+		        address.setDistrictMappingId(applicantDetail.getAddressDistrictMappingId());
+		        res.setContactAddress(address);
+				return res;	
+			}
+		}
+		return null;
+	}
+	
+	public List<FinancialArrangementsDetailRequest> getOneformCreditInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			try {
+	        	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, applicationId, true);
+	            if(retailFinancialDetailsList != null) {
+	            	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+	                FinancialArrangementsDetailRequest retailFinReq=null;
+	                for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+	                	retailFinReq =new FinancialArrangementsDetailRequest();
+	                	BeanUtils.copyProperties(finArDetails, retailFinReq);
+	                	retailFinancialDetailsReq.add(retailFinReq);
+	                }
+	                return retailFinancialDetailsReq;
+	            }
+			} catch (Exception e) {
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails while coapplicant <<<<<<<=========",e);
+			}	
+		} else {
+			 try {
+            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
+                if(retailFinancialDetailsList != null) {
+                	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+                    FinancialArrangementsDetailRequest retailFinReq=null;
+                    for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+                    	retailFinReq =new FinancialArrangementsDetailRequest();
+                    	BeanUtils.copyProperties(finArDetails, retailFinReq);
+                    	retailFinancialDetailsReq.add(retailFinReq);
+                    }
+                    return retailFinancialDetailsReq;
+                }
+			} catch (Exception e) {
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
+			}
+		}
+		return Collections.emptyList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject getApplicantAndCoAppOneFormInfo(Long applicationId, Long coAppId) {
+		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
+			CoApplicantDetail coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coAppId, true);
+			if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
+				JSONObject json = new JSONObject();
+				json.put("isBasicInfoFilled", coApplicantDetail.getIsBasicInfoFilled());
+				json.put("isEmploymentInfoFilled",coApplicantDetail.getIsEmploymentInfoFilled());
+				json.put("isCreditInfoFilled",coApplicantDetail.getIsCreditInfoFilled());
+				json.put("isContactInfoFilled",coApplicantDetail.getIsContactInfoFilled());
+				json.put("isCibilCompleted",coApplicantDetail.getIsCibilCompleted());
+				json.put("isOneFormCompleted",coApplicantDetail.getIsOneFormCompleted());
+				return json;
+			}
+		} else {
+			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
+				JSONObject json = new JSONObject();
+				json.put("isBasicInfoFilled",applicantDetail.getIsBasicInfoFilled());
+				json.put("isEmploymentInfoFilled",applicantDetail.getIsEmploymentInfoFilled());
+				json.put("isCreditInfoFilled",applicantDetail.getIsCreditInfoFilled());
+				json.put("isContactInfoFilled",applicantDetail.getIsContactInfoFilled());
+				json.put("isCibilCompleted",applicantDetail.getIsCibilCompleted());
+				json.put("isOneFormCompleted",applicantDetail.getIsOneFormCompleted());
+				return json;
+			}
+		}
+		return null;
+	}
 }

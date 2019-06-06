@@ -17,6 +17,7 @@ import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModel;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModelTemp;
 import com.capitaworld.service.loans.domain.fundprovider.RetailModel;
@@ -48,6 +49,9 @@ public class RetailModelServiceImpl implements RetailModelService {
 	
 	@Autowired
 	private WorkflowClient workflowClient;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComp;
 
 	@Override
 	public Boolean save(RetailModelRequest modelRequest) {
@@ -70,6 +74,7 @@ public class RetailModelServiceImpl implements RetailModelService {
 		BeanUtils.copyProperties(modelRequest, retailModel,"createdBy","createdDate","modifiedBy","modifiedDate","isActive","id","jobId");
 		retailModel.setIsActive(true);
 		retailModelRepository.save(retailModel);
+		fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(modelRequest.getUserId(), retailModel.getId(), WorkflowUtils.Action.PENDING,false);
 		logger.info(CommonUtils.EXIT_FROM + SAVE);
 		return true;
 	}
@@ -158,10 +163,12 @@ public class RetailModelServiceImpl implements RetailModelService {
 			int updateStatus = retailModelTempRepository.changeStatus(workflowData.getId(), CommonUtils.Status.IN_PROGRESS, false, false, false, null);
 			workflowResponse = workflowClient.updateJob(request);
 			logger.info("UpdateStatus Count in SEND_FOR_APPROVAL == >{}",updateStatus);
+			fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),false);
 		}else if (WorkflowUtils.Action.APPROVED.equals(workflowData.getActionId())) {
 			Boolean result = false;
 			if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 				result = homeLoanModelService.copyTempToMaster(workflowData.getId());
+				fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
 			}
 			int updateStatus = retailModelTempRepository.changeStatus(workflowData.getId(), CommonUtils.Status.APPROVED, true, false, true, new Date());
 			logger.info("UpdateStatus Count in APPROVED == >{}===Copy Master Result==>{}",updateStatus,result);
@@ -170,6 +177,7 @@ public class RetailModelServiceImpl implements RetailModelService {
 			int updateStatus = retailModelTempRepository.changeStatus(workflowData.getId(), CommonUtils.Status.REVERTED, false, false, false, null);
 			logger.info("UpdateStatus Count in SEND_BACK== >{}",updateStatus);
 			workflowResponse = workflowClient.updateJob(request);
+			fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
 		}
 		if (workflowResponse != null && workflowResponse.getStatus() == 200) {
 			logger.info("Workflow Job updated Successfully with Job Id = >{}",workflowData.getJobId());

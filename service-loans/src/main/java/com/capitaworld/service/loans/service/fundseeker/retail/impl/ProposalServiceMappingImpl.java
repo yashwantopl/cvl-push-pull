@@ -688,6 +688,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
 					retailProposalDetails.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					retailProposalDetails.setFpProductid(fpProductId);
+					retailProposalDetails.setProductId(applicationProposalMapping.getProductId());
 
 					retailProposalDetails.setProposalStatus(proposalrequest.getProposalStatusId());
 					if(proposalrequest.getProposalStatusId() == ProposalStatus.HOLD || proposalrequest.getProposalStatusId() == ProposalStatus.DECLINE) {
@@ -2728,7 +2729,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						SchedulerDataMultipleBankRequest schedulerDataMultipleBankRequest = new SchedulerDataMultipleBankRequest();
 						schedulerDataMultipleBankRequest.setUserId(connectRequest1.getUserId());
 						schedulerDataMultipleBankRequest.setApplicationId(connectRequest1.getApplicationId());
-						if(connectRequest1.getStageId().equals(4) && connectRequest1.getStatus().equals(6)){
+						if((connectRequest1.getStageId().equals(4) || connectRequest1.getStageId().equals(207)) && connectRequest1.getStatus().equals(6)){
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
@@ -2936,28 +2937,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return finalList;
 	}
 
-	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest) {
+	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest,Long businessTypeId) {
 		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
 		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
 		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
 		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
 			return Collections.emptyList();
 		}
-		if(roleId == 9) {//CHECKER AND MAKER
-			List<Object[]> objList = loanRepository.searchProposalForCheckerAndMaker(loginOrgId, reportRequest.getValue(), branchId,reportRequest.getNumber().longValue());
-			if(objList.size() > 0) {
-				return setValue(objList, false);
-			}
-		} else if(roleId == 5) {//HO
-			List<Object[]> objList = loanRepository.searchProposalForHO(loginOrgId, reportRequest.getValue(),reportRequest.getNumber().longValue());
-			if(objList.size() > 0) {
-				return setValue(objList, true);
-			}
-		} else if(roleId == 12) {//SMECC
-			List<Object[]> objList = loanRepository.searchProposalForSMECC(loginOrgId, reportRequest.getValue(),loginUserId,reportRequest.getNumber().longValue());
-			if(objList.size() > 0) {
-				return setValue(objList, true);
-			}
+		List<Object[]> objList = loanRepository.getSerachProposalListByRoleSP(loginOrgId, reportRequest.getValue(),loginUserId,reportRequest.getNumber().longValue(),businessTypeId,branchId);
+		if(objList.size() > 0) {
+			return setValue(objList, true);
 		}
 		return Collections.emptyList();
 	}
@@ -2977,20 +2966,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			response.setCreatedDate(CommonUtils.convertDate(obj[7]));
 			response.setBusinessTypeId(CommonUtils.convertInteger(obj[8]));
 			if(response.getBusinessTypeId() == 3 || response.getBusinessTypeId() == 5 ) {
-				response.setOrgName(CommonUtils.convertString(obj[11]));
+				response.setApplicantName(CommonUtils.convertString(obj[11]));
 			}
 			response.setProposalStatusId(CommonUtils.convertLong(obj[9]));
 			response.setProductId(CommonUtils.convertInteger(obj[10]));
 			if(setBranch) {
-				response.setBranchName(CommonUtils.convertString(obj[11]));
-				response.setBranchCode(CommonUtils.convertString(obj[12]));
+				response.setBranchName(CommonUtils.convertString(obj[12]));
+				response.setBranchCode(CommonUtils.convertString(obj[13]));
 			}
 			responseList.add(response);
 		}
 		return responseList;
 	}
 
-	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId) {
+	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId,Long businessTypeId) {
 		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
 		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
 		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
@@ -2998,13 +2987,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			return null;
 		}
 		Object[] count = null;
-		if(roleId == 9) {//FP CHECKER
-			count = loanRepository.fpDashBoardCountByOrgIdAndBranchId(loginOrgId, branchId);
-		} else if(roleId == 5){//HO
-			count = loanRepository.fpDashBoardCountByOrgId(loginOrgId);
-		} else if(roleId == 12){//SMECC
-			count = loanRepository.fpDashBoardCountByOrgIdAndUserId(loginOrgId, loginUserId);
-		}
+		count = loanRepository.fetchFpDashbordCountByRoleSP(loginOrgId, loginUserId,businessTypeId,branchId);
 		if(count != null) {
 			Map<String , Double> map = new HashMap<>();
 			map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));

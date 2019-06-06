@@ -33,6 +33,7 @@ public class CommonUtils {
 	public static final String PROPOSAL_MAPPING_ID = "proposalMappingId";
 	public static final String USER_TYPE = "userType";
 	public static final String USER_ORG_ID = "userOrgId";
+	public static final String BUSINESS_TYPE_ID = "businessTypeId";
 	public static final String CITY_NAME = "cityName";
 	public static final String STATE_NAME = "stateName";
 	public static final String COUNTRY_NAME = "countryName";
@@ -86,7 +87,8 @@ public class CommonUtils {
 	public static final String SUCCESS_RESULT = "Success Result";
 	public static final String DATA_FOUND = "Data Found.";
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
-	public static final String SUCCESSFULLY_SAVED = "Successfully Saved.";
+	public static final String SUCCESSFULLY_SAVED = "Successfully Purpose of loan created";
+	public static final String SUCCESSFULLY_UPDATED = "Purpose of Loan Model sent for approval";
 	public static final String INVALID_AGE = "Invalid Age";
 	public static final String ONE_FORM_SAVED_SUCCESSFULLY = "Oneform Saved Successfully";
 	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
@@ -767,6 +769,7 @@ public class CommonUtils {
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/error".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -1514,6 +1517,44 @@ public enum APIFlags {
 						value = Double.parseDouble(decim.format(value));
 						if(data != null) {
 							value = decimal.format(value);
+							data.put(field.getName(), value);
+						}else {
+							field.set(obj,value);
+						}
+					}
+				}
+			}
+			if(data != null) {
+				return data;
+			}
+			return obj;
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
+	}
+	public static Object convertToValueForXml(Object obj, Map<String, Object>data) throws LoansException {
+		try {
+			if(obj ==  null) {
+				return null;
+			}
+			DecimalFormat decim = new DecimalFormat("0.00");
+			if(obj instanceof Double) {
+				obj = Double.parseDouble(decim.format(obj));
+				return obj;
+			}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for(Field field : fields) {
+					field.setAccessible(true);
+					Object value = field.get(obj);
+					if(data != null) {
+						data.put(field.getName(), value);
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
+						value = Double.parseDouble(decim.format(value));
+						if(data != null) {
+							value = decim2.format(value);
 							data.put(field.getName(), value);
 						}else {
 							field.set(obj,value);

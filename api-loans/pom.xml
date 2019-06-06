@@ -102,8 +102,13 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j-version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>4.3.13.RELEASE</version>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 	<version>1.0.1</version>
 	<groupId>com.capitaworld.api.loans</groupId>
 </project>

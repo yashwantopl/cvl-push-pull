@@ -25,6 +25,7 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.model.api_model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,11 +109,6 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
-import com.capitaworld.service.loans.model.api_model.CorporateProfileRequest;
-import com.capitaworld.service.loans.model.api_model.FinanceMeansDetailRequest;
-import com.capitaworld.service.loans.model.api_model.GuarantorsCorporateDetailRequest;
-import com.capitaworld.service.loans.model.api_model.ProfileReqRes;
-import com.capitaworld.service.loans.model.api_model.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.common.BasicDetailFS;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
@@ -397,6 +393,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private PincodeDateService pincodeDateService;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComp;
 
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
@@ -3699,8 +3698,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (directorBackgroundDetail != null) {
 					return directorBackgroundDetail.getDirectorsName();
 				}
-			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
-					.getId()) {
+			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() ||
+					applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
@@ -6244,7 +6243,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return retailLoanObj.getId();
 		}
 		logger.info("Successfully get result");
-		if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
+		/*if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 			retailLoanObj = new PrimaryHomeLoanDetail();	
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.HOME_LOAN.getValue()));
 			retailLoanObj.setProductId(LoanType.HOME_LOAN.getValue());
@@ -6252,7 +6251,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			retailLoanObj = new PrimaryPersonalLoanDetail();
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.PERSONAL_LOAN.getValue()));
 			retailLoanObj.setProductId(LoanType.PERSONAL_LOAN.getValue());
-		}
+		}*/
+		retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		retailLoanObj.setCreatedBy(userId);
@@ -6286,10 +6286,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
-			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
+			Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
+			if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
+				logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
+			}
+			/*ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				applicationProposalMapping = new ApplicationProposalMapping();
-			}
+			}*/
+			ApplicationProposalMapping applicationProposalMapping = new ApplicationProposalMapping();
 			applicationProposalMapping.setProposalId(proposalDetails.getId());
 			applicationProposalMapping.setApplicationId(proposalDetails.getApplicationId());
 			applicationProposalMapping.setLoanAmount(loanApplicationRequest.getAmount());
@@ -8319,7 +8324,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.error(CommonUtils.EXCEPTION+e.getMessage(), e);
 			}
 
-			//User is Not from Campaign
+			minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetail();
+			/*//User is Not from Campaign
 			if(CommonUtils.isObjectNullOrEmpty(fsOrgId))
 			{
 				logger.info("User is not from Campaign. Application Id ==>"+applicationId);
@@ -8329,7 +8335,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			{
 				logger.info("User is from Campaign. Application Id ==>"+applicationId + " Campaign Code ==>"+campaignCode);
 				minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetailByOrgId(fsOrgId);
-			}
+			}*/
 
 			for(MinMaxProductDetail minMaxProductDetail:minMaxProductDetailList)
 			{
@@ -8389,7 +8395,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationMaster.setModifiedDate(new Date());
 			loanApplicationMaster.setProductId(loanTypeId.intValue());
 			loanApplicationRepository.save(loanApplicationMaster);
+			loanApplicationRepository.updateLoanType(applicationId,loanTypeId);
 			logger.info("Loan Type Updated");
+			fpAsyncComp.sendEmailToFsWhenSubProductOfRetailSelectedByUser(loanApplicationMaster);
 			return  true;
 		}
 		catch (Exception e)
@@ -8399,4 +8407,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return  false;
 		}
 	}
+	//1/6/2019........................
+
+	@Override
+	public List<LoantypeSelectionResponse> getTypeSelectionData() {
+		List<Object[]> responseList = loanRepository.getTypeSelectionData();
+		List<LoantypeSelectionResponse> selectionList = new ArrayList<>();
+		for(Object[] obj : responseList) {
+//			System.out.print("============>" +obj.toString());
+			LoantypeSelectionResponse  response = new LoantypeSelectionResponse();
+			response.setType(obj[0].toString());
+			response.setDescription((String)obj[1]);
+			response.setBusinessTypeId((int)obj[2]);
+			response.setImgPath((String)obj[3]);
+			selectionList.add(response);
+			System.out.print("============>" +response.getType());
+		}
+		return selectionList;
+	}
+
+
 }

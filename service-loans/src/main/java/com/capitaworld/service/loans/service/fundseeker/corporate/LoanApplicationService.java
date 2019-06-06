@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -253,4 +254,7 @@ public interface LoanApplicationService {
 	public BasicDetailFS getBasicDetail(Long applicationId);
 
 	public Boolean updateLoanType(Long userId, Long applicationId, Long loanTypeId);
+
+     //1/6/2109.......................
+	List<LoantypeSelectionResponse> getTypeSelectionData();
 }

@@ -15,6 +15,7 @@ public class ReportRequest implements Serializable {
 	private Long id;
 	private Integer number;
 	private String value;
+	private Long businessTypeId;
 	
 	public Date getFromDate() {
 		return fromDate;
@@ -45,6 +46,18 @@ public class ReportRequest implements Serializable {
 	}
 	public void setValue(String value) {
 		this.value = value;
+	}
+	/**
+	 * @return the businessTypeId
+	 */
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
+	/**
+	 * @param businessTypeId the businessTypeId to set
+	 */
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
 	}
 	
 

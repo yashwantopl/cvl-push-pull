@@ -17,7 +17,16 @@ public class ProposalSearchResponse {
 	private Integer businessTypeId;
 	private Long proposalStatusId;
 	private Integer productId;
-	
+	private String applicantName;
+
+	public String getApplicantName() {
+		return applicantName;
+	}
+
+	public void setApplicantName(String applicantName) {
+		this.applicantName = applicantName;
+	}
+
 	public Long getApplicationId() {
 		return applicationId;
 	}

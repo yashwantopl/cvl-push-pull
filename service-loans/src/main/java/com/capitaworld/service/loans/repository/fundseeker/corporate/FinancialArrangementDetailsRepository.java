@@ -39,7 +39,7 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	public int inActiveManuallyAddedLoans(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
 	@Modifying
-	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true and pm.directorBackgroundDetail.id =:directorId")
+	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true and pm.directorBackgroundDetail =:directorId")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId,@Param("directorId") Long directorId);
 	
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and o.applicationProposalMapping IS NULL")
@@ -64,18 +64,18 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id  and o.isActive = true and o.directorBackgroundDetail IS NULL")
 	public List<FinancialArrangementsDetail> listSecurityCorporateDetailByAppId(@Param("id")Long id);
 
-	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:id and o.isActive =:isActive")
+	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail =:id and o.isActive =:isActive")
 	public FinancialArrangementsDetail findByDirectorIdAndIsActive(@Param("id")Long id, @Param("isActive")Boolean isActive);
 
 //	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:directorId and o.applicationId.id =:applicationId and o.isActive =:true")
 //	public List<FinancialArrangementsDetail> listFinancialListForPartner(@Param("directorId")Long directorId, @Param("applicationId")Long applicationId, @Param("isActive")Boolean isActive);
 	
-	public List<FinancialArrangementsDetail> findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(Long dirId,Long appId,Boolean isActive);
+	public List<FinancialArrangementsDetail> findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(Long dirId,Long appId,Boolean isActive);
 
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail.id =:directorId and o.isActive = true and o.directorBackgroundDetail IS NULL")
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail =:directorId and o.isActive = true")
 	public Double getTotalEmiByApplicationIdAndDirectorId(@Param("applicationId")Long applicationId,@Param("directorId")Long directorId);
 	
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:directorId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.directorBackgroundDetail =:directorId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
 	public Double getTotalEmiByDirectorId(@Param("directorId")Long directorId,@Param("loanType") List<String> loanType);
 
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NOT NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
@@ -84,6 +84,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
 	public Double getTotalEmiByApplicationIdSoftPing(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType);
 	
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail.id =:coApplicantId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail =:coApplicantId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
 	public Double getTotalEmiByApplicationIdSoftPing(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType,@Param("coApplicantId") Long coApplicantId);
+	
+	@Query("From FinancialArrangementsDetail o where o.directorBackgroundDetail =:coAppId")
+	public List<FinancialArrangementsDetail> listCoFinancialByCoAppId(@Param("coAppId")Long id);
 }

@@ -17,13 +17,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
+import com.capitaworld.service.loans.model.retail.RetailOnformBasicInfoReq;
+import com.capitaworld.service.loans.model.retail.RetailOnformContactInfoReq;
+import com.capitaworld.service.loans.model.retail.RetailOnformEmploymentInfoReq;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/sbi_pl")
@@ -101,13 +108,33 @@ public class PlRetailApplicantController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId);
+            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId, null);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(plRetailApplicantRequest);
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("Error while getting Retail Applicant Profile Details==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @GetMapping(value = "/profile/getCoApp/{coAppId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getCoAppProfileById(@PathVariable("coAppId")  Long coAppId) {
+        try {
+            if (coAppId == null) {
+                logger.warn("CoAppId Require to get Retail CoApp Profile Details. CoAppId==> NULL");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getCoAppProfile(coAppId);
+            if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest)) {
+            	return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),plRetailApplicantRequest), HttpStatus.OK);
+            } else {
+            	return new ResponseEntity<LoansResponse>(new LoansResponse("No data available !!", HttpStatus.OK.value()), HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting Retail CoAPplicant Applicant Profile Details==>", e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -170,9 +197,16 @@ public class PlRetailApplicantController {
     }
     
     @GetMapping(value = "/primary/getBankRelations/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId) {
+    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId,@RequestParam(value = "coAppId", required = false) Long coAppId) {
         try {
-            return new ResponseEntity<>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(), plRetailApplicantService.getBankRelations(applicationId)), HttpStatus.OK);
+            List<BankRelationshipRequest> bankRelations = new ArrayList<>();
+            if(coAppId != null){
+                bankRelations = plRetailApplicantService.getBankRelations(applicationId,coAppId);
+            } else {
+                bankRelations = plRetailApplicantService.getBankRelations(applicationId,null);
+            }
+
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(), bankRelations), HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
@@ -346,6 +380,84 @@ public class PlRetailApplicantController {
 
         } catch (Exception e) {
             logger.error("Error while getting Retail Applicant Profile Details==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping(value = "/retail/checkCoAppFilled/{applicationId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> checkCoAppProfileBeforeSelectHL(@PathVariable("applicationId")  Long applicationId) {
+        try {
+            if (applicationId == null) {
+                logger.warn("ApplicationId Require to check CoApp Filled. Application Id ==> NULL");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(plRetailApplicantService.checkCoAppProfileBeforeSelectHL(applicationId));
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while check CoApp Filled==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    
+    @PostMapping(value = "/profile/getMergeProfile", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getProfile(@RequestBody RetailOnformContactInfoReq contactInfoReq, HttpServletRequest request) {
+        try {
+            if (contactInfoReq.getApplicationId() == null && contactInfoReq.getCoAppId() == null) {
+                logger.warn("ApplicationId or CoAppId can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            
+            if (contactInfoReq.getType() == null) {
+                logger.warn("ApplicationId or CoAppId can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value());
+            if(contactInfoReq.getType() == 1) {//BASIC INFO
+            	RetailOnformBasicInfoReq oneformBasicInfo = plRetailApplicantService.getOneformBasicInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
+            	if(oneformBasicInfo != null) {
+            		loansResponse.setData(oneformBasicInfo);
+            		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            	}
+            } else if(contactInfoReq.getType() == 2) {//CONTACT INFO
+            	RetailOnformContactInfoReq oneformContactInfo = plRetailApplicantService.getOneformContactInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
+            	if(oneformContactInfo != null) {
+            		loansResponse.setData(oneformContactInfo);
+            		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            	}
+            } else if(contactInfoReq.getType() == 3) {//EMPLOYMENT INFO
+            	RetailOnformEmploymentInfoReq oneformEmploymentInfo = plRetailApplicantService.getOneformEmploymentInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
+            	if(oneformEmploymentInfo != null) {
+            		loansResponse.setData(oneformEmploymentInfo);
+            		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            	}
+            } else if(contactInfoReq.getType() == 4) {//CREADIT INFO
+            	List<FinancialArrangementsDetailRequest> oneformCreditInfo = plRetailApplicantService.getOneformCreditInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId());
+            	if(oneformCreditInfo != null) {
+            		loansResponse.setData(oneformCreditInfo);
+            		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            	}
+            }
+            logger.info("TYPE IS NOT MATCHED ============================>" + contactInfoReq.getType());
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(CommonUtils.EXCEPTION,e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PostMapping(value = "/getApplicantAndCoAppOneFormInfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getApplicantAndCoAppOneFormInfo(@RequestBody RetailOnformContactInfoReq contactInfoReq, HttpServletRequest request) {
+        try {
+            if (contactInfoReq.getApplicationId() == null && contactInfoReq.getCoAppId() == null) {
+                logger.warn("ApplicationId or CoAppId can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(),plRetailApplicantService.getApplicantAndCoAppOneFormInfo(contactInfoReq.getApplicationId(), contactInfoReq.getCoAppId())), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(CommonUtils.EXCEPTION,e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

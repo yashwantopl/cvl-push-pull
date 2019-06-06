@@ -219,7 +219,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
@@ -756,7 +756,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
@@ -797,7 +797,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		
 		PLRetailApplicantResponse plRetailApplicantResponse = null;
 		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId);
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userid, toApplicationId, proposalId);
 			plRetailApplicantResponse = new PLRetailApplicantResponse();
 			if(plRetailApplicantRequest != null) {
 				
@@ -881,7 +881,12 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 				// loan Details 
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
-				plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
+				if(plRetailApplicantRequest.getLoanPurpose() != null) {
+					plTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose().equals(LoanPurposePL.OTHERS.getId()) ?  "Other - "+plRetailApplicantRequest.getLoanPurposeOther()  : LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString());
+				}else {
+					plTeaserViewResponse.setPurposeOfLoan("NA");
+				}
+				
 				plRetailApplicantResponse.setTenureReq(plRetailApplicantRequest.getTenureRequired()!= null ? plRetailApplicantRequest.getTenureRequired() > 1 ? plRetailApplicantRequest.getTenureRequired() + " Years" : plRetailApplicantRequest.getTenureRequired() + " Year " : "" );
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
@@ -1053,12 +1058,12 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 
 			if (proposalScoreResponse != null){
-				logger.info("getObjectFromMap called successfully");
+				plTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName());
+				plTeaserViewResponse.setDataList(scoringResponse.getDataList());
+				plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
+				plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());
 			}
-			plTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName());
-			plTeaserViewResponse.setDataList(scoringResponse.getDataList());
-			plTeaserViewResponse.setDataObject(scoringResponse.getDataObject());
-			plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());
+			
 		} catch (ScoringException | IOException e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -1131,7 +1136,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setCastCategory(retailFinalInfo.getCastId() != null ? CastCategory.getById(retailFinalInfo.getCastId()).getValue().toString() : "-");
 					plTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
 					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
-					plTeaserViewResponse.setPreviousJobYear(retailFinalInfo.getPreviousJobYear() +" Years " + retailFinalInfo.getPreviousJobMonth() + " Months");
+					
+					if(retailFinalInfo.getPreviousJobYear() != null) {
+						plTeaserViewResponse.setPreviousJobYear(retailFinalInfo.getPreviousJobYear() +" Years " + retailFinalInfo.getPreviousJobMonth() + " Months");
+					}else {
+						plTeaserViewResponse.setPreviousJobYear("-");
+					}
+					
 					
 					if(retailFinalInfo.getDdoRemainingSerYrs() != null && retailFinalInfo.getDdoRemainingSerMonths() != null) {
 						LocalDate today = LocalDate.now();

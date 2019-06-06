@@ -148,7 +148,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	@Override
 	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest, Long applicationId,
 			Long userId, Long directorId) {
-		financialArrangementDetailsRepository.inActive(userId, applicationId,directorId);
+		int inactivatedRow = financialArrangementDetailsRepository.inActive(userId, applicationId,directorId);
+		logger.info("inactivatedRow=============>{} ==>for Director Id===>{}",inactivatedRow,directorId);
+		logger.info("Existing Loans Size=============>{} ==>for Director Id===>{}",existingLoanDetailRequest != null ? existingLoanDetailRequest.size() : null,directorId);
 		for (FinancialArrangementsDetailRequest req : existingLoanDetailRequest) {
 			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
 			BeanUtils.copyProperties(req, arrangementsDetail);
@@ -156,7 +158,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setCreatedBy(userId);
 			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
-			arrangementsDetail.setDirectorBackgroundDetail(new DirectorBackgroundDetail(directorId));
+			arrangementsDetail.setDirectorBackgroundDetail(directorId);
 			arrangementsDetail.setBureauOrCalculatedEmi(req.getEmi());
 			arrangementsDetail.setBureauOutstandingAmount(req.getOutstandingAmount());
 			financialArrangementDetailsRepository.save(arrangementsDetail);
@@ -267,7 +269,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	@Override
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id) throws LoansException {
 		try {
-			return prepareObject(financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true));
+			return prepareObject(financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(dirId,id,true));
 		}
 		catch (Exception e) {
 			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
@@ -282,7 +284,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
 			BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
 			if(!CommonUtils.isObjectNullOrEmpty(detail.getDirectorBackgroundDetail())) {
-				financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail().getId());
+				financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail());
 			}
 			financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
 		}

@@ -344,6 +344,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		termLoanParameterRequest.setMsmeFundingIds(
 				msmeValueMappingService.getDataListFromFpProductId(2, id, termLoanParameterRequest.getUserId()));
+		termLoanParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 
 		termLoanParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
@@ -1295,6 +1296,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		termLoanParameterRequest.setMsmeFundingIds(
 				msmeValueMappingService.getDataListFromFpProductId(2, id, termLoanParameterRequest.getUserId()));
+		termLoanParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getNtbTermLoanParameterRequest");
 		return termLoanParameterRequest;
 	}
