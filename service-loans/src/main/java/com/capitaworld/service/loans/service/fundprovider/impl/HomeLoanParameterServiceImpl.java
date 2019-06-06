@@ -552,7 +552,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				CommonUtils.ParameterTypes.RESIDENTIAL, homeLoanParameterRequest.getResidentialStatusIds());
 
 		// Saving Mapping Current BORROWER_TYPE
-		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
+		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),	
 				CommonUtils.ParameterTypes.BORROWER_TYPE, homeLoanParameterRequest.getBorrowerTypeIds());
 
 		// Saving Mapping Current SALARY_MODE
