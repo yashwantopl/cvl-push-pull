@@ -157,4 +157,55 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 		return referencesRetailRequests;
 	}
 
+	@Override
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailListByPropsalIdAndCoAppId(Long proposalId,
+																					   Long coAppId ) throws LoansException {
+
+		List<ReferencesRetailDetail> referencesRetailDetails = null;
+		referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromPropsalIdAndCoAppId(proposalId,coAppId);
+
+		List<ReferenceRetailDetailsRequest> referencesRetailRequests = new ArrayList<ReferenceRetailDetailsRequest>();
+
+		for (ReferencesRetailDetail detail : referencesRetailDetails) {
+			ReferenceRetailDetailsRequest referencesRetailRequest = new ReferenceRetailDetailsRequest();
+			referencesRetailRequest.setReferncesList(!CommonUtils.isObjectNullOrEmpty(detail.getReferencesListId()) ? StringEscapeUtils.escapeXml(ReferencesList.getById(detail.getReferencesListId()).getValue()) :"");
+			BeanUtils.copyProperties(detail, referencesRetailRequest);
+			referencesRetailRequests.add(referencesRetailRequest);
+		}
+		return referencesRetailRequests;
+	}
+
+	@Override
+	public Boolean saveOrUpdateCoApplicant(FrameRequest frameRequest) throws LoansException {
+		try {
+			for (Map<String, Object> obj : frameRequest.getDataList()) {
+				ReferenceRetailDetailsRequest referencesRetailDetailRequest = (ReferenceRetailDetailsRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, ReferenceRetailDetailsRequest.class);
+				ReferencesRetailDetail referencesRetailDetail = new ReferencesRetailDetail();
+				BeanUtils.copyProperties(referencesRetailDetailRequest, referencesRetailDetail);
+				if (referencesRetailDetailRequest.getId() == null) {
+					referencesRetailDetail.setCreatedBy(frameRequest.getUserId());
+					referencesRetailDetail.setCreatedDate(new Date());
+				}
+				referencesRetailDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				referencesRetailDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(frameRequest.getCoApplicantId()));
+
+				if(frameRequest.getProposalMappingId() != null) {
+					referencesRetailDetail.setApplicationProposalMapping(applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true));
+				}
+
+				referencesRetailDetail.setModifiedBy(frameRequest.getUserId());
+				referencesRetailDetail.setModifiedDate(new Date());
+				referenceRetailDetailsRepository.save(referencesRetailDetail);
+			}
+			return true;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception  in save referencesRetailDetail  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +48,9 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
@@ -76,6 +80,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 
+				otherIncomeDetail.setProposalId(applicationProposalMappingRepository.findOne(frameRequest.getProposalMappingId()));
 				otherIncomeDetail.setModifiedBy(frameRequest.getUserId());
 				otherIncomeDetail.setModifiedDate(new Date());
 				otherIncomeDetailRepository.save(otherIncomeDetail);
@@ -91,23 +96,29 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 	}
 
 	@Override
+	public List<OtherIncomeDetailRequest> getOtherIncomeDetailListForCoApplicant(Long id, Long proposalId, Long coAppId) throws LoansException {
+		try {
+			List<OtherIncomeDetail> otherIncomeDetails;
+			otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromProposalIdAndCoAppId(proposalId, coAppId);
+			List<OtherIncomeDetailRequest> otherIncomeRequests = new ArrayList<OtherIncomeDetailRequest>();
+
+			for (OtherIncomeDetail detail : otherIncomeDetails) {
+				OtherIncomeDetailRequest otherIncomeRequest = new OtherIncomeDetailRequest();
+				BeanUtils.copyProperties(detail, otherIncomeRequest);
+				otherIncomeRequests.add(otherIncomeRequest);
+			}
+			return otherIncomeRequests;
+		} catch (Exception e) {
+			logger.error("Exception in getting otherIncomeDetail :- ", e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType) throws LoansException {
 		try {
 			List<OtherIncomeDetail> otherIncomeDetails;
-			switch (applicationType) {
-			case CommonUtils.ApplicantType.APPLICANT:
-				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromAppId(id);
-				break;
-			case CommonUtils.ApplicantType.COAPPLICANT:
-				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromCoAppId(id);
-				break;
-			case CommonUtils.ApplicantType.GARRANTOR:
-				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromGarrId(id);
-				break;
-			default:
-				throw new LoansException();
-			}
-
+			otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromAppId(id);
 			List<OtherIncomeDetailRequest> otherIncomeRequests = new ArrayList<OtherIncomeDetailRequest>();
 
 			for (OtherIncomeDetail detail : otherIncomeDetails) {
@@ -124,4 +135,55 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 		}
 	}
 
+	@Override
+	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType,Long proposalId) throws LoansException {
+		try {
+			List<OtherIncomeDetail> otherIncomeDetails;
+			otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromAppId(id,proposalId);
+			List<OtherIncomeDetailRequest> otherIncomeRequests = new ArrayList<OtherIncomeDetailRequest>();
+
+			for (OtherIncomeDetail detail : otherIncomeDetails) {
+				OtherIncomeDetailRequest otherIncomeRequest = new OtherIncomeDetailRequest();
+				BeanUtils.copyProperties(detail, otherIncomeRequest);
+				otherIncomeRequests.add(otherIncomeRequest);
+			}
+			return otherIncomeRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in getting otherIncomeDetail :- ",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+
+	@Override
+	public Boolean saveOrUpdateCoApplicant(FrameRequest frameRequest) throws LoansException {
+		try {
+			for (Map<String, Object> obj : frameRequest.getDataList()) {
+				OtherIncomeDetailRequest otherIncomeDetailRequest = (OtherIncomeDetailRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, OtherIncomeDetailRequest.class);
+				OtherIncomeDetail otherIncomeDetail = new OtherIncomeDetail();
+				BeanUtils.copyProperties(otherIncomeDetailRequest, otherIncomeDetail);
+				if (otherIncomeDetailRequest.getId() == null) {
+					otherIncomeDetail.setCreatedBy(frameRequest.getUserId());
+					otherIncomeDetail.setCreatedDate(new Date());
+				}
+				otherIncomeDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				otherIncomeDetail.setCoApplicantDetailId(
+						coApplicantDetailRepository.findOne(frameRequest.getCoApplicantId()));
+
+				otherIncomeDetail.setProposalId(applicationProposalMappingRepository.findOne(frameRequest.getProposalMappingId()));
+				otherIncomeDetail.setModifiedBy(frameRequest.getUserId());
+				otherIncomeDetail.setModifiedDate(new Date());
+				otherIncomeDetailRepository.save(otherIncomeDetail);
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Exception in save otherIncomeDetail  :- ", e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
 }

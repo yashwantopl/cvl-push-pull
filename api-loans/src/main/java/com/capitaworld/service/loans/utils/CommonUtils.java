@@ -143,6 +143,18 @@ public class CommonUtils {
 		public static final String FAILED = "Failed";
 		public static final String BYPASS = "ByPass";
 	}
+	
+	/**
+	 *  Date :- 04/06/2018
+	 * @author harshit
+	 *	USED FOR SAVE AND GET ONEFROM DETAILS ON FS RETAIL JOURNEY 
+	 */
+	public static final class RetailOneformType {
+		public static final int CONTACT_INFO = 2;
+		public static final int EMPLOYMENT_INFO = 3;
+		public static final int CREDIT_INFO = 4;
+		public static final int BASIC_INFO = 1;
+	}
 
 	public static final class UsersRoles {
 		private UsersRoles(){
@@ -431,6 +443,12 @@ public class CommonUtils {
 		public static String[] getPlRetailPrimary() {
 			return PL_RETAIL_PRIMARY;
 		}
+		
+		private static final String[] RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","createdBy","createdDate","isActive","applicationId","modifiedBy","modifiedDate"};
+
+		public static String[] getRetailPrimary() {
+			return PL_RETAIL_PRIMARY;
+		}
 
 		private static final String[] PL_RETAIL_FINAL = {"addressSameAs","religion","qualifyingYear","noChildren","fatherName","motherName","spouseName","noDependent",
 				"residingMonth","residingYear","nationality","residentialStatus","castId","birthPlace","disabilityType","drivingLicenseNumber","drivingLicenseExpiryDate",
@@ -550,6 +568,8 @@ public class CommonUtils {
 		public static final Integer BORROWER_TYPE = 3;
 		public static final Integer SALARY_MODE = 4;
 		public static final Integer BORROWER_SALARY_ACCOUNT = 5;
+		public static final Integer EMPLOYMENT_WITH = 6;
+		public static final Integer SLEF_EMPLOYMENT_WITH = 7;
 	}
 	
 

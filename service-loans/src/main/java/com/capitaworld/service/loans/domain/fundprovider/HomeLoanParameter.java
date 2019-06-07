@@ -172,6 +172,19 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	private Boolean isBorrSalAccDisplay = false;
 	@Column(name = "is_borr_sal_acc_mandatory")
 	private Boolean isBorrSalAccMandatory = false;
+	
+	
+	// Eligibile Employer From
+	@Column(name = "is_employment_with_display")
+	private Boolean isEmploymentWithDisplay = false;
+	@Column(name = "is_employment_with_mandatory")
+	private Boolean isEmploymentWithMandatory = false;
+	
+	// Eligibile Professional From
+	@Column(name = "is_self_employed_with_display")
+	private Boolean isSelfEmployedWithDisplay = false;
+	@Column(name = "is_self_employed_with_mandatory")
+	private Boolean isSelfEmployedWithMandatory = false;
 
 	// Loan to Value (LTV) %
 	
@@ -893,4 +906,37 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	public void setLtvForEligibility(Integer ltvForEligibility) {
 		this.ltvForEligibility = ltvForEligibility;
 	}
+
+	public Boolean getIsEmploymentWithDisplay() {
+		return isEmploymentWithDisplay;
+	}
+
+	public void setIsEmploymentWithDisplay(Boolean isEmploymentWithDisplay) {
+		this.isEmploymentWithDisplay = isEmploymentWithDisplay;
+	}
+
+	public Boolean getIsEmploymentWithMandatory() {
+		return isEmploymentWithMandatory;
+	}
+
+	public void setIsEmploymentWithMandatory(Boolean isEmploymentWithMandatory) {
+		this.isEmploymentWithMandatory = isEmploymentWithMandatory;
+	}
+
+	public Boolean getIsSelfEmployedWithDisplay() {
+		return isSelfEmployedWithDisplay;
+	}
+
+	public void setIsSelfEmployedWithDisplay(Boolean isSelfEmployedWithDisplay) {
+		this.isSelfEmployedWithDisplay = isSelfEmployedWithDisplay;
+	}
+
+	public Boolean getIsSelfEmployedWithMandatory() {
+		return isSelfEmployedWithMandatory;
+	}
+
+	public void setIsSelfEmployedWithMandatory(Boolean isSelfEmployedWithMandatory) {
+		this.isSelfEmployedWithMandatory = isSelfEmployedWithMandatory;
+	}
+	
 }

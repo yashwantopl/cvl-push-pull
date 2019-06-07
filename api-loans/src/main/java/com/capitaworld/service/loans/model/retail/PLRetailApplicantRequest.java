@@ -20,6 +20,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long applicationId;
     private Long proposalId;
     private Integer loanTypeId;
+    private Integer type;
     
     /*
     * Profile Fields
@@ -86,7 +87,7 @@ public class PLRetailApplicantRequest implements Serializable {
     * */
     
     private Long addressCity;
-    private Long addressCountry;
+    private Integer addressCountry;
     private Long addressState;
     
     private Integer spouseEmployment;
@@ -558,13 +559,6 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.addressCity = addressCity;
 	}
 
-	public Long getAddressCountry() {
-		return addressCountry;
-	}
-
-	public void setAddressCountry(Long addressCountry) {
-		this.addressCountry = addressCountry;
-	}
 
 	public Long getAddressState() {
 		return addressState;
@@ -941,6 +935,22 @@ public class PLRetailApplicantRequest implements Serializable {
 
 	public void setCurrentEmploymentStatus(Integer currentEmploymentStatus) {
 		this.currentEmploymentStatus = currentEmploymentStatus;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public Integer getAddressCountry() {
+		return addressCountry;
+	}
+
+	public void setAddressCountry(Integer addressCountry) {
+		this.addressCountry = addressCountry;
 	}
     
     
