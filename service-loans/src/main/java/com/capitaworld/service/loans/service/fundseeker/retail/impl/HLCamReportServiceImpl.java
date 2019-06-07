@@ -35,17 +35,20 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PurchasePropertyDetails;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
+import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.PurchasePropertyDetailsRequest;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
@@ -54,6 +57,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
@@ -61,6 +65,8 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArran
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanCoAppService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ObligationDetailService;
@@ -99,6 +105,15 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private PlRetailApplicantService plRetailApplicantService;
+	
+	@Autowired
+	private FinalHomeLoanService finalHomeLoanService;
+	
+	@Autowired
+	private FinalHomeLoanCoAppService finalHomeLoanCoAppService;
+	
+	@Autowired
+	private PurchasePropertyDetailsRepository purchasePropertyDetailsRepository;
 	
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -1129,6 +1144,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		/*************************************************************FINAL DETAILS***********************************************************/
 		
 		if(isFinalView) {
+			
+			Map<String , Object> retailMap = new HashMap<String, Object>();
+			
 			//PROPOSAL DATES
 			try {
 				List<Object[]> data = null;
@@ -1154,52 +1172,71 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				logger.error("Error while getting PROPOSAL DATES data : ",e);
 			}
 			
-			Map<String , Object> retailMap = new HashMap<String, Object>();
-			
 			//RETAIL FINAL DETAILS
 			try {
-				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinalByProposalId(userId, applicationId, proposalId);
-				if(!CommonUtils.isObjectNullOrEmpty(retailFinalInfo)) {
-					retailMap.put("educationalQualificationYear", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getQualifyingYear()) ? simpleDateFormat.format(retailFinalInfo.getQualifyingYear()) : "-");
-					retailMap.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getBirthPlace()) ? retailFinalInfo.getBirthPlace() : "-");
-					retailMap.put("religion", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getReligion()) ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue() : "-");
-					retailMap.put("caste", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getCastId()) ? CastCategory.getById(retailFinalInfo.getCastId()).getValue() : "-");
-					retailMap.put("noOfChildren", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getNoChildren()) ? retailFinalInfo.getNoChildren() : "-");
-					retailMap.put("diasablityType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDisabilityType()) ? DisabilityType.getById(retailFinalInfo.getDisabilityType()) : "");
-					retailMap.put("permanantAddCountry", StringEscapeUtils.escapeXml(getCountryName(retailFinalInfo.getPermanentAddress().getCountryId())));
-					retailMap.put("permanantAddState", StringEscapeUtils.escapeXml(getStateName(retailFinalInfo.getPermanentAddress().getStateId())));
-					retailMap.put("permanantAddCity", StringEscapeUtils.escapeXml(getCityName(retailFinalInfo.getPermanentAddress().getCityId())));
-					retailMap.put("permanantAddPincode", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getPermanentAddress().getPincode())?retailFinalInfo.getPermanentAddress().getPincode() : "");
+				
+				FinalHomeLoanDetailRequest finalHomeLoanRequest= finalHomeLoanService.get(applicationId ,userId ,proposalId);
+				if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest)) {
+					retailMap.put("educationalQualificationYear", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getYear()) ? finalHomeLoanRequest.getYear() : "-");
+					retailMap.put("religion", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getReligion()) ? ReligionRetailMst.getById(finalHomeLoanRequest.getReligion()).getValue() : "-");
+					retailMap.put("caste", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getCast()) ? CastCategory.getById(finalHomeLoanRequest.getCast()).getValue() : "-");
+					//retailMap.put("diasablityType", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getDisabilityType()) ? DisabilityType.getById(finalHomeLoanRequest.getDisabilityType()) : "");
+					retailMap.put("permanantAddCountry", StringEscapeUtils.escapeXml(getCountryName(finalHomeLoanRequest.getPermanentAddress().getCountryId())));
+					retailMap.put("permanantAddState", StringEscapeUtils.escapeXml(getStateName(finalHomeLoanRequest.getPermanentAddress().getStateId())));
+					retailMap.put("permanantAddCity", StringEscapeUtils.escapeXml(getCityName(finalHomeLoanRequest.getPermanentAddress().getCityId())));
+					retailMap.put("permanantAddPincode", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getPermanentAddress().getPincode())?finalHomeLoanRequest.getPermanentAddress().getPincode() : "");
 					
 					try {
-						if(!CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getPermanentAddress().getDistrictMappingId())) {
-							retailMap.put("permanantAddressData",CommonUtils.printFields(pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId()),null));				
+						if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getPermanentAddress().getDistrictMappingId())) {
+							retailMap.put("permanantAddressData",CommonUtils.printFields(pincodeDateService.getById(finalHomeLoanRequest.getPermanentAddress().getDistrictMappingId()),null));				
 						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
-					retailMap.put("officeAddPremise", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getPremiseNumber()) ? CommonUtils.printFields(retailFinalInfo.getOfficeAddress().getPremiseNumber(),null) + "," : "");
-					retailMap.put("officeAddStreetName", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getStreetName()) ? CommonUtils.printFields(retailFinalInfo.getOfficeAddress().getStreetName(),null) + "," : "");
-					retailMap.put("officeAddLandmark", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getLandMark()) ? CommonUtils.printFields(retailFinalInfo.getOfficeAddress().getLandMark(),null) + "," : "");
-					retailMap.put("officeAddCountry", StringEscapeUtils.escapeXml(getCountryName(retailFinalInfo.getOfficeAddress().getCountryId())));
-					retailMap.put("officeAddState", StringEscapeUtils.escapeXml(getStateName(retailFinalInfo.getOfficeAddress().getStateId())));
-					retailMap.put("officeAddCity", StringEscapeUtils.escapeXml(getCityName(retailFinalInfo.getOfficeAddress().getCityId())));
-					retailMap.put("officeAddPincode", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getPincode())?retailFinalInfo.getPermanentAddress().getPincode() : "");
+					retailMap.put("correspondencePremise", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getCorrespondenceAddress().getPremiseNumber()) ? CommonUtils.printFields(finalHomeLoanRequest.getCorrespondenceAddress().getPremiseNumber(),null) + "," : "");
+					retailMap.put("correspondenceStreetName", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getCorrespondenceAddress().getStreetName()) ? CommonUtils.printFields(finalHomeLoanRequest.getCorrespondenceAddress().getStreetName(),null) + "," : "");
+					retailMap.put("correspondenceLandmark", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getCorrespondenceAddress().getLandMark()) ? CommonUtils.printFields(finalHomeLoanRequest.getCorrespondenceAddress().getLandMark(),null) + "," : "");
+					retailMap.put("correspondenceCountry", StringEscapeUtils.escapeXml(getCountryName(finalHomeLoanRequest.getCorrespondenceAddress().getCountryId())));
+					retailMap.put("correspondenceState", StringEscapeUtils.escapeXml(getStateName(finalHomeLoanRequest.getCorrespondenceAddress().getStateId())));
+					retailMap.put("correspondenceCity", StringEscapeUtils.escapeXml(getCityName(finalHomeLoanRequest.getCorrespondenceAddress().getCityId())));
+					retailMap.put("correspondencePincode", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getCorrespondenceAddress().getPincode())?finalHomeLoanRequest.getPermanentAddress().getPincode() : "");
 					try {
-						if(!CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getOfficeAddress().getDistrictMappingId())) {
-							retailMap.put("officeAddressData",CommonUtils.printFields(pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId()),null));				
+						if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanRequest.getCorrespondenceAddress().getDistrictMappingId())) {
+							retailMap.put("correspondenceAddressData",CommonUtils.printFields(pincodeDateService.getById(finalHomeLoanRequest.getCorrespondenceAddress().getDistrictMappingId()),null));				
 						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
-					
-					retailMap.put("retailFinalDetails", retailFinalInfo);
 				}
+				
+				retailMap.put("retailFinalDetails", CommonUtils.printFields(finalHomeLoanRequest , null));
+				
 			} catch (Exception e) {
 				logger.error("Error while getting Final Information : ",e);
-			}		
+			}
 			
+			//Purchase Property Details
+			try {
+				List<PurchasePropertyDetailsRequest> listDataOfProperty = new ArrayList<PurchasePropertyDetailsRequest>(); 
+				List<PurchasePropertyDetails> purchasePropertyDetails = purchasePropertyDetailsRepository.getListByApplicationId(applicationId);
+				for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
+					PurchasePropertyDetailsRequest purchasePropertyDetailsRequest = new PurchasePropertyDetailsRequest();
+					purchasePropertyDetailsRequest.setPropertyName(purchasePropertyDetail.getPropertyName());
+					purchasePropertyDetailsRequest.setCityName(purchasePropertyDetail.getCity() != null ? StringEscapeUtils.escapeXml(getCityName(purchasePropertyDetail.getCity().longValue())) : "-");
+					purchasePropertyDetailsRequest.setStateName(purchasePropertyDetail.getState() != null ? StringEscapeUtils.escapeXml(getStateName(purchasePropertyDetail.getState())) : "-");
+					purchasePropertyDetailsRequest.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
+					purchasePropertyDetailsRequest.setCarpetArea(purchasePropertyDetail.getCarpetArea());
+					purchasePropertyDetailsRequest.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
+					purchasePropertyDetailsRequest.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
+					listDataOfProperty.add(purchasePropertyDetailsRequest);		
+				}
+				retailMap.put("purchasePropertyDetails", !CommonUtils.isObjectListNull(listDataOfProperty) ? listDataOfProperty : null);	
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching ListData of Property Details of ApplicationId==>{}" , applicationId);
+			}
+			
+			/*
 			//INCOME DETAILS - GROSS INCOME
 			try {
 				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
@@ -1259,7 +1296,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 			} catch (Exception e) {
 				logger.error("Error while getting reference details : ",e);
-			}
+			}*/
 			
 			map.put("retailData", retailMap);
 			
