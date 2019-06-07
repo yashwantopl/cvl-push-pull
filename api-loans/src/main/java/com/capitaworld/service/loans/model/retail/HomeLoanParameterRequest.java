@@ -108,6 +108,7 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isLtvMandatory = false;
 
 	List<LoanPurposeAmountMappingRequest> loanPurposeAmountMappingRequests = Collections.emptyList();
+	private Integer salaryAcType;
 
 	private Object workflowData;
 	
@@ -562,5 +563,13 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 
 	public void setIsSelfEmployedWithMandatory(Boolean isSelfEmployedWithMandatory) {
 		this.isSelfEmployedWithMandatory = isSelfEmployedWithMandatory;
+	}
+
+	public Integer getSalaryAcType() {
+		return salaryAcType;
+	}
+
+	public void setSalaryAcType(Integer salaryAcType) {
+		this.salaryAcType = salaryAcType;
 	}
 }

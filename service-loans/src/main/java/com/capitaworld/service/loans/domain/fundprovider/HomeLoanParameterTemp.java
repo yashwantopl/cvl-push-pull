@@ -292,6 +292,9 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "ltv_for_eligibility")
 	private Integer ltvForEligibility;
 	
+	@Column(name="salary_ac_type")
+	private Integer salaryAcType;
+	
 	
 	public HomeLoanParameterTemp() {
 //		super();
@@ -1102,4 +1105,15 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setIsSelfEmployedWithMandatory(Boolean isSelfEmployedWithMandatory) {
 		this.isSelfEmployedWithMandatory = isSelfEmployedWithMandatory;
 	}
+
+
+	public Integer getSalaryAcType() {
+		return salaryAcType;
+	}
+
+
+	public void setSalaryAcType(Integer salaryAcType) {
+		this.salaryAcType = salaryAcType;
+	}
+	
 }
