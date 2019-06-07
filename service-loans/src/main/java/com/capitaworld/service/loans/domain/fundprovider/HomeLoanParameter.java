@@ -290,6 +290,9 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	
 	@Column(name = "ltv_for_eligibility")
 	private Integer ltvForEligibility;
+	
+	@Column(name="salary_ac_type")
+	private Integer salaryAcType;
 
 	public Integer getCurrency() {
 		return currency;
@@ -938,5 +941,14 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	public void setIsSelfEmployedWithMandatory(Boolean isSelfEmployedWithMandatory) {
 		this.isSelfEmployedWithMandatory = isSelfEmployedWithMandatory;
 	}
+
+	public Integer getSalaryAcType() {
+		return salaryAcType;
+	}
+
+	public void setSalaryAcType(Integer salaryAcType) {
+		this.salaryAcType = salaryAcType;
+	}
+	
 	
 }
