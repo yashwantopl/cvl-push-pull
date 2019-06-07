@@ -47,13 +47,13 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	List<EmpAgriculturistTypeRequest> empAgriculturistTypeList;
 	List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeList;
 	List<ReferenceRetailDetailsRequest> referenceRetailDetailsList;
-	private String nameOfSeller;
+	private String sellerName;
 	private String sellerAddress;
 	private Integer sellerPincode;
 	private Integer sellerCity;
 	private Integer sellerState;
 	private Date dateOfExistingLoanTaken;
-	private String originalValueOfProperty;
+	private Integer originalValueOfProperty;
 	private Long clientId;
 	private String currencyValue;
 	private String finalFilledCount;
@@ -252,12 +252,12 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 		this.otherIncomeDetailsList = otherIncomeDetailsList;
 	}
 
-	public String getNameOfSeller() {
-		return nameOfSeller;
+	public String getSellerName() {
+		return sellerName;
 	}
 
-	public void setNameOfSeller(String nameOfSeller) {
-		this.nameOfSeller = nameOfSeller;
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
 	}
 
 	public String getSellerAddress() {
@@ -267,7 +267,7 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	public void setSellerAddress(String sellerAddress) {
 		this.sellerAddress = sellerAddress;
 	}
-
+	
 	public Integer getSellerPincode() {
 		return sellerPincode;
 	}
@@ -300,11 +300,11 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 		this.dateOfExistingLoanTaken = dateOfExistingLoanTaken;
 	}
 
-	public String getOriginalValueOfProperty() {
+	public Integer getOriginalValueOfProperty() {
 		return originalValueOfProperty;
 	}
 
-	public void setOriginalValueOfProperty(String originalValueOfProperty) {
+	public void setOriginalValueOfProperty(Integer originalValueOfProperty) {
 		this.originalValueOfProperty = originalValueOfProperty;
 	}
 
