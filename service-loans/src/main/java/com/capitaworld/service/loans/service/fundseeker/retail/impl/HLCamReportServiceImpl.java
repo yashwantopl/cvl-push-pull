@@ -437,7 +437,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		            }
 		            
 		          
-		            coApp.put("bankingRelationship", bankRelationshipRequests);
+		            coApp.put("bankingRelationship", !CommonUtils.isObjectListNull(bankRelationshipRequests) ? bankRelationshipRequests : null);
 				}catch (Exception e) {
 					logger.error("Error/Exception while fetching data for CoApplicant Banking Relationship");
 				}
