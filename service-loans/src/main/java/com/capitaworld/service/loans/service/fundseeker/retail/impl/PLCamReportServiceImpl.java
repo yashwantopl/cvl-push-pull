@@ -25,6 +25,7 @@ import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
@@ -169,12 +170,18 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
 	
-
 	@Autowired
 	private EPFClient epfClient;
 	
+	@Autowired
+	private PLCamReportService plCamService;
+	
+	@Autowired
+	private ReportsClient reportsClient;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	private static final String PLINELIGIBLE_CAM_REPORT = "INELIGIBLEPLCAM";
 	
 	@Override
 	public Map<String, Object> getCamReportDetails(Long applicationId, Long productId, boolean isFinalView) {
@@ -1662,6 +1669,21 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		/*************************************************************FINAL DETAILS***********************************************************/
 		
 		return map;
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService#generateIneligibleCamReportFromMap(java.lang.Long)
+	 */
+	@Override
+	public byte[] generateIneligibleCamReportFromMap(Long applicationId) {
+		Map<String,Object> response = plCamService.getPLInEligibleCamReport(applicationId);
+		com.capitaworld.api.reports.ReportRequest reportRequest = new com.capitaworld.api.reports.ReportRequest();
+		reportRequest.setParams(response);
+		reportRequest.setTemplate(PLINELIGIBLE_CAM_REPORT);
+		reportRequest.setType(PLINELIGIBLE_CAM_REPORT);
+		return reportsClient.generatePDFFile(reportRequest);
 	}
 
 }
