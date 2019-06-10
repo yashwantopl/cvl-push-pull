@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDe
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.UniformProductCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportService;
+import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
@@ -39,6 +40,9 @@ public class CamReportPdfDetailsController {
 	
 	@Autowired
 	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
+	
+	@Autowired
+	private HLIneligibleCamReportService hlIneligibleCamReportService;
 
 	@Autowired
 	private PLCamReportService plCamService;
@@ -429,7 +433,7 @@ public class CamReportPdfDetailsController {
 			  JSONObject jsonObj = new JSONObject();
 			  
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
-				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 582L);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 570L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, PLINELIGIBLE_CAM_REPORT+applicationId+".pdf");
 
@@ -456,7 +460,7 @@ public class CamReportPdfDetailsController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			Map<String,Object> response = plCamService.getPLInEligibleCamReport(applicationId);
+			Map<String,Object> response = hlIneligibleCamReportService.getHLInEligibleCamReport(applicationId);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate(HLINELIGIBLE_CAM_REPORT );
@@ -466,7 +470,7 @@ public class CamReportPdfDetailsController {
 			  JSONObject jsonObj = new JSONObject();
 			  
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
-				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 583L);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 570L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, HLINELIGIBLE_CAM_REPORT +applicationId+".pdf");
 
