@@ -64,9 +64,9 @@ public interface ProposalService {
 	
 	public Object getHomeCounterDetail();
 
-	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest);
+	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest,Long businessTypeId);
 
-	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId);
+	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId,Long businessTypeId);
 
 	public Integer updateStatus(Long applicationId,Long fpProductId,Long status,String remarks);
 

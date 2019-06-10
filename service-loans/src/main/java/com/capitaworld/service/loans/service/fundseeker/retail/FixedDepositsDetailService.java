@@ -14,8 +14,12 @@ public interface FixedDepositsDetailService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
+	public Boolean saveOrUpdateCoApplicant(FrameRequest frameRequest) throws LoansException;
+
 	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailList(Long id, int applicationType) throws LoansException;
 	
 	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailByProposalId(Long proposalId, int applicationType) throws LoansException;
+
+	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailByProposalIdAndCoAppId(Long proposalId, Long coAppId) throws LoansException;
 
 }

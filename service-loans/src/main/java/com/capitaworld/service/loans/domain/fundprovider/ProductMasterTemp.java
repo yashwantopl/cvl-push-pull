@@ -16,7 +16,7 @@ import javax.persistence.TemporalType;
 
 /**
  * The persistent class for the fp_product_master database table.
- * 
+ *
  */
 @Entity
 @Table(name = "fp_product_master_temp")
@@ -33,7 +33,7 @@ public class ProductMasterTemp implements Serializable {
 
 	@Column(name = "fp_name")
 	private String fpName;
-	
+
 	@Column(name = "product_code")
 	private String productCode;
 
@@ -64,29 +64,29 @@ public class ProductMasterTemp implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified_date")
 	private Date modifiedDate;
-	
+
 	@Column(name = "is_parameter_filled")
 	private Boolean isParameterFilled = false;
 
 	@Column(name = "is_active")
 	private Boolean isActive = true;
-	
+
 	@Column(name = "is_matched")
 	private Boolean isMatched = false;
 
 	@Column(name = "user_org_id")
 	private Long userOrgId;
 
-	
+
 	@Column(name = "score_model_id")
 	private Long scoreModelId;
-	
+
 	@Column(name = "purpose_loan_model_id")
 	private Long purposeLoanModelId;
-	
+
 	@Column(name = "score_model_id_coapp_id")
 	private Long scoreModelIdCoAppId;
-		
+
 	@Column(name = "fp_product_mapping_id")
 	private Long fpProductMappingId;
 
@@ -110,28 +110,52 @@ public class ProductMasterTemp implements Serializable {
 
     @Column(name="approval_date")
     private Date approvalDate;
-    
+
 	@Column(name="org_id")
 	private Long orgId;
 
 	@Column(name = "business_type_id")
 	private Long businessTypeId;
-	
+
 	@Column(name = "wc_renewal_status")
 	private Integer wcRenewalStatus;
-	
+
 	@Column(name="fin_type_id")
 	private Integer finId;
-	
+
 	@Column(name="campaign_type")
 	private Integer campaignCode;
-	
+
 	@Column(name="active_inactive_job_id")
     private Long activeInactiveJobId;
-	
+
 	@Column(name="action_for")
 	private String actionFor;
-	
+
+	@Column(name = "import_from_id")
+	private Long importFromId;
+
+	@Column(name = "is_gst")
+	private Boolean isGst;
+
+	@Column(name = "is_itr")
+	private Boolean isItr;
+
+	@Column(name = "is_bank_statement")
+	private Boolean isBankStatement;
+
+	@Column(name = "is_mca")
+	private Boolean isMca;
+
+	@Column(name = "is_bureu_personal")
+	private Boolean isBureuPersonal;
+
+	@Column(name = "is_bureu_commercial")
+	private Boolean isBureuCommercial;
+
+	@Column(name = "is_manual_fill")
+	private Boolean isManualFill;
+
 
 	public ProductMasterTemp() {
 		// Do nothing because of X and Y.
@@ -231,9 +255,9 @@ public class ProductMasterTemp implements Serializable {
 	public Long getUserId() {
 		return this.userId;
 	}
-	
-	
-	
+
+
+
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
@@ -397,6 +421,72 @@ public class ProductMasterTemp implements Serializable {
 	public void setActionFor(String actionFor) {
 		this.actionFor = actionFor;
 	}
+
+
+	public Long getImportFromId() {
+		return importFromId;
+	}
+
+	public void setImportFromId(Long importFromId) {
+		this.importFromId = importFromId;
+	}
+
+	public Boolean getIsGst() {
+		return isGst;
+	}
+
+	public void setIsGst(Boolean isGst) {
+		this.isGst = isGst;
+	}
+
+	public Boolean getIsItr() {
+		return isItr;
+	}
+
+	public void setIsItr(Boolean isItr) {
+		this.isItr = isItr;
+	}
+
+	public Boolean getIsBankStatement() {
+		return isBankStatement;
+	}
+
+	public void setIsBankStatement(Boolean isBankStatement) {
+		this.isBankStatement = isBankStatement;
+	}
+
+	public Boolean getIsMca() {
+		return isMca;
+	}
+
+	public void setIsMca(Boolean isMca) {
+		this.isMca = isMca;
+	}
+
+	public Boolean getIsBureuPersonal() {
+		return isBureuPersonal;
+	}
+
+	public void setIsBureuPersonal(Boolean isBureuPersonal) {
+		this.isBureuPersonal = isBureuPersonal;
+	}
+
+	public Boolean getIsBureuCommercial() {
+		return isBureuCommercial;
+	}
+
+	public void setIsBureuCommercial(Boolean isBureuCommercial) {
+		this.isBureuCommercial = isBureuCommercial;
+	}
+
+	public Boolean getIsManualFill() {
+		return isManualFill;
+	}
+
+	public void setIsManualFill(Boolean isManualFill) {
+		this.isManualFill = isManualFill;
+	}
+
 	public Long getScoreModelIdCoAppId() {
 		return scoreModelIdCoAppId;
 	}

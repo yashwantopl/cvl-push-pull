@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,6 +77,40 @@ public class PLCamReportController {
 		}
 	}
 	
+	/**
+	 * cam generate for gateway
+	 * @return  byte[]
+	 * */
+
+	@GetMapping(value = "/getPlPrimaryDataInByteArray/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPlPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, 
+			@PathVariable(value = "proposalId") Long proposalId)  {
+
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectListNull(proposalId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
+
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			Map<String,Object> response = plCamReportService.getCamReportDetailsByProposalId(applicationId,productId,proposalId,false);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("PLCAMPRIMARY");
+			reportRequest.setType("PLCAMPRIMARY");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			if(byteArr != null){
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Success",HttpStatus.OK.value(), byteArr),HttpStatus.OK);
+			}else{
+				 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting PL MAP Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 	
 	//Arun's Code
 	

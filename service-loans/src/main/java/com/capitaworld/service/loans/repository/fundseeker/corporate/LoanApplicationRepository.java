@@ -117,6 +117,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm.productId from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public Integer getProductIdByApplicationId(@Param("id") Long applicationId, @Param("userId") Long userId);
 	
+	@Query("select lm.productId from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true")
+	public Integer getProductIdByApplicationId(@Param("id") Long applicationId);
+	
 	@Query("select lm.productId from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId")
 	public Integer getProductIdByApplicationIdForSP(@Param("id") Long applicationId, @Param("userId") Long userId);
 
@@ -353,11 +356,16 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public Integer findOneBusinessTypeIdByIdAndIsActive(@Param("applicationId")  Long applicationId); 
 
 	/*For cam report In-principleDate*/
-	@Query(value = "select lg.modified_date from connect.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage AND lg.business_type_id=:businessTypeId ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
-	Date getModifiedDate(@Param("applicationId")  Long applicationId,@Param("stage")  Integer stage,@Param("businessTypeId")  Integer businessTypeId);
+	@Query(value = "select lg.modified_date from connect.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
+	Date getModifiedDate(@Param("applicationId")  Long applicationId,@Param("stage")  Integer stage);
 	
 	@Modifying
    	@Query("update LoanApplicationMaster lm set lm.isPrimaryLocked =:isPrimaryLocked where lm.id =:applicationId and lm.userId =:userId and lm.isActive = true")
    	public int setIsPrimaryLocked(@Param("applicationId") Long applicationId, @Param("userId") Long userId,
    			@Param("isPrimaryLocked") Boolean isPrimaryLocked);
+
+	/*For select on on Loan Type*/
+	@Modifying
+	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType where application_id=:applicationId", nativeQuery = true)
+	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
 }

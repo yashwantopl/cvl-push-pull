@@ -178,6 +178,12 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		fPParameterMappingService.inactiveAndSave(homeLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, homeLoanParameterRequest.getBorrSalAccIds());
 		
+		fPParameterMappingService.inactiveAndSave(homeLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.EMPLOYMENT_WITH, homeLoanParameterRequest.getEmploymentWithIds());
+		
+		fPParameterMappingService.inactiveAndSave(homeLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, homeLoanParameterRequest.getSelfEmployedWithIds());
+		
 		//Saving Loan Purpose Amount Mapping
 		loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), homeLoanParameterRequest.getId());
 
@@ -277,6 +283,12 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		// Saving Mapping Current BORROWER_SALARY_ACCOUNT
 		homeLoanParameterRequest.setBorrSalAccIds(fPParameterMappingService
 				.getParameters(homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT));
+		
+		homeLoanParameterRequest.setEmploymentWithIds(fPParameterMappingService
+				.getParameters(homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.EMPLOYMENT_WITH));
+		
+		homeLoanParameterRequest.setSelfEmployedWithIds(fPParameterMappingService
+				.getParameters(homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH));
 
 		//Getting Loan Purpose Amount Mapping
 		homeLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(homeLoanParameterRequest.getId()));
@@ -447,6 +459,12 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		// Saving Mapping Current BORROWER_SALARY_ACCOUNT
 		homeLoanParameterRequest.setBorrSalAccIds(fPParameterMappingService.getParametersTemp(
 				homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT));
+		
+		homeLoanParameterRequest.setEmploymentWithIds(fPParameterMappingService.getParametersTemp(
+				homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.EMPLOYMENT_WITH));
+		
+		homeLoanParameterRequest.setSelfEmployedWithIds(fPParameterMappingService.getParametersTemp(
+				homeLoanParameterRequest.getId(), CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH));
 
 		//Getting Loan Purpose Amount Mapping
 		homeLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(homeLoanParameterRequest.getId()));
@@ -543,7 +561,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				CommonUtils.ParameterTypes.RESIDENTIAL, homeLoanParameterRequest.getResidentialStatusIds());
 
 		// Saving Mapping Current BORROWER_TYPE
-		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
+		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),	
 				CommonUtils.ParameterTypes.BORROWER_TYPE, homeLoanParameterRequest.getBorrowerTypeIds());
 
 		// Saving Mapping Current SALARY_MODE
@@ -553,6 +571,12 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		// Saving Mapping Current BORROWER_SALARY_ACCOUNT
 		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, homeLoanParameterRequest.getBorrSalAccIds());
+		
+		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.EMPLOYMENT_WITH, homeLoanParameterRequest.getEmploymentWithIds());
+		
+		fPParameterMappingService.inactiveAndSaveTemp(homeLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, homeLoanParameterRequest.getSelfEmployedWithIds());
 		
 		//Saving Loan Purpose Amount Mapping
 		loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), homeLoanParameterRequest.getId());

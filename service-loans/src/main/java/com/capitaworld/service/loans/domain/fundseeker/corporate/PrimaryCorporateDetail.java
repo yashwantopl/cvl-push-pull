@@ -288,6 +288,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.competition = competition;
     }
 
+    
     public Double getTotalAmtPercentage() {
         return totalAmtPercentage;
     }

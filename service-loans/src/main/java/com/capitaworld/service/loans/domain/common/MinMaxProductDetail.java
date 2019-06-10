@@ -30,7 +30,7 @@ public class MinMaxProductDetail {
     private Double maxLoanAmount;
 
     @Column(name="org_id")
-    private Double orgId;
+    private Long orgId;
 
     @Column(name="loan_type_id")
     private Long loanTypeId;
@@ -103,11 +103,11 @@ public class MinMaxProductDetail {
         this.maxLoanAmount = maxLoanAmount;
     }
 
-    public Double getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
 
-    public void setOrgId(Double orgId) {
+    public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
 

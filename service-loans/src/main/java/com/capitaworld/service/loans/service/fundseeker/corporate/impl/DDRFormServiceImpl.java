@@ -9,13 +9,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.*;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.ddr.*;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.*;
-import com.capitaworld.service.oneform.enums.*;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.json.simple.JSONObject;
@@ -32,9 +25,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.domain.PincodeData;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
@@ -50,6 +45,18 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilitySt
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRAuthorizedSignDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRCreditCardDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRCreditorsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRExistingBankerDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFamilyDirectorsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFinancialSummary;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROfficeDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROtherBankLoanDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRRelWithDbsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
@@ -63,7 +70,50 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
+import com.capitaworld.service.loans.model.ddr.DDRAuthorizedSignDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
+import com.capitaworld.service.loans.model.ddr.DDRCreditCardDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDRCreditorsDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
+import com.capitaworld.service.loans.model.ddr.DDRExistingBankerDetailRequest;
+import com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDRFinancialSummaryRequest;
+import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDROfficeDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
+import com.capitaworld.service.loans.model.ddr.DDROtherBankLoanDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDRRelWithDbsDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDRRequest;
+import com.capitaworld.service.loans.model.ddr.DDRUploadRequest;
+import com.capitaworld.service.loans.model.ddr.DDRVehiclesOwnedDetailsRequest;
 import com.capitaworld.service.loans.repository.PincodeDataRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ExistingProductDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OwnershipDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRAuthorizedSignDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRCreditCardDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRCreditorsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRExistingBankerDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRFamilyDirectorsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRFinancialSummaryRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRFormDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROfficeDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROtherBankLoanDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRRelWithDbsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRVehiclesOwnedDetailsRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
@@ -79,6 +129,13 @@ import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFi
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
@@ -439,8 +496,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					}
 					// dDRFamilyDirectorsList ---> directorBackReq
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getdDRFamilyDirectorsList())) {
-						List<DDRFamilyDirectorsDetailsRequest> ddrFamilyDirReqList = dDRRequest
-								.getdDRFamilyDirectorsList();
+						List<DDRFamilyDirectorsDetailsRequest> ddrFamilyDirReqList = dDRRequest.getdDRFamilyDirectorsList();
 						for (DDRFamilyDirectorsDetailsRequest ddrFamilyDirReq : ddrFamilyDirReqList) {
 							if (!CommonUtils.isObjectNullOrEmpty(ddrFamilyDirReq.getDirectorBackReq())) {
 								DirectorBackgroundDetailRequest directorBackReq = ddrFamilyDirReq.getDirectorBackReq();// FIND
@@ -1119,7 +1175,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	 * GET DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
 	 */
 	@Override
-	public DDRFormDetailsRequest get(Long appId, Long userId) {
+	public DDRFormDetailsRequest  get(Long appId, Long userId) {
 		DDRFormDetailsRequest dDRFormDetailsRequest = null;
 
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
@@ -1158,7 +1214,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 	// NEW BASED ON GET PROPOSAL ID BASED
 	@Override
-	public DDRFormDetailsRequest get(Long appId, Long userId,Long proposalId) {
+	public DDRFormDetailsRequest  get(Long appId, Long userId,Long proposalId) {
 		DDRFormDetailsRequest dDRFormDetailsRequest = null;
 
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(appId,proposalId); //NEW BASED ON PROPOSAL ID
@@ -1198,8 +1254,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 	// ENDS HERE CALCULATIONS--------------->
 
 	@Override
-	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId, Long userId) {
-		com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest dDRFormDetailsRequest = new com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest();
+	public com.capitaworld.service.loans.model.api_model.DDRFormDetailsRequest getSIDBIDetails(Long appId, Long userId) {
+	com.capitaworld.service.loans.model.api_model.DDRFormDetailsRequest dDRFormDetailsRequest = new com.capitaworld.service.loans.model.api_model.DDRFormDetailsRequest();
 
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
 		if (CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
@@ -1266,11 +1322,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		Long ddrFormId = dDRFormDetails.getId();
 
 		List<DDRAuthorizedSignDetails> listByDDRFormId = authorizedSignDetailsRepository.getListByDDRFormId(ddrFormId);
-		List<com.capitaworld.sidbi.integration.model.ddr.DDRAuthorizedSignDetailsRequest> authorResponseList = new ArrayList<>(
+		List<com.capitaworld.service.loans.model.api_model.DDRAuthorizedSignDetailsRequest> authorResponseList = new ArrayList<>(
 				listByDDRFormId.size());
 		if (!CommonUtils.isListNullOrEmpty(listByDDRFormId)) {
 			for (DDRAuthorizedSignDetails authorizedSignDetails : listByDDRFormId) {
-				com.capitaworld.sidbi.integration.model.ddr.DDRAuthorizedSignDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRAuthorizedSignDetailsRequest();
+				com.capitaworld.service.loans.model.api_model.DDRAuthorizedSignDetailsRequest response = new com.capitaworld.service.loans.model.api_model.DDRAuthorizedSignDetailsRequest();
 				BeanUtils.copyProperties(authorizedSignDetails, response);
 				response.setApplicationId(appId);
 				authorResponseList.add(response);
@@ -1279,11 +1335,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		dDRFormDetailsRequest.setdDRAuthSignDetailsList(authorResponseList);
 
 		List<DDRCreditCardDetails> creditCardList = cardDetailsRepository.getListByDDRFormId(ddrFormId);
-		List<com.capitaworld.sidbi.integration.model.ddr.DDRCreditCardDetailsRequest> creditResponseList = new ArrayList<>(
+		List<com.capitaworld.service.loans.model.api_model.DDRCreditCardDetailsRequest> creditResponseList = new ArrayList<>(
 				creditCardList.size());
 		if (!CommonUtils.isListNullOrEmpty(creditCardList)) {
 			for (DDRCreditCardDetails obj : creditCardList) {
-				com.capitaworld.sidbi.integration.model.ddr.DDRCreditCardDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRCreditCardDetailsRequest();
+				com.capitaworld.service.loans.model.api_model.DDRCreditCardDetailsRequest response = new com.capitaworld.service.loans.model.api_model.DDRCreditCardDetailsRequest();
 				BeanUtils.copyProperties(obj, response);
 				response.setApplicationId(appId);
 				creditResponseList.add(response);
@@ -1292,11 +1348,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		dDRFormDetailsRequest.setdDRCreditCardDetailsList(creditResponseList);
 
 		List<DDRCreditorsDetails> creditorsDetailsList = creditorsDetailsRepository.getListByDDRFormId(ddrFormId);
-		List<com.capitaworld.sidbi.integration.model.ddr.DDRCreditorsDetailsRequest> creditorsList = new ArrayList<>(
+		List<com.capitaworld.service.loans.model.api_model.DDRCreditorsDetailsRequest> creditorsList = new ArrayList<>(
 				creditorsDetailsList.size());
 		if (!CommonUtils.isListNullOrEmpty(creditorsDetailsList)) {
 			for (DDRCreditorsDetails obj : creditorsDetailsList) {
-				com.capitaworld.sidbi.integration.model.ddr.DDRCreditorsDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRCreditorsDetailsRequest();
+				com.capitaworld.service.loans.model.api_model.DDRCreditorsDetailsRequest response = new com.capitaworld.service.loans.model.api_model.DDRCreditorsDetailsRequest();
 				BeanUtils.copyProperties(obj, response);
 				response.setApplicationId(appId);
 				creditorsList.add(response);
@@ -1305,11 +1361,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		dDRFormDetailsRequest.setdDRCreditorsDetailsList(creditorsList);
 
 		List<DDROtherBankLoanDetails> otherBankLoanList = bankLoanDetailsRepository.getListByDDRFormId(ddrFormId);
-		List<com.capitaworld.sidbi.integration.model.ddr.DDROtherBankLoanDetailsRequest> otherBankLoanReqList = new ArrayList<>(
+		List<com.capitaworld.service.loans.model.api_model.DDROtherBankLoanDetailsRequest > otherBankLoanReqList = new ArrayList<>(
 				otherBankLoanList.size());
 		if (!CommonUtils.isListNullOrEmpty(otherBankLoanList)) {
 			for (DDROtherBankLoanDetails obj : otherBankLoanList) {
-				com.capitaworld.sidbi.integration.model.ddr.DDROtherBankLoanDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDROtherBankLoanDetailsRequest();
+				com.capitaworld.service.loans.model.api_model.DDROtherBankLoanDetailsRequest response = new com.capitaworld.service.loans.model.api_model.DDROtherBankLoanDetailsRequest();
 				BeanUtils.copyProperties(obj, response);
 				response.setApplicationId(appId);
 				otherBankLoanReqList.add(response);
@@ -1318,11 +1374,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		dDRFormDetailsRequest.setdDROtherBankLoanDetailsList(otherBankLoanReqList);
 
 		List<DDRVehiclesOwnedDetails> vehiclesOwnedList = vehiclesOwnedDetailsRepository.getListByDDRFormId(ddrFormId);
-		List<com.capitaworld.sidbi.integration.model.ddr.DDRVehiclesOwnedDetailsRequest> vehiclesList = new ArrayList<>(
+		List<com.capitaworld.service.loans.model.api_model.DDRVehiclesOwnedDetailsRequest> vehiclesList = new ArrayList<>(
 				vehiclesOwnedList.size());
 		if (!CommonUtils.isListNullOrEmpty(vehiclesOwnedList)) {
 			for (DDRVehiclesOwnedDetails obj : vehiclesOwnedList) {
-				com.capitaworld.sidbi.integration.model.ddr.DDRVehiclesOwnedDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRVehiclesOwnedDetailsRequest();
+				com.capitaworld.service.loans.model.api_model.DDRVehiclesOwnedDetailsRequest response = new com.capitaworld.service.loans.model.api_model.DDRVehiclesOwnedDetailsRequest();
 				BeanUtils.copyProperties(obj, response);
 				response.setApplicationId(appId);
 				vehiclesList.add(response);
@@ -1330,13 +1386,13 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(vehiclesList);
 
-		List<com.capitaworld.sidbi.integration.model.ddr.DDRFinancialSummaryRequest> financialSummuryList = null;
+		List<com.capitaworld.service.loans.model.api_model.DDRFinancialSummaryRequest> financialSummuryList = null;
 		if (!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
 			List<DDRFinancialSummary> objList = financialSummaryRepository.getListByDDRFormId(ddrFormId);
 			if (!CommonUtils.isListNullOrEmpty(objList)) {
 				financialSummuryList = new ArrayList<>(objList.size());
 				for (DDRFinancialSummary obj : objList) {
-					com.capitaworld.sidbi.integration.model.ddr.DDRFinancialSummaryRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRFinancialSummaryRequest();
+					com.capitaworld.service.loans.model.api_model.DDRFinancialSummaryRequest response = new com.capitaworld.service.loans.model.api_model.DDRFinancialSummaryRequest();
 					BeanUtils.copyProperties(obj, response);
 					response.setDiffPfPrvsnlAndLastYear(CommonUtils.checkDouble(obj.getDiffPfPrvsnlAndLastYear()));
 					response.setLastToLastYear(CommonUtils.checkDouble(obj.getLastToLastYear()));
@@ -1349,15 +1405,15 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		dDRFormDetailsRequest.setdDRFinancialSummaryList(financialSummuryList);
 
-		List<com.capitaworld.sidbi.integration.model.ddr.DDRFamilyDirectorsDetailsRequest> familyDirectorsList = null;
+		List<com.capitaworld.service.loans.model.api_model.DDRFamilyDirectorsDetailsRequest> familyDirectorsList = null;
 		if (!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
 			List<DDRFamilyDirectorsDetails> familyDirectorList = familyDirectorsDetailsRepository
 					.getListByDDRFormId(ddrFormId);
 			if (!CommonUtils.isListNullOrEmpty(familyDirectorList)) {
 				familyDirectorsList = new ArrayList<>(familyDirectorList.size());
-				com.capitaworld.sidbi.integration.model.ddr.DDRFamilyDirectorsDetailsRequest response = null;
+				com.capitaworld.service.loans.model.api_model.DDRFamilyDirectorsDetailsRequest response = null;
 				for (DDRFamilyDirectorsDetails obj : familyDirectorList) {
-					response = new com.capitaworld.sidbi.integration.model.ddr.DDRFamilyDirectorsDetailsRequest();
+					response = new com.capitaworld.service.loans.model.api_model.DDRFamilyDirectorsDetailsRequest();
 					BeanUtils.copyProperties(obj, response);
 					if (!CommonUtils.isObjectNullOrEmpty(obj.getMaritalStatus())) {
 						MaritalStatus maritalStatus = MaritalStatus.getById(obj.getMaritalStatus());
@@ -1372,15 +1428,15 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 		dDRFormDetailsRequest.setdDRFamilyDirectorsList(familyDirectorsList);
 
-		List<com.capitaworld.sidbi.integration.model.ddr.DDRExistingBankerDetailRequest> existingBankerDetailsList = null;
+		List<com.capitaworld.service.loans.model.api_model.DDRExistingBankerDetailRequest> existingBankerDetailsList = null;
 		if (!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
 			List<DDRExistingBankerDetails> existingBankList = ddrExistingBankerDetailsRepository
 					.getListByDDRFormId(ddrFormId);
 			if (!CommonUtils.isListNullOrEmpty(existingBankList)) {
 				existingBankerDetailsList = new ArrayList<>(existingBankList.size());
-				com.capitaworld.sidbi.integration.model.ddr.DDRExistingBankerDetailRequest response = null;
+				com.capitaworld.service.loans.model.api_model.DDRExistingBankerDetailRequest response = null;
 				for (DDRExistingBankerDetails obj : existingBankList) {
-					response = new com.capitaworld.sidbi.integration.model.ddr.DDRExistingBankerDetailRequest();
+					response = new com.capitaworld.service.loans.model.api_model.DDRExistingBankerDetailRequest();
 					BeanUtils.copyProperties(obj, response);
 					response.setApplicationId(appId);
 					existingBankerDetailsList.add(response);
@@ -1407,7 +1463,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				for (DDRAuthorizedSignDetails authorizedSignDetails : listByDDRFormId) {
 					DDRAuthorizedSignDetailsRequest response = new DDRAuthorizedSignDetailsRequest();
 					BeanUtils.copyProperties(authorizedSignDetails, response);
-					DDRAuthorizedSignDetailsRequest.printFields(response);
+					com.capitaworld.service.loans.model.ddr.DDRAuthorizedSignDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -1463,7 +1519,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (!CommonUtils.isListNullOrEmpty(objList)) {
 				for (DDRCreditCardDetails obj : objList) {
 					DDRCreditCardDetailsRequest response = new DDRCreditCardDetailsRequest();
-					DDRCreditCardDetailsRequest.printFields(response);
+					com.capitaworld.service.loans.model.ddr.DDRCreditCardDetailsRequest.printFields(response);
 					BeanUtils.copyProperties(obj, response);
 					responseList.add(response);
 				}
@@ -1509,16 +1565,16 @@ public class DDRFormServiceImpl implements DDRFormService {
 	 * @param ddrFormId
 	 * @return
 	 */
-	public List<DDRCreditorsDetailsRequest> getCreaditorsDetails(Long ddrFormId) {
+	public List<com.capitaworld.service.loans.model.ddr.DDRCreditorsDetailsRequest> getCreaditorsDetails(Long ddrFormId) {
 		try {
 			List<DDRCreditorsDetails> objList = creditorsDetailsRepository.getListByDDRFormId(ddrFormId);
-			List<DDRCreditorsDetailsRequest> responseList = new ArrayList<>(objList.size());
+			List<com.capitaworld.service.loans.model.ddr.DDRCreditorsDetailsRequest> responseList = new ArrayList<>(objList.size());
 			if (!CommonUtils.isListNullOrEmpty(objList)) {
 				for (DDRCreditorsDetails obj : objList) {
-					DDRCreditorsDetailsRequest response = new DDRCreditorsDetailsRequest();
+					com.capitaworld.service.loans.model.ddr.DDRCreditorsDetailsRequest response = new com.capitaworld.service.loans.model.ddr.DDRCreditorsDetailsRequest();
 					response.setAmountStr(CommonUtils.convertValue(obj.getAmount()));
 					BeanUtils.copyProperties(obj, response);
-					DDRCreditorsDetailsRequest.printFields(response);
+					com.capitaworld.service.loans.model.ddr.DDRCreditorsDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -1875,19 +1931,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 	 * @param ddrFormId
 	 * @return
 	 */
-	public List<DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetails(Long ddrFormId, Long appId, Long userId, boolean setExistingData) {
+	public List<com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetails(Long ddrFormId, Long appId, Long userId, boolean setExistingData) {
 		try {
-			List<DDRFamilyDirectorsDetailsRequest> responseList = null;
+			List<com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest> responseList = null;
 			if (!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
 				List<DDRFamilyDirectorsDetails> objList = familyDirectorsDetailsRepository.getListByDDRFormId(ddrFormId);
 				if (!CommonUtils.isListNullOrEmpty(objList)) {
 					responseList = new ArrayList<>(objList.size());
-					DDRFamilyDirectorsDetailsRequest response = null;
+					com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest response = null;
 					for (DDRFamilyDirectorsDetails obj : objList) {
-						response = new DDRFamilyDirectorsDetailsRequest();
+						response = new com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest();
 						BeanUtils.copyProperties(obj, response);
 						try {
-							DDRFamilyDirectorsDetailsRequest.printFields(response);
+							com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest.printFields(response);
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
 						}
@@ -1923,11 +1979,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 			try {
 				List<DirectorBackgroundDetail> drDetailsList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(appId);
-				DDRFamilyDirectorsDetailsRequest response = null;
+				com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest response = null;
 				responseList = new ArrayList<>(drDetailsList.size());
 				DirectorBackgroundDetailRequest dirRes = null;
 				for (DirectorBackgroundDetail drDetails : drDetailsList) {
-					response = new DDRFamilyDirectorsDetailsRequest();
+					response = new com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest();
 					response.setBackgroundId(drDetails.getId());
 					response.setName(drDetails.getDirectorsName());
 
@@ -1960,19 +2016,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 	}
 
 
-	public List<DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetailsByProposalId(Long ddrFormId, Long appId,Long proposalId, Long userId, boolean setExistingData) {
+	public List<com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetailsByProposalId(Long ddrFormId, Long appId,Long proposalId, Long userId, boolean setExistingData) {
 		try {
-			List<DDRFamilyDirectorsDetailsRequest> responseList = null;
+			List<com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest> responseList = null;
 			if (!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
 				List<DDRFamilyDirectorsDetails> objList = familyDirectorsDetailsRepository.getListByDDRFormId(ddrFormId);
 				if (!CommonUtils.isListNullOrEmpty(objList)) {
 					responseList = new ArrayList<>(objList.size());
-					DDRFamilyDirectorsDetailsRequest response = null;
+					com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest response = null;
 					for (DDRFamilyDirectorsDetails obj : objList) {
-						response = new DDRFamilyDirectorsDetailsRequest();
+						response = new com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest();
 						BeanUtils.copyProperties(obj, response);
 						try {
-							DDRFamilyDirectorsDetailsRequest.printFields(response);
+							com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest.printFields(response);
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
 						}
@@ -2091,11 +2147,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 			try {
 				List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(appId);
-				DDRExistingBankerDetailRequest response = null;
+				com.capitaworld.service.loans.model.ddr.DDRExistingBankerDetailRequest  response = null;
 				responseList = new ArrayList<>(financialArrangementsList.size());
 				FinancialArrangementDetailResponseString finArrRes = null;
 				for (FinancialArrangementsDetail finDetail : financialArrangementsList) {
-					response = new DDRExistingBankerDetailRequest();
+					response = new com.capitaworld.service.loans.model.ddr.DDRExistingBankerDetailRequest();
 					response.setFinancialArrangementId(finDetail.getId());
 					response.setFinancialInstitutionName(finDetail.getFinancialInstitutionName());
 
@@ -2122,7 +2178,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		return Collections.emptyList();
 	}
 
-	public List<DDRExistingBankerDetailRequest> getExistingBankerDetails(Long ddrFormId, Long appId, Long userId,
+	public List<com.capitaworld.service.loans.model.ddr.DDRExistingBankerDetailRequest> getExistingBankerDetails(Long ddrFormId, Long appId, Long userId,
 			boolean setExistingData) {
 		try {
 			List<DDRExistingBankerDetailRequest> responseList = null;
@@ -2137,7 +2193,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 						response = new DDRExistingBankerDetailRequest();
 						BeanUtils.copyProperties(obj, response);
 						try {
-							DDRExistingBankerDetailRequest.printFields(response);
+							com.capitaworld.service.loans.model.ddr.DDRExistingBankerDetailRequest.printFields(response);
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
 						}
@@ -2166,11 +2222,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 			try {
 				List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(appId);
-				DDRExistingBankerDetailRequest response = null;
+				com.capitaworld.service.loans.model.ddr.DDRExistingBankerDetailRequest response = null;
 				responseList = new ArrayList<>(financialArrangementsList.size());
 				FinancialArrangementDetailResponseString finArrRes = null;
 				for (FinancialArrangementsDetail finDetail : financialArrangementsList) {
-					response = new DDRExistingBankerDetailRequest();
+					response = new com.capitaworld.service.loans.model.ddr.DDRExistingBankerDetailRequest();
 					response.setFinancialArrangementId(finDetail.getId());
 					response.setFinancialInstitutionName(finDetail.getFinancialInstitutionName());
 

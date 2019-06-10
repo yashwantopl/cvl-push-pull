@@ -204,11 +204,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public RetailApplicantRequest get(Long applicationId) throws LoansException {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
-			Integer businessTypeId = loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+			Integer productId = loanApplicationRepository.getProductIdByApplicationId(applicationId);
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
+			applicantRequest.setDob(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
@@ -224,7 +225,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantRequest.setBusinessStartYear(saperatedBusinessStartDate[2]);
 			}			
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
-			applicantRequest.setBusinessTypeId(businessTypeId);
+			applicantRequest.setProductId(productId);
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Retail applicant details:-",e);

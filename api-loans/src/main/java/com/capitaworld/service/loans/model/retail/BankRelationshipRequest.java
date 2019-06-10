@@ -14,6 +14,7 @@ public class BankRelationshipRequest implements Serializable {
 	private Boolean isActive;
 	private Boolean isSalaryAccount;
 	private String sinceWhen;
+	private Long coApplicantId;
 	
 	public String getSinceWhen() {
 		return sinceWhen;
@@ -63,5 +64,11 @@ public class BankRelationshipRequest implements Serializable {
 	public void setIsSalaryAccount(Boolean isSalaryAccount) {
 		this.isSalaryAccount = isSalaryAccount;
 	}
-	
+	public Long getCoApplicantId() {
+		return coApplicantId;
+	}
+
+	public void setCoApplicantId(Long coApplicantId) {
+		this.coApplicantId = coApplicantId;
+	}
 }

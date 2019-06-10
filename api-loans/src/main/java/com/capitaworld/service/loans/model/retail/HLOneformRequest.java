@@ -50,6 +50,7 @@ public class HLOneformRequest implements Serializable {
 	private Integer employmentSubStatus;
 	private String employedWithOther;
 	private String nameOfEmployer;
+	private String kid;
 	private Integer currentEmploymentStatus;
 	private Integer currentJobMonth;
 	private Integer currentJobYear;
@@ -385,6 +386,12 @@ public class HLOneformRequest implements Serializable {
 	}
 	public void setIsItrSkip(Boolean isItrSkip) {
 		this.isItrSkip = isItrSkip;
+	}
+	public String getKid() {
+		return kid;
+	}
+	public void setKid(String kid) {
+		this.kid = kid;
 	}
 	
 	

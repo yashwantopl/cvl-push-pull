@@ -24,7 +24,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
  * 
  */
 @Entity
-@Table(name="fs_retail_references_retail_details")
+	@Table(name="fs_retail_references_retail_details")
 public class ReferencesRetailDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 

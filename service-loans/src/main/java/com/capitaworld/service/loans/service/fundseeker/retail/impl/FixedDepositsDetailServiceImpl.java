@@ -98,6 +98,37 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 	}
 
 	@Override
+	public Boolean saveOrUpdateCoApplicant(FrameRequest frameRequest) throws LoansException {
+		try {
+			for (Map<String, Object> obj : frameRequest.getDataList()) {
+				FixedDepositsDetailsRequest fixedDepositsDetailRequest = (FixedDepositsDetailsRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, FixedDepositsDetailsRequest.class);
+				FixedDepositsDetail fixedDepositsDetail = new FixedDepositsDetail();
+				BeanUtils.copyProperties(fixedDepositsDetailRequest, fixedDepositsDetail);
+				if (fixedDepositsDetailRequest.getId() == null) {
+					fixedDepositsDetail.setCreatedBy(frameRequest.getUserId());
+					fixedDepositsDetail.setCreatedDate(new Date());
+				}
+				fixedDepositsDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				fixedDepositsDetail.setCoApplicantDetailId(
+						coApplicantDetailRepository.findOne(frameRequest.getCoApplicantId()));
+
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(frameRequest.getProposalMappingId(), true);
+				fixedDepositsDetail.setApplicationProposalMapping(applicationProposalMapping);
+				fixedDepositsDetail.setModifiedBy(frameRequest.getUserId());
+				fixedDepositsDetail.setModifiedDate(new Date());
+				fixedDepositsDetailRepository.save(fixedDepositsDetail);
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Exception  in save fixedDepositsDetail  :-", e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
 	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailList(Long id, int applicationType) throws LoansException {
 		try {
 			List<FixedDepositsDetail> fixedDepositsDetails = null;
@@ -139,7 +170,36 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 		}
 
 	}
-	
+
+	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailByProposalIdAndCoAppId(Long proposalId, Long coAppId) throws LoansException {
+		try {
+			List<FixedDepositsDetail> fixedDepositsDetails = null;
+			fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromProposalIdAndCoAppId(proposalId,coAppId);
+			List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>(fixedDepositsDetails.size());
+
+			for (FixedDepositsDetail detail : fixedDepositsDetails) {
+				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
+				fixedDepositsDetailRequest.setAmountString(CommonUtils.convertValue(detail.getAmount()));
+				fixedDepositsDetailRequest.setRateString(CommonUtils.convertValue(detail.getRate()));
+				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getMaturityDate()))
+				{
+					SimpleDateFormat dateFormat=new SimpleDateFormat("dd/MM/yyyy");
+
+					fixedDepositsDetailRequest.setMaturityDateInString(dateFormat.format(detail.getMaturityDate()).toString());
+				}
+				fixedDepositsDetailRequests.add(fixedDepositsDetailRequest);
+			}
+			return fixedDepositsDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.error("Exception in get Proposal ID  :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
 	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailByProposalId(Long proposalId, int applicationType) throws LoansException {
 		try {
 			List<FixedDepositsDetail> fixedDepositsDetails = null;

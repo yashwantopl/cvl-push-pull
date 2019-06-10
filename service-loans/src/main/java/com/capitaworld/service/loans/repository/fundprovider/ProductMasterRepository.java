@@ -115,4 +115,44 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	 */
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId AND pm.businessTypeId=:businessTypeId")
 	public List<ProductMaster> getUserProductActiveList(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
+	
+	/**
+	 * @author vijay.chauhan
+	 * @param productId
+	 * @param userOrgId
+	 * @param businessTypeId
+	 * @return
+	 */
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.id=:productId and pm.businessTypeId=:businessTypeId")
+	public ProductMaster getUserProductByOrgId(@Param("productId") Long productId,@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
+	
+	/**
+	 * @author vijay.chauhan
+	 * @param userOrgId
+	 * @param businessTypeId
+	 * @return
+	 */
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true and pm.businessTypeId=:businessTypeId")
+	public List<ProductMaster> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
+	
+	/**
+	 * @author vijay.chauhan
+	 * @param userId
+	 * @param businessTypeId
+	 * @return
+	 */
+	@Query("from ProductMaster pm where pm.userId =:userId and pm.isActive = true and pm.businessTypeId=:businessTypeId")
+	public List<ProductMaster> getUserProductList(@Param("userId") Long userId,@Param("businessTypeId") Long businessTypeId);
+	
+	/**
+	 * @author vijay.chauhan
+	 * @param productId
+	 * @param userId
+	 * @param businessTypeId
+	 * @return
+	 */
+	@Query("from ProductMaster pm where pm.userId =:userId and pm.id=:productId  and pm.businessTypeId=:businessTypeId")
+	public ProductMaster getUserProduct(@Param("productId") Long productId,@Param("userId") Long userId,@Param("businessTypeId") Long businessTypeId);
+	
+	public ProductMaster findByIdAndIsActiveAndBusinessTypeId(Long id, Boolean isActive,Long businessTypeId);
 }

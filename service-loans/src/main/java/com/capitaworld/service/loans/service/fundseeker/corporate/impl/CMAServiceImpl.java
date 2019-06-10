@@ -19,6 +19,11 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.model.api_model.BalanceSheetAssetReq;
+import com.capitaworld.service.loans.model.api_model.BalanceSheetLiabilitiesReq;
+import com.capitaworld.service.loans.model.api_model.FinancialRequest;
+import com.capitaworld.service.loans.model.api_model.ProfitAndLossStmntReq;
+import com.capitaworld.service.loans.model.api_model.RatioDetailsReq;
 import com.capitaworld.service.loans.model.corporate.AssetsDetailsRequest;
 import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.model.corporate.LiabilitiesDetailsRequest;
@@ -31,11 +36,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingSt
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.sidbi.integration.model.financial.BalanceSheetAssetReq;
-import com.capitaworld.sidbi.integration.model.financial.BalanceSheetLiabilitiesReq;
-import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
-import com.capitaworld.sidbi.integration.model.financial.ProfitAndLossStmntReq;
-import com.capitaworld.sidbi.integration.model.financial.RatioDetailsReq;
 
 @Service
 @Transactional

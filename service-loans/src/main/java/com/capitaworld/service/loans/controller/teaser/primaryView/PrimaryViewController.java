@@ -1244,6 +1244,8 @@ public class PrimaryViewController {
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
+//				e.printStackTrace();
+				logger.error("Exception : "+e.getMessage());
 				loansResponse.setData(plPrimaryViewResponse);
 				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -37,6 +38,7 @@ public class HLOneformPrimaryRes implements Serializable {
 	private Integer oldPropMonth;
 	private Integer oldPropYear;
 	
+	private  Map<Long, String> coAppFullNameAndCoAppId;	
 	//Existing Loan Details
 	List<FinancialArrangementsDetailRequest> finArrangementsDetailList;
 	
@@ -49,7 +51,7 @@ public class HLOneformPrimaryRes implements Serializable {
     private Integer salaryBankYear;
     private Boolean isOtherSalaryBank;
     private Boolean isOneformPrimaryComplete;
-	
+	private String applicantName;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -219,6 +221,20 @@ public class HLOneformPrimaryRes implements Serializable {
 	public void setLoanPurposeQueValue(String loanPurposeQueValue) {
 		this.loanPurposeQueValue = loanPurposeQueValue;
 	}
+	public Map<Long, String> getCoAppFullNameAndCoAppId() {
+		return coAppFullNameAndCoAppId;
+	}
+	public void setCoAppFullNameAndCoAppId(Map<Long, String> coAppFullNameAndCoAppId) {
+		this.coAppFullNameAndCoAppId = coAppFullNameAndCoAppId;
+	}
+	public String getApplicantName() {
+		return applicantName;
+	}
+	public void setApplicantName(String applicantName) {
+		this.applicantName = applicantName;
+	}
+	
+	
 	
 	
 	

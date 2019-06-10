@@ -28,6 +28,9 @@ public interface BankAccountHeldDetailRepository extends JpaRepository<BankAccou
 	@Query("update BankAccountHeldDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicantId.id =:applicantId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId, @Param("applicantId") Long applicantId);
 	
-	@Query("select o from BankAccountHeldDetail o where o.applicationProposalMapping.proposalId= :proposalId and o.isActive = true")
+	@Query("select o from BankAccountHeldDetail o where o.applicationProposalMapping.proposalId= :proposalId and o.coApplicantDetailId=null and o.isActive = true")
 	public List<BankAccountHeldDetail> listBankAccountHeldFromProposalId(@Param("proposalId")Long proposalId);
+
+	@Query("select o from BankAccountHeldDetail o where o.applicationProposalMapping.proposalId= :proposalId and o.coApplicantDetailId.id=:coAppId and o.isActive = true")
+	public List<BankAccountHeldDetail> listBankAccountHeldFromProposalIdAndCoAppId(@Param("proposalId")Long proposalId,@Param("coAppId")Long coAppId);
 }

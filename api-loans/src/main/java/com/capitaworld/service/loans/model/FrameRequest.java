@@ -14,7 +14,9 @@ public class FrameRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private Long applicationId;
-	
+
+	private Long coApplicantId;
+
 	private Long userId;
 	
 	private Long clientId;
@@ -101,5 +103,13 @@ public class FrameRequest implements Serializable{
 
 	public void setProposalMappingId(Long proposalMappingId) {
 		this.proposalMappingId = proposalMappingId;
+	}
+
+	public Long getCoApplicantId() {
+		return coApplicantId;
+	}
+
+	public void setCoApplicantId(Long coApplicantId) {
+		this.coApplicantId = coApplicantId;
 	}
 }

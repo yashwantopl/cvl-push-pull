@@ -590,6 +590,15 @@ public class RetailApplicantDetail implements Serializable {
     @Column(name="is_credit_info_filled")
     private Boolean isCreditInfoFilled;
     
+	@Column(name="bank_name_id")
+	private Integer bankNameId;
+	
+	@Column(name="insurance_name_id")
+	private Integer insuranceNameId;
+    
+    @Column(name="kid")
+    private String kid;
+
     private String remarks;
 
 
@@ -2078,6 +2087,31 @@ public class RetailApplicantDetail implements Serializable {
 		this.isCreditInfoFilled = isCreditInfoFilled;
 	}
 
+	public String getKid() {
+		return kid;
+	}
+
+	public void setKid(String kid) {
+		this.kid = kid;
+	}
+
+	public Integer getBankNameId() {
+		return bankNameId;
+	}
+
+	public void setBankNameId(Integer bankNameId) {
+		this.bankNameId = bankNameId;
+	}
+
+	public Integer getInsuranceNameId() {
+		return insuranceNameId;
+	}
+
+	public void setInsuranceNameId(Integer insuranceNameId) {
+		this.insuranceNameId = insuranceNameId;
+	}
+
+	
 
 
 

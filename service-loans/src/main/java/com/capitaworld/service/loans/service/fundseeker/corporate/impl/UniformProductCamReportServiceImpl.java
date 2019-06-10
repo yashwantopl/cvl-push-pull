@@ -282,7 +282,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 		//date of InPrincipal
 		try {
 			/*ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());*/
-			Date InPrincipleDate=loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.ONEPAGER_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId());
+			Date InPrincipleDate=loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.ONEPAGER_COMPLETE.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
 			}

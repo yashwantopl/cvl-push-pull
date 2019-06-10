@@ -1,7 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import com.capitaworld.service.loans.model.api_model.FinancialRequest;
 import com.capitaworld.service.loans.model.corporate.CMARequest;
-import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
 
 public interface CMAService {
 

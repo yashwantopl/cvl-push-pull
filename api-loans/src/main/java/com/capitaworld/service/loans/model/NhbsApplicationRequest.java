@@ -33,6 +33,10 @@ public class NhbsApplicationRequest implements Serializable{
 
 	private Long fpProductId;
 
+	private Long businessTypeId;
+
+	private Long productTypeId;
+
 	//added by Dhaval
 	private Long npUserId;
 
@@ -148,5 +152,21 @@ public class NhbsApplicationRequest implements Serializable{
 
 	public void setUserOrgId(Long userOrgId) {
 		this.userOrgId = userOrgId;
+	}
+
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Long getProductTypeId() {
+		return productTypeId;
+	}
+
+	public void setProductTypeId(Long productTypeId) {
+		this.productTypeId = productTypeId;
 	}
 }

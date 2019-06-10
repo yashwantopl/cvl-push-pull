@@ -65,6 +65,9 @@ public class BankingRelation implements Serializable {
 	@Column(name="is_salary_account")
 	private Boolean isSalaryAccount;
 
+	@Column(name="co_applicant_id")
+	private Long coApplicantId;
+
 	public Long getId() {
 		return id;
 	}
@@ -161,4 +164,11 @@ public class BankingRelation implements Serializable {
 		this.isSalaryAccount = isSalaryAccount;
 	}
 
+	public Long getCoApplicantId() {
+		return coApplicantId;
+	}
+
+	public void setCoApplicantId(Long coApplicantId) {
+		this.coApplicantId = coApplicantId;
+	}
 }

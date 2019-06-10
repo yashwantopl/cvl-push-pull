@@ -300,6 +300,42 @@ public class CamReportPdfDetailsController {
 
 	}
 	
+	/**
+	 * cam generate for gateway
+	 * @return  byte[]
+	 * */
+
+	@GetMapping(value = "/getHlPrimaryDataInByteArray/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getHlPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, 
+			@PathVariable(value = "proposalId") Long proposalId)  {
+
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectListNull(proposalId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
+
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+
+			Map<String,Object> response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, false);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("HLCAMPRIMARY");
+			reportRequest.setType("HLCAMPRIMARY");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			if(byteArr != null){
+				return new ResponseEntity<LoansResponse>(new LoansResponse(SUCCESS_LITERAL,HttpStatus.OK.value(), byteArr),HttpStatus.OK);
+			}else{
+				 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	@GetMapping(value = "/getPrimaryHlCamData/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryHLCamDataByProposalId(@PathVariable(value = "proposalId") Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId") Long productId, HttpServletRequest request) {
 		

@@ -46,7 +46,7 @@ public class PLRetailApplicantResponse implements Serializable {
     private Address contactAddress;
     private String contactNo;
     private String email;
-    
+    private Long coAppId;
     private String maritalStatus;
 
     private String category;
@@ -69,7 +69,6 @@ public class PLRetailApplicantResponse implements Serializable {
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
     private List<CreditCardsDetailRequest> creditCardsDetailRequestList;
     private List<BankRelationshipRequest> bankRelationShipList;
-    	
     private Boolean isApplicantDetailsFilled;
     
     //FOR PL CAM REPORT
@@ -87,6 +86,15 @@ public class PLRetailApplicantResponse implements Serializable {
     private Double annualIncomeOfSpouse;
     private String address;
     private String coApplicantNameAsPerITR;
+    private String tenureReq;
+    private String companyName;
+    private Object coAppItrXml;
+    private Object coAppItrPdf;
+    private String OccupationHL;
+    private String scoringModelName;
+    private Object dataList;
+    private Object dataObject;
+    private Object scoringResponseList;
 
     /*
     * Final
@@ -638,6 +646,85 @@ public class PLRetailApplicantResponse implements Serializable {
 		this.bankRelationShipList = bankRelationShipList;
 	}
 
+	public String getTenureReq() {
+		return tenureReq;
+	}
+
+	public void setTenureReq(String tenureReq) {
+		this.tenureReq = tenureReq;
+	}
+
+	public Object getCoAppItrXml() {
+		return coAppItrXml;
+	}
+
+	public void setCoAppItrXml(Object coAppItrXml) {
+		this.coAppItrXml = coAppItrXml;
+	}
+
+	public Object getCoAppItrPdf() {
+		return coAppItrPdf;
+	}
+
+	public void setCoAppItrPdf(Object coAppItrPdf) {
+		this.coAppItrPdf = coAppItrPdf;
+	}
+
+	public String getOccupationHL() {
+		return OccupationHL;
+	}
+
+	public void setOccupationHL(String occupationHL) {
+		OccupationHL = occupationHL;
+	}
+
+	public String getScoringModelName() {
+		return scoringModelName;
+	}
+
+	public void setScoringModelName(String scoringModelName) {
+		this.scoringModelName = scoringModelName;
+	}
+
+	public Object getDataList() {
+		return dataList;
+	}
+
+	public void setDataList(Object dataList) {
+		this.dataList = dataList;
+	}
+
+	public Object getDataObject() {
+		return dataObject;
+	}
+
+	public void setDataObject(Object dataObject) {
+		this.dataObject = dataObject;
+	}
+
+	public Object getScoringResponseList() {
+		return scoringResponseList;
+	}
+
+	public void setScoringResponseList(Object scoringResponseList) {
+		this.scoringResponseList = scoringResponseList;
+	}
+
+	public Long getCoAppId() {
+		return coAppId;
+	}
+
+	public void setCoAppId(Long coAppId) {
+		this.coAppId = coAppId;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
 	
     
 	
