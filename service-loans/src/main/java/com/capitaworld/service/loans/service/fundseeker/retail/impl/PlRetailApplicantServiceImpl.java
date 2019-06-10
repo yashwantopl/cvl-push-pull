@@ -1295,7 +1295,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 		List<CoApplicantDetail> coAppIdList = coApplicantDetailRepository.getAllByApplicationId(applicationId);
 		if(!coAppIdList.isEmpty()) {
 			for(CoApplicantDetail coApp : coAppIdList) {
-				if((CommonUtils.isObjectNullOrEmpty(coApp.getIsBankStatementCompleted()) || !coApp.getIsBankStatementCompleted())
+				if((CommonUtils.isObjectNullOrEmpty(coApp.getIsBankStatementCompleted()) || ((coApp.getIsItrSkip() && !coApp.getIsBankStatementCompleted()) || !coApp.getIsBankStatementCompleted()))
 						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsItrCompleted()) || !coApp.getIsItrCompleted())
 						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsCibilCompleted()) || !coApp.getIsCibilCompleted())
 						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsBasicInfoFilled()) || !coApp.getIsBasicInfoFilled())
