@@ -42,12 +42,17 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDe
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.EmpAgriculturistTypeRequest;
+import com.capitaworld.service.loans.model.retail.EmpSalariedTypeRequest;
+import com.capitaworld.service.loans.model.retail.EmpSelfEmployedTypeRequest;
+import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -63,13 +68,17 @@ import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
+import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanCoAppService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -109,10 +118,25 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
 	
 	@Autowired
+	private BankAccountHeldDetailService bankAccountHeldDetailService;
+	
+	@Autowired
+	private FixedDepositsDetailService fixedDepositsDetailService;
+	
+	@Autowired
 	private OtherPropertyDetailsRepository otherPropertyDetailsRepository;
 	
 	@Autowired
+	private OtherCurrentAssetDetailService otherCurrentAssetDetailService;
+	
+	@Autowired
+	private OtherIncomeDetailService otherIncomeDetailService;
+	
+	@Autowired
 	private FinalHomeLoanCoAppService finalHomeLoanCoAppService;
+	
+	@Autowired
+	private EmpFinancialDetailsService empFinancialDetailsService;
 	
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
@@ -1210,6 +1234,83 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				logger.error("Error while getting Final Information : ",e);
 			}
 			
+			//Current Bank Account Detail
+			try {
+				List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailService.getExistingLoanDetailListByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(bankAccountHeldDetails)) {
+					retailMap.put("bankAccountHeldDetails", !CommonUtils.isObjectListNull(bankAccountHeldDetails) ? bankAccountHeldDetails : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of Current Bank Account in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Fixed Deposit Detail
+			try {
+				List<FixedDepositsDetailsRequest> fixedDepositsDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(fixedDepositsDetails)) {
+					retailMap.put("fixedDepositDetails", !CommonUtils.isObjectListNull(fixedDepositsDetails) ? fixedDepositsDetails : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of fixed deposit details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Investment Detail
+			try {
+				List<OtherCurrentAssetDetailRequest> investmentDetails = otherCurrentAssetDetailService.getOtherCurrentAssetDetailListByProposalId(proposalId, 1);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(investmentDetails)) {
+					retailMap.put("investmentDetails", !CommonUtils.isObjectListNull(investmentDetails) ? investmentDetails : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of investment details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Other Income Detail
+			try {
+				List<OtherIncomeDetailRequest> otherIncomeDetails = otherIncomeDetailService.getOtherIncomeDetailList(applicationId, 1, proposalId);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(otherIncomeDetails)) {
+					retailMap.put("otherIncomeDetails", !CommonUtils.isObjectListNull(otherIncomeDetails) ? otherIncomeDetails : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of other income details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Emp Salaried Type
+			try {
+				List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
+					retailMap.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Emp SelfEmployed Type
+			try {
+				List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(empSelfEmployedTypeDetail)) {
+					retailMap.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Emp Agriculturist Type
+			try {
+				List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(empAgriculturistTypeDetail)) {
+					retailMap.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
 			//Purchase Property Details
 			try {
 				List<Map<String, Object>> listDataOfProperty = new ArrayList<Map<String,Object>>(); 
@@ -1237,9 +1338,13 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
 				for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
 					Map<String , Object> otherPropertyData = new HashMap<String, Object>();
-					otherPropertyData.put("timeForCompletion" ,otherPropertyDetail.getTimeForCompletion() != null ? otherPropertyDetail.getTimeForCompletion() : "-");
 					otherPropertyData.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
 					otherPropertyData.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
+					otherPropertyData.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
+					
+					otherPropertyData.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
+					otherPropertyData.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
+					otherPropertyData.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
 					otherPropertyListData.add(otherPropertyData);
 				}
 				
@@ -1263,72 +1368,10 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					referencesRetailsListData.add(referencesRetailsData);
 				}
 				
-				retailMap.put("referencesRetailData", referencesRetailsListData);
+				retailMap.put("referencesRetailData", !CommonUtils.isObjectListNull(referencesRetailsListData) ? referencesRetailsListData : null);
 			}catch (Exception e) {
 				logger.error("Error/Exception while fetching references Details in Final Cam of ApplicationId==>{}" ,applicationId);
 			}
-			
-			/*
-			//INCOME DETAILS - GROSS INCOME
-			try {
-				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
-				
-				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
-					retailMap.put("grossIncomeDetails", retailApplicantIncomeDetail);
-				}
-			} catch (Exception e) {
-				logger.error("Error while getting income details : ",e);
-			}
-			
-			//BANK ACCOUNT HELD DETAILS
-			try {
-				List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailsService.getExistingLoanDetailListByProposalId(proposalId, 1);
-				if(!CommonUtils.isObjectNullOrEmpty(bankAccountHeldDetails)) {
-					retailMap.put("bankAccountHeld", bankAccountHeldDetails);
-				}
-			} catch (Exception e) {
-				logger.error("Error while getting bank account held details : ",e);
-			}
-			
-			//FIXED DEPOSITS DETAILS
-			try {
-				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalId(proposalId, 1);
-				if(!CommonUtils.isObjectNullOrEmpty(fixedDepositeDetails)) {
-					retailMap.put("fixedDepositeDetails", fixedDepositeDetails);
-				}
-			} catch (Exception e) {
-				logger.error("Error while getting fixed deposite details : ",e);
-			}
-			
-			//OTHER CURRENT ASSEST DETAILS
-			try {
-				List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetails = otherCurrentAssetDetailsService.getOtherCurrentAssetDetailListByProposalId(proposalId,1);
-				if(!CommonUtils.isObjectNullOrEmpty(otherCurrentAssetDetails)) {
-					retailMap.put("otherCurrentAssetDetails", otherCurrentAssetDetails);
-				}
-			} catch (Exception e) {
-				logger.error("Error while getting other current asset details : ",e);
-			}
-			
-			//OBLIGATION DETAILS
-			try {
-				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailsFromProposalId(proposalId,1);
-				if(!CommonUtils.isObjectNullOrEmpty(obligationRequest)) {
-					retailMap.put("obligationDetails", obligationRequest);
-				}
-			} catch (Exception e) {
-				logger.error("Error while getting obligation details : ",e);
-			}
-			
-			//REFERENCES DETAILS
-			try {
-				List<ReferenceRetailDetailsRequest> referenceDetails = referenceRetailDetailService.getReferenceRetailDetailListByPropsalId(proposalId,1);
-				if(!CommonUtils.isObjectNullOrEmpty(referenceDetails)) {
-					retailMap.put("referenceDetails", referenceDetails);
-				}
-			} catch (Exception e) {
-				logger.error("Error while getting reference details : ",e);
-			}*/
 			
 			map.put("retailData", retailMap);
 			

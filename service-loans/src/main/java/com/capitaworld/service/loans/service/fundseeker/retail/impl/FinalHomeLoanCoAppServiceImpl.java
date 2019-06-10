@@ -107,7 +107,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             Address permanentAddress = finalHomeLoanDetailRequest.getPermanentAddress();
             Address correspondenceAddress = finalHomeLoanDetailRequest.getCorrespondenceAddress();
 
-            finalHomeLoanDetailTmp.setPermanentPremiseNo(Integer.parseInt(permanentAddress.getPremiseNumber()));
+            finalHomeLoanDetailTmp.setPermanentPremiseNo(permanentAddress.getPremiseNumber());
             finalHomeLoanDetailTmp.setPermanentStreetName(permanentAddress.getStreetName());
             finalHomeLoanDetailTmp.setPermanentCity(permanentAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setPermanentState(permanentAddress.getStateId());
@@ -116,7 +116,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             finalHomeLoanDetailTmp.setPermanentPinCode(permanentAddress.getPincode().intValue());
 
 
-            finalHomeLoanDetailTmp.setCorrespondencePremiseNo(Integer.parseInt(correspondenceAddress.getPremiseNumber()));
+            finalHomeLoanDetailTmp.setCorrespondencePremiseNo(correspondenceAddress.getPremiseNumber());
             finalHomeLoanDetailTmp.setCorrespondenceStreetName(correspondenceAddress.getStreetName());
             finalHomeLoanDetailTmp.setCorrespondenceCity(correspondenceAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setCorrespondenceState(correspondenceAddress.getStateId());
@@ -153,13 +153,13 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             finalHomeLoanDetailRequest.setFatherFullName(retailApplicantDetail.getFatherName());
 
             Address permanentAddress = new Address();
-            permanentAddress.setPremiseNumber(retailApplicantDetail.getPermanentPremiseNumberName());
-            permanentAddress.setStreetName(retailApplicantDetail.getPermanentStreetName());
-            permanentAddress.setCityId(Long.valueOf(retailApplicantDetail.getPermanentCityId()));
-            permanentAddress.setStateId(retailApplicantDetail.getPermanentStateId());
-            permanentAddress.setCountryId(retailApplicantDetail.getPermanentCountryId());
-            permanentAddress.setPincode(Long.valueOf(retailApplicantDetail.getPermanentPincode()));
-            permanentAddress.setLandMark(retailApplicantDetail.getPermanentLandMark());
+            permanentAddress.setPremiseNumber(retailApplicantDetail.getAddressPremiseName());
+            permanentAddress.setStreetName(retailApplicantDetail.getAddressStreetName());
+            permanentAddress.setCityId(Long.valueOf(retailApplicantDetail.getAddressCity()));
+            permanentAddress.setStateId(retailApplicantDetail.getAddressState());
+            permanentAddress.setCountryId(retailApplicantDetail.getAddressCountry());
+            permanentAddress.setPincode(Long.valueOf(String.valueOf(retailApplicantDetail.getAddressPincode())));
+            permanentAddress.setLandMark(retailApplicantDetail.getAddressLandmark());
 
             finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
             finalHomeLoanDetailRequest.setEducationalQualification(EducationStatusRetailMst.getById(retailApplicantDetail.getEducationQualification()).getValue());

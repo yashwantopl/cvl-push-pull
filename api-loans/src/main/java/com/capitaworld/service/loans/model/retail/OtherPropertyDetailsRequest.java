@@ -16,19 +16,23 @@ public class OtherPropertyDetailsRequest implements Serializable {
 
     private Long applicationId;
 
-    private Integer propertyType;
-
     private Integer totalCostOfLand;
 
     private Integer totalCostOfConstruction;
 
-    private Integer timeForCompletion;
+    private Integer timeForCompletionConstruction;
+
+    private Integer timeForCompletionRenovation;
 
     private Date createdDate;
 
     private Date modifiedDate;
 
     private Boolean isActive;
+
+    private Integer totalCostOfRenovation;
+
+    private Integer typeOfRepairRenovation;
 
     public Long getId() {
         return id;
@@ -46,14 +50,6 @@ public class OtherPropertyDetailsRequest implements Serializable {
         this.applicationId = applicationId;
     }
 
-    public Integer getPropertyType() {
-        return propertyType;
-    }
-
-    public void setPropertyType(Integer propertyType) {
-        this.propertyType = propertyType;
-    }
-
     public Integer getTotalCostOfLand() {
         return totalCostOfLand;
     }
@@ -68,14 +64,6 @@ public class OtherPropertyDetailsRequest implements Serializable {
 
     public void setTotalCostOfConstruction(Integer totalCostOfConstruction) {
         this.totalCostOfConstruction = totalCostOfConstruction;
-    }
-
-    public Integer getTimeForCompletion() {
-        return timeForCompletion;
-    }
-
-    public void setTimeForCompletion(Integer timeForCompletion) {
-        this.timeForCompletion = timeForCompletion;
     }
 
     public Date getCreatedDate() {
@@ -100,5 +88,37 @@ public class OtherPropertyDetailsRequest implements Serializable {
 
     public void setIsActive(Boolean active) {
         isActive = active;
+    }
+
+    public Integer getTotalCostOfRenovation() {
+        return totalCostOfRenovation;
+    }
+
+    public void setTotalCostOfRenovation(Integer totalCostOfRenovation) {
+        this.totalCostOfRenovation = totalCostOfRenovation;
+    }
+
+    public Integer getTypeOfRepairRenovation() {
+        return typeOfRepairRenovation;
+    }
+
+    public void setTypeOfRepairRenovation(Integer typeOfRepairRenovation) {
+        this.typeOfRepairRenovation = typeOfRepairRenovation;
+    }
+
+    public Integer getTimeForCompletionConstruction() {
+        return timeForCompletionConstruction;
+    }
+
+    public void setTimeForCompletionConstruction(Integer timeForCompletionConstruction) {
+        this.timeForCompletionConstruction = timeForCompletionConstruction;
+    }
+
+    public Integer getTimeForCompletionRenovation() {
+        return timeForCompletionRenovation;
+    }
+
+    public void setTimeForCompletionRenovation(Integer timeForCompletionRenovation) {
+        this.timeForCompletionRenovation = timeForCompletionRenovation;
     }
 }

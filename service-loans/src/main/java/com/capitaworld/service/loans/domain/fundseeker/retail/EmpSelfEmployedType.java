@@ -54,6 +54,9 @@ public class EmpSelfEmployedType implements Serializable {
     @Column(name="is_active")
     private Boolean isActive;
 
+    @Column(name="name_of_poa_holder")
+    private String nameOfPOAHolder;
+
     public Long getId() {
         return id;
     }
@@ -156,6 +159,14 @@ public class EmpSelfEmployedType implements Serializable {
 
     public void setProposalId(ApplicationProposalMapping proposalId) {
         this.proposalId = proposalId;
+    }
+
+    public String getNameOfPOAHolder() {
+        return nameOfPOAHolder;
+    }
+
+    public void setNameOfPOAHolder(String nameOfPOAHolder) {
+        this.nameOfPOAHolder = nameOfPOAHolder;
     }
 }
 

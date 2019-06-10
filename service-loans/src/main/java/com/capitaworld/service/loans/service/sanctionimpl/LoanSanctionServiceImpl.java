@@ -433,7 +433,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
 		try {
 
-			if(loanSanctionRequest.getIsSanctionedFrom() == 2){
+			if(loanSanctionRequest.getIsSanctionedFrom() == 2 && loanSanctionRequest.getBusinessTypeId() == 1){
 				//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT
 				Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
 				if(status == 4) {//OFFLINE
