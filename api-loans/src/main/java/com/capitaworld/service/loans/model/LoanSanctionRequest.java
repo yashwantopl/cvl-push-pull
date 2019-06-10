@@ -43,6 +43,15 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Boolean isIneligibleProposal;
 	private Long isSanctionedFrom;
 	private Boolean isPartiallyDisbursedOffline;
+	private Long businessTypeId;
+
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
 	
 	public Long getId() {
 		return id;
