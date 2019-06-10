@@ -256,5 +256,5 @@ public interface LoanApplicationService {
 	public Boolean updateLoanType(Long userId, Long applicationId, Long loanTypeId);
 
      //1/6/2109.......................
-	List<LoantypeSelectionResponse> getTypeSelectionData();
+	List<LoantypeSelectionResponse> getTypeSelectionData(String userId);
 }
