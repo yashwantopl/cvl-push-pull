@@ -1,0 +1,217 @@
+DROP TABLE IF EXISTS `loan_application`.`fs_other_property_details`;
+
+CREATE TABLE `loan_application`.`fs_other_property_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `total_cost_of_land` int(11) DEFAULT NULL,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `fs_home_loan_detail_id` bigint(20) DEFAULT NULL,
+  `total_cost_of_construction` int(11) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
+  `proposal_mapping_id` bigint(20) unsigned DEFAULT NULL,
+  `total_cost_of_renovation` int(11) DEFAULT NULL,
+  `type_of_repair_renovation` int(11) DEFAULT NULL,
+  `time_for_completion_renovation` int(11) DEFAULT NULL,
+  `time_for_completion_construction` int(11) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `proposal_mapping_id` (`proposal_mapping_id`),
+  CONSTRAINT `fs_other_property_details_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `fs_other_property_details_ibfk_2` FOREIGN KEY (`proposal_mapping_id`) REFERENCES `application_proposal_mapping` (`proposal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS loan_application.`fs_purchase_property_details`;
+
+CREATE TABLE loan_application.`fs_purchase_property_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `property_name` varchar(360) DEFAULT NULL,
+  `city` int(11) DEFAULT NULL,
+  `state` int(11) DEFAULT NULL,
+  `built_up_area` int(11) DEFAULT NULL,
+  `super_built_up_area` int(11) DEFAULT NULL,
+  `carpet_area` int(11) DEFAULT NULL,
+  `total_price_of_property` int(11) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
+  `proposal_mapping_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `proposal_mapping_id` (`proposal_mapping_id`),
+  CONSTRAINT `fs_purchase_property_details_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `fs_purchase_property_details_ibfk_2` FOREIGN KEY (`proposal_mapping_id`) REFERENCES `application_proposal_mapping` (`proposal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS loan_application.`fs_emp_agriculturist_type`;
+
+CREATE TABLE loan_application.`fs_emp_agriculturist_type` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `total_land_owned_and_in_possesion` int(11) DEFAULT NULL,
+  `presently_irrigated` int(11) DEFAULT NULL,
+  `seasonal_irrigated` int(11) DEFAULT NULL,
+  `rain_fed` int(11) DEFAULT NULL,
+  `un_attended` int(11) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
+  `proposal_mapping_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `proposal_mapping_id` (`proposal_mapping_id`),
+  CONSTRAINT `fs_emp_agriculturist_type_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `fs_emp_agriculturist_type_ibfk_2` FOREIGN KEY (`proposal_mapping_id`) REFERENCES `application_proposal_mapping` (`proposal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS loan_application.`fs_emp_salaried_type`;
+
+CREATE TABLE loan_application.`fs_emp_salaried_type` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `bonus_per_annum` int(11) DEFAULT NULL,
+  `incentive_per_annum` int(11) DEFAULT NULL,
+  `tax_paid_last_year` int(11) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
+  `proposal_mapping_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `proposal_mapping_id` (`proposal_mapping_id`),
+  CONSTRAINT `fs_emp_salaried_type_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `fs_emp_salaried_type_ibfk_2` FOREIGN KEY (`proposal_mapping_id`) REFERENCES `application_proposal_mapping` (`proposal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS loan_application.`fs_emp_self_employed_type`;
+
+CREATE TABLE loan_application.`fs_emp_self_employed_type` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `name_of_entity` varchar(1350) DEFAULT NULL,
+  `type_of_ownership` int(11) DEFAULT NULL,
+  `number_of_dir_partner` int(11) DEFAULT NULL,
+  `name_of_dir_partner` varchar(1350) DEFAULT NULL,
+  `share_hodling` int(11) DEFAULT NULL,
+  `trade_license_no` varchar(720) DEFAULT NULL,
+  `trade_license_exp_date` date DEFAULT NULL,
+  `name_of_poa_holder` varchar(300) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
+  `proposal_mapping_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `proposal_mapping_id` (`proposal_mapping_id`),
+  CONSTRAINT `fs_emp_self_employed_type_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `fs_emp_self_employed_type_ibfk_2` FOREIGN KEY (`proposal_mapping_id`) REFERENCES `application_proposal_mapping` (`proposal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS loan_application.`fs_retail_final_home_loan_details`;
+
+CREATE TABLE loan_application.`fs_retail_final_home_loan_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
+  `proposal_mapping_id` bigint(20) unsigned DEFAULT NULL,
+  `father_full_name` varchar(360) DEFAULT NULL,
+  `mather_maiden_name` varchar(360) DEFAULT NULL,
+  `name_of_spouse` varchar(150) DEFAULT NULL,
+  `cast` int(11) DEFAULT NULL,
+  `religion` int(11) DEFAULT NULL,
+  `place_of_birth` varchar(150) DEFAULT NULL,
+  `no_of_children` int(11) DEFAULT NULL,
+  `permanent_premise_no` varchar(120) DEFAULT NULL,
+  `permanent_street_name` varchar(90) DEFAULT NULL,
+  `permanent_landmark` varchar(120) DEFAULT NULL,
+  `permanent_pin_code` int(11) DEFAULT NULL,
+  `permanent_city` int(11) DEFAULT NULL,
+  `permanent_state` int(11) DEFAULT NULL,
+  `permanent_country` int(11) DEFAULT NULL,
+  `same_as_permanent_address` tinyint(1) DEFAULT NULL,
+  `correspondence_premise_no` varchar(120) DEFAULT NULL,
+  `correspondence_street_name` varchar(90) DEFAULT NULL,
+  `correspondence_land_mark` varchar(120) DEFAULT NULL,
+  `correspondence_pin_code` int(11) DEFAULT NULL,
+  `correspondence_city` int(11) DEFAULT NULL,
+  `correspondence_state` int(11) DEFAULT NULL,
+  `correspondence_country` int(11) DEFAULT NULL,
+  `educational_qualification` varchar(90) DEFAULT NULL,
+  `year` int(11) DEFAULT NULL,
+  `employeeType` int(11) DEFAULT NULL,
+  `seller_name` varchar(150) DEFAULT NULL,
+  `seller_address` varchar(765) DEFAULT NULL,
+  `seller_city` int(11) DEFAULT NULL,
+  `seller_state` int(11) DEFAULT NULL,
+  `seller_country` int(11) DEFAULT NULL,
+  `seller_pincode` int(11) DEFAULT NULL,
+  `date_of_existing_loan_taken` date DEFAULT NULL,
+  `original_value_of_property` int(11) DEFAULT NULL,
+  `modified_date` date DEFAULT NULL,
+  `created_date` date DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `name` varchar(450) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `proposal_mapping_id` (`proposal_mapping_id`),
+  CONSTRAINT `fs_retail_final_home_loan_details_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `fs_retail_final_home_loan_details_ibfk_2` FOREIGN KEY (`proposal_mapping_id`) REFERENCES `application_proposal_mapping` (`proposal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS loan_application.`fs_retail_final_home_loan_co_applicant_details`;
+
+CREATE TABLE loan_application.`fs_retail_final_home_loan_co_applicant_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
+  `proposal_mapping_id` bigint(20) unsigned DEFAULT NULL,
+  `father_full_name` varchar(360) DEFAULT NULL,
+  `mather_maiden_name` varchar(360) DEFAULT NULL,
+  `name_of_spouse` varchar(150) DEFAULT NULL,
+  `cast` int(11) DEFAULT NULL,
+  `religion` int(11) DEFAULT NULL,
+  `place_of_birth` varchar(150) DEFAULT NULL,
+  `no_of_children` int(11) DEFAULT NULL,
+  `permanent_premise_no` varchar(120) DEFAULT NULL,
+  `permanent_street_name` varchar(90) DEFAULT NULL,
+  `permanent_landmark` varchar(120) DEFAULT NULL,
+  `permanent_pin_code` int(11) DEFAULT NULL,
+  `permanent_city` int(11) DEFAULT NULL,
+  `permanent_state` int(11) DEFAULT NULL,
+  `permanent_country` int(11) DEFAULT NULL,
+  `same_as_permanent_address` tinyint(1) DEFAULT NULL,
+  `correspondence_premise_no` varchar(120) DEFAULT NULL,
+  `correspondence_street_name` varchar(90) DEFAULT NULL,
+  `correspondence_land_mark` varchar(120) DEFAULT NULL,
+  `correspondence_pin_code` int(11) DEFAULT NULL,
+  `correspondence_city` int(11) DEFAULT NULL,
+  `correspondence_state` int(11) DEFAULT NULL,
+  `correspondence_country` int(11) DEFAULT NULL,
+  `educational_qualification` varchar(90) DEFAULT NULL,
+  `year` int(11) DEFAULT NULL,
+  `employeeType` int(11) DEFAULT NULL,
+  `seller_name` varchar(150) DEFAULT NULL,
+  `seller_address` varchar(765) DEFAULT NULL,
+  `seller_city` int(11) DEFAULT NULL,
+  `seller_state` int(11) DEFAULT NULL,
+  `seller_country` int(11) DEFAULT NULL,
+  `seller_pincode` int(11) DEFAULT NULL,
+  `date_of_existing_loan_taken` date DEFAULT NULL,
+  `original_value_of_property` int(11) DEFAULT NULL,
+  `modified_date` date DEFAULT NULL,
+  `created_date` date DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `co_applicant_id` bigint(20) DEFAULT NULL,
+  `name` varchar(450) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `proposal_mapping_id` (`proposal_mapping_id`),
+  CONSTRAINT `fs_retail_final_home_loan_co_applicant_details_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `fs_retail_final_home_loan_co_applicant_details_ibfk_2` FOREIGN KEY (`proposal_mapping_id`) REFERENCES `application_proposal_mapping` (`proposal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

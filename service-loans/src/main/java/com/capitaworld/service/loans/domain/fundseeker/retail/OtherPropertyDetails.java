@@ -24,8 +24,8 @@ public class OtherPropertyDetails implements Serializable {
     @JoinColumn(name = "proposal_mapping_id")
     private ApplicationProposalMapping proposalId;
 
-    @Column(name="property_type")
-    private Integer propertyType;
+    @Column(name="type_of_repair_renovation")
+    private Integer typeOfRepairRenovation;
 
     @Column(name="total_cost_of_land")
     private Integer totalCostOfLand;
@@ -33,8 +33,14 @@ public class OtherPropertyDetails implements Serializable {
     @Column(name="total_cost_of_construction")
     private Integer totalCostOfConstruction;
 
-    @Column(name="time_for_completion")
-    private Integer timeForCompletion;
+    @Column(name="total_cost_of_renovation")
+    private Integer totalCostOfRenovation;
+
+    @Column(name="time_for_completion_construction")
+    private Integer timeForCompletionConstruction;
+
+    @Column(name="time_for_completion_renovation")
+    private Integer timeForCompletionRenovation;
 
     @Column(name="created_date")
     private Date createdDate;
@@ -61,14 +67,6 @@ public class OtherPropertyDetails implements Serializable {
         this.applicationId = applicationId;
     }
 
-    public Integer getPropertyType() {
-        return propertyType;
-    }
-
-    public void setPropertyType(Integer propertyType) {
-        this.propertyType = propertyType;
-    }
-
     public Integer getTotalCostOfLand() {
         return totalCostOfLand;
     }
@@ -83,14 +81,6 @@ public class OtherPropertyDetails implements Serializable {
 
     public void setTotalCostOfConstruction(Integer totalCostOfConstruction) {
         this.totalCostOfConstruction = totalCostOfConstruction;
-    }
-
-    public Integer getTimeForCompletion() {
-        return timeForCompletion;
-    }
-
-    public void setTimeForCompletion(Integer timeForCompletion) {
-        this.timeForCompletion = timeForCompletion;
     }
 
     public Date getCreatedDate() {
@@ -123,5 +113,37 @@ public class OtherPropertyDetails implements Serializable {
 
     public void setProposalId(ApplicationProposalMapping proposalId) {
         this.proposalId = proposalId;
+    }
+
+    public Integer getTypeOfRepairRenovation() {
+        return typeOfRepairRenovation;
+    }
+
+    public void setTypeOfRepairRenovation(Integer typeOfRepairRenovation) {
+        this.typeOfRepairRenovation = typeOfRepairRenovation;
+    }
+
+    public Integer getTotalCostOfRenovation() {
+        return totalCostOfRenovation;
+    }
+
+    public void setTotalCostOfRenovation(Integer totalCostOfRenovation) {
+        this.totalCostOfRenovation = totalCostOfRenovation;
+    }
+
+    public Integer getTimeForCompletionConstruction() {
+        return timeForCompletionConstruction;
+    }
+
+    public void setTimeForCompletionConstruction(Integer timeForCompletionConstruction) {
+        this.timeForCompletionConstruction = timeForCompletionConstruction;
+    }
+
+    public Integer getTimeForCompletionRenovation() {
+        return timeForCompletionRenovation;
+    }
+
+    public void setTimeForCompletionRenovation(Integer timeForCompletionRenovation) {
+        this.timeForCompletionRenovation = timeForCompletionRenovation;
     }
 }
