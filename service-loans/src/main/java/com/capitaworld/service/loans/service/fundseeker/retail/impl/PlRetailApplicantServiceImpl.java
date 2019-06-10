@@ -1168,7 +1168,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
-            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
+            applicantRequest.setBankingRelationshipList(!CommonUtils.isObjectListNull(bankRelationshipRequests) ? bankRelationshipRequests : null);
 
             List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
             List<CreditCardsDetailRequest> creditCardsDetailRequestList= new ArrayList<CreditCardsDetailRequest>(creditCardsDetailList.size());
