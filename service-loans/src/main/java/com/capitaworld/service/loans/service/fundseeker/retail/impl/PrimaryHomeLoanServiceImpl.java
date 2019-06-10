@@ -139,6 +139,17 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		BeanUtils.copyProperties(loanDetail, primaryHomeLoanDetailRequest);
 		primaryHomeLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 		Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+		
+		RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+		if(retailApplicantDetail != null) {
+			primaryHomeLoanDetailRequest.setLoanAmountRequired(retailApplicantDetail.getLoanAmountRequired());
+			primaryHomeLoanDetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
+			primaryHomeLoanDetailRequest.setLoanPurposeOther(retailApplicantDetail.getLoanPurposeOther());
+			primaryHomeLoanDetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
+			primaryHomeLoanDetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
+			primaryHomeLoanDetailRequest.setTenureRequired(retailApplicantDetail.getTenureRequired());
+		}
+		
 		primaryHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 		return primaryHomeLoanDetailRequest;
 		} catch (Exception e) {

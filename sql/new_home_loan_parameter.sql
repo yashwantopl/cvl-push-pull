@@ -627,3 +627,13 @@ ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN new_women_applicant DOUBL
 ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN new_women_applicant DOUBLE;
 ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN is_fs_women_applicant BIT(1);
 ALTER TABLE `scoring_sidbi`.`proposal_score` ADD COLUMN is_fp_women_applicant BIT(1);
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_employment_with_display BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_employment_with_mandatory BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_employment_with_display BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_employment_with_mandatory BIT(1);
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_self_employed_with_display BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_self_employed_with_mandatory BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_self_employed_with_display BIT(1);
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_self_employed_with_mandatory BIT(1);

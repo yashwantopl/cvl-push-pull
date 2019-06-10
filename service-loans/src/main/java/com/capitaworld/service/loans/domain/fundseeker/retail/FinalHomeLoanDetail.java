@@ -11,9 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
@@ -24,6 +23,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 @Entity
 @Table(name="fs_retail_final_home_loan_details")
 public class FinalHomeLoanDetail implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -34,80 +34,129 @@ public class FinalHomeLoanDetail implements Serializable {
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
 
-	@Column(name="built_up_area")
-	private Double builtUpArea;
+	@OneToOne
+	@JoinColumn(name = "proposal_mapping_id")
+	private ApplicationProposalMapping proposalId;
 
-	@Column(name="carpet_area")
-	private Double carpetArea;
+	@Column(name="name")
+	private String name;
 
-	@Column(name="created_by")
-	private Long createdBy;
+	@Column(name="father_full_name")
+	private String fatherFullName;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="mather_maiden_name")
+	private String matherMaidenName;
+
+	@Column(name="name_of_spouse")
+	private String nameOfSpouse;
+
+	@Column(name="cast")
+	private Integer cast;
+
+	@Column(name="religion")
+	private Integer religion;
+
+	@Column(name="place_of_birth")
+	private String placeOfBirth;
+
+	@Column(name="no_of_children")
+	private Integer noOfChildren;
+
+	@Column(name="permanent_premise_no")
+	private Integer permanentPremiseNo;
+
+	@Column(name="permanent_street_name")
+	private String permanentStreetName;
+
+	@Column(name="permanent_landmark")
+	private String permanentLandmark;
+
+	@Column(name="permanent_pin_code")
+	private Integer permanentPinCode;
+
+	@Column(name="permanent_city")
+	private Integer permanentCity;
+
+	@Column(name="permanent_state")
+	private Integer permanentState;
+
+	@Column(name="permanent_country")
+	private Integer permanentCountry;
+
+	@Column(name="same_as_permanent_address")
+	private Boolean sameAsPermanentAddress;
+
+	@Column(name="correspondence_premise_no")
+	private Integer correspondencePremiseNo;
+
+	@Column(name="correspondence_street_name")
+	private String correspondenceStreetName;
+
+	@Column(name="correspondence_land_mark")
+	private String correspondenceLandmark;
+
+	@Column(name="correspondence_pin_code")
+	private Integer correspondencePinCode;
+
+	@Column(name="correspondence_city")
+	private Integer correspondenceCity;
+
+	@Column(name="correspondence_state")
+	private Integer correspondenceState;
+
+	@Column(name="correspondence_country")
+	private Integer correspondenceCountry;
+
+	@Column(name="educational_qualification")
+	private String educationalQualification;
+
+	@Column(name="year")
+	private Integer year;
+
+	@Column(name="employeeType")
+	private Integer employeeType;
+
 	@Column(name="created_date")
 	private Date createdDate;
 
-	
-	@Column(name="is_active")
-	private Boolean isActive;
-
-	@Column(name="modified_by")
-	private Long modifiedBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
-	@Column(name="project_city_state")
-	private String projectCityState;
+	@Column(name="is_active")
+	private Boolean isActive;
 
-	@Column(name="property_address_city")
-	private Integer propertyAddressCity;
+	@Column(name="seller_city")
+	private Integer sellerCity;
 
-	@Column(name="property_address_country")
-	private Integer propertyAddressCountry;
+	@Column(name="seller_state")
+	private Integer sellerState;
+	
+	@Column(name="seller_pincode")
+	private Integer sellerPincode;
 
-	@Column(name="property_address_landmark")
-	private String propertyAddressLandmark;
+	@Column(name="seller_country")
+	private Integer sellerCountry;
 
-	@Column(name="property_address_pincode")
-	private String propertyAddressPincode;
-
-	@Column(name="property_address_premise")
-	private String propertyAddressPremise;
-
-	@Column(name="property_address_state")
-	private Integer propertyAddressState;
-
-	@Column(name="property_address_street")
-	private String propertyAddressStreet;
+	@Column(name="seller_address")
+	private String sellerAddress;
 
 	@Column(name="seller_name")
 	private String sellerName;
 
-	@Column(name="sellers_address_city")
-	private Integer sellersAddressCity;
+	@Column(name="date_of_existing_loan_taken")
+	private Date dateOfExistingLoanTaken;
 
-	@Column(name="sellers_address_country")
-	private Integer sellersAddressCountry;
+	@Column(name="original_value_of_property")
+	private Integer originalValueOfProperty;
 
-	@Column(name="sellers_address_landmark")
-	private String sellersAddressLandmark;
+	@Column(name="created_by")
+	private Long createdBy;
 
-	@Column(name="sellers_address_pincode")
-	private String sellersAddressPincode;
+	@Column(name="modified_by")
+	private Long modifiedBy;
 
-	@Column(name="sellers_address_premise")
-	private String sellersAddressPremise;
-
-	@Column(name="sellers_address_state")
-	private Integer sellersAddressState;
-
-	@Column(name="sellers_address_street")
-	private String sellersAddressStreet;
-
-	@Column(name="super_built_up_area")
-	private Double superBuiltUpArea;
+	@Column(name="status_id")
+	private Integer statusId;
 
 	public Long getId() {
 		return id;
@@ -125,28 +174,220 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public Double getBuiltUpArea() {
-		return builtUpArea;
+	public ApplicationProposalMapping getProposalId() {
+		return proposalId;
 	}
 
-	public void setBuiltUpArea(Double builtUpArea) {
-		this.builtUpArea = builtUpArea;
+	public void setProposalId(ApplicationProposalMapping proposalId) {
+		this.proposalId = proposalId;
 	}
 
-	public Double getCarpetArea() {
-		return carpetArea;
+	public String getFatherFullName() {
+		return fatherFullName;
 	}
 
-	public void setCarpetArea(Double carpetArea) {
-		this.carpetArea = carpetArea;
+	public void setFatherFullName(String fatherFullName) {
+		this.fatherFullName = fatherFullName;
 	}
 
-	public Long getCreatedBy() {
-		return createdBy;
+	public String getMatherMaidenName() {
+		return matherMaidenName;
 	}
 
-	public void setCreatedBy(Long createdBy) {
-		this.createdBy = createdBy;
+	public void setMatherMaidenName(String matherMaidenName) {
+		this.matherMaidenName = matherMaidenName;
+	}
+
+	public String getNameOfSpouse() {
+		return nameOfSpouse;
+	}
+
+	public void setNameOfSpouse(String nameOfSpouse) {
+		this.nameOfSpouse = nameOfSpouse;
+	}
+
+	public Integer getCast() {
+		return cast;
+	}
+
+	public void setCast(Integer cast) {
+		this.cast = cast;
+	}
+
+	public Integer getReligion() {
+		return religion;
+	}
+
+	public void setReligion(Integer religion) {
+		this.religion = religion;
+	}
+
+	public String getPlaceOfBirth() {
+		return placeOfBirth;
+	}
+
+	public void setPlaceOfBirth(String placeOfBirth) {
+		this.placeOfBirth = placeOfBirth;
+	}
+
+	public Integer getNoOfChildren() {
+		return noOfChildren;
+	}
+
+	public void setNoOfChildren(Integer noOfChildren) {
+		this.noOfChildren = noOfChildren;
+	}
+
+	public Integer getPermanentPremiseNo() {
+		return permanentPremiseNo;
+	}
+
+	public void setPermanentPremiseNo(Integer permanentPremiseNo) {
+		this.permanentPremiseNo = permanentPremiseNo;
+	}
+
+	public String getPermanentStreetName() {
+		return permanentStreetName;
+	}
+
+	public void setPermanentStreetName(String permanentStreetName) {
+		this.permanentStreetName = permanentStreetName;
+	}
+
+	public String getPermanentLandmark() {
+		return permanentLandmark;
+	}
+
+	public void setPermanentLandmark(String permanentLandmark) {
+		this.permanentLandmark = permanentLandmark;
+	}
+
+	public Integer getPermanentPinCode() {
+		return permanentPinCode;
+	}
+
+	public void setPermanentPinCode(Integer permanentPinCode) {
+		this.permanentPinCode = permanentPinCode;
+	}
+
+	public Integer getPermanentCity() {
+		return permanentCity;
+	}
+
+	public void setPermanentCity(Integer permanentCity) {
+		this.permanentCity = permanentCity;
+	}
+
+	public Integer getPermanentState() {
+		return permanentState;
+	}
+
+	public void setPermanentState(Integer permanentState) {
+		this.permanentState = permanentState;
+	}
+
+	public Integer getPermanentCountry() {
+		return permanentCountry;
+	}
+
+	public void setPermanentCountry(Integer permanentCountry) {
+		this.permanentCountry = permanentCountry;
+	}
+
+	public Boolean getIsSameAsPermanentAddress() {
+		return sameAsPermanentAddress;
+	}
+
+	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
+		this.sameAsPermanentAddress = sameAsPermanentAddress;
+	}
+
+	public Integer getCorrespondencePremiseNo() {
+		return correspondencePremiseNo;
+	}
+
+	public void setCorrespondencePremiseNo(Integer correspondencePremiseNo) {
+		this.correspondencePremiseNo = correspondencePremiseNo;
+	}
+
+	public String getCorrespondenceStreetName() {
+		return correspondenceStreetName;
+	}
+
+	public void setCorrespondenceStreetName(String correspondenceStreetName) {
+		this.correspondenceStreetName = correspondenceStreetName;
+	}
+
+	public String getCorrespondenceLandmark() {
+		return correspondenceLandmark;
+	}
+
+	public void setCorrespondenceLandmark(String correspondenceLandmark) {
+		this.correspondenceLandmark = correspondenceLandmark;
+	}
+
+	public Integer getCorrespondencePinCode() {
+		return correspondencePinCode;
+	}
+
+	public void setCorrespondencePinCode(Integer correspondencePinCode) {
+		this.correspondencePinCode = correspondencePinCode;
+	}
+
+	public Integer getCorrespondenceCity() {
+		return correspondenceCity;
+	}
+
+	public void setCorrespondenceCity(Integer correspondenceCity) {
+		this.correspondenceCity = correspondenceCity;
+	}
+
+	public Integer getCorrespondenceState() {
+		return correspondenceState;
+	}
+
+	public void setCorrespondenceState(Integer correspondenceState) {
+		this.correspondenceState = correspondenceState;
+	}
+
+	public Integer getSellerPincode() {
+		return sellerPincode;
+	}
+
+	public void setSellerPincode(Integer sellerPincode) {
+		this.sellerPincode = sellerPincode;
+	}
+	
+	public Integer getCorrespondenceCountry() {
+		return correspondenceCountry;
+	}
+
+	public void setCorrespondenceCountry(Integer correspondenceCountry) {
+		this.correspondenceCountry = correspondenceCountry;
+	}
+
+	public String getEducationalQualification() {
+		return educationalQualification;
+	}
+
+	public void setEducationalQualification(String educationalQualification) {
+		this.educationalQualification = educationalQualification;
+	}
+
+	public Integer getYear() {
+		return year;
+	}
+
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+
+	public Integer getEmployeeType() {
+		return employeeType;
+	}
+
+	public void setEmployeeType(Integer employeeType) {
+		this.employeeType = employeeType;
 	}
 
 	public Date getCreatedDate() {
@@ -157,13 +398,84 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.createdDate = createdDate;
 	}
 
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
 
 	public Boolean getIsActive() {
 		return isActive;
 	}
 
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
+	public void setIsActive(Boolean active) {
+		isActive = active;
+	}
+
+	public Integer getSellerCity() {
+		return sellerCity;
+	}
+
+	public void setSellerCity(Integer sellerCity) {
+		this.sellerCity = sellerCity;
+	}
+
+	public Integer getSellerState() {
+		return sellerState;
+	}
+
+	public void setSellerState(Integer sellerState) {
+		this.sellerState = sellerState;
+	}
+
+	public Integer getSellerCountry() {
+		return sellerCountry;
+	}
+
+	public void setSellerCountry(Integer sellerCountry) {
+		this.sellerCountry = sellerCountry;
+	}
+
+	public String getSellerAddress() {
+		return sellerAddress;
+	}
+
+	public void setSellerAddress(String sellerAddress) {
+		this.sellerAddress = sellerAddress;
+	}
+
+	public String getSellerName() {
+		return sellerName;
+	}
+
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
+	}
+
+	public Date getDateOfExistingLoanTaken() {
+		return dateOfExistingLoanTaken;
+	}
+
+	public void setDateOfExistingLoanTaken(Date dateOfExistingLoanTaken) {
+		this.dateOfExistingLoanTaken = dateOfExistingLoanTaken;
+	}
+
+	public Integer getOriginalValueOfProperty() {
+		return originalValueOfProperty;
+	}
+
+	public void setOriginalValueOfProperty(Integer originalValueOfProperty) {
+		this.originalValueOfProperty = originalValueOfProperty;
+	}
+
+	public Long getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	public Long getModifiedBy() {
@@ -174,150 +486,19 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Date getModifiedDate() {
-		return modifiedDate;
+	public String getName() {
+		return name;
 	}
 
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getProjectCityState() {
-		return projectCityState;
+	public Integer getStatusId() {
+		return statusId;
 	}
 
-	public void setProjectCityState(String projectCityState) {
-		this.projectCityState = projectCityState;
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
 	}
-
-	public Integer getPropertyAddressCity() {
-		return propertyAddressCity;
-	}
-
-	public void setPropertyAddressCity(Integer propertyAddressCity) {
-		this.propertyAddressCity = propertyAddressCity;
-	}
-
-	public Integer getPropertyAddressCountry() {
-		return propertyAddressCountry;
-	}
-
-	public void setPropertyAddressCountry(Integer propertyAddressCountry) {
-		this.propertyAddressCountry = propertyAddressCountry;
-	}
-
-	public String getPropertyAddressLandmark() {
-		return propertyAddressLandmark;
-	}
-
-	public void setPropertyAddressLandmark(String propertyAddressLandmark) {
-		this.propertyAddressLandmark = propertyAddressLandmark;
-	}
-
-	public String getPropertyAddressPincode() {
-		return propertyAddressPincode;
-	}
-
-	public void setPropertyAddressPincode(String propertyAddressPincode) {
-		this.propertyAddressPincode = propertyAddressPincode;
-	}
-
-	public String getPropertyAddressPremise() {
-		return propertyAddressPremise;
-	}
-
-	public void setPropertyAddressPremise(String propertyAddressPremise) {
-		this.propertyAddressPremise = propertyAddressPremise;
-	}
-
-	public Integer getPropertyAddressState() {
-		return propertyAddressState;
-	}
-
-	public void setPropertyAddressState(Integer propertyAddressState) {
-		this.propertyAddressState = propertyAddressState;
-	}
-
-	public String getPropertyAddressStreet() {
-		return propertyAddressStreet;
-	}
-
-	public void setPropertyAddressStreet(String propertyAddressStreet) {
-		this.propertyAddressStreet = propertyAddressStreet;
-	}
-
-
-	public String getSellerName() {
-		return sellerName;
-	}
-
-	public void setSellerName(String sellerName) {
-		this.sellerName = sellerName;
-	}
-
-	public Integer getSellersAddressCity() {
-		return sellersAddressCity;
-	}
-
-	public void setSellersAddressCity(Integer sellersAddressCity) {
-		this.sellersAddressCity = sellersAddressCity;
-	}
-
-	public Integer getSellersAddressCountry() {
-		return sellersAddressCountry;
-	}
-
-	public void setSellersAddressCountry(Integer sellersAddressCountry) {
-		this.sellersAddressCountry = sellersAddressCountry;
-	}
-
-	public String getSellersAddressLandmark() {
-		return sellersAddressLandmark;
-	}
-
-	public void setSellersAddressLandmark(String sellersAddressLandmark) {
-		this.sellersAddressLandmark = sellersAddressLandmark;
-	}
-
-	public String getSellersAddressPincode() {
-		return sellersAddressPincode;
-	}
-
-	public void setSellersAddressPincode(String sellersAddressPincode) {
-		this.sellersAddressPincode = sellersAddressPincode;
-	}
-
-	public String getSellersAddressPremise() {
-		return sellersAddressPremise;
-	}
-
-	public void setSellersAddressPremise(String sellersAddressPremise) {
-		this.sellersAddressPremise = sellersAddressPremise;
-	}
-
-	public Integer getSellersAddressState() {
-		return sellersAddressState;
-	}
-
-	public void setSellersAddressState(Integer sellersAddressState) {
-		this.sellersAddressState = sellersAddressState;
-	}
-
-	public String getSellersAddressStreet() {
-		return sellersAddressStreet;
-	}
-
-	public void setSellersAddressStreet(String sellersAddressStreet) {
-		this.sellersAddressStreet = sellersAddressStreet;
-	}
-
-	public Double getSuperBuiltUpArea() {
-		return superBuiltUpArea;
-	}
-
-	public void setSuperBuiltUpArea(Double superBuiltUpArea) {
-		this.superBuiltUpArea = superBuiltUpArea;
-	}
-
-	
 }

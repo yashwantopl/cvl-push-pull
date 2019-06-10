@@ -804,7 +804,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}
 					}	
-				} else if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(applicationProposalMapping.getBusinessTypeId())){
+				} else if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(applicationProposalMapping.getBusinessTypeId()) || BusinessType.RETAIL_HOME_LOAN.getId().equals(applicationProposalMapping.getBusinessTypeId())){
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(applicationProposalMapping.getUserId(), applicationProposalMapping.getApplicationId());
 					if(retailApplicantDetail != null){
 						try {
