@@ -32,8 +32,28 @@ public class PurchasePropertyDetailsRequest implements Serializable {
     private Date modifiedDate;
 
     private Boolean isActive;
+    
+    private String cityName;
+    
+    private String stateName;
 
-    public Long getId() {
+    public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
+	}
+
+	public Long getId() {
         return id;
     }
 

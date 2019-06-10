@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 /**
@@ -23,6 +24,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 @Entity
 @Table(name="fs_retail_final_home_loan_details")
 public class FinalHomeLoanDetail implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -62,7 +64,7 @@ public class FinalHomeLoanDetail implements Serializable {
 	private Integer noOfChildren;
 
 	@Column(name="permanent_premise_no")
-	private Integer permanentPremiseNo;
+	private String permanentPremiseNo;
 
 	@Column(name="permanent_street_name")
 	private String permanentStreetName;
@@ -86,7 +88,7 @@ public class FinalHomeLoanDetail implements Serializable {
 	private Boolean sameAsPermanentAddress;
 
 	@Column(name="correspondence_premise_no")
-	private Integer correspondencePremiseNo;
+	private String correspondencePremiseNo;
 
 	@Column(name="correspondence_street_name")
 	private String correspondenceStreetName;
@@ -138,6 +140,9 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	@Column(name="seller_name")
 	private String sellerName;
+
+	@Column(name="seller_pincode")
+	private Integer sellerPincode;
 
 	@Column(name="date_of_existing_loan_taken")
 	private Date dateOfExistingLoanTaken;
@@ -234,11 +239,11 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.noOfChildren = noOfChildren;
 	}
 
-	public Integer getPermanentPremiseNo() {
+	public String getPermanentPremiseNo() {
 		return permanentPremiseNo;
 	}
 
-	public void setPermanentPremiseNo(Integer permanentPremiseNo) {
+	public void setPermanentPremiseNo(String permanentPremiseNo) {
 		this.permanentPremiseNo = permanentPremiseNo;
 	}
 
@@ -298,11 +303,11 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.sameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
-	public Integer getCorrespondencePremiseNo() {
+	public String getCorrespondencePremiseNo() {
 		return correspondencePremiseNo;
 	}
 
-	public void setCorrespondencePremiseNo(Integer correspondencePremiseNo) {
+	public void setCorrespondencePremiseNo(String correspondencePremiseNo) {
 		this.correspondencePremiseNo = correspondencePremiseNo;
 	}
 
@@ -346,6 +351,14 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.correspondenceState = correspondenceState;
 	}
 
+	public Integer getSellerPincode() {
+		return sellerPincode;
+	}
+
+	public void setSellerPincode(Integer sellerPincode) {
+		this.sellerPincode = sellerPincode;
+	}
+	
 	public Integer getCorrespondenceCountry() {
 		return correspondenceCountry;
 	}

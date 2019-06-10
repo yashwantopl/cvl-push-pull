@@ -371,7 +371,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			        
 			        plRetailApplicantResponse.setResidenceSinceMonthYear(years+" year "+months+" months");
 				}
-
+				//for address
+				try {
+					plRetailApplicantResponse.setAddress(asyncComponent.murgedAddress(plRetailApplicantRequest.getAddressPremiseName(), plRetailApplicantRequest.getAddressLandmark(), plRetailApplicantRequest.getAddressStreetName(), Long.valueOf(plRetailApplicantRequest.getAddressCity()), Long.valueOf(plRetailApplicantRequest.getAddressPincode().toString()), Long.valueOf(plRetailApplicantRequest.getAddressState())));
+				} catch (Exception e) {
+					logger.info("error while fetching address");
+				}
+				
 				
 				//citetailApplicantResponse.setry,State,country
 				hlTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
