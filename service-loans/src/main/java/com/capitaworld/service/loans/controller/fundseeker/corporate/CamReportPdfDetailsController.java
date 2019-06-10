@@ -529,13 +529,7 @@ public class CamReportPdfDetailsController {
 				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			Map<String,Object> response =  hlIneligibleCamReportService.getHLInEligibleCamReport(applicationId);
-			ReportRequest reportRequest = new ReportRequest();
-			reportRequest.setParams(response);
-			reportRequest.setTemplate(HLINELIGIBLE_CAM_REPORT);
-			reportRequest.setType(HLINELIGIBLE_CAM_REPORT);
-			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-
+			byte[] byteArr = hlIneligibleCamReportService.generateIneligibleCamReportFromMap(applicationId);
 			return new ResponseEntity<>(new LoansResponse(SUCCESS_LITERAL,HttpStatus.OK.value(),byteArr),HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);

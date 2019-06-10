@@ -19,12 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
@@ -49,9 +49,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanSe
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
@@ -116,9 +114,17 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+
+	@Autowired
+	private ReportsClient reportsClient;
+	
+	@Autowired
+	private HLIneligibleCamReportService hlIneligibleCamReportService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	
+	private static final String HLINELIGIBLE_CAM_REPORT = "INELIGIBLEHLCAM";
 	
 	@Override
 	public Map<String, Object> getHLInEligibleCamReport(Long applicationId){
@@ -696,5 +702,18 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService#generateIneligibleCamReportFromMap(java.lang.Long)
+	 */
+	@Override
+	public byte[] generateIneligibleCamReportFromMap(Long applicationId) {
+		Map<String,Object> response =  hlIneligibleCamReportService.getHLInEligibleCamReport(applicationId);
+		com.capitaworld.api.reports.ReportRequest reportRequest = new com.capitaworld.api.reports.ReportRequest();
+		reportRequest.setParams(response);
+		reportRequest.setTemplate(HLINELIGIBLE_CAM_REPORT);
+		reportRequest.setType(HLINELIGIBLE_CAM_REPORT);
+		return reportsClient.generatePDFFile(reportRequest);
 	}
 }
