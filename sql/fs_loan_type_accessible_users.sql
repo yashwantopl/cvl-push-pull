@@ -1,4 +1,4 @@
-CREATE TABLE `fs_loan_type_accessible_users` (
+CREATE TABLE `loan_application`.`fs_loan_type_accessible_users` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `loan_type_selection_id` bigint(20) DEFAULT NULL,
   `user_id` bigint(20) DEFAULT NULL,
