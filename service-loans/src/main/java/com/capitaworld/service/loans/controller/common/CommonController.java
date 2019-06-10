@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -440,13 +441,16 @@ public class CommonController {
 	}
 
 /*1/6/2019...................*/
-	@RequestMapping(value = "/getTypeSelectionData", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse>  getTypeSelectionData() {
+	@GetMapping(value = "/getTypeSelectionData", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse>  getTypeSelectionData(HttpServletRequest request) {
+		logger.info("------|||||||| Calling getTypeSelectionData() |||||||||||----------");
 		try {
+			String userId = String.valueOf(request.getAttribute(CommonUtils.USER_ID));
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setData(applicationService.getTypeSelectionData());
+			loansResponse.setData(applicationService.getTypeSelectionData(userId));
 			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 		} catch (Exception e){
+			logger.error("Error while getting getTypeSelectionData()==>>>{}",e);
 			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

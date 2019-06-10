@@ -50,4 +50,6 @@ public interface LoanRepository {
 
 	//1/6/2019..............
 	public List<Object[]>getTypeSelectionData();
+	
+	public List<Object[]>getTypeSelectionData(String userId);
 }
