@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
 @Table(name="fs_retail_final_home_loan_details")
 public class FinalHomeLoanDetail implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -130,6 +131,9 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	@Column(name="seller_state")
 	private Integer sellerState;
+	
+	@Column(name="seller_pincode")
+	private Integer sellerPincode;
 
 	@Column(name="seller_country")
 	private Integer sellerCountry;
@@ -350,6 +354,14 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.correspondenceState = correspondenceState;
 	}
 
+	public Integer getSellerPincode() {
+		return sellerPincode;
+	}
+
+	public void setSellerPincode(Integer sellerPincode) {
+		this.sellerPincode = sellerPincode;
+	}
+	
 	public Integer getCorrespondenceCountry() {
 		return correspondenceCountry;
 	}
