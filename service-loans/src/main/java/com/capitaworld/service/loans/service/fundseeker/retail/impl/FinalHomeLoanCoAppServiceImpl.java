@@ -313,6 +313,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                     permanentAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getPermanentPinCode()));
                     finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
                 }
+                BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
             }
             addEmployementDetails(finalHomeLoanDetailRequest);
             addBankAccDetails(finalHomeLoanDetailRequest);
@@ -331,10 +332,11 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                 }
                 return finalHomeLoanDetailRequest;
             }
-            BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
             Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
             finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-            finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
+            if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail) && !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getApplicationId())) {
+                finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
+            }
             return finalHomeLoanDetailRequest;
         } catch (Exception e) {
             logger.error("Error while getting Final Home Loan Details:-", e);
