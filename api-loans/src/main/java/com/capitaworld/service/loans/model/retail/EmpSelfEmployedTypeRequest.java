@@ -30,7 +30,7 @@ public class EmpSelfEmployedTypeRequest implements Serializable {
 
     private String nameOfEntity;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date tradeLicenseExpDate;
 
     private Date createdDate;
@@ -38,6 +38,8 @@ public class EmpSelfEmployedTypeRequest implements Serializable {
     private Date modifiedDate;
 
     private Boolean isActive;
+
+    private String nameOfPOAHolder;
 
     public Long getId() {
         return id;
@@ -133,5 +135,13 @@ public class EmpSelfEmployedTypeRequest implements Serializable {
 
     public void setIsActive(Boolean active) {
         isActive = active;
+    }
+
+    public String getNameOfPOAHolder() {
+        return nameOfPOAHolder;
+    }
+
+    public void setNameOfPOAHolder(String nameOfPOAHolder) {
+        this.nameOfPOAHolder = nameOfPOAHolder;
     }
 }

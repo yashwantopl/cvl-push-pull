@@ -58,7 +58,6 @@ public class OtherPropertyDetailsServiceImpl implements OtherPropertyDetailsServ
 				if (otherPropertyDetailsRequest.getId() == null) {
 					otherPropertyDetails.setCreatedDate(new Date());
 					otherPropertyDetails.setIsActive(true);
-					otherPropertyDetails.setPropertyType(type);
 				}
 				otherPropertyDetails.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 /*
@@ -95,7 +94,7 @@ public class OtherPropertyDetailsServiceImpl implements OtherPropertyDetailsServ
 	}
 
 	@Override
-	public List<OtherPropertyDetailsRequest> getPropertyDetailListByProposalId(Long proposalId, int applicationType,int propertyType) throws LoansException {
+	public List<OtherPropertyDetailsRequest> getPropertyDetailListByProposalId(Long proposalId, int applicationType) throws LoansException {
 		List<OtherPropertyDetails> otherPropertyDetails = null;
 //		switch (applicationType) {
 //		case CommonUtils.ApplicantType.APPLICANT:
@@ -111,7 +110,7 @@ public class OtherPropertyDetailsServiceImpl implements OtherPropertyDetailsServ
 //			throw new LoansException();
 //		}
 
-		otherPropertyDetails = otherPropertyDetailsRepository.listPropertyFromPropsalIdAndType(proposalId,propertyType);
+		otherPropertyDetails = otherPropertyDetailsRepository.listPropertyFromPropsalIdAndType(proposalId);
 
 		List<OtherPropertyDetailsRequest> otherPropertyDetailsRequests = new ArrayList<>();
 
