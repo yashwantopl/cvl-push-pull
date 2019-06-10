@@ -11,6 +11,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.retail.*;
 import com.capitaworld.service.loans.repository.fundseeker.retail.*;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EducationalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.Title;
 import org.json.simple.JSONObject;
@@ -106,7 +107,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			Address permanentAddress = finalHomeLoanDetailRequest.getPermanentAddress();
 			Address correspondenceAddress = finalHomeLoanDetailRequest.getCorrespondenceAddress();
 
-            finalHomeLoanDetailTmp.setPermanentPremiseNo(Integer.parseInt(permanentAddress.getPremiseNumber()));
+            finalHomeLoanDetailTmp.setPermanentPremiseNo(permanentAddress.getPremiseNumber());
             finalHomeLoanDetailTmp.setPermanentStreetName(permanentAddress.getStreetName());
             finalHomeLoanDetailTmp.setPermanentCity(permanentAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setPermanentState(permanentAddress.getStateId());
@@ -115,7 +116,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             finalHomeLoanDetailTmp.setPermanentPinCode(permanentAddress.getPincode().intValue());
 
 
-            finalHomeLoanDetailTmp.setCorrespondencePremiseNo(Integer.parseInt(correspondenceAddress.getPremiseNumber()));
+            finalHomeLoanDetailTmp.setCorrespondencePremiseNo(correspondenceAddress.getPremiseNumber());
             finalHomeLoanDetailTmp.setCorrespondenceStreetName(correspondenceAddress.getStreetName());
             finalHomeLoanDetailTmp.setCorrespondenceCity(correspondenceAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setCorrespondenceState(correspondenceAddress.getStateId());
@@ -151,18 +152,19 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 		finalHomeLoanDetailRequest.setFatherFullName(retailApplicantDetail.getFatherName());
 
 		Address permanentAddress = new Address();
-		permanentAddress.setPremiseNumber(retailApplicantDetail.getPermanentPremiseNumberName());
-		permanentAddress.setStreetName(retailApplicantDetail.getPermanentStreetName());
-		permanentAddress.setCityId(retailApplicantDetail.getPermanentCityId());
-		permanentAddress.setStateId(retailApplicantDetail.getPermanentStateId());
-		permanentAddress.setCountryId(retailApplicantDetail.getPermanentCountryId());
-		permanentAddress.setPincode(retailApplicantDetail.getPermanentPincode());
-		permanentAddress.setLandMark(retailApplicantDetail.getPermanentLandMark());
+		permanentAddress.setPremiseNumber(retailApplicantDetail.getAddressPremiseName());
+		permanentAddress.setStreetName(retailApplicantDetail.getAddressStreetName());
+		permanentAddress.setCityId(retailApplicantDetail.getAddressCity());
+		permanentAddress.setStateId(Integer.valueOf(String.valueOf(retailApplicantDetail.getAddressState())));
+		permanentAddress.setCountryId(retailApplicantDetail.getAddressCountry());
+		permanentAddress.setPincode(retailApplicantDetail.getAddressPincode());
+		permanentAddress.setLandMark(retailApplicantDetail.getAddressLandmark());
 
 		finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
 		finalHomeLoanDetailRequest.setEducationalQualification(EducationStatusRetailMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
 		finalHomeLoanDetailRequest.setEmployeeType(retailApplicantDetail.getEmploymentType());
 		finalHomeLoanDetailRequest.setStatusId(retailApplicantDetail.getStatusId());
+		finalHomeLoanDetailRequest.setEducationalQualification(EducationalStatusMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
 	}
 
     private void addEmployementDetails(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest) {
@@ -315,7 +317,6 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 					permanentAddress.setLandMark(finalHomeLoanDetail.getPermanentLandmark());
 					finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
 				}
-
 				if (finalHomeLoanDetail.getCorrespondencePremiseNo() != null) {
 					Address correspondenceAddress = new Address();
 					correspondenceAddress.setPremiseNumber(String.valueOf(finalHomeLoanDetail.getCorrespondencePremiseNo()));
@@ -328,8 +329,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 					finalHomeLoanDetailRequest.setCorrespondenceAddress(correspondenceAddress);
 				}
 				finalHomeLoanDetailRequest.setEmployeeType(finalHomeLoanDetail.getEmployeeType());
+				BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
 			}
-			//finalHomeLoanDetailRequest.setEmployeeType(finalHomeLoanDetailRequest.getEmployeeType());
+
 			addEmployementDetails(finalHomeLoanDetailRequest);
             addPropertyDetails(finalHomeLoanDetailRequest);
             addBankAccDetails(finalHomeLoanDetailRequest);
@@ -346,12 +348,12 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 				if(!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))){
 					finalHomeLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());
 				}
+				finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
 				return finalHomeLoanDetailRequest;
 			}
-			BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
+
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-			finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
 			return finalHomeLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Home Loan Details:-",e);
