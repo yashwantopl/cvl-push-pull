@@ -131,9 +131,6 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	@Column(name="seller_state")
 	private Integer sellerState;
-	
-	@Column(name="seller_pincode")
-	private Integer sellerPincode;
 
 	@Column(name="seller_country")
 	private Integer sellerCountry;
@@ -504,13 +501,5 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
-	}
-
-	public Integer getSellerPincode() {
-		return sellerPincode;
-	}
-
-	public void setSellerPincode(Integer sellerPincode) {
-		this.sellerPincode = sellerPincode;
 	}
 }
