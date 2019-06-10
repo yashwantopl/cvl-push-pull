@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.retail;
 
 import com.capitaworld.service.loans.model.Address;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
@@ -52,6 +53,7 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	private Integer sellerPincode;
 	private Integer sellerCity;
 	private Integer sellerState;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date dateOfExistingLoanTaken;
 	private Integer originalValueOfProperty;
 	private Long clientId;

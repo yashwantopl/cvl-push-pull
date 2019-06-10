@@ -44,10 +44,11 @@ import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseStr
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.EmpAgriculturistTypeRequest;
+import com.capitaworld.service.loans.model.retail.EmpSalariedTypeRequest;
+import com.capitaworld.service.loans.model.retail.EmpSelfEmployedTypeRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -64,12 +65,12 @@ import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanCoAppService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -113,6 +114,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private FinalHomeLoanCoAppService finalHomeLoanCoAppService;
+	
+	@Autowired
+	private EmpFinancialDetailsService empFinancialDetailsService;
 	
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
@@ -1210,6 +1214,39 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				logger.error("Error while getting Final Information : ",e);
 			}
 			
+			//Emp Salaried Type
+			try {
+				List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
+					retailMap.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Emp SelfEmployed Type
+			try {
+				List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(empSelfEmployedTypeDetail)) {
+					retailMap.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
+			//Emp Agriculturist Type
+			try {
+				List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(empAgriculturistTypeDetail)) {
+					retailMap.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching data of Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+			}
+			
 			//Purchase Property Details
 			try {
 				List<Map<String, Object>> listDataOfProperty = new ArrayList<Map<String,Object>>(); 
@@ -1237,7 +1274,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
 				for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
 					Map<String , Object> otherPropertyData = new HashMap<String, Object>();
-					otherPropertyData.put("timeForCompletion" ,otherPropertyDetail.getTimeForCompletion() != null ? otherPropertyDetail.getTimeForCompletion() : "-");
+					//otherPropertyData.put("timeForCompletion" ,otherPropertyDetail.getTimeForCompletion() != null ? otherPropertyDetail.getTimeForCompletion() : "-");
 					otherPropertyData.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
 					otherPropertyData.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
 					otherPropertyListData.add(otherPropertyData);
@@ -1263,7 +1300,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					referencesRetailsListData.add(referencesRetailsData);
 				}
 				
-				retailMap.put("referencesRetailData", referencesRetailsListData);
+				retailMap.put("referencesRetailData", !CommonUtils.isObjectListNull(referencesRetailsListData) ? referencesRetailsListData : null);
 			}catch (Exception e) {
 				logger.error("Error/Exception while fetching references Details in Final Cam of ApplicationId==>{}" ,applicationId);
 			}
@@ -1319,16 +1356,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			} catch (Exception e) {
 				logger.error("Error while getting obligation details : ",e);
 			}
-			
-			//REFERENCES DETAILS
-			try {
-				List<ReferenceRetailDetailsRequest> referenceDetails = referenceRetailDetailService.getReferenceRetailDetailListByPropsalId(proposalId,1);
-				if(!CommonUtils.isObjectNullOrEmpty(referenceDetails)) {
-					retailMap.put("referenceDetails", referenceDetails);
-				}
-			} catch (Exception e) {
-				logger.error("Error while getting reference details : ",e);
-			}*/
+			 */
 			
 			map.put("retailData", retailMap);
 			

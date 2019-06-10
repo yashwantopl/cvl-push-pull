@@ -16,5 +16,5 @@ public interface OtherPropertyDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest,int type) throws LoansException;
 
-	public List<OtherPropertyDetailsRequest> getPropertyDetailListByProposalId(Long proposalId, int applicationType,int propertyType) throws LoansException;
+	public List<OtherPropertyDetailsRequest> getPropertyDetailListByProposalId(Long proposalId, int applicationType) throws LoansException;
 }
