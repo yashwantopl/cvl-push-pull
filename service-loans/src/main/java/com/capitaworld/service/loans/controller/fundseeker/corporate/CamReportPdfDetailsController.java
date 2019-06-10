@@ -489,4 +489,60 @@ public class CamReportPdfDetailsController {
 		}
 
 	}
+	/**
+	 * This method is used for sending in mail.
+	 * */
+	@GetMapping(value = "/getPLInEligiblePrimaryDataForMail/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPLInEligiblePrimaryDataCam(@PathVariable(value = "applicationId") Long applicationId)  {
+
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			Map<String,Object> response = plCamService.getPLInEligibleCamReport(applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate(PLINELIGIBLE_CAM_REPORT);
+			reportRequest.setType(PLINELIGIBLE_CAM_REPORT);
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+
+			return new ResponseEntity<>(new LoansResponse(SUCCESS_LITERAL,HttpStatus.OK.value(),byteArr),HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	
+	/**
+	 * This method is used for sending in mail.
+	 * */
+	@GetMapping(value = "/getHLInEligiblePrimaryDataForMail/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getHLInEligiblePrimaryDataCam(@PathVariable(value = "applicationId") Long applicationId)  {
+
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			Map<String,Object> response =  hlIneligibleCamReportService.getHLInEligibleCamReport(applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate(HLINELIGIBLE_CAM_REPORT);
+			reportRequest.setType(HLINELIGIBLE_CAM_REPORT);
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+
+			return new ResponseEntity<>(new LoansResponse(SUCCESS_LITERAL,HttpStatus.OK.value(),byteArr),HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 }
