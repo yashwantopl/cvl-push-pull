@@ -639,7 +639,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
                 //financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
                 financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
             }
-            	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
+            	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : null);
         } catch (Exception e) {
             logger.error("Problem to get Data of Financial Arrangements Details {}", e);
         }	
@@ -667,11 +667,11 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					//financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");	
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);	
 				}
-				map1.put("financialDetails", !CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
+				map1.put("financialDetails", !CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : null);
 				map1.put("coAppDetail", CommonUtils.printFields(coApplicantRequest, null));
 				listMap.add(map1);		
 			}
-			map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : " ");
+			map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : null);
          } catch (Exception e) {	
             logger.error("Problem to get Data of Financial Arrangements Details {}", e);	
         }
@@ -1079,7 +1079,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					scoreResponse.add(companyMap);
 					coAppScoringData.add(scoreResponse);
 			}
-			map.put("scoringRespOfCoApp", coAppScoringData);
+			map.put("scoringRespOfCoApp", CommonUtils.isObjectListNull(coAppScoringData) ? coAppScoringData : null);
 			}
 				
 		}catch (Exception e) {
