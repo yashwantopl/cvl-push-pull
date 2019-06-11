@@ -2562,7 +2562,7 @@ public class ScoringServiceImpl implements ScoringService {
 									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setIsNetWorth_p(true);
 										scoreParameterRetailRequest.setNetWorth((coApplicantDetail.getNetworth() / scoringRequestLoans.getElAmountOnAverageScoring()) * 100);
-										logger.warn("Eligible Loan Amount Based on Income is Set in APPLICANT_NW_TO_LOAN_AMOUNT and Networth==== > {}===>{}",scoringRequestLoans.getElAmountOnAverageScoring(),coApplicantDetail.getNetworth());
+										logger.warn("Eligible Loan Amount Based on Income is Set in APPLICANT_NW_TO_LOAN_AMOUNT and Networth and Result==== > {}===>{}==>{}",scoringRequestLoans.getElAmountOnAverageScoring(),coApplicantDetail.getNetworth(),scoreParameterRetailRequest.getNetWorth());
 									}else {
 										logger.warn("Eligible Loan Amount Based on Income is not Set in APPLICANT_NW_TO_LOAN_AMOUNT==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
 									}
@@ -2666,7 +2666,6 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             if (data != null) {
                 List<Xn> xns = data.getXns().getXn();
-                List<Double> al = new ArrayList<Double>();
                 for (Xn xn : xns) {
                     if (xn.getCategory().equalsIgnoreCase("Salary")) {
                         salaryWithBank=true;
