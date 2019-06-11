@@ -340,19 +340,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             addRefDetails(finalHomeLoanDetailRequest);
             addFixdepositeDetails(finalHomeLoanDetailRequest);
             addOtherIncomeDetails(finalHomeLoanDetailRequest);
-
-			//finalHomeLoanDetailRequest.setYear(retailApplicantDetail.getQualifyingYear());
-			if (finalHomeLoanDetail == null) {
-				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
-				JSONObject bowlCount = loanApplicationService.getBowlCount(applicationId, userId);
-				finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-				if(!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))){
-					finalHomeLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());
-				}
-				finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
-				return finalHomeLoanDetailRequest;
-			}
-
+			
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return finalHomeLoanDetailRequest;

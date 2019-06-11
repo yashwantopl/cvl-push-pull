@@ -75,7 +75,7 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
                 return false;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("Erroe while callSkipPayment",e);
             return false;
         }
     }
