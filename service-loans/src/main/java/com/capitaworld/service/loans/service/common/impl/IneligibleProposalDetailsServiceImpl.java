@@ -1000,7 +1000,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							logger.error("Exception in getting user organisation name",e2);
 							param.put("org_name", "Bank");
 						}
-						if(fsEmail != null && fsMobile!=null && applicationId != null && bankLogo != "") {
+						if(fsEmail != null && fsMobile!=null && applicationId != null && !bankLogo.isEmpty()) {
 							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
 							String[] cc = {String.valueOf(param.get("branch_contact_email"))};
 							try {

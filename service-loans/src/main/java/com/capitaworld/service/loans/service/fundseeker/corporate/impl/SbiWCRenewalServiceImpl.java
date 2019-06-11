@@ -10,6 +10,7 @@ import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.service.common.impl.IneligibleProposalDetailsServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SbiWCRenewalService;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -20,6 +21,9 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.matchengine.utils.CommonUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +36,8 @@ import javax.transaction.Transactional;
 @Transactional
 public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
 
+	private static final Logger logger = LoggerFactory.getLogger(SbiWCRenewalServiceImpl.class);
+	
     @Autowired
     private GatewayClient gatewayClient;
 
@@ -100,14 +106,15 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
                 try {
                     postOneForm = connectClient.postPayment(application_id, userId, null);
                 } catch (ConnectException e1) {
-                    e1.printStackTrace();
+                	logger.error("Exception while calling callMatchEngine() of postPayment()",e1);
                 }
                 if (postOneForm != null && postOneForm.getProceed() != null && postOneForm.getProceed().booleanValue()) {
                     mappingRequest.setUserOrgId(postOneForm.getOrgId());
                     mappingRequest.setBranchId(postOneForm.getBranchId());
                 }
                 //saving details in proposal details
-                ProposalMappingResponse proposalMappingResponse = proposalDetailsClient.savePoposalOnLoanSelection(mappingRequest);
+                
+                proposalDetailsClient.savePoposalOnLoanSelection(mappingRequest);
 
 
                 //for loan details update call. [existing service re-used]
@@ -117,12 +124,14 @@ public class SbiWCRenewalServiceImpl implements SbiWCRenewalService {
                 loanApplicationRequest.setTenure(response.getMaxTenure());
                 ProductMaster productMaster = productMasterRepository.getById(response.getFpProductId());
                 loanApplicationRequest.setProductId(productMaster.getProductId());
-                loanApplicationRequest.setNpOrgId(postOneForm.getOrgId());
-                boolean isLoanDetailsUpdated = loanApplicationService.updateProductDetails(loanApplicationRequest);
-                return isLoanDetailsUpdated;
+                if(null!=postOneForm) {
+                	loanApplicationRequest.setNpOrgId(postOneForm.getOrgId());
+                }
+                
+                return loanApplicationService.updateProductDetails(loanApplicationRequest);
             }
         } catch (MatchException e) {
-            e.printStackTrace();
+        	logger.error("Exception while calling callMatchEngine()",e);
         }
         return false;
     }
