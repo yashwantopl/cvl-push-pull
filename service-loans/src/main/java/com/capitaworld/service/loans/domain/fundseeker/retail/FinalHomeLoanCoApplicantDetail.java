@@ -75,7 +75,7 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 	private Integer permanentCountry;
 
 	@Column(name="same_as_permanent_address")
-	private Boolean sameAsPermanentAddress;
+	private Boolean isSameAsPermanentAddress;
 
 	@Column(name="correspondence_premise_no")
 	private String correspondencePremiseNo;
@@ -289,11 +289,11 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 	}
 
 	public Boolean getIsSameAsPermanentAddress() {
-		return sameAsPermanentAddress;
+		return isSameAsPermanentAddress;
 	}
 
 	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
-		this.sameAsPermanentAddress = sameAsPermanentAddress;
+		this.isSameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
 	public String getCorrespondencePremiseNo() {

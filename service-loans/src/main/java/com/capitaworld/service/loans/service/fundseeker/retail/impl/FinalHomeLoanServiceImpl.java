@@ -93,7 +93,6 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 				finalHomeLoanDetailTmp = new FinalHomeLoanDetail();
 				finalHomeLoanDetailTmp.setCreatedBy(userId);
 				finalHomeLoanDetailTmp.setCreatedDate(new Date());
-				finalHomeLoanDetailTmp.setIsActive(true);
 				finalHomeLoanDetailTmp
 						.setApplicationId(new LoanApplicationMaster(finalHomeLoanDetailRequest.getApplicationId()));
 				finalHomeLoanDetailTmp.setProposalId(new ApplicationProposalMapping(finalHomeLoanDetailRequest.getProposalId()));
@@ -105,6 +104,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
 			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length -1] = "is_active";
 			BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetailTmp,corporate);
+			finalHomeLoanDetailTmp.setIsActive(true);
 			Address permanentAddress = finalHomeLoanDetailRequest.getPermanentAddress();
 			Address correspondenceAddress = finalHomeLoanDetailRequest.getCorrespondenceAddress();
 
@@ -121,7 +121,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             finalHomeLoanDetailTmp.setCorrespondenceStreetName(correspondenceAddress.getStreetName());
             finalHomeLoanDetailTmp.setCorrespondenceCity(correspondenceAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setCorrespondenceState(correspondenceAddress.getStateId());
-            finalHomeLoanDetailTmp.setPermanentCountry(correspondenceAddress.getCountryId());
+            finalHomeLoanDetailTmp.setCorrespondenceCountry(correspondenceAddress.getCountryId());
             finalHomeLoanDetailTmp.setCorrespondenceLandmark(correspondenceAddress.getLandMark());
             finalHomeLoanDetailTmp.setCorrespondencePinCode(correspondenceAddress.getPincode().intValue());
 			finalHomeLoanDetailTmp = finalHomeLoanDetailRepository.save(finalHomeLoanDetailTmp);
@@ -324,7 +324,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 					correspondenceAddress.setStreetName(finalHomeLoanDetail.getCorrespondenceStreetName());
 					correspondenceAddress.setCityId(Long.valueOf(finalHomeLoanDetail.getCorrespondenceCity()));
 					correspondenceAddress.setStateId(finalHomeLoanDetail.getCorrespondenceState());
-					correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCity());
+					correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCountry());
 					correspondenceAddress.setLandMark(finalHomeLoanDetail.getCorrespondenceLandmark());
 					correspondenceAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getCorrespondencePinCode()));
 					finalHomeLoanDetailRequest.setCorrespondenceAddress(correspondenceAddress);
@@ -340,19 +340,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             addRefDetails(finalHomeLoanDetailRequest);
             addFixdepositeDetails(finalHomeLoanDetailRequest);
             addOtherIncomeDetails(finalHomeLoanDetailRequest);
-
-			//finalHomeLoanDetailRequest.setYear(retailApplicantDetail.getQualifyingYear());
-			if (finalHomeLoanDetail == null) {
-				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
-				JSONObject bowlCount = loanApplicationService.getBowlCount(applicationId, userId);
-				finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-				if(!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))){
-					finalHomeLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());
-				}
-				finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
-				return finalHomeLoanDetailRequest;
-			}
-
+			
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return finalHomeLoanDetailRequest;

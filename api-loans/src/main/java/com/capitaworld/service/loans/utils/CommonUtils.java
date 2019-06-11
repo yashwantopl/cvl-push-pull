@@ -756,7 +756,7 @@ public class CommonUtils {
 	}
 
 	public static Double getBowlCount(String count, Integer tabNumber) {
-		if (!isObjectListNull(count) && count != "0") {
+		if (!isObjectListNull(count) && count.equals("0")) {
 			String[] split = count.split("\\|");
 			if (split.length > 0) {
 				if (!isObjectListNull(tabNumber)) {
@@ -944,15 +944,15 @@ public class CommonUtils {
 		if (isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)) {
 			return null;
 		}
-		if (denomination == DenominationId.LAKHS) {
+		if (DenominationId.LAKHS.equals(denomination)) {
 			return (long) (DenominationInAmount.LAKHS * amount);
-		} else if (denomination == DenominationId.MILLIONS) {
+		} else if (DenominationId.MILLIONS.equals(denomination)) {
 			return (long) (DenominationInAmount.MILLIONS * amount);
-		} else if (denomination == DenominationId.CRORES) {
+		} else if (DenominationId.CRORES.equals(denomination)) {
 			return (long) (DenominationInAmount.CRORES * amount);
-		} else if (denomination == DenominationId.BILLIONS) {
+		} else if (DenominationId.BILLIONS.equals(denomination)) {
 			return (long) (DenominationInAmount.BILLIONS * amount);
-		} else if (denomination == DenominationId.ABSOLUTE) {
+		} else if (DenominationId.ABSOLUTE.equals(denomination)) {
 			return (long) (DenominationInAmount.ABSOLUTE * amount);
 		} else {
 			return null;
@@ -1696,7 +1696,7 @@ public enum APIFlags {
 
 		public static BankName getDataFormBankId(Integer id){
 			for (BankName bankName:BankName.values()) {
-				if (bankName.id == id) {
+				if (bankName.id.equals(id)) {
 					return bankName;
 				}
 			}
