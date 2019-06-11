@@ -14,7 +14,6 @@ import javax.persistence.Table;
 
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 /**
@@ -85,7 +84,7 @@ public class FinalHomeLoanDetail implements Serializable {
 	private Integer permanentCountry;
 
 	@Column(name="same_as_permanent_address")
-	private Boolean sameAsPermanentAddress;
+	private Boolean isSameAsPermanentAddress;
 
 	@Column(name="correspondence_premise_no")
 	private String correspondencePremiseNo;
@@ -296,11 +295,11 @@ public class FinalHomeLoanDetail implements Serializable {
 	}
 
 	public Boolean getIsSameAsPermanentAddress() {
-		return sameAsPermanentAddress;
+		return isSameAsPermanentAddress;
 	}
 
 	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
-		this.sameAsPermanentAddress = sameAsPermanentAddress;
+		this.isSameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
 	public String getCorrespondencePremiseNo() {
