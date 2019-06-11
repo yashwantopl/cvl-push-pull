@@ -89,6 +89,8 @@ public class CommonUtils {
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
 	public static final String SUCCESSFULLY_SAVED = "Successfully Purpose of loan created";
 	public static final String SUCCESSFULLY_UPDATED = "Purpose of Loan Model sent for approval";
+	public static final String STATUS_UPDATED = "Purpose of Model Saved Successfully";
+	
 	public static final String INVALID_AGE = "Invalid Age";
 	public static final String ONE_FORM_SAVED_SUCCESSFULLY = "Oneform Saved Successfully";
 	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
@@ -790,6 +792,7 @@ public class CommonUtils {
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/error".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/mca/error".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
