@@ -92,7 +92,6 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                 finalHomeLoanDetailTmp = new FinalHomeLoanCoApplicantDetail();
                 finalHomeLoanDetailTmp.setCreatedBy(userId);
                 finalHomeLoanDetailTmp.setCreatedDate(new Date());
-                finalHomeLoanDetailTmp.setIsActive(true);
                 finalHomeLoanDetailTmp
                         .setApplicationId(new LoanApplicationMaster(finalHomeLoanDetailRequest.getApplicationId()));
                 finalHomeLoanDetailTmp.setProposalId(new ApplicationProposalMapping(finalHomeLoanDetailRequest.getProposalId()));
@@ -104,6 +103,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             corporate[CommonUtils.IgnorableCopy.getCORPORATE().length-1] = "isActive";
             corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
             BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetailTmp, corporate);
+            finalHomeLoanDetailTmp.setIsActive(true);
             Address permanentAddress = finalHomeLoanDetailRequest.getPermanentAddress();
             Address correspondenceAddress = finalHomeLoanDetailRequest.getCorrespondenceAddress();
 
@@ -120,7 +120,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             finalHomeLoanDetailTmp.setCorrespondenceStreetName(correspondenceAddress.getStreetName());
             finalHomeLoanDetailTmp.setCorrespondenceCity(correspondenceAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setCorrespondenceState(correspondenceAddress.getStateId());
-            finalHomeLoanDetailTmp.setPermanentCountry(correspondenceAddress.getCountryId());
+            finalHomeLoanDetailTmp.setCorrespondenceCountry(correspondenceAddress.getCountryId());
             finalHomeLoanDetailTmp.setCorrespondenceLandmark(correspondenceAddress.getLandMark());
             finalHomeLoanDetailTmp.setCorrespondencePinCode(correspondenceAddress.getPincode().intValue());
             finalHomeLoanDetailTmp = finalHomeLoanCoAppDetailRepository.save(finalHomeLoanDetailTmp);
@@ -297,7 +297,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                     correspondenceAddress.setStreetName(finalHomeLoanDetail.getCorrespondenceStreetName());
                     correspondenceAddress.setCityId(Long.valueOf(finalHomeLoanDetail.getCorrespondenceCity()));
                     correspondenceAddress.setStateId(finalHomeLoanDetail.getCorrespondenceState());
-                    correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCity());
+                    correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCountry());
                     correspondenceAddress.setLandMark(finalHomeLoanDetail.getCorrespondenceLandmark());
                     correspondenceAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getCorrespondencePinCode()));
                     finalHomeLoanDetailRequest.setCorrespondenceAddress(correspondenceAddress);
