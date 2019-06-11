@@ -339,6 +339,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
 				/*plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getNationality());*/
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
+				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail());
+				plRetailApplicantResponse.setContactNo(plRetailApplicantRequest.getContactNo());
 				
 
 				/*salary account details*/
@@ -411,6 +413,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+				plRetailApplicantResponse.setGrossMonthlyIncome(plRetailApplicantRequest.getGrossMonthlyIncome());
 				plRetailApplicantResponse.setTenureReq(plRetailApplicantRequest.getTenureRequired()!= null ? plRetailApplicantRequest.getTenureRequired() > 1 ? plRetailApplicantRequest.getTenureRequired() + " Years" : plRetailApplicantRequest.getTenureRequired() + " Year " : "" );
 				
 				//set existing financial data if not null 
@@ -840,6 +843,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setSpouseEmployment(coApplicantDetail.getSpouseEmployment() != null ? SpouseEmploymentList.getById(coApplicantDetail.getSpouseEmployment()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(coApplicantDetail.getStatusId()!= null ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNoOfDependent(coApplicantDetail.getNoDependent());
+				plRetailApplicantResponse.setContactNo(coApplicantDetail.getContactNo());
+				plRetailApplicantResponse.setEmail(coApplicantDetail.getEmail());
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithPL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");

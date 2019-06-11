@@ -142,7 +142,7 @@ public class RetailModelController {
 				homeLoanModelRequest.setClientId(clientId);
 			}
 			logger.info(CommonUtils.EXIT_FROM + METHOD_CREATE);
-			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESSFULLY_UPDATED, HttpStatus.OK.value(),homeLoanModelService.saveToTemp(homeLoanModelRequest)), HttpStatus.OK);
+			return new ResponseEntity<>( new LoansResponse(CommonUtils.STATUS_UPDATED, HttpStatus.OK.value(),homeLoanModelService.saveToTemp(homeLoanModelRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving Loan Purpose Model Details==> {} ", e);
 			logger.info(CommonUtils.EXIT_FROM + METHOD_CREATE_WITH_ERROR );
@@ -215,7 +215,7 @@ public class RetailModelController {
 	@PostMapping(value = "/update_status/{bti}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateStatus(@RequestBody WorkflowData workflowData,@PathVariable("bti") Integer businessTypeId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
-		logger.info(CommonUtils.ENTRY_IN + METHOD_CREATE);
+		logger.info(CommonUtils.ENTRY_IN + METHOD_CREATE);	
 		try {
 			// request must not be null
 
@@ -231,7 +231,7 @@ public class RetailModelController {
 			if (WorkflowUtils.Action.SEND_FOR_APPROVAL.equals(workflowData.getActionId())) {
 				msg = "Purpose of Loan Model sent for approval";
 			}else if (WorkflowUtils.Action.SEND_BACK.equals(workflowData.getActionId())) {
-				msg = "Scoring Model is successfully sent back";
+				msg = "Purpose of Model is successfully sent back to Maker";
 			}
 			return new ResponseEntity<>(new LoansResponse(msg, HttpStatus.OK.value(),retailModelService.processWorkflow(workflowData, businessTypeId)), HttpStatus.OK);
 		} catch (Exception e) {

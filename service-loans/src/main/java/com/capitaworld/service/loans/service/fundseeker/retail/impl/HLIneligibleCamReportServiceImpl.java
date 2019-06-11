@@ -19,12 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
@@ -36,7 +36,6 @@ import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
@@ -49,9 +48,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanSe
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
@@ -94,9 +91,6 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 	private PincodeDateService pincodeDateService;
 	
 	@Autowired
-	private ApplicationProposalMappingRepository applicationMappingRepository;
-	
-	@Autowired
 	private AnalyzerClient analyzerClient;
 	
 	@Autowired
@@ -116,9 +110,17 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+
+	@Autowired
+	private ReportsClient reportsClient;
+	
+	@Autowired
+	private HLIneligibleCamReportService hlIneligibleCamReportService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	
+	private static final String HLINELIGIBLE_CAM_REPORT = "INELIGIBLEHLCAM";
 	
 	@Override
 	public Map<String, Object> getHLInEligibleCamReport(Long applicationId){
@@ -126,7 +128,6 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
-		//ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationId(applicationId);
      	LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
      	
      	if(loanApplicationMaster != null) {
@@ -216,7 +217,6 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			}
 			
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "-");
-			//map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentWith()) ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue() : "-");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentEmploymentStatus()) ?EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
 			map.put("sinceSalaryWhen", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getSalaryBankYear()) ? plRetailApplicantRequest.getSalaryBankYear() + " years" : "")+" "+(plRetailApplicantRequest.getSalaryBankMonth() != null ? plRetailApplicantRequest.getSalaryBankMonth() +" months" : ""));
 			map.put("retailApplicantProfile", CommonUtils.printFields(plRetailApplicantRequest, null));
@@ -401,7 +401,7 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 				coApp.put("birthDate",!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())? simpleDateFormat.format(coApplicantDetail.getBirthDate()):"-");
 				coApp.put("employmentType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentType()) ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue() : "-");
 				
-				/*employment type*/
+				/*employment With*/
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
 					coApp.put("employmentWith" , coApplicantDetail.getEmployedWithId() != null ? EmploymentWithPL.getById(coApplicantDetail.getEmployedWithId()).getValue() : "-");
 				}else if (coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 5) {
@@ -410,7 +410,6 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 					coApp.put("employmentWith" , coApplicantDetail.getEmployedWithId() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmployedWithId()).getValue() : "-");
 				}
 				
-				//coApp.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId()) ? OccupationHL.getById(coApplicantDetail.getEmployedWithId()).getValue() : "-");
 				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue() : "-");
 				coApp.put("relationshipWithApp", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRelationshipWithApplicant()) ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : "-");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "-");
@@ -443,7 +442,6 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalByApplicationID(applicationId);
 			
 			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
-//					BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 			
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
 			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
@@ -555,14 +553,7 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
 		List<Data> datas = new ArrayList<>();
-//		List<Object> bankStatement = new ArrayList<Object>();
-/**	List<Object> monthlyDetails = new ArrayList<Object>();
-		List<Object> top5FundReceived = new ArrayList<Object>();
-		List<Object> top5FundTransfered = new ArrayList<Object>();
-		List<Object> bouncedChequeList = new ArrayList<Object>();
-		List<Object> customerInfo = new ArrayList<Object>();
-		List<Object> summaryInfo = new ArrayList<Object>();*/
-
+		//List<Object> bankStatement = new ArrayList<Object>();
 
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
@@ -575,33 +566,11 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 					datas.add(data);
 							
 					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
-					/**monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
-					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
-					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
-					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
-					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");*/
-						
-/**					HashMap<String, Object>  bankData = new HashMap<>();
-					bankData.put("monthlyDetails", monthlyDetails);
-					bankData.put("top5FundReceived", top5FundReceived);
-					bankData.put("top5FundTransfered", top5FundTransfered);
-					bankData.put("bouncedChequeList", bouncedChequeList);
-					bankData.put("customerInfo", customerInfo);
-					bankData.put("summaryInfo", summaryInfo);
-					bankData.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
-					bankDataDetails.add(bankData);*/
 				}
 						
 				map.put("bankRelatedData" , CommonUtils.printFields(datas, null));
 				//map.put("bankStatement", bankStatement);
-				/**map.put("monthlyDetails", monthlyDetails);
-				map.put("top5FundReceived", top5FundReceived);
-				map.put("top5FundTransfered", top5FundTransfered);
-				map.put("bouncedChequeList", bouncedChequeList);
-				map.put("customerInfo", customerInfo);
-				map.put("summaryInfo", summaryInfo);
-				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));*/
+		
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
@@ -696,5 +665,18 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService#generateIneligibleCamReportFromMap(java.lang.Long)
+	 */
+	@Override
+	public byte[] generateIneligibleCamReportFromMap(Long applicationId) {
+		Map<String,Object> response =  hlIneligibleCamReportService.getHLInEligibleCamReport(applicationId);
+		com.capitaworld.api.reports.ReportRequest reportRequest = new com.capitaworld.api.reports.ReportRequest();
+		reportRequest.setParams(response);
+		reportRequest.setTemplate(HLINELIGIBLE_CAM_REPORT);
+		reportRequest.setType(HLINELIGIBLE_CAM_REPORT);
+		return reportsClient.generatePDFFile(reportRequest);
 	}
 }

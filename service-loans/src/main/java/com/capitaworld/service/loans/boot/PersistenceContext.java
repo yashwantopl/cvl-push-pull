@@ -103,6 +103,7 @@ public class PersistenceContext {
 		jpaProperties.put(PROPERTY_NAME_HIBERNATE_LAZY_LOAD,
 				environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_LAZY_LOAD));
 		jpaProperties.put("hibernate.hql.bulk_id_strategy","org.hibernate.hql.spi.id.inline.InlineIdsOrClauseBulkIdStrategy");
+		jpaProperties.put("hibernate.proc.param_null_passing",true);
 		entityManagerFactoryBean.setJpaProperties(jpaProperties);
 		return entityManagerFactoryBean;
 	}

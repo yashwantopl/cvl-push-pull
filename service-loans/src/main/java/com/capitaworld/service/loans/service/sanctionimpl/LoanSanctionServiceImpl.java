@@ -237,7 +237,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											parameters.put(APPLICATION_ID, applicationCode);
 											parameters.put(NAME_OF_ENTITY, organizationName != null ? organizationName : "Fund Seeker");
 											parameters.put(CHECKER_NAME, checkerName);
-											if (fpName != "" && fpName != null) {
+											if (fpName != null && !fpName.isEmpty()) {
 												parameters.put(HO_NAME, fpName);
 											}
 											else{
@@ -264,7 +264,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											fpName = request.getUserName();
 											parameters.put(APPLICATION_ID, applicationCode);
 											parameters.put(NAME_OF_ENTITY, organizationName);
-											if (fpName != "" && fpName != null) {
+											if (fpName != null && !fpName.isEmpty()) {											
 												parameters.put(BO_CHECKER, fpName);
 											}
 											else{

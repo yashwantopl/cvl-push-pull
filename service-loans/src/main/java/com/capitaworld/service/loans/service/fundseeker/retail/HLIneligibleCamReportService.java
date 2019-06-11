@@ -6,4 +6,6 @@ public interface HLIneligibleCamReportService {
 
 	public Map<String, Object> getHLInEligibleCamReport(Long applicationId);
 	
+	public byte[] generateIneligibleCamReportFromMap(Long applicationId);
+	
 }
