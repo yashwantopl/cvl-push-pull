@@ -6,4 +6,8 @@ public interface PLCamReportService {
 	public Map<String, Object> getCamReportDetails(Long applicationId, Long productId, boolean isFinalView);
 	
 	public Map<String, Object> getCamReportDetailsByProposalId(Long applicationId, Long productId, Long proposalId, boolean isFinalView);
+	
+	public Map<String, Object> getPLInEligibleCamReport(Long applicationId);
+
+	public byte[] generateIneligibleCamReportFromMap(Long applicationId);
 }

@@ -103,6 +103,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			}
 			String[] corporate = new String[CommonUtils.IgnorableCopy.getCORPORATE().length + 1];
 			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
+			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length -1] = "is_active";
 			BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetailTmp,corporate);
 			Address permanentAddress = finalHomeLoanDetailRequest.getPermanentAddress();
 			Address correspondenceAddress = finalHomeLoanDetailRequest.getCorrespondenceAddress();
@@ -339,19 +340,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             addRefDetails(finalHomeLoanDetailRequest);
             addFixdepositeDetails(finalHomeLoanDetailRequest);
             addOtherIncomeDetails(finalHomeLoanDetailRequest);
-
-			//finalHomeLoanDetailRequest.setYear(retailApplicantDetail.getQualifyingYear());
-			if (finalHomeLoanDetail == null) {
-				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
-				JSONObject bowlCount = loanApplicationService.getBowlCount(applicationId, userId);
-				finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-				if(!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))){
-					finalHomeLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());
-				}
-				finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
-				return finalHomeLoanDetailRequest;
-			}
-
+			
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return finalHomeLoanDetailRequest;

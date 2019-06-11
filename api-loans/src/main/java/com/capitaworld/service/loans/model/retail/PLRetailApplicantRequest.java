@@ -69,6 +69,8 @@ public class PLRetailApplicantRequest implements Serializable {
     * */
     private Double loanAmountRequired;
     private Integer loanPurpose;
+    private Integer loanPurposeQueType;
+   	private String loanPurposeQueValue;
     private Integer tenureRequired;
     private Integer repayment;
     private Double monthlyIncome;
@@ -136,7 +138,22 @@ public class PLRetailApplicantRequest implements Serializable {
     private String nameOfEntity;
     private Boolean isItrSkip;
     
+    public Integer getLoanPurposeQueType() {
+		return loanPurposeQueType;
+	}
 
+	public void setLoanPurposeQueType(Integer loanPurposeQueType) {
+		this.loanPurposeQueType = loanPurposeQueType;
+	}
+
+	public String getLoanPurposeQueValue() {
+		return loanPurposeQueValue;
+	}
+
+	public void setLoanPurposeQueValue(String loanPurposeQueValue) {
+		this.loanPurposeQueValue = loanPurposeQueValue;
+	}
+    
     public String getLoanPurposeOther() {
 		return loanPurposeOther;
 	}

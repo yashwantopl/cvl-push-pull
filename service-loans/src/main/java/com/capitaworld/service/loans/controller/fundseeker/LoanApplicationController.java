@@ -2120,7 +2120,7 @@ public class LoanApplicationController {
 			if (CommonUtils.isObjectListNull(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getBranch(),
 					loanSanctionRequest.getOrgId(), loanSanctionRequest.getRoi(),
 					loanSanctionRequest.getSanctionAmount(), loanSanctionRequest.getTenure(),
-					loanSanctionRequest.getProcessingFee())) {
+					loanSanctionRequest.getProcessingFee(), loanSanctionRequest.getBusinessTypeId())) {
 				logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}

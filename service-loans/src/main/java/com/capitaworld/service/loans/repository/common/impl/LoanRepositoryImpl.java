@@ -110,6 +110,8 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		if(CommonUtils.isObjectNullOrEmpty(branchId))
+			branchId=-1l;
 		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
@@ -154,6 +156,8 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		if(CommonUtils.isObjectNullOrEmpty(branchId))
+			branchId=-1l;
 		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
@@ -307,9 +311,25 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	//1/6/2019...................
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getTypeSelectionData() {
-		return (List<Object[]>) entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE")
-				.getResultList();
+		return (List<Object[]>)entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE").getResultList();
+	}
+	
+	/**
+	 * @author vijay.chauhan
+	 * @param userId
+	 */	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getTypeSelectionData(String userId) {
+		String query = "SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE AND TYPE!='Retail'\n" + 
+				"UNION ALL\n" + 
+				"SELECT lts.`type`,lts.`description`,lts.`business_type_id`,lts.`img_path`\n" + 
+				"FROM `loan_application`.`fs_loan_type_selection` lts \n" + 
+				"INNER JOIN `loan_application`.`fs_loan_type_accessible_users` ltsu ON (lts.id=ltsu.loan_type_selection_id AND ltsu.is_active=TRUE)\n" + 
+				"WHERE lts.TYPE='Retail' AND ltsu.user_id="+userId;
+		return (List<Object[]>) entityManager.createNativeQuery(query).getResultList();
 	}
 }
