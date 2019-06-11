@@ -101,17 +101,12 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         try {
 
             if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
+                //for Approval stage
                 if (addProductRequest.getStage() == 2) {
-
-                    productMasterRepository.changeProductName(
-                            (CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-                                    ? addProductRequest.getUserId() : addProductRequest.getClientId()),
-                            addProductRequest.getProductMappingId(), addProductRequest.getName());
+                    productMasterRepository.changeProductName((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId()) ? addProductRequest.getUserId() : addProductRequest.getClientId()), addProductRequest.getProductMappingId(), addProductRequest.getName());
                 } else {
-                    productMasterTempRepository.changeProductName(
-                            (CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-                                    ? addProductRequest.getUserId() : addProductRequest.getClientId()),
-                            addProductRequest.getProductMappingId(), addProductRequest.getName());
+                    //for pending stage
+                    productMasterTempRepository.changeProductName((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId()) ? addProductRequest.getUserId() : addProductRequest.getClientId()), addProductRequest.getProductMappingId(), addProductRequest.getName());
                 }
                 CommonDocumentUtils.endHook(logger, "saveOrUpdate");
                 return 0l;

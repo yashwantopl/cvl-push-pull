@@ -264,6 +264,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String ORG_ID = "org_id";
 	private static final String MSG_LITERAL = " Msg : ";
 	private static final String PROPOSAL_ID="proposalId";
+	private static final String LOAN_RETAILS_ENABLE="cw.loan.retails.enable";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -8410,18 +8411,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	//1/6/2019........................
 
 	@Override
-	public List<LoantypeSelectionResponse> getTypeSelectionData() {
-		List<Object[]> responseList = loanRepository.getTypeSelectionData();
+	public List<LoantypeSelectionResponse> getTypeSelectionData(String userId) {
+		List<Object[]> responseList =null;
+		logger.info("userId-->>{}",userId);
+		if("Y".equalsIgnoreCase(environment.getRequiredProperty(LOAN_RETAILS_ENABLE))) {
+			responseList = loanRepository.getTypeSelectionData();
+		}else {			
+			responseList = loanRepository.getTypeSelectionData(userId);
+		}
+		
 		List<LoantypeSelectionResponse> selectionList = new ArrayList<>();
 		for(Object[] obj : responseList) {
-//			System.out.print("============>" +obj.toString());
 			LoantypeSelectionResponse  response = new LoantypeSelectionResponse();
 			response.setType(obj[0].toString());
 			response.setDescription((String)obj[1]);
 			response.setBusinessTypeId((int)obj[2]);
 			response.setImgPath((String)obj[3]);
-			selectionList.add(response);
-			System.out.print("============>" +response.getType());
+			selectionList.add(response);			
 		}
 		return selectionList;
 	}
