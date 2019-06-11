@@ -167,15 +167,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private AnalyzerClient analyzerClient;
-
-	@Autowired
-	private LoanDisbursementRepository loanDisbursementRepository;
-	
-	@Autowired
-	private LoanSanctionRepository loanSanctionRepository;
-	
-	@Autowired
-	private ProposalDetailsRepository proposalDetailsRepository;
 	
 	@Autowired
 	private EligibilityClient eligibilityClient;
@@ -279,6 +270,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
 			}
 			
+			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType() != null) ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue() : "-");
+			map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue() != null) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
+			
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "-");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
 			
@@ -375,16 +369,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		}else {
 			logger.info("fpProductMapping id is null..");
 		}
-		
-		//DATE OF IN-PRINCIPLE APPROVAL (CONNECT CLIENT) EXISTING CODE
-		/*try {
-			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
-			if(!CommonUtils.isObjectNullOrEmpty(connectResponse)) {
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? CommonUtils.DATE_FORMAT.format(connectResponse.getData()):"-");
-			}
-		} catch (Exception e2) {
-			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
-		}*/
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
@@ -560,7 +544,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 							coAppData.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPlaceOfBirth()) ? finalCoApplicantDetail.getPlaceOfBirth() :"-");
 						}
 						
-						coApp.put("finalData" ,coAppData);
+						coApp.put("finalData" ,coAppData != null ? coAppData : null);
 					}
 					catch (Exception e) {
 						logger.error("Error/Exception while fetching final home loan detail Of Co-Applicant ..Error==>{}",e);
@@ -571,7 +555,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				listMap.add(coApp);
 				
 			}
-			map.put("retailCoApplicantDetails", CommonUtils.printFields(listMap, null));
+			map.put("retailCoApplicantDetails", !CommonUtils.isObjectListNull(listMap) ? CommonUtils.printFields(listMap, null) : null);
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
@@ -593,7 +577,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse"+matchResponse);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : null);
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
@@ -610,8 +594,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			//BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 			
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
-			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "-");
+			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : null);
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -620,7 +604,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "");
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
 			logger.error("Error while getting primary Details : ",e);
@@ -929,10 +913,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 				scoringRequest.setCoAppId(coApplicantDetail.getId());
 				ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-				DecimalFormat df = new DecimalFormat(".##");
 				List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
 				Map<String,Object> companyMap =new HashMap<>();
-				ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+				ProposalScoreResponse proposalScoreResponse =  MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 				companyMap.put("name",(coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") + " " +(coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") + " " + (coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : " ") );
 				companyMap.put("scoringDataObject",CommonUtils.printFields(proposalScoreResponse,null));
 			
@@ -1177,7 +1160,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			Map<String , Object> retailMap = new HashMap<String, Object>();
 			
 			//PROPOSAL DATES
-			try {
+			/**try {
 				List<Object[]> data = null;
 				List<Date[]> data1 = null;
 				data1 = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
@@ -1199,7 +1182,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				} catch (Exception e) {
 				logger.error("Error while getting PROPOSAL DATES data : ",e);
-			}
+			}*/
 			
 			//RETAIL FINAL DETAILS
 			try {
