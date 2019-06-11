@@ -156,6 +156,8 @@ public class LoanRepositoryImpl implements LoanRepository {
 		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(BUSI_TYPE_ID,businessTypeId);
+		if(CommonUtils.isObjectNullOrEmpty(branchId))
+			branchId=-1l;
 		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
