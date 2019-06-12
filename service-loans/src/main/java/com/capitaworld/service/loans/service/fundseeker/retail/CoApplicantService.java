@@ -23,7 +23,7 @@ public interface CoApplicantService {
 	public List<CoApplicantDetail> getCoApplicantList(Long applicationId) throws LoansException;
 
 	public List<CoApplicantRequest> getCoApplicantListByApplicationId(Long applicationId) throws LoansException;
-
+	
 	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException;
 
 	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException;
