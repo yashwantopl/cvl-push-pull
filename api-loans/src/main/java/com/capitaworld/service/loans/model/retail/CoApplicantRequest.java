@@ -110,6 +110,10 @@ public class CoApplicantRequest {
 	}
 
 	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled) {
+		new CoApplicantRequest(id, firstName, middleName, lastName, relationshipWithApplicant, applicationId, isItrCompleted, isItrSkip, isItrManual, isCibilCompleted, isBankStatementCompleted, isOneFormCompleted, isBasicInfoFilled, isEmploymentInfoFilled, isContactInfoFilled, isCreditInfoFilled, null);
+	}
+	
+	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled,String pan) {
 		this.id = id;
 		this.applicationId = applicationId;
 		this.firstName = firstName;
@@ -126,7 +130,7 @@ public class CoApplicantRequest {
 		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
 		this.isContactInfoFilled = isContactInfoFilled;
 		this.isCreditInfoFilled = isCreditInfoFilled;
-
+		this.pan = pan;
 	}
 
 	public Long getApplicationId() {

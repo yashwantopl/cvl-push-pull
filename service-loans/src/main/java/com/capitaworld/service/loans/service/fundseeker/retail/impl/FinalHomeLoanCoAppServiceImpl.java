@@ -144,6 +144,10 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
         }
     }
 
+    private Object getDefaultOrEmpty(Object o) {
+        return CommonUtils.isObjectNullOrEmpty(o) ? "" : o;
+    }
+
     private void addOneformDetails(FinalHomeLoanCoApplicantDetailRequest finalHomeLoanDetailRequest) {
 
         CoApplicantDetail retailApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(finalHomeLoanDetailRequest.getCoApplicantId(),true);
@@ -153,13 +157,13 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             finalHomeLoanDetailRequest.setFatherFullName(retailApplicantDetail.getFatherName());
 
             Address permanentAddress = new Address();
-            permanentAddress.setPremiseNumber(retailApplicantDetail.getAddressPremiseName());
-            permanentAddress.setStreetName(retailApplicantDetail.getAddressStreetName());
-            permanentAddress.setCityId(Long.valueOf(retailApplicantDetail.getAddressCity()));
-            permanentAddress.setStateId(retailApplicantDetail.getAddressState());
-            permanentAddress.setCountryId(retailApplicantDetail.getAddressCountry());
-            permanentAddress.setPincode(Long.valueOf(String.valueOf(retailApplicantDetail.getAddressPincode())));
-            permanentAddress.setLandMark(retailApplicantDetail.getAddressLandmark());
+            permanentAddress.setPremiseNumber(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressPremiseName())));
+            permanentAddress.setStreetName(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressStreetName())));
+            permanentAddress.setCityId(Long.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressCity()))));
+            permanentAddress.setStateId(Integer.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressState()))));
+            permanentAddress.setCountryId(Integer.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressCountry()))));
+            permanentAddress.setPincode(Long.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressPincode()))));
+            permanentAddress.setLandMark(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressLandmark())));
 
             finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
             finalHomeLoanDetailRequest.setEducationalQualification(EducationStatusRetailMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
