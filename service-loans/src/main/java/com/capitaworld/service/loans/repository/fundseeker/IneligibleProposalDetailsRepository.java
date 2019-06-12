@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -43,5 +44,9 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
 
 	@Query(value = "SELECT * FROM loan_application.ineligible_proposal_details WHERE application_id=:applicationId AND is_active=TRUE AND (is_sanctioned = TRUE OR is_disbursed = TRUE) AND user_org_id <>:userOrgId", nativeQuery = true)
 	public IneligibleProposalDetails getSanctionedByApplicationIdAndOrgId(@Param("applicationId")Long applicationId,@Param("userOrgId")Long userOrgId);
+
+	@Modifying
+	@Query(value="update ineligible_proposal_details set is_active =: isActive where application_id =: applicationId", nativeQuery = true)
+	public Integer updateInEligibleDataBasedonApplicationId(@Param("applicationId")Long applicationId,@Param("isActive")Boolean isActive);
 
 }
