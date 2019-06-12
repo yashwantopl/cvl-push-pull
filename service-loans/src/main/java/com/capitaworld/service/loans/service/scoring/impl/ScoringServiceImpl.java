@@ -2175,9 +2175,6 @@ public class ScoringServiceImpl implements ScoringService {
 			}else {
 				logger.info("Something is NULL From EligibilityResponse for CoApplicant===============>{}",monthlyIncomeForCoApplicant);
 			}
-			 if(netMonthlyIncome <= 0 || grossMonthlyIncome <= 0) {
-             	return new ResponseEntity<>(new LoansResponse("NMI or GMI is Zero ", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-			 }
             try {
                  ReportRequest reportRequest = new ReportRequest();
                  reportRequest.setApplicationId(applicationId);
