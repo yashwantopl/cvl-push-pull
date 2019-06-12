@@ -7,8 +7,10 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1492,7 +1494,7 @@ public class ScoringServiceImpl implements ScoringService {
             //Getting Banks List 
             ReportRequest reportRequest = new ReportRequest();
             reportRequest.setApplicationId(applicationId);
-            AnalyzerResponse analyzerResponse;
+            AnalyzerResponse analyzerResponse = null;
 			try {
 				analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
 				bankStringsList = (List<String> )analyzerResponse.getData();
@@ -1687,7 +1689,8 @@ public class ScoringServiceImpl implements ScoringService {
             								|| OccupationNatureNTB.AGRICULTURIST.equals(retailApplicantDetail.getEmploymentType())){
             							if(retailApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("retailApplicantDetail.getBusinessStartDate() For HL==== > {}",retailApplicantDetail.getBusinessStartDate());
-                        					totalExperience = Double.valueOf(ChronoUnit.YEARS.between(retailApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+                        					Integer[] busiFromDate = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBusinessStartDate());
+                        					totalExperience = (((double) busiFromDate[0]) + ((double)busiFromDate[1] / 12));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -2240,6 +2243,8 @@ public class ScoringServiceImpl implements ScoringService {
 				scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 				scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
 				scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
+				logger.info("Result of Average Eligibility Call For CoApplicant===============>{}",scoringRequestLoans.getElAmountOnAverageScoring());
+				logger.info("FOIR For CoApplicant===============>{}",scoringRequestLoans.getFoir());
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
@@ -2285,7 +2290,8 @@ public class ScoringServiceImpl implements ScoringService {
             								|| OccupationNatureNTB.AGRICULTURIST.equals(coApplicantDetail.getEmploymentType())){
             							if(coApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("coApplicantDetail.getBusinessStartDate() For HL==== > {}",coApplicantDetail.getBusinessStartDate());
-                        					totalExperience = Double.valueOf(ChronoUnit.YEARS.between(coApplicantDetail.getBusinessStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+                        					Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBusinessStartDate());
+                        					totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -2397,8 +2403,8 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.MIN_BANKING_RELATIONSHIP:
             				//Not Available in Sheet Document
-            				scoreParameterRetailRequest.setIsMinBankingRelationship_p(minBankRelationshipInMonths != null);
-            				scoreParameterRetailRequest.setMinBankingRelationship(minBankRelationshipInMonths);
+            				scoreParameterRetailRequest.setIsMinBankingRelationship_p(true);
+            				scoreParameterRetailRequest.setMinBankingRelationship(minBankRelationshipInMonths == null ? 0 : minBankRelationshipInMonths);
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
@@ -2442,7 +2448,8 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVAILABLE_INCOME:
             				try {
             					logger.info("netMonthlyIncome===>{}===grossAnnualIncome===>{}== For ApplicationId ==>{}===>FpProductId===>{}",netMonthlyIncome,grossMonthlyIncome,applicationId,fpProductId);
-								scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
+            					logger.info("Foir For AVAILABLE_INCOME for CoApplicant============>{}",scoringRequestLoans.getFoir());
+            					scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
 								scoreParameterRetailRequest.setIsAvailableIncome_p(true);
 							} catch (Exception e1) {
 								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
@@ -2450,10 +2457,10 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.ADDI_INCOME_SPOUSE:
             				//Not Available in Sheet Document
-//	            				if(coApplicantDetail.get != null) {
-//	            					scoreParameterRetailRequest.setSpouseIncome(coApplicantDetail.getAnnualIncomeOfSpouse());
-//	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
-//	            				}
+	            				if(coApplicantDetail.getAnnualIncomeOfSpouse() != null) {
+	            					scoreParameterRetailRequest.setSpouseIncome(coApplicantDetail.getAnnualIncomeOfSpouse());
+	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
+	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.MON_INCOME_DEPENDANT:
             				scoreParameterRetailRequest.setNoOfDependants(coApplicantDetail.getNoDependent());
