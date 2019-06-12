@@ -1417,6 +1417,7 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
+        	logger.info("retailApplicantDetail.getEmploymentType()=======>{}",retailApplicantDetail.getEmploymentType());
         	
         	isWomenApplicant = Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId());       	
         	primaryHomLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
@@ -1688,8 +1689,10 @@ public class ScoringServiceImpl implements ScoringService {
             								|| OccupationNatureNTB.SELF_EMPLOYED_PROFESSIONAL.equals(retailApplicantDetail.getEmploymentType())
             								|| OccupationNatureNTB.AGRICULTURIST.equals(retailApplicantDetail.getEmploymentType())){
             							if(retailApplicantDetail.getBusinessStartDate() != null) {
-                        					logger.info("retailApplicantDetail.getBusinessStartDate() For HL==== > {}",retailApplicantDetail.getBusinessStartDate());
+                        					logger.info("retailApplicantDetail.getBusinessStartDate() For HL====ApplicationId===>{}=====>{}",retailApplicantDetail.getBusinessStartDate(),applicationId);
                         					Integer[] busiFromDate = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBusinessStartDate());
+                        					logger.info("Year For HL====ApplicationId===>{}=====>{}",busiFromDate[0],applicationId);
+                        					logger.info("Month For HL====ApplicationId===>{}=====>{}",busiFromDate[1],applicationId);
                         					totalExperience = (((double) busiFromDate[0]) + ((double)busiFromDate[1] / 12));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
@@ -2119,11 +2122,13 @@ public class ScoringServiceImpl implements ScoringService {
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	coApplicantId = scoringRequestLoansList.get(0).getCoApplicantId();
+        	logger.info("Calculating Scoring For CoApplicant and ApplicationId============{}==================>{}",coApplicantId,applicationId);
         	coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coApplicantId, true);
         	if (CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
+        	logger.info("coApplicantDetail.getEmploymentType()===============>{}",coApplicantDetail.getEmploymentType());
         	
         	CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(coApplicantDetail.getPan());
@@ -2291,6 +2296,8 @@ public class ScoringServiceImpl implements ScoringService {
             							if(coApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("coApplicantDetail.getBusinessStartDate() For HL==== > {}",coApplicantDetail.getBusinessStartDate());
                         					Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBusinessStartDate());
+                        					logger.info("Year For HL CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[0],applicationId);
+                        					logger.info("Month For HL CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[1],applicationId);
                         					totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
