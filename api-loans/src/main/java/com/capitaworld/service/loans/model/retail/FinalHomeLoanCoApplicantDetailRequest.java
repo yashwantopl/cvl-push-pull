@@ -60,7 +60,7 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 	private Long clientId;
 	private String currencyValue;
 	private String finalFilledCount;
-	private Boolean sameAsPermanentAddress;
+	private Boolean isSameAsPermanentAddress;
 	private Integer statusId;
 
 	public Long getId() {
@@ -384,11 +384,11 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 	}
 
 	public Boolean getIsSameAsPermanentAddress() {
-		return sameAsPermanentAddress;
+		return isSameAsPermanentAddress;
 	}
 
 	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
-		this.sameAsPermanentAddress = sameAsPermanentAddress;
+		this.isSameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
 	public Long getCoApplicantId() {

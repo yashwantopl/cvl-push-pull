@@ -8347,8 +8347,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		catch (Exception e)
 		{
-			logger.error("Error while get min max product detail list");
-			e.printStackTrace();
+			logger.error("Error while get min max product detail list",e);			
 		}
 
 		return minMaxProductDetailRequestList;
@@ -8381,8 +8380,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		catch (Exception e)
 		{
-			logger.error("Error while get Basic Detail FS");
-			e.printStackTrace();
+			logger.error("Error while get Basic Detail FS",e);			
 		}
 		return  basicDetailFS;
 	}
@@ -8403,8 +8401,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		catch (Exception e)
 		{
-			logger.error("Erroe while Loan Type Update");
-			e.printStackTrace();
+			logger.error("Erroe while Loan Type Update",e);
 			return  false;
 		}
 	}

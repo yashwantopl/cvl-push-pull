@@ -35,6 +35,7 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.OtherPropertyDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PurchasePropertyDetails;
@@ -59,6 +60,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanCoAppDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.OtherPropertyDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
@@ -71,8 +73,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReport
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanCoAppService;
-import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
@@ -112,9 +112,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	private PlRetailApplicantService plRetailApplicantService;
 	
 	@Autowired
-	private FinalHomeLoanService finalHomeLoanService;
-	
-	@Autowired
 	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
 	
 	@Autowired
@@ -133,7 +130,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	private OtherIncomeDetailService otherIncomeDetailService;
 	
 	@Autowired
-	private FinalHomeLoanCoAppService finalHomeLoanCoAppService;
+	private FinalHomeLoanCoAppDetailRepository finalHomeLoanCoAppDetailRepository;
 	
 	@Autowired
 	private EmpFinancialDetailsService empFinancialDetailsService;
@@ -170,15 +167,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private AnalyzerClient analyzerClient;
-
-	@Autowired
-	private LoanDisbursementRepository loanDisbursementRepository;
-	
-	@Autowired
-	private LoanSanctionRepository loanSanctionRepository;
-	
-	@Autowired
-	private ProposalDetailsRepository proposalDetailsRepository;
 	
 	@Autowired
 	private EligibilityClient eligibilityClient;
@@ -282,6 +270,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
 			}
 			
+			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType() != null) ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue() : "-");
+			map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue() != null) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
+			
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "-");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
 			
@@ -295,8 +286,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 			
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "-");
-			//map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentWith()) ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue() : "-");
-			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentEmploymentStatus()) ?EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
+			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ?EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 			map.put("sinceSalaryWhen", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getSalaryBankYear()) ? plRetailApplicantRequest.getSalaryBankYear() + " years" : "")+" "+(plRetailApplicantRequest.getSalaryBankMonth() != null ? plRetailApplicantRequest.getSalaryBankMonth() +" months" : ""));
 			map.put("retailApplicantProfile", CommonUtils.printFields(plRetailApplicantRequest, null));
 			map.put("educationQualification", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEducationQualification()) ? EducationStatusRetailMst.getById(plRetailApplicantRequest.getEducationQualification()).getValue() : "-");
@@ -379,16 +369,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		}else {
 			logger.info("fpProductMapping id is null..");
 		}
-		
-		//DATE OF IN-PRINCIPLE APPROVAL (CONNECT CLIENT) EXISTING CODE
-		/*try {
-			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
-			if(!CommonUtils.isObjectNullOrEmpty(connectResponse)) {
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? CommonUtils.DATE_FORMAT.format(connectResponse.getData()):"-");
-			}
-		} catch (Exception e2) {
-			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
-		}*/
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
@@ -464,8 +444,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		            	}
 		            	bankRelationshipRequests.add(bankRelationshipRequest);
 		            }
-		            
-		          
+
 		            coApp.put("bankingRelationship", !CommonUtils.isObjectListNull(bankRelationshipRequests) ? bankRelationshipRequests : null);
 				}catch (Exception e) {
 					logger.error("Error/Exception while fetching data for CoApplicant Banking Relationship");
@@ -502,15 +481,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				
 				/*employment type*/
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
-					coApp.put("employmentWith" , coApplicantDetail.getEmployedWithId() != null ? EmploymentWithPL.getById(coApplicantDetail.getEmployedWithId()).getValue() : "-");
+					coApp.put("employmentWith" , coApplicantDetail.getEmploymentWith() != null ? EmploymentWithPL.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				}else if (coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 5) {
-					coApp.put("employmentWith" , coApplicantDetail.getEmployedWithId() != null ? OccupationHL.getById(coApplicantDetail.getEmployedWithId()).getValue() : "-");
+					coApp.put("employmentWith" , coApplicantDetail.getEmploymentWith() != null ? OccupationHL.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				}else if (coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 4) {
-					coApp.put("employmentWith" , coApplicantDetail.getEmployedWithId() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmployedWithId()).getValue() : "-");
+					coApp.put("employmentWith" , coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				}
 				
-				//coApp.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId()) ? OccupationHL.getById(coApplicantDetail.getEmployedWithId()).getValue() : "-");
-				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue() : "-");
+				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				coApp.put("relationshipWithApp", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRelationshipWithApplicant()) ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : "-");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "-");
 				coApp.put("nameOfEmployer", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? coApplicantDetail.getNameOfEmployer() : "-");
@@ -531,9 +509,53 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				coApp.put("experienceInPresentJob", (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : ""));
 				coApp.put("totalExperience", (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear()) ? coApplicantDetail.getTotalExperienceYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth()) ? coApplicantDetail.getTotalExperienceMonth() +" months" : ""));
 				coApp.put("retailCoApplicantProfile", CommonUtils.printFields(coApplicantRequest, null));
-				listMap.add(coApp);		
+				
+				//Retail Final Co-App Detail
+				if(isFinalView) {
+					
+					try {
+						//final CoApp Data
+						Map<String, Object> coAppData=new HashMap<>();
+						FinalHomeLoanCoApplicantDetail finalCoApplicantDetail = finalHomeLoanCoAppDetailRepository.getByApplicationAndProposalIdAndCoAppId(applicationId, proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail)) {
+							coAppData.put("permanentPremise", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentPremiseNo()) ? CommonUtils.printFields(finalCoApplicantDetail.getPermanentPremiseNo(),null) + "," : "");
+							coAppData.put("permanentStreetName", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentStreetName()) ? CommonUtils.printFields(finalCoApplicantDetail.getPermanentStreetName(),null) + "," : "");
+							coAppData.put("permanentLandmark", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentLandmark()) ? CommonUtils.printFields(finalCoApplicantDetail.getPermanentLandmark(),null) + "," : "");
+							coAppData.put("permanentCountry", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentCountry()) ? StringEscapeUtils.escapeXml(getCountryName(finalCoApplicantDetail.getPermanentCountry())) : "");
+							coAppData.put("permanentState", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentState()) ? StringEscapeUtils.escapeXml(getStateName(finalCoApplicantDetail.getPermanentState())) : "");
+							coAppData.put("permanentCity", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentCity()) ? StringEscapeUtils.escapeXml(getCityName(finalCoApplicantDetail.getPermanentCity().longValue())) : "");
+							coAppData.put("permanentPincode", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentPinCode()) ? finalCoApplicantDetail.getPermanentPinCode() : "");
+							
+							coAppData.put("correspondencePremise", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondencePremiseNo()) ? CommonUtils.printFields(finalCoApplicantDetail.getCorrespondencePremiseNo(),null) + "," : "");
+							coAppData.put("correspondenceStreetName", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondenceStreetName()) ? CommonUtils.printFields(finalCoApplicantDetail.getCorrespondenceStreetName(),null) + "," : "");
+							coAppData.put("correspondenceLandmark", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondenceLandmark()) ? CommonUtils.printFields(finalCoApplicantDetail.getCorrespondenceLandmark(),null) + "," : "");
+							coAppData.put("correspondenceCountry", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondenceCountry()) ? StringEscapeUtils.escapeXml(getCountryName(finalCoApplicantDetail.getCorrespondenceCountry())) : "");
+							coAppData.put("correspondenceState", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondenceState()) ? StringEscapeUtils.escapeXml(getStateName(finalCoApplicantDetail.getCorrespondenceState())) : "");
+							coAppData.put("correspondenceCity", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondenceCity()) ? StringEscapeUtils.escapeXml(getCityName(finalCoApplicantDetail.getCorrespondenceCity().longValue())) : "");
+							coAppData.put("correspondencePincode", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondencePinCode()) ? finalCoApplicantDetail.getCorrespondencePinCode() : "");
+							
+							coAppData.put("mothersMaidenName", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getMatherMaidenName()) ? finalCoApplicantDetail.getMatherMaidenName() : "-");
+							coAppData.put("qualificationYear", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getYear()) ? finalCoApplicantDetail.getYear() : "-");
+							coAppData.put("nameOfSpouse", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getNameOfSpouse()) ? finalCoApplicantDetail.getNameOfSpouse() : "-");
+							coAppData.put("noOfChildren", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getNoOfChildren()) ? finalCoApplicantDetail.getNoOfChildren() : "-");
+							coAppData.put("caste", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCast()) ? CastCategory.getById(finalCoApplicantDetail.getCast()) : "-");
+							coAppData.put("religion", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getReligion()) ? ReligionRetailMst.getById(finalCoApplicantDetail.getReligion()) : "-");
+							coAppData.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPlaceOfBirth()) ? finalCoApplicantDetail.getPlaceOfBirth() :"-");
+						}
+						
+						coApp.put("finalData" ,coAppData != null ? coAppData : null);
+					}
+					catch (Exception e) {
+						logger.error("Error/Exception while fetching final home loan detail Of Co-Applicant ..Error==>{}",e);
+					}
+					
+				}
+				
+				listMap.add(coApp);
+				
 			}
-			map.put("retailCoApplicantDetails", CommonUtils.printFields(listMap, null));
+			map.put("retailCoApplicantDetails", !CommonUtils.isObjectListNull(listMap) ? CommonUtils.printFields(listMap, null) : null);
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
@@ -555,7 +577,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse"+matchResponse);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : null);
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
@@ -569,19 +591,20 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
 			
 			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
-//			BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
+			//BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 			
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
-			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "-");
+			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : null);
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "");
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
 			logger.error("Error while getting primary Details : ",e);
@@ -736,10 +759,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.TOTAL_WORK_EXP, CommonUtils.printFields(collect.get(0),null));
 					}
-//					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TOTAL_BUSI_PROFE_EXP)).collect(Collectors.toList());
-//					if(!CommonUtils.isListNullOrEmpty(collect)) {
-//						companyMap.put(Retail.HomeLoan.TOTAL_BUSI_PROFE_EXP, CommonUtils.printFields(collect.get(0),null));
-//					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.RESIDENCE_TYPE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.RESIDENCE_TYPE, CommonUtils.printFields(collect.get(0),null));
@@ -804,10 +823,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.AVAILABLE_INCOME, CommonUtils.printFields(collect.get(0),null));
 					}
-//					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TOIR)).collect(Collectors.toList());
-//					if(!CommonUtils.isListNullOrEmpty(collect)) {
-//						companyMap.put(Retail.HomeLoan.TOIR, CommonUtils.printFields(collect.get(0),null));
-//					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.ADDI_INCOME_SPOUSE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.ADDI_INCOME_SPOUSE, CommonUtils.printFields(collect.get(0),null));
@@ -824,10 +839,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT, CommonUtils.printFields(collect.get(0),null));
 					}
-//					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.REPAYMENT_PERIOD)).collect(Collectors.toList());
-//					if(!CommonUtils.isListNullOrEmpty(collect)) {
-//						companyMap.put(Retail.HomeLoan.REPAYMENT_PERIOD, CommonUtils.printFields(collect.get(0),null));
-//					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TENURE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.TENURE, CommonUtils.printFields(collect.get(0),null));
@@ -902,10 +913,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 				scoringRequest.setCoAppId(coApplicantDetail.getId());
 				ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-				DecimalFormat df = new DecimalFormat(".##");
 				List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
 				Map<String,Object> companyMap =new HashMap<>();
-				ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+				ProposalScoreResponse proposalScoreResponse =  MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 				companyMap.put("name",(coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") + " " +(coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") + " " + (coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : " ") );
 				companyMap.put("scoringDataObject",CommonUtils.printFields(proposalScoreResponse,null));
 			
@@ -928,10 +938,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.TOTAL_WORK_EXP, CommonUtils.printFields(collect.get(0),null));
 					}
-//					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TOTAL_BUSI_PROFE_EXP)).collect(Collectors.toList());
-//					if(!CommonUtils.isListNullOrEmpty(collect)) {
-//						companyMap.put(Retail.HomeLoan.TOTAL_BUSI_PROFE_EXP, CommonUtils.printFields(collect.get(0),null));
-//					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.RESIDENCE_TYPE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.RESIDENCE_TYPE, CommonUtils.printFields(collect.get(0),null));
@@ -996,10 +1002,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.AVAILABLE_INCOME, CommonUtils.printFields(collect.get(0),null));
 					}
-//					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TOIR)).collect(Collectors.toList());
-//					if(!CommonUtils.isListNullOrEmpty(collect)) {
-//						companyMap.put(Retail.HomeLoan.TOIR, CommonUtils.printFields(collect.get(0),null));
-//					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.ADDI_INCOME_SPOUSE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.ADDI_INCOME_SPOUSE, CommonUtils.printFields(collect.get(0),null));
@@ -1016,10 +1018,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT, CommonUtils.printFields(collect.get(0),null));
 					}
-//					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.REPAYMENT_PERIOD)).collect(Collectors.toList());
-//					if(!CommonUtils.isListNullOrEmpty(collect)) {
-//						companyMap.put(Retail.HomeLoan.REPAYMENT_PERIOD, CommonUtils.printFields(collect.get(0),null));
-//					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TENURE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.TENURE, CommonUtils.printFields(collect.get(0),null));
@@ -1091,8 +1089,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
 		List<Data> datas = new ArrayList<>();
-//		List<Object> bankStatement = new ArrayList<Object>();
-/**	List<Object> monthlyDetails = new ArrayList<Object>();
+	  //List<Object> bankStatement = new ArrayList<Object>();
+	/**	List<Object> monthlyDetails = new ArrayList<Object>();
 		List<Object> top5FundReceived = new ArrayList<Object>();
 		List<Object> top5FundTransfered = new ArrayList<Object>();
 		List<Object> bouncedChequeList = new ArrayList<Object>();
@@ -1118,7 +1116,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
 					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");*/
 						
-/**					HashMap<String, Object>  bankData = new HashMap<>();
+				/**HashMap<String, Object>  bankData = new HashMap<>();
 					bankData.put("monthlyDetails", monthlyDetails);
 					bankData.put("top5FundReceived", top5FundReceived);
 					bankData.put("top5FundTransfered", top5FundTransfered);
@@ -1162,7 +1160,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			Map<String , Object> retailMap = new HashMap<String, Object>();
 			
 			//PROPOSAL DATES
-			try {
+			/**try {
 				List<Object[]> data = null;
 				List<Date[]> data1 = null;
 				data1 = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
@@ -1184,7 +1182,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				} catch (Exception e) {
 				logger.error("Error while getting PROPOSAL DATES data : ",e);
-			}
+			}*/
 			
 			//RETAIL FINAL DETAILS
 			try {

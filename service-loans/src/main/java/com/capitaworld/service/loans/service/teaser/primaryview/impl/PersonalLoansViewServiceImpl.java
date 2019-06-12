@@ -721,7 +721,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 		}
 
 		//set up loan specific details
-		if (applicantDetail.getLoanPurpose() != null && applicantDetail.getLoanPurpose() != 7 && applicantDetail.getLoanPurpose() != null) {
+		if (applicantDetail.getLoanPurpose() != null && applicantDetail.getLoanPurpose() != 7) {
 			personalLoanResponse.setPurposeOfLoan(PersonalLoanPurpose.getById(Integer.valueOf(applicantDetail.getLoanPurpose().toString())).getValue());
 		} else {
 			personalLoanResponse.setPurposeOfLoan(applicantDetail.getLoanPurposeOther());
