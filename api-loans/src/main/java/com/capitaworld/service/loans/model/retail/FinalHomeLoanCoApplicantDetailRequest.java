@@ -49,7 +49,7 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 	List<EmpAgriculturistTypeRequest> empAgriculturistTypeList;
 	List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeList;
 	List<ReferenceRetailDetailsRequest> referenceRetailDetailsList;
-	private String nameOfSeller;
+	private String sellerName;
 	private String sellerAddress;
 	private Integer sellerPincode;
 	private Integer sellerCity;
@@ -255,12 +255,12 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 		this.otherIncomeDetailsList = otherIncomeDetailsList;
 	}
 
-	public String getNameOfSeller() {
-		return nameOfSeller;
+	public String getSellerName() {
+		return sellerName;
 	}
 
-	public void setNameOfSeller(String nameOfSeller) {
-		this.nameOfSeller = nameOfSeller;
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
 	}
 
 	public String getSellerAddress() {
