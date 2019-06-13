@@ -2135,13 +2135,13 @@ public class ScoringServiceImpl implements ScoringService {
             cibilRequest.setApplicationId(applicationId);
             try {
             	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-            	if(cibilResponse == null) {
-            		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID for CoApplicant====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-            	}
+//            	if(cibilResponse == null) {
+//            		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID for CoApplicant====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+//            	}
             	cibilResponseDpdCoApp = cibilClient.getDPDLastXMonth(applicationId,coApplicantDetail.getPan());
-                if(cibilResponseDpdCoApp == null) {
-            		return new ResponseEntity<>(new LoansResponse("CIBIL DPD Reponse Found NULL for ApplicationID for CoApplicant====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-            	}
+//                if(cibilResponseDpdCoApp == null) {
+//            		return new ResponseEntity<>(new LoansResponse("CIBIL DPD Reponse Found NULL for ApplicationID for CoApplicant====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+//            	}
             }catch(Exception e) {
             	logger.error("Error in Getting CIBIL infor like DPD and Score == >{}",e);
             }
@@ -2152,12 +2152,12 @@ public class ScoringServiceImpl implements ScoringService {
 				List<Long> coAppIds = new ArrayList<>(1);
 				coAppIds.add(coApplicantId);
 				monthlyIncomeForCoApplicant = eligibilityClient.getMonthlyIncomeForCoApplicant(coAppIds, applicationId);
-				if(monthlyIncomeForCoApplicant == null) {
-					return new ResponseEntity<>(new LoansResponse("Eligibility Response Found NULL For CoApplicant : ", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-				}
+//				if(monthlyIncomeForCoApplicant == null) {
+//					return new ResponseEntity<>(new LoansResponse("Eligibility Response Found NULL For CoApplicant : ", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+//				}
 			} catch (EligibilityExceptions e) {
 				logger.error("Error while Getting MonthlyIncome Details == >{}",e);
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong while getting Calculated NMI and GMI for Scoring For CoAplicant : "+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+//				return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong while getting Calculated NMI and GMI for Scoring For CoAplicant : "+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 			if(!CommonUtils.isListNullOrEmpty(monthlyIncomeForCoApplicant)) {
 				try {
@@ -2180,10 +2180,10 @@ public class ScoringServiceImpl implements ScoringService {
                  reportRequest.setApplicationId(applicationId);
                  reportRequest.setCoApplicantId(coApplicantId);
                  AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-                 if(analyzerResponse == null) {
-                	 return new ResponseEntity<>(new LoansResponse("Analyser Response Found null For Scoring Calculation HL For the ApplicationId for CoApplicant===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK); 
-                 }
-                 if(analyzerResponse.getData() != null) {
+//                 if(analyzerResponse == null) {
+//                	 return new ResponseEntity<>(new LoansResponse("Analyser Response Found null For Scoring Calculation HL For the ApplicationId for CoApplicant===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK); 
+//                 }
+                 if(analyzerResponse != null && analyzerResponse.getData() != null) {
                 	 coApplicantBankStatementData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);                	 
                  }
 //                 if(coApplicantBankStatementData == null) {
