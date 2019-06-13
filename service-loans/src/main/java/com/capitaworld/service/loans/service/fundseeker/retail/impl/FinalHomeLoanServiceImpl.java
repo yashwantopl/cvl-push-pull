@@ -1,9 +1,16 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -80,7 +87,8 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
 
-
+	@Autowired
+	private WorkflowClient workflowClient;
 
 
 	@Override
@@ -93,7 +101,6 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 				finalHomeLoanDetailTmp = new FinalHomeLoanDetail();
 				finalHomeLoanDetailTmp.setCreatedBy(userId);
 				finalHomeLoanDetailTmp.setCreatedDate(new Date());
-				finalHomeLoanDetailTmp.setIsActive(true);
 				finalHomeLoanDetailTmp
 						.setApplicationId(new LoanApplicationMaster(finalHomeLoanDetailRequest.getApplicationId()));
 				finalHomeLoanDetailTmp.setProposalId(new ApplicationProposalMapping(finalHomeLoanDetailRequest.getProposalId()));
@@ -103,7 +110,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			}
 			String[] corporate = new String[CommonUtils.IgnorableCopy.getCORPORATE().length + 1];
 			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
+			corporate[CommonUtils.IgnorableCopy.getCORPORATE().length -1] = "is_active";
 			BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetailTmp,corporate);
+			finalHomeLoanDetailTmp.setIsActive(true);
 			Address permanentAddress = finalHomeLoanDetailRequest.getPermanentAddress();
 			Address correspondenceAddress = finalHomeLoanDetailRequest.getCorrespondenceAddress();
 
@@ -120,9 +129,29 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             finalHomeLoanDetailTmp.setCorrespondenceStreetName(correspondenceAddress.getStreetName());
             finalHomeLoanDetailTmp.setCorrespondenceCity(correspondenceAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setCorrespondenceState(correspondenceAddress.getStateId());
-            finalHomeLoanDetailTmp.setPermanentCountry(correspondenceAddress.getCountryId());
+            finalHomeLoanDetailTmp.setCorrespondenceCountry(correspondenceAddress.getCountryId());
             finalHomeLoanDetailTmp.setCorrespondenceLandmark(correspondenceAddress.getLandMark());
             finalHomeLoanDetailTmp.setCorrespondencePinCode(correspondenceAddress.getPincode().intValue());
+
+            //Creating Workflow Job
+			if(finalHomeLoanDetailTmp.getJobId() == null){
+				WorkflowResponse workflowResponse = null;
+				try{
+					WorkflowRequest workflowRequest = new WorkflowRequest();
+					workflowRequest.setApplicationId(finalHomeLoanDetailRequest.getApplicationId());
+					workflowRequest.setUserId(userId);
+					workflowRequest.setActionId(WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE);
+					workflowRequest.setWorkflowId(WorkflowUtils.Workflow.PL_PROCESS);
+					workflowResponse = workflowClient.createJob(workflowRequest);
+					Long jobId = null;
+					if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+						jobId = Long.valueOf(workflowResponse.getData().toString());
+					}
+					finalHomeLoanDetailTmp.setJobId(jobId);
+				}catch (Exception e){
+					logger.error("Error while Creating Workflow Process for HL = >{}",e);
+				}
+			}
 			finalHomeLoanDetailTmp = finalHomeLoanDetailRepository.save(finalHomeLoanDetailTmp);
 
 			if (finalHomeLoanDetailTmp != null){
@@ -323,7 +352,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 					correspondenceAddress.setStreetName(finalHomeLoanDetail.getCorrespondenceStreetName());
 					correspondenceAddress.setCityId(Long.valueOf(finalHomeLoanDetail.getCorrespondenceCity()));
 					correspondenceAddress.setStateId(finalHomeLoanDetail.getCorrespondenceState());
-					correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCity());
+					correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCountry());
 					correspondenceAddress.setLandMark(finalHomeLoanDetail.getCorrespondenceLandmark());
 					correspondenceAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getCorrespondencePinCode()));
 					finalHomeLoanDetailRequest.setCorrespondenceAddress(correspondenceAddress);
@@ -339,19 +368,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             addRefDetails(finalHomeLoanDetailRequest);
             addFixdepositeDetails(finalHomeLoanDetailRequest);
             addOtherIncomeDetails(finalHomeLoanDetailRequest);
-
-			//finalHomeLoanDetailRequest.setYear(retailApplicantDetail.getQualifyingYear());
-			if (finalHomeLoanDetail == null) {
-				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
-				JSONObject bowlCount = loanApplicationService.getBowlCount(applicationId, userId);
-				finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-				if(!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))){
-					finalHomeLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());
-				}
-				finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
-				return finalHomeLoanDetailRequest;
-			}
-
+			
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return finalHomeLoanDetailRequest;

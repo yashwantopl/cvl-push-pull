@@ -92,7 +92,6 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                 finalHomeLoanDetailTmp = new FinalHomeLoanCoApplicantDetail();
                 finalHomeLoanDetailTmp.setCreatedBy(userId);
                 finalHomeLoanDetailTmp.setCreatedDate(new Date());
-                finalHomeLoanDetailTmp.setIsActive(true);
                 finalHomeLoanDetailTmp
                         .setApplicationId(new LoanApplicationMaster(finalHomeLoanDetailRequest.getApplicationId()));
                 finalHomeLoanDetailTmp.setProposalId(new ApplicationProposalMapping(finalHomeLoanDetailRequest.getProposalId()));
@@ -104,6 +103,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             corporate[CommonUtils.IgnorableCopy.getCORPORATE().length-1] = "isActive";
             corporate[CommonUtils.IgnorableCopy.getCORPORATE().length] = CommonUtils.IgnorableCopy.ID;
             BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetailTmp, corporate);
+            finalHomeLoanDetailTmp.setIsActive(true);
             Address permanentAddress = finalHomeLoanDetailRequest.getPermanentAddress();
             Address correspondenceAddress = finalHomeLoanDetailRequest.getCorrespondenceAddress();
 
@@ -120,7 +120,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             finalHomeLoanDetailTmp.setCorrespondenceStreetName(correspondenceAddress.getStreetName());
             finalHomeLoanDetailTmp.setCorrespondenceCity(correspondenceAddress.getCityId().intValue());
             finalHomeLoanDetailTmp.setCorrespondenceState(correspondenceAddress.getStateId());
-            finalHomeLoanDetailTmp.setPermanentCountry(correspondenceAddress.getCountryId());
+            finalHomeLoanDetailTmp.setCorrespondenceCountry(correspondenceAddress.getCountryId());
             finalHomeLoanDetailTmp.setCorrespondenceLandmark(correspondenceAddress.getLandMark());
             finalHomeLoanDetailTmp.setCorrespondencePinCode(correspondenceAddress.getPincode().intValue());
             finalHomeLoanDetailTmp = finalHomeLoanCoAppDetailRepository.save(finalHomeLoanDetailTmp);
@@ -144,6 +144,10 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
         }
     }
 
+    private Object getDefaultOrEmpty(Object o) {
+        return CommonUtils.isObjectNullOrEmpty(o) ? "" : o;
+    }
+
     private void addOneformDetails(FinalHomeLoanCoApplicantDetailRequest finalHomeLoanDetailRequest) {
 
         CoApplicantDetail retailApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(finalHomeLoanDetailRequest.getCoApplicantId(),true);
@@ -153,13 +157,13 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             finalHomeLoanDetailRequest.setFatherFullName(retailApplicantDetail.getFatherName());
 
             Address permanentAddress = new Address();
-            permanentAddress.setPremiseNumber(retailApplicantDetail.getAddressPremiseName());
-            permanentAddress.setStreetName(retailApplicantDetail.getAddressStreetName());
-            permanentAddress.setCityId(Long.valueOf(retailApplicantDetail.getAddressCity()));
-            permanentAddress.setStateId(retailApplicantDetail.getAddressState());
-            permanentAddress.setCountryId(retailApplicantDetail.getAddressCountry());
-            permanentAddress.setPincode(Long.valueOf(String.valueOf(retailApplicantDetail.getAddressPincode())));
-            permanentAddress.setLandMark(retailApplicantDetail.getAddressLandmark());
+            permanentAddress.setPremiseNumber(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressPremiseName())));
+            permanentAddress.setStreetName(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressStreetName())));
+            permanentAddress.setCityId(Long.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressCity()))));
+            permanentAddress.setStateId(Integer.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressState()))));
+            permanentAddress.setCountryId(Integer.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressCountry()))));
+            permanentAddress.setPincode(Long.valueOf(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressPincode()))));
+            permanentAddress.setLandMark(String.valueOf(getDefaultOrEmpty(retailApplicantDetail.getAddressLandmark())));
 
             finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
             finalHomeLoanDetailRequest.setEducationalQualification(EducationStatusRetailMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
@@ -297,7 +301,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                     correspondenceAddress.setStreetName(finalHomeLoanDetail.getCorrespondenceStreetName());
                     correspondenceAddress.setCityId(Long.valueOf(finalHomeLoanDetail.getCorrespondenceCity()));
                     correspondenceAddress.setStateId(finalHomeLoanDetail.getCorrespondenceState());
-                    correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCity());
+                    correspondenceAddress.setCountryId(finalHomeLoanDetail.getCorrespondenceCountry());
                     correspondenceAddress.setLandMark(finalHomeLoanDetail.getCorrespondenceLandmark());
                     correspondenceAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getCorrespondencePinCode()));
                     finalHomeLoanDetailRequest.setCorrespondenceAddress(correspondenceAddress);
@@ -313,6 +317,7 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
                     permanentAddress.setPincode(Long.valueOf(finalHomeLoanDetail.getPermanentPinCode()));
                     finalHomeLoanDetailRequest.setPermanentAddress(permanentAddress);
                 }
+                BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
             }
             addEmployementDetails(finalHomeLoanDetailRequest);
             addBankAccDetails(finalHomeLoanDetailRequest);
@@ -320,21 +325,12 @@ public class FinalHomeLoanCoAppServiceImpl implements FinalHomeLoanCoAppService 
             addRefDetails(finalHomeLoanDetailRequest);
             addFixdepositeDetails(finalHomeLoanDetailRequest);
             addOtherIncomeDetails(finalHomeLoanDetailRequest);
-
-            //finalHomeLoanDetailRequest.setYear(retailApplicantDetail.getQualifyingYear());
-            if (finalHomeLoanDetail == null) {
-                Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
-                JSONObject bowlCount = loanApplicationService.getBowlCount(applicationId, userId);
-                finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-                if (!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))) {
-                    finalHomeLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());
-                }
-                return finalHomeLoanDetailRequest;
-            }
-            BeanUtils.copyProperties(finalHomeLoanDetail, finalHomeLoanDetailRequest);
+            
             Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
             finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
-            finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
+            if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail) && !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getApplicationId())) {
+                finalHomeLoanDetailRequest.setFinalFilledCount(finalHomeLoanDetail.getApplicationId().getFinalFilledCount());
+            }
             return finalHomeLoanDetailRequest;
         } catch (Exception e) {
             logger.error("Error while getting Final Home Loan Details:-", e);

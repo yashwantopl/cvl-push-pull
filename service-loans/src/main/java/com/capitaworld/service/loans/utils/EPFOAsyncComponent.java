@@ -3,6 +3,8 @@
  */
 package com.capitaworld.service.loans.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +14,7 @@ import com.capitaworld.api.ekyc.model.epf.request.EmployerDefaulterRequest;
 import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.ekyc.model.epf.request.EmployerVerificationRequest;
 import com.capitaworld.client.ekyc.EPFClient;
+import com.capitaworld.service.loans.service.fundseeker.corporate.impl.LoanApplicationServiceImpl;
 
 /**
  * @author sanket
@@ -19,6 +22,8 @@ import com.capitaworld.client.ekyc.EPFClient;
  */
 @Component
 public class EPFOAsyncComponent {
+	
+	private static final Logger logger = LoggerFactory.getLogger(EPFOAsyncComponent.class.getName());
 	
 	@Autowired
 	private EPFClient epfClient;
@@ -46,7 +51,7 @@ public class EPFOAsyncComponent {
 		    }
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Erroe while callAPI",e);
 		}
 		
 	}
@@ -58,7 +63,7 @@ public class EPFOAsyncComponent {
 			epfClient.getVerifyEmployment(employerRequest);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Erroe while callAllAPIForData",e);
 		}
 		
 		
