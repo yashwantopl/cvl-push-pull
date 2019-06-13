@@ -1718,18 +1718,20 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_JOB_EXP:
             				try {
-            				 Double currentExperience = 0.0;
-                             if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobYear())) {
-                            	 currentExperience += Double.valueOf(retailApplicantDetail.getCurrentJobYear());
-                            	 logger.info("currentExperience Year {}===>{}",currentExperience);
-                             }
-                             if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobMonth())) {
-                                 currentExperience += (retailApplicantDetail.getCurrentJobMonth().doubleValue() / 12);
-                            	 logger.info("currentExperience Month {}===>{}",retailApplicantDetail.getCurrentJobMonth().doubleValue());	 
-                             }
-                             logger.info("currentExperience {}===>{}",currentExperience);
-                             scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
-                             scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);
+            					if(OccupationNatureNTB.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())){
+            						Double currentExperience = 0.0;
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobYear())){
+                                   	 currentExperience += Double.valueOf(retailApplicantDetail.getCurrentJobYear());
+                                   	 logger.info("CURRENT_JOB_EXP Year {}===>{}",retailApplicantDetail.getCurrentJobYear());
+                                    }
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrentJobMonth())) {
+                                   	 currentExperience += (retailApplicantDetail.getCurrentJobMonth() / 12);
+                                   	 logger.info("CURRENT_JOB_EXP Month {}===>{}",retailApplicantDetail.getCurrentJobMonth());
+                                    }
+                                    scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
+                                    scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);		
+            					}
                          } catch (Exception e) {
                              logger.error("error while getting CURRENT_JOB_EXP parameter : {}",e);
                          }
@@ -2319,19 +2321,22 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_JOB_EXP:
             				try {
-            				 Double currentExperience = 0.0;
-                             if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear())){
-                            	 currentExperience += Double.valueOf(coApplicantDetail.getCurrentJobYear());
-                            	 logger.info("CURRENT_JOB_EXP Year {}===>{}",coApplicantDetail.getCurrentJobYear());
-                             }
+            					if(OccupationNatureNTB.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())){
+            						Double currentExperience = 0.0;
+                                    if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear())){
+                                   	 currentExperience += Double.valueOf(coApplicantDetail.getCurrentJobYear());
+                                   	 logger.info("CURRENT_JOB_EXP Year {}===>{}",coApplicantDetail.getCurrentJobYear());
+                                    }
 
-                             if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth())) {
-                            	 currentExperience += (coApplicantDetail.getCurrentJobMonth() / 12);
-                            	 logger.info("CURRENT_JOB_EXP Month {}===>{}",coApplicantDetail.getCurrentJobMonth());
-                             }
+                                    if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth())) {
+                                   	 currentExperience += (coApplicantDetail.getCurrentJobMonth() / 12);
+                                   	 logger.info("CURRENT_JOB_EXP Month {}===>{}",coApplicantDetail.getCurrentJobMonth());
+                                    }
 
-                             scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
-                             scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);
+                                    scoreParameterRetailRequest.setWorkingExperienceCurrent(currentExperience);
+                                    scoreParameterRetailRequest.setIsWorkingExperienceCurrent_p(true);		
+            					}
+            				 
                          } catch (Exception e) {
                              logger.error("error while getting CURRENT_JOB_EXP parameter : {}",e);
                          }
