@@ -378,6 +378,11 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				res.setMarketValProp(prHlDetails.getMarketValProp());
 				res.setOldPropMonth(prHlDetails.getOldPropMonth());
 				res.setOldPropYear(prHlDetails.getOldPropYear());
+				res.setIsCheckOffAgreeToPayOutstanding(prHlDetails.getIsCheckOffAgreeToPayOutstanding());
+				res.setIsCheckOffDirectPayEmi(prHlDetails.getIsCheckOffDirectPayEmi());
+				res.setIsCheckOffNotChangeSalAcc(prHlDetails.getIsCheckOffNotChangeSalAcc());
+				res.setIsCheckOffPayOutstndAmount(prHlDetails.getIsCheckOffPayOutstndAmount());
+				res.setIsCheckOffShiftSalAcc(prHlDetails.getIsCheckOffShiftSalAcc());
 			}
 			
 			/*// GET EXISTING BANK DETAILS 
@@ -482,6 +487,11 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				prHlDetails.setMarketValProp(hlOneformPrimaryRes.getMarketValProp());
 				prHlDetails.setOldPropMonth(hlOneformPrimaryRes.getOldPropMonth());
 				prHlDetails.setOldPropYear(hlOneformPrimaryRes.getOldPropYear());
+				prHlDetails.setIsCheckOffAgreeToPayOutstanding(hlOneformPrimaryRes.getIsCheckOffAgreeToPayOutstanding());
+				prHlDetails.setIsCheckOffDirectPayEmi(hlOneformPrimaryRes.getIsCheckOffDirectPayEmi());
+				prHlDetails.setIsCheckOffNotChangeSalAcc(hlOneformPrimaryRes.getIsCheckOffNotChangeSalAcc());
+				prHlDetails.setIsCheckOffPayOutstndAmount(hlOneformPrimaryRes.getIsCheckOffPayOutstndAmount());
+				prHlDetails.setIsCheckOffShiftSalAcc(hlOneformPrimaryRes.getIsCheckOffShiftSalAcc());
 				prHlDetails = primaryHomeLoanDetailRepository.save(prHlDetails);
 			}
 			
