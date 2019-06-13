@@ -52,6 +52,12 @@ public class HLOneformPrimaryRes implements Serializable {
     private Boolean isOtherSalaryBank;
     private Boolean isOneformPrimaryComplete;
 	private String applicantName;
+
+	private Boolean isCheckOffDirectPayEmi;
+	private Boolean isCheckOffAgreeToPayOutstanding;
+	private Boolean isCheckOffShiftSalAcc;
+	private Boolean isCheckOffPayOutstndAmount;
+	private Boolean isCheckOffNotChangeSalAcc;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -233,8 +239,49 @@ public class HLOneformPrimaryRes implements Serializable {
 	public void setApplicantName(String applicantName) {
 		this.applicantName = applicantName;
 	}
-	
-	
+
+
+
+	public Boolean getIsCheckOffDirectPayEmi() {
+		return isCheckOffDirectPayEmi;
+	}
+
+	public void setIsCheckOffDirectPayEmi(Boolean isCheckOffDirectPayEmi) {
+		this.isCheckOffDirectPayEmi = isCheckOffDirectPayEmi;
+	}
+
+	public Boolean getIsCheckOffAgreeToPayOutstanding() {
+		return isCheckOffAgreeToPayOutstanding;
+	}
+
+	public void setIsCheckOffAgreeToPayOutstanding(Boolean isCheckOffAgreeToPayOutstanding) {
+		this.isCheckOffAgreeToPayOutstanding = isCheckOffAgreeToPayOutstanding;
+	}
+
+	public Boolean getIsCheckOffShiftSalAcc() {
+		return isCheckOffShiftSalAcc;
+	}
+
+	public void setIsCheckOffShiftSalAcc(Boolean isCheckOffShiftSalAcc) {
+		this.isCheckOffShiftSalAcc = isCheckOffShiftSalAcc;
+	}
+
+	public Boolean getIsCheckOffPayOutstndAmount() {
+		return isCheckOffPayOutstndAmount;
+	}
+
+	public void setIsCheckOffPayOutstndAmount(Boolean isCheckOffPayOutstndAmount) {
+		this.isCheckOffPayOutstndAmount = isCheckOffPayOutstndAmount;
+	}
+
+	public Boolean getIsCheckOffNotChangeSalAcc() {
+		return isCheckOffNotChangeSalAcc;
+	}
+
+	public void setIsCheckOffNotChangeSalAcc(Boolean isCheckOffNotChangeSalAcc) {
+		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
+	}
+
 	
 	
 	

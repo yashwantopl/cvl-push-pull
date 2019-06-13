@@ -137,6 +137,12 @@ public class PLRetailApplicantRequest implements Serializable {
     private String employmentStatusOther;
     private String nameOfEntity;
     private Boolean isItrSkip;
+
+    private Boolean isCheckOffDirectPayEmi;
+    private Boolean isCheckOffAgreeToPayOutstanding;
+    private Boolean isCheckOffShiftSalAcc;
+    private Boolean isCheckOffPayOutstndAmount;
+    private Boolean isCheckOffNotChangeSalAcc;
     
     public Integer getLoanPurposeQueType() {
 		return loanPurposeQueType;
@@ -969,6 +975,44 @@ public class PLRetailApplicantRequest implements Serializable {
 	public void setAddressCountry(Integer addressCountry) {
 		this.addressCountry = addressCountry;
 	}
-    
-    
+
+    public Boolean getIsCheckOffDirectPayEmi() {
+        return isCheckOffDirectPayEmi;
+    }
+
+    public void setIsCheckOffDirectPayEmi(Boolean isCheckOffDirectPayEmi) {
+        this.isCheckOffDirectPayEmi = isCheckOffDirectPayEmi;
+    }
+
+    public Boolean getIsCheckOffAgreeToPayOutstanding() {
+        return isCheckOffAgreeToPayOutstanding;
+    }
+
+    public void setIsCheckOffAgreeToPayOutstanding(Boolean isCheckOffAgreeToPayOutstanding) {
+        this.isCheckOffAgreeToPayOutstanding = isCheckOffAgreeToPayOutstanding;
+    }
+
+    public Boolean getIsCheckOffShiftSalAcc() {
+        return isCheckOffShiftSalAcc;
+    }
+
+    public void setIsCheckOffShiftSalAcc(Boolean isCheckOffShiftSalAcc) {
+        this.isCheckOffShiftSalAcc = isCheckOffShiftSalAcc;
+    }
+
+    public Boolean getIsCheckOffPayOutstndAmount() {
+        return isCheckOffPayOutstndAmount;
+    }
+
+    public void setIsCheckOffPayOutstndAmount(Boolean isCheckOffPayOutstndAmount) {
+        this.isCheckOffPayOutstndAmount = isCheckOffPayOutstndAmount;
+    }
+
+    public Boolean getIsCheckOffNotChangeSalAcc() {
+        return isCheckOffNotChangeSalAcc;
+    }
+
+    public void setIsCheckOffNotChangeSalAcc(Boolean isCheckOffNotChangeSalAcc) {
+        this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
+    }
 }

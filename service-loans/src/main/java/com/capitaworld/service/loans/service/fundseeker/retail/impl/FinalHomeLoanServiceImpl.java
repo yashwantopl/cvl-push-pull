@@ -1,9 +1,16 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -80,7 +87,8 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
 
-
+	@Autowired
+	private WorkflowClient workflowClient;
 
 
 	@Override
@@ -124,6 +132,26 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
             finalHomeLoanDetailTmp.setCorrespondenceCountry(correspondenceAddress.getCountryId());
             finalHomeLoanDetailTmp.setCorrespondenceLandmark(correspondenceAddress.getLandMark());
             finalHomeLoanDetailTmp.setCorrespondencePinCode(correspondenceAddress.getPincode().intValue());
+
+            //Creating Workflow Job
+			if(finalHomeLoanDetailTmp.getJobId() == null){
+				WorkflowResponse workflowResponse = null;
+				try{
+					WorkflowRequest workflowRequest = new WorkflowRequest();
+					workflowRequest.setApplicationId(finalHomeLoanDetailRequest.getApplicationId());
+					workflowRequest.setUserId(userId);
+					workflowRequest.setActionId(WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE);
+					workflowRequest.setWorkflowId(WorkflowUtils.Workflow.PL_PROCESS);
+					workflowResponse = workflowClient.createJob(workflowRequest);
+					Long jobId = null;
+					if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+						jobId = Long.valueOf(workflowResponse.getData().toString());
+					}
+					finalHomeLoanDetailTmp.setJobId(jobId);
+				}catch (Exception e){
+					logger.error("Error while Creating Workflow Process for HL = >{}",e);
+				}
+			}
 			finalHomeLoanDetailTmp = finalHomeLoanDetailRepository.save(finalHomeLoanDetailTmp);
 
 			if (finalHomeLoanDetailTmp != null){
