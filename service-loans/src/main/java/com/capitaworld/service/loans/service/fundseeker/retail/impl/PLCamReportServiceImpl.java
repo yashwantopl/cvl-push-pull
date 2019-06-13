@@ -88,6 +88,7 @@ import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -190,6 +191,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
+	
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfile(userId, applicationId);
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
@@ -1311,13 +1313,21 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
+		if(loanApplicationMaster != null) {
+     		map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
+     		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
+     		map.put("applicationCode", loanApplicationMaster.getApplicationCode() != null ? loanApplicationMaster.getApplicationCode() : "-");
+     		map.put("loanType", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId()) ? CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName() : " ");
+     	}
+		
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfile(userId, applicationId);
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
 			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress())) {
 				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getPremiseNumber(),null) + "," : "");
 				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getStreetName(),null) + "," : "");
+				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
+				map.put("loanType", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId()) ? CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName() : " ");
 				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getLandMark()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getLandMark(),null) + "," : "");
 				map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(plRetailApplicantRequest.getContactAddress().getCountryId())));
 				map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(plRetailApplicantRequest.getContactAddress().getStateId())));
