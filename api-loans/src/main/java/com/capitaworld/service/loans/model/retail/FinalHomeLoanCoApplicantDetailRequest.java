@@ -49,7 +49,7 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 	List<EmpAgriculturistTypeRequest> empAgriculturistTypeList;
 	List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeList;
 	List<ReferenceRetailDetailsRequest> referenceRetailDetailsList;
-	private String nameOfSeller;
+	private String sellerName;
 	private String sellerAddress;
 	private Integer sellerPincode;
 	private Integer sellerCity;
@@ -60,7 +60,7 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 	private Long clientId;
 	private String currencyValue;
 	private String finalFilledCount;
-	private Boolean sameAsPermanentAddress;
+	private Boolean isSameAsPermanentAddress;
 	private Integer statusId;
 
 	public Long getId() {
@@ -255,12 +255,12 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 		this.otherIncomeDetailsList = otherIncomeDetailsList;
 	}
 
-	public String getNameOfSeller() {
-		return nameOfSeller;
+	public String getSellerName() {
+		return sellerName;
 	}
 
-	public void setNameOfSeller(String nameOfSeller) {
-		this.nameOfSeller = nameOfSeller;
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
 	}
 
 	public String getSellerAddress() {
@@ -384,11 +384,11 @@ public class FinalHomeLoanCoApplicantDetailRequest implements Serializable {
 	}
 
 	public Boolean getIsSameAsPermanentAddress() {
-		return sameAsPermanentAddress;
+		return isSameAsPermanentAddress;
 	}
 
 	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
-		this.sameAsPermanentAddress = sameAsPermanentAddress;
+		this.isSameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
 	public Long getCoApplicantId() {

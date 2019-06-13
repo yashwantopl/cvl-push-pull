@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -37,6 +39,9 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException {
@@ -144,6 +149,8 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			primaryCorporateDetail.setIsAllowSwitchExistingLender(true);
 			primaryCorporateDetail.setModifiedDate(new Date());
 			primaryCorporateRepository.save(primaryCorporateDetail);
+
+			ineligibleProposalDetailsRepository.updateInEligibleDataBasedonApplicationId(primaryCorporateRequest.getId(),false);
 			return true;
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
