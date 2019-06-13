@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.api.eligibility.model.RetailEligibilityRequest;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -56,7 +55,6 @@ import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
@@ -65,8 +63,6 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanD
 import com.capitaworld.service.loans.repository.fundseeker.retail.OtherPropertyDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
@@ -1148,7 +1144,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.getHLLoanData(eligibilityReq);
 			if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
-				map.put("assLimits",CommonUtils.convertToValueForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), RetailEligibilityRequest.class), new HashMap<>()));
+				//mapData.put("assLimit", CommonUtils.convertToValueForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), RetailEligibilityRequest.class), new HashMap<>()));
+				map.put("assLimits",CommonUtils.printFieldsForValue((LinkedHashMap<String, Object>)eligibilityResp.getData(),new HashMap<>()));
 			}
 		}catch (Exception e) {
 			logger.error("Error while getting Eligibility data : ",e);
