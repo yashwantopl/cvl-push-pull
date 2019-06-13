@@ -1637,6 +1637,48 @@ public enum APIFlags {
 		 return obj;
 	}
 	
+	public static Object printFieldsForValue(Object obj, Map<String, Object>data) throws Exception {
+		if(obj != null) {
+			if(obj.getClass().isArray()) {
+				// Do nothing because of X and Y.
+		}
+		}else {
+			return obj;
+		}
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) {
+				o = printFieldsForValue(o,data);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				setEntry.setValue(printFieldsForValue(setEntry.getValue(),data));
+			}
+		}else if(obj instanceof String) {
+			obj = StringEscapeUtils.escapeXml(((String)obj).replaceAll("--", ""));
+			return obj;
+		}else if(obj instanceof Double) {
+			if(!Double.isNaN((Double)obj)) {
+				return convertValueWithoutDecimal((Double)obj);
+			}
+		}else {
+			if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for (Field field : fields) {
+					if((field.getModifiers()& Modifier.STATIC) == Modifier.STATIC){
+						// Do nothing because of X and Y.
+					}else {
+						field.setAccessible(true);
+						Object value = field.get(obj);
+						field.set(obj, printFieldsForValue(value,data));	
+					}
+				}
+			}
+		}
+		 return obj;
+	}
+	
 	public enum BankName {
 		UNION_BANK_OF_INDIA(1,"Union Bank of India",""),
 		SARASWAT(2,"Saraswat",""),

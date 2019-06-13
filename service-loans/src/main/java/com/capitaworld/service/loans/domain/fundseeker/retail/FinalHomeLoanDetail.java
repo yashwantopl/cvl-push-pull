@@ -158,6 +158,9 @@ public class FinalHomeLoanDetail implements Serializable {
 	@Column(name="status_id")
 	private Integer statusId;
 
+	@Column(name="job_id")
+	private Long jobId;
+
 	public Long getId() {
 		return id;
 	}
@@ -500,5 +503,13 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
+	}
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
 	}
 }
