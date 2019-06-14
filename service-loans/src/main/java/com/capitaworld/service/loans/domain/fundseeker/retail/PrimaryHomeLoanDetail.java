@@ -144,7 +144,18 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 	private Long propPincode;
 
 	@Column(name = "prop_district_mapping_id")
-	private Long propdistrictMappingId;	
+	private Long propdistrictMappingId;
+
+	@Column(name="is_check_off_direct_pay_emi")
+	private Boolean isCheckOffDirectPayEmi;
+	@Column(name="is_check_off_agree_to_pay_outstanding")
+	private Boolean isCheckOffAgreeToPayOutstanding;
+	@Column(name="is_check_off_shift_sal_acc")
+	private Boolean isCheckOffShiftSalAcc;
+	@Column(name="is_check_off_pay_outstnd_amount")
+	private Boolean isCheckOffPayOutstndAmount;
+	@Column(name="is_check_off_not_change_sal_acc")
+	private Boolean isCheckOffNotChangeSalAcc;
 
 	//-------- END ADD NEW FIELDS Date:- 28th April 2019 Harshit
 	
@@ -470,7 +481,46 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 		this.propdistrictMappingId = propdistrictMappingId;
 	}
 
-	
+
+	public Boolean getIsCheckOffDirectPayEmi() {
+		return isCheckOffDirectPayEmi;
+	}
+
+	public void setIsCheckOffDirectPayEmi(Boolean isCheckOffDirectPayEmi) {
+		this.isCheckOffDirectPayEmi = isCheckOffDirectPayEmi;
+	}
+
+	public Boolean getIsCheckOffAgreeToPayOutstanding() {
+		return isCheckOffAgreeToPayOutstanding;
+	}
+
+	public void setIsCheckOffAgreeToPayOutstanding(Boolean isCheckOffAgreeToPayOutstanding) {
+		this.isCheckOffAgreeToPayOutstanding = isCheckOffAgreeToPayOutstanding;
+	}
+
+	public Boolean getIsCheckOffShiftSalAcc() {
+		return isCheckOffShiftSalAcc;
+	}
+
+	public void setIsCheckOffShiftSalAcc(Boolean isCheckOffShiftSalAcc) {
+		this.isCheckOffShiftSalAcc = isCheckOffShiftSalAcc;
+	}
+
+	public Boolean getIsCheckOffPayOutstndAmount() {
+		return isCheckOffPayOutstndAmount;
+	}
+
+	public void setIsCheckOffPayOutstndAmount(Boolean isCheckOffPayOutstndAmount) {
+		this.isCheckOffPayOutstndAmount = isCheckOffPayOutstndAmount;
+	}
+
+	public Boolean getIsCheckOffNotChangeSalAcc() {
+		return isCheckOffNotChangeSalAcc;
+	}
+
+	public void setIsCheckOffNotChangeSalAcc(Boolean isCheckOffNotChangeSalAcc) {
+		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
+	}
 
 	
 
