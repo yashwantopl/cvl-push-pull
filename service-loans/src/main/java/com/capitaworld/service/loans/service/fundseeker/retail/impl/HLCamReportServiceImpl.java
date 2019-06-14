@@ -248,8 +248,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				Period sinceWhen = Period.between(since, now);
 				int years = sinceWhen.getYears();
 				int months = sinceWhen.getMonths();
-				plRetailApplicantRequest.setSalaryBankYear(years);
-				plRetailApplicantRequest.setSalaryBankMonth(months);
+				map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(years) ? years + " years" : "")+ " " +(!CommonUtils.isObjectNullOrEmpty(months) ? months+" months":""));
+			}else {
+				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
 			
 			if(plRetailApplicantRequest.getResidenceSinceYear() != null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
@@ -306,7 +307,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			map.put("applicantNetWorth", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getNetworth()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getNetworth()) : "-");
 			map.put("grossMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGrossMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getGrossMonthlyIncome()) : null);
 			map.put("netMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getMonthlyIncome()) : null);
-			map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceYear()) ? plRetailApplicantRequest.getResidenceSinceYear() + " years" : "")+ " " +(plRetailApplicantRequest.getResidenceSinceMonth() != null ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":""));
+			//map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceYear()) ? plRetailApplicantRequest.getResidenceSinceYear() + " years" : "")+ " " +(plRetailApplicantRequest.getResidenceSinceMonth() != null ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":""));
 			map.put("eligibleLoanAmount", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getLoanAmount()) ? CommonUtils.convertValueWithoutDecimal(applicationProposalMapping.getLoanAmount()): "-");
 			map.put("eligibleTenure", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getTenure()) ? applicationProposalMapping.getTenure().longValue():"-");
 			//map.put("operatingBusinessSince", !CommonUtils.isObjectNullOrEmpty(operatingBusinessSince) ? operatingBusinessSince :"-");
@@ -1208,7 +1209,13 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		if(isFinalView) {
 			
 			Map<String , Object> retailMap = new HashMap<String, Object>();
+			try {
+				
 			
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
+			if(plRetailApplicantRequest == null) {
+				logger.error("Error/Exception while fetching primary details in final View of ApplicationId==>>{}",applicationId);
+			}
 			//PROPOSAL DATES
 			/**try {
 				List<Object[]> data = null;
@@ -1238,6 +1245,10 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			try {
 				FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
 				if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail)) {
+					retailMap.put("motherMaidenName", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getMatherMaidenName()) ? StringEscapeUtils.escapeXml(finalHomeLoanDetail.getMatherMaidenName()) : "-");
+					retailMap.put("nameOfSpouse", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getNameOfSpouse()) ? StringEscapeUtils.escapeXml(finalHomeLoanDetail.getNameOfSpouse()) : "-");
+					retailMap.put("noOfChildren", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getNoOfChildren()) ? finalHomeLoanDetail.getNoOfChildren() : "-");
+					retailMap.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPlaceOfBirth()) ? StringEscapeUtils.escapeXml(finalHomeLoanDetail.getPlaceOfBirth()) : "-");
 					retailMap.put("educationalQualificationYear", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getYear()) ? finalHomeLoanDetail.getYear() : "-");
 					retailMap.put("religion", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getReligion()) ? ReligionRetailMst.getById(finalHomeLoanDetail.getReligion()).getValue() : "-");
 					retailMap.put("caste", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCast()) ? CastCategory.getById(finalHomeLoanDetail.getCast()).getValue() : "-");
@@ -1326,79 +1337,116 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				logger.error("Error/Exception while fetching data of other income details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 			}
 			
-			//Emp Salaried Type
-			try {
-				List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
+			if(plRetailApplicantRequest != null) {
 				
-				if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
-					retailMap.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
-				}
-			}catch (Exception e) {
-				logger.error("Error/Exception while fetching data of Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
-			}
-			
-			//Emp SelfEmployed Type
-			try {
-				List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
-				
-				if(!CommonUtils.isObjectNullOrEmpty(empSelfEmployedTypeDetail)) {
-					retailMap.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
-				}
-			}catch (Exception e) {
-				logger.error("Error/Exception while fetching data of Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
-			}
-			
-			//Emp Agriculturist Type
-			try {
-				List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
-				
-				if(!CommonUtils.isObjectNullOrEmpty(empAgriculturistTypeDetail)) {
-					retailMap.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
-				}
-			}catch (Exception e) {
-				logger.error("Error/Exception while fetching data of Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
-			}
-			
-			//Purchase Property Details
-			try {
-				List<Map<String, Object>> listDataOfProperty = new ArrayList<Map<String,Object>>(); 
-				List<PurchasePropertyDetails> purchasePropertyDetails = purchasePropertyDetailsRepository.getListByApplicationId(applicationId);
-				for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
-					Map<String , Object> purchasePropertyDetailsReq = new HashMap<String, Object>();
-					purchasePropertyDetailsReq.put("propertyName", purchasePropertyDetail.getPropertyName() != null ? purchasePropertyDetail.getPropertyName() : "-");
-					purchasePropertyDetailsReq.put("cityName" ,purchasePropertyDetail.getCity() != null ? StringEscapeUtils.escapeXml(getCityName(purchasePropertyDetail.getCity().longValue())) : "-");
-					purchasePropertyDetailsReq.put("stateName" ,purchasePropertyDetail.getState() != null ? StringEscapeUtils.escapeXml(getStateName(purchasePropertyDetail.getState())) : "-");
-					purchasePropertyDetailsReq.put("buildUpArea" ,purchasePropertyDetail.getBuildUpArea() != null ? purchasePropertyDetail.getBuildUpArea() : "-");
-					purchasePropertyDetailsReq.put("carpetArea" ,purchasePropertyDetail.getCarpetArea() != null ? purchasePropertyDetail.getCarpetArea() : "-");
-					purchasePropertyDetailsReq.put("superBuildUpArea" ,purchasePropertyDetail.getSuperBuildUpArea() != null ? purchasePropertyDetail.getSuperBuildUpArea() : "-");
-					purchasePropertyDetailsReq.put("totalPriceOfProperty" ,purchasePropertyDetail.getTotalPriceOfProperty() != null ? CommonUtils.convertValueWithoutDecimal(purchasePropertyDetail.getTotalPriceOfProperty().doubleValue()) : "-");
-					listDataOfProperty.add(purchasePropertyDetailsReq);		
+				//Emp Salaried Type
+				if(plRetailApplicantRequest.getEmploymentType() == 2) {
+					try {
+						List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
+						
+						if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
+							retailMap.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
 				}
 				
-				retailMap.put("purchasePropertyDetails", !CommonUtils.isObjectListNull(listDataOfProperty) ? listDataOfProperty : null);	
-			}catch (Exception e) {
-				logger.error("Error/Exception while fetching ListData of Property Details of ApplicationId==>{}" , applicationId);
+				//Emp SelfEmployed Type
+				if(plRetailApplicantRequest.getEmploymentType() == 3 || plRetailApplicantRequest.getEmploymentType() == 4 ||plRetailApplicantRequest.getEmploymentType() == 5) {
+					try {
+						List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
+						
+						if(!CommonUtils.isObjectNullOrEmpty(empSelfEmployedTypeDetail)) {
+							retailMap.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+				}
+				
+				//Emp Agriculturist Type
+				if(plRetailApplicantRequest.getEmploymentType() == 6) {
+					try {
+						List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
+						
+						if(!CommonUtils.isObjectNullOrEmpty(empAgriculturistTypeDetail)) {
+							retailMap.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+				}
 			}
 			
-			//Other Property Details
 			try {
-				List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
-				List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
-				for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
-					Map<String , Object> otherPropertyData = new HashMap<String, Object>();
-					otherPropertyData.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
-					otherPropertyData.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
-					otherPropertyData.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
+				if(plRetailApplicantRequest != null) {
+				
+					if(plRetailApplicantRequest.getLoanPurpose() == 1) {
+						//Purchase Property Details
+						try {
+							List<Map<String, Object>> listDataOfProperty = new ArrayList<Map<String,Object>>(); 
+							List<PurchasePropertyDetails> purchasePropertyDetails = purchasePropertyDetailsRepository.getListByApplicationId(applicationId);
+							for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
+								Map<String , Object> purchasePropertyDetailsReq = new HashMap<String, Object>();
+								purchasePropertyDetailsReq.put("propertyName", purchasePropertyDetail.getPropertyName() != null ? purchasePropertyDetail.getPropertyName() : "-");
+								purchasePropertyDetailsReq.put("cityName" ,purchasePropertyDetail.getCity() != null ? StringEscapeUtils.escapeXml(getCityName(purchasePropertyDetail.getCity().longValue())) : "-");
+								purchasePropertyDetailsReq.put("stateName" ,purchasePropertyDetail.getState() != null ? StringEscapeUtils.escapeXml(getStateName(purchasePropertyDetail.getState())) : "-");
+								purchasePropertyDetailsReq.put("buildUpArea" ,purchasePropertyDetail.getBuildUpArea() != null ? purchasePropertyDetail.getBuildUpArea() : "-");
+								purchasePropertyDetailsReq.put("carpetArea" ,purchasePropertyDetail.getCarpetArea() != null ? purchasePropertyDetail.getCarpetArea() : "-");
+								purchasePropertyDetailsReq.put("superBuildUpArea" ,purchasePropertyDetail.getSuperBuildUpArea() != null ? purchasePropertyDetail.getSuperBuildUpArea() : "-");
+								purchasePropertyDetailsReq.put("totalPriceOfProperty" ,purchasePropertyDetail.getTotalPriceOfProperty() != null ? CommonUtils.convertValueWithoutDecimal(purchasePropertyDetail.getTotalPriceOfProperty().doubleValue()) : "-");
+								listDataOfProperty.add(purchasePropertyDetailsReq);		
+							}
+							
+							retailMap.put("purchasePropertyDetails", !CommonUtils.isObjectListNull(listDataOfProperty) ? listDataOfProperty : null);	
+						}catch (Exception e) {
+							logger.error("Error/Exception while fetching ListData of Property Details of ApplicationId==>{}" , applicationId);
+						}
+					}
 					
-					otherPropertyData.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
-					otherPropertyData.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
-					otherPropertyData.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
-					otherPropertyListData.add(otherPropertyData);
+					if(plRetailApplicantRequest.getLoanPurpose() == 2) {
+						//Other Property Details
+						try {
+							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
+							List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
+							for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
+								Map<String ,Object> constructionDetails = new HashMap<String, Object>();	
+								constructionDetails.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
+								constructionDetails.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
+								constructionDetails.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
+								
+								otherPropertyListData.add(!CommonUtils.isObjectListNull(constructionDetails) ? constructionDetails : null);
+							}
+							
+							retailMap.put("constructionDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
+						}catch (Exception e) {
+							logger.error("Error/Exception while fetching ListData of Property Other Details of ApplicationId==>{}",applicationId);
+						}
+					}
+					
+					if(plRetailApplicantRequest.getLoanPurpose() == 3) {
+						//Other Property Details
+						try {
+							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
+							List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
+							for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
+								Map<String ,Object> repairDetails = new HashMap<String, Object>();
+								repairDetails.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
+								repairDetails.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
+								repairDetails.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
+								
+								otherPropertyListData.add(!CommonUtils.isObjectListNull(repairDetails) ? repairDetails : null);
+							}
+							
+							retailMap.put("repairDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
+						}catch (Exception e) {
+							logger.error("Error/Exception while fetching ListData of Property Other Details of ApplicationId==>{}",applicationId);
+						}
+					}
 				}
-				
-				retailMap.put("constructionDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
 			}catch (Exception e) {
-				logger.error("Error/Exception while fetching ListData of Property Other Details of ApplicationId==>{}",applicationId);
+				// TODO: handle exception
 			}
 			
 			//References Details
@@ -1422,7 +1470,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 			
 			map.put("retailData", retailMap);
-			
+			} catch (Exception e) {
+				logger.error("Error/Exception while fetching final details of ApplicationId==>{}",applicationId);
+			}
 		}
 		
 		return map;
