@@ -1093,7 +1093,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					scoreResponse.add(companyMap);
 					coAppScoringData.add(scoreResponse);
 			}
-			map.put("scoringRespOfCoApp", CommonUtils.isObjectListNull(coAppScoringData) ? coAppScoringData : null);
+			map.put("scoringRespOfCoApp", !CommonUtils.isObjectListNull(coAppScoringData) ? coAppScoringData : null);
 			}
 				
 		}catch (Exception e) {
