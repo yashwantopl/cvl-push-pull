@@ -2065,8 +2065,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                         }
                     }
-                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
-
+//                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
                     logger.info("----------------------------END-------------------------------------------");
 
                     Gson g = new GsonBuilder().serializeSpecialFloatingPointValues().create();
