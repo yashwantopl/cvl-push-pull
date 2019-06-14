@@ -150,6 +150,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 					finalHomeLoanDetailTmp.setJobId(jobId);
 				}catch (Exception e){
 					logger.error("Error while Creating Workflow Process for HL = >{}",e);
+					return false;
 				}
 			}
 			finalHomeLoanDetailTmp = finalHomeLoanDetailRepository.save(finalHomeLoanDetailTmp);
