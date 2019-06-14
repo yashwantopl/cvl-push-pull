@@ -1573,6 +1573,42 @@ public class ScoringServiceImpl implements ScoringService {
             Boolean isBorrowersAvailingLoans = false;
             Boolean isBorrowersHavingSalaryAccounts = false;
             Boolean isBorrowersAvailingCreaditCards = false;
+            
+            
+            // LOGIC FOR CHECK OFF RELATED ISSUE
+            Boolean isCheckOffDirectPayEmi = false;
+            Boolean isCheckOffAgreetoPayOutstanding =false;
+            Boolean isCheckOffShiftSalAcc = false;
+            Boolean isCheckOffPayOutstndAmount = false;
+            Boolean isCheckOffNotChangeSalAcc=false;
+            // ENDS HERE CHECK OFF
+            
+        	if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+        		
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
+        			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		}
+        		
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
+        			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		}
+        		
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
+        			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
+        		}
+
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
+        			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
+        		}
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
+        			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
+        	   }
+        	}
+        	 
+        	// ENDS HERE CHECK OFF LOGIC HERE 
+            
+            
+            
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
             if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList)){
@@ -1652,6 +1688,15 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
             scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
             scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
+            
+            // check off related 
+            scoringRequest.setIsCheckOffDirectPayEmi(isCheckOffDirectPayEmi);
+            scoringRequest.setIsCheckOffAgreetoPayOutstanding(isCheckOffAgreetoPayOutstanding);
+            scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
+            scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
+            scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
+            // ends here 
+            
             scoringRequest.setIsWomenApplicant(isWomenApplicant);
 
             ///////// End  Getting Old Request ///////
