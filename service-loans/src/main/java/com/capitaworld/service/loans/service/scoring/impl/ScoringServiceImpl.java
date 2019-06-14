@@ -719,7 +719,45 @@ public class ScoringServiceImpl implements ScoringService {
             Boolean isBorrowersAvailingLoans=false;
             Boolean isBorrowersHavingSalaryAccounts=false;
             Boolean isBorrowersAvailingCreaditCards=false;
+            
+ 		   // LOGIC FOR CHECK OFF RELATED ISSUE
+            Boolean isCheckOffDirectPayEmi = false;
+            Boolean isCheckOffAgreetoPayOutstanding =false;
+            Boolean isCheckOffShiftSalAcc = false;
+            Boolean isCheckOffPayOutstndAmount = false;
+            Boolean isCheckOffNotChangeSalAcc=false;
+            // ENDS HERE CHECK OFF
+            
+            RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+        	if (!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail)) {
+        		
+        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffDirectPayEmi())){
+        			isCheckOffDirectPayEmi  =  RetailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		}
+        		
+        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
+        			isCheckOffAgreetoPayOutstanding = RetailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		}
+        		
+        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffShiftSalAcc())){
+        			isCheckOffShiftSalAcc = RetailApplicantDetail.getIsCheckOffShiftSalAcc();
+        		}
 
+        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffPayOutstndAmount())){
+        			isCheckOffPayOutstndAmount = RetailApplicantDetail.getIsCheckOffPayOutstndAmount();
+        		}
+        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
+        			isCheckOffNotChangeSalAcc = RetailApplicantDetail.getIsCheckOffNotChangeSalAcc();
+        	   }
+        	}
+        	
+        	 scoringRequest.setIsCheckOffDirectPayEmi(isCheckOffDirectPayEmi);
+             scoringRequest.setIsCheckOffAgreetoPayOutstanding(isCheckOffAgreetoPayOutstanding);
+             scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
+             scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
+             scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
+        	// ENDS HERE CHECK OFF LOGIC HERE 
+            
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
 
