@@ -2103,8 +2103,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                         }
                     }
-                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
-
+//                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
                     logger.info("----------------------------END-------------------------------------------");
 
                     Gson g = new GsonBuilder().serializeSpecialFloatingPointValues().create();
@@ -2157,6 +2156,7 @@ public class ScoringServiceImpl implements ScoringService {
         CibilScoreLogRequest cibilResponse = null;
         CibilResponse cibilResponseDpdCoApp = null;
         Boolean itrSkippedForCoApp = null;
+        Boolean itrMannualForCoApp = null;
         List<Double> incomeOfItrOf3YearsCoApplicant = null;
 //        Double loanAmount = 0.0d;
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
@@ -2236,14 +2236,15 @@ public class ScoringServiceImpl implements ScoringService {
             
             //ITR and bank Statement Checking
             itrSkippedForCoApp = loanRepository.isITRSkippedForCoApp(applicationId, coApplicantId);
+            itrMannualForCoApp = loanRepository.isITRMannualForCoApp(applicationId, coApplicantId);
             incomeOfItrOf3YearsCoApplicant = loanRepository.getIncomeOfItrOf3YearsOfCoApplicant(coApplicantId);
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
-        ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         Integer minBankRelationshipInMonths = null;
 //        HLEligibilityRequest hlEligibilityRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
+        	ScoreParameterRetailRequest scoreParameterRetailRequest = null;
             Long scoreModelId = scoringRequestLoans.getScoringModelCoAppId();
             if(scoreModelId == null) {
             	scoreModelId = scoringRequestLoans.getScoringModelId();
@@ -2285,8 +2286,8 @@ public class ScoringServiceImpl implements ScoringService {
 				scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 				scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
 				scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
-				logger.info("Result of Average Eligibility Call For CoApplicant===============>{}",scoringRequestLoans.getElAmountOnAverageScoring());
-				logger.info("FOIR For CoApplicant===============>{}",scoringRequestLoans.getFoir());
+				logger.info("Result of Average Eligibility Call For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getElAmountOnAverageScoring(),applicationId,fpProductId,coApplicantId);
+				logger.info("FOIR For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getFoir(),applicationId,fpProductId,applicationId,fpProductId,coApplicantId);
                 logger.info("----------------------------START RETAIL HL ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
@@ -2640,7 +2641,9 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.INCOME_PROOF:
             				if(itrSkippedForCoApp != null && itrSkippedForCoApp) {
             					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.NOT_AVAILABLE);	
-            				}else {
+            				}else if (itrMannualForCoApp != null && itrMannualForCoApp){
+            					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.BANK_STATEMENT);
+            				} else {
             					scoreParameterRetailRequest.setIncomeProofId(ScoreParameter.IncomeProof.IT_RETURN_AND_BANK_STATEMENT);
             				}
         				break;
