@@ -1470,16 +1470,14 @@ public class ScoringServiceImpl implements ScoringService {
                 return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         	
+        	// FOR CONCESSION CHECK OFF 
         	isCheckOffDirectPayEmi  =  primaryHomLoanDetail.getIsCheckOffDirectPayEmi() != null ? primaryHomLoanDetail.getIsCheckOffDirectPayEmi() : false ;
-    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffDirectPayEmi(),applicationId);
     		isCheckOffAgreetoPayOutstanding = primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding() != null ? primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding() : false;
-    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
     		isCheckOffShiftSalAcc = primaryHomLoanDetail.getIsCheckOffShiftSalAcc() != null ? primaryHomLoanDetail.getIsCheckOffShiftSalAcc() : false;
-    		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffShiftSalAcc(),applicationId);
     		isCheckOffPayOutstndAmount = primaryHomLoanDetail.getIsCheckOffPayOutstndAmount() != null ? primaryHomLoanDetail.getIsCheckOffPayOutstndAmount() : false;
-    		logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffPayOutstndAmount(),applicationId);
     		isCheckOffNotChangeSalAcc = primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc() != null ? primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc() : false;
-    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
+    		// ENDS HERE 
+    		
         	EligibilityResponse eligibilityResponse = null;
 			try {
 				EligibililityRequest eligibililityRequest = new EligibililityRequest();
