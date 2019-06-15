@@ -189,4 +189,7 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Modifying
     @Query("delete from ApplicationProposalMapping where applicationId=:applicationId and orgId=:orgId")
     public Integer deleteByApplicationIdAndOrgId(@Param("applicationId")Long applicationId,@Param("orgId")Long orgId);
+
+    @Query("from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.orgId =:orgId and lm.isActive = true")
+    public List<ApplicationProposalMapping> getListByApplicationIdAndOrgId(@Param("applicationId") Long applicationId, @Param("orgId") Long orgId);
 }
