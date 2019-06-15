@@ -1091,7 +1091,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		} catch (Exception e) {
 			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
-		
+
+         // for name is edited or not:
+         if(!plRetailApplicantResponse.getFullName().equals(plTeaserViewResponse.getNameAsPerItr()))
+         {// name is edited
+			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		 }
+		 else{
+			 // name is  not edited
+			 plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
+		 }
+
 		
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();

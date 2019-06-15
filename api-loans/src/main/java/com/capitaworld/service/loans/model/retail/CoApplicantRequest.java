@@ -105,6 +105,7 @@ public class CoApplicantRequest {
 	private Boolean isCibilCompleted;
 	private Integer designation;
 	private Integer educationQualification;
+	private Boolean isIncomeConsider;
 
 	public CoApplicantRequest() {
 	}
@@ -865,5 +866,13 @@ public class CoApplicantRequest {
 
 	public void setIsCibilCompleted(Boolean isCibilCompleted) {
 		this.isCibilCompleted = isCibilCompleted;
+	}
+
+	public Boolean getIsIncomeConsider() {
+		return isIncomeConsider;
+	}
+
+	public void setIsIncomeConsider(Boolean isIncomeConsider) {
+		this.isIncomeConsider = isIncomeConsider;
 	}
 }

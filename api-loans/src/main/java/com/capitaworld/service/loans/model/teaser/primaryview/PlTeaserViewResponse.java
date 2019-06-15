@@ -204,7 +204,7 @@ public class PlTeaserViewResponse {
     
     private String previousJobYear;
     private String tenureReq;
-    
+	private Boolean isNameEdited;
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1135,4 +1135,11 @@ public class PlTeaserViewResponse {
 		this.tenureReq = tenureReq;
 	}
 
+	public Boolean getIsNameEdited() {
+		return isNameEdited;
+	}
+
+	public void setIsNameEdited(Boolean nameEdited) {
+		isNameEdited = nameEdited;
+	}
 }

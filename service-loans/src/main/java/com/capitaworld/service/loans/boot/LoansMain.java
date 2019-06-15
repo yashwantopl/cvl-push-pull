@@ -1,6 +1,7 @@
 
 package com.capitaworld.service.loans.boot;
 
+import com.capitaworld.service.BodmasClient;
 import com.capitaworld.source.provider.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -121,6 +122,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.eky.url}")
 	private String ekycUrl;
+	
+	@Value("${capitaworld.service.bodmas.url}")
+	private String bodmasBaseUrl;
 
 	
 	public static void main(String[] args) throws Exception {
@@ -279,6 +283,13 @@ public class LoansMain {
 		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
+	}
+	
+	@Bean
+	public BodmasClient bodmasClient() {
+		BodmasClient bodmasClient = new BodmasClient(bodmasBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(bodmasClient);
+		return bodmasClient;		
 	}
 
 }
