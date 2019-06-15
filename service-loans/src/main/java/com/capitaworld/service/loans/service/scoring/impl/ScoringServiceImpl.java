@@ -1463,25 +1463,18 @@ public class ScoringServiceImpl implements ScoringService {
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
-        			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
-        		}
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
-        			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding();
-        		}
-        		
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
-        			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
-        		}
-
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
-        			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
-        		}
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
-        			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
-        	   }
-        	
+    		isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi() != null ? retailApplicantDetail.getIsCheckOffDirectPayEmi() : false ;
+    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",isCheckOffDirectPayEmi,applicationId);
+    		isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() != null ? retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() : false;
+    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}",isCheckOffAgreetoPayOutstanding,applicationId);
+    		isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc() != null ? retailApplicantDetail.getIsCheckOffShiftSalAcc() : false;
+    		logger.info("isCheckOffShiftSalAcc HL=======>{}",isCheckOffShiftSalAcc,applicationId);
+    		isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount() != null ? retailApplicantDetail.getIsCheckOffPayOutstndAmount() : false;
+    		logger.info("isCheckOffPayOutstndAmount HL=======>{}",isCheckOffPayOutstndAmount,applicationId);
+    		isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc() != null ? retailApplicantDetail.getIsCheckOffNotChangeSalAcc() : false;
+    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}",isCheckOffNotChangeSalAcc,applicationId);
+    		
         	logger.info("retailApplicantDetail.getEmploymentType()=======>{}",retailApplicantDetail.getEmploymentType());
         	
         	isWomenApplicant = Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId());       	
