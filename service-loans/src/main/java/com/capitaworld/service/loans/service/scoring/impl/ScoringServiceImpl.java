@@ -1464,7 +1464,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
         		
         		
-    		isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi() != null ? retailApplicantDetail.getIsCheckOffDirectPayEmi() : false ;
+/*    		isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi() != null ? retailApplicantDetail.getIsCheckOffDirectPayEmi() : false ;
     		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffDirectPayEmi(),applicationId);
     		isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() != null ? retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() : false;
     		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
@@ -1473,7 +1473,34 @@ public class ScoringServiceImpl implements ScoringService {
     		isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount() != null ? retailApplicantDetail.getIsCheckOffPayOutstndAmount() : false;
     		logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffPayOutstndAmount(),applicationId);
     		isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc() != null ? retailApplicantDetail.getIsCheckOffNotChangeSalAcc() : false;
-    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
+    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffNotChangeSalAcc(),applicationId);*/
+        	
+        	
+        	
+        	if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
+    			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
+    			logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffDirectPayEmi(),applicationId);
+    		}
+    		
+    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
+    			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffDirectPayEmi();
+    			logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
+    		}
+    		
+    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
+    			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
+    	  		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffShiftSalAcc(),applicationId);
+    		}
+
+    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
+    			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
+    			logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffPayOutstndAmount(),applicationId);
+    		}
+    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
+    			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
+    			logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
+    			
+    	   }
     		
         	logger.info("retailApplicantDetail.getEmploymentType()=======>{}",retailApplicantDetail.getEmploymentType());
         	
