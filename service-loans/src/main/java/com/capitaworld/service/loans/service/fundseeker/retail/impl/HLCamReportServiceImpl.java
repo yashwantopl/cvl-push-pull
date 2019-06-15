@@ -1409,12 +1409,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
 							List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
 							for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
-								Map<String ,Object> constructionDetails = new HashMap<String, Object>();	
-								constructionDetails.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
-								constructionDetails.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
-								constructionDetails.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
-								
-								otherPropertyListData.add(!CommonUtils.isObjectListNull(constructionDetails) ? constructionDetails : null);
+								if(otherPropertyDetail != null && otherPropertyDetail.getTotalCostOfLand() != null) {
+									Map<String ,Object> constructionDetails = new HashMap<String, Object>();	
+									constructionDetails.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
+									constructionDetails.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
+									constructionDetails.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
+									
+									otherPropertyListData.add(!CommonUtils.isObjectListNull(constructionDetails) ? constructionDetails : null);
+								}
 							}
 							
 							retailMap.put("constructionDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
@@ -1427,12 +1429,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
 							List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
 							for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
-								Map<String ,Object> repairDetails = new HashMap<String, Object>();
-								repairDetails.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
-								repairDetails.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
-								repairDetails.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
-								
-								otherPropertyListData.add(!CommonUtils.isObjectListNull(repairDetails) ? repairDetails : null);
+								if(otherPropertyDetail != null && otherPropertyDetail.getTotalCostOfRenovation() != null) {
+									Map<String ,Object> repairDetails = new HashMap<String, Object>();
+									repairDetails.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
+									repairDetails.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
+									repairDetails.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
+									
+									otherPropertyListData.add(!CommonUtils.isObjectListNull(repairDetails) ? repairDetails : null);
+								}
 							}
 							
 							retailMap.put("repairDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
