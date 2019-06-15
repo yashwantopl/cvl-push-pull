@@ -1340,7 +1340,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			if(plRetailApplicantRequest != null) {
 				
 				//Emp Salaried Type
-				if(plRetailApplicantRequest.getEmploymentType() == 2) {
+				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
 					try {
 						List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
 						
@@ -1353,7 +1353,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				
 				//Emp SelfEmployed Type
-				if(plRetailApplicantRequest.getEmploymentType() == 3 || plRetailApplicantRequest.getEmploymentType() == 4 ||plRetailApplicantRequest.getEmploymentType() == 5) {
+				if(plRetailApplicantRequest.getEmploymentType() != null && (plRetailApplicantRequest.getEmploymentType() == OccupationNature.BUSINESS.getId() || plRetailApplicantRequest.getEmploymentType() == OccupationNature.SELF_EMPLOYED.getId() || plRetailApplicantRequest.getEmploymentType() == OccupationNature.SELF_EMPLOYED_PROFESSIONAL.getId())) {
 					try {
 						List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
 						
@@ -1366,7 +1366,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				
 				//Emp Agriculturist Type
-				if(plRetailApplicantRequest.getEmploymentType() == 6) {
+				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.AGRICULTURIST.getId()) {
 					try {
 						List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
 						
@@ -1382,7 +1382,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			try {
 				if(plRetailApplicantRequest != null) {
 				
-					if(plRetailApplicantRequest.getLoanPurpose() == 1) {
+					if(plRetailApplicantRequest.getLoanPurpose() != null && plRetailApplicantRequest.getLoanPurpose() == HomeLoanPurpose.PURCHASE.getId()) {
 						//Purchase Property Details
 						try {
 							List<Map<String, Object>> listDataOfProperty = new ArrayList<Map<String,Object>>(); 
@@ -1403,9 +1403,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						}catch (Exception e) {
 							logger.error("Error/Exception while fetching ListData of Property Details of ApplicationId==>{}" , applicationId);
 						}
-					}
-					
-					if(plRetailApplicantRequest.getLoanPurpose() == 2) {
+					}else if(plRetailApplicantRequest.getLoanPurpose() != null && plRetailApplicantRequest.getLoanPurpose() == HomeLoanPurpose.CONSTRUCTION_EXPANSION.getId()) {
 						//Other Property Details
 						try {
 							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
@@ -1423,9 +1421,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						}catch (Exception e) {
 							logger.error("Error/Exception while fetching ListData of Property Other Details of ApplicationId==>{}",applicationId);
 						}
-					}
-					
-					if(plRetailApplicantRequest.getLoanPurpose() == 3) {
+					}else if(plRetailApplicantRequest.getLoanPurpose() != null && plRetailApplicantRequest.getLoanPurpose() == HomeLoanPurpose.REPAIRS_RENOVATIONS.getId()) {
 						//Other Property Details
 						try {
 							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
