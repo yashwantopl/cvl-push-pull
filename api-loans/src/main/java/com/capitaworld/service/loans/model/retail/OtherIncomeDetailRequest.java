@@ -26,6 +26,26 @@ public class OtherIncomeDetailRequest implements Serializable{
 	private Double netIncome;
 	
 	private String incomeDetailsType;
+	
+	private String grossIncomeString;
+	
+	private String netIncomeString;
+
+	public String getGrossIncomeString() {
+		return grossIncomeString;
+	}
+
+	public void setGrossIncomeString(String grossIncomeString) {
+		this.grossIncomeString = grossIncomeString;
+	}
+
+	public String getNetIncomeString() {
+		return netIncomeString;
+	}
+
+	public void setNetIncomeString(String netIncomeString) {
+		this.netIncomeString = netIncomeString;
+	}
 
 	public String getIncomeDetailsType() {
 		return incomeDetailsType;

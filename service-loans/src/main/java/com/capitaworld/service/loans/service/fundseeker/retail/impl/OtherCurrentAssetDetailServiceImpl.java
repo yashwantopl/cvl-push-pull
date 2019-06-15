@@ -166,7 +166,7 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 
 		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
 			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
-			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValue(detail.getAssetValue()));
+			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValueWithoutDecimal(detail.getAssetValue()));
 			otherCurrentAssetRequest.setAssetType(!CommonUtils.isObjectNullOrEmpty(detail.getAssetTypesId()) ? StringEscapeUtils.escapeXml(Assets.getById(detail.getAssetTypesId()).getValue()) : "");
 			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
 			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
