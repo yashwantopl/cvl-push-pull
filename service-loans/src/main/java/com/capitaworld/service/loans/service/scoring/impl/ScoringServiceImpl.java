@@ -1430,7 +1430,6 @@ public class ScoringServiceImpl implements ScoringService {
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
         RetailApplicantDetail retailApplicantDetail = null;
-        PrimaryHomeLoanDetail primaryHomeLoanDetail = null;        
         Boolean isItrMannualFilled = false;
         Long applicationId = null;
         Long orgId = null;
@@ -1459,33 +1458,28 @@ public class ScoringServiceImpl implements ScoringService {
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
-        	primaryHomeLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
-        	
         	if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
-        		
-        		
-    		isCheckOffDirectPayEmi  =  primaryHomeLoanDetail.getIsCheckOffDirectPayEmi() != null ? primaryHomeLoanDetail.getIsCheckOffDirectPayEmi() : false ;
-    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffDirectPayEmi(),applicationId);
-    		isCheckOffAgreetoPayOutstanding = primaryHomeLoanDetail.getIsCheckOffAgreeToPayOutstanding() != null ? primaryHomeLoanDetail.getIsCheckOffAgreeToPayOutstanding() : false;
-    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
-    		isCheckOffShiftSalAcc = primaryHomeLoanDetail.getIsCheckOffShiftSalAcc() != null ? primaryHomeLoanDetail.getIsCheckOffShiftSalAcc() : false;
-    		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffShiftSalAcc(),applicationId);
-    		isCheckOffPayOutstndAmount = primaryHomeLoanDetail.getIsCheckOffPayOutstndAmount() != null ? primaryHomeLoanDetail.getIsCheckOffPayOutstndAmount() : false;
-    		logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffPayOutstndAmount(),applicationId);
-    		isCheckOffNotChangeSalAcc = primaryHomeLoanDetail.getIsCheckOffNotChangeSalAcc() != null ? primaryHomeLoanDetail.getIsCheckOffNotChangeSalAcc() : false;
-    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
-        	
         	logger.info("retailApplicantDetail.getEmploymentType()=======>{}",retailApplicantDetail.getEmploymentType());
-        	
         	isWomenApplicant = Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId());       	
         	primaryHomLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
         	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                 return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
+        	
+        	isCheckOffDirectPayEmi  =  primaryHomLoanDetail.getIsCheckOffDirectPayEmi() != null ? primaryHomLoanDetail.getIsCheckOffDirectPayEmi() : false ;
+    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffDirectPayEmi(),applicationId);
+    		isCheckOffAgreetoPayOutstanding = primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding() != null ? primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding() : false;
+    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
+    		isCheckOffShiftSalAcc = primaryHomLoanDetail.getIsCheckOffShiftSalAcc() != null ? primaryHomLoanDetail.getIsCheckOffShiftSalAcc() : false;
+    		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffShiftSalAcc(),applicationId);
+    		isCheckOffPayOutstndAmount = primaryHomLoanDetail.getIsCheckOffPayOutstndAmount() != null ? primaryHomLoanDetail.getIsCheckOffPayOutstndAmount() : false;
+    		logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffPayOutstndAmount(),applicationId);
+    		isCheckOffNotChangeSalAcc = primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc() != null ? primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc() : false;
+    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
         	EligibilityResponse eligibilityResponse = null;
 			try {
 				EligibililityRequest eligibililityRequest = new EligibililityRequest();
