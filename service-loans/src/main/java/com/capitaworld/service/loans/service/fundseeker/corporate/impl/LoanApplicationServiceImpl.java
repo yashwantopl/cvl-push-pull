@@ -6287,9 +6287,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
-			Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
-			if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
-				logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
+			List<ApplicationProposalMapping> applicationProposalMappingList = applicationProposalMappingRepository.getListByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
+			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMappingList)){
+				Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
+				if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
+					logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
+				}
 			}
 			/*ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){

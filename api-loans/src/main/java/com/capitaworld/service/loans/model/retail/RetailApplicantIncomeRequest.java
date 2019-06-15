@@ -17,6 +17,7 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	
 	private Long id;
 	private Long applicationId;
+	private Long proposalId;
 	private Long coAppId;
 	private Integer year;
 	private Double salaryIncome;
@@ -284,5 +285,12 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	public void setCoAppId(Long coAppId) {
 		this.coAppId = coAppId;
 	}
-	
+
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
 }

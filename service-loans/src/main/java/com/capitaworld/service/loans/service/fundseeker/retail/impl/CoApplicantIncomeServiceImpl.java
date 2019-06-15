@@ -56,6 +56,7 @@ public class CoApplicantIncomeServiceImpl implements CoApplicantIncomeService{
 				appIncomeDetail.setCreatedDate(new Date());
 				appIncomeDetail.setIsActive(true);
 				appIncomeDetail.setApplicationId(appIncomeReq.getApplicationId());
+				appIncomeDetail.setProposalId(appIncomeReq.getProposalId());
 				appIncomeDetail.setCoAppId(appIncomeReq.getCoAppId());
 				appIncomeDetail.setYear(appIncomeReq.getYear());
 			} else {
