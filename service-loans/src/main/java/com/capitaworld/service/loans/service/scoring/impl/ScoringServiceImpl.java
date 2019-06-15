@@ -1430,6 +1430,7 @@ public class ScoringServiceImpl implements ScoringService {
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
         RetailApplicantDetail retailApplicantDetail = null;
+        PrimaryHomeLoanDetail primaryHomeLoanDetail = null;        
         Boolean isItrMannualFilled = false;
         Long applicationId = null;
         Long orgId = null;
@@ -1458,50 +1459,25 @@ public class ScoringServiceImpl implements ScoringService {
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+        	primaryHomeLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
+        	
         	if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         		
         		
-/*    		isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi() != null ? retailApplicantDetail.getIsCheckOffDirectPayEmi() : false ;
-    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffDirectPayEmi(),applicationId);
-    		isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() != null ? retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() : false;
-    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
-    		isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc() != null ? retailApplicantDetail.getIsCheckOffShiftSalAcc() : false;
-    		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffShiftSalAcc(),applicationId);
-    		isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount() != null ? retailApplicantDetail.getIsCheckOffPayOutstndAmount() : false;
-    		logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffPayOutstndAmount(),applicationId);
-    		isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc() != null ? retailApplicantDetail.getIsCheckOffNotChangeSalAcc() : false;
-    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffNotChangeSalAcc(),applicationId);*/
+    		isCheckOffDirectPayEmi  =  primaryHomeLoanDetail.getIsCheckOffDirectPayEmi() != null ? primaryHomeLoanDetail.getIsCheckOffDirectPayEmi() : false ;
+    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffDirectPayEmi(),applicationId);
+    		isCheckOffAgreetoPayOutstanding = primaryHomeLoanDetail.getIsCheckOffAgreeToPayOutstanding() != null ? primaryHomeLoanDetail.getIsCheckOffAgreeToPayOutstanding() : false;
+    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
+    		isCheckOffShiftSalAcc = primaryHomeLoanDetail.getIsCheckOffShiftSalAcc() != null ? primaryHomeLoanDetail.getIsCheckOffShiftSalAcc() : false;
+    		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffShiftSalAcc(),applicationId);
+    		isCheckOffPayOutstndAmount = primaryHomeLoanDetail.getIsCheckOffPayOutstndAmount() != null ? primaryHomeLoanDetail.getIsCheckOffPayOutstndAmount() : false;
+    		logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffPayOutstndAmount(),applicationId);
+    		isCheckOffNotChangeSalAcc = primaryHomeLoanDetail.getIsCheckOffNotChangeSalAcc() != null ? primaryHomeLoanDetail.getIsCheckOffNotChangeSalAcc() : false;
+    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",primaryHomeLoanDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
         	
-        	
-        	
-        	if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
-    			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
-    			logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffDirectPayEmi(),applicationId);
-    		}
-    		
-    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
-    			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffDirectPayEmi();
-    			logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
-    		}
-    		
-    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
-    			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
-    	  		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffShiftSalAcc(),applicationId);
-    		}
-
-    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
-    			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
-    			logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffPayOutstndAmount(),applicationId);
-    		}
-    		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
-    			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
-    			logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
-    			
-    	   }
-    		
         	logger.info("retailApplicantDetail.getEmploymentType()=======>{}",retailApplicantDetail.getEmploymentType());
         	
         	isWomenApplicant = Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId());       	
