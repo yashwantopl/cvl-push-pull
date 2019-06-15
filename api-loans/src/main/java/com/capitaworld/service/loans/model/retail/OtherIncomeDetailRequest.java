@@ -24,6 +24,16 @@ public class OtherIncomeDetailRequest implements Serializable{
 	private Boolean isActive = true;
 
 	private Double netIncome;
+	
+	private String incomeDetailsType;
+
+	public String getIncomeDetailsType() {
+		return incomeDetailsType;
+	}
+
+	public void setIncomeDetailsType(String incomeDetailsType) {
+		this.incomeDetailsType = incomeDetailsType;
+	}
 
 	public Long getId() {
 		return id;

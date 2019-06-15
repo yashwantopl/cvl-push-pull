@@ -248,9 +248,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				Period sinceWhen = Period.between(since, now);
 				int years = sinceWhen.getYears();
 				int months = sinceWhen.getMonths();
-				map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(years) ? years + " years" : "")+ " " +(!CommonUtils.isObjectNullOrEmpty(months) ? months+" months":""));
-			}else {
-				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
+				plRetailApplicantRequest.setSalaryBankYear(years);
+				plRetailApplicantRequest.setSalaryBankMonth(months);
 			}
 			
 			if(plRetailApplicantRequest.getResidenceSinceYear() != null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
@@ -258,7 +257,10 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				LocalDate now = LocalDate.now();
 				Period sinceWhen = Period.between(since, now);
 				int years = sinceWhen.getYears();
-				plRetailApplicantRequest.setResidenceSinceYear(years);
+				int months = sinceWhen.getMonths();
+				map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(years) ? years + " years" : "")+ " " +(!CommonUtils.isObjectNullOrEmpty(months) ? months+" months":""));
+			}else {
+				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
 			
 			String operatingBusinessSince = null;
@@ -505,7 +507,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
 				
-				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue() : "-");
+				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				coApp.put("relationshipWithApp", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRelationshipWithApplicant()) ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : "-");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "-");
 				coApp.put("nameOfEmployer", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? coApplicantDetail.getNameOfEmployer() : "-");
