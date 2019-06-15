@@ -152,6 +152,9 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 	@Column(name = "status_id")
 	private Integer statusId;
 
+	@Column(name = "remarks")
+	private String remarks;
+
 	public Long getId() {
 		return id;
 	}
@@ -502,5 +505,13 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 
 	public void setSellerPincode(Integer sellerPincode) {
 		this.sellerPincode = sellerPincode;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 }
