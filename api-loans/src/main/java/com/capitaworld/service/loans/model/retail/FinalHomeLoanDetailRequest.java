@@ -62,6 +62,7 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	private Boolean isSameAsPermanentAddress;
 	private Integer statusId;
 	private Object workflowData;
+	private String remarks;
 
 	public Long getId() {
 		return id;
@@ -405,5 +406,13 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 
 	public void setWorkflowData(Object workflowData) {
 		this.workflowData = workflowData;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 }
