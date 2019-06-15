@@ -1,6 +1,7 @@
 
 package com.capitaworld.service.loans.boot;
 
+import com.capitaworld.service.BodmasClient;
 import com.capitaworld.source.provider.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
