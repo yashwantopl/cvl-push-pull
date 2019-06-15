@@ -1465,15 +1465,15 @@ public class ScoringServiceImpl implements ScoringService {
         		
         		
     		isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi() != null ? retailApplicantDetail.getIsCheckOffDirectPayEmi() : false ;
-    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",isCheckOffDirectPayEmi,applicationId);
+    		logger.info("isCheckOffDirectPayEmi HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffDirectPayEmi(),applicationId);
     		isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() != null ? retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding() : false;
-    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}",isCheckOffAgreetoPayOutstanding,applicationId);
+    		logger.info("isCheckOffAgreetoPayOutstanding HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding(),applicationId);
     		isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc() != null ? retailApplicantDetail.getIsCheckOffShiftSalAcc() : false;
-    		logger.info("isCheckOffShiftSalAcc HL=======>{}",isCheckOffShiftSalAcc,applicationId);
+    		logger.info("isCheckOffShiftSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffShiftSalAcc(),applicationId);
     		isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount() != null ? retailApplicantDetail.getIsCheckOffPayOutstndAmount() : false;
-    		logger.info("isCheckOffPayOutstndAmount HL=======>{}",isCheckOffPayOutstndAmount,applicationId);
+    		logger.info("isCheckOffPayOutstndAmount HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffPayOutstndAmount(),applicationId);
     		isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc() != null ? retailApplicantDetail.getIsCheckOffNotChangeSalAcc() : false;
-    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}",isCheckOffNotChangeSalAcc,applicationId);
+    		logger.info("isCheckOffNotChangeSalAcc HL=======>{}======>{}",retailApplicantDetail.getIsCheckOffNotChangeSalAcc(),applicationId);
     		
         	logger.info("retailApplicantDetail.getEmploymentType()=======>{}",retailApplicantDetail.getEmploymentType());
         	
