@@ -228,6 +228,44 @@ public class CamReportPdfDetailsController {
 
 	}
 	
+	@GetMapping(value = "/getHLBankStatementAnalysis/{applicationId}/{productMappingId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getHLBankStatementAnalysis(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
+		
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+
+			Map<String,Object> response = hlCamReportService.getHLBankStatementAnalysisReport(applicationId, productId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("HLBANKSTATEMENTANALYSIS");
+			reportRequest.setType("HLBANKSTATEMENTANALYSIS");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+			  JSONObject jsonObj = new JSONObject();
+
+				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID,553L);
+				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put(ORIGINAL_FILE_NAME, "HL_BANK_STATEMENT_ANALYSIS"+applicationId+".pdf");
+				
+				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+				if(documentResponse.getStatus() == 200){
+				logger.info("DocumentResponse Data==>{}",documentResponse.getData());
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
+				}
+				else{
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	@GetMapping(value = "/getInEligiblePrimaryDataMap/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId)  {
 
