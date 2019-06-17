@@ -1,7 +1,6 @@
 DELIMITER $$
 
 USE `loan_application`$$
-
 DROP PROCEDURE IF EXISTS `spFetchOfflineDisbursedProposal`$$
 
 CREATE DEFINER=`dbsidbi`@`%` PROCEDURE `spFetchOfflineDisbursedProposal`(IN userId INT)
@@ -20,6 +19,8 @@ BEGIN
 		'branchName',branch.`name`,
 		'branchCode',branch.`code`,
 		'branchId',branch.`id`,
+		'loanTypeId',con.loan_type_id,
+		'businessType',con.business_type_id,
 		'mobile',u.mobile,
 		'email',u.email) AS JSON
 		FROM loan_application.`ineligible_proposal_details` ine 
@@ -53,6 +54,8 @@ BEGIN
 		'branchCode',branch.`code`,
 		'branchId',branch.`id`,
 		'mobile',u.mobile,
+		'loanTypeId',con.loan_type_id,
+		'businessType',con.business_type_id,
 		'email',u.email) AS JSON
 		FROM loan_application.`ineligible_proposal_details` ine 
 		LEFT JOIN `loan_application`.`disbursement_detail` dis ON dis.`application_id` = ine.`application_id`
