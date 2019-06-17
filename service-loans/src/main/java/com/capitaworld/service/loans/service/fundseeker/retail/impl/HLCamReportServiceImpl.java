@@ -537,9 +537,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				//Retail Final Co-App Detail
 				if(isFinalView) {
 					
+					Map<String, Object> coAppData=new HashMap<>();
 					try {
 						//final CoApp Data
-						Map<String, Object> coAppData=new HashMap<>();
 						FinalHomeLoanCoApplicantDetail finalCoApplicantDetail = finalHomeLoanCoAppDetailRepository.getByApplicationAndProposalIdAndCoAppId(applicationId, proposalId, coApplicantDetail.getId());
 						
 						if(!CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail)) {
@@ -567,13 +567,98 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 							coAppData.put("religion", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getReligion()) ? ReligionRetailMst.getById(finalCoApplicantDetail.getReligion()) : "-");
 							coAppData.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPlaceOfBirth()) ? finalCoApplicantDetail.getPlaceOfBirth() :"-");
 						}
-						
-						coApp.put("finalData" ,coAppData != null ? coAppData : null);
 					}
 					catch (Exception e) {
 						logger.error("Error/Exception while fetching final home loan detail Of Co-Applicant ..Error==>{}",e);
 					}
 					
+					//Current Bank Account Detail
+					try {
+						List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailService.getExistingLoanDetailListByProposalIdCoAppId(proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(bankAccountHeldDetails)) {
+							coAppData.put("bankAccountHeldDetails", !CommonUtils.isObjectListNull(bankAccountHeldDetails) ? bankAccountHeldDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant Current Bank Account in home loan final CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					//Fixed Deposit Detail
+					try {
+						List<FixedDepositsDetailsRequest> fixedDepositsDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalIdAndCoAppId(proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(fixedDepositsDetails)) {
+							coAppData.put("fixedDepositDetails", !CommonUtils.isObjectListNull(fixedDepositsDetails) ? fixedDepositsDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant fixed deposit details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					//Investment Detail
+					try {
+						List<OtherCurrentAssetDetailRequest> investmentDetails = otherCurrentAssetDetailService.getOtherCurrentAssetDetailListByProposalIdAndCoAppId(proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(investmentDetails)) {
+							coAppData.put("investmentDetails", !CommonUtils.isObjectListNull(investmentDetails) ? investmentDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant investment details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					//Other Income Detail
+					try {
+						List<OtherIncomeDetailRequest> otherIncomeDetails = otherIncomeDetailService.getOtherIncomeDetailListForCoApplicant(applicationId, proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(otherIncomeDetails)) {
+							coAppData.put("otherIncomeDetails", !CommonUtils.isObjectListNull(otherIncomeDetails) ? otherIncomeDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant other income details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					if(coApplicantDetail.getEmploymentType() != null) {
+						
+						//Emp Salaried Type
+						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.SALARIED.getId()) {
+							try {
+								List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
+								
+								if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
+									coAppData.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
+								}
+							}catch (Exception e) {
+								logger.error("Error/Exception while fetching data of Co-Applicant Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							}
+						}
+						
+						//Emp SelfEmployed Type
+						if(coApplicantDetail.getEmploymentType() != null && (coApplicantDetail.getEmploymentType() == OccupationNature.BUSINESS.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED_PROFESSIONAL.getId())) {
+							try {
+								List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
+								
+								if(!CommonUtils.isObjectNullOrEmpty(empSelfEmployedTypeDetail)) {
+									coAppData.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
+								}
+							}catch (Exception e) {
+								logger.error("Error/Exception while fetching data of Co-Applicant Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							}
+						}
+						
+						//Emp Agriculturist Type
+						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.AGRICULTURIST.getId()) {
+							try {
+								List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
+								
+								if(!CommonUtils.isObjectNullOrEmpty(empAgriculturistTypeDetail)) {
+									coAppData.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
+								}
+							}catch (Exception e) {
+								logger.error("Error/Exception while fetching data of Co-Applicant Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							}
+						}
+					}
+					
+					coApp.put("finalData" ,coAppData != null ? coAppData : null);
 				}
 				
 				listMap.add(coApp);
