@@ -6,4 +6,6 @@ public interface HLCamReportService {
 		
 	public Map<String, Object> getCamReportDetailsByProposalId(Long applicationId, Long productId, Long proposalId, boolean isFinalView);
 	
+	public Map<String, Object> getHLBankStatementAnalysisReport(Long applicationId, Long productId);
+	
 }

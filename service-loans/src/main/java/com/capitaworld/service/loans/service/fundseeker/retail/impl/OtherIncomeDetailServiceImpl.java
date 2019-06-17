@@ -24,6 +24,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.OtherIncomeDet
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.IncomeDetails;
 
 /**
  * @author Sanket
@@ -145,6 +146,9 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 			for (OtherIncomeDetail detail : otherIncomeDetails) {
 				OtherIncomeDetailRequest otherIncomeRequest = new OtherIncomeDetailRequest();
 				BeanUtils.copyProperties(detail, otherIncomeRequest);
+				otherIncomeRequest.setNetIncomeString( !CommonUtils.isObjectNullOrEmpty(otherIncomeRequest.getNetIncome()) ? CommonUtils.convertValueWithoutDecimal(otherIncomeRequest.getNetIncome()) : null);
+				otherIncomeRequest.setGrossIncomeString( !CommonUtils.isObjectNullOrEmpty(otherIncomeRequest.getGrossIncome()) ? CommonUtils.convertValueWithoutDecimal(otherIncomeRequest.getGrossIncome()) : null);
+				otherIncomeRequest.setIncomeDetailsType(!CommonUtils.isObjectNullOrEmpty(otherIncomeRequest.getIncomeDetailsId()) ? IncomeDetails.getById(otherIncomeRequest.getIncomeDetailsId()).getValue() : "-" ); 
 				otherIncomeRequests.add(otherIncomeRequest);
 			}
 			return otherIncomeRequests;

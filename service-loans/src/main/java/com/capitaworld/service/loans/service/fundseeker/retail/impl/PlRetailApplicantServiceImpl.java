@@ -1419,33 +1419,55 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 	public List<FinancialArrangementsDetailRequest> getOneformCreditInfo(Long applicationId, Long coAppId) {
 		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
 			try {
-	        	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, applicationId, true);
-	            if(retailFinancialDetailsList != null) {
-	            	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
-	                FinancialArrangementsDetailRequest retailFinReq=null;
-	                for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
-	                	retailFinReq =new FinancialArrangementsDetailRequest();
-	                	BeanUtils.copyProperties(finArDetails, retailFinReq);
-	                	retailFinancialDetailsReq.add(retailFinReq);
-	                }
-	                return retailFinancialDetailsReq;
-	            }
+	            List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, applicationId, true);
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
+                FinancialArrangementsDetailRequest financialRequest = null;
+                for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
+                    financialRequest = new FinancialArrangementsDetailRequest();
+                    BeanUtils.copyProperties(financialDetail, financialRequest);
+                    financialArrangementsDetailRequestList.add(financialRequest);
+                }
+                
+                List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromCoAppId(coAppId);
+                for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
+                	financialRequest = new FinancialArrangementsDetailRequest();
+                    financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
+                    financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
+                    financialRequest.setLoanType("Credit Card");
+                    financialRequest.setIsManuallyAdded(false);
+                    financialArrangementsDetailRequestList.add(financialRequest);
+                }
+                
+                return financialArrangementsDetailRequestList;
 			} catch (Exception e) {
 				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails while coapplicant <<<<<<<=========",e);
 			}	
 		} else {
 			 try {
-            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
-                if(retailFinancialDetailsList != null) {
-                	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
-                    FinancialArrangementsDetailRequest retailFinReq=null;
-                    for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
-                    	retailFinReq =new FinancialArrangementsDetailRequest();
-                    	BeanUtils.copyProperties(finArDetails, retailFinReq);
-                    	retailFinancialDetailsReq.add(retailFinReq);
-                    }
-                    return retailFinancialDetailsReq;
+                
+                List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
+                FinancialArrangementsDetailRequest financialRequest = null;
+                for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
+                    financialRequest = new FinancialArrangementsDetailRequest();
+                    BeanUtils.copyProperties(financialDetail, financialRequest);
+                    financialArrangementsDetailRequestList.add(financialRequest);
                 }
+                
+                List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+                for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
+                	financialRequest = new FinancialArrangementsDetailRequest();
+                    financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
+                    financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
+                    financialRequest.setLoanType("Credit Card");
+                    financialRequest.setIsManuallyAdded(false);
+                    financialArrangementsDetailRequestList.add(financialRequest);
+                }
+                
+                System.out.println("financialArrangementsDetailRequestList : "+financialArrangementsDetailRequestList.size());
+                return financialArrangementsDetailRequestList;
+                
+                
 			} catch (Exception e) {
 				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
 			}

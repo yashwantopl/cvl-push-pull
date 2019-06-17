@@ -42,6 +42,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDe
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
@@ -64,6 +65,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.OtherPropertyD
 import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
@@ -179,6 +181,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	@Autowired
 	private BankingRelationlRepository bankingRelationlRepository;
 	
+	@Autowired
+	private CorporateApplicantService corporateApplicantService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	
@@ -248,9 +253,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				Period sinceWhen = Period.between(since, now);
 				int years = sinceWhen.getYears();
 				int months = sinceWhen.getMonths();
-				map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(years) ? years + " years" : "")+ " " +(!CommonUtils.isObjectNullOrEmpty(months) ? months+" months":""));
-			}else {
-				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
+				plRetailApplicantRequest.setSalaryBankYear(years);
+				plRetailApplicantRequest.setSalaryBankMonth(months);
 			}
 			
 			if(plRetailApplicantRequest.getResidenceSinceYear() != null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
@@ -258,7 +262,10 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				LocalDate now = LocalDate.now();
 				Period sinceWhen = Period.between(since, now);
 				int years = sinceWhen.getYears();
-				plRetailApplicantRequest.setResidenceSinceYear(years);
+				int months = sinceWhen.getMonths();
+				map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(years) ? years + " years" : "")+ " " +(!CommonUtils.isObjectNullOrEmpty(months) ? months+" months":""));
+			}else {
+				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
 			
 			String operatingBusinessSince = null;
@@ -505,7 +512,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
 				
-				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue() : "-");
+				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				coApp.put("relationshipWithApp", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRelationshipWithApplicant()) ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : "-");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "-");
 				coApp.put("nameOfEmployer", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? coApplicantDetail.getNameOfEmployer() : "-");
@@ -1409,12 +1416,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
 							List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
 							for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
-								Map<String ,Object> constructionDetails = new HashMap<String, Object>();	
-								constructionDetails.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
-								constructionDetails.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
-								constructionDetails.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
-								
-								otherPropertyListData.add(!CommonUtils.isObjectListNull(constructionDetails) ? constructionDetails : null);
+								if(otherPropertyDetail != null && otherPropertyDetail.getTotalCostOfLand() != null) {
+									Map<String ,Object> constructionDetails = new HashMap<String, Object>();	
+									constructionDetails.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
+									constructionDetails.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
+									constructionDetails.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
+									
+									otherPropertyListData.add(!CommonUtils.isObjectListNull(constructionDetails) ? constructionDetails : null);
+								}
 							}
 							
 							retailMap.put("constructionDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
@@ -1427,12 +1436,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 							List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
 							List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
 							for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
-								Map<String ,Object> repairDetails = new HashMap<String, Object>();
-								repairDetails.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
-								repairDetails.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
-								repairDetails.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
-								
-								otherPropertyListData.add(!CommonUtils.isObjectListNull(repairDetails) ? repairDetails : null);
+								if(otherPropertyDetail != null && otherPropertyDetail.getTotalCostOfRenovation() != null) {
+									Map<String ,Object> repairDetails = new HashMap<String, Object>();
+									repairDetails.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
+									repairDetails.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
+									repairDetails.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
+									
+									otherPropertyListData.add(!CommonUtils.isObjectListNull(repairDetails) ? repairDetails : null);
+								}
 							}
 							
 							retailMap.put("repairDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
@@ -1471,6 +1482,78 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 		}
 		
+		return map;
+	}
+	
+	@Override
+	public Map<String, Object> getHLBankStatementAnalysisReport(Long applicationId, Long productId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
+		try {
+			if(corporateApplicantRequest != null) {
+				map.put("orgName", StringEscapeUtils.escapeXml(corporateApplicantRequest.getOrganisationName()));
+			}
+		} catch (Exception e1) {
+			logger.error(CommonUtils.EXCEPTION,e1);
+		}
+		
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		List<Data> datas = new ArrayList<>();
+	  //List<Object> bankStatement = new ArrayList<Object>();
+	/**	List<Object> monthlyDetails = new ArrayList<Object>();
+		List<Object> top5FundReceived = new ArrayList<Object>();
+		List<Object> top5FundTransfered = new ArrayList<Object>();
+		List<Object> bouncedChequeList = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+		List<Object> summaryInfo = new ArrayList<Object>();*/
+
+
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> listhashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			//List<HashMap<String, Object>> bankDataDetails = new ArrayList<HashMap<String,Object>>(); 
+
+			if (!CommonUtils.isListNullOrEmpty(listhashMap)) {	
+				for (HashMap<String, Object> rec : listhashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+							
+					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					/**monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");*/
+						
+				/**HashMap<String, Object>  bankData = new HashMap<>();
+					bankData.put("monthlyDetails", monthlyDetails);
+					bankData.put("top5FundReceived", top5FundReceived);
+					bankData.put("top5FundTransfered", top5FundTransfered);
+					bankData.put("bouncedChequeList", bouncedChequeList);
+					bankData.put("customerInfo", customerInfo);
+					bankData.put("summaryInfo", summaryInfo);
+					bankData.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+					bankDataDetails.add(bankData);*/
+				}
+						
+				map.put("bankRelatedData" , CommonUtils.printFields(datas, null));
+				//map.put("bankStatement", bankStatement);
+				/**map.put("monthlyDetails", monthlyDetails);
+				map.put("top5FundReceived", top5FundReceived);
+				map.put("top5FundTransfered", top5FundTransfered);
+				map.put("bouncedChequeList", bouncedChequeList);
+				map.put("customerInfo", customerInfo);
+				map.put("summaryInfo", summaryInfo);
+				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));*/
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting perfios data : ",e);
+		}
 		return map;
 	}
 	
