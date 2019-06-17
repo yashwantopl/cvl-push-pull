@@ -4,6 +4,7 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -14,6 +15,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.retail.*;
+import com.capitaworld.service.loans.repository.fundseeker.retail.*;
+import com.capitaworld.service.oneform.enums.*;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,9 +50,6 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
-import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
@@ -67,8 +69,6 @@ import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -92,26 +92,6 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.CastCategory;
-import com.capitaworld.service.oneform.enums.DesignationList;
-import com.capitaworld.service.oneform.enums.DisabilityType;
-import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EmploymentCategory;
-import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EmploymentWithPL;
-import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
-import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.MaritalStatusMst;
-import com.capitaworld.service.oneform.enums.OccupationHL;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.ReligionRetailMst;
-import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
-import com.capitaworld.service.oneform.enums.ResidentStatusMst;
-import com.capitaworld.service.oneform.enums.ResidentialStatus;
-import com.capitaworld.service.oneform.enums.SalaryModeMst;
-import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -222,8 +202,15 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	
     @Autowired
     private BankingRelationlRepository bankingRelationlRepository;
-    
-	
+
+	@Autowired
+	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
+
+	@Autowired
+	private PurchasePropertyDetailsRepository purchasePropertyDetailsRepository;
+
+	@Autowired
+	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
 	
 	@Override
 	public HlTeaserViewResponse getHlTeaserView(Long toApplicationId, Integer userType, Long userId,Long productMappingId, Boolean isFinal, Long proposalId) {
@@ -341,6 +328,20 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
 				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail());
 				plRetailApplicantResponse.setContactNo(plRetailApplicantRequest.getContactNo());
+
+				LocalDate today = LocalDate.now();
+				String operatingBusinessSince = null;
+				if(plRetailApplicantRequest.getBusinessStartDate() != null ) {
+					LocalDate operatingBusinessDiff = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(plRetailApplicantRequest.getBusinessStartDate()));
+					operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
+				}
+				if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 2) {
+					plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() != null ? plRetailApplicantRequest.getTotalExperienceYear() + " years" :" ") + " "+ (plRetailApplicantRequest.getTotalExperienceMonth()!= null  ? plRetailApplicantRequest.getTotalExperienceMonth() +" months" : " "));
+				}else if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 7) {
+					plRetailApplicantResponse.setTotalExperienceYear(null);
+				}else {
+					plRetailApplicantResponse.setTotalExperienceYear(operatingBusinessSince != null ? operatingBusinessSince :"-");
+				}
 				
 
 				/*salary account details*/
@@ -349,10 +350,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 				
 				/*Co Applicant Details*/
-				List<PLRetailApplicantResponse> coApplicationDetails = getCoApplicationDetails(toApplicationId,productMappingId);
+				List<PLRetailApplicantResponse> coApplicationDetails = getCoApplicationDetails(toApplicationId,productMappingId,proposalId);
 				hlTeaserViewResponse.setRetailCoApplicantDetail(coApplicationDetails);
-				
-				LocalDate today = LocalDate.now();
+
 				if(plRetailApplicantRequest.getSalaryBankYear() !=null && plRetailApplicantRequest.getSalaryBankMonth()!= null) {
 
 //					LocalDate since = LocalDate.of(plRetailApplicantRequest.getSalaryBankYear(), plRetailApplicantRequest.getSalaryBankMonth(), 1);
@@ -410,6 +410,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				// loan Details 
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
 				hlTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
+				/*detailed purpose of loan*/
+				hlTeaserViewResponse.setDetailedLoanPur(plRetailApplicantRequest.getLoanPurposeQueType() != null ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
@@ -495,6 +497,12 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		//property details
 		PrimaryHomeLoanDetail primaryHlDetail= primaryHomeloanDetailsRepo.getByApplication(toApplicationId);
 		HLOneformPrimaryRes res=primaryHomeloanService.getOneformPrimaryDetails(toApplicationId);
+
+		List<PurchasePropertyDetails> purchasePropertyDetails = purchasePropertyDetailsRepository.getListByApplicationId(toApplicationId);
+		FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(toApplicationId, proposalId);
+
+		//List<ReferencesRetailDetail> referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromPropsalId(proposalId);
+
 		if(primaryHlDetail != null) {
 			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getMarketValProp() != null ? primaryHlDetail.getMarketValProp() : 0);
 			hlTeaserViewResponse.setPropertyAge((primaryHlDetail.getOldPropYear()!= null ? primaryHlDetail.getOldPropYear() + (primaryHlDetail.getOldPropYear() >1 ? " years"  : " year") :"") + " " +
@@ -515,6 +523,44 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 														);
 				}
 			}
+
+			try {
+				/*for(ReferencesRetailDetail referencesRetailDetail : referencesRetailDetails) {
+					hlTeaserViewResponse.setRefNo(referencesRetailDetail.getId());
+					hlTeaserViewResponse.setRefName(referencesRetailDetail.getName());
+					hlTeaserViewResponse.setRefAddress(referencesRetailDetail.getAddress());
+					hlTeaserViewResponse.setRefEmail(referencesRetailDetail.getEmail());
+					hlTeaserViewResponse.setRefMobile(referencesRetailDetail.getMobile());
+					hlTeaserViewResponse.setRefTel(referencesRetailDetail.getTelephone());
+				}*/
+
+				for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
+					hlTeaserViewResponse.setPropCity(CommonDocumentUtils.getCity(purchasePropertyDetail.getCity().longValue(), oneFormClient));
+					hlTeaserViewResponse.setPropState(CommonDocumentUtils.getState(purchasePropertyDetail.getState().longValue(), oneFormClient));
+					hlTeaserViewResponse.setPropertyName(purchasePropertyDetail.getPropertyName());
+					hlTeaserViewResponse.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
+					hlTeaserViewResponse.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
+					hlTeaserViewResponse.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
+					hlTeaserViewResponse.setCarpetArea(purchasePropertyDetail.getCarpetArea());
+				}
+
+				hlTeaserViewResponse.setLandPlotCost(primaryHlDetail.getLandPlotCost());
+				hlTeaserViewResponse.setConstructionCost(primaryHlDetail.getConstructionCost());
+				hlTeaserViewResponse.setCompletionTimeInYear(primaryHlDetail.getCompletionTimeInYear());
+				hlTeaserViewResponse.setRenovationType(primaryHlDetail.getRenovationType() != null ? PropertySubType.getById(primaryHlDetail.getRenovationType()).getValue().toString() : "-");
+				hlTeaserViewResponse.setRenovationCost(primaryHlDetail.getRenovationCost());
+				hlTeaserViewResponse.setRenovationCompletionTimeInYear(primaryHlDetail.getRenovationCompletionTimeInYear());
+				hlTeaserViewResponse.setDateOfLoanTaken(primaryHlDetail.getDateOfLoanTaken());
+				hlTeaserViewResponse.setOriginalValProp(primaryHlDetail.getOriginalValProp());
+				hlTeaserViewResponse.setSellerName(finalHomeLoanDetail.getSellerName());
+				hlTeaserViewResponse.setSellerAddress(finalHomeLoanDetail.getSellerAddress());
+				hlTeaserViewResponse.setSellerCity(CommonDocumentUtils.getCity(finalHomeLoanDetail.getSellerCity().longValue(), oneFormClient));
+				hlTeaserViewResponse.setSellerState(CommonDocumentUtils.getState(finalHomeLoanDetail.getSellerState().longValue(), oneFormClient));
+				hlTeaserViewResponse.setSellerPincode(finalHomeLoanDetail.getSellerPincode());
+			}catch (Exception e){
+				logger.error("Exception while fetching property details",e);
+			}
+
 		}
 		//PROPOSAL RESPONSE
 		try {
@@ -671,8 +717,12 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					hlTeaserViewResponse.setReligion(retailFinalInfo.getReligion() != null ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue().toString() : "-");
 					hlTeaserViewResponse.setResidentialStatus(retailFinalInfo.getResidentialStatus() != null ? ResidentialStatus.getById(retailFinalInfo.getResidentialStatus()).getValue().toString() : "-");
 					hlTeaserViewResponse.setCastCategory(retailFinalInfo.getCastId() != null ? CastCategory.getById(retailFinalInfo.getCastId()).getValue().toString() : "-");
-					hlTeaserViewResponse.setMotherName(retailFinalInfo.getMotherName());
 					hlTeaserViewResponse.setFatherName(retailFinalInfo.getFatherName());
+					hlTeaserViewResponse.setMotherName(retailFinalInfo.getMotherName());
+					hlTeaserViewResponse.setNameOfSpouse(retailFinalInfo.getSpouseName());
+					hlTeaserViewResponse.setNoOfChildren(retailFinalInfo.getNoChildren());
+					hlTeaserViewResponse.setBirthPlace(retailFinalInfo.getBirthPlace());
+					hlTeaserViewResponse.setQualifyingYear(retailFinalInfo.getQualifyingYear());
 					hlTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
 					hlTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
 					if(retailFinalInfo.getDdoRemainingSerYrs() != null && retailFinalInfo.getDdoRemainingSerMonths() != null) {
@@ -685,7 +735,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					
 					//permanent address
 					try {
-						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {	
+						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {
 							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId());
 							hlTeaserViewResponse.setPermAddDist(pindata.getDistrictName());
 							hlTeaserViewResponse.setPermAddTaluko(pindata.getTaluka());
@@ -697,8 +747,26 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
-					if(retailFinalInfo.getPermanentAddress() != null){	
+					if(retailFinalInfo.getPermanentAddress() != null){
 						hlTeaserViewResponse.setPermAdd( (retailFinalInfo.getPermanentAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getPremiseNumber())) :"") + (retailFinalInfo.getPermanentAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getStreetName())) : "") + (retailFinalInfo.getPermanentAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getLandMark())) : "")+ (hlTeaserViewResponse.getPermAddDist() != null ?(CommonUtils.commaReplace(hlTeaserViewResponse.getPermAddDist())) :"")+ (hlTeaserViewResponse.getPermAddTaluko() != null ? (CommonUtils.commaReplace(hlTeaserViewResponse.getPermAddTaluko())) : "") + (retailFinalInfo.getPermanentAddress().getPincode() != null ? (retailFinalInfo.getPermanentAddress().getPincode()) : ""));
+					}
+
+					//co-add
+					try {
+						if(finalHomeLoanDetail != null) {
+							PincodeDataResponse pindata=pincodeDateService.getById(finalHomeLoanDetail.getCorrespondencePinCode().longValue());
+							hlTeaserViewResponse.setCorrAddDist(pindata.getDistrictName());
+							hlTeaserViewResponse.setCorrAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}else {
+							logger.warn(DISTRICT_ID_IS_NULL_MSG);
+						}
+					} catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
+					}
+
+					if(finalHomeLoanDetail!= null){
+						hlTeaserViewResponse.setCorrAdd( (finalHomeLoanDetail.getCorrespondencePremiseNo()!=null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondencePremiseNo())) :"") + (finalHomeLoanDetail.getCorrespondenceStreetName() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceStreetName())) : "") + (finalHomeLoanDetail.getCorrespondenceLandmark() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceLandmark())) : "")+ (hlTeaserViewResponse.getCorrAddDist() != null ?(CommonUtils.commaReplace(hlTeaserViewResponse.getCorrAddDist())) :"")+ (hlTeaserViewResponse.getCorrAddTaluko() != null ? (CommonUtils.commaReplace(hlTeaserViewResponse.getCorrAddTaluko())) : "") + (finalHomeLoanDetail.getCorrespondencePinCode() != null ? (finalHomeLoanDetail.getCorrespondencePinCode()) : ""));
 					}
 					
 					
@@ -805,10 +873,11 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 
 
-	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId , Long productMappingId) throws LoansException {
+	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId , Long productMappingId, Long proposalId) throws LoansException {
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
 			List<CoApplicantDetail> coApplicantList = coAppService.getCoApplicantList(applicationId);
+			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
 			for (CoApplicantDetail coApplicantDetail : coApplicantList) {
 				PLRetailApplicantResponse plRetailApplicantResponse=new PLRetailApplicantResponse();
 				
@@ -828,6 +897,15 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setCategory(coApplicantDetail.getCategory()!=null?String.valueOf(CastCategory.getById(coApplicantDetail.getCategory())):" - ");
 				plRetailApplicantResponse.setFatherName(coApplicantDetail.getFatherName()!=null ? coApplicantDetail.getFatherName(): "-");
+				plRetailApplicantResponse.setMotherName(coApplicantDetail.getMotherName());
+				plRetailApplicantResponse.setEducationQualificationString(coApplicantDetail.getEducationQualification() != null ? EducationStatusRetailMst.getById(coApplicantDetail.getEducationQualification()).getValue().toString() : "-");
+				plRetailApplicantResponse.setQualifyingYear(coApplicantDetail.getQualifyingYear());
+				plRetailApplicantResponse.setNameOfSpouse(coApplicantDetail.getSpouseName());
+				plRetailApplicantResponse.setNoOfChildren(coApplicantDetail.getNoChildren());
+				plRetailApplicantResponse.setRelationshipWithApplicant(coApplicantDetail.getRelationshipWithApplicant() != null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString() : "-");
+				plRetailApplicantResponse.setBirthPlace(coApplicantDetail.getBirthPlace());
+				plRetailApplicantResponse.setReligion(coApplicantDetail.getReligion() != null ? Religion.getById(coApplicantDetail.getReligion()).getValue().toString() : "-");
+				plRetailApplicantResponse.setCastCategory(coApplicantDetail.getCastId() != null ? CastCategory.getById(coApplicantDetail.getCastId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNationality(coApplicantDetail.getNationality()!=null ?ResidentialStatus.getById(coApplicantDetail.getNationality()).getValue(): "-");
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
@@ -845,6 +923,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setNoOfDependent(coApplicantDetail.getNoDependent());
 				plRetailApplicantResponse.setContactNo(coApplicantDetail.getContactNo());
 				plRetailApplicantResponse.setEmail(coApplicantDetail.getEmail());
+				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithPL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
@@ -906,8 +985,42 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				} catch (Exception e) {
 					logger.error("error while fetching itr data from itrClient",e);
 				}
-				
-				
+
+				//permanent address
+				try {
+					if(coApplicantDetail != null && coApplicantDetail.getPermanentPincode() != null) {
+						PincodeDataResponse pindata=pincodeDateService.getById(coApplicantDetail.getPermanentPincode().longValue());
+						plRetailApplicantResponse.setPermAddDist(pindata.getDistrictName());
+						plRetailApplicantResponse.setPermAddTaluko(pindata.getTaluka());
+						pindata.getTaluka();
+					}else {
+						logger.warn(DISTRICT_ID_IS_NULL_MSG);
+					}
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+
+				if(coApplicantDetail.getPermanentPincode() != null){
+					plRetailApplicantResponse.setPermAdd( (coApplicantDetail.getPermanentPremiseNumberName()!=null ? (CommonUtils.commaReplace(coApplicantDetail.getPermanentPremiseNumberName())) :"") + (coApplicantDetail.getPermanentStreetName() != null ? (CommonUtils.commaReplace(coApplicantDetail.getPermanentStreetName())) : "") + (coApplicantDetail.getPermanentLandMark() != null ? (CommonUtils.commaReplace(coApplicantDetail.getPermanentLandMark())) : "")+ (plRetailApplicantResponse.getPermAddDist() != null ?(CommonUtils.commaReplace(plRetailApplicantResponse.getPermAddDist())) :"")+ (plRetailApplicantResponse.getPermAddTaluko() != null ? (CommonUtils.commaReplace(plRetailApplicantResponse.getPermAddTaluko())) : "") + (coApplicantDetail.getPermanentPincode() != null ? (coApplicantDetail.getPermanentPincode()) : ""));
+				}
+
+				//co-add
+				try {
+					if(finalHomeLoanDetail != null) {
+						PincodeDataResponse pindata=pincodeDateService.getById(finalHomeLoanDetail.getCorrespondencePinCode().longValue());
+						plRetailApplicantResponse.setCorrAddDist(pindata.getDistrictName());
+						plRetailApplicantResponse.setCorrAddTaluko(pindata.getTaluka());
+						pindata.getTaluka();
+					}else {
+						logger.warn(DISTRICT_ID_IS_NULL_MSG);
+					}
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+
+				if(finalHomeLoanDetail!= null){
+					plRetailApplicantResponse.setCorrAdd( (finalHomeLoanDetail.getCorrespondencePremiseNo()!=null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondencePremiseNo())) :"") + (finalHomeLoanDetail.getCorrespondenceStreetName() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceStreetName())) : "") + (finalHomeLoanDetail.getCorrespondenceLandmark() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceLandmark())) : "")+ (plRetailApplicantResponse.getCorrAddDist() != null ?(CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddDist())) :"")+ (plRetailApplicantResponse.getCorrAddTaluko() != null ? (CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddTaluko())) : "") + (finalHomeLoanDetail.getCorrespondencePinCode() != null ? (finalHomeLoanDetail.getCorrespondencePinCode()) : ""));
+				}
 
 				
 				try {

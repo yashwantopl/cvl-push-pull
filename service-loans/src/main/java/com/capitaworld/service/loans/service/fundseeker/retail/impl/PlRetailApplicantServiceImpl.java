@@ -1487,6 +1487,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isContactInfoFilled",coApplicantDetail.getIsContactInfoFilled());
 				json.put("isCibilCompleted",coApplicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",coApplicantDetail.getIsOneFormCompleted());
+				json.put("isIncomeConsider",coApplicantDetail.getIsIncomeConsider());
 				return json;
 			}
 		} else {
@@ -1500,6 +1501,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isContactInfoFilled",applicantDetail.getIsContactInfoFilled());
 				json.put("isCibilCompleted",applicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",applicantDetail.getIsOneFormCompleted());
+                json.put("isIncomeConsider",true);
 				return json;
 			}
 		}
