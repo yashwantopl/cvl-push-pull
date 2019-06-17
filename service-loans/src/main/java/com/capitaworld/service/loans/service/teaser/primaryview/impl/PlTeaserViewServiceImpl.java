@@ -1093,16 +1093,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 
          // for name is edited or not:
-         if(!plRetailApplicantResponse.getFullName().equals(plTeaserViewResponse.getNameAsPerItr()))
-         {// name is edited
-			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
-		 }
-		 else{
-			 // name is  not edited
+
+         if(plRetailApplicantResponse.getFullName().equals(plTeaserViewResponse.getNameAsPerItr()))
+         {
 			 plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
 		 }
 
-		
+		 else{
+			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		 }
+
+
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
@@ -1172,6 +1173,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						}else {
 							logger.warn(DISTRICT_ID_IS_NULL_MSG);
 						}
+
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
