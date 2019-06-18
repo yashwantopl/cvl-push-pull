@@ -1370,28 +1370,24 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL:
                                 try {
                                     Double totalEODBalAvg=0.0;
-                                    Double totalCheDepsitLast6Month = 0.0d;
+                                    Double deposite = 0.0;
                                     boolean isAvgEod = true;
-                                    if(bankStatementData != null && bankStatementData.getSummaryInfo() != null) {
-                                        if(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit() != null) {
-                                            totalEODBalAvg = Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
+                                        if(bankStatementData != null &&
+                                                bankStatementData.getSummaryInfo() != null &&
+                                                bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg() != null &&
+                                                bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit() != null) {
+                                            totalEODBalAvg = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
+                                            deposite = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
+                                            logger.info("value===>{},{}",totalEODBalAvg,deposite);
                                         }else{
                                             isAvgEod =false;
-                                        }
-                                        if(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
-                                            totalCheDepsitLast6Month = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
-                                            logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",totalCheDepsitLast6Month);
-                                        }else{
-                                            isAvgEod =false;
-                                        }
-                                    }else{
-                                        isAvgEod =false;
+                                            logger.info("error while gettig AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL parameter value ===>{},{}",totalEODBalAvg,deposite);
                                     }
 
                                     if(isAvgEod){
                                         scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(true);
                                         scoreParameterRetailRequest.setAvgEODBal(totalEODBalAvg);
-                                        scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(totalCheDepsitLast6Month);
+                                        scoreParameterRetailRequest.setDeposite(deposite);
                                     }else{
                                         scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(false);
                                     }
