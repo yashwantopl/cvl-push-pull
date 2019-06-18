@@ -524,42 +524,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				}
 			}
 
-			try {
-				/*for(ReferencesRetailDetail referencesRetailDetail : referencesRetailDetails) {
-					hlTeaserViewResponse.setRefNo(referencesRetailDetail.getId());
-					hlTeaserViewResponse.setRefName(referencesRetailDetail.getName());
-					hlTeaserViewResponse.setRefAddress(referencesRetailDetail.getAddress());
-					hlTeaserViewResponse.setRefEmail(referencesRetailDetail.getEmail());
-					hlTeaserViewResponse.setRefMobile(referencesRetailDetail.getMobile());
-					hlTeaserViewResponse.setRefTel(referencesRetailDetail.getTelephone());
-				}*/
-
-				for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
-					hlTeaserViewResponse.setPropCity(CommonDocumentUtils.getCity(purchasePropertyDetail.getCity().longValue(), oneFormClient));
-					hlTeaserViewResponse.setPropState(CommonDocumentUtils.getState(purchasePropertyDetail.getState().longValue(), oneFormClient));
-					hlTeaserViewResponse.setPropertyName(purchasePropertyDetail.getPropertyName());
-					hlTeaserViewResponse.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
-					hlTeaserViewResponse.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
-					hlTeaserViewResponse.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
-					hlTeaserViewResponse.setCarpetArea(purchasePropertyDetail.getCarpetArea());
-				}
-
-				hlTeaserViewResponse.setLandPlotCost(primaryHlDetail.getLandPlotCost());
-				hlTeaserViewResponse.setConstructionCost(primaryHlDetail.getConstructionCost());
-				hlTeaserViewResponse.setCompletionTimeInYear(primaryHlDetail.getCompletionTimeInYear());
-				hlTeaserViewResponse.setRenovationType(primaryHlDetail.getRenovationType() != null ? PropertySubType.getById(primaryHlDetail.getRenovationType()).getValue().toString() : "-");
-				hlTeaserViewResponse.setRenovationCost(primaryHlDetail.getRenovationCost());
-				hlTeaserViewResponse.setRenovationCompletionTimeInYear(primaryHlDetail.getRenovationCompletionTimeInYear());
-				hlTeaserViewResponse.setDateOfLoanTaken(primaryHlDetail.getDateOfLoanTaken());
-				hlTeaserViewResponse.setOriginalValProp(primaryHlDetail.getOriginalValProp());
-				hlTeaserViewResponse.setSellerName(finalHomeLoanDetail.getSellerName());
-				hlTeaserViewResponse.setSellerAddress(finalHomeLoanDetail.getSellerAddress());
-				hlTeaserViewResponse.setSellerCity(CommonDocumentUtils.getCity(finalHomeLoanDetail.getSellerCity().longValue(), oneFormClient));
-				hlTeaserViewResponse.setSellerState(CommonDocumentUtils.getState(finalHomeLoanDetail.getSellerState().longValue(), oneFormClient));
-				hlTeaserViewResponse.setSellerPincode(finalHomeLoanDetail.getSellerPincode());
-			}catch (Exception e){
-				logger.error("Exception while fetching property details",e);
-			}
+			
 
 		}
 		//PROPOSAL RESPONSE
@@ -733,6 +698,46 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						retailFinalInfo.setDdoRemainingSerMonths(p.getMonths());
 					}
 					
+					//property details
+					
+					
+					try {
+						/*for(ReferencesRetailDetail referencesRetailDetail : referencesRetailDetails) {
+							hlTeaserViewResponse.setRefNo(referencesRetailDetail.getId());
+							hlTeaserViewResponse.setRefName(referencesRetailDetail.getName());
+							hlTeaserViewResponse.setRefAddress(referencesRetailDetail.getAddress());
+							hlTeaserViewResponse.setRefEmail(referencesRetailDetail.getEmail());
+							hlTeaserViewResponse.setRefMobile(referencesRetailDetail.getMobile());
+							hlTeaserViewResponse.setRefTel(referencesRetailDetail.getTelephone());
+						}*/
+
+						for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
+							hlTeaserViewResponse.setPropCity(CommonDocumentUtils.getCity(purchasePropertyDetail.getCity().longValue(), oneFormClient));
+							hlTeaserViewResponse.setPropState(CommonDocumentUtils.getState(purchasePropertyDetail.getState().longValue(), oneFormClient));
+							hlTeaserViewResponse.setPropertyName(purchasePropertyDetail.getPropertyName());
+							hlTeaserViewResponse.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
+							hlTeaserViewResponse.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
+							hlTeaserViewResponse.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
+							hlTeaserViewResponse.setCarpetArea(purchasePropertyDetail.getCarpetArea());
+						}
+
+						hlTeaserViewResponse.setLandPlotCost(primaryHlDetail.getLandPlotCost());
+						hlTeaserViewResponse.setConstructionCost(primaryHlDetail.getConstructionCost());
+						hlTeaserViewResponse.setCompletionTimeInYear(primaryHlDetail.getCompletionTimeInYear());
+						hlTeaserViewResponse.setRenovationType(primaryHlDetail.getRenovationType() != null ? PropertySubType.getById(primaryHlDetail.getRenovationType()).getValue().toString() : "-");
+						hlTeaserViewResponse.setRenovationCost(primaryHlDetail.getRenovationCost());
+						hlTeaserViewResponse.setRenovationCompletionTimeInYear(primaryHlDetail.getRenovationCompletionTimeInYear());
+						hlTeaserViewResponse.setDateOfLoanTaken(primaryHlDetail.getDateOfLoanTaken());
+						hlTeaserViewResponse.setOriginalValProp(primaryHlDetail.getOriginalValProp());
+						hlTeaserViewResponse.setSellerName(finalHomeLoanDetail.getSellerName());
+						hlTeaserViewResponse.setSellerAddress(finalHomeLoanDetail.getSellerAddress());
+						hlTeaserViewResponse.setSellerCity(CommonDocumentUtils.getCity(finalHomeLoanDetail.getSellerCity().longValue(), oneFormClient));
+						hlTeaserViewResponse.setSellerState(CommonDocumentUtils.getState(finalHomeLoanDetail.getSellerState().longValue(), oneFormClient));
+						hlTeaserViewResponse.setSellerPincode(finalHomeLoanDetail.getSellerPincode());
+					}catch (Exception e){
+						logger.error("Exception while fetching property details",e);
+					}
+					
 					//permanent address
 					try {
 						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {
@@ -871,8 +876,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	
 	}
 
-
-
 	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId , Long productMappingId, Long proposalId) throws LoansException {
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
@@ -923,6 +926,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setNoOfDependent(coApplicantDetail.getNoDependent());
 				plRetailApplicantResponse.setContactNo(coApplicantDetail.getContactNo());
 				plRetailApplicantResponse.setEmail(coApplicantDetail.getEmail());
+				plRetailApplicantResponse.setSalaryMode(coApplicantDetail.getModeOfReceipt()!= null ? SalaryModeMst.getById(coApplicantDetail.getModeOfReceipt()).getValue().toString() : "-");
 				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
