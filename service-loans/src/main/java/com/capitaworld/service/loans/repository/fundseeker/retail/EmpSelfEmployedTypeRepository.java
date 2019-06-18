@@ -15,6 +15,10 @@ public interface EmpSelfEmployedTypeRepository extends JpaRepository<EmpSelfEmpl
     @Query("select o from EmpSelfEmployedType o where o.applicationId.id = :applicationId and o.isActive = true")
     List<EmpSelfEmployedType> getListByApplicationId(@Param("applicationId")Long applicationId);
 
-    @Query("select o from EmpSelfEmployedType o where o.proposalId.proposalId = :proposalId and o.isActive = true")
+    @Query("select o from EmpSelfEmployedType o where o.proposalId.proposalId =:proposalId and o.isActive = true and o.coAppId=null")
     public List<EmpSelfEmployedType> listSalariedEmpRetailFromPropsalId(@Param("proposalId")Long proposalId);
+
+
+    @Query("select o from EmpSelfEmployedType o where o.proposalId.proposalId =:proposalId and o.coAppId=:coAppId and o.isActive = true")
+    public List<EmpSelfEmployedType> listSalariedEmpRetailFromPropsalIdAndCoAppId(@Param("proposalId")Long proposalId,@Param("coAppId")Long coAppId);
 }

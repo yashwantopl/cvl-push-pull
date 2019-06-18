@@ -40,8 +40,18 @@ public class EmpSelfEmployedTypeRequest implements Serializable {
     private Boolean isActive;
 
     private String nameOfPOAHolder;
+    
+    private String ownershipType;
 
-    public Long getId() {
+    public String getOwnershipType() {
+		return ownershipType;
+	}
+
+	public void setOwnershipType(String ownershipType) {
+		this.ownershipType = ownershipType;
+	}
+
+	public Long getId() {
         return id;
     }
 

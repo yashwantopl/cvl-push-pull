@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailReq
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.capitaworld.service.loans.service.teaser.primaryview.impl.CorporatePrimaryViewServiceImpl;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 public class CollateralSecurityDetailServiceImpl implements CollateralSecurityDetailService{
@@ -57,7 +58,9 @@ public class CollateralSecurityDetailServiceImpl implements CollateralSecurityDe
 			List<CollateralSecurityDetail> list = collateralSecurityDetailRepository.findByApplicationIdAndIsActive(applicationId, true);
 			for(CollateralSecurityDetail collateralSecurityDetail : list) {
 				CollateralSecurityDetailRequest request = new CollateralSecurityDetailRequest();
+				
 				BeanUtils.copyProperties(collateralSecurityDetail, request);
+				request.setCollateralAmountStr(collateralSecurityDetail.getCollateralAmount() != null ? CommonUtils.convertValueWithoutDecimal(collateralSecurityDetail.getCollateralAmount()) : "-");
 				response.add(request);
 			}
 		} catch (Exception e) {

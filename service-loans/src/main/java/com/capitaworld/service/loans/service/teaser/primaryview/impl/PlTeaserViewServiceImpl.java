@@ -94,6 +94,8 @@ import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
@@ -826,6 +828,25 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(plRetailApplicantRequest.getRetailApplicantIncomeRequestList());
 				
+				
+				
+				
+				/* Addition */
+				plRetailApplicantResponse.setCategory(plRetailApplicantRequest.getCategory() != null ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
+				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail() != null ? (plRetailApplicantRequest.getEmail()) : "-");
+				plRetailApplicantResponse.setFatherName(plRetailApplicantRequest.getFatherName() != null ? (plRetailApplicantRequest.getFatherName()) : " ");
+				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse() != null ? plRetailApplicantRequest.getAnnualIncomeOfSpouse() : null);
+				plRetailApplicantResponse.setContactNo((plRetailApplicantRequest.getContactNo() != null ? plRetailApplicantRequest.getContactNo() : " "));
+				plRetailApplicantResponse.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
+				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
+				plRetailApplicantResponse.setGrossMonthlyIncome(plRetailApplicantRequest.getGrossMonthlyIncome() != null ? (plRetailApplicantRequest.getGrossMonthlyIncome()) : null);
+				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "-");
+				plRetailApplicantResponse.setNetMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome() != null ? (plRetailApplicantRequest.getMonthlyIncome()) : null);
+				plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getResidentialStatus()!=null ? ResidentStatusMst.getById(plRetailApplicantRequest.getResidentialStatus()).getValue().toString() : "-");
+				/* Addition */
+				
+			
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
@@ -1091,8 +1112,19 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		} catch (Exception e) {
 			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
-		
-		
+
+         // for name is edited or not:
+
+         if(plRetailApplicantResponse.getFullName().equals(plTeaserViewResponse.getNameAsPerItr()))
+         {
+			 plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
+		 }
+
+		 else{
+			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		 }
+
+
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
@@ -1162,6 +1194,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						}else {
 							logger.warn(DISTRICT_ID_IS_NULL_MSG);
 						}
+
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
