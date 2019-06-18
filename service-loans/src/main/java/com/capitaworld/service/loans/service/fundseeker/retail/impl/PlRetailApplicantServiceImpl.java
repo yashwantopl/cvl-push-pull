@@ -1464,7 +1464,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     financialArrangementsDetailRequestList.add(financialRequest);
                 }
                 
-                System.out.println("financialArrangementsDetailRequestList : "+financialArrangementsDetailRequestList.size());
                 return financialArrangementsDetailRequestList;
                 
                 

@@ -41,6 +41,9 @@ public class EmpSalariedType implements Serializable{
     @Column(name="is_active")
     private Boolean isActive;
 
+    @Column(name="co_app_id")
+    private Long coAppId;
+
     public Long getId() {
         return id;
     }
@@ -111,5 +114,13 @@ public class EmpSalariedType implements Serializable{
 
     public void setProposalId(ApplicationProposalMapping proposalId) {
         this.proposalId = proposalId;
+    }
+
+    public Long getCoAppId() {
+        return coAppId;
+    }
+
+    public void setCoAppId(Long coAppId) {
+        this.coAppId = coAppId;
     }
 }

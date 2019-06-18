@@ -57,6 +57,9 @@ public class EmpSelfEmployedType implements Serializable {
     @Column(name="name_of_poa_holder")
     private String nameOfPOAHolder;
 
+    @Column(name="co_app_id")
+    private Long coAppId;
+
     public Long getId() {
         return id;
     }
@@ -168,5 +171,14 @@ public class EmpSelfEmployedType implements Serializable {
     public void setNameOfPOAHolder(String nameOfPOAHolder) {
         this.nameOfPOAHolder = nameOfPOAHolder;
     }
+
+    public Long getCoAppId() {
+        return coAppId;
+    }
+
+    public void setCoAppId(Long coAppId) {
+        this.coAppId = coAppId;
+    }
 }
+
 

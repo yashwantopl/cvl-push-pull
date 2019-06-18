@@ -189,19 +189,19 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 				if(proposalDetailByApplicationId != null && proposalDetailByApplicationId.get(1) != null){
 					// check is their any sanction
-					Boolean isSanction = false;
+					/*
 					for(Object[] arr : proposalDetailByApplicationId ){
 						Integer proposalStatus = CommonUtils.convertInteger(arr[1]);
 						Long branchId = CommonUtils.convertLong(arr[3]);
 						if (proposalStatus == 5 && branchId != null) {
 							isSanction =true;
 						}
-					}
+					}*/
 					
 					for(Object[] arr : proposalDetailByApplicationId ){
 						Integer proposalStatus = CommonUtils.convertInteger(arr[1]);
 						Long branchId = CommonUtils.convertLong(arr[3]);
-						if (isSanction && (proposalStatus != 5)) {
+						if (proposalStatus != 5) {
 							UserResponse userResponse=  userClient.getBranchUsersListByBranchId(branchId);
 							for (int i=0;i<userResponse.getListData().size();i++) {
 								try {
