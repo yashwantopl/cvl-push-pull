@@ -153,6 +153,13 @@ public class LoansResponse implements Serializable{
 		this.data = data;
 		this.map = map;
 	}
+	
+	public LoansResponse(Integer status, String message, Map<String, Object> map) {
+		super();
+		this.status = status;
+		this.message = message;
+		this.map = map;
+	}
 
 	public Long getId() {
 		return id;
