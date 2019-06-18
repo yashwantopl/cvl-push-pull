@@ -23,7 +23,13 @@ public interface EmpFinancialDetailsService {
 
 	public List<EmpSalariedTypeRequest> getSalariedEmpFinDetailListByProposalId(Long proposalId, int applicationType) throws LoansException;
 
+	public List<EmpSalariedTypeRequest> getSalariedEmpFinDetailListByProposalIdCoAppId(Long proposalId, int applicationType,Long coAppId) throws LoansException;
+
 	public List<EmpAgriculturistTypeRequest> getAgriculturistEmpFinDetailListByProposalId(Long proposalId, int applicationType) throws LoansException;
 
+	public List<EmpAgriculturistTypeRequest> getAgriculturistEmpFinDetailListByProposalIdAndCoAppId(Long proposalId, int applicationType,Long coAppId) throws LoansException;
+
 	public List<EmpSelfEmployedTypeRequest> getSelfEmpFinDetailListByProposalId(Long proposalId, int applicationType) throws LoansException;
+
+	public List<EmpSelfEmployedTypeRequest> getSelfEmpFinDetailListByProposalIdAndCoAppId(Long proposalId, int applicationType,Long coAppId) throws LoansException;
 }
