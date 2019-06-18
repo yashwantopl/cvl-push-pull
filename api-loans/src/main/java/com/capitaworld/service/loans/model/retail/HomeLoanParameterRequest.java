@@ -47,6 +47,12 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Double maxNetMonthlyIncomeRange;
 	private Boolean isNetMonthlyIncomeRangeDisplay = false;
 	private Boolean isNetMonthlyIncomeRangeMandatory = false;
+	
+	// Gross Monthly Income Range (Rs.)
+	private Double minGrossMonthlyIncomeRange;
+	private Double maxGrossMonthlyIncomeRange;
+	private Boolean isGrossMonthlyIncomeRangeDisplay = false;
+	private Boolean isGrossMonthlyIncomeRangeMandatory = false;
 
 	// Purpose Loan
 	private Boolean isPurposeLoanDisplay = false;
@@ -572,4 +578,37 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	public void setSalaryAcType(Integer salaryAcType) {
 		this.salaryAcType = salaryAcType;
 	}
+
+	public Double getMinGrossMonthlyIncomeRange() {
+		return minGrossMonthlyIncomeRange;
+	}
+
+	public void setMinGrossMonthlyIncomeRange(Double minGrossMonthlyIncomeRange) {
+		this.minGrossMonthlyIncomeRange = minGrossMonthlyIncomeRange;
+	}
+
+	public Double getMaxGrossMonthlyIncomeRange() {
+		return maxGrossMonthlyIncomeRange;
+	}
+
+	public void setMaxGrossMonthlyIncomeRange(Double maxGrossMonthlyIncomeRange) {
+		this.maxGrossMonthlyIncomeRange = maxGrossMonthlyIncomeRange;
+	}
+
+	public Boolean getIsGrossMonthlyIncomeRangeDisplay() {
+		return isGrossMonthlyIncomeRangeDisplay;
+	}
+
+	public void setIsGrossMonthlyIncomeRangeDisplay(Boolean isGrossMonthlyIncomeRangeDisplay) {
+		this.isGrossMonthlyIncomeRangeDisplay = isGrossMonthlyIncomeRangeDisplay;
+	}
+
+	public Boolean getIsGrossMonthlyIncomeRangeMandatory() {
+		return isGrossMonthlyIncomeRangeMandatory;
+	}
+
+	public void setIsGrossMonthlyIncomeRangeMandatory(Boolean isGrossMonthlyIncomeRangeMandatory) {
+		this.isGrossMonthlyIncomeRangeMandatory = isGrossMonthlyIncomeRangeMandatory;
+	}
+	
 }

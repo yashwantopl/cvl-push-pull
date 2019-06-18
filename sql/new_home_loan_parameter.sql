@@ -639,3 +639,17 @@ ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_self_em
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_self_employed_with_mandatory BIT(1);
 ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN salary_ac_type INT(1);
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN salary_ac_type INT(1);
+
+
+
+
+==================================18-06-2019=====================================
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_gross_monthly_income_range DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN max_gross_monthly_income_range DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_gross_monthly_income_range_display BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_gross_monthly_income_range_mandatory BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_gross_monthly_income_range DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN max_gross_monthly_income_range DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_display BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_mandatory BIT(1) DEFAULT NULL;
