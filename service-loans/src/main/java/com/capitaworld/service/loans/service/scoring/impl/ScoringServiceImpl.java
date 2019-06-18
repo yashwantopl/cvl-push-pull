@@ -685,13 +685,30 @@ public class ScoringServiceImpl implements ScoringService {
         ScoringResponse scoringResponseMain = null;
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
-
+        Data bankStatementData;
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long applicationId = scoringRequestLoans.getApplicationId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            Double eligibleTenure = scoringRequestLoans.getEligibleTenure();
+            Double eligibleLoanAmountCircular = scoringRequestLoans.getEligibleLoanAmountCircular();
+            try {
+                ReportRequest reportRequest = new ReportRequest();
+                reportRequest.setApplicationId(applicationId);
+                AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                if(analyzerResponse == null) {
+                    return new ResponseEntity<>(new LoansResponse("Analyser Response Found null For Scoring Calculation HL For the ApplicationId===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+                }
+                bankStatementData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
+                if(bankStatementData == null) {
+                    return new ResponseEntity<>(new LoansResponse("Bank Statement Report Found Null For the ApplicationId HL===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+                }
+            }catch(Exception e) {
+                logger.error("Error while getting Bank Statement Details===>{}",e);
+                return new ResponseEntity<>(new LoansResponse("Error while Getting Bank Statemtnt Report for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+            }
 
             ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
 
@@ -704,6 +721,8 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN);
             scoringRequest.setEmi(scoringRequestLoans.getEmi());
+            scoringRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
+            scoringRequest.setEligibleTenure(eligibleTenure);
 
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
@@ -1333,6 +1352,63 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
+                            case ScoreParameter.Retail.NET_WROTH_TO_LOAN_AMOUNT_PL:
+                                try {
+                                    Double netwroth = retailApplicantDetail.getNetworth();
+                                    scoreParameterRetailRequest.setNetWorth(netwroth);
+                                    scoreParameterRetailRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
+                                    scoreParameterRetailRequest.setIsNetWrothToLoanAmount_p(true);
+                                    List<String> loanType= new ArrayList<>();
+                                    loanType.add(CibilUtils.AccountTypeEnum.PERSONAL_LOAN.getValue());
+                                    Double exitingLoanObligation = financialArrangementDetailsRepository.getOutStandingAmount(applicationId,loanType);
+                                    scoreParameterRetailRequest.setExitingLoanObligation(exitingLoanObligation);
+                                } catch (Exception e) {
+                                    logger.error("error while getting NET_WROTH_TO_LOAN_AMOUNT_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setIsNetWrothToLoanAmount_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL:
+                                try {
+                                    Double totalEODBalAvg=0.0;
+                                    Double totalCheDepsitLast6Month = 0.0d;
+                                    boolean isAvgEod = true;
+                                    if(bankStatementData != null && bankStatementData.getSummaryInfo() != null) {
+                                        if(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit() != null) {
+                                            totalEODBalAvg = Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
+                                        }else{
+                                            isAvgEod =false;
+                                        }
+                                        if(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
+                                            totalCheDepsitLast6Month = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
+                                            logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",totalCheDepsitLast6Month);
+                                        }else{
+                                            isAvgEod =false;
+                                        }
+                                    }else{
+                                        isAvgEod =false;
+                                    }
+
+                                    if(isAvgEod){
+                                        scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(true);
+                                        scoreParameterRetailRequest.setAvgEODBal(totalEODBalAvg);
+                                        scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(totalCheDepsitLast6Month);
+                                    }else{
+                                        scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting DESIGNATION_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.TENURE_OF_THE_LOAN_PL:
+                                try {
+                                    scoreParameterRetailRequest.setTenureOfTheLoan(eligibleTenure);
+                                    scoreParameterRetailRequest.setTenureOfTheLoan_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting TENURE_OF_THE_LOAN_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setTenureOfTheLoan_p(false);
+                                }
+                                break;
                             default:
                                 break;
 
