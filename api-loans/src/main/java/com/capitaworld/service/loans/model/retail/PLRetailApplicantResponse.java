@@ -128,13 +128,26 @@ public class PLRetailApplicantResponse implements Serializable {
 	private Object permAddPinData;
 	private String permAddDist;
 	private String permAddTaluko;
+	private Double netMonthlyIncome;
+	
+	
 
     /*
     * Final
     * */
+	
+	
 
 	public String getRelationshipWithApplicant() {
 		return relationshipWithApplicant;
+	}
+
+	public Double getNetMonthlyIncome() {
+		return netMonthlyIncome;
+	}
+
+	public void setNetMonthlyIncome(Double netMonthlyIncome) {
+		this.netMonthlyIncome = netMonthlyIncome;
 	}
 
 	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
