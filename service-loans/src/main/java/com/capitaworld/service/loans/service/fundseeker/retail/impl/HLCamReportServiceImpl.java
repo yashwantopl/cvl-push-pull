@@ -621,7 +621,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						//Emp Salaried Type
 						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.SALARIED.getId()) {
 							try {
-								List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
+								List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalIdCoAppId(proposalId, 0 ,coApplicantDetail.getId());
 								
 								if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
 									coAppData.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
@@ -634,7 +634,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						//Emp SelfEmployed Type
 						if(coApplicantDetail.getEmploymentType() != null && (coApplicantDetail.getEmploymentType() == OccupationNature.BUSINESS.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED_PROFESSIONAL.getId())) {
 							try {
-								List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
+								List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalIdAndCoAppId(proposalId, 0 ,coApplicantDetail.getId());
 								
 								if(!CommonUtils.isObjectNullOrEmpty(empSelfEmployedTypeDetail)) {
 									coAppData.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
@@ -647,7 +647,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						//Emp Agriculturist Type
 						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.AGRICULTURIST.getId()) {
 							try {
-								List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
+								List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalIdAndCoAppId(proposalId, 0 ,coApplicantDetail.getId());
 								
 								if(!CommonUtils.isObjectNullOrEmpty(empAgriculturistTypeDetail)) {
 									coAppData.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
