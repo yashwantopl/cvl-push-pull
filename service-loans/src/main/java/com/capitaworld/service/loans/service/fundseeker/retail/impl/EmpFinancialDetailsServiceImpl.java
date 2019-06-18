@@ -248,6 +248,37 @@ public class EmpFinancialDetailsServiceImpl implements EmpFinancialDetailsServic
 	}
 
 	@Override
+	public List<EmpSalariedTypeRequest> getSalariedEmpFinDetailListByProposalIdCoAppId(Long proposalId, int applicationType,Long coAppId) throws LoansException {
+		List<EmpSalariedType> empSalariedTypes = null;
+//		switch (applicationType) {
+//		case CommonUtils.ApplicantType.APPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.COAPPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromCoAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.GARRANTOR:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromGarrId(id);
+//			break;
+//		default:
+//			throw new LoansException();
+//		}
+
+		empSalariedTypes = empSalariedTypeRepository.listSalariedEmpRetailFromPropsalIdAndCoAppId(proposalId,coAppId);
+
+		List<EmpSalariedTypeRequest> empSalariedTypeRequests = new ArrayList<>();
+
+		for (EmpSalariedType detail : empSalariedTypes) {
+			EmpSalariedTypeRequest empSalariedTypeRequest = new EmpSalariedTypeRequest();
+			//referencesRetailRequest.setReferncesList(!CommonUtils.isObjectNullOrEmpty(detail.getReferencesListId()) ? StringEscapeUtils.escapeXml(ReferencesList.getById(detail.getReferencesListId()).getValue()) :"");
+			BeanUtils.copyProperties(detail, empSalariedTypeRequest);
+			empSalariedTypeRequests.add(empSalariedTypeRequest);
+		}
+		return empSalariedTypeRequests;
+
+	}
+
+	@Override
 	public List<EmpSalariedTypeRequest> getSalariedEmpFinDetailListByProposalId(Long proposalId, int applicationType) throws LoansException {
 		List<EmpSalariedType> empSalariedTypes = null;
 //		switch (applicationType) {
@@ -279,6 +310,36 @@ public class EmpFinancialDetailsServiceImpl implements EmpFinancialDetailsServic
 	}
 
 	@Override
+	public List<EmpAgriculturistTypeRequest> getAgriculturistEmpFinDetailListByProposalIdAndCoAppId(Long proposalId, int applicationType,Long coAppId) throws LoansException {
+		List<EmpAgriculturistType> empAgriculturistTypes = null;
+//		switch (applicationType) {
+//		case CommonUtils.ApplicantType.APPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.COAPPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromCoAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.GARRANTOR:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromGarrId(id);
+//			break;
+//		default:
+//			throw new LoansException();
+//		}
+
+		empAgriculturistTypes = empAgriculturistTypeRepository.listSalariedEmpRetailFromPropsalIdAndCoAppId(proposalId,coAppId);
+
+		List<EmpAgriculturistTypeRequest> agriculturistTypes = new ArrayList<>();
+
+		for (EmpAgriculturistType detail : empAgriculturistTypes) {
+			EmpAgriculturistTypeRequest empAgriculturistTypeRequest = new EmpAgriculturistTypeRequest();
+			//referencesRetailRequest.setReferncesList(!CommonUtils.isObjectNullOrEmpty(detail.getReferencesListId()) ? StringEscapeUtils.escapeXml(ReferencesList.getById(detail.getReferencesListId()).getValue()) :"");
+			BeanUtils.copyProperties(detail, empAgriculturistTypeRequest);
+			agriculturistTypes.add(empAgriculturistTypeRequest);
+		}
+		return agriculturistTypes;
+	}
+
+	@Override
 	public List<EmpAgriculturistTypeRequest> getAgriculturistEmpFinDetailListByProposalId(Long proposalId, int applicationType) throws LoansException {
 		List<EmpAgriculturistType> empAgriculturistTypes = null;
 //		switch (applicationType) {
@@ -306,6 +367,37 @@ public class EmpFinancialDetailsServiceImpl implements EmpFinancialDetailsServic
 			agriculturistTypes.add(empAgriculturistTypeRequest);
 		}
 		return agriculturistTypes;
+	}
+
+	@Override
+	public List<EmpSelfEmployedTypeRequest> getSelfEmpFinDetailListByProposalIdAndCoAppId(Long proposalId, int applicationType,Long coAppId) throws LoansException {
+		List<EmpSelfEmployedType> empSelfEmployedTypes = null;
+//		switch (applicationType) {
+//		case CommonUtils.ApplicantType.APPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.COAPPLICANT:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromCoAppId(id);
+//			break;
+//		case CommonUtils.ApplicantType.GARRANTOR:
+//			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromGarrId(id);
+//			break;
+//		default:
+//			throw new LoansException();
+//		}
+
+		empSelfEmployedTypes = empSelfEmployedTypeRepository.listSalariedEmpRetailFromPropsalIdAndCoAppId(proposalId,coAppId);
+
+		List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeRequests = new ArrayList<>();
+
+		for (EmpSelfEmployedType detail : empSelfEmployedTypes) {
+			EmpSelfEmployedTypeRequest empSelfEmployedTypeRequest = new EmpSelfEmployedTypeRequest();
+			//referencesRetailRequest.setReferncesList(!CommonUtils.isObjectNullOrEmpty(detail.getReferencesListId()) ? StringEscapeUtils.escapeXml(ReferencesList.getById(detail.getReferencesListId()).getValue()) :"");
+			BeanUtils.copyProperties(detail, empSelfEmployedTypeRequest);
+			empSelfEmployedTypeRequests.add(empSelfEmployedTypeRequest);
+		}
+		return empSelfEmployedTypeRequests;
+
 	}
 
 	@Override
