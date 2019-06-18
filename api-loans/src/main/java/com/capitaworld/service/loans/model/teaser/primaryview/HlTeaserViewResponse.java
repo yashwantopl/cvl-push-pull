@@ -3,6 +3,7 @@
  */
 package com.capitaworld.service.loans.model.teaser.primaryview;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -121,6 +122,17 @@ public class HlTeaserViewResponse {
     private Object permAddPinData;
     private String permAddDist;
     private String permAddTaluko;
+	private Object corrAdd;
+	private Object corrAddPremise;
+	private Object corrAddStreetName;
+	private Object corrAddLandmark;
+	private Object corrAddCountry;
+	private Object corrAddState;
+	private Object corrAddCity;
+	private Object corrAddPincode;
+	private Object corrAddPinData;
+	private String corrAddDist;
+	private String corrAddTaluko;
     private Object offAdd;
     private Object offAddPremise;
     private Object offAddStreetName;
@@ -136,15 +148,295 @@ public class HlTeaserViewResponse {
     private Double propertyValue;
     private String propertyAge;
     private Object propertyAdd;
+	private String propCountry;
+	private String propState;
+	private String propCity;
+	private Long propPincode;
+	private Double landPlotCost;
+	private Double constructionCost;
+	private Integer completionTimeInYear;
+	private String renovationType;
+	private Double renovationCost;
+	private Integer renovationCompletionTimeInYear;
+	private Date dateOfLoanTaken;
+	private Double originalValProp;
+	private String sellerName;
+	private String sellerCity;
+	private String sellerState;
+	private String sellerAddress;
+	private Integer sellerPincode;
+	private String propertyName;
+	private Integer buildUpArea;
+	private Integer superBuildUpArea;
+	private Integer carpetArea;
+	private Integer totalPriceOfProperty;
     
-    
-    private String motherName;
     private String fatherName;
-    private String educationStatus;
-    private String educationYear;
+	private String motherName;
+	private String educationStatus;
+    private Date qualifyingYear;
+    private String nameOfSpouse;
+    private Integer noOfChildren;
+    private String birthPlace;
+
+	private Long RefNo;
+	private String RefName;
+	private String RefAddress;
+	private String RefEmail;
+	private String RefTel;
+	private String RefMobile;
     
     private Object epfData;
-    
+	private String detailedLoanPur;
+
+	public Long getRefNo() {
+		return RefNo;
+	}
+
+	public void setRefNo(Long refNo) {
+		RefNo = refNo;
+	}
+
+	public String getRefName() {
+		return RefName;
+	}
+
+	public void setRefName(String refName) {
+		RefName = refName;
+	}
+
+	public String getRefAddress() {
+		return RefAddress;
+	}
+
+	public void setRefAddress(String refAddress) {
+		RefAddress = refAddress;
+	}
+
+	public String getRefEmail() {
+		return RefEmail;
+	}
+
+	public void setRefEmail(String refEmail) {
+		RefEmail = refEmail;
+	}
+
+	public String getRefTel() {
+		return RefTel;
+	}
+
+	public void setRefTel(String refTel) {
+		RefTel = refTel;
+	}
+
+	public String getRefMobile() {
+		return RefMobile;
+	}
+
+	public void setRefMobile(String refMobile) {
+		RefMobile = refMobile;
+	}
+
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
+	}
+
+	public Integer getBuildUpArea() {
+		return buildUpArea;
+	}
+
+	public void setBuildUpArea(Integer buildUpArea) {
+		this.buildUpArea = buildUpArea;
+	}
+
+	public Integer getSuperBuildUpArea() {
+		return superBuildUpArea;
+	}
+
+	public void setSuperBuildUpArea(Integer superBuildUpArea) {
+		this.superBuildUpArea = superBuildUpArea;
+	}
+
+	public Integer getCarpetArea() {
+		return carpetArea;
+	}
+
+	public void setCarpetArea(Integer carpetArea) {
+		this.carpetArea = carpetArea;
+	}
+
+	public Integer getTotalPriceOfProperty() {
+		return totalPriceOfProperty;
+	}
+
+	public void setTotalPriceOfProperty(Integer totalPriceOfProperty) {
+		this.totalPriceOfProperty = totalPriceOfProperty;
+	}
+
+	public String getSellerName() {
+		return sellerName;
+	}
+
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
+	}
+
+	public String getSellerCity() {
+		return sellerCity;
+	}
+
+	public void setSellerCity(String sellerCity) {
+		this.sellerCity = sellerCity;
+	}
+
+	public String getSellerState() {
+		return sellerState;
+	}
+
+	public void setSellerState(String sellerState) {
+		this.sellerState = sellerState;
+	}
+
+	public String getSellerAddress() {
+		return sellerAddress;
+	}
+
+	public void setSellerAddress(String sellerAddress) {
+		this.sellerAddress = sellerAddress;
+	}
+
+	public Integer getSellerPincode() {
+		return sellerPincode;
+	}
+
+	public void setSellerPincode(Integer sellerPincode) {
+		this.sellerPincode = sellerPincode;
+	}
+
+	public String getPropCountry() {
+		return propCountry;
+	}
+
+	public void setPropCountry(String propCountry) {
+		this.propCountry = propCountry;
+	}
+
+	public String getPropState() {
+		return propState;
+	}
+
+	public void setPropState(String propState) {
+		this.propState = propState;
+	}
+
+	public String getPropCity() {
+		return propCity;
+	}
+
+	public void setPropCity(String propCity) {
+		this.propCity = propCity;
+	}
+
+	public Long getPropPincode() {
+		return propPincode;
+	}
+
+	public void setPropPincode(Long propPincode) {
+		this.propPincode = propPincode;
+	}
+
+	public Double getLandPlotCost() {
+		return landPlotCost;
+	}
+
+	public void setLandPlotCost(Double landPlotCost) {
+		this.landPlotCost = landPlotCost;
+	}
+
+	public Double getConstructionCost() {
+		return constructionCost;
+	}
+
+	public void setConstructionCost(Double constructionCost) {
+		this.constructionCost = constructionCost;
+	}
+
+	public Integer getCompletionTimeInYear() {
+		return completionTimeInYear;
+	}
+
+	public void setCompletionTimeInYear(Integer completionTimeInYear) {
+		this.completionTimeInYear = completionTimeInYear;
+	}
+
+	public String getRenovationType() {
+		return renovationType;
+	}
+
+	public void setRenovationType(String renovationType) {
+		this.renovationType = renovationType;
+	}
+
+	public Double getRenovationCost() {
+		return renovationCost;
+	}
+
+	public void setRenovationCost(Double renovationCost) {
+		this.renovationCost = renovationCost;
+	}
+
+	public Integer getRenovationCompletionTimeInYear() {
+		return renovationCompletionTimeInYear;
+	}
+
+	public void setRenovationCompletionTimeInYear(Integer renovationCompletionTimeInYear) {
+		this.renovationCompletionTimeInYear = renovationCompletionTimeInYear;
+	}
+
+	public Date getDateOfLoanTaken() {
+		return dateOfLoanTaken;
+	}
+
+	public void setDateOfLoanTaken(Date dateOfLoanTaken) {
+		this.dateOfLoanTaken = dateOfLoanTaken;
+	}
+
+	public Double getOriginalValProp() {
+		return originalValProp;
+	}
+
+	public void setOriginalValProp(Double originalValProp) {
+		this.originalValProp = originalValProp;
+	}
+
+	public Date getQualifyingYear() {
+		return qualifyingYear;
+	}
+	public void setQualifyingYear(Date qualifyingYear) {
+		this.qualifyingYear = qualifyingYear;
+	}
+	public String getBirthPlace() {
+		return birthPlace;
+	}
+	public void setBirthPlace(String birthPlace) {
+		this.birthPlace = birthPlace;
+	}
+	public Integer getNoOfChildren() {
+		return noOfChildren;
+	}
+	public void setNoOfChildren(Integer noOfChildren) {
+		this.noOfChildren = noOfChildren;
+	}
+	public String getNameOfSpouse() {
+		return nameOfSpouse;
+	}
+	public void setNameOfSpouse(String nameOfSpouse) {
+		this.nameOfSpouse = nameOfSpouse;
+	}
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -826,12 +1118,6 @@ public class HlTeaserViewResponse {
 	public void setEducationStatus(String educationStatus) {
 		this.educationStatus = educationStatus;
 	}
-	public String getEducationYear() {
-		return educationYear;
-	}
-	public void setEducationYear(String educationYear) {
-		this.educationYear = educationYear;
-	}
 	public Object getEpfData() {
 		return epfData;
 	}
@@ -839,4 +1125,99 @@ public class HlTeaserViewResponse {
 		this.epfData = epfData;
 	}
 
+	public String getDetailedLoanPur() {
+		return detailedLoanPur;
+	}
+
+	public void setDetailedLoanPur(String detailedLoanPur) {
+		this.detailedLoanPur = detailedLoanPur;
+	}
+
+	public Object getCorrAdd() {
+		return corrAdd;
+	}
+
+	public void setCorrAdd(Object corrAdd) {
+		this.corrAdd = corrAdd;
+	}
+
+	public Object getCorrAddPremise() {
+		return corrAddPremise;
+	}
+
+	public void setCorrAddPremise(Object corrAddPremise) {
+		this.corrAddPremise = corrAddPremise;
+	}
+
+	public Object getCorrAddStreetName() {
+		return corrAddStreetName;
+	}
+
+	public void setCorrAddStreetName(Object corrAddStreetName) {
+		this.corrAddStreetName = corrAddStreetName;
+	}
+
+	public Object getCorrAddLandmark() {
+		return corrAddLandmark;
+	}
+
+	public void setCorrAddLandmark(Object corrAddLandmark) {
+		this.corrAddLandmark = corrAddLandmark;
+	}
+
+	public Object getCorrAddCountry() {
+		return corrAddCountry;
+	}
+
+	public void setCorrAddCountry(Object corrAddCountry) {
+		this.corrAddCountry = corrAddCountry;
+	}
+
+	public Object getCorrAddState() {
+		return corrAddState;
+	}
+
+	public void setCorrAddState(Object corrAddState) {
+		this.corrAddState = corrAddState;
+	}
+
+	public Object getCorrAddCity() {
+		return corrAddCity;
+	}
+
+	public void setCorrAddCity(Object corrAddCity) {
+		this.corrAddCity = corrAddCity;
+	}
+
+	public Object getCorrAddPincode() {
+		return corrAddPincode;
+	}
+
+	public void setCorrAddPincode(Object corrAddPincode) {
+		this.corrAddPincode = corrAddPincode;
+	}
+
+	public Object getCorrAddPinData() {
+		return corrAddPinData;
+	}
+
+	public void setCorrAddPinData(Object corrAddPinData) {
+		this.corrAddPinData = corrAddPinData;
+	}
+
+	public String getCorrAddDist() {
+		return corrAddDist;
+	}
+
+	public void setCorrAddDist(String corrAddDist) {
+		this.corrAddDist = corrAddDist;
+	}
+
+	public String getCorrAddTaluko() {
+		return corrAddTaluko;
+	}
+
+	public void setCorrAddTaluko(String corrAddTaluko) {
+		this.corrAddTaluko = corrAddTaluko;
+	}
 }
