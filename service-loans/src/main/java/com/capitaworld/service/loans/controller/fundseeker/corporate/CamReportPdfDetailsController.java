@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportServic
 import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.DDRMultipart;
 
 @RestController
@@ -576,5 +578,54 @@ public class CamReportPdfDetailsController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+	
+	@Autowired
+	private PLCamReportService plCamReportService;
+	
+	//only to view cam data of All types
+	@GetMapping(value = {"/getCamData/{applicationId}/{productMappingId}/{proposalId}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}/{camType}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCamDataByProposalId(@PathVariable(value = "proposalId") Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId") Long productId,
+			@PathVariable(name= "loanType" , required = false) Integer loanType, @PathVariable(name= "camType" , required = false) Boolean camType, HttpServletRequest request) {
+		
+		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(productId) || CommonUtils.isObjectNullOrEmpty(proposalId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		}
+		try {
+			logger.info("In getCamData Method With ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} LoanType==>{} camType==>{}" , 
+					applicationId ,productId ,proposalId ,loanType ,camType);
+			
+			if(camType == null) {
+				camType = false;
+			}
+			
+			if(loanType == null) {
+				loanType = 1;
+			}
+			
+			Map<String, Object> response = new HashMap<String, Object>();
+				
+			if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
+				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}");
+				response = plCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
+			}else if(loanType == LoanType.HOME_LOAN.getValue()) {
+				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}");
+				response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
+			}else {
+				logger.info("Fetching Data of MSME by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}");
+				response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId, camType);
+			}
+			
+			if(response != null && !response.isEmpty()) {
+				logger.info("DocumentResponse Data==>{}",response);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", response),HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }
