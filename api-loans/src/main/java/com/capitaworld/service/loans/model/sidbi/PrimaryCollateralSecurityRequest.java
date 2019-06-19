@@ -16,7 +16,7 @@ public class PrimaryCollateralSecurityRequest {
 	private String nameOfOwner;
 	private String nature;
 	private String details;
-	private String marketValue;
+	private Double marketValue;
 	private String particularsOfCharge;
 	private String chargeOfferedToSIDBI;
 	/**
@@ -94,13 +94,13 @@ public class PrimaryCollateralSecurityRequest {
 	/**
 	 * @return the marketValue
 	 */
-	public String getMarketValue() {
+	public Double getMarketValue() {
 		return marketValue;
 	}
 	/**
 	 * @param marketValue the marketValue to set
 	 */
-	public void setMarketValue(String marketValue) {
+	public void setMarketValue(Double marketValue) {
 		this.marketValue = marketValue;
 	}
 	/**
