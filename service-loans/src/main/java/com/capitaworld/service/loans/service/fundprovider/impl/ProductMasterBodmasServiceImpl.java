@@ -88,7 +88,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 return 0l;
             } else {
                 //if product id is null than create new product in temp table
-                ProductMasterTemp productMasterTemp = null;
+                ProductMasterTemp productMasterTemp = new ProductMasterTemp();
 //                LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
 //                WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
 //                Long jobId = null;
