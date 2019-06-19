@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.MeansOfFinanceDetail;
+import com.capitaworld.service.loans.domain.sidbi.MeansOfFinanceDetail;
+
 
 public interface MeansOfFinanceDetailRepository extends JpaRepository<MeansOfFinanceDetail, Long>{
 
