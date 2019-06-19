@@ -89,7 +89,7 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 		}
 
 		catch (Exception e) { 
-			logger.error("Exception in save primaryCollateralSecurity :-",e);
+			logger.error("Exception in get primaryCollateralSecurity :-",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
