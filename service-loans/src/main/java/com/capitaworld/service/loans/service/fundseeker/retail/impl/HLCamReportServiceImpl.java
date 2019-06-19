@@ -55,6 +55,7 @@ import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest
 import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -183,6 +184,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
+	
+	@Autowired
+	private CommonRepository commonRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -1332,6 +1336,26 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				} catch (Exception e) {
 				logger.error("Error while getting PROPOSAL DATES data : ",e);
 			}*/
+			
+			//Checker DATES
+			try {
+				if(applicationProposalMapping != null) {
+					map.put("checkerDate" ,!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate()) ? simpleDateFormat.format(applicationProposalMapping.getApprovedDate()) : "-");
+				}
+			}catch (Exception e) {
+				logger.error("Error while getting PROPOSAL DATES data of ApplicationId==>{}   Error:{} ",applicationId ,e);
+			}
+			
+			//Maker Date
+			try {
+				Object makerDate = commonRepository.getMakerDate(applicationId);
+				if(makerDate != null) {
+					map.put("makerDate", simpleDateFormat.format(makerDate));
+				}
+			}catch (Exception e) {
+				logger.error("Error/Excpetion while getting maker Date from workFlow of ApplicationId==>{} Error:{}" ,applicationId ,e);
+			}
+			
 			
 			//RETAIL FINAL DETAILS
 			try {
