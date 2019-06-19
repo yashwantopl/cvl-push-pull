@@ -1,4 +1,4 @@
-package com.capitaworld.service.loans.domain.fundseeker.corporate;
+package com.capitaworld.service.loans.domain.sidbi;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,11 +13,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="fs_corporate_sidbi_project_cost_details")
-public class ProjectCostDetail implements Serializable{
-
-	private static final long serialVersionUID = 1L;
+@Table(name="fs_corporate_sidbi_means_of_finance_details")
+public class MeansOfFinanceDetail implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
@@ -27,9 +27,6 @@ public class ProjectCostDetail implements Serializable{
 	
 	@Column(name="particulars_id")
 	private Integer particularsId;
-	
-	@Column(name="other_particular")
-	private String otherParticular;
 	
 	@Column(name="already_incurred")
 	private Double alreadyIncurred;
@@ -65,8 +62,8 @@ public class ProjectCostDetail implements Serializable{
 		return applicationId;
 	}
 
-	public String getOtherParticular() {
-		return otherParticular;
+	public Integer getParticularsId() {
+		return particularsId;
 	}
 
 	public Double getAlreadyIncurred() {
@@ -109,8 +106,8 @@ public class ProjectCostDetail implements Serializable{
 		this.applicationId = applicationId;
 	}
 
-	public void setOtherParticular(String otherParticular) {
-		this.otherParticular = otherParticular;
+	public void setParticularsId(Integer particularsId) {
+		this.particularsId = particularsId;
 	}
 
 	public void setAlreadyIncurred(Double alreadyIncurred) {
@@ -144,16 +141,6 @@ public class ProjectCostDetail implements Serializable{
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-
-	public Integer getParticularsId() {
-		return particularsId;
-	}
-
-	public void setParticularsId(Integer particularsId) {
-		this.particularsId = particularsId;
-	}
-
 	
-
 	
 }
