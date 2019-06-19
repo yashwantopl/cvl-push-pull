@@ -13,10 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
 import com.capitaworld.service.loans.model.sidbi.PersonalCorporateGuaranteeRequest;
 import com.capitaworld.service.loans.model.sidbi.PrimaryCollateralSecurityRequest;
 import com.capitaworld.service.loans.service.sidbi.PersonalCorporateGuaranteeService;
@@ -94,6 +98,43 @@ public class SidbiSpecificController {
 
 	}
 	
+	@RequestMapping(value = "/save/additionalData", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveAdditionalData(@RequestBody SidbiBasicDetailRequest corporateAdditionalRequest,
+                                                     HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
+            throws LoansException {
+        try {
+            CommonDocumentUtils.startHook(logger, "saveAdditionalData");
+            // request must not be null
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+            	corporateAdditionalRequest.setClientId(clientId);
+            }
+
+            if (userId == null) {
+                logger.warn("userId can not be empty ==>" + corporateAdditionalRequest);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            if (corporateAdditionalRequest.getApplicationId() == null) {
+                logger.warn("ID must not be empty ==>" + corporateAdditionalRequest.getApplicationId());
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            sidbiSpecificService.saveOrUpdateAdditionalData(corporateAdditionalRequest, userId);
+            CommonDocumentUtils.endHook(logger, "savePrimarySpecificData");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while saving savePrimarySpecificData()==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 	@PostMapping(value = "/savePersonalCorporateGuarantee", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePersonalCorporateGuarantee(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
 		// request must not be null
@@ -147,5 +188,6 @@ public class SidbiSpecificController {
 		}
 
 	}
+
 	
 }
