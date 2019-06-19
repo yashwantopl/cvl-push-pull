@@ -16,6 +16,9 @@ public class ScoreParameterRetailRequest {
     private Boolean isNetAnnualIncome_p = false;
     private Boolean isEmiNmi_p = false;
     private Boolean isNoOfYearCurrentLocation_p = false;
+    private Boolean isNetWrothToLoanAmount_p= false;
+    private Boolean isAvgEODBalToTotalDeposite_p = false;
+    private Boolean isTentureOfTheLoan_p    = false;
 
     private Double workingExperience;
     private Double cibilScore;
@@ -31,6 +34,9 @@ public class ScoreParameterRetailRequest {
     private Double netAnnualIncome;
     private Double nmi;
     private Double noOfYearCurrentLocation;
+    private Double netWrothToLoanAmount;
+    private Double avgEODBalToTotalDeposite;
+    private Double tentureOfTheLoan;
 
     @Override
     public String toString() {
@@ -49,6 +55,9 @@ public class ScoreParameterRetailRequest {
                 ", isNetAnnualIncome_p=" + isNetAnnualIncome_p +
                 ", isEmiNmi_p=" + isEmiNmi_p +
                 ", isNoOfYearCurrentLocation_p=" + isNoOfYearCurrentLocation_p +
+                ", isNetWrothToLoanAmount_p=" + isNetWrothToLoanAmount_p +
+                ", isAvgEODBalToTotalDeposite_p=" + isAvgEODBalToTotalDeposite_p +
+                ", isTentureOfTheLoan_p=" + isTentureOfTheLoan_p +
                 ", workingExperience=" + workingExperience +
                 ", cibilScore=" + cibilScore +
                 ", age=" + age +
@@ -63,6 +72,9 @@ public class ScoreParameterRetailRequest {
                 ", netAnnualIncome=" + netAnnualIncome +
                 ", nmi=" + nmi +
                 ", noOfYearCurrentLocation=" + noOfYearCurrentLocation +
+                ", netWrothToLoanAmount=" + netWrothToLoanAmount +
+                ", avgEODBalToTotalDeposite=" + avgEODBalToTotalDeposite +
+                ", tentureOfTheLoan=" + tentureOfTheLoan +
                 '}';
     }
 
@@ -280,5 +292,53 @@ public class ScoreParameterRetailRequest {
 
     public void setNoOfYearCurrentLocation(Double noOfYearCurrentLocation) {
         this.noOfYearCurrentLocation = noOfYearCurrentLocation;
+    }
+
+    public Boolean getIsNetWrothToLoanAmount_p() {
+        return isNetWrothToLoanAmount_p;
+    }
+
+    public void setIsNetWrothToLoanAmount_p(Boolean netWrothToLoanAmount_p) {
+        isNetWrothToLoanAmount_p = netWrothToLoanAmount_p;
+    }
+
+    public Boolean getIsAvgEODBalToTotalDeposite_p() {
+        return isAvgEODBalToTotalDeposite_p;
+    }
+
+    public void setIsAvgEODBalToTotalDeposite_p(Boolean avgEODBalToTotalDeposite_p) {
+        isAvgEODBalToTotalDeposite_p = avgEODBalToTotalDeposite_p;
+    }
+
+    public Boolean getIsTentureOfTheLoan_p() {
+        return isTentureOfTheLoan_p;
+    }
+
+    public void setIsTentureOfTheLoan_p(Boolean tentureOfTheLoan_p) {
+        isTentureOfTheLoan_p = tentureOfTheLoan_p;
+    }
+
+    public Double getNetWrothToLoanAmount() {
+        return netWrothToLoanAmount;
+    }
+
+    public void setNetWrothToLoanAmount(Double netWrothToLoanAmount) {
+        this.netWrothToLoanAmount = netWrothToLoanAmount;
+    }
+
+    public Double getAvgEODBalToTotalDeposite() {
+        return avgEODBalToTotalDeposite;
+    }
+
+    public void setAvgEODBalToTotalDeposite(Double avgEODBalToTotalDeposite) {
+        this.avgEODBalToTotalDeposite = avgEODBalToTotalDeposite;
+    }
+
+    public Double getTentureOfTheLoan() {
+        return tentureOfTheLoan;
+    }
+
+    public void setTentureOfTheLoan(Double tentureOfTheLoan) {
+        this.tentureOfTheLoan = tentureOfTheLoan;
     }
 }

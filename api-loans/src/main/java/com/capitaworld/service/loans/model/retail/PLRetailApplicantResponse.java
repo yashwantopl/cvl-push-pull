@@ -18,7 +18,17 @@ public class PLRetailApplicantResponse implements Serializable {
     * */
     private Integer titleId;
     private String fullName;
-    private String gender;
+    private String title;
+        
+    public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	private String gender;
     private String pan;
     private String aadharNumber;
     private String mobile;
@@ -95,16 +105,142 @@ public class PLRetailApplicantResponse implements Serializable {
     private Object dataList;
     private Object dataObject;
     private Object scoringResponseList;
+    private String motherName;
+	private String educationStatus;
+	private String educationYear;
+	private String nameOfSpouse;
+	private Integer noOfChildren;
+	private String birthPlace;
+	private String religion;
+	private String castCategory;
+	private Date qualifyingYear;
+	private String relationshipWithApplicant;
+	private String relationWithApp;
+	private Object corrAdd;
+	private Object corrAddPremise;
+	private Object corrAddStreetName;
+	private Object corrAddLandmark;
+	private Object corrAddCountry;
+	private Object corrAddState;
+	private Object corrAddCity;
+	private Object corrAddPincode;
+	private Object corrAddPinData;
+	private String corrAddDist;
+	private String corrAddTaluko;
+	private Object permAdd;
+	private Object permAddPremise;
+	private Object permAddStreetName;
+	private Object permAddLandmark;
+	private Object permAddCountry;
+	private Object permAddState;
+	private Object permAddCity;
+	private Object permAddPincode;
+	private Object permAddPinData;
+	private String permAddDist;
+	private String permAddTaluko;
+	private Double netMonthlyIncome;
+	
+	
 
     /*
     * Final
     * */
+	
+	
 
-    public PLRetailApplicantResponse() {
+	public String getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
+	}
+
+	public Double getNetMonthlyIncome() {
+		return netMonthlyIncome;
+	}
+
+	public void setNetMonthlyIncome(Double netMonthlyIncome) {
+		this.netMonthlyIncome = netMonthlyIncome;
+	}
+
+	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
+	}
+
+	public Date getQualifyingYear() {
+		return qualifyingYear;
+	}
+
+	public void setQualifyingYear(Date qualifyingYear) {
+		this.qualifyingYear = qualifyingYear;
+	}
+
+	public PLRetailApplicantResponse() {
         // Do nothing because of X and Y.
     }
 
-    public String getCategory() {
+	public String getReligion() {
+		return religion;
+	}
+
+	public void setReligion(String religion) {
+		this.religion = religion;
+	}
+
+	public String getCastCategory() {
+		return castCategory;
+	}
+
+	public void setCastCategory(String castCategory) {
+		this.castCategory = castCategory;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+
+	public String getEducationStatus() {
+		return educationStatus;
+	}
+
+	public void setEducationStatus(String educationStatus) {
+		this.educationStatus = educationStatus;
+	}
+
+	public String getEducationYear() {
+		return educationYear;
+	}
+
+	public void setEducationYear(String educationYear) {
+		this.educationYear = educationYear;
+	}
+
+	public String getNameOfSpouse() {
+		return nameOfSpouse;
+	}
+
+	public void setNameOfSpouse(String nameOfSpouse) {
+		this.nameOfSpouse = nameOfSpouse;
+	}
+
+	public Integer getNoOfChildren() {
+		return noOfChildren;
+	}
+
+	public void setNoOfChildren(Integer noOfChildren) {
+		this.noOfChildren = noOfChildren;
+	}
+
+	public String getBirthPlace() {
+		return birthPlace;
+	}
+
+	public void setBirthPlace(String birthPlace) {
+		this.birthPlace = birthPlace;
+	}
+
+	public String getCategory() {
 		return category;
 	}
 
@@ -725,7 +861,188 @@ public class PLRetailApplicantResponse implements Serializable {
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
-	
-    
-	
+
+	public String getRelationWithApp() {
+		return relationWithApp;
+	}
+
+	public void setRelationWithApp(String relationWithApp) {
+		this.relationWithApp = relationWithApp;
+	}
+
+	public Object getCorrAdd() {
+		return corrAdd;
+	}
+
+	public void setCorrAdd(Object corrAdd) {
+		this.corrAdd = corrAdd;
+	}
+
+	public Object getCorrAddPremise() {
+		return corrAddPremise;
+	}
+
+	public void setCorrAddPremise(Object corrAddPremise) {
+		this.corrAddPremise = corrAddPremise;
+	}
+
+	public Object getCorrAddStreetName() {
+		return corrAddStreetName;
+	}
+
+	public void setCorrAddStreetName(Object corrAddStreetName) {
+		this.corrAddStreetName = corrAddStreetName;
+	}
+
+	public Object getCorrAddLandmark() {
+		return corrAddLandmark;
+	}
+
+	public void setCorrAddLandmark(Object corrAddLandmark) {
+		this.corrAddLandmark = corrAddLandmark;
+	}
+
+	public Object getCorrAddCountry() {
+		return corrAddCountry;
+	}
+
+	public void setCorrAddCountry(Object corrAddCountry) {
+		this.corrAddCountry = corrAddCountry;
+	}
+
+	public Object getCorrAddState() {
+		return corrAddState;
+	}
+
+	public void setCorrAddState(Object corrAddState) {
+		this.corrAddState = corrAddState;
+	}
+
+	public Object getCorrAddCity() {
+		return corrAddCity;
+	}
+
+	public void setCorrAddCity(Object corrAddCity) {
+		this.corrAddCity = corrAddCity;
+	}
+
+	public Object getCorrAddPincode() {
+		return corrAddPincode;
+	}
+
+	public void setCorrAddPincode(Object corrAddPincode) {
+		this.corrAddPincode = corrAddPincode;
+	}
+
+	public Object getCorrAddPinData() {
+		return corrAddPinData;
+	}
+
+	public void setCorrAddPinData(Object corrAddPinData) {
+		this.corrAddPinData = corrAddPinData;
+	}
+
+	public String getCorrAddDist() {
+		return corrAddDist;
+	}
+
+	public void setCorrAddDist(String corrAddDist) {
+		this.corrAddDist = corrAddDist;
+	}
+
+	public String getCorrAddTaluko() {
+		return corrAddTaluko;
+	}
+
+	public void setCorrAddTaluko(String corrAddTaluko) {
+		this.corrAddTaluko = corrAddTaluko;
+	}
+
+	public Object getPermAdd() {
+		return permAdd;
+	}
+
+	public void setPermAdd(Object permAdd) {
+		this.permAdd = permAdd;
+	}
+
+	public Object getPermAddPremise() {
+		return permAddPremise;
+	}
+
+	public void setPermAddPremise(Object permAddPremise) {
+		this.permAddPremise = permAddPremise;
+	}
+
+	public Object getPermAddStreetName() {
+		return permAddStreetName;
+	}
+
+	public void setPermAddStreetName(Object permAddStreetName) {
+		this.permAddStreetName = permAddStreetName;
+	}
+
+	public Object getPermAddLandmark() {
+		return permAddLandmark;
+	}
+
+	public void setPermAddLandmark(Object permAddLandmark) {
+		this.permAddLandmark = permAddLandmark;
+	}
+
+	public Object getPermAddCountry() {
+		return permAddCountry;
+	}
+
+	public void setPermAddCountry(Object permAddCountry) {
+		this.permAddCountry = permAddCountry;
+	}
+
+	public Object getPermAddState() {
+		return permAddState;
+	}
+
+	public void setPermAddState(Object permAddState) {
+		this.permAddState = permAddState;
+	}
+
+	public Object getPermAddCity() {
+		return permAddCity;
+	}
+
+	public void setPermAddCity(Object permAddCity) {
+		this.permAddCity = permAddCity;
+	}
+
+	public Object getPermAddPincode() {
+		return permAddPincode;
+	}
+
+	public void setPermAddPincode(Object permAddPincode) {
+		this.permAddPincode = permAddPincode;
+	}
+
+	public Object getPermAddPinData() {
+		return permAddPinData;
+	}
+
+	public void setPermAddPinData(Object permAddPinData) {
+		this.permAddPinData = permAddPinData;
+	}
+
+	public String getPermAddDist() {
+		return permAddDist;
+	}
+
+	public void setPermAddDist(String permAddDist) {
+		this.permAddDist = permAddDist;
+	}
+
+	public String getPermAddTaluko() {
+		return permAddTaluko;
+	}
+
+	public void setPermAddTaluko(String permAddTaluko) {
+		this.permAddTaluko = permAddTaluko;
+	}
 }

@@ -106,6 +106,9 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 			for (OtherIncomeDetail detail : otherIncomeDetails) {
 				OtherIncomeDetailRequest otherIncomeRequest = new OtherIncomeDetailRequest();
 				BeanUtils.copyProperties(detail, otherIncomeRequest);
+				otherIncomeRequest.setNetIncomeString( !CommonUtils.isObjectNullOrEmpty(otherIncomeRequest.getNetIncome()) ? CommonUtils.convertValueWithoutDecimal(otherIncomeRequest.getNetIncome()) : null);
+				otherIncomeRequest.setGrossIncomeString( !CommonUtils.isObjectNullOrEmpty(otherIncomeRequest.getGrossIncome()) ? CommonUtils.convertValueWithoutDecimal(otherIncomeRequest.getGrossIncome()) : null);
+				otherIncomeRequest.setIncomeDetailsType(!CommonUtils.isObjectNullOrEmpty(otherIncomeRequest.getIncomeDetailsId()) ? IncomeDetails.getById(otherIncomeRequest.getIncomeDetailsId()).getValue() : "-" );
 				otherIncomeRequests.add(otherIncomeRequest);
 			}
 			return otherIncomeRequests;

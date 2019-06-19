@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,14 +59,9 @@ public class LoanApplicationController {
 
 	private static final String ERROR_WHILE_GETTING_LOAN_APPLICATION_DETAILS = "Error while getting Loan Application Details==>";
 	private static final String SUCCESSFULLY_UPDATED = "Successfully updated";
-	private static final String FAILED_LITERAL = "Failed";
 	private static final String INACTIVATED = "Inactivated";
-	private static final String INVALID_CREDENTIALS = "Invalid Credentials";
-	private static final String TOKEN_IS_NULL = "Token is null";
-	private static final String TOKEN_IS_EXPIRED = "Token is Expired ";
 	private static final String SET_LAST_APPLICATION_ACCESS = "setLastApplicationAccess";
 	private static final String USER_ID_MUST_NOT_BE_NULL_MSG = "User Id must not be null==>";
-	private static final String ERROR_WHILE_DECRYPT_ENCRYPTED_OBJECT_MSG = "ERROR WHILE DECRYPT ENCRYPTED OBJECT   ====> Msg ===> ";
 	private static final String ERROR_WHILE_GETTING_PRODUCT_ID_BY_APPLICATION_ID = "Error while Getting Product Id by Application Id==>";
 	private static final String APPLICATION_ID_MUST_NOT_BE_NULL = "Application id must not be null.";
 	private static final String INVALID_USER_PLEASE_RELOGIN_AND_TRY_AGAIN_MSG = "Invalid User. Please relogin and try again.";
@@ -75,17 +69,10 @@ public class LoanApplicationController {
 	private static final String CHECK_USER_HAS_ANY_APPLICATION = "check User Has Any Application";
 	private static final String ERROR_WHILE_GET_UBI_REPORT1_FOR_ADMIN_PANEL_MSG = "Error while getUbiReport1ForAdminPanel==>";
 	private static final String INFORMATION_SUCCESSFULLY_STORED_MSG = "Information Successfully Stored ";
-	private static final String ERROR_WHILE_UPDATING_PAYMENT_STATUS_MSG = "Error while updating Payment Status==>{}";
-	private static final String SAVING_REQUEST_TO_DB_MSG = "Saving Request to DB ===> ";
 	private static final String AND_USER_ID_MSG = " and UserId ==>";
-	private static final String TOKEN_NULL_MSG = "Token null ==>";
-	private static final String RESPONSE_MSG = "Response ==>{}";
-	private static final String REASON_MSG = " reason  ";
-	private static final String TOKEN_LITERAL = "token";
 	private static final String SUCCESS_LITERAL = "SUCCESS";
 	private static final String IS_PRIMARY_LOCKED = "isPrimaryLocked";
 	private static final String IS_FINAL_LOCKED = "isFinalLocked";
-	private static final String PRODUCT_INFO = "productinfo";
 	private static final String GET_UBI_REPORT1_FOR_ADMIN_PANEL = "getUbiReport1ForAdminPanel";
 
 
@@ -1464,7 +1451,6 @@ public class LoanApplicationController {
 			JSONObject json = new JSONObject();
 			CommonDocumentUtils.startHook(logger, "createLoanFromCampaign");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			Long proposalMappingId = (Long) request.getAttribute(CommonUtils.PROPOSAL_MAPPING_ID);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			for (String campaignCode : campaignCodes) {
@@ -1517,7 +1503,6 @@ public class LoanApplicationController {
 			CommonDocumentUtils.startHook(logger, CHECK_USER_HAS_ANY_APPLICATION);
 			if (CommonUtils.UserType.FUND_SEEKER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
-				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 //				asyncComponent.sendMailWhenUserHasNoApplication(userId);
 			}
 			LoansResponse loansResponse = new LoansResponse("Successfully recieved", HttpStatus.OK.value());
