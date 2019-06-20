@@ -1,0 +1,62 @@
+package com.capitaworld.service.loans.model.sidbi;
+
+/**
+ * Created by pooja.patel on 19-06-2019.
+ */
+public class FacilityDetailsRequest {
+
+    private Long id;
+    private Long rupeeTermLoan;
+    private Long foreignCurrency;
+    private Double workingCapitalFund;
+    private Double workingCapitalNonFund;
+    private Double total;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRupeeTermLoan() {
+        return rupeeTermLoan;
+    }
+
+    public void setRupeeTermLoan(Long rupeeTermLoan) {
+        this.rupeeTermLoan = rupeeTermLoan;
+    }
+
+    public Long getForeignCurrency() {
+        return foreignCurrency;
+    }
+
+    public void setForeignCurrency(Long foreignCurrency) {
+        this.foreignCurrency = foreignCurrency;
+    }
+
+    public Double getWorkingCapitalFund() {
+        return workingCapitalFund;
+    }
+
+    public void setWorkingCapitalFund(Double workingCapitalFund) {
+        this.workingCapitalFund = workingCapitalFund;
+    }
+
+    public Double getWorkingCapitalNonFund() {
+        return workingCapitalNonFund;
+    }
+
+    public void setWorkingCapitalNonFund(Double workingCapitalNonFund) {
+        this.workingCapitalNonFund = workingCapitalNonFund;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+}

@@ -1,4 +1,4 @@
-package com.capitaworld.service.loans.domain.fundseeker.corporate;
+package com.capitaworld.service.loans.domain.sidbi;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -26,7 +26,7 @@ public class ProjectCostDetail implements Serializable{
 	private Long applicationId;
 	
 	@Column(name="particulars_id")
-	private Integer particularId;
+	private Integer particularsId;
 	
 	@Column(name="other_particular")
 	private String otherParticular;
@@ -145,13 +145,14 @@ public class ProjectCostDetail implements Serializable{
 		this.modifiedDate = modifiedDate;
 	}
 
-	public Integer getParticularId() {
-		return particularId;
+	public Integer getParticularsId() {
+		return particularsId;
 	}
 
-	public void setParticularId(Integer particularId) {
-		this.particularId = particularId;
+	public void setParticularsId(Integer particularsId) {
+		this.particularsId = particularsId;
 	}
+
 	
 
 	
