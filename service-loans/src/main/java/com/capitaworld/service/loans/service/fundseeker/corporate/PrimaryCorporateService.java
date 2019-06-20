@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.corporate.CorporateAdditionalDetailRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 
 public interface PrimaryCorporateService {
@@ -21,6 +20,4 @@ public interface PrimaryCorporateService {
 
     public boolean saveSwitchExistingLoan(PrimaryCorporateRequest primaryCorporateRequest) throws LoansException;
 
-	boolean saveOrUpdateAdditionalData(CorporateAdditionalDetailRequest corporateAdditionalRequest, Long userId)
-			throws LoansException;
 }

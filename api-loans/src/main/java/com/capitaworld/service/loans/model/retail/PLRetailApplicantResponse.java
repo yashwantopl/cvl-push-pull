@@ -18,7 +18,17 @@ public class PLRetailApplicantResponse implements Serializable {
     * */
     private Integer titleId;
     private String fullName;
-    private String gender;
+    private String title;
+        
+    public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	private String gender;
     private String pan;
     private String aadharNumber;
     private String mobile;

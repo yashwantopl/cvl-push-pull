@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.corporate.CorporateAdditionalDetailRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryCorporateService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -154,42 +153,6 @@ public class CorporatePrimaryController {
         }
     }
     
-    @RequestMapping(value = "${primary}/save/additionalData", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> saveAdditionalData(@RequestBody CorporateAdditionalDetailRequest corporateAdditionalRequest,
-                                                     HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
-            throws LoansException {
-        try {
-            CommonDocumentUtils.startHook(logger, "saveAdditionalData");
-            // request must not be null
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (CommonDocumentUtils.isThisClientApplication(request)) {
-            	corporateAdditionalRequest.setClientId(clientId);
-            }
-
-            if (userId == null) {
-                logger.warn("userId can not be empty ==>" + corporateAdditionalRequest);
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
-
-            if (corporateAdditionalRequest.getApplicationId() == null) {
-                logger.warn("ID must not be empty ==>" + corporateAdditionalRequest.getApplicationId());
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
-
-            primaryCorporateService.saveOrUpdateAdditionalData(corporateAdditionalRequest, userId);
-            CommonDocumentUtils.endHook(logger, "savePrimarySpecificData");
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-                    HttpStatus.OK);
-
-        } catch (Exception e) {
-            logger.error("Error while saving savePrimarySpecificData()==>", e);
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @RequestMapping(value = "${primary}/save/switchExisting", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> saveSwitchExisting(@RequestBody PrimaryCorporateRequest primaryCorporateRequest,
