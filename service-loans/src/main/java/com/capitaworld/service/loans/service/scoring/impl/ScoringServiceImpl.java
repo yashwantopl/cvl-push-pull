@@ -693,7 +693,7 @@ public class ScoringServiceImpl implements ScoringService {
             Long applicationId = scoringRequestLoans.getApplicationId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
             Double eligibleTenure = scoringRequestLoans.getEligibleTenure();
-            Double eligibleLoanAmountCircular = scoringRequestLoans.getEligibleLoanAmountCircular();
+            Double eligibleLoanAmountCircular = scoringRequestLoans.getElAmountOnAverageScoring();
             try {
                 ReportRequest reportRequest = new ReportRequest();
                 reportRequest.setApplicationId(applicationId);
@@ -1358,10 +1358,6 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setNetWorth(netwroth);
                                     scoreParameterRetailRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
                                     scoreParameterRetailRequest.setIsNetWrothToLoanAmount_p(true);
-                                    List<String> loanType= new ArrayList<>();
-                                    loanType.add(CibilUtils.AccountTypeEnum.PERSONAL_LOAN.getValue());
-                                    Double exitingLoanObligation = financialArrangementDetailsRepository.getOutStandingAmount(applicationId,loanType);
-                                    scoreParameterRetailRequest.setExitingLoanObligation(exitingLoanObligation);
                                 } catch (Exception e) {
                                     logger.error("error while getting NET_WROTH_TO_LOAN_AMOUNT_PL parameter : ",e);
                                     scoreParameterRetailRequest.setIsNetWrothToLoanAmount_p(false);
