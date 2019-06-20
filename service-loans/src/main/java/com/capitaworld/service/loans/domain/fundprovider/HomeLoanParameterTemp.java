@@ -39,6 +39,14 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	private Boolean isGrossMonthlyIncomeRangeDisplay = false;
 	@Column(name = "is_gross_monthly_income_range_mandatory")
 	private Boolean isGrossMonthlyIncomeRangeMandatory = false;
+	
+	// Minimum Net Take Home Salary (Rs.): 
+	@Column(name = "min_net_take_home_salary")
+	private Double minNetTakeHomeSalary;
+	@Column(name = "is_min_net_take_home_salary_display")
+	private Boolean isMinNetTakeHomeSalaryDisplay = false;
+	@Column(name = "is_min_net_take_home_salary_mandatory")
+	private Boolean isMinNetTakeHomeSalaryMandatory = false;
 
 	// Age of Applicant (Yrs.)
 	@Column(name = "min_age")
@@ -1166,6 +1174,34 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setIsGrossMonthlyIncomeRangeMandatory(Boolean isGrossMonthlyIncomeRangeMandatory) {
 		this.isGrossMonthlyIncomeRangeMandatory = isGrossMonthlyIncomeRangeMandatory;
 	}
-	
-	
+
+
+	public Double getMinNetTakeHomeSalary() {
+		return minNetTakeHomeSalary;
+	}
+
+
+	public void setMinNetTakeHomeSalary(Double minNetTakeHomeSalary) {
+		this.minNetTakeHomeSalary = minNetTakeHomeSalary;
+	}
+
+
+	public Boolean getIsMinNetTakeHomeSalaryDisplay() {
+		return isMinNetTakeHomeSalaryDisplay;
+	}
+
+
+	public void setIsMinNetTakeHomeSalaryDisplay(Boolean isMinNetTakeHomeSalaryDisplay) {
+		this.isMinNetTakeHomeSalaryDisplay = isMinNetTakeHomeSalaryDisplay;
+	}
+
+
+	public Boolean getIsMinNetTakeHomeSalaryMandatory() {
+		return isMinNetTakeHomeSalaryMandatory;
+	}
+
+
+	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
+		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
+	}
 }
