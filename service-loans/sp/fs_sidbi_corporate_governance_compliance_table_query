@@ -1,0 +1,11 @@
+CREATE TABLE `loan_application`.fs_sidbi_corporate_governance_compliance(
+id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+application_id BIGINT NOT NULL,
+corporate_governance_id INT NOT NULL,
+selected_option BYTE(1) NOT NULL,
+updated_value VARCHAR(200),
+created_by BIGINT,
+created_date DATETIME NOT NULL,
+modified_by BIGINT,
+modified_date DATETIME NOT NULL
+)
