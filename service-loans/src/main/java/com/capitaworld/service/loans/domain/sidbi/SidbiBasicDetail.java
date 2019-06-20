@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.capitaworld.service.loans.model.Address;
-
 @Entity
 @Table(name="fs_corporate_sidbi_basic_details")
 public class SidbiBasicDetail implements Serializable{
