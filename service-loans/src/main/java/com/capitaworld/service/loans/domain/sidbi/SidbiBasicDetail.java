@@ -97,6 +97,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "trial_run_end_date")
 	private Date trialRunEndDate;
 	
+	@Column(name = "is_covered_under_cgtmse")
+	private Boolean isCoveredUnderCGTMSE;
+	
 	@Column(name="is_active")
 	private Boolean isActive;
 	

@@ -60,6 +60,8 @@ public class SidbiBasicDetailRequest implements Serializable{
 	private String proposedActivity;
 	
 	private Date trialRunEndDate;
+	
+	private Boolean isCoveredUnderCGTMSE;
 
 	public Long getId() {
 		return id;
@@ -276,7 +278,15 @@ public class SidbiBasicDetailRequest implements Serializable{
 	public void setTrialRunEndDate(Date trialRunEndDate) {
 		this.trialRunEndDate = trialRunEndDate;
 	}
-	
+
+	public Boolean getIsCoveredUnderCGTMSE() {
+		return isCoveredUnderCGTMSE;
+	}
+
+	public void setIsCoveredUnderCGTMSE(Boolean isCoveredUnderCGTMSE) {
+		this.isCoveredUnderCGTMSE = isCoveredUnderCGTMSE;
+	}
+
 
 	
 }
