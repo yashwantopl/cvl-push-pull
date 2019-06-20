@@ -22,8 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.ekyc.model.EkycResponse;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -187,6 +190,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private CommonRepository commonRepository;
+	
+	@Autowired
+	private EPFClient epfClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -1301,6 +1307,20 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			logger.error("Error while getting Eligibility data : ",e);
 		}
 		/*************************************************************FINAL DETAILS***********************************************************/
+		
+		//ekyc data
+		try {
+			EmployerRequest epfReq = new EmployerRequest();
+			epfReq.setApplicationId(applicationId);
+			EkycResponse epfRes = epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				map.put("epfoData", epfRes.getData());
+			}else {
+				logger.info("eKYCData is null for ApplicationId==>{}"+applicationId);
+			}
+		} catch (Exception e) {
+			logger.info("Error/Exception while fetching ekyc Data in HL Cam of ApplicationId==>{} Error:",applicationId ,e);
+		}
 		
 		if(isFinalView) {
 			
