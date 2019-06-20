@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -109,7 +111,7 @@ public class SidbiSpecificController {
 	}
 	
 	@RequestMapping(value = "/save/additionalData", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> saveAdditionalData(@RequestBody SidbiBasicDetailRequest corporateAdditionalRequest,
+    public ResponseEntity<LoansResponse> saveAdditionalData(@RequestBody SidbiBasicDetailRequest sidbiBasicDetailRequest,
                                                      HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
             throws LoansException {
         try {
@@ -117,28 +119,58 @@ public class SidbiSpecificController {
             // request must not be null
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if (CommonDocumentUtils.isThisClientApplication(request)) {
-            	corporateAdditionalRequest.setClientId(clientId);
+            	sidbiBasicDetailRequest.setClientId(clientId);
             }
 
             if (userId == null) {
-                logger.warn("userId can not be empty ==>" + corporateAdditionalRequest);
+                logger.warn("userId can not be empty ==>" + sidbiBasicDetailRequest);
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            if (corporateAdditionalRequest.getApplicationId() == null) {
-                logger.warn("ID must not be empty ==>" + corporateAdditionalRequest.getApplicationId());
+            if (sidbiBasicDetailRequest.getApplicationId() == null) {
+                logger.warn("ID must not be empty ==>" + sidbiBasicDetailRequest.getApplicationId());
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            sidbiSpecificService.saveOrUpdateAdditionalData(corporateAdditionalRequest, userId);
+            sidbiSpecificService.saveOrUpdateAdditionalData(sidbiBasicDetailRequest, userId);
             CommonDocumentUtils.endHook(logger, "savePrimarySpecificData");
             return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
                     HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("Error while saving savePrimarySpecificData()==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+	
+	@GetMapping(value = "/get/additionalData/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getAdditionalData(@PathVariable("applicationId") Long applicationId,
+            HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
+            throws LoansException {
+        try {
+            CommonDocumentUtils.startHook(logger, "getAdditionalData");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            
+            if (applicationId == null || userId == null) {
+                logger.warn("ID and User Id Require to get Primary Working Details ==>" + applicationId + "User ID ==>"
+                        + userId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            
+            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            SidbiBasicDetailRequest sidbiBasicDetailRequest = sidbiSpecificService.getAdditionalData(applicationId, userId);
+			loansResponse.setData(sidbiBasicDetailRequest);
+            
+            CommonDocumentUtils.endHook(logger, "getAdditionalData");
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while getAdditionalData==>", e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);

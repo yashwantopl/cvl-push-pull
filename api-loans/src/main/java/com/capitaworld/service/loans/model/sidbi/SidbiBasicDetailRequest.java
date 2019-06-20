@@ -3,15 +3,6 @@ package com.capitaworld.service.loans.model.sidbi;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.capitaworld.service.loans.model.Address;
-
 public class SidbiBasicDetailRequest implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -69,6 +60,8 @@ public class SidbiBasicDetailRequest implements Serializable{
 	private String proposedActivity;
 	
 	private Date trialRunEndDate;
+	
+	private Boolean isCoveredUnderCGTMSE;
 
 	public Long getId() {
 		return id;
@@ -285,7 +278,15 @@ public class SidbiBasicDetailRequest implements Serializable{
 	public void setTrialRunEndDate(Date trialRunEndDate) {
 		this.trialRunEndDate = trialRunEndDate;
 	}
-	
+
+	public Boolean getIsCoveredUnderCGTMSE() {
+		return isCoveredUnderCGTMSE;
+	}
+
+	public void setIsCoveredUnderCGTMSE(Boolean isCoveredUnderCGTMSE) {
+		this.isCoveredUnderCGTMSE = isCoveredUnderCGTMSE;
+	}
+
 
 	
 }

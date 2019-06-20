@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.capitaworld.service.loans.model.Address;
-
 @Entity
 @Table(name="fs_corporate_sidbi_basic_details")
 public class SidbiBasicDetail implements Serializable{
@@ -98,6 +96,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "trial_run_end_date")
 	private Date trialRunEndDate;
+	
+	@Column(name = "is_covered_under_cgtmse")
+	private Boolean isCoveredUnderCGTMSE;
 	
 	@Column(name="is_active")
 	private Boolean isActive;
