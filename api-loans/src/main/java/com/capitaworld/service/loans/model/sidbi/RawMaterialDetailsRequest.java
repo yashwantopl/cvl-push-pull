@@ -13,6 +13,7 @@ public class RawMaterialDetailsRequest {
     private Long quantityUnitCost;
     private Integer leadProcureTime;
     private Boolean availability;
+    private Boolean isActive;
 
     public Long getId() {
         return id;
@@ -77,4 +78,15 @@ public class RawMaterialDetailsRequest {
     public void setAvailability(Boolean availability) {
         this.availability = availability;
     }
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	
+    
 }

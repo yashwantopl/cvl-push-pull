@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.domain.sidbi;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,8 +11,8 @@ import java.util.Date;
 
 @Entity
 @Table(name="fs_sidbi_facility_details")
-public class FacilityDetails {
-
+public class FacilityDetails implements Serializable{
+	private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -21,8 +23,8 @@ public class FacilityDetails {
     @Column(name="rupee_term_loan")
     private Long rupeeTermLoan;
 
-        @Column(name="foreign_currency")
-    private Long foreignCurrency;
+	@Column(name="foreign_currency")
+    private Double foreignCurrency;
 
     @Column(name="working_capital_fund")
     private Double workingCapitalFund;
@@ -74,11 +76,11 @@ public class FacilityDetails {
         this.rupeeTermLoan = rupeeTermLoan;
     }
 
-    public Long getForeignCurrency() {
+    public Double getForeignCurrency() {
         return foreignCurrency;
     }
 
-    public void setForeignCurrency(Long foreignCurrency) {
+    public void setForeignCurrency(Double foreignCurrency) {
         this.foreignCurrency = foreignCurrency;
     }
 
@@ -106,15 +108,15 @@ public class FacilityDetails {
         this.total = total;
     }
 
-    public Boolean getActive() {
-        return isActive;
-    }
+    public Boolean getIsActive() {
+		return isActive;
+	}
 
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
-    public Long getCreatedBy() {
+	public Long getCreatedBy() {
         return createdBy;
     }
 

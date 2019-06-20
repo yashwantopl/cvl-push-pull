@@ -16,6 +16,7 @@ import com.capitaworld.service.loans.domain.sidbi.FacilityDetails;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
+import com.capitaworld.service.loans.model.sidbi.PersonalCorporateGuaranteeRequest;
 import com.capitaworld.service.loans.repository.sidbi.FacilityDetailsRepository;
 import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -38,7 +39,7 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
     public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
         try {
             for (Map<String, Object> obj : frameRequest.getDataList()) {
-                FacilityDetailsRequest facilityDetailsRequest= (FacilityDetailsRequest) MultipleJSONObjectHelper.getObjectFromMap(obj, FacilityDetailsRequest.class);
+                FacilityDetailsRequest facilityDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(obj, FacilityDetailsRequest.class);
                 FacilityDetails facilityDetails= null;
                 if (facilityDetailsRequest.getId() != null) {
                     facilityDetails = facilityDetailsRepository.findOne(facilityDetailsRequest.getId());
@@ -52,7 +53,6 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
                 facilityDetails.setApplicationId(frameRequest.getApplicationId());
                 facilityDetails.setModifiedBy(frameRequest.getUserId());
                 facilityDetails.setModifiedDate(new Date());
-                facilityDetails.setActive(true);
                 facilityDetailsRepository.save(facilityDetails);
             }
             return true;

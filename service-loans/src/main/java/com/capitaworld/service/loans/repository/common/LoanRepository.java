@@ -52,4 +52,6 @@ public interface LoanRepository {
 	public List<Object[]>getTypeSelectionData();
 	
 	public List<Object[]>getTypeSelectionData(String userId);
+	
+	public String checkPanForAlreayInPrinciplOrNotEligible(Integer typeId,Integer selectedLoanTypeId,Long applicationId,String panNumber);
 }

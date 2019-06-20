@@ -376,6 +376,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				res.setPropPincode(prHlDetails.getPropPincode());
 				res.setPropdistrictMappingId(prHlDetails.getPropdistrictMappingId());
 				res.setMarketValProp(prHlDetails.getMarketValProp());
+				res.setCostOfProp(prHlDetails.getCostOfProp());
 				res.setOldPropMonth(prHlDetails.getOldPropMonth());
 				res.setOldPropYear(prHlDetails.getOldPropYear());
 				res.setIsCheckOffAgreeToPayOutstanding(prHlDetails.getIsCheckOffAgreeToPayOutstanding());
@@ -485,6 +486,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				prHlDetails.setPropPincode(hlOneformPrimaryRes.getPropPincode());
 				prHlDetails.setPropdistrictMappingId(hlOneformPrimaryRes.getPropdistrictMappingId());
 				prHlDetails.setMarketValProp(hlOneformPrimaryRes.getMarketValProp());
+				prHlDetails.setCostOfProp(hlOneformPrimaryRes.getCostOfProp());
 				prHlDetails.setOldPropMonth(hlOneformPrimaryRes.getOldPropMonth());
 				prHlDetails.setOldPropYear(hlOneformPrimaryRes.getOldPropYear());
 				prHlDetails.setIsCheckOffAgreeToPayOutstanding(hlOneformPrimaryRes.getIsCheckOffAgreeToPayOutstanding());
