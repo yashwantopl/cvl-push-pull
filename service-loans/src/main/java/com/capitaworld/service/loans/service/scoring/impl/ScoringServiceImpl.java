@@ -4,13 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -2255,12 +2251,12 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
 	public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList) {
     	CoApplicantDetail coApplicantDetail = null;
+        Long orgId = null;
         Long applicationId = null;
         Long coApplicantId = null;
-        Long orgId = null;
+        ScoringRequestLoans scoringRequestLoansReq = null;
         Double netMonthlyIncome = 0.0d;
         Double grossMonthlyIncome = 0.0d;
-//        PrimaryHomeLoanDetail primaryHomLoanDetail = null;
         Data coApplicantBankStatementData = null;
         Double totalEMI = 0.0;
         CibilScoreLogRequest cibilResponse = null;
@@ -2270,8 +2266,9 @@ public class ScoringServiceImpl implements ScoringService {
         List<Double> incomeOfItrOf3YearsCoApplicant = null;
 //        Double loanAmount = 0.0d;
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
-        	applicationId = scoringRequestLoansList.get(0).getApplicationId();
-        	coApplicantId = scoringRequestLoansList.get(0).getCoApplicantId();
+        	scoringRequestLoansReq = scoringRequestLoansList.get(0); 
+        	applicationId = scoringRequestLoansReq.getApplicationId();
+        	coApplicantId = scoringRequestLoansReq.getCoApplicantId();
         	logger.info("Calculating Scoring For CoApplicant and ApplicationId============{}==================>{}",coApplicantId,applicationId);
         	coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coApplicantId, true);
         	if (CommonUtils.isObjectNullOrEmpty(coApplicantDetail)) {
@@ -2282,16 +2279,10 @@ public class ScoringServiceImpl implements ScoringService {
         	
         	CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(coApplicantDetail.getPan());
-            cibilRequest.setApplicationId(applicationId);
+            cibilRequest.setApplicationId(scoringRequestLoansReq.getApplicationId());
             try {
             	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-//            	if(cibilResponse == null) {
-//            		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID for CoApplicant====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-//            	}
             	cibilResponseDpdCoApp = cibilClient.getDPDLastXMonth(applicationId,coApplicantDetail.getPan());
-//                if(cibilResponseDpdCoApp == null) {
-//            		return new ResponseEntity<>(new LoansResponse("CIBIL DPD Reponse Found NULL for ApplicationID for CoApplicant====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-//            	}
             }catch(Exception e) {
             	logger.error("Error in Getting CIBIL infor like DPD and Score == >{}",e);
             }
@@ -2299,15 +2290,14 @@ public class ScoringServiceImpl implements ScoringService {
             List<CoApplicantEligibilityRequest> monthlyIncomeForCoApplicant = null;
             CoApplicantEligibilityRequest incomeFromEligibility = null;
 			try {
-				List<Long> coAppIds = new ArrayList<>(1);
-				coAppIds.add(coApplicantId);
-				monthlyIncomeForCoApplicant = eligibilityClient.getMonthlyIncomeForCoApplicant(coAppIds, applicationId);
-//				if(monthlyIncomeForCoApplicant == null) {
-//					return new ResponseEntity<>(new LoansResponse("Eligibility Response Found NULL For CoApplicant : ", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-//				}
+				List<CoApplicantEligibilityRequest> coAppElRequest = new ArrayList<>(1);
+				CoApplicantEligibilityRequest applicantEligibilityRequest = new CoApplicantEligibilityRequest();
+				applicantEligibilityRequest.setId(scoringRequestLoansReq.getCoApplicantId());
+				applicantEligibilityRequest.setIsConsiderIncome(scoringRequestLoansReq.getIsConsiderCoAppIncome());
+				coAppElRequest.add(applicantEligibilityRequest);
+				monthlyIncomeForCoApplicant = eligibilityClient.getMonthlyIncomeForCoApplicant(coAppElRequest, applicationId);
 			} catch (EligibilityExceptions e) {
 				logger.error("Error while Getting MonthlyIncome Details == >{}",e);
-//				return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong while getting Calculated NMI and GMI for Scoring For CoAplicant : "+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 			if(!CommonUtils.isListNullOrEmpty(monthlyIncomeForCoApplicant)) {
 				try {
@@ -2330,15 +2320,9 @@ public class ScoringServiceImpl implements ScoringService {
                  reportRequest.setApplicationId(applicationId);
                  reportRequest.setCoApplicantId(coApplicantId);
                  AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-//                 if(analyzerResponse == null) {
-//                	 return new ResponseEntity<>(new LoansResponse("Analyser Response Found null For Scoring Calculation HL For the ApplicationId for CoApplicant===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK); 
-//                 }
                  if(analyzerResponse != null && analyzerResponse.getData() != null) {
                 	 coApplicantBankStatementData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);                	 
                  }
-//                 if(coApplicantBankStatementData == null) {
-//                	 return new ResponseEntity<>(new LoansResponse("Bank Statement Report Found Null For the ApplicationId HL for CoApplicant===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-//                 }
             }catch(Exception e) {
             	logger.error("Error while getting Bank Statement Details");
             }
@@ -2351,7 +2335,6 @@ public class ScoringServiceImpl implements ScoringService {
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         Integer minBankRelationshipInMonths = null;
-//        HLEligibilityRequest hlEligibilityRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
         	ScoreParameterRetailRequest scoreParameterRetailRequest = null;
@@ -2396,6 +2379,8 @@ public class ScoringServiceImpl implements ScoringService {
 				scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 				scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
 				scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
+				scoreParameterRetailRequest.setIsConsiderCoAppIncome(scoringRequestLoansReq.getIsConsiderCoAppIncome());
+				logger.info("Is Income Consider For CoApplicant============>{}=======>{}",scoringRequestLoansReq.getIsConsiderCoAppIncome(), coApplicantId);
 				logger.info("Result of Average Eligibility Call For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getElAmountOnAverageScoring(),applicationId,fpProductId,coApplicantId);
 				logger.info("FOIR For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getFoir(),applicationId,fpProductId,applicationId,fpProductId,coApplicantId);
                 logger.info("----------------------------START RETAIL HL ------------------------------");

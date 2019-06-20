@@ -38,21 +38,20 @@ public class RawMaterialDetailsServiceImpl implements RawMaterialDetailsService{
     public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
         try {
             for (Map<String, Object> obj : frameRequest.getDataList()) {
-                RawMaterialDetailsRequest RawMaterialDetailsRequest= (RawMaterialDetailsRequest) MultipleJSONObjectHelper.getObjectFromMap(obj, RawMaterialDetailsRequest.class);
+                RawMaterialDetailsRequest rawMaterialDetailsRequest= MultipleJSONObjectHelper.getObjectFromMap(obj, RawMaterialDetailsRequest.class);
                 RawMaterialDetails rawMaterialDetails= null;
-                if (RawMaterialDetailsRequest.getId() != null) {
-                    rawMaterialDetails = rawMaterialDetailsRepository.findOne(RawMaterialDetailsRequest.getId());
+                if (rawMaterialDetailsRequest.getId() != null) {
+                    rawMaterialDetails = rawMaterialDetailsRepository.findOne(rawMaterialDetailsRequest.getId());
                 } else {
                     rawMaterialDetails = new RawMaterialDetails();
                     rawMaterialDetails.setCreatedBy(frameRequest.getUserId());
                     rawMaterialDetails.setCreatedDate(new Date());
                 }
 
-                BeanUtils.copyProperties(RawMaterialDetailsRequest, rawMaterialDetails);
+                BeanUtils.copyProperties(rawMaterialDetailsRequest, rawMaterialDetails);
                 rawMaterialDetails.setApplicationId(frameRequest.getApplicationId());
                 rawMaterialDetails.setModifiedBy(frameRequest.getUserId());
                 rawMaterialDetails.setModifiedDate(new Date());
-                rawMaterialDetails.setActive(true);
                 rawMaterialDetailsRepository.save(rawMaterialDetails);
             }
             return true;

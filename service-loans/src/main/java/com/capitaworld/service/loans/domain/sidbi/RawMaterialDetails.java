@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.domain.sidbi;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,8 +11,8 @@ import java.util.Date;
 
 @Entity
 @Table(name="fs_sidbi_raw_material_details")
-public class RawMaterialDetails {
-
+public class RawMaterialDetails implements Serializable{
+	private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -128,15 +130,16 @@ public class RawMaterialDetails {
         this.availability = availability;
     }
 
-    public Boolean getActive() {
-        return isActive;
-    }
 
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
+    public Boolean getIsActive() {
+		return isActive;
+	}
 
-    public Long getCreatedBy() {
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Long getCreatedBy() {
         return createdBy;
     }
 
