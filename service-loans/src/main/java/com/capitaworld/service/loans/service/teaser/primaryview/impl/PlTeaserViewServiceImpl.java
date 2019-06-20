@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,9 +95,12 @@ import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -821,11 +825,30 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 				plRetailApplicantResponse.setDesignation(plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
-				
+				plRetailApplicantResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):null);
 				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
 
 				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(plRetailApplicantRequest.getRetailApplicantIncomeRequestList());
 				
+				
+				
+				
+				/* Addition */
+				plRetailApplicantResponse.setCategory(plRetailApplicantRequest.getCategory() != null ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
+				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail() != null ? (plRetailApplicantRequest.getEmail()) : "-");
+				plRetailApplicantResponse.setFatherName(plRetailApplicantRequest.getFatherName() != null ? (plRetailApplicantRequest.getFatherName()) : " ");
+				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse() != null ? plRetailApplicantRequest.getAnnualIncomeOfSpouse() : null);
+				plRetailApplicantResponse.setContactNo((plRetailApplicantRequest.getContactNo() != null ? plRetailApplicantRequest.getContactNo() : " "));
+				plRetailApplicantResponse.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
+				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
+				plRetailApplicantResponse.setGrossMonthlyIncome(plRetailApplicantRequest.getGrossMonthlyIncome() != null ? (plRetailApplicantRequest.getGrossMonthlyIncome()) : null);
+				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "-");
+				plRetailApplicantResponse.setNetMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome() != null ? (plRetailApplicantRequest.getMonthlyIncome()) : null);
+				plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getResidentialStatus()!=null ? ResidentStatusMst.getById(plRetailApplicantRequest.getResidentialStatus()).getValue().toString() : "-");
+				/* Addition */
+				
+			
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
@@ -1093,16 +1116,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 
          // for name is edited or not:
-         if(!plRetailApplicantResponse.getFullName().equals(plTeaserViewResponse.getNameAsPerItr()))
-         {// name is edited
-			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
-		 }
-		 else{
-			 // name is  not edited
+
+         if(plRetailApplicantResponse.getFullName().equals(plTeaserViewResponse.getNameAsPerItr()))
+         {
 			 plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
 		 }
 
-		
+		 else{
+			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		 }
+
+
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
@@ -1172,6 +1196,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						}else {
 							logger.warn(DISTRICT_ID_IS_NULL_MSG);
 						}
+
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}

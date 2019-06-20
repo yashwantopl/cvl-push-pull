@@ -28,6 +28,25 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	private Boolean isNetMonthlyIncomeRangeDisplay = false;
 	@Column(name = "is_net_monthly_income_range_mandatory")
 	private Boolean isNetMonthlyIncomeRangeMandatory = false;
+	
+	
+	// Gross Monthly Income Range (Rs.)
+	@Column(name = "min_gross_monthly_income_range")
+	private Double minGrossMonthlyIncomeRange;
+	@Column(name = "max_gross_monthly_income_range")
+	private Double maxGrossMonthlyIncomeRange;
+	@Column(name = "is_gross_monthly_income_range_display")
+	private Boolean isGrossMonthlyIncomeRangeDisplay = false;
+	@Column(name = "is_gross_monthly_income_range_mandatory")
+	private Boolean isGrossMonthlyIncomeRangeMandatory = false;
+	
+	// Minimum Net Take Home Salary (Rs.): 
+	@Column(name = "min_net_take_home_salary")
+	private Double minNetTakeHomeSalary;
+	@Column(name = "is_min_net_take_home_salary_display")
+	private Boolean isMinNetTakeHomeSalaryDisplay = false;
+	@Column(name = "is_min_net_take_home_salary_mandatory")
+	private Boolean isMinNetTakeHomeSalaryMandatory = false;
 
 	// Age of Applicant (Yrs.)
 	@Column(name = "min_age")
@@ -1115,5 +1134,74 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setSalaryAcType(Integer salaryAcType) {
 		this.salaryAcType = salaryAcType;
 	}
-	
+
+
+	public Double getMinGrossMonthlyIncomeRange() {
+		return minGrossMonthlyIncomeRange;
+	}
+
+
+	public void setMinGrossMonthlyIncomeRange(Double minGrossMonthlyIncomeRange) {
+		this.minGrossMonthlyIncomeRange = minGrossMonthlyIncomeRange;
+	}
+
+
+	public Double getMaxGrossMonthlyIncomeRange() {
+		return maxGrossMonthlyIncomeRange;
+	}
+
+
+	public void setMaxGrossMonthlyIncomeRange(Double maxGrossMonthlyIncomeRange) {
+		this.maxGrossMonthlyIncomeRange = maxGrossMonthlyIncomeRange;
+	}
+
+
+	public Boolean getIsGrossMonthlyIncomeRangeDisplay() {
+		return isGrossMonthlyIncomeRangeDisplay;
+	}
+
+
+	public void setIsGrossMonthlyIncomeRangeDisplay(Boolean isGrossMonthlyIncomeRangeDisplay) {
+		this.isGrossMonthlyIncomeRangeDisplay = isGrossMonthlyIncomeRangeDisplay;
+	}
+
+
+	public Boolean getIsGrossMonthlyIncomeRangeMandatory() {
+		return isGrossMonthlyIncomeRangeMandatory;
+	}
+
+
+	public void setIsGrossMonthlyIncomeRangeMandatory(Boolean isGrossMonthlyIncomeRangeMandatory) {
+		this.isGrossMonthlyIncomeRangeMandatory = isGrossMonthlyIncomeRangeMandatory;
+	}
+
+
+	public Double getMinNetTakeHomeSalary() {
+		return minNetTakeHomeSalary;
+	}
+
+
+	public void setMinNetTakeHomeSalary(Double minNetTakeHomeSalary) {
+		this.minNetTakeHomeSalary = minNetTakeHomeSalary;
+	}
+
+
+	public Boolean getIsMinNetTakeHomeSalaryDisplay() {
+		return isMinNetTakeHomeSalaryDisplay;
+	}
+
+
+	public void setIsMinNetTakeHomeSalaryDisplay(Boolean isMinNetTakeHomeSalaryDisplay) {
+		this.isMinNetTakeHomeSalaryDisplay = isMinNetTakeHomeSalaryDisplay;
+	}
+
+
+	public Boolean getIsMinNetTakeHomeSalaryMandatory() {
+		return isMinNetTakeHomeSalaryMandatory;
+	}
+
+
+	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
+		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
+	}
 }

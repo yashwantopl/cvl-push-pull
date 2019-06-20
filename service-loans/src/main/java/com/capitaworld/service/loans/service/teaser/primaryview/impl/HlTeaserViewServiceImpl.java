@@ -15,10 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.domain.fundseeker.retail.*;
-import com.capitaworld.service.loans.repository.fundseeker.retail.*;
-import com.capitaworld.service.oneform.enums.*;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +46,11 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PurchasePropertyDetails;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
@@ -69,6 +70,11 @@ import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -92,6 +98,31 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.DesignationList;
+import com.capitaworld.service.oneform.enums.DisabilityType;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmploymentCategory;
+import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmploymentWithPL;
+import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
+import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
+import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.MaritalStatusMst;
+import com.capitaworld.service.oneform.enums.OccupationHL;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.PropertySubType;
+import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
+import com.capitaworld.service.oneform.enums.Religion;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
+import com.capitaworld.service.oneform.enums.ResidentialStatus;
+import com.capitaworld.service.oneform.enums.SalaryModeMst;
+import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -291,25 +322,64 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
+				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
-				if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 2) {
+				
+				//as per OccupationNature enum id
+				switch (plRetailApplicantRequest.getEmploymentType() != null ? plRetailApplicantRequest.getEmploymentType() : 0) {
+				
+				case 2:
 					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
-				}else if (plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 5) {
+					
+					//switch as per EmploymentWithPL id
+					switch (plRetailApplicantRequest.getEmploymentWith() != null ? plRetailApplicantRequest.getEmploymentWith() :0) {
+					
+					case 1://central gov
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue()));
+						break;
+					case 2://state gov
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue()));
+						break;
+					case 3://psu
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue()));
+						break;
+					case 4: //company
+						plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+						break;
+					case 5://educational insitute
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue()));
+						break;
+					case 8: //bank
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue()));
+						break;
+					case 9: //Insurance company
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue()));
+						break;
+
+					default:
+						break;
+					}
+					break;
+					
+				case 5:
+					
 					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
-				}else if (plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 4) {
+					break;
+				case 4:
 					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithRetail.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
+					break;
+				default:
+					break;
 				}
-				
-				
-				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+	
 				/*employment with*/
 				/*plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentStatus() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue().toString() : "-");*/
 				plRetailApplicantResponse.setCurrentEmploymentStatus(plRetailApplicantRequest.getCurrentEmploymentStatus()!= null ? 	EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus()!= null ? 	OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + "" +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() !=null ? (plRetailApplicantRequest.getTotalExperienceYear() +" year") : "") + "" + (plRetailApplicantRequest.getTotalExperienceMonth() != null ? (plRetailApplicantRequest.getTotalExperienceMonth() +" months") :  "" ));
-				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(plRetailApplicantRequest.getStatusId() != null ? MaritalStatusMst.getById(plRetailApplicantRequest.getStatusId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEducationQualificationString(plRetailApplicantRequest.getEducationQualification() != null ? EducationStatusRetailMst.getById(plRetailApplicantRequest.getEducationQualification()).getValue().toString() : "-");
 				plRetailApplicantResponse.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
@@ -335,6 +405,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					LocalDate operatingBusinessDiff = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(plRetailApplicantRequest.getBusinessStartDate()));
 					operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
 				}
+				
+				//OccupationNature condition for Total Experiance Calculation
 				if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 2) {
 					plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() != null ? plRetailApplicantRequest.getTotalExperienceYear() + " years" :" ") + " "+ (plRetailApplicantRequest.getTotalExperienceMonth()!= null  ? plRetailApplicantRequest.getTotalExperienceMonth() +" months" : " "));
 				}else if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 7) {
@@ -524,42 +596,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				}
 			}
 
-			try {
-				/*for(ReferencesRetailDetail referencesRetailDetail : referencesRetailDetails) {
-					hlTeaserViewResponse.setRefNo(referencesRetailDetail.getId());
-					hlTeaserViewResponse.setRefName(referencesRetailDetail.getName());
-					hlTeaserViewResponse.setRefAddress(referencesRetailDetail.getAddress());
-					hlTeaserViewResponse.setRefEmail(referencesRetailDetail.getEmail());
-					hlTeaserViewResponse.setRefMobile(referencesRetailDetail.getMobile());
-					hlTeaserViewResponse.setRefTel(referencesRetailDetail.getTelephone());
-				}*/
-
-				for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
-					hlTeaserViewResponse.setPropCity(CommonDocumentUtils.getCity(purchasePropertyDetail.getCity().longValue(), oneFormClient));
-					hlTeaserViewResponse.setPropState(CommonDocumentUtils.getState(purchasePropertyDetail.getState().longValue(), oneFormClient));
-					hlTeaserViewResponse.setPropertyName(purchasePropertyDetail.getPropertyName());
-					hlTeaserViewResponse.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
-					hlTeaserViewResponse.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
-					hlTeaserViewResponse.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
-					hlTeaserViewResponse.setCarpetArea(purchasePropertyDetail.getCarpetArea());
-				}
-
-				hlTeaserViewResponse.setLandPlotCost(primaryHlDetail.getLandPlotCost());
-				hlTeaserViewResponse.setConstructionCost(primaryHlDetail.getConstructionCost());
-				hlTeaserViewResponse.setCompletionTimeInYear(primaryHlDetail.getCompletionTimeInYear());
-				hlTeaserViewResponse.setRenovationType(primaryHlDetail.getRenovationType() != null ? PropertySubType.getById(primaryHlDetail.getRenovationType()).getValue().toString() : "-");
-				hlTeaserViewResponse.setRenovationCost(primaryHlDetail.getRenovationCost());
-				hlTeaserViewResponse.setRenovationCompletionTimeInYear(primaryHlDetail.getRenovationCompletionTimeInYear());
-				hlTeaserViewResponse.setDateOfLoanTaken(primaryHlDetail.getDateOfLoanTaken());
-				hlTeaserViewResponse.setOriginalValProp(primaryHlDetail.getOriginalValProp());
-				hlTeaserViewResponse.setSellerName(finalHomeLoanDetail.getSellerName());
-				hlTeaserViewResponse.setSellerAddress(finalHomeLoanDetail.getSellerAddress());
-				hlTeaserViewResponse.setSellerCity(CommonDocumentUtils.getCity(finalHomeLoanDetail.getSellerCity().longValue(), oneFormClient));
-				hlTeaserViewResponse.setSellerState(CommonDocumentUtils.getState(finalHomeLoanDetail.getSellerState().longValue(), oneFormClient));
-				hlTeaserViewResponse.setSellerPincode(finalHomeLoanDetail.getSellerPincode());
-			}catch (Exception e){
-				logger.error("Exception while fetching property details",e);
-			}
+			
 
 		}
 		//PROPOSAL RESPONSE
@@ -733,6 +770,46 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						retailFinalInfo.setDdoRemainingSerMonths(p.getMonths());
 					}
 					
+					//property details
+					
+					
+					try {
+						/*for(ReferencesRetailDetail referencesRetailDetail : referencesRetailDetails) {
+							hlTeaserViewResponse.setRefNo(referencesRetailDetail.getId());
+							hlTeaserViewResponse.setRefName(referencesRetailDetail.getName());
+							hlTeaserViewResponse.setRefAddress(referencesRetailDetail.getAddress());
+							hlTeaserViewResponse.setRefEmail(referencesRetailDetail.getEmail());
+							hlTeaserViewResponse.setRefMobile(referencesRetailDetail.getMobile());
+							hlTeaserViewResponse.setRefTel(referencesRetailDetail.getTelephone());
+						}*/
+
+						for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
+							hlTeaserViewResponse.setPropCity(CommonDocumentUtils.getCity(purchasePropertyDetail.getCity().longValue(), oneFormClient));
+							hlTeaserViewResponse.setPropState(CommonDocumentUtils.getState(purchasePropertyDetail.getState().longValue(), oneFormClient));
+							hlTeaserViewResponse.setPropertyName(purchasePropertyDetail.getPropertyName());
+							hlTeaserViewResponse.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
+							hlTeaserViewResponse.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
+							hlTeaserViewResponse.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
+							hlTeaserViewResponse.setCarpetArea(purchasePropertyDetail.getCarpetArea());
+						}
+
+						hlTeaserViewResponse.setLandPlotCost(primaryHlDetail.getLandPlotCost());
+						hlTeaserViewResponse.setConstructionCost(primaryHlDetail.getConstructionCost());
+						hlTeaserViewResponse.setCompletionTimeInYear(primaryHlDetail.getCompletionTimeInYear());
+						hlTeaserViewResponse.setRenovationType(primaryHlDetail.getRenovationType() != null ? PropertySubType.getById(primaryHlDetail.getRenovationType()).getValue().toString() : "-");
+						hlTeaserViewResponse.setRenovationCost(primaryHlDetail.getRenovationCost());
+						hlTeaserViewResponse.setRenovationCompletionTimeInYear(primaryHlDetail.getRenovationCompletionTimeInYear());
+						hlTeaserViewResponse.setDateOfLoanTaken(primaryHlDetail.getDateOfLoanTaken());
+						hlTeaserViewResponse.setOriginalValProp(primaryHlDetail.getOriginalValProp());
+						hlTeaserViewResponse.setSellerName(finalHomeLoanDetail.getSellerName());
+						hlTeaserViewResponse.setSellerAddress(finalHomeLoanDetail.getSellerAddress());
+						hlTeaserViewResponse.setSellerCity(CommonDocumentUtils.getCity(finalHomeLoanDetail.getSellerCity().longValue(), oneFormClient));
+						hlTeaserViewResponse.setSellerState(CommonDocumentUtils.getState(finalHomeLoanDetail.getSellerState().longValue(), oneFormClient));
+						hlTeaserViewResponse.setSellerPincode(finalHomeLoanDetail.getSellerPincode());
+					}catch (Exception e){
+						logger.error("Exception while fetching property details",e);
+					}
+					
 					//permanent address
 					try {
 						if(retailFinalInfo != null && retailFinalInfo.getPermanentAddress().getDistrictMappingId() != null) {
@@ -871,9 +948,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	
 	}
 
-
-
 	private List<PLRetailApplicantResponse> getCoApplicationDetails(Long applicationId , Long productMappingId, Long proposalId) throws LoansException {
+		LocalDate today = LocalDate.now();
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
 			List<CoApplicantDetail> coApplicantList = coAppService.getCoApplicantList(applicationId);
@@ -893,7 +969,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year") : "") + "" +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() !=null ? (coApplicantDetail.getTotalExperienceYear() +" year") : "") + "" + (coApplicantDetail.getTotalExperienceMonth() != null ? (coApplicantDetail.getTotalExperienceMonth() +" months") :  "" ));
-				plRetailApplicantResponse.setResidenceType(coApplicantDetail.getResidenceType() != null ? ResidenceTypeHomeLoan.getById(coApplicantDetail.getResidenceType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setResidenceType(coApplicantDetail.getResidenceType() != null ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue().toString() : "-");
 				plRetailApplicantResponse.setCategory(coApplicantDetail.getCategory()!=null?String.valueOf(CastCategory.getById(coApplicantDetail.getCategory())):" - ");
 				plRetailApplicantResponse.setFatherName(coApplicantDetail.getFatherName()!=null ? coApplicantDetail.getFatherName(): "-");
@@ -910,7 +986,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
-				plRetailApplicantResponse.setEmploymentWith(EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue());
+				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentStatus()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
@@ -923,16 +999,74 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setNoOfDependent(coApplicantDetail.getNoDependent());
 				plRetailApplicantResponse.setContactNo(coApplicantDetail.getContactNo());
 				plRetailApplicantResponse.setEmail(coApplicantDetail.getEmail());
+				plRetailApplicantResponse.setSalaryMode(coApplicantDetail.getModeOfReceipt()!= null ? SalaryModeMst.getById(coApplicantDetail.getModeOfReceipt()).getValue().toString() : "-");
 				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
+				
+				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
-				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
+				
+				//as per OccupationNature enum id
+				switch (coApplicantDetail.getEmploymentType() != null ? coApplicantDetail.getEmploymentType() : 0) {
+				
+				case 2:
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithPL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
-				}else if (coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 5) {
+					
+					//switch as per EmploymentWithPL id
+					switch (coApplicantDetail.getEmploymentWith() != null ? coApplicantDetail.getEmploymentWith() :0) {
+					
+					case 1://central gov
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(coApplicantDetail.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue()));
+						break;
+					case 2://state gov
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(coApplicantDetail.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue()));
+						break;
+					case 3://psu
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(coApplicantDetail.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue()));
+						break;
+					case 4: //company
+						plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
+						break;
+					case 5://educational insitute
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(coApplicantDetail.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue()));
+						break;
+					case 8: //bank
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(coApplicantDetail.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue()));
+						break;
+					case 9: //Insurance company
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(coApplicantDetail.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue()));
+						break;
+
+					default:
+						break;
+					}
+					break;
+					
+				case 5:
+					
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? OccupationHL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
-				}else if (coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 4) {
+					break;
+				case 4:
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					break;
+				default:
+					break;
 				}
-				LocalDate today = LocalDate.now();
+				
+				//OccupationNature condition for Total Experiance Calculation
+				String operatingBusinessSince = null;
+				if(coApplicantDetail.getBusinessStartDate() != null ) {
+					LocalDate operatingBusinessDiff = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(coApplicantDetail.getBusinessStartDate()));
+					operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
+				}
+				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
+					plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() != null ? coApplicantDetail.getTotalExperienceYear() + " years" :" ") + " "+ (coApplicantDetail.getTotalExperienceMonth()!= null  ? coApplicantDetail.getTotalExperienceMonth() +" months" : " "));
+				}else if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 7) {
+					plRetailApplicantResponse.setTotalExperienceYear(null);
+				}else {
+					plRetailApplicantResponse.setTotalExperienceYear(operatingBusinessSince != null ? operatingBusinessSince :"-");
+				}
+				
+	
 				if(coApplicantDetail.getResidenceSinceYear() !=null && coApplicantDetail.getResidenceSinceMonth() != null) {
 					LocalDate since = LocalDate.of(coApplicantDetail.getResidenceSinceYear(), coApplicantDetail.getResidenceSinceMonth(), 1);
 

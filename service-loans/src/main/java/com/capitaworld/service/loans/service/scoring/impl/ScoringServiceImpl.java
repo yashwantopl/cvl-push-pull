@@ -685,13 +685,44 @@ public class ScoringServiceImpl implements ScoringService {
         ScoringResponse scoringResponseMain = null;
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
-
+        Data bankStatementData;
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
+
+        // CALL ELIGIBILITY CLIENT FOR GROSS AND NET MONTHLY INCOME PURPOSE
+        EligibilityResponse eligibilityResponse = null;
+        EligibililityRequest eligibililityRequest = new EligibililityRequest();
+		eligibililityRequest.setApplicationId(scoringRequestLoansList.get(0).getApplicationId());
+		eligibililityRequest.setIsIncomeCalculate(false);
+		try {
+			eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
+		} catch (EligibilityExceptions e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        
+        
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long applicationId = scoringRequestLoans.getApplicationId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            Double eligibleTenure = scoringRequestLoans.getEligibleTenure();
+            Double eligibleLoanAmountCircular = scoringRequestLoans.getElAmountOnAverageScoring();
+            try {
+                ReportRequest reportRequest = new ReportRequest();
+                reportRequest.setApplicationId(applicationId);
+                AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                if(analyzerResponse == null) {
+                    return new ResponseEntity<>(new LoansResponse("Analyser Response Found null For Scoring Calculation HL For the ApplicationId===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+                }
+                bankStatementData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),Data.class);
+                if(bankStatementData == null) {
+                    return new ResponseEntity<>(new LoansResponse("Bank Statement Report Found Null For the ApplicationId HL===>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+                }
+            }catch(Exception e) {
+                logger.error("Error while getting Bank Statement Details===>{}",e);
+                return new ResponseEntity<>(new LoansResponse("Error while Getting Bank Statemtnt Report for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+            }
 
             ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
 
@@ -704,6 +735,8 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN);
             scoringRequest.setEmi(scoringRequestLoans.getEmi());
+            scoringRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
+            scoringRequest.setEligibleTenure(eligibleTenure);
 
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
@@ -1196,11 +1229,11 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL: {
 
                                 try {
-                                    Double monthlyIncome = 0d;
-                                    EligibililityRequest eligibililityRequest = new EligibililityRequest();
+                        Double monthlyIncome = 0d;
+                        /*         EligibililityRequest eligibililityRequest = new EligibililityRequest();
                     				eligibililityRequest.setApplicationId(applicationId);
                     				eligibililityRequest.setIsIncomeCalculate(false);
-                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);*/
                                     if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
                                             && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                                         List monthlyIncomeList = (List) eligibilityResponse.getData();
@@ -1225,12 +1258,14 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.EMI_NMI_PL: {
 
                                     try {
-                                        Double netMonthlyIncome = 0d;
+                                    	
+                                    	
+                                     Double netMonthlyIncome = 0d;
                                         //Double emi = scoringRequestLoans.getEmi();
-                                        EligibililityRequest eligibililityRequest = new EligibililityRequest();
+                                     /* EligibililityRequest eligibililityRequest = new EligibililityRequest();
                         				eligibililityRequest.setApplicationId(applicationId);
                         				eligibililityRequest.setIsIncomeCalculate(false);
-                                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
+                                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);*/
                                         if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
                                                 && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                                             List monthlyIncomeList = (List) eligibilityResponse.getData();
@@ -1309,10 +1344,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
                                     Double monthlyIncome = 0d;
-                                    EligibililityRequest eligibililityRequest = new EligibililityRequest();
+/*                                    EligibililityRequest eligibililityRequest = new EligibililityRequest();
                       				eligibililityRequest.setApplicationId(applicationId);
                       				eligibililityRequest.setIsIncomeCalculate(false);
-                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
+                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);*/
                                     if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
                                         List monthlyIncomeList = (List) eligibilityResponse.getData();
                                         if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
@@ -1333,6 +1368,55 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
+                            case ScoreParameter.Retail.NET_WROTH_TO_LOAN_AMOUNT_PL:
+                                try {
+                                    Double netwroth = retailApplicantDetail.getNetworth();
+                                    scoreParameterRetailRequest.setNetWorth(netwroth);
+                                    scoreParameterRetailRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
+                                    scoreParameterRetailRequest.setIsNetWrothToLoanAmount_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting NET_WROTH_TO_LOAN_AMOUNT_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setIsNetWrothToLoanAmount_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL:
+                                try {
+                                    Double totalEODBalAvg=0.0;
+                                    Double deposite = 0.0;
+                                    boolean isAvgEod = true;
+                                        if(bankStatementData != null &&
+                                                bankStatementData.getSummaryInfo() != null &&
+                                                bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg() != null &&
+                                                bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit() != null) {
+                                            totalEODBalAvg = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
+                                            deposite = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
+                                            logger.info("value===>{},{}",totalEODBalAvg,deposite);
+                                        }else{
+                                            isAvgEod =false;
+                                            logger.info("error while gettig AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL parameter value ===>{},{}",totalEODBalAvg,deposite);
+                                    }
+
+                                    if(isAvgEod){
+                                        scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(true);
+                                        scoreParameterRetailRequest.setAvgEODBal(totalEODBalAvg);
+                                        scoreParameterRetailRequest.setDeposite(deposite);
+                                    }else{
+                                        scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting DESIGNATION_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(false);
+                                }
+                                break;
+                            case ScoreParameter.Retail.TENURE_OF_THE_LOAN_PL:
+                                try {
+                                    scoreParameterRetailRequest.setTenureOfTheLoan(eligibleTenure);
+                                    scoreParameterRetailRequest.setTenureOfTheLoan_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting TENURE_OF_THE_LOAN_PL parameter : ",e);
+                                    scoreParameterRetailRequest.setTenureOfTheLoan_p(false);
+                                }
+                                break;
                             default:
                                 break;
 
@@ -1340,21 +1424,17 @@ public class ScoringServiceImpl implements ScoringService {
                     }
 
                     Double grossAnnualIncome =0d;
-                    try {
-                    	EligibililityRequest eligibililityRequest = new EligibililityRequest();
-          				eligibililityRequest.setApplicationId(applicationId);
-          				eligibililityRequest.setIsIncomeCalculate(false);
-                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);
-                        if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
-                            List monthlyIncomeList = (List) eligibilityResponse.getData();
-                            if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
-                                grossAnnualIncome = Double.valueOf(monthlyIncomeList.get(8).toString());
-                                scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome*12);
-                            }
-                        }
-                    } catch (EligibilityExceptions eligibilityExceptions) {
-                        logger.error("error while getting GROSS ANNUAL INCOME FROM ELIGIBILITY  : ",eligibilityExceptions);
-                    }
+                    /*EligibililityRequest eligibililityRequest = new EligibililityRequest();
+					eligibililityRequest.setApplicationId(applicationId);
+					eligibililityRequest.setIsIncomeCalculate(false);
+					EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);*/
+					if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
+					    List monthlyIncomeList = (List) eligibilityResponse.getData();
+					    if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
+					        grossAnnualIncome = Double.valueOf(monthlyIncomeList.get(8).toString());
+					        scoreParameterRetailRequest.setGrossAnnualIncome(grossAnnualIncome*12);
+					    }
+					}
 
                     logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
 

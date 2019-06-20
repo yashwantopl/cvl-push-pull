@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import org.json.simple.JSONObject;
@@ -137,6 +136,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
 
 	@Override
 	public boolean saveSwitchExistingLoan(PrimaryCorporateRequest primaryCorporateRequest) throws LoansException {

@@ -18,7 +18,17 @@ public class PLRetailApplicantResponse implements Serializable {
     * */
     private Integer titleId;
     private String fullName;
-    private String gender;
+    private String title;
+        
+    public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	private String gender;
     private String pan;
     private String aadharNumber;
     private String mobile;
@@ -128,13 +138,26 @@ public class PLRetailApplicantResponse implements Serializable {
 	private Object permAddPinData;
 	private String permAddDist;
 	private String permAddTaluko;
+	private Double netMonthlyIncome;
+	
+	
 
     /*
     * Final
     * */
+	
+	
 
 	public String getRelationshipWithApplicant() {
 		return relationshipWithApplicant;
+	}
+
+	public Double getNetMonthlyIncome() {
+		return netMonthlyIncome;
+	}
+
+	public void setNetMonthlyIncome(Double netMonthlyIncome) {
+		this.netMonthlyIncome = netMonthlyIncome;
 	}
 
 	public void setRelationshipWithApplicant(String relationshipWithApplicant) {

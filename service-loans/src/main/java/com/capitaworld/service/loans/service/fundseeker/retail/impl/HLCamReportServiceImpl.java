@@ -22,8 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.ekyc.model.EkycResponse;
+import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -55,6 +58,7 @@ import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest
 import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -183,6 +187,12 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
+	
+	@Autowired
+	private CommonRepository commonRepository;
+	
+	@Autowired
+	private EPFClient epfClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -537,9 +547,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				//Retail Final Co-App Detail
 				if(isFinalView) {
 					
+					Map<String, Object> coAppData=new HashMap<>();
 					try {
 						//final CoApp Data
-						Map<String, Object> coAppData=new HashMap<>();
 						FinalHomeLoanCoApplicantDetail finalCoApplicantDetail = finalHomeLoanCoAppDetailRepository.getByApplicationAndProposalIdAndCoAppId(applicationId, proposalId, coApplicantDetail.getId());
 						
 						if(!CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail)) {
@@ -567,13 +577,98 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 							coAppData.put("religion", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getReligion()) ? ReligionRetailMst.getById(finalCoApplicantDetail.getReligion()) : "-");
 							coAppData.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPlaceOfBirth()) ? finalCoApplicantDetail.getPlaceOfBirth() :"-");
 						}
-						
-						coApp.put("finalData" ,coAppData != null ? coAppData : null);
 					}
 					catch (Exception e) {
 						logger.error("Error/Exception while fetching final home loan detail Of Co-Applicant ..Error==>{}",e);
 					}
 					
+					//Current Bank Account Detail
+					try {
+						List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailService.getExistingLoanDetailListByProposalIdCoAppId(proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(bankAccountHeldDetails)) {
+							coAppData.put("bankAccountHeldDetails", !CommonUtils.isObjectListNull(bankAccountHeldDetails) ? bankAccountHeldDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant Current Bank Account in home loan final CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					//Fixed Deposit Detail
+					try {
+						List<FixedDepositsDetailsRequest> fixedDepositsDetails = fixedDepositsDetailService.getFixedDepositsDetailByProposalIdAndCoAppId(proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(fixedDepositsDetails)) {
+							coAppData.put("fixedDepositDetails", !CommonUtils.isObjectListNull(fixedDepositsDetails) ? fixedDepositsDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant fixed deposit details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					//Investment Detail
+					try {
+						List<OtherCurrentAssetDetailRequest> investmentDetails = otherCurrentAssetDetailService.getOtherCurrentAssetDetailListByProposalIdAndCoAppId(proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(investmentDetails)) {
+							coAppData.put("investmentDetails", !CommonUtils.isObjectListNull(investmentDetails) ? investmentDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant investment details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					//Other Income Detail
+					try {
+						List<OtherIncomeDetailRequest> otherIncomeDetails = otherIncomeDetailService.getOtherIncomeDetailListForCoApplicant(applicationId, proposalId, coApplicantDetail.getId());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(otherIncomeDetails)) {
+							coAppData.put("otherIncomeDetails", !CommonUtils.isObjectListNull(otherIncomeDetails) ? otherIncomeDetails : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Co-Applicant other income details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					}
+					
+					if(coApplicantDetail.getEmploymentType() != null) {
+						
+						//Emp Salaried Type
+						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.SALARIED.getId()) {
+							try {
+								List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalIdCoAppId(proposalId, 0 ,coApplicantDetail.getId());
+								
+								if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
+									coAppData.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
+								}
+							}catch (Exception e) {
+								logger.error("Error/Exception while fetching data of Co-Applicant Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							}
+						}
+						
+						//Emp SelfEmployed Type
+						if(coApplicantDetail.getEmploymentType() != null && (coApplicantDetail.getEmploymentType() == OccupationNature.BUSINESS.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED_PROFESSIONAL.getId())) {
+							try {
+								List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalIdAndCoAppId(proposalId, 0 ,coApplicantDetail.getId());
+								
+								if(!CommonUtils.isObjectNullOrEmpty(empSelfEmployedTypeDetail)) {
+									coAppData.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
+								}
+							}catch (Exception e) {
+								logger.error("Error/Exception while fetching data of Co-Applicant Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							}
+						}
+						
+						//Emp Agriculturist Type
+						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.AGRICULTURIST.getId()) {
+							try {
+								List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalIdAndCoAppId(proposalId, 0 ,coApplicantDetail.getId());
+								
+								if(!CommonUtils.isObjectNullOrEmpty(empAgriculturistTypeDetail)) {
+									coAppData.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
+								}
+							}catch (Exception e) {
+								logger.error("Error/Exception while fetching data of Co-Applicant Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							}
+						}
+					}
+					
+					coApp.put("finalData" ,coAppData != null ? coAppData : null);
 				}
 				
 				listMap.add(coApp);
@@ -1213,6 +1308,20 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		}
 		/*************************************************************FINAL DETAILS***********************************************************/
 		
+		//ekyc data
+		try {
+			EmployerRequest epfReq = new EmployerRequest();
+			epfReq.setApplicationId(applicationId);
+			EkycResponse epfRes = epfClient.getEpfData(epfReq);
+			if(epfRes != null && epfRes.getData()!= null) {
+				map.put("epfoData", epfRes.getData());
+			}else {
+				logger.info("eKYCData is null for ApplicationId==>{}"+applicationId);
+			}
+		} catch (Exception e) {
+			logger.info("Error/Exception while fetching ekyc Data in HL Cam of ApplicationId==>{} Error:",applicationId ,e);
+		}
+		
 		if(isFinalView) {
 			
 			Map<String , Object> retailMap = new HashMap<String, Object>();
@@ -1247,6 +1356,26 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				} catch (Exception e) {
 				logger.error("Error while getting PROPOSAL DATES data : ",e);
 			}*/
+			
+			//Checker DATES
+			try {
+				if(applicationProposalMapping != null) {
+					map.put("checkerDate" ,!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate()) ? simpleDateFormat.format(applicationProposalMapping.getApprovedDate()) : "-");
+				}
+			}catch (Exception e) {
+				logger.error("Error while getting PROPOSAL DATES data of ApplicationId==>{}   Error:{} ",applicationId ,e);
+			}
+			
+			//Maker Date
+			try {
+				Object makerDate = commonRepository.getMakerDate(applicationId);
+				if(makerDate != null) {
+					map.put("makerDate", simpleDateFormat.format(makerDate));
+				}
+			}catch (Exception e) {
+				logger.error("Error/Excpetion while getting maker Date from workFlow of ApplicationId==>{} Error:{}" ,applicationId ,e);
+			}
+			
 			
 			//RETAIL FINAL DETAILS
 			try {

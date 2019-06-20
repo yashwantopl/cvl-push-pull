@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +90,8 @@ import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.enums.Title;
@@ -119,6 +126,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	@Autowired 
 	private PincodeDateService pincodeDateService;
 
+	@Autowired
+	private ITRClient itrClient;
 	
 	@Autowired
 	private MatchEngineClient matchEngineClient;
@@ -211,6 +220,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
+
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "");
@@ -274,7 +284,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			} catch (Exception e) {
 				logger.error("error while getting key vertical sub-sector : ",e);
 			}
-			
+
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
@@ -482,6 +492,26 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.LOAN_TO_INCOME_RATIO_PL, CommonUtils.printFields(collect.get(0),null));
 					}
+					
+					/* new parameter */
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.TENURE_OF_THE_LOAN_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMPLOYMENT_CATEGORY_AND_SALARY_INFORMATION)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+
+					
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
@@ -758,10 +788,56 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("spouseEmployment", plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 			map.put("designation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getDesignation())? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 			map.put("noOfDependent", plRetailApplicantRequest.getNoOfDependent());
+			
+			/* Addition */
+			map.put("email", (plRetailApplicantRequest.getEmail() != null ? (plRetailApplicantRequest.getEmail()) : "-"));
+			map.put("fathersName", (plRetailApplicantRequest.getFatherName() != null ? (plRetailApplicantRequest.getFatherName()) : " "));
+			map.put("applicantCategory", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCategory()) ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 			map.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValue(applicationProposalMapping.getLoanAmount()) : "-");
 			map.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? CommonUtils.convertValueWithoutDecimal(applicationProposalMapping.getTenure()) :"-");
+			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "-");
+			map.put("applicantNetWorth", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getNetworth()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getNetworth()) : "-");
+			map.put("annualIncomeOfSpouse", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAnnualIncomeOfSpouse()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getAnnualIncomeOfSpouse()) : "-");
+			map.put("landlineNo", (plRetailApplicantRequest.getContactNo() != null ? plRetailApplicantRequest.getContactNo() : " "));
+			map.put("grossMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGrossMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getGrossMonthlyIncome()) : null);
+			map.put("netMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getMonthlyIncome()) : null);
+			map.put("nationality", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidentialStatus()) ? ResidentStatusMst.getById(plRetailApplicantRequest.getResidentialStatus()).getValue() : "-");
+			if(plRetailApplicantRequest.getResidenceSinceYear() != null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
+				LocalDate since = LocalDate.of(plRetailApplicantRequest.getResidenceSinceYear(), plRetailApplicantRequest.getResidenceSinceMonth(), 1);
+				LocalDate now = LocalDate.now();
+				Period sinceWhen = Period.between(since, now);
+				int years = sinceWhen.getYears();
+				int months = sinceWhen.getMonths();
+				map.put("residenceSinceYearMonths", (!CommonUtils.isObjectNullOrEmpty(years) ? years + " years" : "")+ " " +(!CommonUtils.isObjectNullOrEmpty(months) ? months+" months":""));
+			}else {
+				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
+			}
 
+			/*	For name comparison:*/
+			/* Addition */
+			ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+			String nameAsPerItr = null;
+			try {
+				ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
+				if (resNameAsPerITR != null) {
+					itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+					nameAsPerItr = itrBasicDetailsResponse.getName();
+					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+				} else {
+					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+				}
+			} catch (Exception e) {
+				logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+			}
+
+			// for name is edited or not:
+			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
+			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equals(nameAsPerItr)){
+				map.put("nameEdited","-");
+			}else{
+				map.put("nameEdited",fullName);
+			}
 
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
@@ -1028,6 +1104,25 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.LOAN_TO_INCOME_RATIO_PL, CommonUtils.printFields(collect.get(0),null));
 					}
+					
+					/* new parameter */
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.TENURE_OF_THE_LOAN_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMPLOYMENT_CATEGORY_AND_SALARY_INFORMATION)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {

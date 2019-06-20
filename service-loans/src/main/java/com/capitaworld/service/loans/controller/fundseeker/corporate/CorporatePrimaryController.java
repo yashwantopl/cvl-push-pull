@@ -152,6 +152,7 @@ public class CorporatePrimaryController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
 
     @RequestMapping(value = "${primary}/save/switchExisting", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> saveSwitchExisting(@RequestBody PrimaryCorporateRequest primaryCorporateRequest,

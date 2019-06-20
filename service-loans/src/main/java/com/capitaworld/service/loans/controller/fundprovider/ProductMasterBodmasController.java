@@ -24,7 +24,6 @@ import java.util.List;
 public class ProductMasterBodmasController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductMasterBodmasController.class);
-
     private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty ==>{}";
     private static final String ADD_PRODUCT = "addProduct";
     private static final String ADD_PRODUCT_PARAMETER = "addProductParameter";
@@ -46,16 +45,14 @@ public class ProductMasterBodmasController {
             Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 
             if (userId == null) {
-                logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
+                logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if (addProductRequest == null) {
-                logger.warn("addProductRequest Object can not be empty ==>" + addProductRequest);
+                logger.warn("Add Product Request Object can not be empty ==> {}", addProductRequest);
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
             addProductRequest.setUserId(userId);
@@ -66,64 +63,49 @@ public class ProductMasterBodmasController {
             Long response = productMasterBodmasService.saveOrUpdate(addProductRequest, userOrgId);
             if (response != null) {
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(), response), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value(), response), HttpStatus.OK);
             } else {
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         } catch (Exception e) {
             logger.error("Error while saving addProduct Details==>", e);
-            return new ResponseEntity<>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.OK);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
         }
     }
 
     @PostMapping(value = "/addProductParameter")
-    public ResponseEntity<LoansResponse> addProductParameter(@RequestBody ProductParameterRequest productParameterRequest,
-                                                             HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+    public ResponseEntity<LoansResponse> addProductParameter(@RequestBody ProductParameterRequest productParameterRequest, HttpServletRequest request,
+                                                             @RequestParam(value = "clientId", required = false) Long clientId) {
         CommonDocumentUtils.startHook(logger, ADD_PRODUCT_PARAMETER);
         try {
             // request must not be null
-
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 
             if (userId == null) {
                 logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if (productParameterRequest == null) {
                 logger.warn("addProductParameter Object can not be empty ==>" + productParameterRequest);
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
             productParameterRequest.setUserId(userId);
-
-
             Boolean response = productMasterBodmasService.saveCondition(productParameterRequest);
             if (response) {
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT_PARAMETER);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
             } else {
                 CommonDocumentUtils.endHook(logger, ADD_PRODUCT_PARAMETER);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         } catch (Exception e) {
-            logger.error("Error while saving addProduct Details==>", e);
-            return new ResponseEntity<>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.OK);
+            logger.error("Error while saving addProduct Parameters==>", e);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
         }
     }
 
@@ -141,8 +123,7 @@ public class ProductMasterBodmasController {
             if (userId == null) {
                 logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
                 CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
             List<ProductMasterRequest> response = productMasterBodmasService.getList(userId, userOrgId);
@@ -153,16 +134,13 @@ public class ProductMasterBodmasController {
 
         } catch (Exception e) {
             logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
-            return new ResponseEntity<>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping(value = "/getListByUserType/{userType}/{applicationStage}/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> getListByUserType(HttpServletRequest request,
-                                                           @PathVariable(value = "userType") String userType, @PathVariable(value = "applicationStage") String applicationStage,
-                                                           @PathVariable(value = "status") String status,@RequestParam(value = "clientId", required = false) Long clientId) {
+    public ResponseEntity<LoansResponse> getListByUserType(HttpServletRequest request,@PathVariable(value = "userType") String userType, @PathVariable(value = "applicationStage") String applicationStage,
+                                                           @PathVariable(value = "status") String status, @RequestParam(value = "clientId", required = false) Long clientId) {
         // request must not be null
         CommonDocumentUtils.startHook(logger, GET_LIST_BY_USER_TYPE);
         try {
@@ -189,7 +167,7 @@ public class ProductMasterBodmasController {
             }
             //List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-            loansResponse.setListData(productMasterBodmasService.getListByUserType(userId, Integer.parseInt(CommonUtils.decode(userType)), Integer.parseInt(CommonUtils.decode(applicationStage)),Integer.parseInt(CommonUtils.decode(status)), userOrgId));
+            loansResponse.setListData(productMasterBodmasService.getListByUserType(userId, Integer.parseInt(CommonUtils.decode(userType)), Integer.parseInt(CommonUtils.decode(applicationStage)), Integer.parseInt(CommonUtils.decode(status)), userOrgId));
             CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
             return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 
@@ -215,8 +193,7 @@ public class ProductMasterBodmasController {
             if (userId == null) {
                 logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
                 CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
             List<ProductConditionResponse> response = productMasterBodmasService.getConditionsByProductId(productId);
