@@ -186,7 +186,14 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name="based_on_type")
 	private Integer basedOnType;
 	
-	
+	@Column(name = "min_net_take_home_salary")
+	private Double minNetTakeHomeSalary;
+
+    @Column(name = "is_min_net_take_home_salary_display")
+    private Boolean isMinNetTakeHomeSalaryDisplay = false;
+
+    @Column(name = "is_min_net_take_home_salary_mandatory")
+    private Boolean isMinNetTakeHomeSalaryMandatory = false;
 	
 	/*//FP NEW REQUIREMENT
 	@Column(name="employment_id")
@@ -919,6 +926,32 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	public void setBasedOnType(Integer basedOnType) {
 		this.basedOnType = basedOnType;
 	}
+
+	public Double getMinNetTakeHomeSalary() {
+		return minNetTakeHomeSalary;
+	}
+
+	public void setMinNetTakeHomeSalary(Double minNetTakeHomeSalary) {
+		this.minNetTakeHomeSalary = minNetTakeHomeSalary;
+	}
+
+	public Boolean getIsMinNetTakeHomeSalaryDisplay() {
+		return isMinNetTakeHomeSalaryDisplay;
+	}
+
+	public void setIsMinNetTakeHomeSalaryDisplay(Boolean isMinNetTakeHomeSalaryDisplay) {
+		this.isMinNetTakeHomeSalaryDisplay = isMinNetTakeHomeSalaryDisplay;
+	}
+
+	public Boolean getIsMinNetTakeHomeSalaryMandatory() {
+		return isMinNetTakeHomeSalaryMandatory;
+	}
+
+	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
+		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
+	}
+	
+	
 	
 	
 
