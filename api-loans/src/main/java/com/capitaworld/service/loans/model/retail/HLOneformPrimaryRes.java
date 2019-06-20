@@ -35,6 +35,7 @@ public class HLOneformPrimaryRes implements Serializable {
 	private Long propdistrictMappingId;	
 	
 	private Double marketValProp;
+	private Double costOfProp;
 	private Integer oldPropMonth;
 	private Integer oldPropYear;
 	
@@ -282,7 +283,11 @@ public class HLOneformPrimaryRes implements Serializable {
 		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
 	}
 
-	
-	
-	
+	public Double getCostOfProp() {
+		return costOfProp;
+	}
+
+	public void setCostOfProp(Double costOfProp) {
+		this.costOfProp = costOfProp;
+	}
 }

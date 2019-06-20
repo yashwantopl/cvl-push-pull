@@ -113,6 +113,9 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 	
 	@Column(name="market_val_prop")
 	private Double marketValProp;
+
+	@Column(name="cost_of_prop")
+	private Double costOfProp;
 	
 	@Column(name="property_used")
 	private Integer propertyUsed;
@@ -522,6 +525,11 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
 	}
 
-	
+	public Double getCostOfProp() {
+		return costOfProp;
+	}
 
+	public void setCostOfProp(Double costOfProp) {
+		this.costOfProp = costOfProp;
+	}
 }
