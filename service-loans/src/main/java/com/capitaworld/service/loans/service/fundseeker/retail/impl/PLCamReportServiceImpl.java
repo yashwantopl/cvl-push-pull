@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +125,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	@Autowired 
 	private PincodeDateService pincodeDateService;
 
+	@Autowired
+	private ITRClient itrClient;
 	
 	@Autowired
 	private MatchEngineClient matchEngineClient;
@@ -215,6 +219,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
+
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "");
@@ -278,7 +283,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			} catch (Exception e) {
 				logger.error("error while getting key vertical sub-sector : ",e);
 			}
-			
+
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
@@ -787,10 +792,33 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}else {
 				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
-			
+
+		/*	For name comparison:*/
 			/* Addition */
-			
-			
+			Object nameAsPerItr = null;
+			try {
+				ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
+				if (resNameAsPerITR != null) {
+					nameAsPerItr = resNameAsPerITR.getData() != null ? resNameAsPerITR.getData().equals("name") : null;
+					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+				} else {
+
+					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+				}
+
+			} catch (Exception e) {
+				logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+			}
+
+			// for name is edited or not:
+			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
+
+			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equals(nameAsPerItr)){
+				map.put("nameEdited",nameAsPerItr);
+			}else{
+				map.put("nameEdited","-");
+			}
+
 
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();

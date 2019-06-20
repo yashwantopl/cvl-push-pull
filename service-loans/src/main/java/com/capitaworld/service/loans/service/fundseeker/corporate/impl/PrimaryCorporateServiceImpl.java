@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import org.json.simple.JSONObject;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.model.corporate.CorporateAdditionalDetailRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -139,29 +137,6 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 		}
 	}
 	
-	@Override
-	public boolean saveOrUpdateAdditionalData(CorporateAdditionalDetailRequest corporateAdditionalRequest, Long userId) throws LoansException {
-
-		try {
-			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(corporateAdditionalRequest.getApplicationId(),
-					(CommonUtils.isObjectNullOrEmpty(corporateAdditionalRequest.getClientId()) ? userId : corporateAdditionalRequest.getClientId()));
-			
-			if (primaryCorporateDetail == null) {
-				throw new NullPointerException(PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG
-						+ corporateAdditionalRequest.getApplicationId() + " and UserId==>" + userId);
-			}
-			
-			BeanUtils.copyProperties(corporateAdditionalRequest, primaryCorporateDetail);
-
-			primaryCorporateDetail.setModifiedBy(userId);
-			primaryCorporateDetail.setModifiedDate(new Date());
-			primaryCorporateRepository.save(primaryCorporateDetail);
-			return true;
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
-			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
-		}
-	}
 
 	@Override
 	public boolean saveSwitchExistingLoan(PrimaryCorporateRequest primaryCorporateRequest) throws LoansException {

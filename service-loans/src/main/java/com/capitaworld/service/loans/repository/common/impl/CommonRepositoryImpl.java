@@ -62,5 +62,12 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	public Object[] getFpFullName(Long userId) {
 		return (Object[]) manager.createNativeQuery("SELECT fp.`first_name`,fp.`last_name` FROM users.`fund_provider_details` fp WHERE  fp.user_id=:userId").setParameter("userId", userId).getSingleResult();
 	}
+	
+	@Override
+	public Object getMakerDate(Long applicationId) {
+		return (Object) manager.createNativeQuery("SELECT wjt.updated_on FROM `workflow`.`workflow_jobs_tracker` wjt WHERE wjt.job_id = "
+				+ "(SELECT wj.id FROM `workflow`.`workflow_jobs` wj WHERE wj.application_id ="+applicationId+" AND wj.is_active = TRUE) "
+						+ "AND wjt.action_id=2").getSingleResult();
+	}
 
 }

@@ -3,7 +3,9 @@
  */
 package com.capitaworld.service.loans.service.sidbi.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import com.capitaworld.service.loans.repository.sidbi.PrimaryCollateralSecurityR
 import com.capitaworld.service.loans.service.sidbi.PrimaryCollateralSecurityService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.ParticularOfSecurity;
 
 /**
  * @author vijay.chauhan
@@ -36,11 +39,11 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 	@Autowired
 	private PrimaryCollateralSecurityRepository primaryCollateralSecuRepository;
 	
-	@Override
+	@Override 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
-				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = (PrimaryCollateralSecurityRequest) MultipleJSONObjectHelper.getObjectFromMap(obj, PrimaryCollateralSecurityRequest.class);
+				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = MultipleJSONObjectHelper.getObjectFromMap(obj, PrimaryCollateralSecurityRequest.class);
 				PrimaryCollateralSecurity primaryCollateralSecurity = null;
 				if (primaryCollateralSecurityRequest.getId() != null) {
 					primaryCollateralSecurity = primaryCollateralSecuRepository.findOne(primaryCollateralSecurityRequest.getId());
@@ -51,6 +54,7 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 				}
 				
 				BeanUtils.copyProperties(primaryCollateralSecurityRequest, primaryCollateralSecurity);
+				primaryCollateralSecurity.setIsActive(true);
 				primaryCollateralSecurity.setApplicationId(frameRequest.getApplicationId());
 				primaryCollateralSecurity.setModifiedBy(frameRequest.getUserId());
 				primaryCollateralSecurity.setModifiedDate(new Date());
@@ -61,6 +65,31 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 
 		catch (Exception e) {
 			logger.error("Exception in save primaryCollateralSecurity :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
+	public List<PrimaryCollateralSecurityRequest> getPrimaryCollateralSecurityListAppId(Long applicationId) throws LoansException {
+		List<PrimaryCollateralSecurityRequest> primaryCollateralSecurityList = null;
+		try {
+			List<PrimaryCollateralSecurity> primaryCollateralSecurity = primaryCollateralSecuRepository.getPrimaryCollateralSecurityListAppId(applicationId);
+			primaryCollateralSecurityList = new ArrayList<>(primaryCollateralSecurity.size());
+
+			for (PrimaryCollateralSecurity detail : primaryCollateralSecurity) {
+				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = new PrimaryCollateralSecurityRequest();
+				BeanUtils.copyProperties(detail, primaryCollateralSecurityRequest);
+				
+				primaryCollateralSecurityRequest.setParticularsName(ParticularOfSecurity.getById(primaryCollateralSecurityRequest.getParticularsId()).getValue());
+				
+				primaryCollateralSecurityList.add(primaryCollateralSecurityRequest);
+			}
+			return primaryCollateralSecurityList;
+		}
+
+		catch (Exception e) { 
+			logger.error("Exception in get primaryCollateralSecurity :-",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
