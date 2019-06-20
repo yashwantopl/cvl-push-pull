@@ -184,6 +184,11 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Integer multiplierIncomeType;
 	
 	private Integer basedOnType;
+	
+	// Minimum Net Take Home Salary (Rs.): 
+	private Double minNetTakeHomeSalary;
+	private Boolean isMinNetTakeHomeSalaryDisplay = false;
+	private Boolean isMinNetTakeHomeSalaryMandatory = false;
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -887,6 +892,30 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.basedOnType = basedOnType;
 	}
 
+	public Double getMinNetTakeHomeSalary() {
+		return minNetTakeHomeSalary;
+	}
+
+	public void setMinNetTakeHomeSalary(Double minNetTakeHomeSalary) {
+		this.minNetTakeHomeSalary = minNetTakeHomeSalary;
+	}
+
+	public Boolean getIsMinNetTakeHomeSalaryDisplay() {
+		return isMinNetTakeHomeSalaryDisplay;
+	}
+
+	public void setIsMinNetTakeHomeSalaryDisplay(Boolean isMinNetTakeHomeSalaryDisplay) {
+		this.isMinNetTakeHomeSalaryDisplay = isMinNetTakeHomeSalaryDisplay;
+	}
+
+	public Boolean getIsMinNetTakeHomeSalaryMandatory() {
+		return isMinNetTakeHomeSalaryMandatory;
+	}
+
+	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
+		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
+	}
+
 	
 	
 
@@ -988,6 +1017,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	 * isTotalJobExperienceMandatory) { this.isTotalJobExperienceMandatory =
 	 * isTotalJobExperienceMandatory; }
 	 */
+	
+	
 	
 	
 	

@@ -190,6 +190,11 @@ public class RetailProduct extends ProductMasterRequest {
 	
 	private Integer basedOnType;
 	
+	// Minimum Net Take Home Salary (Rs.): 
+	private Double minNetTakeHomeSalary;
+	private Boolean isMinNetTakeHomeSalaryDisplay = false;
+	private Boolean isMinNetTakeHomeSalaryMandatory = false;
+	
 	
 	
 
@@ -880,6 +885,32 @@ public class RetailProduct extends ProductMasterRequest {
 	public void setBasedOnType(Integer basedOnType) {
 		this.basedOnType = basedOnType;
 	}
+
+	public Double getMinNetTakeHomeSalary() {
+		return minNetTakeHomeSalary;
+	}
+
+	public void setMinNetTakeHomeSalary(Double minNetTakeHomeSalary) {
+		this.minNetTakeHomeSalary = minNetTakeHomeSalary;
+	}
+
+	public Boolean getIsMinNetTakeHomeSalaryDisplay() {
+		return isMinNetTakeHomeSalaryDisplay;
+	}
+
+	public void setIsMinNetTakeHomeSalaryDisplay(Boolean isMinNetTakeHomeSalaryDisplay) {
+		this.isMinNetTakeHomeSalaryDisplay = isMinNetTakeHomeSalaryDisplay;
+	}
+
+	public Boolean getIsMinNetTakeHomeSalaryMandatory() {
+		return isMinNetTakeHomeSalaryMandatory;
+	}
+
+	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
+		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
+	}
+	
+	
 
 	
 

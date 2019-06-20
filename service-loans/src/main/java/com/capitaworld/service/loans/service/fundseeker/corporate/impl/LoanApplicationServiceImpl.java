@@ -98,6 +98,7 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.LoanPanCheckRequest;
 import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -8323,5 +8324,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return selectionList;
 	}
 	
+	@Override
+	public LoanPanCheckRequest checkAlreadyPANExitsOrNot(LoanPanCheckRequest loanPanCheckRequest) {
+		String msg = null;
+		if(loanPanCheckRequest.getTypeId() == 2) {
+			loanPanCheckRequest.setPan("NA");
+			msg = loanRepository.checkPanForAlreayInPrinciplOrNotEligible(loanPanCheckRequest.getTypeId(), loanPanCheckRequest.getSelectedLoanTypeId(), loanPanCheckRequest.getApplicationId(), loanPanCheckRequest.getPan());	
+		} else if(loanPanCheckRequest.getTypeId() == 3) {
+			loanPanCheckRequest.setPan("NA");
+			msg = loanRepository.checkPanForAlreayInPrinciplOrNotEligible(loanPanCheckRequest.getTypeId(), loanPanCheckRequest.getSelectedLoanTypeId(), loanPanCheckRequest.getApplicationId(), loanPanCheckRequest.getPan());
+		}
+		if(!CommonUtils.isObjectNullOrEmpty(msg)) {
+			loanPanCheckRequest.setIsExist(true);
+			loanPanCheckRequest.setMessage(msg);
+		} else {
+			loanPanCheckRequest.setIsExist(false);
+		}
+		return loanPanCheckRequest;
+	}
 
 }
