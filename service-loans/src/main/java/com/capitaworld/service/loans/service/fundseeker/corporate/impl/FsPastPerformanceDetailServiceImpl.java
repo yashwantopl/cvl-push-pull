@@ -2,11 +2,19 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FsPastPerformanceDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FsPastPerformanceDetailsRequest;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FsPastPerformanceDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FsPastPerformanceDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OperatingStatementDetailsService;
+import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
@@ -27,6 +35,18 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 
 	@Autowired
 	private FsPastPerformanceDetailRepository fsPastPerformanceDetailRepository;
+
+	@Autowired
+	OperatingStatementDetailsService operatingStatementDetailsService;
+
+	@Autowired
+	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+
+	@Autowired
+	LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+
+	@Autowired
+	private ScoringService scoringService;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -58,8 +78,48 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 	@Override
 	public List<FsPastPerformanceDetailsRequest> getPastPerformanceList(Long applicationId) throws Exception {
 		try {
+
+			Integer year = scoringService.getFinYear(applicationId);
+			int pastYear1 = year - 1;
+			int pastYear2 = year - 2;
 			List<FsPastPerformanceDetails> fsPastPerformanceDetails = fsPastPerformanceDetailRepository
 					.getList(applicationId);
+			if(CommonUtils.isListNullOrEmpty(fsPastPerformanceDetails)){
+
+				fsPastPerformanceDetails = new ArrayList<>();
+				FsPastPerformanceDetails fsPastPerformanceDetails1 = new FsPastPerformanceDetails();
+				OperatingStatementDetails operatingStatementPast1YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, pastYear1+"");
+				if (!CommonUtils.isObjectNullOrEmpty(operatingStatementPast1YearDetails)) {
+					fsPastPerformanceDetails1.setNetSalesPastYear1(operatingStatementPast1YearDetails.getNetSales().longValue());
+					fsPastPerformanceDetails1.setNetProfitPastYear1(operatingStatementPast1YearDetails.getNetProfitOrLoss().longValue());
+				}else{
+					logger.error("Error while getting net sales/net profit loss past 1 year details from operating statement");
+				}
+
+
+				OperatingStatementDetails operatingStatementPast2YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, pastYear2+"");
+				if (!CommonUtils.isObjectNullOrEmpty(operatingStatementPast2YearDetails)) {
+					fsPastPerformanceDetails1.setNetSalesPastYear2(operatingStatementPast2YearDetails.getNetSales().longValue());
+					fsPastPerformanceDetails1.setNetProfitPastYear2(operatingStatementPast2YearDetails.getNetProfitOrLoss().longValue());
+				}else{
+					logger.error("Error while getting net sales/net profit loss past 2 year details from operating statement");
+				}
+
+				LiabilitiesDetails liabilitiesPast1YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId,pastYear1+"");
+				if (!CommonUtils.isObjectNullOrEmpty(liabilitiesPast1YearDetails)) {
+					fsPastPerformanceDetails1.setCompNetWorthPastYear1(liabilitiesPast1YearDetails.getNetWorth().longValue());
+				}else{
+					logger.error("Error while getting company net worth past 1 year details from liabilities statement");
+				}
+
+				LiabilitiesDetails liabilitiesPast2YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId,pastYear2+"");
+				if (!CommonUtils.isObjectNullOrEmpty(liabilitiesPast2YearDetails)) {
+					fsPastPerformanceDetails1.setCompNetWorthPastYear2(liabilitiesPast2YearDetails.getNetWorth().longValue());
+				}else{
+					logger.error("Error while getting company net worth past 2 year details from liabilities statement");
+				}
+				fsPastPerformanceDetails.add(fsPastPerformanceDetails1);
+			}
 			List<FsPastPerformanceDetailsRequest> fsPastPerformanceDetailsRequests = new ArrayList<>(
 					fsPastPerformanceDetails.size());
 
