@@ -792,13 +792,14 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}else {
 				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
-			
+
+		/*	For name comparison:*/
 			/* Addition */
 			Object nameAsPerItr = null;
 			try {
 				ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
 				if (resNameAsPerITR != null) {
-					//nameAsPerItr = resNameAsPerITR.getData();
+					nameAsPerItr = resNameAsPerITR.getData() != null ? resNameAsPerITR.getData().equals("name") : null;
 					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 				} else {
 
@@ -813,9 +814,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
 
 			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equals(nameAsPerItr)){
-				map.put("nameEdited",Boolean.FALSE);
+				map.put("nameEdited",nameAsPerItr);
 			}else{
-				map.put("nameEdited",Boolean.TRUE);
+				map.put("nameEdited","-");
 			}
 
 
