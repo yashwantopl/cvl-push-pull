@@ -653,3 +653,11 @@ ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_gross_
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN max_gross_monthly_income_range DOUBLE DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_display BIT(1) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_mandatory BIT(1) DEFAULT NULL;
+
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_net_take_home_salary DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_min_net_take_home_salary_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_min_net_take_home_salary_mandatory BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_net_take_home_salary DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_min_net_take_home_salary_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_min_net_take_home_salary_mandatory BIT(1) DEFAULT FALSE;
