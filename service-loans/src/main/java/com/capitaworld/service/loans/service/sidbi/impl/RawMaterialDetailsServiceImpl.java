@@ -1,5 +1,17 @@
 package com.capitaworld.service.loans.service.sidbi.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.loans.domain.sidbi.RawMaterialDetails;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -8,15 +20,6 @@ import com.capitaworld.service.loans.repository.sidbi.RawMaterialDetailsReposito
 import com.capitaworld.service.loans.service.sidbi.RawMaterialDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.Map;
 
 /**
  * Created by pooja.patel on 19-06-2019.
@@ -61,5 +64,27 @@ public class RawMaterialDetailsServiceImpl implements RawMaterialDetailsService{
         }
 
     }
+
+	@Override
+	public List<RawMaterialDetailsRequest> getRawMaterialDetailsListAppId(Long applicationId) throws LoansException {
+		List<RawMaterialDetailsRequest> rawMaterialDetailsRequestList = null;
+		try {
+			List<RawMaterialDetails> rawMaterialDetailsList = rawMaterialDetailsRepository.getRawMaterialDetailsListAppId(applicationId);
+			rawMaterialDetailsRequestList = new ArrayList<>(rawMaterialDetailsList.size());
+
+			for (RawMaterialDetails detail : rawMaterialDetailsList) {
+				RawMaterialDetailsRequest rawMaterialDetailsRequest = new RawMaterialDetailsRequest();
+				BeanUtils.copyProperties(detail, rawMaterialDetailsRequest);
+				
+				rawMaterialDetailsRequestList.add(rawMaterialDetailsRequest);
+			}
+			return rawMaterialDetailsRequestList;
+		}
+
+		catch (Exception e) { 
+			logger.error("Exception in get rawMaterialDetailsRequestList :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 }

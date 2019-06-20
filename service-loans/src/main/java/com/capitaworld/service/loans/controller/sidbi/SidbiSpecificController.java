@@ -21,10 +21,14 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
+import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
 import com.capitaworld.service.loans.model.sidbi.PersonalCorporateGuaranteeRequest;
 import com.capitaworld.service.loans.model.sidbi.PrimaryCollateralSecurityRequest;
+import com.capitaworld.service.loans.model.sidbi.RawMaterialDetailsRequest;
+import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
 import com.capitaworld.service.loans.service.sidbi.PersonalCorporateGuaranteeService;
 import com.capitaworld.service.loans.service.sidbi.PrimaryCollateralSecurityService;
+import com.capitaworld.service.loans.service.sidbi.RawMaterialDetailsService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -44,6 +48,12 @@ public class SidbiSpecificController {
 	@Autowired
 	private PersonalCorporateGuaranteeService personalCorporateGuaranteeService;
 
+    @Autowired
+    FacilityDetailsService facilityDetailsService;
+
+    @Autowired
+    RawMaterialDetailsService rawMaterialDetailsService;
+    
 	@PostMapping(value = "/savePrimaryCollateralSecurity", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePrimaryCollateralSecurity(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
 		// request must not be null
@@ -189,5 +199,112 @@ public class SidbiSpecificController {
 
 	}
 
+	 @PostMapping(value = "/saveFinalFacilityDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	    public ResponseEntity<LoansResponse> saveFinalFacilityDetails(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
+	        // request must not be null
+	        CommonDocumentUtils.startHook(logger, "saveFinalFacilityDetails");
+
+	        Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+	        if (frameRequest == null) {
+	            logger.warn("frameRequest must not be empty ==>{}" , frameRequest);
+	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+	        }
+	        try {
+	            frameRequest.setUserId(userId);
+
+	            facilityDetailsService.saveOrUpdate(frameRequest);
+	            CommonDocumentUtils.endHook(logger, "saveFinalFacilityDetails");
+	            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),HttpStatus.OK);
+
+	        } catch (Exception e) {
+	            logger.error("Error while saving Facility Details==>", e);
+	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+	        }
+
+	    }
+
+	    @PostMapping(value = "/saveRawMaterialDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	    public ResponseEntity<LoansResponse> saveRawMaterialDetails(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
+	        // request must not be null
+	        CommonDocumentUtils.startHook(logger, "saveRawMaterialDetails");
+
+	        Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+	        if (frameRequest == null) {
+	            logger.warn("frameRequest must not be empty ==>{}" , frameRequest);
+	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+	        }
+	        try {
+	            frameRequest.setUserId(userId);
+
+	            rawMaterialDetailsService.saveOrUpdate(frameRequest);
+	            CommonDocumentUtils.endHook(logger, "saveRawMaterialDetails");
+	            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),HttpStatus.OK);
+
+	        } catch (Exception e) {
+	            logger.error("Error while saving Raw Material Details==>", e);
+	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+	        }
+
+	    }
+	    
+	    @PostMapping(value = "/getRawMaterialDetailsList", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> getRawMaterialDetailsList(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
+			// request must not be null
+			CommonDocumentUtils.startHook(logger, "getRawMaterialDetailsList");
+
+			if (frameRequest == null) {
+				logger.warn("frameRequest must not be empty ==>{}" , frameRequest);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			try {
+				
+				if (frameRequest.getApplicationId() == null) {
+					logger.warn("ID Require to get Raw Material Details List Details ==>{}" , frameRequest.getApplicationId());
+					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+
+				List<RawMaterialDetailsRequest> response = rawMaterialDetailsService.getRawMaterialDetailsListAppId(frameRequest.getApplicationId());
+				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse.setListData(response);
+				CommonDocumentUtils.endHook(logger, "getRawMaterialDetailsList");
+				return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+				
+			} catch (Exception e) {
+				logger.error("Error while get Raw Material Details List Details==>", e);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+
+		}
+	    
+	    @PostMapping(value = "/getFacilityDetailsList", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> getFacilityDetailsList(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
+			// request must not be null
+			CommonDocumentUtils.startHook(logger, "getFacilityDetailsList");
+
+			if (frameRequest == null) {
+				logger.warn("frameRequest must not be empty ==>{}" , frameRequest);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			try {
+				
+				if (frameRequest.getApplicationId() == null) {
+					logger.warn("ID Require to get Facility Details List Details ==>{}" , frameRequest.getApplicationId());
+					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+
+				List<FacilityDetailsRequest> response = facilityDetailsService.getFacilityDetailsListAppId(frameRequest.getApplicationId());
+				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse.setListData(response);
+				CommonDocumentUtils.endHook(logger, "getFacilityDetailsList");
+				return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+				
+			} catch (Exception e) {
+				logger.error("Error while get Facility Details List Details==>", e);
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+
+		}
 	
 }

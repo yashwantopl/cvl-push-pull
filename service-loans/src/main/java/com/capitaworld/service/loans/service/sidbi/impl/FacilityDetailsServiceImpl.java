@@ -1,15 +1,10 @@
 package com.capitaworld.service.loans.service.sidbi.impl;
 
-import com.capitaworld.service.loans.domain.sidbi.FacilityDetails;
-import com.capitaworld.service.loans.domain.sidbi.PrimaryCollateralSecurity;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
-import com.capitaworld.service.loans.model.sidbi.PrimaryCollateralSecurityRequest;
-import com.capitaworld.service.loans.repository.sidbi.FacilityDetailsRepository;
-import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,8 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.Map;
+import com.capitaworld.service.loans.domain.sidbi.FacilityDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
+import com.capitaworld.service.loans.repository.sidbi.FacilityDetailsRepository;
+import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
  * Created by pooja.patel on 19-06-2019.
@@ -63,5 +64,27 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
         }
 
     }
+
+	@Override
+	public List<FacilityDetailsRequest> getFacilityDetailsListAppId(Long applicationId) throws LoansException {
+		List<FacilityDetailsRequest> facilityDetailsRequestList = null;
+		try {
+			List<FacilityDetails> facilityDetailsList = facilityDetailsRepository.getFacilityDetailsListAppId(applicationId);
+			facilityDetailsRequestList = new ArrayList<>(facilityDetailsList.size());
+
+			for (FacilityDetails detail : facilityDetailsList) {
+				FacilityDetailsRequest facilityDetailsRequest = new FacilityDetailsRequest();
+				BeanUtils.copyProperties(detail, facilityDetailsRequest);
+				
+				facilityDetailsRequestList.add(facilityDetailsRequest);
+			}
+			return facilityDetailsRequestList;
+		}
+
+		catch (Exception e) { 
+			logger.error("Exception in get facilityDetailsRequestList :-",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 }
