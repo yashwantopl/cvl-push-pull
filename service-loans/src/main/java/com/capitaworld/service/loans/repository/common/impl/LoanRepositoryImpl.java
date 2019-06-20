@@ -332,4 +332,30 @@ public class LoanRepositoryImpl implements LoanRepository {
 				"WHERE lts.TYPE='Retail' AND ltsu.user_id="+userId;
 		return (List<Object[]>) entityManager.createNativeQuery(query).getResultList();
 	}
+	
+	
+	@Override
+	public String checkPanForAlreayInPrinciplOrNotEligible(Integer typeId,Integer selectedLoanTypeId,Long applicationId,String panNumber) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spRetailCheckPANAlreadyExist");
+			storedProcedureQuery.registerStoredProcedureParameter("typeId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("selectedLoanTypeId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("panNumber",String.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("loanType",Integer.class, ParameterMode.OUT);
+			storedProcedureQuery.registerStoredProcedureParameter("message",String.class, ParameterMode.OUT);
+			storedProcedureQuery.setParameter("typeId",typeId);
+			storedProcedureQuery.setParameter("selectedLoanTypeId",selectedLoanTypeId);
+			storedProcedureQuery.setParameter("applicationId",applicationId);
+			storedProcedureQuery.setParameter("panNumber",panNumber);
+			storedProcedureQuery.execute();
+			Object result = storedProcedureQuery.getOutputParameterValue("loanType");
+			if(!CommonUtils.isObjectNullOrEmpty(result)) {
+				return (String) storedProcedureQuery.getOutputParameterValue("message");
+			}
+		} catch (Exception e) {
+			logger.error("EXCEPTION spRetailCheckPANAlreadyExist :=- ", e);
+		}
+		return null;
+	}
 }

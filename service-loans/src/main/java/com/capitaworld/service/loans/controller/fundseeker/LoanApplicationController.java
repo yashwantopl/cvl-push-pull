@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoanPanCheckRequest;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
@@ -3012,6 +3013,28 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/checkAlreadyPANExitsOrNot", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkAlreadyPANExitsOrNot(@RequestBody LoanPanCheckRequest loanPanCheckRequest, HttpServletRequest request) {
+		try {
+			logger.info("start checkAlreadyPANExitsOrNot()");
+				
+			if (CommonUtils.isObjectNullOrEmpty(loanPanCheckRequest.getTypeId())
+					|| CommonUtils.isObjectNullOrEmpty(loanPanCheckRequest.getApplicationId())
+					|| CommonUtils.isObjectNullOrEmpty(loanPanCheckRequest.getSelectedLoanTypeId())) {
+				logger.error("Type Id is null or Empty");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoanPanCheckRequest loanPanCheckReq = loanApplicationService.checkAlreadyPANExitsOrNot(loanPanCheckRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get value", HttpStatus.OK.value(), loanPanCheckReq), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while checkAlreadyPANExitsOrNot==>{}", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse( CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 
