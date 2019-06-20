@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -793,32 +794,30 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
 
-		/*	For name comparison:*/
+			/*	For name comparison:*/
 			/* Addition */
-			Object nameAsPerItr = null;
+			ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+			String nameAsPerItr = null;
 			try {
 				ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
 				if (resNameAsPerITR != null) {
-					nameAsPerItr = resNameAsPerITR.getData() != null ? resNameAsPerITR.getData().equals("name") : null;
+					itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+					nameAsPerItr = itrBasicDetailsResponse.getName();
 					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 				} else {
-
 					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 				}
-
 			} catch (Exception e) {
 				logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 			}
 
 			// for name is edited or not:
 			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
-
 			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equals(nameAsPerItr)){
-				map.put("nameEdited",nameAsPerItr);
-			}else{
 				map.put("nameEdited","-");
+			}else{
+				map.put("nameEdited",fullName);
 			}
-
 
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
