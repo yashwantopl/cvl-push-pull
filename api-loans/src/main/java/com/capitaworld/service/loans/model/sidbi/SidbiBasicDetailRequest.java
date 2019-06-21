@@ -62,7 +62,9 @@ public class SidbiBasicDetailRequest implements Serializable{
 	private Date trialRunEndDate;
 	
 	private Boolean isCoveredUnderCGTMSE;
-
+	
+	private Integer repaymemtPeriod;
+	
 	public Long getId() {
 		return id;
 	}
@@ -286,6 +288,16 @@ public class SidbiBasicDetailRequest implements Serializable{
 	public void setIsCoveredUnderCGTMSE(Boolean isCoveredUnderCGTMSE) {
 		this.isCoveredUnderCGTMSE = isCoveredUnderCGTMSE;
 	}
+
+	public Integer getRepaymemtPeriod() {
+		return repaymemtPeriod;
+	}
+
+	public void setRepaymemtPeriod(Integer repaymemtPeriod) {
+		this.repaymemtPeriod = repaymemtPeriod;
+	}
+
+	
 
 
 	
