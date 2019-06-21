@@ -39,6 +39,7 @@ public class HLOneformPrimaryRes implements Serializable {
 	private Integer oldPropMonth;
 	private Integer oldPropYear;
 	private Integer employmentType;
+	private Integer repaymentMode;
 
 	private  Map<Long, String> coAppFullNameAndCoAppId;	
 	//Existing Loan Details
@@ -299,4 +300,13 @@ public class HLOneformPrimaryRes implements Serializable {
 	public void setEmploymentType(Integer employmentType) {
 		this.employmentType = employmentType;
 	}
+
+	public Integer getRepaymentMode() {
+		return repaymentMode;
+	}
+
+	public void setRepaymentMode(Integer repaymentMode) {
+		this.repaymentMode = repaymentMode;
+	}
+
 }

@@ -358,6 +358,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			res.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
 			res.setTenureRequired(retailApplicantDetail.getTenureRequired());
 			res.setEmploymentType(retailApplicantDetail.getEmploymentType());
+			res.setRepaymentMode(retailApplicantDetail.getRepaymentMode());
 			/*res.setRepayment(retailApplicantDetail.getRepayment());
 			res.setSalaryMode(retailApplicantDetail.getSalaryMode());
 			res.setSalaryBankName(retailApplicantDetail.getSalaryBankName());
@@ -438,7 +439,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	 * SAVE LOAN REQUIREMENT DETAILS 
 	 * Author : Harshit
 	 * Date : 29/04/2019
-	 * @param applicationId
+	 * @param hlOneformPrimaryRes
 	 * @return
 	 */
 	@Override
@@ -456,6 +457,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 				retailApplicantDetail.setRepayment(hlOneformPrimaryRes.getRepayment());
 				retailApplicantDetail.setModifiedDate(new Date());
 				retailApplicantDetail.setModifiedBy(hlOneformPrimaryRes.getUserId());
+				retailApplicantDetail.setRepaymentMode(hlOneformPrimaryRes.getRepaymentMode());
 				retailApplicantDetail.setIsOneformPrimaryComplete(hlOneformPrimaryRes.getIsOneformPrimaryComplete());
 				/*retailApplicantDetail.setSalaryMode(hlOneformPrimaryRes.getSalaryMode());
 				retailApplicantDetail.setSalaryBankName(hlOneformPrimaryRes.getSalaryBankName());
