@@ -242,7 +242,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public List<Double> getIncomeOfItrOf3YearsOfCoApplicant(Long coAppId) {
 
-		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
+		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`co_app_id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
 				.setParameter("id", coAppId)
 				.getResultList();
 	}
