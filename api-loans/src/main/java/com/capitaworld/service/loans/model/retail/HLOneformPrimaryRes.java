@@ -35,9 +35,11 @@ public class HLOneformPrimaryRes implements Serializable {
 	private Long propdistrictMappingId;	
 	
 	private Double marketValProp;
+	private Double costOfProp;
 	private Integer oldPropMonth;
 	private Integer oldPropYear;
-	
+	private Integer employmentType;
+
 	private  Map<Long, String> coAppFullNameAndCoAppId;	
 	//Existing Loan Details
 	List<FinancialArrangementsDetailRequest> finArrangementsDetailList;
@@ -282,7 +284,19 @@ public class HLOneformPrimaryRes implements Serializable {
 		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
 	}
 
-	
-	
-	
+	public Double getCostOfProp() {
+		return costOfProp;
+	}
+
+	public void setCostOfProp(Double costOfProp) {
+		this.costOfProp = costOfProp;
+	}
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
+	}
 }

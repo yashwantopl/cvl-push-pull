@@ -7,11 +7,11 @@ public class FacilityDetailsRequest {
 
     private Long id;
     private Long rupeeTermLoan;
-    private Long foreignCurrency;
+    private Double foreignCurrency;
     private Double workingCapitalFund;
     private Double workingCapitalNonFund;
     private Double total;
-
+    private Boolean isActive;
     public Long getId() {
         return id;
     }
@@ -28,11 +28,11 @@ public class FacilityDetailsRequest {
         this.rupeeTermLoan = rupeeTermLoan;
     }
 
-    public Long getForeignCurrency() {
+    public Double getForeignCurrency() {
         return foreignCurrency;
     }
 
-    public void setForeignCurrency(Long foreignCurrency) {
+    public void setForeignCurrency(Double foreignCurrency) {
         this.foreignCurrency = foreignCurrency;
     }
 
@@ -59,4 +59,15 @@ public class FacilityDetailsRequest {
     public void setTotal(Double total) {
         this.total = total;
     }
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	
+    
 }
