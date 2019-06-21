@@ -18,6 +18,7 @@ public class ProposalSearchResponse {
 	private Long proposalStatusId;
 	private Integer productId;
 	private String applicantName;
+	private Boolean isSactionedFromOther;
 
 	public String getApplicantName() {
 		return applicantName;
@@ -104,6 +105,14 @@ public class ProposalSearchResponse {
 	}
 	public void setProductId(Integer productId) {
 		this.productId = productId;
+	}
+
+	public Boolean getIsSactionedFromOther() {
+		return isSactionedFromOther;
+	}
+
+	public void setIsSactionedFromOther(Boolean isSactionedFromOther) {
+		this.isSactionedFromOther = isSactionedFromOther;
 	}
 	
 	
