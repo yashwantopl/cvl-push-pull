@@ -2977,7 +2977,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				response.setBranchName(CommonUtils.convertString(obj[12]));
 				response.setBranchCode(CommonUtils.convertString(obj[13]));
 			}
-			response.setIsSactionedFromOther(CommonUtils.convertBoolean(obj[14]));
+			Integer count = CommonUtils.convertInteger(obj[14]);
+			if(!CommonUtils.isObjectNullOrEmpty(count) && count > 0) {
+				response.setIsSactionedFromOther(true);
+			} else {
+				response.setIsSactionedFromOther(false);
+			}
 			responseList.add(response);
 		}
 		return responseList;
