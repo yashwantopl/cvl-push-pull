@@ -47,6 +47,7 @@ import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.MonthlyDetail;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.analyzer.model.common.Xn;
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
@@ -2115,7 +2116,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.CHECQUE_BOUNSE_LAST_6_MONTH:
             				 try {
-                               if(bankStatementData != null && bankStatementData.getCheckBounceForLast6Month() != null) {
+                               if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCheckBounceForLast6Month())) {
                             	   scoreParameterRetailRequest.setChequeBounce(bankStatementData.getCheckBounceForLast6Month().doubleValue());
                                }else {
                             	   scoreParameterRetailRequest.setChequeBounce(0.0d);
@@ -2190,7 +2191,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_EOD_BALANCE:
             				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null) {
-            					if(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit() != null) {
+            					if(!CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
             						Double totalEODBalAvg = Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
             						Double totalCredit = Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
             						scoreParameterRetailRequest.setAvgEodBalToToalDep(totalEODBalAvg / totalCredit);
@@ -2379,8 +2380,8 @@ public class ScoringServiceImpl implements ScoringService {
 				scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
 				scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
 				scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
-				scoreParameterRetailRequest.setIsConsiderCoAppIncome(scoringRequestLoansReq.getIsConsiderCoAppIncome());
-				logger.info("Is Income Consider For CoApplicant============>{}=======>{}",scoringRequestLoansReq.getIsConsiderCoAppIncome(), coApplicantId);
+				scoreParameterRetailRequest.setIsConsiderCoAppIncome(scoringRequestLoans.getIsConsiderCoAppIncome());
+				logger.info("Is Income Consider For CoApplicant============>{}=======>{}",scoringRequestLoans.getIsConsiderCoAppIncome(), coApplicantId);
 				logger.info("Result of Average Eligibility Call For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getElAmountOnAverageScoring(),applicationId,fpProductId,coApplicantId);
 				logger.info("FOIR For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getFoir(),applicationId,fpProductId,applicationId,fpProductId,coApplicantId);
                 logger.info("----------------------------START RETAIL HL ------------------------------");
@@ -2670,7 +2671,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.CHECQUE_BOUNSE_LAST_1_MONTH:
             				 try {
             					 if(coApplicantBankStatementData != null) {
-            						 if(coApplicantBankStatementData.getCheckBounceForLast1Month() != null) {
+            						 if(!CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getCheckBounceForLast1Month())) {
             							 scoreParameterRetailRequest.setChequeBouncelast1Month(coApplicantBankStatementData.getCheckBounceForLast1Month().doubleValue());            							 
             						 }else {
             							 scoreParameterRetailRequest.setChequeBouncelast1Month(0.0d);
@@ -2686,7 +2687,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.CHECQUE_BOUNSE_LAST_6_MONTH:
             				 try {
                                if(coApplicantBankStatementData != null) {
-                            	   if(coApplicantBankStatementData.getCheckBounceForLast6Month() != null) {
+                            	   if(!CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getCheckBounceForLast6Month())) {
                             		   scoreParameterRetailRequest.setChequeBounce(coApplicantBankStatementData.getCheckBounceForLast6Month().doubleValue());                            		   
                             	   }else {
                             		   scoreParameterRetailRequest.setChequeBounce(0.0d);                            		   
@@ -2744,7 +2745,7 @@ public class ScoringServiceImpl implements ScoringService {
         				break;
         			case ScoreParameter.Retail.HomeLoan.AVG_EOD_BALANCE:
         				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null) {
-        					if(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit() != null) {
+        					if(!CommonUtil.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
         						Double totalEODBalAvg = Double.parseDouble(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
         						Double totalCredit = Double.parseDouble(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
         						scoreParameterRetailRequest.setAvgEodBalToToalDep(totalEODBalAvg / totalCredit);
@@ -2767,7 +2768,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                         }
                     }
-                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
+//                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
 
                     logger.info("----------------------------END-------------------------------------------");
 

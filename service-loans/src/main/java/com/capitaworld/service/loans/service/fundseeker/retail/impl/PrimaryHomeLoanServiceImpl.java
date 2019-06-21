@@ -357,6 +357,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
 			res.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
 			res.setTenureRequired(retailApplicantDetail.getTenureRequired());
+			res.setEmploymentType(retailApplicantDetail.getEmploymentType());
 			/*res.setRepayment(retailApplicantDetail.getRepayment());
 			res.setSalaryMode(retailApplicantDetail.getSalaryMode());
 			res.setSalaryBankName(retailApplicantDetail.getSalaryBankName());
