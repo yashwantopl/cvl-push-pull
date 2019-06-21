@@ -100,6 +100,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "is_covered_under_cgtmse")
 	private Boolean isCoveredUnderCGTMSE;
 	
+	@Column(name = "repaymemt_period")
+	private Integer repaymemtPeriod;
+	
 	@Column(name="is_active")
 	private Boolean isActive;
 	
@@ -364,11 +367,21 @@ public class SidbiBasicDetail implements Serializable{
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	
-	
-	
-	
-	
-	
 
+	public Boolean getIsCoveredUnderCGTMSE() {
+		return isCoveredUnderCGTMSE;
+	}
+
+	public Integer getRepaymemtPeriod() {
+		return repaymemtPeriod;
+	}
+
+	public void setIsCoveredUnderCGTMSE(Boolean isCoveredUnderCGTMSE) {
+		this.isCoveredUnderCGTMSE = isCoveredUnderCGTMSE;
+	}
+
+	public void setRepaymemtPeriod(Integer repaymemtPeriod) {
+		this.repaymemtPeriod = repaymemtPeriod;
+	}
+	
 }
