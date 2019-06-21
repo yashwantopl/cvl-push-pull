@@ -129,6 +129,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String addressLandmark;
     private Long addressDistrictMappingId;
     private Long addressPincode;
+    private Integer repaymentMode;
 
     private Integer employmentSubStatus;
     private String employedWithOther;
@@ -1014,5 +1015,13 @@ public class PLRetailApplicantRequest implements Serializable {
 
     public void setIsCheckOffNotChangeSalAcc(Boolean isCheckOffNotChangeSalAcc) {
         this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
+    }
+
+    public Integer getRepaymentMode() {
+        return repaymentMode;
+    }
+
+    public void setRepaymentMode(Integer repaymentMode) {
+        this.repaymentMode = repaymentMode;
     }
 }
