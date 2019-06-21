@@ -1528,14 +1528,14 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
                                 scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
                                 break;
-                            case ScoreParameter.Retail.CHECQUE_BOUNSE_LAST_6_MONTH_PL:
+                            case ScoreParameter.Retail.CHEQUE_BOUNCE_LAST_1_MONTH_PL:
                                 try {
-                                    if(bankStatementData != null && bankStatementData.getCheckBounceForLast6Month() != null) {
-                                        scoreParameterRetailRequest.setChequeBounce(bankStatementData.getCheckBounceForLast6Month().doubleValue());
+                                    if(bankStatementData != null && bankStatementData.getCheckBounceForLast1Month() != null) {
+                                        scoreParameterRetailRequest.setChequeBouncelast1Month(bankStatementData.getCheckBounceForLast1Month().doubleValue());
                                     }else {
-                                        scoreParameterRetailRequest.setChequeBounce(0.0d);
+                                        scoreParameterRetailRequest.setChequeBouncelast1Month(0.0d);
                                     }
-                                    scoreParameterRetailRequest.setChequeBounce_p(true);
+                                    scoreParameterRetailRequest.setIsChequeBounceLast1Month_p(true);
                                 }catch(Exception e) {
                                     logger.error("Error while Getting Cheque Bounse of Last 6 Month");
                                 }
