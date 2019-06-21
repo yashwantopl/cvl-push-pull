@@ -302,7 +302,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
 				plTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
-				plTeaserViewResponse.setCountry(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
+				plTeaserViewResponse.setCountry(CommonDocumentUtils.getCountry(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
 				
 				// address
 				
@@ -879,7 +879,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				//citetailApplicantResponse.setry,State,country
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
 				plTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
-				plTeaserViewResponse.setCountry(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
+				plTeaserViewResponse.setCountry(CommonDocumentUtils.getCountry(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
 				
 				// address
 				try {
