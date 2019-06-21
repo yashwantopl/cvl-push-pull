@@ -940,7 +940,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return status;
 		}
 		if(user!=null) {
-			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2))/* || user[0].equals("sidbi")*/) {
+			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)) || user[0].equals("sidbi")) {
 				String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
 				Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
 				if(emailData!=null) {
