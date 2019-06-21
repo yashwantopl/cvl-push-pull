@@ -63,7 +63,7 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		try {
 			sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 			SidbiBasicDetail sidbiBasicDetail = basicDetailRepository.getByApplicationAndUserId(userId, applicationId);
-			System.out.println("sidbiBasicDetail : "+sidbiBasicDetail);
+			//System.out.println("sidbiBasicDetail : "+sidbiBasicDetail);
 			if(sidbiBasicDetail != null) {
 				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);
 			}else {
@@ -87,10 +87,11 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 				BeanUtils.copyProperties(corporateApplicantDetail, sidbiBasicDetailRequest);
 				
 				sidbiBasicDetailRequest.setIndustryId(corporateApplicantDetail.getKeyVericalFunding());
-				sidbiBasicDetailRequest.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
-				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
-				sidbiBasicDetailRequest.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
-				sidbiBasicDetailRequest.setPincode(corporateApplicantDetail.getAdministrativePincode());
+				sidbiBasicDetailRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
+				sidbiBasicDetailRequest.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
+				sidbiBasicDetailRequest.setPincode(corporateApplicantDetail.getRegisteredPincode());
+				
 				
 			}
 			
