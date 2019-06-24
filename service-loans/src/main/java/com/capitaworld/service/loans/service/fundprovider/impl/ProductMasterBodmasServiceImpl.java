@@ -386,9 +386,11 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
     public ProductMasterRequest getProductDetails(Long id,Integer stage,Long role,Long userId){
         ProductMasterRequest masterRequest = new ProductMasterRequest();
         if(stage == 1) {
+            logger.info("Get stage 1 for pending products");
             ProductMasterTemp master = productMasterTempRepository.findOne(id);
             BeanUtils.copyProperties(master,masterRequest);
         } else {
+            logger.info("Get stage 2 for Approved products");
             ProductMaster master = productMasterRepository.findOne(id);
             BeanUtils.copyProperties(master,masterRequest);
         }
