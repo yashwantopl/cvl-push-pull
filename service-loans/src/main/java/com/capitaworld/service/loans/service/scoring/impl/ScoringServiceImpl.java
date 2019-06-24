@@ -1258,29 +1258,13 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL: {
-
+                                scoreParameterRetailRequest.setNetAnnualIncome_p(true);
                                 try {
-                        Double monthlyIncome = 0d;
-                        /*         EligibililityRequest eligibililityRequest = new EligibililityRequest();
-                    				eligibililityRequest.setApplicationId(applicationId);
-                    				eligibililityRequest.setIsIncomeCalculate(false);
-                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);*/
-                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
-                                            && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
-                                        List monthlyIncomeList = (List) eligibilityResponse.getData();
-                                        if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
-                                            monthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
-                                        }
-                                    }
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(monthlyIncome)) {
-                                        scoreParameterRetailRequest.setNetAnnualIncome(monthlyIncome * 12);
-                                        scoreParameterRetailRequest.setNetAnnualIncome_p(true);
-                                    } else {
+                                    if (CommonUtils.isObjectNullOrEmpty(grossMonthlyIncome)) {
                                         scoreParameterRetailRequest.setNetAnnualIncome_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting NET_ANNUAL_INCOME_PL parameter : ",e);
+                                    logger.error("error while getting NET_ANNUAL_INCOME_PL parameter : ", e);
                                     scoreParameterRetailRequest.setNetAnnualIncome_p(false);
                                 }
 
@@ -1288,30 +1272,11 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.Retail.EMI_NMI_PL: {
 
+                                scoreParameterRetailRequest.setEmiNmi_p(true);
                                     try {
-                                    	
-                                    	
-                                        //Double emi = scoringRequestLoans.getEmi();
-                                     /* EligibililityRequest eligibililityRequest = new EligibililityRequest();
-                        				eligibililityRequest.setApplicationId(applicationId);
-                        				eligibililityRequest.setIsIncomeCalculate(false);
-                                        EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);*/
-                                        if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
-                                                && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
-                                            List monthlyIncomeList = (List) eligibilityResponse.getData();
-                                            if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
-                                                netMonthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
-                                            }
-                                        }
-
-                                        if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && !CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getEmi())) {
-                                            scoreParameterRetailRequest.setEmiNmi_p(true);
-                                            scoreParameterRetailRequest.setNmi(netMonthlyIncome);
+                                         scoreParameterRetailRequest.setEmiNmi_p(true);
+                                         scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
                                             //scoreParameterRetailRequest.setEmi(emi);
-                                        } else {
-                                            scoreParameterRetailRequest.setEmiNmi_p(false);
-                                            logger.error("Monthly income from Eligibility:: " + netMonthlyIncome);
-                                        }
                                     } catch (Exception e) {
                                         logger.error("error while getting EMI_NMI_PL parameter : ",e);
                                         scoreParameterRetailRequest.setNetAnnualIncome_p(false);
@@ -1374,20 +1339,8 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
                                     Double monthlyIncome = 0d;
-/*                                    EligibililityRequest eligibililityRequest = new EligibililityRequest();
-                      				eligibililityRequest.setApplicationId(applicationId);
-                      				eligibililityRequest.setIsIncomeCalculate(false);
-                                    EligibilityResponse eligibilityResponse = eligibilityClient.getMonthlyIncome(eligibililityRequest);*/
-                                    if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse) && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
-                                        List monthlyIncomeList = (List) eligibilityResponse.getData();
-                                        if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
-                                            monthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
-                                        }
-                                    }
-
                                     if (!CommonUtils.isObjectNullOrEmpty(monthlyIncome)) {
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
-                                        scoreParameterRetailRequest.setNetAnnualIncome(monthlyIncome * 12);
                                         scoreParameterRetailRequest.setLoanAmtProposed(retailApplicantDetail.getLoanAmountRequired());
                                     } else {
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(false);
@@ -1448,7 +1401,6 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             case ScoreParameter.Retail.ANNUAL_INCOME_PL:
-                                scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
                                 scoreParameterRetailRequest.setAnnualIncome_p(true);
                                 break;
                             case ScoreParameter.Retail.INCOME_PROOF_PL:
@@ -1549,17 +1501,9 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.Retail.EMI_NMI_RATIO_PL:
                                 //Already Set NMI and GMI and EMI Above Before Switch Starts
-                                if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse)
-                                        && !com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(eligibilityResponse.getData())){
-                                    List monthlyIncomeList = (List) eligibilityResponse.getData();
-                                    if(!com.capitaworld.service.matchengine.utils.CommonUtils.isListNullOrEmpty(monthlyIncomeList)){
-                                        netMonthlyIncome = Double.valueOf(monthlyIncomeList.get(0).toString());
-                                    }
-                                }
 
                                 if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome) && !CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getEmi())) {
                                     scoreParameterRetailRequest.setEmiNmiRatio_p(true);
-                                    scoreParameterRetailRequest.setNmi(netMonthlyIncome);
                                     scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
                                     scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
                                 } else {
