@@ -383,7 +383,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
      * @param userId
      * @return
      */
-    public ProductMasterRequest getProductDetails(Long id,Integer stage,Long role,Long userId){
+    public ProductMasterRequest getProductDetails(Long id,Integer stage){
         ProductMasterRequest masterRequest = new ProductMasterRequest();
         if(stage == 1) {
             logger.info("Get stage 1 for pending products");

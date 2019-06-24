@@ -208,23 +208,11 @@ public class ProductMasterBodmasController {
     }
 
     @GetMapping(value = "/getProductDetails/{productId}/{applicationStage}/{roleId}")
-    public ResponseEntity<LoansResponse> getProductDetails(@PathVariable(value = "productId") Long productId, @PathVariable(value = "applicationStage")Integer applicationStage
-            ,@PathVariable(value = "role")Long role, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+    public ResponseEntity<LoansResponse> getProductDetails(@PathVariable(value = "productId") Long productId, @PathVariable(value = "applicationStage")Integer applicationStage) {
         // request must not be null
         CommonDocumentUtils.startHook(logger, CommonUtils.GET_LIST);
         try {
-            Long userId = null;
-            if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
-                userId = clientId;
-            } else {
-                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            }
-            if (userId == null) {
-                logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
-                CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
-                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
-            ProductMasterRequest response = productMasterBodmasService.getProductDetails(productId,applicationStage,role,userId);
+            ProductMasterRequest response = productMasterBodmasService.getProductDetails(productId,applicationStage);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(response);
             CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);

@@ -19,5 +19,5 @@ public interface ProductMasterBodmasService {
 
     public List<ProductConditionResponse> getConditionsByProductId(Long productId);
 
-    public ProductMasterRequest getProductDetails(Long productId,Integer stage,Long roleId,Long userId);
+    public ProductMasterRequest getProductDetails(Long productId,Integer stage);
 }
