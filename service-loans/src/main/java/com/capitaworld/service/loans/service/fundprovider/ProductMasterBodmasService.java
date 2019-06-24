@@ -18,4 +18,6 @@ public interface ProductMasterBodmasService {
     public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Integer status, Long userOrgId);
 
     public List<ProductConditionResponse> getConditionsByProductId(Long productId);
+
+    public ProductMasterRequest getProductDetails(Long productId,Integer stage,Long roleId,Long userId);
 }

@@ -162,8 +162,7 @@ public class ProductMasterBodmasController {
             if (userType == null) {
                 logger.warn("userType Require to get product Details ==>{}", userId);
                 CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
-                return new ResponseEntity<>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             //List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
@@ -204,10 +203,39 @@ public class ProductMasterBodmasController {
 
         } catch (Exception e) {
             logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
-            return new ResponseEntity<>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping(value = "/getProductDetails/{productId}/{applicationStage}/{roleId}")
+    public ResponseEntity<LoansResponse> getProductDetails(@PathVariable(value = "productId") Long productId, @PathVariable(value = "applicationStage")Integer applicationStage
+            ,@PathVariable(value = "role")Long role, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+        // request must not be null
+        CommonDocumentUtils.startHook(logger, CommonUtils.GET_LIST);
+        try {
+            Long userId = null;
+            if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+                userId = clientId;
+            } else {
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+            if (userId == null) {
+                logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
+                CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
+                return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            ProductMasterRequest response = productMasterBodmasService.getProductDetails(productId,applicationStage,role,userId);
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(response);
+            CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
+            return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
     }
 
 }
