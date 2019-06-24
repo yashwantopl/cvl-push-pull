@@ -329,7 +329,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				//as per OccupationNature enum id
 				switch (plRetailApplicantRequest.getEmploymentType() != null ? plRetailApplicantRequest.getEmploymentType() : 0) {
 				
-				case 2:
+				case 2:// salaried
 					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
 					
 					//switch as per EmploymentWithPL id
@@ -361,14 +361,22 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						break;
 					}
 					break;
+				
+				case 3: case 6: case 8: //business/Agriculturist/Others for name of employer
+					plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+				    break;
+				    
+				case 4://Self Employed
+					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithRetail.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+					break;
 					
-				case 5:
+				case 5://Self Employed Professional
 					
 					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
 					break;
-				case 4:
-					plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithRetail.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
-					break;
+				
 				default:
 					break;
 				}
@@ -1041,13 +1049,19 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					}
 					break;
 					
-				case 5:
+				case 3: case 6: case 8: //business/Agriculturist/Others for name of employer
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
+				    break;
+					
+				case 4://Self Employed
+					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					break;
+				
+				case 5://Self Employed Professional
 					
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? OccupationHL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
 					break;
-				case 4:
-					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
-					break;
+				
 				default:
 					break;
 				}
