@@ -33,4 +33,19 @@ public class SbiWCRenewalController {
         response.setStatus(HttpStatus.OK.value());
         return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
     }
+
+    @GetMapping(value = "/fs/bank/specific/{applicationId}/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> fsBankSpecificPostOneForm(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "userId") Long userId) {
+         //skip payment request
+        Boolean isProceed = null;
+        boolean isMatchesDone = sbiWCRenewalService.callMatchEngine(applicationId,userId);
+        if (isMatchesDone) {
+            sbiWCRenewalService.callSkipPayment(applicationId,userId);
+            isProceed =true;
+        }
+        LoansResponse response = new LoansResponse();
+        response.setData(isProceed);
+        response.setStatus(HttpStatus.OK.value());
+        return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+    }
 }
