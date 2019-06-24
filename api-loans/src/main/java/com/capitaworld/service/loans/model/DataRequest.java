@@ -11,7 +11,8 @@ public class DataRequest implements Serializable{
 	private Long productId;
 	private Long mappingId;
 	
-
+	private static final long serialVersionUID = 1L;
+	
 	public DataRequest() {
 		// Do nothing because of X and Y.
 	}
