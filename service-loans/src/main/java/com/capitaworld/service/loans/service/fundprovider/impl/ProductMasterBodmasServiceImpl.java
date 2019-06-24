@@ -89,17 +89,14 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
             } else {
                 //if product id is null than create new product in temp table
                 ProductMasterTemp productMasterTemp = new ProductMasterTemp();
-//                LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
-//                WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
-//                Long jobId = null;
-//                // productMaster.setJobId(null);
-//                if (workflowResponse != null) {
-//                    jobId = workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
-//                    productMasterTemp.setJobId(jobId);
-//                }
-
+                LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
+                WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
+                Long jobId = null;
+                if (workflowResponse != null) {
+                    jobId = workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
+                    productMasterTemp.setJobId(jobId);
+                }
                 logger.info("addProductRequest.getProductId() === >" + addProductRequest.getProductId());
-
                 productMasterTemp.setProductId(addProductRequest.getProductId());
                 productMasterTemp.setIsMatched(false);
                 productMasterTemp.setName(addProductRequest.getName());
@@ -376,6 +373,28 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
             return CommonUtils.isObjectListNull(formulaNameById) ? null : formulaNameById.get(0);
         }
         return null;
+    }
+
+    /**
+     * get Product by product id and role
+     * @param id
+     * @param stage
+     * @param role
+     * @param userId
+     * @return
+     */
+    public ProductMasterRequest getProductDetails(Long id,Integer stage){
+        ProductMasterRequest masterRequest = new ProductMasterRequest();
+        if(stage == 1) {
+            logger.info("Get stage 1 for pending products");
+            ProductMasterTemp master = productMasterTempRepository.findOne(id);
+            BeanUtils.copyProperties(master,masterRequest);
+        } else {
+            logger.info("Get stage 2 for Approved products");
+            ProductMaster master = productMasterRepository.findOne(id);
+            BeanUtils.copyProperties(master,masterRequest);
+        }
+        return masterRequest;
     }
 
 }
