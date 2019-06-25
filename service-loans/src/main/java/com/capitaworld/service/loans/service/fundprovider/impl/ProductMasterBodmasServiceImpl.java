@@ -61,7 +61,8 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
     private FpGstTypeMappingRepository fpGstTypeMappingRepository;
 
     //if use retail Loan Id
-    private Integer[] productIds = {CommonUtils.LoanType.HOME_LOAN.getValue(), CommonUtils.LoanType.PERSONAL_LOAN.getValue()};
+    private Integer[] retailProductIds = {CommonUtils.LoanType.HOME_LOAN.getValue(), CommonUtils.LoanType.PERSONAL_LOAN.getValue()};
+    private Integer[] corpProductIds = {CommonUtils.LoanType.WORKING_CAPITAL.getValue(), CommonUtils.LoanType.TERM_LOAN.getValue(), CommonUtils.LoanType.UNSECURED_LOAN.getValue(), CommonUtils.LoanType.WCTL_LOAN.getValue()};
 
     /**
      * save Method For new product
@@ -91,10 +92,9 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 ProductMasterTemp productMasterTemp = new ProductMasterTemp();
                 LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
                 WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
-                Long jobId = null;
+
                 if (workflowResponse != null) {
-                    jobId = workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
-                    productMasterTemp.setJobId(jobId);
+                    productMasterTemp.setJobId(workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null);
                 }
                 logger.info("addProductRequest.getProductId() === >" + addProductRequest.getProductId());
                 productMasterTemp.setProductId(addProductRequest.getProductId());
@@ -170,6 +170,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
 
         //for add group or parameter
         if (!CommonUtils.isObjectListNull(productParameterRequest.getParameters())) {
+            //recursive method for save group and parameters
             return saveParameterWithGroup(productParameterRequest.getParameters(), fpProductConditions.getId(), productParameterRequest.getUserId(), 0, null, productParameterRequest.getProductId());
         }
         return false;
@@ -209,6 +210,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 fpProParameter.setProductId(productId);
                 parametersRepository.save(fpProParameter);
             } else {
+                //for level of sub parameter condtions
                 level = level + 1;
                 FpProductParameters fpProductParameters;
                 if (CommonUtils.isObjectNullOrEmpty(request.getId())) {
@@ -227,6 +229,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 fpProductParameters.setParentId(CommonUtils.isObjectNullOrEmpty(parentId) ? null : parentId);
                 parametersRepository.save(fpProductParameters);
                 if (!CommonUtils.isListNullOrEmpty(request.getParameters())) {
+                    //call recursive when sub group and sub parameters are available
                     saveParameterWithGroup(request.getParameters(), conditionId, userId, level, fpProductParameters.getId(), productId);
                 }
             }
@@ -264,67 +267,56 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
     public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Integer status, Long userOrgId) {
         CommonDocumentUtils.startHook(logger, "getListByUserType");
         List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
-
+        Integer[] productIds = null;
+        if (userType == 1) {
+            //for retail products
+            productIds = retailProductIds;
+        } else {
+            //for Corporate Products
+            productIds = corpProductIds;
+        }
+        //for pending stage
         if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
             List<ProductMasterTemp> results = null;
-            if (userType == 1) {
-                if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-                    results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId, Arrays.asList(productIds));
-                } else {
-                    results = productMasterTempRepository.getUserRetailProductList(userId, Arrays.asList(productIds));
-                }
-                for (ProductMasterTemp productMaster : results) {
-                    ProductMasterRequest productMasterRequest = new ProductMasterRequest();
-                    BeanUtils.copyProperties(productMaster, productMasterRequest);
-                    productMasterRequest.setFinId(productMaster.getFinId());
-                    List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
-                    productMasterRequest.setGstType(gstTypes);
-                    productMasterRequests.add(productMasterRequest);
-                }
+            if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+                //if data get from User org id
+                results = productMasterTempRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),(status == 1 ? true : false));
             } else {
-
-                if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-                    results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
-                } else {
-                    results = productMasterTempRepository.getUserCorporateProductList(userId);
-                }
-                for (ProductMasterTemp productMaster : results) {
-                    ProductMasterRequest productMasterRequest = new ProductMasterRequest();
-                    BeanUtils.copyProperties(productMaster, productMasterRequest);
-                    productMasterRequest.setFinId(productMaster.getFinId());
-                    List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
-                    productMasterRequest.setGstType(gstTypes);
-                    productMasterRequests.add(productMasterRequest);
+                //if data get from User id
+                results = productMasterTempRepository.getProductListByUserId(userId, Arrays.asList(productIds),(status == 1 ? true : false));
+            }
+            if(!CommonUtils.isListNullOrEmpty(results)) {
+                for (ProductMasterTemp productMasterTemp : results) {
+                    ProductMasterRequest productMasterTempRequest = new ProductMasterRequest();
+                    BeanUtils.copyProperties(productMasterTemp, productMasterTempRequest);
+                    productMasterTempRequest.setFinId(productMasterTemp.getFinId());
+                    List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMasterTemp.getId());
+                    productMasterTempRequest.setGstType(gstTypes);
+                    productMasterRequests.add(productMasterTempRequest);
                 }
             }
         } else {
+            //for approve stage
             List<ProductMaster> results = null;
-            if (userType == 1) {
-                if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-                    results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId, Arrays.asList(productIds));
-                } else {
-                    results = productMasterRepository.getUserRetailProductList(userId, Arrays.asList(productIds));
-                }
-
+            if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+                //if data get from User org id
+                results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),(status == 1 ? true : false));
             } else {
-                if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-                    results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
-                } else {
-                    results = productMasterRepository.getUserCorporateProductList(userId);
-                }
+                //if data get from User id
+                results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds),(status == 1 ? true : false));
             }
-            for (ProductMaster productMaster : results) {
-                ProductMasterRequest productMasterRequest = new ProductMasterRequest();
-                BeanUtils.copyProperties(productMaster, productMasterRequest);
-                productMasterRequest.setFinId(productMaster.getFinId());
-                List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
-                productMasterRequest.setGstType(gstTypes);
-                productMasterRequests.add(productMasterRequest);
+            if(!CommonUtils.isListNullOrEmpty(results)) {
+                for (ProductMaster productMaster : results) {
+                    ProductMasterRequest productMasterRequest = new ProductMasterRequest();
+                    BeanUtils.copyProperties(productMaster, productMasterRequest);
+                    productMasterRequest.setFinId(productMaster.getFinId());
+                    List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
+                    productMasterRequest.setGstType(gstTypes);
+                    productMasterRequests.add(productMasterRequest);
+                }
             }
         }
-
         CommonDocumentUtils.endHook(logger, "getListByUserType");
-
         return productMasterRequests;
     }
 
