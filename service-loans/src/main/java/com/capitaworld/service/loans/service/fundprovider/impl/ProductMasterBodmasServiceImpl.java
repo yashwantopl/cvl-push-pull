@@ -269,21 +269,30 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
         Integer[] productIds = null;
         if (userType == 1) {
-            //for retail products
-            productIds = retailProductIds;
+            productIds = retailProductIds;//for retail products
         } else {
-            //for Corporate Products
-            productIds = corpProductIds;
+            productIds = corpProductIds;//for Corporate Products
         }
+        Boolean isActive = (status == 1 ? true : status == 2 ? false : null);
         //for pending stage
         if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
             List<ProductMasterTemp> results = null;
             if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
                 //if data get from User org id
-                results = productMasterTempRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),(status == 1 ? true : false));
+                if(isActive == null){
+                    results = productMasterTempRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds));
+                }else{
+                    results = productMasterTempRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),isActive);
+                }
+
             } else {
                 //if data get from User id
-                results = productMasterTempRepository.getProductListByUserId(userId, Arrays.asList(productIds),(status == 1 ? true : false));
+                if(isActive == null){
+                    results = productMasterTempRepository.getProductListByUserId(userId, Arrays.asList(productIds));
+                }else{
+                    results = productMasterTempRepository.getProductListByUserId(userId, Arrays.asList(productIds),isActive);
+                }
+
             }
             if(!CommonUtils.isListNullOrEmpty(results)) {
                 for (ProductMasterTemp productMasterTemp : results) {
@@ -300,10 +309,18 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
             List<ProductMaster> results = null;
             if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
                 //if data get from User org id
-                results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),(status == 1 ? true : false));
+                if(isActive == null){
+                    results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds));
+                }else{
+                    results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),isActive);
+                }
             } else {
                 //if data get from User id
-                results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds),(status == 1 ? true : false));
+                if(isActive == null){
+                    results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds));
+                }else{
+                    results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds),isActive);
+                }
             }
             if(!CommonUtils.isListNullOrEmpty(results)) {
                 for (ProductMaster productMaster : results) {
