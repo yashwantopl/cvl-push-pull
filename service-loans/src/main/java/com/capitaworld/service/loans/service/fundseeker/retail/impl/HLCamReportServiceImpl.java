@@ -309,6 +309,44 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			
 			String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentJobYear()) ? plRetailApplicantRequest.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentJobMonth()) ? plRetailApplicantRequest.getCurrentJobMonth() +" months" : "");
 			
+			map.put("nameOfEmployer",plRetailApplicantRequest.getNameOfEmployer() != null ? plRetailApplicantRequest.getNameOfEmployer() : "-");
+			
+			//as per OccupationNature enum id
+			switch (plRetailApplicantRequest.getEmploymentType() != null ? plRetailApplicantRequest.getEmploymentType() : 0) {
+			
+			case 2:
+				//switch as per EmploymentWithPL id
+				switch (plRetailApplicantRequest.getEmploymentWith() != null ? plRetailApplicantRequest.getEmploymentWith() :0) {
+				
+					case 1://central gov
+						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue()));
+						break;
+					case 2://state gov
+						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue()));
+						break;
+					case 3://psu
+						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue()));
+						break;
+					case 4: //company
+						map.put("nameOfEmployer",plRetailApplicantRequest.getNameOfEmployer());
+						break;
+					case 5://educational insitute
+						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue()));
+						break;
+					case 8: //bank
+						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue()));
+						break;
+					case 9: //Insurance company
+						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue()));
+						break;
+	
+					default:
+						break;
+				}
+				break;
+				
+			}
+			
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "-");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ?EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 			map.put("sinceSalaryWhen", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getSalaryBankYear()) ? plRetailApplicantRequest.getSalaryBankYear() + " years" : "")+" "+(plRetailApplicantRequest.getSalaryBankMonth() != null ? plRetailApplicantRequest.getSalaryBankMonth() +" months" : ""));
@@ -520,12 +558,49 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					coApp.put("totalExperience",!CommonUtils.isObjectNullOrEmpty(operatingBusinessSince) ? operatingBusinessSince :"-");
 				}
 				
+				coApp.put("nameOfEmployer", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? coApplicantDetail.getNameOfEmployer() : "-");
+				
+				//as per OccupationNature enum id
+				switch (coApplicantDetail.getEmploymentType() != null ? coApplicantDetail.getEmploymentType() : 0) {
+					
+					case 2:
+						//switch as per EmploymentWithPL id
+						switch (coApplicantDetail.getEmploymentWith() != null ? coApplicantDetail.getEmploymentWith() :0) {
+						
+							case 1://central gov
+								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue()));
+								break;
+							case 2://state gov
+								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue()));
+								break;
+							case 3://psu
+								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue()));
+								break;
+							case 4: //company
+								coApp.put("nameOfEmployer" ,coApplicantDetail.getNameOfEmployer());
+								break;
+							case 5://educational insitute
+								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue()));
+								break;
+							case 8: //bank
+								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue()));
+								break;
+							case 9: //Insurance company
+								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue()));
+								break;
+		
+							default:
+								break;
+							}
+						break;
+					
+				}
+
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
 				
 				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				coApp.put("relationshipWithApp", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRelationshipWithApplicant()) ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : "-");
 				coApp.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue() : "-");
-				coApp.put("nameOfEmployer", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? coApplicantDetail.getNameOfEmployer() : "-");
 				coApp.put("spouseEmployment", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseEmployment()) ? SpouseEmploymentList.getById(coApplicantDetail.getSpouseEmployment()).getValue() : "-");
 				coApp.put("annualIncomeOfSpouse", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualIncomeOfSpouse()) ? CommonUtils.convertValueWithoutDecimal(coApplicantDetail.getAnnualIncomeOfSpouse()) : "-");
 				coApp.put("residenceType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType()) ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue() : "-");
