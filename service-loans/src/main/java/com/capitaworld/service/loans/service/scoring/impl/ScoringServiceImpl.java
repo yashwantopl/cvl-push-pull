@@ -968,7 +968,8 @@ public class ScoringServiceImpl implements ScoringService {
                     if (scoringResponse != null && scoringResponse.getDataList() != null) {
                         dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
                     }
-
+                    scoreParameterRetailRequest.setNmi(netMonthlyIncome);
+                    scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
                     for (int i = 0; i < dataList.size(); i++) {
 
                         ModelParameterResponse modelParameterResponse = null;
