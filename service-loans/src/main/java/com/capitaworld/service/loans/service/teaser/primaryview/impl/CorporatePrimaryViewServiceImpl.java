@@ -219,7 +219,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		logger.info("AppId===========>{}",applicationProposalMapping.getApplicationId());
 		Long toApplicationId = applicationProposalMapping.getApplicationId(); // new
 		Long toUserId = applicationProposalMapping.getUserId(); // new
-
+		corporatePrimaryViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
+		
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		//Long userId = loanApplicationMaster.getUserId(); // previous
 
