@@ -2216,6 +2216,10 @@ public class ScoringServiceImpl implements ScoringService {
             					}
             				}
             				break;
+            			case ScoreParameter.Retail.HomeLoan.REPAYMENT_PERIOD:
+            				scoreParameterRetailRequest.setRepaymentPeriod(retailApplicantDetail.getRepaymentMode());
+        					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
+            				break;
             			case ScoreParameter.Retail.HomeLoan.AGE_PROPERTY:
 	            				if(primaryHomLoanDetail.getOldPropYear() != null) {
 	            					scoreParameterRetailRequest.setAgeOfProperty(primaryHomLoanDetail.getOldPropYear());

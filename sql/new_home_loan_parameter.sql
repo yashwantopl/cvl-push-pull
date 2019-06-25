@@ -661,3 +661,9 @@ ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_min_net_take
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_net_take_home_salary DOUBLE DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_min_net_take_home_salary_display BIT(1) DEFAULT FALSE;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_min_net_take_home_salary_mandatory BIT(1) DEFAULT FALSE;
+
+
+==================================25-06-2019===========================================
+
+UPDATE `scoring_sidbi`.`field_master` SET `type` = '2' WHERE `id` = '102'; 
+UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'1' WHERE `field_master_id` = '102'
