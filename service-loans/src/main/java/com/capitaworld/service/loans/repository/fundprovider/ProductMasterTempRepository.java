@@ -107,6 +107,16 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("update ProductMasterTemp pm set pm.statusId=:statusId where pm.id =:id")
 	public int updateStatusToInProgress(@Param("id")Long id,@Param("statusId")Integer statusId);
 
+	@Query("select pm from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isCopied=false and pm.productId  IN (:productIds) and isActive =:status")
+	public List<ProductMasterTemp> getProductListByUserOrgId(@Param("userOrgId") Long userOrgId,@Param("productIds") List<Integer> productIds,@Param("status") boolean status);
 
+	@Query("select pm from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isCopied=false and pm.productId  IN (:productIds)")
+	public List<ProductMasterTemp> getProductListByUserOrgId(@Param("userOrgId") Long userOrgId,@Param("productIds") List<Integer> productIds);
+
+	@Query("select pm from ProductMasterTemp pm where pm.userId =:userId and pm.isCopied=false and pm.productId  IN (:productIds) and isActive =:status")
+	public List<ProductMasterTemp> getProductListByUserId(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds,@Param("status") boolean status);
+
+	@Query("select pm from ProductMasterTemp pm where pm.userId =:userId and pm.isCopied=false and pm.productId  IN (:productIds)")
+	public List<ProductMasterTemp> getProductListByUserId(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
 	
 }
