@@ -273,7 +273,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         } else {
             productIds = corpProductIds;//for Corporate Products
         }
-        Boolean isActive = (status == 1 ? true : status == 2 ? false : null);
+        Boolean isActive = (status == 1 ? true : false);
         //for pending stage
         if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
             List<ProductMasterTemp> results = null;
