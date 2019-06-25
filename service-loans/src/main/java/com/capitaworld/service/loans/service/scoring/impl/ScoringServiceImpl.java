@@ -968,7 +968,8 @@ public class ScoringServiceImpl implements ScoringService {
                     if (scoringResponse != null && scoringResponse.getDataList() != null) {
                         dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
                     }
-
+                    scoreParameterRetailRequest.setNmi(netMonthlyIncome);
+                    scoreParameterRetailRequest.setGmi(grossMonthlyIncome);
                     for (int i = 0; i < dataList.size(); i++) {
 
                         ModelParameterResponse modelParameterResponse = null;
@@ -2215,6 +2216,10 @@ public class ScoringServiceImpl implements ScoringService {
             						scoreParameterRetailRequest.setIsIncomeFromItr_p(true);	
             					}
             				}
+            				break;
+            			case ScoreParameter.Retail.HomeLoan.REPAYMENT_PERIOD:
+            				scoreParameterRetailRequest.setRepaymentPeriod(retailApplicantDetail.getRepaymentMode());
+        					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
             			case ScoreParameter.Retail.HomeLoan.AGE_PROPERTY:
 	            				if(primaryHomLoanDetail.getOldPropYear() != null) {

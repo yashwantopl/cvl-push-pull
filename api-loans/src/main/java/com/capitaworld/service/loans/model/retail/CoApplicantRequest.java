@@ -111,10 +111,10 @@ public class CoApplicantRequest {
 	}
 
 	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled) {
-		new CoApplicantRequest(id, firstName, middleName, lastName, relationshipWithApplicant, applicationId, isItrCompleted, isItrSkip, isItrManual, isCibilCompleted, isBankStatementCompleted, isOneFormCompleted, isBasicInfoFilled, isEmploymentInfoFilled, isContactInfoFilled, isCreditInfoFilled, null);
+		new CoApplicantRequest(id, firstName, middleName, lastName, relationshipWithApplicant, applicationId, isItrCompleted, isItrSkip, isItrManual, isCibilCompleted, isBankStatementCompleted, isOneFormCompleted, isBasicInfoFilled, isEmploymentInfoFilled, isContactInfoFilled, isCreditInfoFilled, null,null);
 	}
 	
-	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled,String pan) {
+	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled,String pan,Boolean isIncomeConsider) {
 		this.id = id;
 		this.applicationId = applicationId;
 		this.firstName = firstName;
@@ -132,6 +132,7 @@ public class CoApplicantRequest {
 		this.isContactInfoFilled = isContactInfoFilled;
 		this.isCreditInfoFilled = isCreditInfoFilled;
 		this.pan = pan;
+		this.isIncomeConsider = isIncomeConsider;
 	}
 
 	public Long getApplicationId() {
