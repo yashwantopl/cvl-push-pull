@@ -1537,7 +1537,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterRetailRequest.setCurrentEmploymentStatus((retailApplicantDetail.getEmploymentStatus() != null  ? retailApplicantDetail.getEmploymentStatus().longValue() : null));
                                 break;
                             case ScoreParameter.Retail.MIN_BANKING_RELATIONSHIP_PL:
-                                scoreParameterRetailRequest.setIsMinBankingRelationship_p(minBankRelationshipInMonths != null);
+                                scoreParameterRetailRequest.setIsMinBankingRelationship_p(true);
                                 scoreParameterRetailRequest.setMinBankingRelationship(minBankRelationshipInMonths == null ? 0 : minBankRelationshipInMonths);
                                 break;
                             case ScoreParameter.Retail.RESIDENCE_TYPE_PL:
