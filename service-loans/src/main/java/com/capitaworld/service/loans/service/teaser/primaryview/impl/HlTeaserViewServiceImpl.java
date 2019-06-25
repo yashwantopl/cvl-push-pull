@@ -990,7 +990,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setBirthPlace(coApplicantDetail.getBirthPlace());
 				plRetailApplicantResponse.setReligion(coApplicantDetail.getReligion() != null ? Religion.getById(coApplicantDetail.getReligion()).getValue().toString() : "-");
 				plRetailApplicantResponse.setCastCategory(coApplicantDetail.getCastId() != null ? CastCategory.getById(coApplicantDetail.getCastId()).getValue().toString() : "-");
-				plRetailApplicantResponse.setNationality(coApplicantDetail.getNationality()!=null ?ResidentialStatus.getById(coApplicantDetail.getNationality()).getValue(): "-");
+				plRetailApplicantResponse.setNationality(coApplicantDetail.getNationality()!=null ? ResidentStatusMst.getById(coApplicantDetail.getNationality()).getValue(): "-");
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
@@ -998,7 +998,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
-				plRetailApplicantResponse.setCurrentEmploymentStatus(coApplicantDetail.getCurrentEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getCurrentEmploymentStatus()).getValue() : "-");
+				plRetailApplicantResponse.setCurrentEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
 				plRetailApplicantResponse.setDesignation(coApplicantDetail.getDesignation()!= null ? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(coApplicantDetail.getAnnualIncomeOfSpouse());
