@@ -1544,6 +1544,10 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterRetailRequest.setIsResidenceType_p(retailApplicantDetail.getResidenceType() != null);
                                 scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
                                 break;
+                            case ScoreParameter.Retail.REPAYMENT_MODE_PL:
+                                scoreParameterRetailRequest.setRepaymentMode(retailApplicantDetail.getRepaymentMode());
+                                scoreParameterRetailRequest.setRepaymentMode_p(retailApplicantDetail.getRepaymentMode() != null);
+                                break;
                             default:
                                 break;
 
