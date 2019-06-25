@@ -279,7 +279,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
             List<ProductMasterTemp> results = null;
             if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
                 //if data get from User org id
-                if(isActive == null){
+                if(status == 0){
                     results = productMasterTempRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds));
                 }else{
                     results = productMasterTempRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),isActive);
@@ -287,7 +287,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
 
             } else {
                 //if data get from User id
-                if(isActive == null){
+                if(status == 0){
                     results = productMasterTempRepository.getProductListByUserId(userId, Arrays.asList(productIds));
                 }else{
                     results = productMasterTempRepository.getProductListByUserId(userId, Arrays.asList(productIds),isActive);
