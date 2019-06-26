@@ -455,5 +455,20 @@ public class LoanEligibilityCalculatorController {
 		return cmaDetailResponse;
 	}
 	// LAP Calculation Ends
+	
+	
+	@RequestMapping(value="/getCMADetailForAPI/{applicationId}" ,method =RequestMethod.GET) 
+	public CMADetailResponse getCmaDetailForAPI(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in getCmaDetail() For API Related========>" + applicationId);
+		CMADetailResponse cmaDetailResponse=null;
+		try {
+		cmaDetailResponse =loanEligibilityCalculatorService.getCMADetailApi(applicationId);
+		} catch (Exception e) {
+			logger.error("EXCEPTION IS GETTING WHILE GETTING CMA API DATA------------{}-----{} ",e);
+		}
+		return cmaDetailResponse;
+	}
+	// LAP Calculation Ends
+	
 
 }
