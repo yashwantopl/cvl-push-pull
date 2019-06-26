@@ -80,6 +80,8 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 ProductMasterTemp productMasterTemp;
                 if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
                     productMasterTemp = productMasterTempRepository.findOne(addProductRequest.getProductMappingId());
+                    productMasterTemp.setModifiedDate(new Date());
+                    productMasterTemp.setModifiedBy(userId);
                 } else{
                     productMasterTemp = new ProductMasterTemp();
                     LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
@@ -88,6 +90,8 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                     if (workflowResponse != null) {
                         productMasterTemp.setJobId(workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null);
                     }
+                    productMasterTemp.setCreatedBy(userId);
+                    productMasterTemp.setCreatedDate(new Date());
                 }
 
                 logger.info("addProductRequest.getProductId() === >" + addProductRequest.getProductId());
@@ -96,11 +100,8 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 productMasterTemp.setName(addProductRequest.getName());
                 productMasterTemp.setFpName(addProductRequest.getFpName());
                 productMasterTemp.setUserId(userId);
-                productMasterTemp.setCreatedBy(userId);
-                productMasterTemp.setCreatedDate(new Date());
                 productMasterTemp.setModifiedBy(userId);
                 productMasterTemp.setIsParameterFilled(false);
-                productMasterTemp.setModifiedDate(new Date());
                 productMasterTemp.setBusinessTypeId(addProductRequest.getBusinessTypeId());// set business type id
                 productMasterTemp.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
                 productMasterTemp.setFinId(addProductRequest.getFinId());
@@ -142,6 +143,10 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
      */
     @Override
     public boolean saveCondition(ProductParameterRequest productParameterRequest) {
+        List<ProductConditionResponse> allByFpProductId = conditionsRepository.findAllByFpProductId(productParameterRequest.getProductId());
+        if(allByFpProductId.size() > 0){
+            return true;
+        }
         FpProductConditions fpProductConditions;
         if (CommonUtils.isObjectNullOrEmpty(productParameterRequest.getId())) {
             fpProductConditions = new FpProductConditions();
@@ -379,8 +384,6 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
      * get Product by product id and role
      * @param id
      * @param stage
-     * @param role
-     * @param userId
      * @return
      */
     public ProductMasterRequest getProductDetails(Long id,Integer stage){
