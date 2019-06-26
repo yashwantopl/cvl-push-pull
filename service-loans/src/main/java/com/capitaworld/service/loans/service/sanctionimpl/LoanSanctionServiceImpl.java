@@ -147,6 +147,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			} else {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
+			loanSanctionDomainOld.setOrgId(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getOrgId()) ? loanSanctionRequest.getOrgId() : null);
 			loanSanctionDomainOld.setSanctionAmount(loanSanctionRequest.getSanctionAmount());
 			loanSanctionDomainOld.setSanctionDate(new Date());
 			loanSanctionDomainOld.setTenure(loanSanctionRequest.getTenure());
