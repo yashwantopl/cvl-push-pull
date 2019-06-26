@@ -27,6 +27,8 @@ public interface LoanEligibilityCalculatorService {
 	
 	public JSONObject calcLAPAmount(LAPEligibilityRequest homeLoanRequest) throws LoansException;
 	
-	public CMADetailResponse getCMADetail(Long applicationId ); 
+	public CMADetailResponse getCMADetail(Long applicationId );
+	
+	public CMADetailResponse getCMADetailApi(Long applicationId);
 	
 }

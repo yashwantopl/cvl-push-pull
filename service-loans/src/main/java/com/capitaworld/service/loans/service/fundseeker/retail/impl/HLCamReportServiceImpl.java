@@ -212,6 +212,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
      	if(applicationProposalMapping != null) {
      		map.put("applicationCode", applicationProposalMapping.getApplicationCode() != null ? applicationProposalMapping.getApplicationCode() : "-");
      		map.put("loanType", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getProductId()) ? CommonUtils.LoanType.getType(applicationProposalMapping.getProductId()).getName() : " ");
+     		map.put("currency", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getCurrencyId()) ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : null);
      	}
      	
 		try {

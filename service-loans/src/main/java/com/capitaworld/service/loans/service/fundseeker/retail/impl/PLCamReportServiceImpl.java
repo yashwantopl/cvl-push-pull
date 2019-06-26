@@ -510,7 +510,97 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.EMPLOYMENT_CATEGORY_AND_SALARY_INFORMATION, CommonUtils.printFields(collect.get(0),null));
 					}
-
+					
+					//new parameters
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CURRENT_EMPLOYMENT_STATUS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CURRENT_EMPLOYMENT_STATUS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.RESIDENCE_TYPE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.RESIDENCE_TYPE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NO_OF_YEAR_CURRENT_LOCATION_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NO_OF_YEAR_CURRENT_LOCATION_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.SPOUSE_EMPLOYMENT_DETAILS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.SPOUSE_EMPLOYMENT_DETAILS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NUMBER_OF_DEPENDENTS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NUMBER_OF_DEPENDENTS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.DESIGNATION_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.DESIGNATION_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CURRENT_JOB_EXP_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CURRENT_JOB_EXP_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.MIN_BANKING_RELATIONSHIP_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.MIN_BANKING_RELATIONSHIP_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.ANNUAL_INCOME_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.ANNUAL_INCOME_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.LOAN_TO_INCOME_RATIO_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.LOAN_TO_INCOME_RATIO_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.TENURE_OF_THE_LOAN_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.TENURE_OF_THE_LOAN_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.INCOME_PROOF_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.INCOME_PROOF_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.MON_INCOME_DEPENDANT_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.MON_INCOME_DEPENDANT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_INCREASE_INCOME_REPORT_3_YEARS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_INCREASE_INCOME_REPORT_3_YEARS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.REPAYMENT_MODE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.REPAYMENT_MODE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVAILABLE_INCOME_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVAILABLE_INCOME_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_DEPOS_LAST_6_MONTH_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_DEPOS_LAST_6_MONTH_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CHEQUE_BOUNCE_LAST_1_MONTH_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CHEQUE_BOUNCE_LAST_1_MONTH_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.ADDI_INCOME_SPOUSE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.ADDI_INCOME_SPOUSE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMI_NMI_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.EMI_NMI_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+						
 					
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
@@ -1121,6 +1211,96 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMPLOYMENT_CATEGORY_AND_SALARY_INFORMATION)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.EMPLOYMENT_CATEGORY_AND_SALARY_INFORMATION, CommonUtils.printFields(collect.get(0),null));
+					}
+					
+					//new parameters
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CURRENT_EMPLOYMENT_STATUS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CURRENT_EMPLOYMENT_STATUS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.RESIDENCE_TYPE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.RESIDENCE_TYPE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NO_OF_YEAR_CURRENT_LOCATION_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NO_OF_YEAR_CURRENT_LOCATION_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.SPOUSE_EMPLOYMENT_DETAILS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.SPOUSE_EMPLOYMENT_DETAILS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NUMBER_OF_DEPENDENTS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NUMBER_OF_DEPENDENTS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.DESIGNATION_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.DESIGNATION_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CURRENT_JOB_EXP_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CURRENT_JOB_EXP_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.MIN_BANKING_RELATIONSHIP_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.MIN_BANKING_RELATIONSHIP_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.ANNUAL_INCOME_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.ANNUAL_INCOME_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.LOAN_TO_INCOME_RATIO_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.LOAN_TO_INCOME_RATIO_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_WROTH_TO_LOAN_AMOUNT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.TENURE_OF_THE_LOAN_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.TENURE_OF_THE_LOAN_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.INCOME_PROOF_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.INCOME_PROOF_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.MON_INCOME_DEPENDANT_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.MON_INCOME_DEPENDANT_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_INCREASE_INCOME_REPORT_3_YEARS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_INCREASE_INCOME_REPORT_3_YEARS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.REPAYMENT_MODE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.REPAYMENT_MODE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVAILABLE_INCOME_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVAILABLE_INCOME_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AVG_DEPOS_LAST_6_MONTH_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AVG_DEPOS_LAST_6_MONTH_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CHEQUE_BOUNCE_LAST_1_MONTH_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CHEQUE_BOUNCE_LAST_1_MONTH_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.ADDI_INCOME_SPOUSE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.ADDI_INCOME_SPOUSE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMI_NMI_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.EMI_NMI_PL, CommonUtils.printFields(collect.get(0),null));
 					}
 
 					scoreResponse.add(companyMap);

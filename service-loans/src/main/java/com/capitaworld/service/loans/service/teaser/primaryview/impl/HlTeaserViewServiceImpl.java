@@ -99,6 +99,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.DesignationList;
 import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
@@ -264,6 +265,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		hlTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
 		hlTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
 		hlTeaserViewResponse.setTenure(applicationProposalMapping.getTenure()!=null ? ((applicationProposalMapping.getTenure()).toString()) + " Years":" - ");
+		hlTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		hlTeaserViewResponse.setAppId(toApplicationId);
 		
 

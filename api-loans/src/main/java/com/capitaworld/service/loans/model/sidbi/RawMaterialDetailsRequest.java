@@ -13,6 +13,7 @@ public class RawMaterialDetailsRequest {
     private Long quantityUnitCost;
     private Integer leadProcureTime;
     private Boolean availability;
+    private String nameOfRawMaterial;
     private Boolean isActive;
 
     public Long getId() {
@@ -87,6 +88,11 @@ public class RawMaterialDetailsRequest {
 		this.isActive = isActive;
 	}
 
-	
-    
+    public String getNameOfRawMaterial() {
+        return nameOfRawMaterial;
+    }
+
+    public void setNameOfRawMaterial(String nameOfRawMaterial) {
+        this.nameOfRawMaterial = nameOfRawMaterial;
+    }
 }
