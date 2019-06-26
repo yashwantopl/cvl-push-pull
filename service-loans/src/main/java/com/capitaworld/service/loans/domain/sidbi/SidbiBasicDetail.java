@@ -46,13 +46,48 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "pincode")
 	private Long pincode;
 	
-	@Column(name = "factory_address")
-	private String factoryAddress;
+	@Column(name = "exis_fact_premise_number")
+	private String exisFactPremiseNumber;
 	
-	private String existing;
+	@Column(name = "exis_fact_street_name")
+	private String exisFactStreetName;
 	
-	private String proposed;
+	@Column(name = "exis_fact_land_mark")
+	private String exisFactLandMark;
 	
+	@Column(name = "exis_fact_pincode")
+	private Long exisFactPincode;
+	
+	@Column(name="exis_fact_Owned")
+	private Boolean exisFactOwned;
+	
+	@Column(name="exis_fact_ranted")
+	private Boolean exisFactRanted;
+	
+	@Column(name="exis_fact_leased")
+	private Boolean exisFactLeased;
+	
+	@Column(name = "prop_fact_premise_number")
+	private String propFactPremiseNumber;
+	
+	@Column(name = "prop_fact_street_name")
+	private String propFactStreetName;
+	
+	@Column(name = "prop_fact_land_mark")
+	private String propFactLandMark;
+	
+	@Column(name = "prop_fact_pincode")
+	private Long propFactPincode;
+	
+	@Column(name="prop_fact_Owned")
+	private Boolean propFactOwned;
+	
+	@Column(name="prop_fact_ranted")
+	private Boolean propFactRanted;
+	
+	@Column(name="prop_fact_leased")
+	private Boolean propFactLeased;
+		
 	@Column(name = "landline_no")
 	private String landlineNo;
 	
@@ -156,17 +191,7 @@ public class SidbiBasicDetail implements Serializable{
 		return pincode;
 	}
 
-	public String getFactoryAddress() {
-		return factoryAddress;
-	}
-
-	public String getExisting() {
-		return existing;
-	}
-
-	public String getProposed() {
-		return proposed;
-	}
+	
 
 	public String getLandlineNo() {
 		return landlineNo;
@@ -280,17 +305,7 @@ public class SidbiBasicDetail implements Serializable{
 		this.pincode = pincode;
 	}
 
-	public void setFactoryAddress(String factoryAddress) {
-		this.factoryAddress = factoryAddress;
-	}
-
-	public void setExisting(String existing) {
-		this.existing = existing;
-	}
-
-	public void setProposed(String proposed) {
-		this.proposed = proposed;
-	}
+	
 
 	public void setLandlineNo(String landlineNo) {
 		this.landlineNo = landlineNo;
@@ -383,5 +398,118 @@ public class SidbiBasicDetail implements Serializable{
 	public void setRepaymemtPeriod(Integer repaymemtPeriod) {
 		this.repaymemtPeriod = repaymemtPeriod;
 	}
+
+	public String getExisFactPremiseNumber() {
+		return exisFactPremiseNumber;
+	}
+
+	public void setExisFactPremiseNumber(String exisFactPremiseNumber) {
+		this.exisFactPremiseNumber = exisFactPremiseNumber;
+	}
+
+	public String getExisFactStreetName() {
+		return exisFactStreetName;
+	}
+
+	public void setExisFactStreetName(String exisFactStreetName) {
+		this.exisFactStreetName = exisFactStreetName;
+	}
+
+	public String getExisFactLandMark() {
+		return exisFactLandMark;
+	}
+
+	public void setExisFactLandMark(String exisFactLandMark) {
+		this.exisFactLandMark = exisFactLandMark;
+	}
+
+	public Long getExisFactPincode() {
+		return exisFactPincode;
+	}
+
+	public void setExisFactPincode(Long exisFactPincode) {
+		this.exisFactPincode = exisFactPincode;
+	}
+
+	public Boolean getExisFactOwned() {
+		return exisFactOwned;
+	}
+
+	public void setExisFactOwned(Boolean exisFactOwned) {
+		this.exisFactOwned = exisFactOwned;
+	}
+
+	public Boolean getExisFactRanted() {
+		return exisFactRanted;
+	}
+
+	public void setExisFactRanted(Boolean exisFactRanted) {
+		this.exisFactRanted = exisFactRanted;
+	}
+
+	public Boolean getExisFactLeased() {
+		return exisFactLeased;
+	}
+
+	public void setExisFactLeased(Boolean exisFactLeased) {
+		this.exisFactLeased = exisFactLeased;
+	}
+
+	public String getPropFactPremiseNumber() {
+		return propFactPremiseNumber;
+	}
+
+	public void setPropFactPremiseNumber(String propFactPremiseNumber) {
+		this.propFactPremiseNumber = propFactPremiseNumber;
+	}
+
+	public String getPropFactStreetName() {
+		return propFactStreetName;
+	}
+
+	public void setPropFactStreetName(String propFactStreetName) {
+		this.propFactStreetName = propFactStreetName;
+	}
+
+	public String getPropFactLandMark() {
+		return propFactLandMark;
+	}
+
+	public void setPropFactLandMark(String propFactLandMark) {
+		this.propFactLandMark = propFactLandMark;
+	}
+
+	public Long getPropFactPincode() {
+		return propFactPincode;
+	}
+
+	public void setPropFactPincode(Long propFactPincode) {
+		this.propFactPincode = propFactPincode;
+	}
+
+	public Boolean getPropFactOwned() {
+		return propFactOwned;
+	}
+
+	public void setPropFactOwned(Boolean propFactOwned) {
+		this.propFactOwned = propFactOwned;
+	}
+
+	public Boolean getPropFactRanted() {
+		return propFactRanted;
+	}
+
+	public void setPropFactRanted(Boolean propFactRanted) {
+		this.propFactRanted = propFactRanted;
+	}
+
+	public Boolean getPropFactLeased() {
+		return propFactLeased;
+	}
+
+	public void setPropFactLeased(Boolean propFactLeased) {
+		this.propFactLeased = propFactLeased;
+	}
+
 	
 }

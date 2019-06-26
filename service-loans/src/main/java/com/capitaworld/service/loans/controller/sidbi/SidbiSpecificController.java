@@ -156,10 +156,8 @@ public class SidbiSpecificController {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             
             if (applicationId == null || userId == null) {
-                logger.warn("ID and User Id Require to get Primary Working Details ==>" + applicationId + "User ID ==>"
-                        + userId);
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                logger.warn("ID and User Id Require to get Primary Working Details applicationId==> User ID ==>{}" , applicationId + userId);
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             
             LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
@@ -171,9 +169,7 @@ public class SidbiSpecificController {
 
         } catch (Exception e) {
             logger.error("Error while getAdditionalData==>", e);
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
