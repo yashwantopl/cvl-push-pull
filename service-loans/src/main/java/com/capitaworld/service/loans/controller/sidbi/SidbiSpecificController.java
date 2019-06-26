@@ -327,8 +327,14 @@ public class SidbiSpecificController {
 				}
 
 				List<FacilityDetailsRequest> response = facilityDetailsService.getFacilityDetailsListAppId(frameRequest.getApplicationId());
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
+				LoansResponse loansResponse = null;
+				if (response.size()>0) {
+					loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+					loansResponse.setListData(response);
+				}
+				else {
+					loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());
+				}
 				CommonDocumentUtils.endHook(logger, "getFacilityDetailsList");
 				return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 				
