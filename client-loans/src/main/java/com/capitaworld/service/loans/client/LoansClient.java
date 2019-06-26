@@ -203,6 +203,8 @@ public class LoansClient {
 
 	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCMADetailForEligibility/";
 	
+	private static final String GET_CMA_DETAIL_API = "/loan_eligibility/getCMADetailForAPI/";
+	
 	private static final String CMA_DETAILS = "/cma/get";
 	private static final String SAVE_CMA_DETAILS = "/cma/save";
 
@@ -1919,6 +1921,22 @@ public class LoansClient {
 		}
 		
 	}
+	
+	public CMADetailResponse getCMADetilsAPI(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_CMA_DETAIL_API).concat("/"+appId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getCMADetils : ",e);
+			throw new ExcelException(e.getCause().getMessage());
+		}
+		
+	}
+	
 	
 	public CMARequest getCMA(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
