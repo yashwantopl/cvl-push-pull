@@ -76,26 +76,20 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         //if client id is null than select userid
         Long userId = (CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId()) ? addProductRequest.getUserId() : addProductRequest.getClientId());
         try {
-            if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
-                //for Approval stage
-                if (addProductRequest.getStage() == 2) {
-                    //for approval stage change name
-                    productMasterRepository.changeProductName(userId, addProductRequest.getProductMappingId(), addProductRequest.getName());
-                } else {
-                    //for pending stage change name
-                    productMasterTempRepository.changeProductName(userId, addProductRequest.getProductMappingId(), addProductRequest.getName());
-                }
-                CommonDocumentUtils.endHook(logger, "saveOrUpdate");
-                return addProductRequest.getProductMappingId();
-            } else {
                 //if product id is null than create new product in temp table
-                ProductMasterTemp productMasterTemp = new ProductMasterTemp();
-                LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
-                WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
+                ProductMasterTemp productMasterTemp;
+                if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
+                    productMasterTemp = productMasterTempRepository.findOne(addProductRequest.getProductMappingId());
+                } else{
+                    productMasterTemp = new ProductMasterTemp();
+                    LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
+                    WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
 
-                if (workflowResponse != null) {
-                    productMasterTemp.setJobId(workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null);
+                    if (workflowResponse != null) {
+                        productMasterTemp.setJobId(workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null);
+                    }
                 }
+
                 logger.info("addProductRequest.getProductId() === >" + addProductRequest.getProductId());
                 productMasterTemp.setProductId(addProductRequest.getProductId());
                 productMasterTemp.setIsMatched(false);
@@ -134,10 +128,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                         saveCondition(productParameterRequest);
                     }
                 }
-
                 return productMaster2.getId();
-            }
-
         } catch (Exception e) {
             logger.error("error while saveOrUpdate : ", e);
             return null;
