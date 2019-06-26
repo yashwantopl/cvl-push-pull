@@ -86,7 +86,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                     productMasterTempRepository.changeProductName(userId, addProductRequest.getProductMappingId(), addProductRequest.getName());
                 }
                 CommonDocumentUtils.endHook(logger, "saveOrUpdate");
-                return 0l;
+                return addProductRequest.getProductMappingId();
             } else {
                 //if product id is null than create new product in temp table
                 ProductMasterTemp productMasterTemp = new ProductMasterTemp();
@@ -309,14 +309,14 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
             List<ProductMaster> results = null;
             if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
                 //if data get from User org id
-                if(isActive == null){
+                if(status == 0){
                     results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds));
                 }else{
                     results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),isActive);
                 }
             } else {
                 //if data get from User id
-                if(isActive == null){
+                if(status == 0){
                     results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds));
                 }else{
                     results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds),isActive);
