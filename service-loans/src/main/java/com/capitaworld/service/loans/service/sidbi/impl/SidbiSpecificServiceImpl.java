@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.service.sidbi.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.sidbi.SidbiBasicDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
@@ -18,6 +20,11 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.sidbi.BasicDetailRepository;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UserTypeRequest;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -31,6 +38,8 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 	@Autowired
 	CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 	
+	@Autowired
+	UsersClient usersClient;
 	@Override
 	public boolean saveOrUpdateAdditionalData(SidbiBasicDetailRequest sidbiBasicDetailRequest, Long userId) throws LoansException {
 
@@ -63,11 +72,10 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		try {
 			sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 			SidbiBasicDetail sidbiBasicDetail = basicDetailRepository.getByApplicationAndUserId(userId, applicationId);
-			//System.out.println("sidbiBasicDetail : "+sidbiBasicDetail);
 			if(sidbiBasicDetail != null) {
 				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);
 			}else {
-				sidbiBasicDetailRequest = setAutoFilledValue(applicationId);
+				sidbiBasicDetailRequest = setAutoFilledValue(applicationId,userId);
 			}
 			
 		} catch (Exception e) {
@@ -78,7 +86,7 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		return sidbiBasicDetailRequest;
 	}
 	
-	public SidbiBasicDetailRequest setAutoFilledValue(Long applicationId) {
+	public SidbiBasicDetailRequest setAutoFilledValue(Long applicationId, Long userId) {
 		SidbiBasicDetailRequest sidbiBasicDetailRequest = null;
 		try {
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(applicationId);
@@ -91,12 +99,32 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
 				sidbiBasicDetailRequest.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
 				sidbiBasicDetailRequest.setPincode(corporateApplicantDetail.getRegisteredPincode());
+				sidbiBasicDetailRequest.setMsmeRegistrationNumber(corporateApplicantDetail.getMsmeRegistrationNumber());
+				sidbiBasicDetailRequest.setAadhar(corporateApplicantDetail.getAadhar());
 				
+				
+				if(corporateApplicantDetail.getEstablishmentMonth()!=null && corporateApplicantDetail.getEstablishmentYear()!=null) {
+					String str="01-"+corporateApplicantDetail.getEstablishmentMonth()+"-"+corporateApplicantDetail.getEstablishmentYear();
+					Date date1=new SimpleDateFormat("dd-MM-yyyy").parse(str);  
+					sidbiBasicDetailRequest.setEstablishmentDate(date1);
+				}
 				
 			}
+			UserResponse userResponse=usersClient.getUserBasicDetails(userId);
+			if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+				UsersRequest usersRequest =MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+					if(sidbiBasicDetailRequest==null) {
+						sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
+					}
+					sidbiBasicDetailRequest.setMobile(usersRequest.getMobile());
+					sidbiBasicDetailRequest.setEmail(usersRequest.getEmail());
+				}
+			}
+			
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error("Exception while calling setAutoFilledValue :: ",e);
 		}
 		return sidbiBasicDetailRequest;
 	}

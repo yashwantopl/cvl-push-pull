@@ -1,7 +1,7 @@
 DB: loan_application
 --------------------------------------------------------------------
 
-CREATE TABLE `fs_corporate_sidbi_basic_details` (
+CREATE TABLE `loan_application`.`fs_corporate_sidbi_basic_details` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `aadhar` VARCHAR(255) DEFAULT NULL,
   `activity_since` VARCHAR(255) DEFAULT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE `fs_corporate_sidbi_basic_details` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `fs_corporate_sidbi_means_of_finance_details` (
+CREATE TABLE `loan_application`.`fs_corporate_sidbi_means_of_finance_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) unsigned DEFAULT NULL,
   `already_incurred` double DEFAULT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE `fs_corporate_sidbi_means_of_finance_details` (
 );
 
 
-CREATE TABLE `fs_corporate_sidbi_project_cost_details` (
+CREATE TABLE `loan_application`.`fs_corporate_sidbi_project_cost_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) unsigned DEFAULT NULL,
   `already_incurred` double DEFAULT NULL,
@@ -174,3 +174,13 @@ CREATE TABLE `fs_sidbi_corporate_governance_compliance` (
 
 
 ALTER TABLE loan_application.fs_corporate_sidbi_basic_details ADD COLUMN repaymemt_period INT NULL AFTER is_covered_under_cgtmse; 
+
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` DROP COLUMN `existing`, DROP COLUMN `factory_address`, DROP COLUMN `proposed`; 
+
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` 
+ADD COLUMN `exis_fact_premise_number` VARCHAR(255) NULL AFTER `repaymemt_period`, ADD COLUMN `exis_fact_street_name` VARCHAR(255) NULL AFTER `exis_fact_premise_number`, 
+ADD COLUMN `exis_fact_land_mark` VARCHAR(255) NULL AFTER `exis_fact_street_name`, ADD COLUMN `exis_fact_pincode` BIGINT(20) NULL AFTER `exis_fact_land_mark`, 
+ADD COLUMN `exis_fact_Owned` BIT(1) NULL AFTER `exis_fact_pincode`, ADD COLUMN `exis_fact_ranted` BIT(1) NULL AFTER `exis_fact_Owned`, ADD COLUMN `exis_fact_leased` BIT(1) NULL AFTER `exis_fact_ranted`, ADD COLUMN `prop_fact_premise_number` VARCHAR(255) NULL AFTER `exis_fact_leased`, ADD COLUMN `prop_fact_street_name` VARCHAR(255) NULL AFTER `prop_fact_premise_number`, 
+ADD COLUMN `prop_fact_land_mark` VARCHAR(255) NULL AFTER `prop_fact_street_name`, ADD COLUMN `prop_fact_pincode` BIGINT(20) NULL AFTER `prop_fact_land_mark`, 
+ADD COLUMN `prop_fact_Owned` BIT(1) NULL AFTER `prop_fact_pincode`, ADD COLUMN `prop_fact_ranted` BIT(1) NULL AFTER `prop_fact_Owned`, 
+ADD COLUMN `prop_fact_leased` BIT(1) NULL AFTER `prop_fact_ranted`; 

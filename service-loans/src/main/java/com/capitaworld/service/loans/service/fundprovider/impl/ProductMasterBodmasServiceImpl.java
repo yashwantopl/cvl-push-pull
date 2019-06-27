@@ -76,37 +76,32 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         //if client id is null than select userid
         Long userId = (CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId()) ? addProductRequest.getUserId() : addProductRequest.getClientId());
         try {
-            if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
-                //for Approval stage
-                if (addProductRequest.getStage() == 2) {
-                    //for approval stage change name
-                    productMasterRepository.changeProductName(userId, addProductRequest.getProductMappingId(), addProductRequest.getName());
-                } else {
-                    //for pending stage change name
-                    productMasterTempRepository.changeProductName(userId, addProductRequest.getProductMappingId(), addProductRequest.getName());
-                }
-                CommonDocumentUtils.endHook(logger, "saveOrUpdate");
-                return 0l;
-            } else {
                 //if product id is null than create new product in temp table
-                ProductMasterTemp productMasterTemp = new ProductMasterTemp();
-                LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
-                WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
+                ProductMasterTemp productMasterTemp;
+                if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
+                    productMasterTemp = productMasterTempRepository.findOne(addProductRequest.getProductMappingId());
+                    productMasterTemp.setModifiedDate(new Date());
+                    productMasterTemp.setModifiedBy(userId);
+                } else{
+                    productMasterTemp = new ProductMasterTemp();
+                    LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
+                    WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
 
-                if (workflowResponse != null) {
-                    productMasterTemp.setJobId(workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null);
+                    if (workflowResponse != null) {
+                        productMasterTemp.setJobId(workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null);
+                    }
+                    productMasterTemp.setCreatedBy(userId);
+                    productMasterTemp.setCreatedDate(new Date());
                 }
+
                 logger.info("addProductRequest.getProductId() === >" + addProductRequest.getProductId());
                 productMasterTemp.setProductId(addProductRequest.getProductId());
                 productMasterTemp.setIsMatched(false);
                 productMasterTemp.setName(addProductRequest.getName());
                 productMasterTemp.setFpName(addProductRequest.getFpName());
                 productMasterTemp.setUserId(userId);
-                productMasterTemp.setCreatedBy(userId);
-                productMasterTemp.setCreatedDate(new Date());
                 productMasterTemp.setModifiedBy(userId);
                 productMasterTemp.setIsParameterFilled(false);
-                productMasterTemp.setModifiedDate(new Date());
                 productMasterTemp.setBusinessTypeId(addProductRequest.getBusinessTypeId());// set business type id
                 productMasterTemp.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
                 productMasterTemp.setFinId(addProductRequest.getFinId());
@@ -134,10 +129,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                         saveCondition(productParameterRequest);
                     }
                 }
-
                 return productMaster2.getId();
-            }
-
         } catch (Exception e) {
             logger.error("error while saveOrUpdate : ", e);
             return null;
@@ -151,6 +143,10 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
      */
     @Override
     public boolean saveCondition(ProductParameterRequest productParameterRequest) {
+        List<ProductConditionResponse> allByFpProductId = conditionsRepository.findAllByFpProductId(productParameterRequest.getProductId());
+        if(allByFpProductId.size() > 0){
+            return true;
+        }
         FpProductConditions fpProductConditions;
         if (CommonUtils.isObjectNullOrEmpty(productParameterRequest.getId())) {
             fpProductConditions = new FpProductConditions();
@@ -309,14 +305,14 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
             List<ProductMaster> results = null;
             if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
                 //if data get from User org id
-                if(isActive == null){
+                if(status == 0){
                     results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds));
                 }else{
                     results = productMasterRepository.getProductListByUserOrgId(userOrgId, Arrays.asList(productIds),isActive);
                 }
             } else {
                 //if data get from User id
-                if(isActive == null){
+                if(status == 0){
                     results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds));
                 }else{
                     results = productMasterRepository.getProductListByUserId(userId, Arrays.asList(productIds),isActive);
@@ -388,8 +384,6 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
      * get Product by product id and role
      * @param id
      * @param stage
-     * @param role
-     * @param userId
      * @return
      */
     public ProductMasterRequest getProductDetails(Long id,Integer stage){

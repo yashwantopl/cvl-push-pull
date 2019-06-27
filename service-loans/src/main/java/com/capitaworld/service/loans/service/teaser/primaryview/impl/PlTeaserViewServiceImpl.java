@@ -1117,14 +1117,20 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
          // for name is edited or not:
 
-         if(plRetailApplicantResponse.getFullName().equals(plTeaserViewResponse.getNameAsPerItr()))
+        /* if(plRetailApplicantResponse.getFullName().equalsIgnoreCase((String) plTeaserViewResponse.getNameAsPerItr()))
          {
 			 plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
 		 }
 
 		 else{
 			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
-		 }
+		 }*/
+		String fullName = (plRetailApplicantResponse.getFirstName() != null ? plRetailApplicantResponse.getFirstName() : "") +" "+ (plRetailApplicantResponse.getMiddleName() != null ? plRetailApplicantResponse.getMiddleName() : "") +" "+ (plRetailApplicantResponse.getLastName() != null ?  plRetailApplicantResponse.getLastName() : "");
+		if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equalsIgnoreCase((String)plTeaserViewResponse.getNameAsPerItr())){
+			plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
+		}else{
+			plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		}
 
 
 		// GET DOCUMENTS

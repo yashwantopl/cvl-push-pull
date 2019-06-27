@@ -41,6 +41,9 @@ public class RawMaterialDetails implements Serializable{
     @Column(name="availability")
     private Boolean availability;
 
+    @Column(name="name_of_raw_material")
+    private String nameOfRawMaterial;
+
     @Column(name="is_active")
     private Boolean isActive;
 
@@ -130,7 +133,6 @@ public class RawMaterialDetails implements Serializable{
         this.availability = availability;
     }
 
-
     public Boolean getIsActive() {
 		return isActive;
 	}
@@ -169,5 +171,13 @@ public class RawMaterialDetails implements Serializable{
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    public String getNameOfRawMaterial() {
+        return nameOfRawMaterial;
+    }
+
+    public void setNameOfRawMaterial(String nameOfRawMaterial) {
+        this.nameOfRawMaterial = nameOfRawMaterial;
     }
 }
