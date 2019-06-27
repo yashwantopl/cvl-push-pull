@@ -10,8 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,8 +86,10 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.LoanPurposeAmountMappingService;
 import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
@@ -226,9 +226,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     @Autowired
     private ProposalDetailsRepository proposalDetailsRepository;
     
+    @Autowired
+	private FPParameterMappingService fPParameterMappingService;
     
     @Autowired
-    private EntityManager entityManager;
+	private LoanPurposeAmountMappingService loanPurposeAmountMappingService; 
     
     @Autowired
     private  FpGstTypeMappingRepository fpGstTypeMappingRepository;
@@ -242,7 +244,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-
+		HomeLoanParameterRequest homeLoanParameterRequest = null;
 		try {
 
 			if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
@@ -399,11 +401,34 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						break;
 					case HOME_LOAN:
 						HomeLoanParameterTemp homeLoanParameterTemp = new HomeLoanParameterTemp();
-						HomeLoanParameterRequest homeLoanParameterRequest = homeLoanParameterService.getHomeLoanParameterRequest(addProductRequest.getLoanId());
+						homeLoanParameterRequest = homeLoanParameterService.getHomeLoanParameterRequest(addProductRequest.getLoanId());
 						geogaphicallyCountry=homeLoanParameterRequest.getCountryList();
 						geogaphicallyState=homeLoanParameterRequest.getStateList();
 						geogaphicallyCity=homeLoanParameterRequest.getCityList();
 						BeanUtils.copyProperties(homeLoanParameterRequest, homeLoanParameterTemp,"id");
+						if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMaxTenure()))
+							homeLoanParameterRequest.setMaxTenure(homeLoanParameterRequest.getMaxTenure() * 12);
+						if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMinTenure()))
+							homeLoanParameterRequest.setMinTenure(homeLoanParameterRequest.getMinTenure() * 12);
+
+						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMinBankRelation())) {
+							homeLoanParameterTemp.setMinBankRelation(homeLoanParameterRequest.getMinBankRelation().intValue());	
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMinBureauScore())) {
+							homeLoanParameterTemp.setMinBureauScore(homeLoanParameterRequest.getMinBureauScore().intValue());	
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMaxBureauScore())) {
+							homeLoanParameterTemp.setMaxBureauScore(homeLoanParameterRequest.getMaxBureauScore().intValue());	
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMinTotalJobExp())) {
+							homeLoanParameterTemp.setMinTotalJobExp(homeLoanParameterRequest.getMinTotalJobExp().intValue());	
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMaxTotalJobExp())) {
+							homeLoanParameterTemp.setMaxTotalJobExp(homeLoanParameterRequest.getMaxTotalJobExp().intValue());	
+						}
 						productMasterTemp = homeLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
@@ -507,6 +532,42 @@ public class ProductMasterServiceImpl implements ProductMasterService {
                     }
                 }
 				
+				//HomeLoan Specific Copy Changes
+			
+				if(LoanType.HOME_LOAN.getId().equals(loanType.getId())) {
+					// Saving Mapping Current CURRENT_EMPLOYMENT
+					
+					if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest)) {
+						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+								CommonUtils.ParameterTypes.CURRENT_EMPLOYMENT,
+								homeLoanParameterRequest.getCurrentEmploymentStatusIds());
+
+						// Saving Mapping Current RESIDENTIAL
+						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+								CommonUtils.ParameterTypes.RESIDENTIAL, homeLoanParameterRequest.getResidentialStatusIds());
+
+						// Saving Mapping Current BORROWER_TYPE
+						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+								CommonUtils.ParameterTypes.BORROWER_TYPE, homeLoanParameterRequest.getBorrowerTypeIds());
+
+						// Saving Mapping Current SALARY_MODE
+						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+								CommonUtils.ParameterTypes.SALARY_MODE, homeLoanParameterRequest.getSalaryModeIds());
+
+						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
+						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+								CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, homeLoanParameterRequest.getBorrSalAccIds());
+						
+						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+								CommonUtils.ParameterTypes.EMPLOYMENT_WITH, homeLoanParameterRequest.getEmploymentWithIds());
+						
+						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+								CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, homeLoanParameterRequest.getSelfEmployedWithIds());
+						
+						//Saving Loan Purpose Amount Mapping
+						loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), productMaster2.getId());						
+					}
+				}
 				return true;
 			}
 
