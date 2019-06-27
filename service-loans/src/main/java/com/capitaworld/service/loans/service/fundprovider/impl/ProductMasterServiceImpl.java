@@ -398,11 +398,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						productMasterTemp.setIsParameterFilled(true);
 						break;
 					case HOME_LOAN:
+						HomeLoanParameterTemp homeLoanParameterTemp = new HomeLoanParameterTemp();
 						HomeLoanParameterRequest homeLoanParameterRequest = homeLoanParameterService.getHomeLoanParameterRequest(addProductRequest.getLoanId());
 						geogaphicallyCountry=homeLoanParameterRequest.getCountryList();
 						geogaphicallyState=homeLoanParameterRequest.getStateList();
 						geogaphicallyCity=homeLoanParameterRequest.getCityList();
-						BeanUtils.copyProperties(homeLoanParameterRequest, productMasterTemp,"id");
+						BeanUtils.copyProperties(homeLoanParameterRequest, homeLoanParameterTemp,"id");
+						productMasterTemp = homeLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
 
