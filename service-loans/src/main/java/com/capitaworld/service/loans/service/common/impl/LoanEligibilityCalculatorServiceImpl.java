@@ -22,7 +22,6 @@ import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
-import com.capitaworld.service.loans.client.LoansClient;
 import com.capitaworld.service.loans.domain.common.HomeLoanEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.LAPEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.PersonalLoanEligibilityCriteria;
@@ -35,7 +34,6 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LoanEligibilility;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.common.LoanEligibilityCriteriaRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -774,6 +772,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	 */
 	@Override
 	public CMADetailResponse getCMADetailApi(Long applicationId) {
+		
 		// TODO Auto-generated method stub
 		
 		logger.info("ENTER IN GET CMA DETAILS FOR SBI RELATED API");
@@ -805,10 +804,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				// Efficiency Ratios HOLD
 				cmaDetailResponse.setNetSalesTotalTangible(CommonUtils.divideNumbers(operating.get(0).getNetSales(), asset.get(0).getTotalAssets()) -asset.get(0).getIntangibleAssets());  // remaining for chages
 				cmaDetailResponse.setPbtToTotalTangilbeAssets(CommonUtils.divideNumbers(operating.get(0).getOpProfitBeforeIntrest() , asset.get(0).getTotalAssets()) - asset.get(0).getIntangibleAssets());
-				cmaDetailResponse.setOperatingCostToSales(operating.get(0).getRawMaterials() + operating.get(0).getPowerAndFuel()+ operating.get(0).getDirectLabour() + operating.get(0).getOtherMfgExpenses());
+				cmaDetailResponse.setOperatingCostToSales(operating.get(0).getRawMaterials() + operating.get(0).getPowerAndFuel()+ operating.get(0).getDirectLabour() + operating.get(0).getOtherMfgExpenses()/operating.get(0).getDomesticSales() + operating.get(0).getExportSales());  // (D20+D28+D30+D32)/(D8+D9)
 				cmaDetailResponse.setBankFinanceToCurrentAssests((liabilitie.get(0).getShortTermBorrowingFromOthers() + liabilitie.get(0).getShortTermBorrowingFromOthers()+liabilitie.get(0).getTermLoans() / asset.get(0).getTotalCurrentAssets()));
 				cmaDetailResponse.setInventoryAndNetSales((CommonUtils.divideNumbers(asset.get(0).getInventory() , operating.get(0).getNetSales())) + asset.get(0).getReceivableOtherThanDefferred() +
-						(CommonUtils.divideNumbers(asset.get(0).getExportReceivables() , operating.get(0).getDomesticSales())));  // Done
+						(CommonUtils.divideNumbers(asset.get(0).getExportReceivables() , operating.get(0).getDomesticSales())));  // Done Changes After Development 
 				cmaDetailResponse.setInterestCostsOfSales(CommonUtils.divideNumbers(operating.get(0).getInterest() ,operating.get(0).getTotalCostSales()));
 				//  BF/Gross sales HOLD
 				//Movement of TNW
