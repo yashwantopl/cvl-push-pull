@@ -1193,7 +1193,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}
 					}
-				} else if (proposalMapping.getBusinessTypeId().equals(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId())) {
+				} else if (proposalMapping.getBusinessTypeId().equals(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) || proposalMapping.getBusinessTypeId().equals(BusinessType.RETAIL_HOME_LOAN.getId())) {
 
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(proposalMapping.getUserId(), proposalMapping.getApplicationId());
 					if (retailApplicantDetail != null) {
@@ -1268,17 +1268,32 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 				nhbsApplicationsResponse.setApplicationDate(proposalMapping.getCreatedDate());
 				if (request.getDdrStatusId() == CommonUtils.DdrStatus.SUBMITTED) {
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getApplicationId(), proposalMapping.getProposalId(), CommonUtils.DdrStatus.IN_PROGRESS);
+					List<ApplicationStatusAudit> applicationStatusAuditList = new ArrayList<>();
+					if(proposalMapping.getBusinessTypeId()  == BusinessType.RETAIL_HOME_LOAN.getId()){
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPChecker(proposalMapping.getApplicationId(), ApplicationStatus.ASSIGNED,proposalMapping.getProposalId());
+					}else{
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getApplicationId(), proposalMapping.getProposalId(), CommonUtils.DdrStatus.IN_PROGRESS);
+					}
 					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
 						nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}
 				} else if (request.getDdrStatusId() == CommonUtils.DdrStatus.REVERTED) {
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getApplicationId(), proposalMapping.getProposalId(), CommonUtils.DdrStatus.SUBMITTED);
+					List<ApplicationStatusAudit> applicationStatusAuditList = new ArrayList<>();
+					if(proposalMapping.getBusinessTypeId()  == BusinessType.RETAIL_HOME_LOAN.getId()){
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPChecker(proposalMapping.getApplicationId(), ApplicationStatus.REVERTED,proposalMapping.getProposalId());
+					}else {
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getApplicationId(), proposalMapping.getProposalId(), CommonUtils.DdrStatus.SUBMITTED);
+					}
 					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
 						nhbsApplicationsResponse.setRevertDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}
 				} else if (request.getDdrStatusId() == CommonUtils.DdrStatus.APPROVED) {
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getApplicationId(), proposalMapping.getProposalId(), CommonUtils.DdrStatus.SUBMITTED);
+					List<ApplicationStatusAudit> applicationStatusAuditList = new ArrayList<>();
+					if(proposalMapping.getBusinessTypeId()  == BusinessType.RETAIL_HOME_LOAN.getId()){
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPChecker(proposalMapping.getApplicationId(),CommonUtils.ApplicationStatus.APPROVED,proposalMapping.getProposalId());
+					}else {
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getApplicationId(), proposalMapping.getProposalId(), CommonUtils.DdrStatus.SUBMITTED);
+					}
 					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
 						nhbsApplicationsResponse.setApprovalDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}

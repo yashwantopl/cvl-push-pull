@@ -147,6 +147,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			} else {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
+			loanSanctionDomainOld.setOrgId(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getOrgId()) ? loanSanctionRequest.getOrgId() : null);
 			loanSanctionDomainOld.setSanctionAmount(loanSanctionRequest.getSanctionAmount());
 			loanSanctionDomainOld.setSanctionDate(new Date());
 			loanSanctionDomainOld.setTenure(loanSanctionRequest.getTenure());
@@ -189,19 +190,19 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		List<Object[]> proposalDetailByApplicationId = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 				if(proposalDetailByApplicationId != null && proposalDetailByApplicationId.get(1) != null){
 					// check is their any sanction
-					Boolean isSanction = false;
+					/*
 					for(Object[] arr : proposalDetailByApplicationId ){
 						Integer proposalStatus = CommonUtils.convertInteger(arr[1]);
 						Long branchId = CommonUtils.convertLong(arr[3]);
 						if (proposalStatus == 5 && branchId != null) {
 							isSanction =true;
 						}
-					}
+					}*/
 					
 					for(Object[] arr : proposalDetailByApplicationId ){
 						Integer proposalStatus = CommonUtils.convertInteger(arr[1]);
 						Long branchId = CommonUtils.convertLong(arr[3]);
-						if (isSanction && (proposalStatus != 5)) {
+						if (proposalStatus != 5) {
 							UserResponse userResponse=  userClient.getBranchUsersListByBranchId(branchId);
 							for (int i=0;i<userResponse.getListData().size();i++) {
 								try {
@@ -237,7 +238,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											parameters.put(APPLICATION_ID, applicationCode);
 											parameters.put(NAME_OF_ENTITY, organizationName != null ? organizationName : "Fund Seeker");
 											parameters.put(CHECKER_NAME, checkerName);
-											if (fpName != "" && fpName != null) {
+											if (fpName != null && !fpName.isEmpty()) {
 												parameters.put(HO_NAME, fpName);
 											}
 											else{
@@ -264,7 +265,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											fpName = request.getUserName();
 											parameters.put(APPLICATION_ID, applicationCode);
 											parameters.put(NAME_OF_ENTITY, organizationName);
-											if (fpName != "" && fpName != null) {
+											if (fpName != null && !fpName.isEmpty()) {											
 												parameters.put(BO_CHECKER, fpName);
 											}
 											else{
@@ -433,7 +434,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
 		try {
 
-			if(loanSanctionRequest.getIsSanctionedFrom() == 2){
+			if(loanSanctionRequest.getIsSanctionedFrom() == 2 && loanSanctionRequest.getBusinessTypeId() == 1){
 				//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT
 				Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
 				if(status == 4) {//OFFLINE

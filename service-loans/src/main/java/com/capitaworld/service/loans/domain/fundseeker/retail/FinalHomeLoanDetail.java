@@ -14,7 +14,6 @@ import javax.persistence.Table;
 
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 /**
@@ -85,7 +84,7 @@ public class FinalHomeLoanDetail implements Serializable {
 	private Integer permanentCountry;
 
 	@Column(name="same_as_permanent_address")
-	private Boolean sameAsPermanentAddress;
+	private Boolean isSameAsPermanentAddress;
 
 	@Column(name="correspondence_premise_no")
 	private String correspondencePremiseNo;
@@ -158,6 +157,13 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	@Column(name="status_id")
 	private Integer statusId;
+
+	@Column(name="job_id")
+	private Long jobId;
+
+
+	@Column(name="remarks")
+	private String remarks;
 
 	public Long getId() {
 		return id;
@@ -296,11 +302,11 @@ public class FinalHomeLoanDetail implements Serializable {
 	}
 
 	public Boolean getIsSameAsPermanentAddress() {
-		return sameAsPermanentAddress;
+		return isSameAsPermanentAddress;
 	}
 
 	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
-		this.sameAsPermanentAddress = sameAsPermanentAddress;
+		this.isSameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
 	public String getCorrespondencePremiseNo() {
@@ -501,5 +507,21 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
+	}
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 }

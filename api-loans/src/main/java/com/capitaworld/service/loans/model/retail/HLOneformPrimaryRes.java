@@ -35,9 +35,12 @@ public class HLOneformPrimaryRes implements Serializable {
 	private Long propdistrictMappingId;	
 	
 	private Double marketValProp;
+	private Double costOfProp;
 	private Integer oldPropMonth;
 	private Integer oldPropYear;
-	
+	private Integer employmentType;
+	private Integer repaymentMode;
+
 	private  Map<Long, String> coAppFullNameAndCoAppId;	
 	//Existing Loan Details
 	List<FinancialArrangementsDetailRequest> finArrangementsDetailList;
@@ -52,6 +55,12 @@ public class HLOneformPrimaryRes implements Serializable {
     private Boolean isOtherSalaryBank;
     private Boolean isOneformPrimaryComplete;
 	private String applicantName;
+
+	private Boolean isCheckOffDirectPayEmi;
+	private Boolean isCheckOffAgreeToPayOutstanding;
+	private Boolean isCheckOffShiftSalAcc;
+	private Boolean isCheckOffPayOutstndAmount;
+	private Boolean isCheckOffNotChangeSalAcc;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -233,9 +242,71 @@ public class HLOneformPrimaryRes implements Serializable {
 	public void setApplicantName(String applicantName) {
 		this.applicantName = applicantName;
 	}
-	
-	
-	
-	
-	
+
+
+
+	public Boolean getIsCheckOffDirectPayEmi() {
+		return isCheckOffDirectPayEmi;
+	}
+
+	public void setIsCheckOffDirectPayEmi(Boolean isCheckOffDirectPayEmi) {
+		this.isCheckOffDirectPayEmi = isCheckOffDirectPayEmi;
+	}
+
+	public Boolean getIsCheckOffAgreeToPayOutstanding() {
+		return isCheckOffAgreeToPayOutstanding;
+	}
+
+	public void setIsCheckOffAgreeToPayOutstanding(Boolean isCheckOffAgreeToPayOutstanding) {
+		this.isCheckOffAgreeToPayOutstanding = isCheckOffAgreeToPayOutstanding;
+	}
+
+	public Boolean getIsCheckOffShiftSalAcc() {
+		return isCheckOffShiftSalAcc;
+	}
+
+	public void setIsCheckOffShiftSalAcc(Boolean isCheckOffShiftSalAcc) {
+		this.isCheckOffShiftSalAcc = isCheckOffShiftSalAcc;
+	}
+
+	public Boolean getIsCheckOffPayOutstndAmount() {
+		return isCheckOffPayOutstndAmount;
+	}
+
+	public void setIsCheckOffPayOutstndAmount(Boolean isCheckOffPayOutstndAmount) {
+		this.isCheckOffPayOutstndAmount = isCheckOffPayOutstndAmount;
+	}
+
+	public Boolean getIsCheckOffNotChangeSalAcc() {
+		return isCheckOffNotChangeSalAcc;
+	}
+
+	public void setIsCheckOffNotChangeSalAcc(Boolean isCheckOffNotChangeSalAcc) {
+		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
+	}
+
+	public Double getCostOfProp() {
+		return costOfProp;
+	}
+
+	public void setCostOfProp(Double costOfProp) {
+		this.costOfProp = costOfProp;
+	}
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
+	}
+
+	public Integer getRepaymentMode() {
+		return repaymentMode;
+	}
+
+	public void setRepaymentMode(Integer repaymentMode) {
+		this.repaymentMode = repaymentMode;
+	}
+
 }

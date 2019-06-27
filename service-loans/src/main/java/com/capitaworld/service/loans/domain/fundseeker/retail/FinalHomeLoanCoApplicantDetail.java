@@ -75,7 +75,7 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 	private Integer permanentCountry;
 
 	@Column(name="same_as_permanent_address")
-	private Boolean sameAsPermanentAddress;
+	private Boolean isSameAsPermanentAddress;
 
 	@Column(name="correspondence_premise_no")
 	private String correspondencePremiseNo;
@@ -151,6 +151,9 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 
 	@Column(name = "status_id")
 	private Integer statusId;
+
+	@Column(name = "remarks")
+	private String remarks;
 
 	public Long getId() {
 		return id;
@@ -289,11 +292,11 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 	}
 
 	public Boolean getIsSameAsPermanentAddress() {
-		return sameAsPermanentAddress;
+		return isSameAsPermanentAddress;
 	}
 
 	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
-		this.sameAsPermanentAddress = sameAsPermanentAddress;
+		this.isSameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
 	public String getCorrespondencePremiseNo() {
@@ -502,5 +505,13 @@ public class FinalHomeLoanCoApplicantDetail implements Serializable {
 
 	public void setSellerPincode(Integer sellerPincode) {
 		this.sellerPincode = sellerPincode;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 }

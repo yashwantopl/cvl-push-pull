@@ -25,6 +25,11 @@ public class TotalCostOfProjectRequest implements Serializable {
 	private Double totalCost;
 
 	private Integer particularsId;
+	
+	private String particularName;
+	
+	private String otherParticular;
+	
 
 	public TotalCostOfProjectRequest() {
 		// Do nothing because of X and Y.
@@ -85,5 +90,22 @@ public class TotalCostOfProjectRequest implements Serializable {
 	public void setParticularsId(Integer particularsId) {
 		this.particularsId = particularsId;
 	}
+
+	public String getOtherParticular() {
+		return otherParticular;
+	}
+
+	public void setOtherParticular(String otherParticular) {
+		this.otherParticular = otherParticular;
+	}
+
+	public String getParticularName() {
+		return particularName;
+	}
+
+	public void setParticularName(String particularName) {
+		this.particularName = particularName;
+	}
+	
 
 	}

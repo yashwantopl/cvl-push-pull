@@ -232,8 +232,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.source.provider</groupId>
+			<artifactId>source-provider</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.service.bodmas</groupId>
+			<artifactId>client-bodmas</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

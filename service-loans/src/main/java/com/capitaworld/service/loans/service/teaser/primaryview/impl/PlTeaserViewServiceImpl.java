@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -82,6 +84,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.DesignationList;
 import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
@@ -94,9 +97,11 @@ import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -105,7 +110,6 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
-import com.capitaworld.service.users.model.EmployeeRequest;
 
 /**
  * @author nilay.darji
@@ -298,7 +302,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
 				plTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
-				plTeaserViewResponse.setCountry(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
+				plTeaserViewResponse.setCountry(CommonDocumentUtils.getCountry(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
 				
 				// address
 				
@@ -750,6 +754,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		plTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
 		plTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
 		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).intValue()) + " Years");
+		plTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		plTeaserViewResponse.setAppId(toApplicationId);
 		
 
@@ -821,11 +826,30 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 				plRetailApplicantResponse.setDesignation(plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
-				
+				plRetailApplicantResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):null);
 				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
 
 				plRetailApplicantResponse.setRetailApplicantIncomeRequestList(plRetailApplicantRequest.getRetailApplicantIncomeRequestList());
 				
+				
+				
+				
+				/* Addition */
+				plRetailApplicantResponse.setCategory(plRetailApplicantRequest.getCategory() != null ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
+				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail() != null ? (plRetailApplicantRequest.getEmail()) : "-");
+				plRetailApplicantResponse.setFatherName(plRetailApplicantRequest.getFatherName() != null ? (plRetailApplicantRequest.getFatherName()) : " ");
+				plRetailApplicantResponse.setResidenceSinceMonthYear((plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
+				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse() != null ? plRetailApplicantRequest.getAnnualIncomeOfSpouse() : null);
+				plRetailApplicantResponse.setContactNo((plRetailApplicantRequest.getContactNo() != null ? plRetailApplicantRequest.getContactNo() : " "));
+				plRetailApplicantResponse.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
+				plRetailApplicantResponse.setNetworth(plRetailApplicantRequest.getNetworth());
+				plRetailApplicantResponse.setGrossMonthlyIncome(plRetailApplicantRequest.getGrossMonthlyIncome() != null ? (plRetailApplicantRequest.getGrossMonthlyIncome()) : null);
+				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "-");
+				plRetailApplicantResponse.setNetMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome() != null ? (plRetailApplicantRequest.getMonthlyIncome()) : null);
+				plRetailApplicantResponse.setNationality(plRetailApplicantRequest.getResidentialStatus()!=null ? ResidentStatusMst.getById(plRetailApplicantRequest.getResidentialStatus()).getValue().toString() : "-");
+				/* Addition */
+				
+			
 				/*salary account details*/
 				plRetailApplicantResponse.setSalaryAccountBankName(plRetailApplicantRequest.getSalaryBankName());
 				plRetailApplicantResponse.setIsOtherSalaryAccBank(plRetailApplicantRequest.getIsOtherSalaryBank()!=null ? plRetailApplicantRequest.getIsOtherSalaryBank() : false);
@@ -856,7 +880,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				//citetailApplicantResponse.setry,State,country
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
 				plTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
-				plTeaserViewResponse.setCountry(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
+				plTeaserViewResponse.setCountry(CommonDocumentUtils.getCountry(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
 				
 				// address
 				try {
@@ -1084,15 +1108,35 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
-				plTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+				
+				
+				ITRBasicDetailsResponse itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+				plTeaserViewResponse.setNameAsPerItr(itrBasicDetailsResponse.getName() != null ? itrBasicDetailsResponse.getName(): "NA");
 			} else {
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
 		} catch (Exception e) {
 			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
-		
-		
+
+         // for name is edited or not:
+
+        /* if(plRetailApplicantResponse.getFullName().equalsIgnoreCase((String) plTeaserViewResponse.getNameAsPerItr()))
+         {
+			 plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
+		 }
+
+		 else{
+			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		 }*/
+		String fullName = plRetailApplicantResponse.getFullName();
+		if(!CommonUtils.isObjectNullOrEmpty(fullName.trim()) && fullName.equalsIgnoreCase(String.valueOf(plTeaserViewResponse.getNameAsPerItr()))){
+			plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
+		}else{
+			plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		}
+
+
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
@@ -1162,6 +1206,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						}else {
 							logger.warn(DISTRICT_ID_IS_NULL_MSG);
 						}
+
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}

@@ -25,7 +25,6 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.model.api_model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.cibil.client.CIBILClient;
-import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
@@ -53,9 +50,7 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
-import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
 import com.capitaworld.service.loans.domain.common.PaymentGatewayAuditMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
@@ -103,12 +98,19 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.LoanPanCheckRequest;
 import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.api_model.CorporateProfileRequest;
+import com.capitaworld.service.loans.model.api_model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.api_model.GuarantorsCorporateDetailRequest;
+import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
+import com.capitaworld.service.loans.model.api_model.ProfileReqRes;
+import com.capitaworld.service.loans.model.api_model.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.common.BasicDetailFS;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
@@ -139,17 +141,10 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatin
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ExistingProductDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinanceMeansDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.GuarantorsCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.MonthlyTurnoverDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.OwnershipDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
@@ -160,28 +155,21 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
-import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
-import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.irr.IrrService;
-import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
@@ -238,32 +226,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
 
-	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response -->";
-	private static final String BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG = "Before Start Saving Phase 1 Sidbi API -->";
-	private static final String FP_PRODUCT_ID_MSG = "FpProductId ==>{}";
-	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response --> ";
-	private static final String PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG = "Proposal Mapping Response Null or Empty --> ";
-	private static final String EXCEPTION_IN_EDR_IN_SAVE_PHESE1_DATA_TO_SIDBI_MSG = "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() for ApplicationId ==>{} ";
 	private static final String FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG = "Fetched Director's background details for application Id : ";
-	private static final String INVALID_TOKEN_DETAILS_MSG = "Invalid Token Details";
-	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG = "Exception occured while Sending Mail to HO : ";
-	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG = "Exception occured while Sending Mail to All BO : ";
-	private static final String INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to HO after In-principle Approval";
-	private static final String INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to Maker after In-principle Approval";
-	private static final String INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to BO after In-principle Approval";
-	private static final String INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to Checker after In-principle Approval";
-	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG  = "Exception occured while Sending Mail to All Checkers : ";
-	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG = "Exception occured while Sending Mail to All Makers : ";
-	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG = "Something went wrong while call proposal client for ";
-	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG = "Something went wrong while call connect client for ";
-	private static final String CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG = "Connector Response null or empty";
-	private static final String ERROR_MSG = "----- Error Msg : ";
 	private static final String OTHER_LITERAL = "OTHER";
 	private static final String DIRECT_LITERAL = "Direct";
-	private static final String SIDBI_FEES = "SIDBI_FEES";
 	private static final String ORG_ID = "org_id";
-	private static final String MSG_LITERAL = " Msg : ";
-	private static final String PROPOSAL_ID="proposalId";
+	private static final String LOAN_RETAILS_ENABLE="cw.loan.retails.enable";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -323,12 +290,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private ScoringClient scoringClient;
 
 	@Autowired
-	private ProposalService proposalService;
-
-	@Autowired
-	private MatchEngineClient matchEngineClient;
-
-	@Autowired
 	private PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository;
 
 	@Autowired
@@ -350,13 +311,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private RatingClient ratingClient;
 
 	@Autowired
-	private EligibilityClient eligibilityClient;
-
-	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
-
-	@Autowired
-	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
 	@Autowired
 	private AchievementDetailsRepository achievementDetailsRepository;
@@ -366,9 +321,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ProposedProductDetailsRepository proposedProductDetailsRepository;
-
-	@Autowired
-	private OwnershipDetailsRepository ownershipDetailsRepository;
 
 	@Autowired
 	private CreditRatingOrganizationDetailsRepository creditRatingOrganizationDetailsRepository;
@@ -382,18 +334,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
 
-	@Autowired
-	private CIBILClient cibilClient;
-
-	@Autowired
-	private FPAsyncComponent fpasyncComponent;
-
-	@Autowired
-	private CMAService cmaService;
-
-	@Autowired
-	private PincodeDateService pincodeDateService;
-	
 	@Autowired
 	private FPAsyncComponent fpAsyncComp;
 
@@ -419,31 +359,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private AnalyzerClient analyzerClient;
 
 	@Autowired
-	private NetworkPartnerService networkPartnerService;
-
-	@Autowired
-	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
-
-	@Autowired
-	private PrimaryTermLoanDetailRepository primaryTermLoanDetailRepository;
-
-	@Autowired
-	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanDetailRepository;
-
-	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
 	@Autowired
-	private DDRFormService dDRFormService;
-
-	@Autowired
-	private IrrService irrService;
-
-	@Autowired
 	private AssetsDetailsRepository assetsDetailsRepository;
-
-	@Autowired
-	private MCAAsyncComponent mcaAsyncComponent;
 
 	@Autowired
 	private FinanceMeansDetailRepository financeMeansDetailRepository;
@@ -465,18 +384,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanDisbursementService loanDisbursementService;
-
-	@Autowired
-	private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
-
-	@Autowired
-	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
-
-	@Autowired
-	private GstClient gstClient;
-
-	@Autowired
-	private LoanApplicationService loanApplicationService;
 
 	@Autowired
 	private LoanRepository loanRepository;
@@ -1400,7 +1307,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
             LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
             loanApplicationRequest.setIsMailSent(false);
-            LoanApplicationMaster applicationMaster1 = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
             ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
             if (applicationProposalMapping == null) {
                 throw new Exception(
@@ -1434,7 +1340,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                 userRequest.setId(master.getUserId());
                 Map<String, Object> parameters = new HashMap<String, Object>();
                 // calling USER for getting fp details
-                UserResponse userResponse = userClient.getFPDetails(userRequest);
 
                 try {
                     if (CommonUtils.isObjectNullOrEmpty(fsName)) {
@@ -1699,12 +1604,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		return MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
-	}
-
-	private Object[] getFPName(Long fpMappingId) {
-		List<Object[]> pm = productMasterRepository.findById(fpMappingId);
-		CommonDocumentUtils.endHook(logger, "getUserDetailsByPrductId");
-		return (pm != null && !pm.isEmpty()) ? pm.get(0) : null;
 	}
 
 	private String getApplicantName(long applicationId) throws LoansException {
@@ -3563,14 +3462,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return response;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private JSONObject retailValidating(ApplicationProposalMapping applicationProposalMapping, Integer toTabType,
 			Long coAppllicantOrGuarantorId) throws LoansException {
-		List<Long> coAppIds = null;
-		List<Long> guaIds = null;
-		Long coAppCount = null;
-		Long guarantorCount = null;
-		int index = 0;
-		final String INVALID_MSG = "Requested data is Invalid.";
 
 		JSONObject response = new JSONObject();
 		response.put(MESSAGE_LITERAL, "NA");
@@ -3663,10 +3557,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationProposalMapping.getProductId());
 			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
-					&& (loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
+					&& (loanType.getId() != CommonUtils.LoanType.HOME_LOAN.getValue()
 							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
                     && (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
-                            || !applicationProposalMapping.getIsFinalMcqFilled().booleanValue())) {
+                            || !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) ) {
 					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else {
@@ -3888,7 +3782,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
 
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 
@@ -4322,7 +4215,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			// code for got eligibility
 			if (loanApplicationMaster.getEligibleAmnt() != null && CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked()) ) {
@@ -4439,7 +4331,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -4591,7 +4482,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -4710,6 +4600,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<ChatDetails> getChatListByApplicationId(Long applicationId) {
 		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
 		mappingRequest.setFpProductId(applicationId);
@@ -6037,6 +5928,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest) {
 
 				try {
@@ -6238,11 +6130,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Long createRetailLoan(Long userId, Boolean isActive, Integer businessTypeId) {
 		logger.info("Entry in createRetailLoan=>{} and business type id =>{}", userId, businessTypeId);
-		LoanApplicationMaster retailLoanObj = loanApplicationRepository.getCorporateLoan(userId, businessTypeId);
+		/*LoanApplicationMaster retailLoanObj = loanApplicationRepository.getCorporateLoan(userId, businessTypeId);
 		if (!CommonUtils.isObjectNullOrEmpty(retailLoanObj)) {
 			return retailLoanObj.getId();
-		}
-		logger.info("Successfully get result");
+		}*/
+		//logger.info("Successfully get result");
 		/*if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 			retailLoanObj = new PrimaryHomeLoanDetail();	
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.HOME_LOAN.getValue()));
@@ -6252,7 +6144,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.PERSONAL_LOAN.getValue()));
 			retailLoanObj.setProductId(LoanType.PERSONAL_LOAN.getValue());
 		}*/
-		retailLoanObj = new LoanApplicationMaster();
+		LoanApplicationMaster retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		retailLoanObj.setCreatedBy(userId);
@@ -6286,9 +6178,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
-			Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
-			if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
-				logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
+			List<ApplicationProposalMapping> applicationProposalMappingList = applicationProposalMappingRepository.getListByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
+			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMappingList)){
+				Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
+				if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
+					logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
+				}
 			}
 			/*ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
@@ -6650,6 +6545,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws LoansException {
 		try {
 
@@ -6886,6 +6782,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws LoansException {
 		try {
 
@@ -7877,7 +7774,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public JSONObject isAllowToMoveAheadForMultiProposal(Long applicationId, Long proposalId, Long userId, Integer nextTabType,
 														 Long coAppllicantOrGuarantorId) throws Exception {
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
 		int userMainType = CommonUtils.getUserMainType(applicationProposalMapping.getProductId());
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
@@ -8346,8 +8242,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		catch (Exception e)
 		{
-			logger.error("Error while get min max product detail list");
-			e.printStackTrace();
+			logger.error("Error while get min max product detail list",e);			
 		}
 
 		return minMaxProductDetailRequestList;
@@ -8380,8 +8275,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		catch (Exception e)
 		{
-			logger.error("Error while get Basic Detail FS");
-			e.printStackTrace();
+			logger.error("Error while get Basic Detail FS",e);			
 		}
 		return  basicDetailFS;
 	}
@@ -8402,29 +8296,51 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		catch (Exception e)
 		{
-			logger.error("Erroe while Loan Type Update");
-			e.printStackTrace();
+			logger.error("Erroe while Loan Type Update",e);
 			return  false;
 		}
 	}
 	//1/6/2019........................
 
 	@Override
-	public List<LoantypeSelectionResponse> getTypeSelectionData() {
-		List<Object[]> responseList = loanRepository.getTypeSelectionData();
+	public List<LoantypeSelectionResponse> getTypeSelectionData(String userId) {
+		List<Object[]> responseList =null;
+		logger.info("userId-->>{}",userId);
+		if("Y".equalsIgnoreCase(environment.getRequiredProperty(LOAN_RETAILS_ENABLE))) {
+			responseList = loanRepository.getTypeSelectionData();
+		}else {			
+			responseList = loanRepository.getTypeSelectionData(userId);
+		}
+		
 		List<LoantypeSelectionResponse> selectionList = new ArrayList<>();
 		for(Object[] obj : responseList) {
-//			System.out.print("============>" +obj.toString());
 			LoantypeSelectionResponse  response = new LoantypeSelectionResponse();
 			response.setType(obj[0].toString());
 			response.setDescription((String)obj[1]);
 			response.setBusinessTypeId((int)obj[2]);
 			response.setImgPath((String)obj[3]);
-			selectionList.add(response);
-			System.out.print("============>" +response.getType());
+			selectionList.add(response);			
 		}
 		return selectionList;
 	}
-
+	
+	@Override
+	public LoanPanCheckRequest checkAlreadyPANExitsOrNot(LoanPanCheckRequest loanPanCheckRequest) {
+		String msg = null;
+		if(loanPanCheckRequest.getTypeId() == 2) {
+			loanPanCheckRequest.setPan("NA");
+			msg = loanRepository.checkPanForAlreayInPrinciplOrNotEligible(loanPanCheckRequest.getTypeId(), loanPanCheckRequest.getSelectedLoanTypeId(), loanPanCheckRequest.getApplicationId(), loanPanCheckRequest.getPan());	
+		} else if(loanPanCheckRequest.getTypeId() == 3) {
+			loanPanCheckRequest.setPan("NA");
+			msg = loanRepository.checkPanForAlreayInPrinciplOrNotEligible(loanPanCheckRequest.getTypeId(), loanPanCheckRequest.getSelectedLoanTypeId(), loanPanCheckRequest.getApplicationId(), loanPanCheckRequest.getPan());
+		}
+		if(!CommonUtils.isObjectNullOrEmpty(msg)) {
+			loanPanCheckRequest.setIsExist(true);
+			loanPanCheckRequest.setMessage(msg);
+		} else {
+			loanPanCheckRequest.setIsExist(false);
+		}
+		return loanPanCheckRequest;
+	}
 
 }

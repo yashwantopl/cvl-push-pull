@@ -13,4 +13,6 @@ public interface CommonRepository {
 	public List<Object[]>  getBranchUserDetailsBasedOnRoleId(Long orgId,Integer roleId);
 	
 	public Object[] getFpFullName(Long userId); 
+	
+	public Object getMakerDate(Long applicationId);
 }

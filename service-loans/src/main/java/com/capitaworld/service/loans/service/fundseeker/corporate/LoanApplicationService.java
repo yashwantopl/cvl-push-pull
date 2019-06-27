@@ -12,6 +12,7 @@ import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanPanCheckRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.api_model.ProfileReqRes;
 import com.capitaworld.service.loans.model.common.BasicDetailFS;
@@ -256,5 +257,7 @@ public interface LoanApplicationService {
 	public Boolean updateLoanType(Long userId, Long applicationId, Long loanTypeId);
 
      //1/6/2109.......................
-	List<LoantypeSelectionResponse> getTypeSelectionData();
+	List<LoantypeSelectionResponse> getTypeSelectionData(String userId);
+	
+	public LoanPanCheckRequest checkAlreadyPANExitsOrNot(LoanPanCheckRequest loanPanCheckRequest);
 }

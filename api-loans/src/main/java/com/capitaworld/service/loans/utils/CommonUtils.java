@@ -89,6 +89,8 @@ public class CommonUtils {
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
 	public static final String SUCCESSFULLY_SAVED = "Successfully Purpose of loan created";
 	public static final String SUCCESSFULLY_UPDATED = "Purpose of Loan Model sent for approval";
+	public static final String STATUS_UPDATED = "Purpose of Model Saved Successfully";
+	
 	public static final String INVALID_AGE = "Invalid Age";
 	public static final String ONE_FORM_SAVED_SUCCESSFULLY = "Oneform Saved Successfully";
 	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
@@ -754,7 +756,7 @@ public class CommonUtils {
 	}
 
 	public static Double getBowlCount(String count, Integer tabNumber) {
-		if (!isObjectListNull(count) && count != "0") {
+		if (!isObjectListNull(count) && count.equals("0")) {
 			String[] split = count.split("\\|");
 			if (split.length > 0) {
 				if (!isObjectListNull(tabNumber)) {
@@ -790,6 +792,7 @@ public class CommonUtils {
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/error".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/mca/error".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -941,15 +944,15 @@ public class CommonUtils {
 		if (isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)) {
 			return null;
 		}
-		if (denomination == DenominationId.LAKHS) {
+		if (DenominationId.LAKHS.equals(denomination)) {
 			return (long) (DenominationInAmount.LAKHS * amount);
-		} else if (denomination == DenominationId.MILLIONS) {
+		} else if (DenominationId.MILLIONS.equals(denomination)) {
 			return (long) (DenominationInAmount.MILLIONS * amount);
-		} else if (denomination == DenominationId.CRORES) {
+		} else if (DenominationId.CRORES.equals(denomination)) {
 			return (long) (DenominationInAmount.CRORES * amount);
-		} else if (denomination == DenominationId.BILLIONS) {
+		} else if (DenominationId.BILLIONS.equals(denomination)) {
 			return (long) (DenominationInAmount.BILLIONS * amount);
-		} else if (denomination == DenominationId.ABSOLUTE) {
+		} else if (DenominationId.ABSOLUTE.equals(denomination)) {
 			return (long) (DenominationInAmount.ABSOLUTE * amount);
 		} else {
 			return null;
@@ -1634,6 +1637,48 @@ public enum APIFlags {
 		 return obj;
 	}
 	
+	public static Object printFieldsForValue(Object obj, Map<String, Object>data) throws Exception {
+		if(obj != null) {
+			if(obj.getClass().isArray()) {
+				// Do nothing because of X and Y.
+		}
+		}else {
+			return obj;
+		}
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) {
+				o = printFieldsForValue(o,data);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				setEntry.setValue(printFieldsForValue(setEntry.getValue(),data));
+			}
+		}else if(obj instanceof String) {
+			obj = StringEscapeUtils.escapeXml(((String)obj).replaceAll("--", ""));
+			return obj;
+		}else if(obj instanceof Double) {
+			if(!Double.isNaN((Double)obj)) {
+				return convertValueWithoutDecimal((Double)obj);
+			}
+		}else {
+			if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for (Field field : fields) {
+					if((field.getModifiers()& Modifier.STATIC) == Modifier.STATIC){
+						// Do nothing because of X and Y.
+					}else {
+						field.setAccessible(true);
+						Object value = field.get(obj);
+						field.set(obj, printFieldsForValue(value,data));	
+					}
+				}
+			}
+		}
+		 return obj;
+	}
+	
 	public enum BankName {
 		UNION_BANK_OF_INDIA(1,"Union Bank of India",""),
 		SARASWAT(2,"Saraswat",""),
@@ -1693,7 +1738,7 @@ public enum APIFlags {
 
 		public static BankName getDataFormBankId(Integer id){
 			for (BankName bankName:BankName.values()) {
-				if (bankName.id == id) {
+				if (bankName.id.equals(id)) {
 					return bankName;
 				}
 			}

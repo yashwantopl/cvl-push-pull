@@ -1,0 +1,15 @@
+ALTER TABLE loan_application.`fs_retail_co_applicant_details` ADD COLUMN `is_income_consider` BIT NULL;
+
+ALTER TABLE `loan_application`.`fs_retail_primary_home_loan_details`
+	ADD COLUMN `is_check_off_direct_pay_emi` BIT NULL,
+	ADD COLUMN `is_check_off_agree_to_pay_outstanding` BIT NULL AFTER `is_check_off_direct_pay_emi`,
+	ADD COLUMN `is_check_off_shift_sal_acc` BIT NULL AFTER `is_check_off_agree_to_pay_outstanding`,
+	ADD COLUMN `is_check_off_pay_outstnd_amount` BIT NULL AFTER `is_check_off_shift_sal_acc`,
+	ADD COLUMN `is_check_off_not_change_sal_acc` BIT NULL AFTER `is_check_off_pay_outstnd_amount`;
+
+ALTER TABLE `loan_application`.`fs_retail_applicant_details`
+	ADD COLUMN `is_check_off_direct_pay_emi` BIT NULL,
+	ADD COLUMN `is_check_off_agree_to_pay_outstanding` BIT NULL AFTER `is_check_off_direct_pay_emi`,
+	ADD COLUMN `is_check_off_shift_sal_acc` BIT NULL AFTER `is_check_off_agree_to_pay_outstanding`,
+	ADD COLUMN `is_check_off_pay_outstnd_amount` BIT NULL AFTER `is_check_off_shift_sal_acc`,
+	ADD COLUMN `is_check_off_not_change_sal_acc` BIT NULL AFTER `is_check_off_pay_outstnd_amount`;

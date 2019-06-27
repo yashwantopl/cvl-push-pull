@@ -106,11 +106,12 @@ public class ProposalSearchResponse {
 	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
+
 	public Boolean getIsSactionedFromOther() {
 		return isSactionedFromOther;
 	}
 
- 	public void setIsSactionedFromOther(Boolean isSactionedFromOther) {
+	public void setIsSactionedFromOther(Boolean isSactionedFromOther) {
 		this.isSactionedFromOther = isSactionedFromOther;
 	}
 	

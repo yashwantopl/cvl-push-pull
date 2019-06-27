@@ -242,7 +242,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public List<Double> getIncomeOfItrOf3YearsOfCoApplicant(Long coAppId) {
 
-		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
+		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`co_app_id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
 				.setParameter("id", coAppId)
 				.getResultList();
 	}
@@ -311,9 +311,51 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	//1/6/2019...................
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getTypeSelectionData() {
-		return (List<Object[]>) entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE")
-				.getResultList();
+		return (List<Object[]>)entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE").getResultList();
+	}
+	
+	/**
+	 * @author vijay.chauhan
+	 * @param userId
+	 */	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getTypeSelectionData(String userId) {
+		String query = "SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE AND TYPE!='Retail'\n" + 
+				"UNION ALL\n" + 
+				"SELECT lts.`type`,lts.`description`,lts.`business_type_id`,lts.`img_path`\n" + 
+				"FROM `loan_application`.`fs_loan_type_selection` lts \n" + 
+				"INNER JOIN `loan_application`.`fs_loan_type_accessible_users` ltsu ON (lts.id=ltsu.loan_type_selection_id AND ltsu.is_active=TRUE)\n" + 
+				"WHERE lts.TYPE='Retail' AND ltsu.user_id="+userId;
+		return (List<Object[]>) entityManager.createNativeQuery(query).getResultList();
+	}
+	
+	
+	@Override
+	public String checkPanForAlreayInPrinciplOrNotEligible(Integer typeId,Integer selectedLoanTypeId,Long applicationId,String panNumber) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spRetailCheckPANAlreadyExist");
+			storedProcedureQuery.registerStoredProcedureParameter("typeId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("selectedLoanTypeId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("panNumber",String.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("loanType",Integer.class, ParameterMode.OUT);
+			storedProcedureQuery.registerStoredProcedureParameter("message",String.class, ParameterMode.OUT);
+			storedProcedureQuery.setParameter("typeId",typeId);
+			storedProcedureQuery.setParameter("selectedLoanTypeId",selectedLoanTypeId);
+			storedProcedureQuery.setParameter("applicationId",applicationId);
+			storedProcedureQuery.setParameter("panNumber",panNumber);
+			storedProcedureQuery.execute();
+			Object result = storedProcedureQuery.getOutputParameterValue("loanType");
+			if(!CommonUtils.isObjectNullOrEmpty(result)) {
+				return (String) storedProcedureQuery.getOutputParameterValue("message");
+			}
+		} catch (Exception e) {
+			logger.error("EXCEPTION spRetailCheckPANAlreadyExist :=- ", e);
+		}
+		return null;
 	}
 }

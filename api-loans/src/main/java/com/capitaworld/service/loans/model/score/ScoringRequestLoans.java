@@ -16,6 +16,8 @@ public class ScoringRequestLoans {
     
     private Long coApplicantId;
     
+    private Boolean isConsiderCoAppIncome;
+    
     private Long orgId;
 
     /*private Long applicationId;*/
@@ -473,6 +475,15 @@ public class ScoringRequestLoans {
 
 	public void setCoApplicantId(Long coApplicantId) {
 		this.coApplicantId = coApplicantId;
+	}
+	
+
+	public Boolean getIsConsiderCoAppIncome() {
+		return isConsiderCoAppIncome;
+	}
+
+	public void setIsConsiderCoAppIncome(Boolean isConsiderCoAppIncome) {
+		this.isConsiderCoAppIncome = isConsiderCoAppIncome;
 	}
 
 	@Override

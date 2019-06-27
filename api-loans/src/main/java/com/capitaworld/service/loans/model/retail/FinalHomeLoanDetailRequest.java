@@ -59,8 +59,10 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	private Long clientId;
 	private String currencyValue;
 	private String finalFilledCount;
-	private Boolean sameAsPermanentAddress;
+	private Boolean isSameAsPermanentAddress;
 	private Integer statusId;
+	private Object workflowData;
+	private String remarks;
 
 	public Long getId() {
 		return id;
@@ -383,11 +385,11 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	}
 
 	public Boolean getIsSameAsPermanentAddress() {
-		return sameAsPermanentAddress;
+		return isSameAsPermanentAddress;
 	}
 
 	public void setIsSameAsPermanentAddress(Boolean sameAsPermanentAddress) {
-		this.sameAsPermanentAddress = sameAsPermanentAddress;
+		this.isSameAsPermanentAddress = sameAsPermanentAddress;
 	}
 
 	public Integer getStatusId() {
@@ -396,5 +398,21 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 
 	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
+	}
+
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 }

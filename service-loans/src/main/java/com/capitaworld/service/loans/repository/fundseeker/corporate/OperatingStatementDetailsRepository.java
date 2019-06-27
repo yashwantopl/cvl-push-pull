@@ -60,6 +60,15 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	
 	@Query("select a.domesticSales ,a.interest , a.exportSales ,a.netProfitOrLoss, a.depreciation , a.provisionForDeferredTax ,a.opProfitBeforeIntrest from OperatingStatementDetails a where a.loanApplicationMaster.id= :applicationId  AND a.year=(SELECT  max(a.year) FROM OperatingStatementDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.applicationProposalMapping.proposalId = NULL AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
 	public List<Object[]> getCMADetail(@Param("applicationId") Long applicationId, @Param("financialYearlyStatement") String financialYearlyStatement );
+	
+	// for DATA API RELATED 
+	@Query("select a from OperatingStatementDetails a where a.loanApplicationMaster.id= :applicationId  AND a.year=(SELECT  max(a.year) FROM OperatingStatementDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.applicationProposalMapping.proposalId = NULL AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
+	public List<OperatingStatementDetails> getCMADetailForAPI(@Param("applicationId") Long applicationId, @Param("financialYearlyStatement") String financialYearlyStatement );
+	
+	// for DATA API RELATED  min and max year
+   @Query("select a from OperatingStatementDetails a where a.loanApplicationMaster.id= :applicationId  AND a.year=(SELECT  max(a.year-1) FROM OperatingStatementDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.applicationProposalMapping.proposalId = NULL AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
+	public List<OperatingStatementDetails> getCMADetailForAPIMaxAndMinYear(@Param("applicationId") Long applicationId, @Param("financialYearlyStatement") String financialYearlyStatement );
+	 // ENDS HERE 
 
 	public OperatingStatementDetails findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(Long applicationId , String year , String financialYearlyStatement , Boolean isActive);
 

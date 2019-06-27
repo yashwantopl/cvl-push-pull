@@ -69,6 +69,8 @@ public class PLRetailApplicantRequest implements Serializable {
     * */
     private Double loanAmountRequired;
     private Integer loanPurpose;
+    private Integer loanPurposeQueType;
+   	private String loanPurposeQueValue;
     private Integer tenureRequired;
     private Integer repayment;
     private Double monthlyIncome;
@@ -127,6 +129,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private String addressLandmark;
     private Long addressDistrictMappingId;
     private Long addressPincode;
+    private Integer repaymentMode;
 
     private Integer employmentSubStatus;
     private String employedWithOther;
@@ -135,8 +138,29 @@ public class PLRetailApplicantRequest implements Serializable {
     private String employmentStatusOther;
     private String nameOfEntity;
     private Boolean isItrSkip;
-    
 
+    private Boolean isCheckOffDirectPayEmi;
+    private Boolean isCheckOffAgreeToPayOutstanding;
+    private Boolean isCheckOffShiftSalAcc;
+    private Boolean isCheckOffPayOutstndAmount;
+    private Boolean isCheckOffNotChangeSalAcc;
+    
+    public Integer getLoanPurposeQueType() {
+		return loanPurposeQueType;
+	}
+
+	public void setLoanPurposeQueType(Integer loanPurposeQueType) {
+		this.loanPurposeQueType = loanPurposeQueType;
+	}
+
+	public String getLoanPurposeQueValue() {
+		return loanPurposeQueValue;
+	}
+
+	public void setLoanPurposeQueValue(String loanPurposeQueValue) {
+		this.loanPurposeQueValue = loanPurposeQueValue;
+	}
+    
     public String getLoanPurposeOther() {
 		return loanPurposeOther;
 	}
@@ -952,6 +976,52 @@ public class PLRetailApplicantRequest implements Serializable {
 	public void setAddressCountry(Integer addressCountry) {
 		this.addressCountry = addressCountry;
 	}
-    
-    
+
+    public Boolean getIsCheckOffDirectPayEmi() {
+        return isCheckOffDirectPayEmi;
+    }
+
+    public void setIsCheckOffDirectPayEmi(Boolean isCheckOffDirectPayEmi) {
+        this.isCheckOffDirectPayEmi = isCheckOffDirectPayEmi;
+    }
+
+    public Boolean getIsCheckOffAgreeToPayOutstanding() {
+        return isCheckOffAgreeToPayOutstanding;
+    }
+
+    public void setIsCheckOffAgreeToPayOutstanding(Boolean isCheckOffAgreeToPayOutstanding) {
+        this.isCheckOffAgreeToPayOutstanding = isCheckOffAgreeToPayOutstanding;
+    }
+
+    public Boolean getIsCheckOffShiftSalAcc() {
+        return isCheckOffShiftSalAcc;
+    }
+
+    public void setIsCheckOffShiftSalAcc(Boolean isCheckOffShiftSalAcc) {
+        this.isCheckOffShiftSalAcc = isCheckOffShiftSalAcc;
+    }
+
+    public Boolean getIsCheckOffPayOutstndAmount() {
+        return isCheckOffPayOutstndAmount;
+    }
+
+    public void setIsCheckOffPayOutstndAmount(Boolean isCheckOffPayOutstndAmount) {
+        this.isCheckOffPayOutstndAmount = isCheckOffPayOutstndAmount;
+    }
+
+    public Boolean getIsCheckOffNotChangeSalAcc() {
+        return isCheckOffNotChangeSalAcc;
+    }
+
+    public void setIsCheckOffNotChangeSalAcc(Boolean isCheckOffNotChangeSalAcc) {
+        this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
+    }
+
+    public Integer getRepaymentMode() {
+        return repaymentMode;
+    }
+
+    public void setRepaymentMode(Integer repaymentMode) {
+        this.repaymentMode = repaymentMode;
+    }
 }

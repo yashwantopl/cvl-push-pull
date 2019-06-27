@@ -28,7 +28,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			throws Exception {
 
 		String requestURI = request.getRequestURI();
-		logger.info("Loan Request URI------------------------------> " + requestURI);
+		logger.info("Loan Request URI------------------------------> {}" , requestURI);
 		if(CommonUtils.URLS_BRFORE_LOGIN.contains(requestURI.toLowerCase())){
 			return true;
 		}
@@ -37,9 +37,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		
 		// for only client call
 		String reqAuth = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_AUTHENTICATE);
-		logger.info("URI----->"+requestURI);
-		logger.info("Client Call----------------->" + reqAuth);
-		if (reqAuth != null && reqAuth != "" && "true".equals(reqAuth) ) {
+		logger.info("URI----->{}",requestURI);
+		logger.info("Client Call----------------->{}" , reqAuth);
+		
+		if (null!=reqAuth && !reqAuth.isEmpty() && "true".equals(reqAuth) ) {
 				return true;
 		}
 
@@ -51,10 +52,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(username) || StringUtils.isEmpty(refreshToken)
 				|| StringUtils.isEmpty(loginToken)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			logger.warn("Access Token ----------> " + accessToken);
-			logger.warn("UserName --------------> " + username);
-			logger.warn("Refresh Token  --------> " + refreshToken);
-			logger.warn("Login Token -----------> " + loginToken);
+			logger.warn("Access Token ---------->{} " , accessToken);
+			logger.warn("UserName -------------->{} " , username);
+			logger.warn("Refresh Token  -------->{} " , refreshToken);
+			logger.warn("Login Token ----------->{} " , loginToken);
 			logger.warn("Bad Request, If any one of from the above four is null or empty");
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			response.sendRedirect("/loans/error");

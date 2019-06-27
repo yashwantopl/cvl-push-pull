@@ -105,11 +105,16 @@ public class CoApplicantRequest {
 	private Boolean isCibilCompleted;
 	private Integer designation;
 	private Integer educationQualification;
+	private Boolean isIncomeConsider;
 
 	public CoApplicantRequest() {
 	}
 
 	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled) {
+		new CoApplicantRequest(id, firstName, middleName, lastName, relationshipWithApplicant, applicationId, isItrCompleted, isItrSkip, isItrManual, isCibilCompleted, isBankStatementCompleted, isOneFormCompleted, isBasicInfoFilled, isEmploymentInfoFilled, isContactInfoFilled, isCreditInfoFilled, null,null);
+	}
+	
+	public CoApplicantRequest(Long id,String firstName, String middleName, String lastName, Integer relationshipWithApplicant, Long applicationId,Boolean isItrCompleted,Boolean isItrSkip,Boolean isItrManual,Boolean isCibilCompleted,Boolean isBankStatementCompleted,Boolean isOneFormCompleted,Boolean isBasicInfoFilled,Boolean isEmploymentInfoFilled,Boolean isContactInfoFilled,Boolean isCreditInfoFilled,String pan,Boolean isIncomeConsider) {
 		this.id = id;
 		this.applicationId = applicationId;
 		this.firstName = firstName;
@@ -126,7 +131,8 @@ public class CoApplicantRequest {
 		this.isEmploymentInfoFilled = isEmploymentInfoFilled;
 		this.isContactInfoFilled = isContactInfoFilled;
 		this.isCreditInfoFilled = isCreditInfoFilled;
-
+		this.pan = pan;
+		this.isIncomeConsider = isIncomeConsider;
 	}
 
 	public Long getApplicationId() {
@@ -861,5 +867,13 @@ public class CoApplicantRequest {
 
 	public void setIsCibilCompleted(Boolean isCibilCompleted) {
 		this.isCibilCompleted = isCibilCompleted;
+	}
+
+	public Boolean getIsIncomeConsider() {
+		return isIncomeConsider;
+	}
+
+	public void setIsIncomeConsider(Boolean isIncomeConsider) {
+		this.isIncomeConsider = isIncomeConsider;
 	}
 }

@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,10 +42,13 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationPro
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
@@ -138,10 +142,21 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
     @Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+    
+    @Autowired
+    private HLIneligibleCamReportService hlIneligibleService;
+    
+    @Autowired
+	private PLCamReportService plCamService;
 
+    @Value("${isSIDBIFlowForIneligible}")
+    private Boolean isSIDBIFlowForIneligible;
+    
+    @Value("${isSBIFlowForIneligible}")
+    private Boolean isSBIFlowForIneligible;
+    
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
-	
 	
 	@Override
 	public Integer save(InEligibleProposalDetailsRequest inlPropReq) {
@@ -316,6 +331,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					logger.error("Exception in getting : {}" , e1);
 				}
 				notificationParams.put("app_code", applicationRequest.getApplicationCode());
+				notificationParams.put("productId", applicationRequest.getProductId());
 				// For getting Fund Seeker's Name
 				if (applicationRequest != null) {
 					notificationParams.putAll(getFsNameAndDetailsForAllProduct(applicationId, applicationRequest));
@@ -758,22 +774,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			if(!isFundSeeker)
 			{
-				Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
-				ReportRequest reportRequest = new ReportRequest();
-				reportRequest.setParams(response);
-				reportRequest.setTemplate("INELIGIBLECAMREPORT");
-				reportRequest.setType("INELIGIBLECAMREPORT");
-	
-				try
-				{
-					byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-					notification.setFileName("CAM.pdf");
-					notification.setContentInBytes(byteArr);
-				}
-				catch (Exception e)
-				{
-					logger.error("error while attaching cam report : ",e);
-				}
+				Integer productId = Integer.valueOf(mailParameters.get("productId").toString());
+				byte[] camArr = getCamForNotification(applicationId, productId);
+				
+				notification.setFileName("CAM.pdf");
+				notification.setContentInBytes(camArr);
 			}
 		}catch (Exception e) {
 			logger.error("Exception in getting cam for ineligible");
@@ -783,6 +788,46 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" , toNo);
+	}
+
+	private byte[] getCamForNotification(Long applicationId, Integer productId) {
+		ReportRequest reportRequest = new ReportRequest();
+		Map<String,Object> response = new HashMap<>();
+		
+		if(productId == LoanType.WORKING_CAPITAL.getValue() || productId == LoanType.WCTL_LOAN.getValue() || productId == LoanType.TERM_LOAN.getValue()) {
+			response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("INELIGIBLECAMREPORT");
+			reportRequest.setType("INELIGIBLECAMREPORT");
+			try
+			{
+				return reportsClient.generatePDFFile(reportRequest);
+			}
+			catch (Exception e)
+			{
+				logger.error("error while attaching cam report : {}",e);
+				return null;
+			}
+		}else if(productId == LoanType.PERSONAL_LOAN.getValue()) {
+			try
+			{
+				return hlIneligibleService.generateIneligibleCamReportFromMap(applicationId);
+			}
+			catch (Exception e)
+			{
+				logger.error("error while attaching cam report : ",e);
+				return null;
+			}
+		}else if(productId == LoanType.HOME_LOAN.getValue()) {
+			try {
+				return plCamService.generateIneligibleCamReportFromMap(applicationId);
+			}catch (Exception e) {
+				logger.error("error while attaching cam report : {}",e);
+				return null;
+			}
+		}else {
+			return null;
+		}
 	}
 
 	private void sendEmail(NotificationRequest notificationRequest) throws NotificationException {
@@ -902,7 +947,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return status;
 		}
 		if(user!=null) {
-			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2))/* || user[0].equals("sidbi")*/) {
+			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)  && isSBIFlowForIneligible != null && isSBIFlowForIneligible) || (user[0].equals("sidbi") && isSIDBIFlowForIneligible != null && isSIDBIFlowForIneligible)) {
 				String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
 				Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
 				if(emailData!=null) {
@@ -962,7 +1007,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							logger.error("Exception in getting user organisation name",e2);
 							param.put("org_name", "Bank");
 						}
-						if(fsEmail != null && fsMobile!=null && applicationId != null && bankLogo != "") {
+						if(fsEmail != null && fsMobile!=null && applicationId != null && !bankLogo.isEmpty()) {
 							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
 							String[] cc = {String.valueOf(param.get("branch_contact_email"))};
 							try {

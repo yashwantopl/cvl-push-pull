@@ -12,6 +12,8 @@ public class CollateralSecurityDetailRequest {
 	
 	private Double collateralAmount;
 	
+	private String collateralAmountStr;
+	
 
 	public Long getId() {
 		return id;
@@ -51,6 +53,14 @@ public class CollateralSecurityDetailRequest {
 
 	public void setCollateralAmount(Double collateralAmount) {
 		this.collateralAmount = collateralAmount;
+	}
+
+	public String getCollateralAmountStr() {
+		return collateralAmountStr;
+	}
+
+	public void setCollateralAmountStr(String collateralAmountStr) {
+		this.collateralAmountStr = collateralAmountStr;
 	}
 	
 	

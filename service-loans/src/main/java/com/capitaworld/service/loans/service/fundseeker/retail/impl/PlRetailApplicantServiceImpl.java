@@ -974,6 +974,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
+            applicantRequest.setId(applicantDetail.getId());
             BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailPlProfile());
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, PERMANENT_LITERAL);
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
@@ -1168,7 +1169,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             	}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
-            applicantRequest.setBankingRelationshipList(bankRelationshipRequests);
+            applicantRequest.setBankingRelationshipList(!CommonUtils.isObjectListNull(bankRelationshipRequests) ? bankRelationshipRequests : null);
 
             List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
             List<CreditCardsDetailRequest> creditCardsDetailRequestList= new ArrayList<CreditCardsDetailRequest>(creditCardsDetailList.size());
@@ -1295,7 +1296,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 		List<CoApplicantDetail> coAppIdList = coApplicantDetailRepository.getAllByApplicationId(applicationId);
 		if(!coAppIdList.isEmpty()) {
 			for(CoApplicantDetail coApp : coAppIdList) {
-				if((CommonUtils.isObjectNullOrEmpty(coApp.getIsBankStatementCompleted()) || !coApp.getIsBankStatementCompleted())
+				if((CommonUtils.isObjectNullOrEmpty(coApp.getIsBankStatementCompleted()) || (!coApp.getIsItrSkip() && !coApp.getIsBankStatementCompleted()))
 						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsItrCompleted()) || !coApp.getIsItrCompleted())
 						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsCibilCompleted()) || !coApp.getIsCibilCompleted())
 						|| (CommonUtils.isObjectNullOrEmpty(coApp.getIsBasicInfoFilled()) || !coApp.getIsBasicInfoFilled())
@@ -1419,33 +1420,54 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 	public List<FinancialArrangementsDetailRequest> getOneformCreditInfo(Long applicationId, Long coAppId) {
 		if(!CommonUtils.isObjectNullOrEmpty(coAppId)) {
 			try {
-	        	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, applicationId, true);
-	            if(retailFinancialDetailsList != null) {
-	            	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
-	                FinancialArrangementsDetailRequest retailFinReq=null;
-	                for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
-	                	retailFinReq =new FinancialArrangementsDetailRequest();
-	                	BeanUtils.copyProperties(finArDetails, retailFinReq);
-	                	retailFinancialDetailsReq.add(retailFinReq);
-	                }
-	                return retailFinancialDetailsReq;
-	            }
+	            List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.findByDirectorBackgroundDetailAndApplicationIdIdAndIsActive(coAppId, applicationId, true);
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
+                FinancialArrangementsDetailRequest financialRequest = null;
+                for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
+                    financialRequest = new FinancialArrangementsDetailRequest();
+                    BeanUtils.copyProperties(financialDetail, financialRequest);
+                    financialArrangementsDetailRequestList.add(financialRequest);
+                }
+                
+                List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromCoAppId(coAppId);
+                for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
+                	financialRequest = new FinancialArrangementsDetailRequest();
+                    financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
+                    financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
+                    financialRequest.setLoanType("Credit Card");
+                    financialRequest.setIsManuallyAdded(false);
+                    financialArrangementsDetailRequestList.add(financialRequest);
+                }
+                
+                return financialArrangementsDetailRequestList;
 			} catch (Exception e) {
 				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails while coapplicant <<<<<<<=========",e);
 			}	
 		} else {
 			 try {
-            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
-                if(retailFinancialDetailsList != null) {
-                	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
-                    FinancialArrangementsDetailRequest retailFinReq=null;
-                    for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
-                    	retailFinReq =new FinancialArrangementsDetailRequest();
-                    	BeanUtils.copyProperties(finArDetails, retailFinReq);
-                    	retailFinancialDetailsReq.add(retailFinReq);
-                    }
-                    return retailFinancialDetailsReq;
+                
+                List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList= new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementsDetailList.size());
+                FinancialArrangementsDetailRequest financialRequest = null;
+                for(FinancialArrangementsDetail financialDetail : financialArrangementsDetailList){
+                    financialRequest = new FinancialArrangementsDetailRequest();
+                    BeanUtils.copyProperties(financialDetail, financialRequest);
+                    financialArrangementsDetailRequestList.add(financialRequest);
                 }
+                
+                List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+                for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
+                	financialRequest = new FinancialArrangementsDetailRequest();
+                    financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
+                    financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
+                    financialRequest.setLoanType("Credit Card");
+                    financialRequest.setIsManuallyAdded(false);
+                    financialArrangementsDetailRequestList.add(financialRequest);
+                }
+                
+                return financialArrangementsDetailRequestList;
+                
+                
 			} catch (Exception e) {
 				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
 			}
@@ -1465,6 +1487,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isContactInfoFilled",coApplicantDetail.getIsContactInfoFilled());
 				json.put("isCibilCompleted",coApplicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",coApplicantDetail.getIsOneFormCompleted());
+				json.put("isIncomeConsider",coApplicantDetail.getIsIncomeConsider());
 				return json;
 			}
 		} else {
@@ -1478,6 +1501,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isContactInfoFilled",applicantDetail.getIsContactInfoFilled());
 				json.put("isCibilCompleted",applicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",applicantDetail.getIsOneFormCompleted());
+                json.put("isIncomeConsider",true);
 				return json;
 			}
 		}

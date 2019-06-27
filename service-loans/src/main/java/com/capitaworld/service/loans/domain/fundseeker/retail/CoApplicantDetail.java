@@ -486,6 +486,9 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "annual_income_of_spouse")
 	private Double annualIncomeOfSpouse;
+
+	@Column(name = "is_income_consider")
+	private Boolean isIncomeConsider;
 	
 
 	public CoApplicantDetail() {
@@ -1713,5 +1716,13 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setAnnualIncomeOfSpouse(Double annualIncomeOfSpouse) {
 		this.annualIncomeOfSpouse = annualIncomeOfSpouse;
+	}
+
+	public Boolean getIsIncomeConsider() {
+		return isIncomeConsider;
+	}
+
+	public void setIsIncomeConsider(Boolean isIncomeConsider) {
+		this.isIncomeConsider = isIncomeConsider;
 	}
 }
