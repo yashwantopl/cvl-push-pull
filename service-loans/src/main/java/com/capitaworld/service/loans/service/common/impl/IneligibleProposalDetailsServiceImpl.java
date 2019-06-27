@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,6 +149,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
     @Autowired
 	private PLCamReportService plCamService;
 
+    @Value("${isSIDBIFlowForIneligible}")
+    private Boolean isSIDBIFlowForIneligible;
+    
+    @Value("${isSBIFlowForIneligible}")
+    private Boolean isSBIFlowForIneligible;
+    
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	
@@ -940,7 +947,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return status;
 		}
 		if(user!=null) {
-			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)) || user[0].equals("sidbi")) {
+			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)  && isSBIFlowForIneligible != null && isSBIFlowForIneligible) || (user[0].equals("sidbi") && isSIDBIFlowForIneligible != null && isSIDBIFlowForIneligible)) {
 				String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
 				Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
 				if(emailData!=null) {
