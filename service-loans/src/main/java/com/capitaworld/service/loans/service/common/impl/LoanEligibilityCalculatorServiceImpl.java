@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,16 +18,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
+import com.capitaworld.service.gst.GstCalculation;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.client.LoansClient;
 import com.capitaworld.service.loans.domain.common.HomeLoanEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.LAPEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.PersonalLoanEligibilityCriteria;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.model.CMADetailResponse;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LoanEligibilility;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.common.LoanEligibilityCriteriaRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.service.common.LoanEligibilityCalculatorService;
@@ -56,6 +68,13 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	@Autowired
 	private OneFormClient oneFormClient;
+	
+/*	@Autowired 
+	private LoansClient loansClient;*/
+	
+	@Autowired 
+	private  GstClient  gstClient;
+	
 
 	@Autowired
 	private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
@@ -65,6 +84,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	@Autowired
 	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+	
+	@Autowired
+    private CorporateApplicantDetailRepository applicantRepository;
+	
 	// HOME LOAN STARTS
 	@SuppressWarnings("unchecked")
 	private Map<Integer, JSONObject> calculateMinMaxForHomeLoan(HomeLoanEligibilityRequest homeLoanRequest)
@@ -746,6 +769,134 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		return cmaDetailResponse ;
 	}
 
-	// COMMON ENDS
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.common.LoanEligibilityCalculatorService#getCMADetailApi(java.lang.Long)
+	 */
+	@Override
+	public CMADetailResponse getCMADetailApi(Long applicationId) {
+		// TODO Auto-generated method stub
+		
+		logger.info("ENTER IN GET CMA DETAILS FOR SBI RELATED API");
+		CMADetailResponse  cmaDetailResponse=new  CMADetailResponse();
+		
+		try {
+		List<OperatingStatementDetails> operating=operatingStatementDetailsRepository.getCMADetailForAPI(applicationId,CommonUtils.AUDITED);  // FOR OPERATING STMT
+	//	List<OperatingStatementDetails> operatingMinYear = operatingStatementDetailsRepository.getCMADetailForAPIMaxAndMinYear(applicationId,CommonUtils.AUDITED);  // MIN AND MAX YEAR
+		
+		List<LiabilitiesDetails> liabilitie =liabilitiesDetailsRepository.getCMADetailForAPI(applicationId,CommonUtils.AUDITED);              // FOR LIBIBILITIES
+		List<LiabilitiesDetails> liabilitieMinYear =liabilitiesDetailsRepository.getCMADetailForAPIMinAndMaxYear(applicationId,CommonUtils.AUDITED); // MIN AND MAX YEAR
+		
+		List<AssetsDetails> asset =assetsDetailsRepository.getCMADetailAPI(applicationId,CommonUtils.AUDITED);     // FOR ASSESTS
+		List<AssetsDetails> assetMinYear =assetsDetailsRepository.getCMADetailAPIMinAndMaxYear(applicationId,CommonUtils.AUDITED);    // MIN AND MAX YEAR		
+		
+			if(!CommonUtils.isObjectListNull(operating)) {
+				cmaDetailResponse.setSgAndACosts(operating.get(0).getSellingAndDistributionExpenses()+operating.get(0).getOtherMfgExpenses());  // D54+D56
+				cmaDetailResponse.setOpmAndOPNS((CommonUtils.divideNumbers(operating.get(0).getOpProfitAfterInterest() ,operating.get(0).getNetSales()))*100);             //(D64+D15)*100
+				cmaDetailResponse.setPbtNetSales((CommonUtils.divideNumbers(operating.get(0).getOpProfitBeforeIntrest() , operating.get(0).getNetSales()))*100);          //(D60/D15)*100
+				cmaDetailResponse.setCashAccurals(operating.get(0).getNetProfitOrLoss() + operating.get(0).getDepreciation());                // netProfit loss + Depriciation
+				cmaDetailResponse.setPbDIT(operating.get(0).getOpProfitBeforeIntrest() + operating.get(0).getDepreciation());
+				Double result  = operating.get(0).getOpProfitBeforeIntrest() + operating.get(0).getDepreciation();
+				cmaDetailResponse.setInterestCovrageRatio(CommonUtils.divideNumbers(result,operating.get(0).getInterest())); // (D60+D34)/D62
+				Double outStandingAmount = 0.0d; 
+				Double result1  = operating.get(0).getOpProfitBeforeIntrest() + operating.get(0).getDepreciation();
+				cmaDetailResponse.setDscr((CommonUtils.divideNumbers(result1,outStandingAmount)));                         // CHANGES FOR OUTSTANDING AMOUNT IS REMAINING
+				cmaDetailResponse.setRoce((operating.get(0).getOpProfitBeforeIntrest() + operating.get(0).getDepreciation() * 2) / liabilitie.get(0).getOrdinarySharesCapital()+ liabilitie.get(0).getTotalOutsideLiabilities());
+				// Interim Financials HOLD
+				// Efficiency Ratios HOLD
+				cmaDetailResponse.setNetSalesTotalTangible(CommonUtils.divideNumbers(operating.get(0).getNetSales(), asset.get(0).getTotalAssets()) -asset.get(0).getIntangibleAssets());  // remaining for chages
+				cmaDetailResponse.setPbtToTotalTangilbeAssets(CommonUtils.divideNumbers(operating.get(0).getOpProfitBeforeIntrest() , asset.get(0).getTotalAssets()) - asset.get(0).getIntangibleAssets());
+				cmaDetailResponse.setOperatingCostToSales(operating.get(0).getRawMaterials() + operating.get(0).getPowerAndFuel()+ operating.get(0).getDirectLabour() + operating.get(0).getOtherMfgExpenses());
+				cmaDetailResponse.setBankFinanceToCurrentAssests((liabilitie.get(0).getShortTermBorrowingFromOthers() + liabilitie.get(0).getShortTermBorrowingFromOthers()+liabilitie.get(0).getTermLoans() / asset.get(0).getTotalCurrentAssets()));
+				cmaDetailResponse.setInventoryAndNetSales((CommonUtils.divideNumbers(asset.get(0).getInventory() , operating.get(0).getNetSales())) + asset.get(0).getReceivableOtherThanDefferred() +
+						(CommonUtils.divideNumbers(asset.get(0).getExportReceivables() , operating.get(0).getDomesticSales())));  // Done
+				cmaDetailResponse.setInterestCostsOfSales(CommonUtils.divideNumbers(operating.get(0).getInterest() ,operating.get(0).getTotalCostSales()));
+				//  BF/Gross sales HOLD
+				//Movement of TNW
+				cmaDetailResponse.setIncreaseInEquality(liabilitie.get(0).getOrdinarySharesCapital() - liabilitie.get(0).getOrdinarySharesCapital());
+				cmaDetailResponse.setAddSubstractChange(asset.get(0).getIntangibleAssets()- asset.get(0).getIntangibleAssets());
+				//Synopsis of Balance Sheet: Hold 
+				cmaDetailResponse.setTlInsRepayable(liabilitie.get(0).getDepositsOrInstalmentsOfTermLoans() + liabilitie.get(0).getShortTermBorrowingFromOthers()); //D29+D17
+				cmaDetailResponse.setProvisionOtherCl(liabilitie.get(0).getOtherCurrentLiability()+ liabilitie.get(0).getProvisionalForTaxation() + liabilitie.get(0).getOtherStatutoryLiability() + liabilitie.get(0).getDividendPayable()); //D32+D23+D27+D25
+				cmaDetailResponse.setTermLoanOthers(liabilitie.get(0).getTermDeposits() + liabilitie.get(0).getTermLoans()); // D51+D46
+				cmaDetailResponse.setUnsecuredLoans(liabilitie.get(0).getTermLoans()+ liabilitie.get(0).getOtherCurrentLiability() + liabilitie.get(0).getOtherCurrentLiability()); // D47+D58+D59   
+				cmaDetailResponse.setOtherTermLibilities(liabilitie.get(0).getOtherTermLiabilies()+liabilitie.get(0).getDeferredPaymentsCredits());  // D53+D49
+				cmaDetailResponse.setReservesSurplus(liabilitie.get(0).getGeneralReserve()+ liabilitie.get(0).getOtherReservse()+ liabilitie.get(0).getOthers()); // D73+D77+D83 Done
+				cmaDetailResponse.setReceivables(asset.get(0).getReceivableOtherThanDefferred() + asset.get(0).getExportReceivables()+ asset.get(0).getInstalmentsDeferred()); // D16+D18+D20
+				cmaDetailResponse.setOtherCurrentAssests(asset.get(0).getAdvanceToSupplierRawMaterials() + asset.get(0).getOtherCurrentAssets());  // D37+D39
+				cmaDetailResponse.setNetBlock(asset.get(0).getNetBlock()+ asset.get(0).getOtherNcaOtherCapitalWorkInprogress()); // D56+D60
+				cmaDetailResponse.setReceivables(asset.get(0).getInvestmentsOrBookDebts());  // D69 Done 
+				cmaDetailResponse.setOthers(asset.get(0).getInvestmentsOrBookDebts()+ asset.get(0).getOthers()+ asset.get(0).getOtherNonCurrentAssets()); // D71+D76+D78
+				cmaDetailResponse.setcLoans(liabilitie.get(0).getTotalOutsideLiabilities() - liabilitie.get(0).getTotalCurrentLiabilities()); // D63-D37
+				cmaDetailResponse.setLongTermUses(asset.get(0).getGrossBlock() - assetMinYear.get(0).getGrossBlock()); // D45-C47
+				cmaDetailResponse.setDecreaseInTermLibilities(liabilitie.get(0).getTotalTermLiabilities() - liabilitieMinYear.get(0).getTotalTermLiabilities());// D55-C55
+				//Fund Flow Cash_Flow	
+				cmaDetailResponse.setIncreaseAndDecreaseInSundry(asset.get(0).getReceivableOtherThanDefferred()+ asset.get(0).getExportReceivables()- assetMinYear.get(0).getReceivableOtherThanDefferred()+ assetMinYear.get(0).getExportReceivables()); // D16+D18-C16+C18
+				cmaDetailResponse.setIncreaseAndDecreaseInInventories(asset.get(0).getInventory()- asset.get(0).getInventory()); // D22-C22
+				cmaDetailResponse.setIncreaseAndDecreaseOtherCurrentAssessts(asset.get(0).getInvestments()+asset.get(0).getInstalmentsDeferred()+asset.get(0).getOtherCurrentAssets()- asset.get(0).getInvestments()+ asset.get(0).getInvestments());  // D11+D69-C11+C69+C41
+				cmaDetailResponse.setIncreaseAndDecreaseLoansAndAdvan(asset.get(0).getAdvanceToSupplierRawMaterials() + asset.get(0).getAdvancePaymentTaxes()  - assetMinYear.get(0).getAdvanceToSupplierRawMaterials() + assetMinYear.get(0).getAdvancePaymentTaxes() );  //D37+D39-C37+C37  Done
+				cmaDetailResponse.setIncreaseAndDecreaseTradeCreaditors(liabilitie.get(0).getSundryCreditors() - liabilitieMinYear.get(0).getSundryCreditors()); //  D19-C19  
+				cmaDetailResponse.setPurchaseOfFixedAssests(asset.get(0).getGrossBlock() - asset.get(0).getGrossBlock()); //   Purchase Of Fixed Assets Remaining for Changes.
+				cmaDetailResponse.setSalesOfFixedAssests(asset.get(0).getGrossBlock() - asset.get(0).getGrossBlock());  //  CHANGES IS REMAINING  (If the figure comes positive above 0 then value should be displayed Or else 0 should be displayed)
+				cmaDetailResponse.setIncreaseAndDecreaseInCapital(asset.get(0).getOtherNcaOtherCapitalWorkInprogress()+ assetMinYear.get(0).getOtherNcaOtherCapitalWorkInprogress());   // D60+C60   
+				// cmaDetailResponse.setdev    Dividend From Investments-others  CHANGES FOR REMAININIG
+				cmaDetailResponse.setIncreaseAndDecreaseInSecuredLoans(liabilitie.get(0).getTermLoans() - liabilitieMinYear.get(0).getTermLoans());  // D46-C46  
+				cmaDetailResponse.setIncreaseAndDecreaseInUnsecuredLoans(liabilitie.get(0).getTermLoans() + liabilitie.get(0).getOtherNcl()+ liabilitie.get(0).getOtherNcl() - liabilitieMinYear.get(0).getTermLoans()+ liabilitieMinYear.get(0).getOtherNcl()+liabilitieMinYear.get(0).getOtherNcl());  //D47+D58+D59-C47+C58+C59
+				
+				cmaDetailResponse.setIncreaseAndDecreaseSecuredWorking(liabilitie.get(0).getShortTermBorrowingFromOthers()- liabilitie.get(0).getShortTermBorrowingFromOthers());
+				cmaDetailResponse.setIncreaseInShareCapital(liabilitie.get(0).getOrdinarySharesCapital()- liabilitieMinYear.get(0).getOrdinarySharesCapital());  // D67-C67 Done 
+				cmaDetailResponse.setNetIncreaseInCash(asset.get(0).getCashAndBankBalance()- assetMinYear.get(0).getCashAndBankBalance()); //  D9-C9  Done 
+/*				Double projectedSales = 0.0d;
+				cmaDetailResponse.setEstimatedSalesCurrentYear(projectedSales);  // REMAINING FOR CHANGES  GST PROJECTED SALES*/
+				cmaDetailResponse.setEstimatedAverageReceivable(asset.get(0).getReceivableOtherThanDefferred()+ asset.get(0).getExportReceivables()+asset.get(0).getInstalmentsDeferred());  // D16+D18+D20
+				cmaDetailResponse.setLessOtherSourcesLike(liabilitie.get(0).getTermLoans()+ liabilitie.get(0).getOtherNcl()+ liabilitie.get(0).getOtherNcl());   // D47+D58+D59  remaining for Changes
+				cmaDetailResponse.setInventoryAndNetSales((CommonUtils.divideNumbers(asset.get(0).getInventory(), operating.get(0).getNetSales())) + asset.get(0).getReceivableOtherThanDefferred() +
+						(CommonUtils.divideNumbers(asset.get(0).getExportReceivables(),operating.get(0).getDomesticSales())));  // D22/D15+D16+D18/D8
+				cmaDetailResponse.setNetSalesToTotalTangibleAssessts(CommonUtils.divideNumbers((operating.get(0).getNetSales()) ,asset.get(0).getTotalOtherNonCurrentAssets()));  //D15-/D80
+				cmaDetailResponse.setWcGap(asset.get(0).getTotalCurrentAssets()- liabilitie.get(0).getOtherCurrentLiability());  // D43-D32
+				cmaDetailResponse.setNWC(asset.get(0).getTotalCurrentAssets() - liabilitie.get(0).getTotalCurrentLiabilities()); // D43-D37
+				cmaDetailResponse.setNwcAndTCA(asset.get(0).getTotalCurrentAssets() - liabilitie.get(0).getTotalCurrentLiabilities() / asset.get(0).getTotalCurrentAssets());  // D43-D37/D43
+				cmaDetailResponse.setCrAndTCA(liabilitie.get(0).getSundryCreditors()/ asset.get(0).getTotalCurrentAssets());  // D19/D43
+				cmaDetailResponse.setBfTCA(CommonUtils.divideNumbers(liabilitie.get(0).getShortTermBorrowingFromOthers(),asset.get(0).getTotalCurrentAssets())); // D15/D43
+				cmaDetailResponse.setOclTCA(CommonUtils.divideNumbers(liabilitie.get(0).getOtherCurrentLiability(),asset.get(0).getTotalCurrentAssets()));  // D32/D43
+				cmaDetailResponse.setOcaAndTCA(asset.get(0).getAdvanceToSupplierRawMaterials()+ asset.get(0).getAdvancePaymentTaxes() + (CommonUtils.divideNumbers(asset.get(0).getOtherCurrentAssets(),asset.get(0).getTotalCurrentAssets()))); // D37+D39+D41/D43
+
+				//ENDS HERE CALCULATION FOR CMA DATA --->
+				CorporateApplicantDetail applicantRequest =null;
+				applicantRequest = applicantRepository.findByApplicationIdIdAndIsActive(applicationId,true);
+				// GETTING DETAILS FOR PROJECTED SALES
+				GstResponse calculations =null;
+				GSTR1Request gstr1Request = new GSTR1Request();
+				if(applicantRequest.getGstIn()!=null){
+					gstr1Request.setGstin(applicantRequest.getGstIn());
+				}
+ 				try{
+ 					calculations = gstClient.getCalculations(gstr1Request);
+ 				}catch (Exception e) {
+ 					e.getMessage();
+				}
+ 				
+ 			// getting gstr3B projected Sales
+ 				Double projectedSales =0.0d; 
+ 				if(calculations!=null && calculations.getData()!=null){
+ 					try {
+						GstCalculation calculation = (GstCalculation) MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) calculations.getData(), GstCalculation.class);
+							if(calculation.getProjectedSales()!=null){
+								projectedSales = calculation.getProjectedSales();
+									cmaDetailResponse.setEstimatedSalesCurrentYear(projectedSales);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+ 				}
+				
+				// ENDS HERE PROJECTED SALES CALCULATION 
+			}			
+			
+		} catch (NullPointerException e) {
+			logger.error("EXCEPTION IS GETTING FOR CMA DATA API======{}===={} ",e);
+		}
+		logger.info("EXIST FROM GET CMA API DATA ======{}===={}");
+		return cmaDetailResponse ;
+	}
 
 }

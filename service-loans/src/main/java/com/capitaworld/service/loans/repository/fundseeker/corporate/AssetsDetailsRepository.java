@@ -56,6 +56,13 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	
 	@Query("select a.receivableOtherThanDefferred, a.exportReceivables, a.inventory ,a.advanceToSupplierRawMaterials , a.grossBlock , a.totalCurrentAssets,a.tangibleNetWorth from AssetsDetails a where a.loanApplicationMaster.id =:applicationId  AND year = (SELECT  max(a.year) FROM AssetsDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.applicationProposalMapping.proposalId = NULL AND  a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
 	public List<Object[]> getCMADetail(@Param("applicationId") Long applicationId,@Param("financialYearlyStatement") String financialYearlyStatement);
+	
+	@Query("select a from AssetsDetails a where a.loanApplicationMaster.id =:applicationId  AND year = (SELECT  max(a.year) FROM AssetsDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.applicationProposalMapping.proposalId = NULL AND  a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
+	public List<AssetsDetails> getCMADetailAPI(@Param("applicationId") Long applicationId,@Param("financialYearlyStatement") String financialYearlyStatement);
+	
+	
+	@Query("select a from AssetsDetails a where a.loanApplicationMaster.id =:applicationId  AND year = (SELECT  max(a.year-1) FROM AssetsDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.applicationProposalMapping.proposalId = NULL AND  a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
+	public List<AssetsDetails> getCMADetailAPIMinAndMaxYear(@Param("applicationId") Long applicationId,@Param("financialYearlyStatement") String financialYearlyStatement);
 
 	public AssetsDetails findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(Long applicationId , String year , String financialYearlyStatement , Boolean isActive);
 

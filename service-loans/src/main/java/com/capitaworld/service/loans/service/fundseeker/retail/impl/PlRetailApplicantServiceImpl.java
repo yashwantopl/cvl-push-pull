@@ -974,6 +974,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
+            applicantRequest.setId(applicantDetail.getId());
             BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailPlProfile());
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, PERMANENT_LITERAL);
             copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
