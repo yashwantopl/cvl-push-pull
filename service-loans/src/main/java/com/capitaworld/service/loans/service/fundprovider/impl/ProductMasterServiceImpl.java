@@ -538,30 +538,30 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					// Saving Mapping Current CURRENT_EMPLOYMENT
 					
 					if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest)) {
-						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
 								CommonUtils.ParameterTypes.CURRENT_EMPLOYMENT,
 								homeLoanParameterRequest.getCurrentEmploymentStatusIds());
 
 						// Saving Mapping Current RESIDENTIAL
-						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
 								CommonUtils.ParameterTypes.RESIDENTIAL, homeLoanParameterRequest.getResidentialStatusIds());
 
 						// Saving Mapping Current BORROWER_TYPE
-						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
 								CommonUtils.ParameterTypes.BORROWER_TYPE, homeLoanParameterRequest.getBorrowerTypeIds());
 
 						// Saving Mapping Current SALARY_MODE
-						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
 								CommonUtils.ParameterTypes.SALARY_MODE, homeLoanParameterRequest.getSalaryModeIds());
 
 						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
-						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
 								CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, homeLoanParameterRequest.getBorrSalAccIds());
 						
-						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
 								CommonUtils.ParameterTypes.EMPLOYMENT_WITH, homeLoanParameterRequest.getEmploymentWithIds());
 						
-						fPParameterMappingService.inactiveAndSave(productMaster2.getId(),
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
 								CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, homeLoanParameterRequest.getSelfEmployedWithIds());
 						
 						//Saving Loan Purpose Amount Mapping
