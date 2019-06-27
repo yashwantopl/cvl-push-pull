@@ -183,4 +183,6 @@ ADD COLUMN `exis_fact_land_mark` VARCHAR(255) NULL AFTER `exis_fact_street_name`
 ADD COLUMN `exis_fact_Owned` BIT(1) NULL AFTER `exis_fact_pincode`, ADD COLUMN `exis_fact_ranted` BIT(1) NULL AFTER `exis_fact_Owned`, ADD COLUMN `exis_fact_leased` BIT(1) NULL AFTER `exis_fact_ranted`, ADD COLUMN `prop_fact_premise_number` VARCHAR(255) NULL AFTER `exis_fact_leased`, ADD COLUMN `prop_fact_street_name` VARCHAR(255) NULL AFTER `prop_fact_premise_number`, 
 ADD COLUMN `prop_fact_land_mark` VARCHAR(255) NULL AFTER `prop_fact_street_name`, ADD COLUMN `prop_fact_pincode` BIGINT(20) NULL AFTER `prop_fact_land_mark`, 
 ADD COLUMN `prop_fact_Owned` BIT(1) NULL AFTER `prop_fact_pincode`, ADD COLUMN `prop_fact_ranted` BIT(1) NULL AFTER `prop_fact_Owned`, 
-ADD COLUMN `prop_fact_leased` BIT(1) NULL AFTER `prop_fact_ranted`; 
+ADD COLUMN `prop_fact_leased` BIT(1) NULL AFTER `prop_fact_ranted`;
+
+ALTER TABLE `loan_application`.`fs_sidbi_raw_material_details` ADD COLUMN `name_of_raw_material` VARCHAR(100) NULL AFTER `application_id`;
