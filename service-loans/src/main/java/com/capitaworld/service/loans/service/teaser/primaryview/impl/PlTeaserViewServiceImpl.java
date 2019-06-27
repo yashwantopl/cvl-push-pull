@@ -32,6 +32,7 @@ import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -1107,7 +1108,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
-				plTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+				
+				
+				ITRBasicDetailsResponse itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+				plTeaserViewResponse.setNameAsPerItr(itrBasicDetailsResponse.getName() != null ? itrBasicDetailsResponse.getName(): "NA");
 			} else {
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
@@ -1125,8 +1129,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		 else{
 			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
 		 }*/
-		String fullName = (plRetailApplicantResponse.getFirstName() != null ? plRetailApplicantResponse.getFirstName() : "") +" "+ (plRetailApplicantResponse.getMiddleName() != null ? plRetailApplicantResponse.getMiddleName() : "") +" "+ (plRetailApplicantResponse.getLastName() != null ?  plRetailApplicantResponse.getLastName() : "");
-		if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equalsIgnoreCase((String)plTeaserViewResponse.getNameAsPerItr())){
+		String fullName = plRetailApplicantResponse.getFullName();
+		if(!CommonUtils.isObjectNullOrEmpty(fullName.trim()) && fullName.equalsIgnoreCase(String.valueOf(plTeaserViewResponse.getNameAsPerItr()))){
 			plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
 		}else{
 			plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
