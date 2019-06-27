@@ -19,7 +19,11 @@ public class PLRetailApplicantResponse implements Serializable {
     private Integer titleId;
     private String fullName;
     private String title;
-        
+
+
+	private String firstName;
+	private String middleName;
+	private String lastName;
     public String getTitle() {
 		return title;
 	}
@@ -576,7 +580,30 @@ public class PLRetailApplicantResponse implements Serializable {
 		this.monthlyIncomeString = monthlyIncomeString;
 	}
 
-	
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
 
 	public String getGender() {
 		return gender;
