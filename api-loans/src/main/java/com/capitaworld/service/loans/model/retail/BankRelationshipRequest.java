@@ -13,6 +13,7 @@ public class BankRelationshipRequest implements Serializable {
 	private Integer from;
 	private Boolean isActive;
 	private Boolean isSalaryAccount;
+	private String accountNo;
 	private String sinceWhen;
 	private Long coApplicantId;
 	
@@ -70,5 +71,13 @@ public class BankRelationshipRequest implements Serializable {
 
 	public void setCoApplicantId(Long coApplicantId) {
 		this.coApplicantId = coApplicantId;
+	}
+
+	public String getAccountNo() {
+		return accountNo;
+	}
+
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
 	}
 }
