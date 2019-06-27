@@ -1340,9 +1340,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
                                     Double monthlyIncome = 0d;
-                                    if (!CommonUtils.isObjectNullOrEmpty(monthlyIncome)) {
+                                    if (!CommonUtils.isObjectNullOrEmpty(netMonthlyIncome)) {
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(true);
                                         scoreParameterRetailRequest.setLoanAmtProposed(retailApplicantDetail.getLoanAmountRequired());
+                                        scoreParameterRetailRequest.setNetAnnualIncome(netMonthlyIncome * 12);
                                     } else {
                                         scoreParameterRetailRequest.setLoanToIncomeRatio_p(false);
                                     }
