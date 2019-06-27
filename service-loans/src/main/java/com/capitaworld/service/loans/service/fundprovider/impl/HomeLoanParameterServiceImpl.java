@@ -213,7 +213,13 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		if (!countryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-				homeLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				homeLoanParameterRequest.setCountryList(dataRequests);
 
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG, e);
@@ -224,7 +230,13 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		if (!stateList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-				homeLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				homeLoanParameterRequest.setStateList(dataRequests);
 
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG, e);
@@ -235,7 +247,13 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		if (!cityList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-				homeLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				homeLoanParameterRequest.setCityList(dataRequests);
 
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG, e);
