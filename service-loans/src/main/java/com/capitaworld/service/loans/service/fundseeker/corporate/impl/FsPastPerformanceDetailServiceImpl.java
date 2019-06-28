@@ -88,7 +88,7 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 
 				fsPastPerformanceDetails = new ArrayList<>();
 				FsPastPerformanceDetails fsPastPerformanceDetails1 = new FsPastPerformanceDetails();
-				OperatingStatementDetails operatingStatementPast1YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, pastYear1+"");
+				OperatingStatementDetails operatingStatementPast1YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(applicationId, pastYear1+"");
 				if (!CommonUtils.isObjectNullOrEmpty(operatingStatementPast1YearDetails)) {
 					fsPastPerformanceDetails1.setNetSalesPastYear1(operatingStatementPast1YearDetails.getNetSales().longValue());
 					fsPastPerformanceDetails1.setNetProfitPastYear1(operatingStatementPast1YearDetails.getNetProfitOrLoss().longValue());
@@ -97,7 +97,7 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 				}
 
 
-				OperatingStatementDetails operatingStatementPast2YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, pastYear2+"");
+				OperatingStatementDetails operatingStatementPast2YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(applicationId, pastYear2+"");
 				if (!CommonUtils.isObjectNullOrEmpty(operatingStatementPast2YearDetails)) {
 					fsPastPerformanceDetails1.setNetSalesPastYear2(operatingStatementPast2YearDetails.getNetSales().longValue());
 					fsPastPerformanceDetails1.setNetProfitPastYear2(operatingStatementPast2YearDetails.getNetProfitOrLoss().longValue());
@@ -105,14 +105,14 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 					logger.error("Error while getting net sales/net profit loss past 2 year details from operating statement");
 				}
 
-				LiabilitiesDetails liabilitiesPast1YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId,pastYear1+"");
+				LiabilitiesDetails liabilitiesPast1YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetailsByAppIdAndFinYear(applicationId,pastYear1+"");
 				if (!CommonUtils.isObjectNullOrEmpty(liabilitiesPast1YearDetails)) {
 					fsPastPerformanceDetails1.setCompNetWorthPastYear1(liabilitiesPast1YearDetails.getNetWorth().longValue());
 				}else{
 					logger.error("Error while getting company net worth past 1 year details from liabilities statement");
 				}
 
-				LiabilitiesDetails liabilitiesPast2YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId,pastYear2+"");
+				LiabilitiesDetails liabilitiesPast2YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetailsByAppIdAndFinYear(applicationId,pastYear2+"");
 				if (!CommonUtils.isObjectNullOrEmpty(liabilitiesPast2YearDetails)) {
 					fsPastPerformanceDetails1.setCompNetWorthPastYear2(liabilitiesPast2YearDetails.getNetWorth().longValue());
 				}else{
