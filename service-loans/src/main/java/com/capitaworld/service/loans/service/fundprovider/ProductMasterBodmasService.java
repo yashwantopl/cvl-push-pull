@@ -20,4 +20,6 @@ public interface ProductMasterBodmasService {
     public List<ProductConditionResponse> getConditionsByProductId(Long productId);
 
     public ProductMasterRequest getProductDetails(Long productId,Integer stage);
+
+    public boolean activeInActiveProduct(Long userId,Long productId,Integer applicationStage,Boolean status);
 }

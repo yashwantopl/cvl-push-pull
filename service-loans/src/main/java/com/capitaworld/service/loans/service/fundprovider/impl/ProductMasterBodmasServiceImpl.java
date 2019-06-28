@@ -400,4 +400,14 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         return masterRequest;
     }
 
+
+    public boolean activeInActiveProduct(Long userId, Long id, Integer stage, Boolean status){
+        if(stage == 1) {
+            productMasterTempRepository.changeStatus(userId , id, status);
+        } else {
+            productMasterRepository.changeStatus(userId , id, status);
+        }
+        return true;
+    }
+
 }
