@@ -21,7 +21,7 @@ public class FacilityDetails implements Serializable{
     private Long applicationId;
 
     @Column(name="rupee_term_loan")
-    private Long rupeeTermLoan;
+    private Double rupeeTermLoan;
 
 	@Column(name="foreign_currency")
     private Double foreignCurrency;
@@ -68,11 +68,11 @@ public class FacilityDetails implements Serializable{
         this.applicationId = applicationId;
     }
 
-    public Long getRupeeTermLoan() {
+    public Double getRupeeTermLoan() {
         return rupeeTermLoan;
     }
 
-    public void setRupeeTermLoan(Long rupeeTermLoan) {
+    public void setRupeeTermLoan(Double rupeeTermLoan) {
         this.rupeeTermLoan = rupeeTermLoan;
     }
 

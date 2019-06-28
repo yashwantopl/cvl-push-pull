@@ -179,8 +179,8 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 
 			for (FixedDepositsDetail detail : fixedDepositsDetails) {
 				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
-				fixedDepositsDetailRequest.setAmountString(CommonUtils.convertValueWithoutDecimal(detail.getAmount()));
-				fixedDepositsDetailRequest.setRateString(CommonUtils.convertValue(detail.getRate()));
+				fixedDepositsDetailRequest.setAmountString(!CommonUtils.isObjectNullOrEmpty(detail.getAmount()) ? CommonUtils.convertValueWithoutDecimal(detail.getAmount()) : null);
+				fixedDepositsDetailRequest.setRateString(!CommonUtils.isObjectNullOrEmpty(detail.getRate()) ? CommonUtils.convertValue(detail.getRate()) : null);
 				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
 				if(!CommonUtils.isObjectNullOrEmpty(detail.getMaturityDate()))
 				{
@@ -222,8 +222,8 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 
 			for (FixedDepositsDetail detail : fixedDepositsDetails) {
 				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
-				fixedDepositsDetailRequest.setAmountString(CommonUtils.convertValueWithoutDecimal(detail.getAmount()));
-				fixedDepositsDetailRequest.setRateString(CommonUtils.convertValue(detail.getRate()));
+				fixedDepositsDetailRequest.setAmountString(!CommonUtils.isObjectNullOrEmpty(detail.getAmount()) ? CommonUtils.convertValueWithoutDecimal(detail.getAmount()) : null);
+				fixedDepositsDetailRequest.setRateString(!CommonUtils.isObjectNullOrEmpty(detail.getRate()) ? CommonUtils.convertValue(detail.getRate()) : null);
 				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
 				if(!CommonUtils.isObjectNullOrEmpty(detail.getMaturityDate()))
 				{

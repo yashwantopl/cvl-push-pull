@@ -22,7 +22,6 @@ import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
-import com.capitaworld.service.loans.client.LoansClient;
 import com.capitaworld.service.loans.domain.common.HomeLoanEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.LAPEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.PersonalLoanEligibilityCriteria;
@@ -35,7 +34,6 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LoanEligibilility;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.common.LoanEligibilityCriteriaRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -774,6 +772,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	 */
 	@Override
 	public CMADetailResponse getCMADetailApi(Long applicationId) {
+		
 		// TODO Auto-generated method stub
 		
 		logger.info("ENTER IN GET CMA DETAILS FOR SBI RELATED API");
@@ -805,15 +804,15 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				// Efficiency Ratios HOLD
 				cmaDetailResponse.setNetSalesTotalTangible(CommonUtils.divideNumbers(operating.get(0).getNetSales(), asset.get(0).getTotalAssets()) -asset.get(0).getIntangibleAssets());  // remaining for chages
 				cmaDetailResponse.setPbtToTotalTangilbeAssets(CommonUtils.divideNumbers(operating.get(0).getOpProfitBeforeIntrest() , asset.get(0).getTotalAssets()) - asset.get(0).getIntangibleAssets());
-				cmaDetailResponse.setOperatingCostToSales(operating.get(0).getRawMaterials() + operating.get(0).getPowerAndFuel()+ operating.get(0).getDirectLabour() + operating.get(0).getOtherMfgExpenses());
+				cmaDetailResponse.setOperatingCostToSales(operating.get(0).getRawMaterials() + operating.get(0).getPowerAndFuel()+ operating.get(0).getDirectLabour() + operating.get(0).getOtherMfgExpenses()/operating.get(0).getDomesticSales() + operating.get(0).getExportSales());  // (D20+D28+D30+D32)/(D8+D9)
 				cmaDetailResponse.setBankFinanceToCurrentAssests((liabilitie.get(0).getShortTermBorrowingFromOthers() + liabilitie.get(0).getShortTermBorrowingFromOthers()+liabilitie.get(0).getTermLoans() / asset.get(0).getTotalCurrentAssets()));
 				cmaDetailResponse.setInventoryAndNetSales((CommonUtils.divideNumbers(asset.get(0).getInventory() , operating.get(0).getNetSales())) + asset.get(0).getReceivableOtherThanDefferred() +
-						(CommonUtils.divideNumbers(asset.get(0).getExportReceivables() , operating.get(0).getDomesticSales())));  // Done
+						(CommonUtils.divideNumbers(asset.get(0).getExportReceivables() , operating.get(0).getDomesticSales())));  // Done Changes After Development 
 				cmaDetailResponse.setInterestCostsOfSales(CommonUtils.divideNumbers(operating.get(0).getInterest() ,operating.get(0).getTotalCostSales()));
 				//  BF/Gross sales HOLD
 				//Movement of TNW
-				cmaDetailResponse.setIncreaseInEquality(liabilitie.get(0).getOrdinarySharesCapital() - liabilitie.get(0).getOrdinarySharesCapital());
-				cmaDetailResponse.setAddSubstractChange(asset.get(0).getIntangibleAssets()- asset.get(0).getIntangibleAssets());
+				cmaDetailResponse.setIncreaseInEquality(liabilitie.get(0).getOrdinarySharesCapital() - liabilitieMinYear.get(0).getOrdinarySharesCapital());
+				cmaDetailResponse.setAddSubstractChange(asset.get(0).getIntangibleAssets()- assetMinYear.get(0).getIntangibleAssets());
 				//Synopsis of Balance Sheet: Hold 
 				cmaDetailResponse.setTlInsRepayable(liabilitie.get(0).getDepositsOrInstalmentsOfTermLoans() + liabilitie.get(0).getShortTermBorrowingFromOthers()); //D29+D17
 				cmaDetailResponse.setProvisionOtherCl(liabilitie.get(0).getOtherCurrentLiability()+ liabilitie.get(0).getProvisionalForTaxation() + liabilitie.get(0).getOtherStatutoryLiability() + liabilitie.get(0).getDividendPayable()); //D32+D23+D27+D25
@@ -831,18 +830,18 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				cmaDetailResponse.setDecreaseInTermLibilities(liabilitie.get(0).getTotalTermLiabilities() - liabilitieMinYear.get(0).getTotalTermLiabilities());// D55-C55
 				//Fund Flow Cash_Flow	
 				cmaDetailResponse.setIncreaseAndDecreaseInSundry(asset.get(0).getReceivableOtherThanDefferred()+ asset.get(0).getExportReceivables()- assetMinYear.get(0).getReceivableOtherThanDefferred()+ assetMinYear.get(0).getExportReceivables()); // D16+D18-C16+C18
-				cmaDetailResponse.setIncreaseAndDecreaseInInventories(asset.get(0).getInventory()- asset.get(0).getInventory()); // D22-C22
+				cmaDetailResponse.setIncreaseAndDecreaseInInventories(asset.get(0).getInventory()- assetMinYear.get(0).getInventory()); // D22-C22
 				cmaDetailResponse.setIncreaseAndDecreaseOtherCurrentAssessts(asset.get(0).getInvestments()+asset.get(0).getInstalmentsDeferred()+asset.get(0).getOtherCurrentAssets()- asset.get(0).getInvestments()+ asset.get(0).getInvestments());  // D11+D69-C11+C69+C41
 				cmaDetailResponse.setIncreaseAndDecreaseLoansAndAdvan(asset.get(0).getAdvanceToSupplierRawMaterials() + asset.get(0).getAdvancePaymentTaxes()  - assetMinYear.get(0).getAdvanceToSupplierRawMaterials() + assetMinYear.get(0).getAdvancePaymentTaxes() );  //D37+D39-C37+C37  Done
 				cmaDetailResponse.setIncreaseAndDecreaseTradeCreaditors(liabilitie.get(0).getSundryCreditors() - liabilitieMinYear.get(0).getSundryCreditors()); //  D19-C19  
-				cmaDetailResponse.setPurchaseOfFixedAssests(asset.get(0).getGrossBlock() - asset.get(0).getGrossBlock()); //   Purchase Of Fixed Assets Remaining for Changes.
-				cmaDetailResponse.setSalesOfFixedAssests(asset.get(0).getGrossBlock() - asset.get(0).getGrossBlock());  //  CHANGES IS REMAINING  (If the figure comes positive above 0 then value should be displayed Or else 0 should be displayed)
+				cmaDetailResponse.setPurchaseOfFixedAssests(asset.get(0).getGrossBlock() - assetMinYear.get(0).getGrossBlock()); //   Purchase Of Fixed Assets Remaining for Changes.
+				cmaDetailResponse.setSalesOfFixedAssests(asset.get(0).getGrossBlock() - assetMinYear.get(0).getGrossBlock());  //  CHANGES IS REMAINING  (If the figure comes positive above 0 then value should be displayed Or else 0 should be displayed)
 				cmaDetailResponse.setIncreaseAndDecreaseInCapital(asset.get(0).getOtherNcaOtherCapitalWorkInprogress()+ assetMinYear.get(0).getOtherNcaOtherCapitalWorkInprogress());   // D60+C60   
 				// cmaDetailResponse.setdev    Dividend From Investments-others  CHANGES FOR REMAININIG
 				cmaDetailResponse.setIncreaseAndDecreaseInSecuredLoans(liabilitie.get(0).getTermLoans() - liabilitieMinYear.get(0).getTermLoans());  // D46-C46  
 				cmaDetailResponse.setIncreaseAndDecreaseInUnsecuredLoans(liabilitie.get(0).getTermLoans() + liabilitie.get(0).getOtherNcl()+ liabilitie.get(0).getOtherNcl() - liabilitieMinYear.get(0).getTermLoans()+ liabilitieMinYear.get(0).getOtherNcl()+liabilitieMinYear.get(0).getOtherNcl());  //D47+D58+D59-C47+C58+C59
 				
-				cmaDetailResponse.setIncreaseAndDecreaseSecuredWorking(liabilitie.get(0).getShortTermBorrowingFromOthers()- liabilitie.get(0).getShortTermBorrowingFromOthers());
+				cmaDetailResponse.setIncreaseAndDecreaseSecuredWorking(liabilitie.get(0).getShortTermBorrowingFromOthers()- liabilitieMinYear.get(0).getShortTermBorrowingFromOthers());
 				cmaDetailResponse.setIncreaseInShareCapital(liabilitie.get(0).getOrdinarySharesCapital()- liabilitieMinYear.get(0).getOrdinarySharesCapital());  // D67-C67 Done 
 				cmaDetailResponse.setNetIncreaseInCash(asset.get(0).getCashAndBankBalance()- assetMinYear.get(0).getCashAndBankBalance()); //  D9-C9  Done 
 /*				Double projectedSales = 0.0d;
@@ -885,7 +884,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 									cmaDetailResponse.setEstimatedSalesCurrentYear(projectedSales);
 						}
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error("EXCEPTION IS GETTING ------project sales ",e);
 					}
  				}
 				

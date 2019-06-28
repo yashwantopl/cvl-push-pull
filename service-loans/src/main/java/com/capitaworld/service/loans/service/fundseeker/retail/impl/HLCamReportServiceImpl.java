@@ -310,43 +310,48 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			
 			String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentJobYear()) ? plRetailApplicantRequest.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentJobMonth()) ? plRetailApplicantRequest.getCurrentJobMonth() +" months" : "");
 			
-			map.put("nameOfEmployer",plRetailApplicantRequest.getNameOfEmployer() != null ? plRetailApplicantRequest.getNameOfEmployer() : "-");
+			map.put("nameOfEmployer",plRetailApplicantRequest.getNameOfEmployer() != null ? StringEscapeUtils.escapeXml(plRetailApplicantRequest.getNameOfEmployer()) : "-");
 			
-			//as per OccupationNature enum id
-			switch (plRetailApplicantRequest.getEmploymentType() != null ? plRetailApplicantRequest.getEmploymentType() : 0) {
-			
-			case 2:
-				//switch as per EmploymentWithPL id
-				switch (plRetailApplicantRequest.getEmploymentWith() != null ? plRetailApplicantRequest.getEmploymentWith() :0) {
+			try {
+				//as per OccupationNature enum id
+				switch (plRetailApplicantRequest.getEmploymentType() != null ? plRetailApplicantRequest.getEmploymentType() : 0) {
 				
-					case 1://central gov
-						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue()));
-						break;
-					case 2://state gov
-						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue()));
-						break;
-					case 3://psu
-						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue()));
-						break;
-					case 4: //company
-						map.put("nameOfEmployer",plRetailApplicantRequest.getNameOfEmployer());
-						break;
-					case 5://educational insitute
-						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue()));
-						break;
-					case 8: //bank
-						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue()));
-						break;
-					case 9: //Insurance company
-						map.put("nameOfEmployer",oneFormClient.getMasterTableData(plRetailApplicantRequest.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue()));
-						break;
-	
-					default:
-						break;
+				case 2:
+					//switch as per EmploymentWithPL id
+					switch (plRetailApplicantRequest.getEmploymentWith() != null ? plRetailApplicantRequest.getEmploymentWith() :0) {
+					
+						case 1://central gov
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue())));
+							break;
+						case 2://state gov
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue())));
+							break;
+						case 3://psu
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue())));
+							break;
+						case 4: //company
+							map.put("nameOfEmployer",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getNameOfEmployer()) ? StringEscapeUtils.escapeXml(plRetailApplicantRequest.getNameOfEmployer()) : "-");
+							break;
+						case 5://educational insitute
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue())));
+							break;
+						case 8: //bank
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue())));
+							break;
+						case 9: //Insurance company
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue())));
+							break;
+		
+						default:
+							break;
+					}
+					break;
+					
 				}
-				break;
-				
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching details of nameOfEmployer of Applicants in HL Cam Report of applicationId==>{} with EmploymentType==>{}  and EmploymentWith=={}" , applicationId, plRetailApplicantRequest.getEmploymentType() ,plRetailApplicantRequest.getEmploymentWith());
 			}
+			
 			
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "-");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ?EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
@@ -559,42 +564,44 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					coApp.put("totalExperience",!CommonUtils.isObjectNullOrEmpty(operatingBusinessSince) ? operatingBusinessSince :"-");
 				}
 				
-				coApp.put("nameOfEmployer", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? coApplicantDetail.getNameOfEmployer() : "-");
-				
-				//as per OccupationNature enum id
-				switch (coApplicantDetail.getEmploymentType() != null ? coApplicantDetail.getEmploymentType() : 0) {
-					
-					case 2:
-						//switch as per EmploymentWithPL id
-						switch (coApplicantDetail.getEmploymentWith() != null ? coApplicantDetail.getEmploymentWith() :0) {
+				coApp.put("nameOfEmployer", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? StringEscapeUtils.escapeXml(coApplicantDetail.getNameOfEmployer()) : "-");
+				try {
+					//as per OccupationNature enum id
+					switch (coApplicantDetail.getEmploymentType() != null ? coApplicantDetail.getEmploymentType() : 0) {
 						
-							case 1://central gov
-								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue()));
-								break;
-							case 2://state gov
-								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue()));
-								break;
-							case 3://psu
-								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue()));
-								break;
-							case 4: //company
-								coApp.put("nameOfEmployer" ,coApplicantDetail.getNameOfEmployer());
-								break;
-							case 5://educational insitute
-								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue()));
-								break;
-							case 8: //bank
-								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue()));
-								break;
-							case 9: //Insurance company
-								coApp.put("nameOfEmployer" ,oneFormClient.getMasterTableData(coApplicantDetail.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue()));
-								break;
-		
-							default:
-								break;
+						case 2:
+							//switch as per EmploymentWithPL id
+							switch (coApplicantDetail.getEmploymentWith() != null ? coApplicantDetail.getEmploymentWith() :0) {
+							
+								case 1://central gov
+									coApp.put("nameOfEmployer" ,StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(coApplicantDetail.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue())));
+									break;
+								case 2://state gov
+									coApp.put("nameOfEmployer" ,StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(coApplicantDetail.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue())));
+									break;
+								case 3://psu
+									coApp.put("nameOfEmployer" ,StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(coApplicantDetail.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue())));
+									break;
+								case 4: //company
+									coApp.put("nameOfEmployer" ,!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEmployer()) ? StringEscapeUtils.escapeXml(coApplicantDetail.getNameOfEmployer()) : "-");
+									break;
+								case 5://educational insitute
+									coApp.put("nameOfEmployer" ,StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(coApplicantDetail.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue())));
+									break;
+								case 8: //bank
+									coApp.put("nameOfEmployer" ,StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(coApplicantDetail.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue())));
+									break;
+								case 9: //Insurance company
+									coApp.put("nameOfEmployer" ,StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(coApplicantDetail.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue())));
+									break;
+
+								default:
+									break;
 							}
 						break;
-					
+					}
+				}catch (Exception e) {
+					logger.error("Error/Exception while fetching name Of Employer in CoApplicants in HL Cam Report of applicationId==>{} with EmploymentType==>{}  and EmploymentWith=={}" , applicationId, coApplicantDetail.getEmploymentType() ,coApplicantDetail.getEmploymentWith());
 				}
 
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
@@ -1093,6 +1100,10 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.INCOME_TO_INSTALLMENT_RATIO, CommonUtils.printFields(collect.get(0),null));
 					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.REPAYMENT_PERIOD)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.HomeLoan.REPAYMENT_PERIOD, CommonUtils.printFields(collect.get(0),null));
+					}
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
@@ -1305,6 +1316,10 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.INCOME_TO_INSTALLMENT_RATIO, CommonUtils.printFields(collect.get(0),null));
 					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.REPAYMENT_PERIOD)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.HomeLoan.REPAYMENT_PERIOD, CommonUtils.printFields(collect.get(0),null));
+					}
 					scoreResponse.add(companyMap);
 					coAppScoringData.add(scoreResponse);
 			}
@@ -1494,14 +1509,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
-					retailMap.put("nameOfSeller", finalHomeLoanDetail.getSellerName() != null ? finalHomeLoanDetail.getSellerName() : "-");
-					retailMap.put("sellerAddress", finalHomeLoanDetail.getSellerAddress() != null ? finalHomeLoanDetail.getSellerAddress() : "-");
-					retailMap.put("sellerPincode", finalHomeLoanDetail.getSellerPincode() != null ? finalHomeLoanDetail.getSellerPincode() : "-");
-					retailMap.put("sellerCity", finalHomeLoanDetail.getSellerCity() != null ? StringEscapeUtils.escapeXml(getCityName(finalHomeLoanDetail.getSellerCity().longValue())) : "-");
-					retailMap.put("sellerState", finalHomeLoanDetail.getSellerState() != null ? StringEscapeUtils.escapeXml(getStateName(finalHomeLoanDetail.getSellerState())) : "-");
+					retailMap.put("nameOfSeller", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerName()) ? finalHomeLoanDetail.getSellerName() : "-");
+					retailMap.put("sellerAddress", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerAddress()) ? finalHomeLoanDetail.getSellerAddress() : "-");
+					retailMap.put("sellerPincode", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerPincode()) ? finalHomeLoanDetail.getSellerPincode() : "-");
+					retailMap.put("sellerCity", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerCity()) ? StringEscapeUtils.escapeXml(getCityName(finalHomeLoanDetail.getSellerCity().longValue())) : "-");
+					retailMap.put("sellerState", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerState()) ? StringEscapeUtils.escapeXml(getStateName(finalHomeLoanDetail.getSellerState())) : "-");
 					
-					retailMap.put("dateOfExisLoanTaken", finalHomeLoanDetail.getDateOfExistingLoanTaken() != null ? simpleDateFormat.format(finalHomeLoanDetail.getDateOfExistingLoanTaken()) : "-");
-					retailMap.put("originalValueOfProperty", finalHomeLoanDetail.getOriginalValueOfProperty() != null ? CommonUtils.convertValueWithoutDecimal(finalHomeLoanDetail.getOriginalValueOfProperty().doubleValue()) : "-");
+					retailMap.put("dateOfExisLoanTaken", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getDateOfExistingLoanTaken()) ? simpleDateFormat.format(finalHomeLoanDetail.getDateOfExistingLoanTaken()) : "-");
+					retailMap.put("originalValueOfProperty", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getOriginalValueOfProperty()) ? CommonUtils.convertValueWithoutDecimal(finalHomeLoanDetail.getOriginalValueOfProperty().doubleValue()) : null);
 				}
 				
 			} catch (Exception e) {
