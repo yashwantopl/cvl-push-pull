@@ -884,7 +884,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 									cmaDetailResponse.setEstimatedSalesCurrentYear(projectedSales);
 						}
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error("EXCEPTION IS GETTING ------project sales ",e);
 					}
  				}
 				
