@@ -6,7 +6,7 @@ package com.capitaworld.service.loans.model.sidbi;
 public class FacilityDetailsRequest {
 
     private Long id;
-    private Long rupeeTermLoan;
+    private Double rupeeTermLoan;
     private Double foreignCurrency;
     private Double workingCapitalFund;
     private Double workingCapitalNonFund;
@@ -20,11 +20,11 @@ public class FacilityDetailsRequest {
         this.id = id;
     }
 
-    public Long getRupeeTermLoan() {
+    public Double getRupeeTermLoan() {
         return rupeeTermLoan;
     }
 
-    public void setRupeeTermLoan(Long rupeeTermLoan) {
+    public void setRupeeTermLoan(Double rupeeTermLoan) {
         this.rupeeTermLoan = rupeeTermLoan;
     }
 
