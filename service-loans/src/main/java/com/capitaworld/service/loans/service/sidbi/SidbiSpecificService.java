@@ -9,4 +9,6 @@ public interface SidbiSpecificService {
 			throws LoansException;
 
 	SidbiBasicDetailRequest getAdditionalData(Long applicationId, Long userId) throws LoansException;
+	
+	Double getLoanAmountByApplicationId(Long applicationId) throws LoansException;
 }
