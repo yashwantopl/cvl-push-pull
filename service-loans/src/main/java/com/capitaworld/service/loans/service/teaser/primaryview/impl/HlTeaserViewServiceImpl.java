@@ -255,8 +255,22 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			logger.info("Profile Details :{}",profile);
 			BeanUtils.copyProperties(profile, hlTeaserViewResponse);
 		} catch (LoansException e2) {
-			logger.error("Exveption in getting profile value from retail profile for application {}",toApplicationId);
+			logger.error("Exveption in getting profile value from retail profile for application {}",toApplicationsId);
 		}*/
+		
+		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
+		try {
+			Object obj = "-";
+			Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
+		     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
+			}else{
+			hlTeaserViewResponse.setDateOfProposal(obj);
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		// ENDS HERE===================>
 		
 //		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
@@ -269,19 +283,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		hlTeaserViewResponse.setAppId(toApplicationId);
 		
 
-		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
-			try {
-				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
-				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
-			     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
-				}else{
-				hlTeaserViewResponse.setDateOfProposal(obj);
-				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}
-			// ENDS HERE===================>
+		
 
 
 		/* ========= Matches Data ========== */
@@ -1011,6 +1013,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setEmail(coApplicantDetail.getEmail());
 				plRetailApplicantResponse.setSalaryMode(coApplicantDetail.getModeOfReceipt()!= null ? SalaryModeMst.getById(coApplicantDetail.getModeOfReceipt()).getValue().toString() : "-");
 				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
+				plRetailApplicantResponse.setIsIncomeCons(coApplicantDetail.getIsIncomeConsider());
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
