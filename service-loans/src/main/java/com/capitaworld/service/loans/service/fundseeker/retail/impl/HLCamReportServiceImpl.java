@@ -1509,14 +1509,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
-					retailMap.put("nameOfSeller", finalHomeLoanDetail.getSellerName() != null ? finalHomeLoanDetail.getSellerName() : "-");
-					retailMap.put("sellerAddress", finalHomeLoanDetail.getSellerAddress() != null ? finalHomeLoanDetail.getSellerAddress() : "-");
-					retailMap.put("sellerPincode", finalHomeLoanDetail.getSellerPincode() != null ? finalHomeLoanDetail.getSellerPincode() : "-");
-					retailMap.put("sellerCity", finalHomeLoanDetail.getSellerCity() != null ? StringEscapeUtils.escapeXml(getCityName(finalHomeLoanDetail.getSellerCity().longValue())) : "-");
-					retailMap.put("sellerState", finalHomeLoanDetail.getSellerState() != null ? StringEscapeUtils.escapeXml(getStateName(finalHomeLoanDetail.getSellerState())) : "-");
+					retailMap.put("nameOfSeller", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerName()) ? finalHomeLoanDetail.getSellerName() : "-");
+					retailMap.put("sellerAddress", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerAddress()) ? finalHomeLoanDetail.getSellerAddress() : "-");
+					retailMap.put("sellerPincode", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerPincode()) ? finalHomeLoanDetail.getSellerPincode() : "-");
+					retailMap.put("sellerCity", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerCity()) ? StringEscapeUtils.escapeXml(getCityName(finalHomeLoanDetail.getSellerCity().longValue())) : "-");
+					retailMap.put("sellerState", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerState()) ? StringEscapeUtils.escapeXml(getStateName(finalHomeLoanDetail.getSellerState())) : "-");
 					
-					retailMap.put("dateOfExisLoanTaken", finalHomeLoanDetail.getDateOfExistingLoanTaken() != null ? simpleDateFormat.format(finalHomeLoanDetail.getDateOfExistingLoanTaken()) : "-");
-					retailMap.put("originalValueOfProperty", finalHomeLoanDetail.getOriginalValueOfProperty() != null ? CommonUtils.convertValueWithoutDecimal(finalHomeLoanDetail.getOriginalValueOfProperty().doubleValue()) : "-");
+					retailMap.put("dateOfExisLoanTaken", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getDateOfExistingLoanTaken()) ? simpleDateFormat.format(finalHomeLoanDetail.getDateOfExistingLoanTaken()) : "-");
+					retailMap.put("originalValueOfProperty", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getOriginalValueOfProperty()) ? CommonUtils.convertValueWithoutDecimal(finalHomeLoanDetail.getOriginalValueOfProperty().doubleValue()) : null);
 				}
 				
 			} catch (Exception e) {
