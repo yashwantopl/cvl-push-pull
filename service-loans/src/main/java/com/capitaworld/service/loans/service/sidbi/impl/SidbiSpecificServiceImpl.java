@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.service.sidbi.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,17 +12,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.sidbi.SidbiBasicDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sidbi.BasicDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UserTypeRequest;
 import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
@@ -40,6 +42,13 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 	
 	@Autowired
 	UsersClient usersClient;
+	
+	@Autowired
+	private PrimaryCorporateDetailRepository  primaryCorporateDetailRepository;
+	
+	@Autowired
+	FinancialArrangementDetailsService financialArrangementDetailsService;
+	
 	@Override
 	public boolean saveOrUpdateAdditionalData(SidbiBasicDetailRequest sidbiBasicDetailRequest, Long userId) throws LoansException {
 
@@ -77,6 +86,8 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 			}else {
 				sidbiBasicDetailRequest = setAutoFilledValue(applicationId,userId);
 			}
+			
+			sidbiBasicDetailRequest.setLoanAmount(getLoanAmountByApplicationId(applicationId));
 			
 		} catch (Exception e) {
 			logger.error("Exception : ", e);
@@ -128,4 +139,26 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		}
 		return sidbiBasicDetailRequest;
 	}
+
+	
+	@Override
+	public Double getLoanAmountByApplicationId(Long applicationId) throws LoansException {
+		Double loanAmount=null;
+		PrimaryCorporateDetail primaryCorpDetailObj = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
+		
+		if(primaryCorpDetailObj!=null) {
+			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender() && primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
+	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
+	    		
+	    		FinancialArrangementsDetailRequest arrangementsDetailRequest =financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
+	    		loanAmount+=arrangementsDetailRequest.getAmount();
+	    		
+	    	}else {
+	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
+	    	}
+		}
+		return loanAmount;
+	}
+
+	
 }

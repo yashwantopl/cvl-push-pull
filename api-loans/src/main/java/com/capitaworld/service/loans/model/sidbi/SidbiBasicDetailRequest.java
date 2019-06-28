@@ -87,6 +87,8 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Integer repaymemtPeriod;
 
+	private Double loanAmount;
+	
 	public Long getId() {
 		return id;
 	}
@@ -407,6 +409,15 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.repaymemtPeriod = repaymemtPeriod;
 	}
 
+	
+	public Double getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(Double loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+
 	@Override
 	public String toString() {
 		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
@@ -425,8 +436,10 @@ public class SidbiBasicDetailRequest implements Serializable{
 				+ associatedGroup + ", sidbiBranch=" + sidbiBranch + ", exisitngActivity=" + exisitngActivity
 				+ ", activitySince=" + activitySince + ", proposedActivity=" + proposedActivity + ", trialRunEndDate="
 				+ trialRunEndDate + ", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE + ", repaymemtPeriod="
-				+ repaymemtPeriod + "]";
+				+ repaymemtPeriod + ", loanAmount=" + loanAmount + "]";
 	}
+
+	
 	
 	
 }
