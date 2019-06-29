@@ -187,3 +187,5 @@ ADD COLUMN `prop_fact_leased` BIT(1) NULL AFTER `prop_fact_ranted`;
 
 ALTER TABLE `loan_application`.`fs_sidbi_raw_material_details` ADD COLUMN `name_of_raw_material` VARCHAR(100) NULL AFTER `application_id`;
 ALTER TABLE `loan_application`.`fs_sidbi_facility_details` CHANGE `rupee_term_loan` `rupee_term_loan` DOUBLE NULL;
+ALTER TABLE `loan_application`.`fs_sidbi_facility_details` ADD COLUMN `currency_type` VARCHAR(10) NULL AFTER `foreign_currency`;
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` ADD COLUMN `repayment_months` INT(2) NULL AFTER `is_covered_under_cgtmse`, CHANGE `repaymemt_period` `repayment_years` INT(2) NULL;

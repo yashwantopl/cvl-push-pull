@@ -134,10 +134,13 @@ public class SidbiBasicDetail implements Serializable{
 	
 	@Column(name = "is_covered_under_cgtmse")
 	private Boolean isCoveredUnderCGTMSE;
-	
-	@Column(name = "repaymemt_period")
-	private Integer repaymemtPeriod;
-	
+
+	@Column(name="repayment_years")
+	private Integer repaymemtYears;
+
+	@Column(name="repayment_months")
+	private Integer repaymemtMonths;
+
 	@Column(name="is_active")
 	private Boolean isActive;
 	
@@ -387,16 +390,8 @@ public class SidbiBasicDetail implements Serializable{
 		return isCoveredUnderCGTMSE;
 	}
 
-	public Integer getRepaymemtPeriod() {
-		return repaymemtPeriod;
-	}
-
 	public void setIsCoveredUnderCGTMSE(Boolean isCoveredUnderCGTMSE) {
 		this.isCoveredUnderCGTMSE = isCoveredUnderCGTMSE;
-	}
-
-	public void setRepaymemtPeriod(Integer repaymemtPeriod) {
-		this.repaymemtPeriod = repaymemtPeriod;
 	}
 
 	public String getExisFactPremiseNumber() {
@@ -511,5 +506,19 @@ public class SidbiBasicDetail implements Serializable{
 		this.propFactLeased = propFactLeased;
 	}
 
-	
+	public Integer getRepaymemtYears() {
+		return repaymemtYears;
+	}
+
+	public void setRepaymemtYears(Integer repaymemtYears) {
+		this.repaymemtYears = repaymemtYears;
+	}
+
+	public Integer getRepaymemtMonths() {
+		return repaymemtMonths;
+	}
+
+	public void setRepaymemtMonths(Integer repaymemtMonths) {
+		this.repaymemtMonths = repaymemtMonths;
+	}
 }
