@@ -958,6 +958,7 @@ public class PrimaryViewController {
 
 	//CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
 	 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
@@ -995,15 +996,21 @@ public class PrimaryViewController {
 			logger.info("=============>"+toUserId);
 			notificationId = NotificationAlias.SYS_FP_VIEW;
 		}
-
 		try {
-			Integer viewedTeaser = commonRepository.getViewedTeaser(toUserId);
+			String email = null;
+			UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toUserId));
+	        if (!CommonUtils.isObjectNullOrEmpty(toUsersDetails.getData())) {
+				UsersRequest requestUser = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) toUsersDetails.getData(), UsersRequest.class);
+				if(!CommonUtils.isObjectNullOrEmpty(requestUser)) {
+					email = requestUser.getEmail();	
+				}
+			}	
+			Integer viewedTeaser = commonRepository.getViewedTeaser(email);
 			if(viewedTeaser != null && viewedTeaser > 0) {
 				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
 						applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
 			}
-
-		} catch (Exception e) {
+		}catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
