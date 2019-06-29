@@ -775,10 +775,7 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
             }
 
-
             // start getting relation with bank and loan detail for concession in roi
-
-
             Boolean isBorrowersHavingAccounts=false;
             Boolean isBorrowersAvailingLoans=false;
             Boolean isBorrowersHavingSalaryAccounts=false;
@@ -792,6 +789,11 @@ public class ScoringServiceImpl implements ScoringService {
             Boolean isCheckOffNotChangeSalAcc=false;
             // ENDS HERE CHECK OFF
             
+    		// CIBIL BASED CONCESSION RATE  OF INTEREST
+    		Boolean isCreaditHisotryGreaterSixMonths = false;
+    		Boolean isCreaditHisotryLessThenSixMonths= false;
+    		Boolean isNoCreaditHistory =false;
+    		// ENDS HERE 						
             RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
         	if (!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail)) {
         		
@@ -820,7 +822,39 @@ public class ScoringServiceImpl implements ScoringService {
              scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
              scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
              scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
-        	// ENDS HERE CHECK OFF LOGIC HERE 
+        	// ENDS HERE CHECK OFF LOGIC HERE
+             
+             CibilScoreLogRequest cibilResponse1 = null;
+             
+             CibilRequest cibilRequest1 = new CibilRequest();
+             cibilRequest1.setPan(RetailApplicantDetail.getPan());
+             cibilRequest1.setApplicationId(applicationId);
+             try {
+             	Double cibilActualScore = 0.0d;
+             	cibilResponse1 = cibilClient.getCibilScoreByPanCard(cibilRequest1);
+             	
+             	if(cibilResponse1 == null) {
+             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+             	}
+             	
+             	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
+             	cibilActualScore= Double.parseDouble(cibilResponse1.getActualScore());
+             	}
+             	
+             	if(cibilActualScore < 300 && cibilActualScore > 900){
+             		scoringRequest.setIsCreaditHisotryGreaterSixMonths(isCreaditHisotryGreaterSixMonths);
+             		
+             	}
+             	if (cibilActualScore< 1 && cibilActualScore > 10){
+             		scoringRequest.setIsCreaditHisotryLessThenSixMonths(isCreaditHisotryLessThenSixMonths);
+             	} 
+             	if (cibilActualScore ==  -1){ 
+             	scoringRequest.setIsNoCreaditHistory(isNoCreaditHistory);
+             	}
+             	
+             }catch (Exception e) {
+                 logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE IN PERSONAL LOAN======>");
+     		}
             
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
