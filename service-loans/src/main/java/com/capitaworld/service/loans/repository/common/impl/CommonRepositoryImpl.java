@@ -81,5 +81,9 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		return (Integer) storedProcedureQuery.getSingleResult();
 	}
 
+	@Override
+	public String getEmailIdFromUsers(Long userId) {
+		return (String) manager.createNativeQuery("SELECT u.email FROM users.users u WHERE u.user_id=:userId").setParameter("userId", userId).getSingleResult();
+	}
 
 }
