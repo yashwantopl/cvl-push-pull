@@ -91,6 +91,14 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "is_bureau_score_mandatory")
 	private Boolean isBureauScoreMandatory = false;
 	
+	//Less Than 6 month of Credit History
+	@Column(name = "min_bureau_score_less_than6_month")
+	private Integer minBureauScoreLessThan6Month;
+	
+	//No Credit History
+	@Column(name = "no_bureau_credit_history")
+	private Boolean noBureauCreditHistory = true;
+	
 	
 	// Maximum DPDs (Satisfactory with No Default: DPD) (Days) (Past 12 Months)
 	@Column(name = "max_dpds")
@@ -1204,4 +1212,25 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
 		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
 	}
+
+
+	public Integer getMinBureauScoreLessThan6Month() {
+		return minBureauScoreLessThan6Month;
+	}
+
+
+	public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+		this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+	}
+
+
+	public Boolean getNoBureauCreditHistory() {
+		return noBureauCreditHistory;
+	}
+
+
+	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
+	
 }

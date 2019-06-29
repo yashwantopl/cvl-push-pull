@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +36,12 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
 
     @Autowired
     FacilityDetailsRepository facilityDetailsRepository;
+
+    @Autowired
+    PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
+
+    @Autowired
+    SidbiSpecificService sidbiSpecificService;
 
     @Override
     public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -72,12 +80,28 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
 			List<FacilityDetails> facilityDetailsList = facilityDetailsRepository.getFacilityDetailsListAppId(applicationId);
 			facilityDetailsRequestList = new ArrayList<>(facilityDetailsList.size());
 
-			for (FacilityDetails detail : facilityDetailsList) {
-				FacilityDetailsRequest facilityDetailsRequest = new FacilityDetailsRequest();
-				BeanUtils.copyProperties(detail, facilityDetailsRequest);
-				
-				facilityDetailsRequestList.add(facilityDetailsRequest);
-			}
+			if(!CommonUtils.isObjectNullOrEmpty(facilityDetailsList) && facilityDetailsList.size() == 0){
+			    Integer purposeLoanId = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
+                FacilityDetailsRequest facilityDetailsRequest = new FacilityDetailsRequest();
+
+                Double loanAmt = sidbiSpecificService.getLoanAmountByApplicationId(applicationId);
+
+			    if (purposeLoanId == 1){
+                    facilityDetailsRequest.setRupeeTermLoan(loanAmt);
+                }
+                else {
+                    facilityDetailsRequest.setWorkingCapitalFund(loanAmt);
+                }
+                facilityDetailsRequestList.add(facilityDetailsRequest);
+            }
+            else {
+                for (FacilityDetails detail : facilityDetailsList) {
+                    FacilityDetailsRequest facilityDetailsRequest = new FacilityDetailsRequest();
+                    BeanUtils.copyProperties(detail, facilityDetailsRequest);
+
+                    facilityDetailsRequestList.add(facilityDetailsRequest);
+                }
+            }
 			return facilityDetailsRequestList;
 		}
 

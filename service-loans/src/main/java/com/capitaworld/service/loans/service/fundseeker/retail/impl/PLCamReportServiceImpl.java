@@ -28,6 +28,7 @@ import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
+import com.capitaworld.cibil.api.utility.CibilUtils.ResidenceTypeEnum;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.reports.ReportsClient;
@@ -886,7 +887,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
 			map.put("eligibleLoanAmount", applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValue(applicationProposalMapping.getLoanAmount()) : "-");
 			map.put("eligibleTenure", applicationProposalMapping.getTenure() != null ? CommonUtils.convertValueWithoutDecimal(applicationProposalMapping.getTenure()) :"-");
-			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceTypeHomeLoan.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "-");
+			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "-");
 			map.put("applicantNetWorth", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getNetworth()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getNetworth()) : "-");
 			map.put("annualIncomeOfSpouse", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAnnualIncomeOfSpouse()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getAnnualIncomeOfSpouse()) : "-");
 			map.put("landlineNo", (plRetailApplicantRequest.getContactNo() != null ? plRetailApplicantRequest.getContactNo() : " "));
