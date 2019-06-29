@@ -829,27 +829,28 @@ public class ScoringServiceImpl implements ScoringService {
              CibilRequest cibilRequest1 = new CibilRequest();
              cibilRequest1.setPan(RetailApplicantDetail.getPan());
              cibilRequest1.setApplicationId(applicationId);
+             Double cibilActualScore = 0.0d;
              try {
-             	Double cibilActualScore = 0.0d;
              	cibilResponse1 = cibilClient.getCibilScoreByPanCard(cibilRequest1);
              	
              	if(cibilResponse1 == null) {
-             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Not Found NULL this appliID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
              	}
              	
              	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
              	cibilActualScore= Double.parseDouble(cibilResponse1.getActualScore());
+             	//scoringRequest.setCibilActualScore(cibilActualScore);
              	}
              	
              	if(cibilActualScore < 300 && cibilActualScore > 900){
-             		scoringRequest.setIsCreaditHisotryGreaterSixMonths(isCreaditHisotryGreaterSixMonths);
+             	//	scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
              		
              	}
              	if (cibilActualScore< 1 && cibilActualScore > 10){
-             		scoringRequest.setIsCreaditHisotryLessThenSixMonths(isCreaditHisotryLessThenSixMonths);
+             		//scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
              	} 
              	if (cibilActualScore ==  -1){ 
-             	scoringRequest.setIsNoCreaditHistory(isNoCreaditHistory);
+             	//scoringRequest.setIsNoCreaditHistory(true);
              	}
              	
              }catch (Exception e) {

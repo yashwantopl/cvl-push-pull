@@ -997,19 +997,15 @@ public class PrimaryViewController {
 			notificationId = NotificationAlias.SYS_FP_VIEW;
 		}
 		try {
-			String email = null;
-			UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toUserId));
-	        if (!CommonUtils.isObjectNullOrEmpty(toUsersDetails.getData())) {
-				UsersRequest requestUser = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) toUsersDetails.getData(), UsersRequest.class);
-				if(!CommonUtils.isObjectNullOrEmpty(requestUser)) {
-					email = requestUser.getEmail();	
+			String email = commonRepository.getEmailIdFromUsers(Long.valueOf(toUserId));
+	        if (!CommonUtils.isObjectNullOrEmpty(email)) {
+	        	Integer viewedTeaser = commonRepository.getViewedTeaser(email);
+				if(viewedTeaser != null && viewedTeaser > 0) {
+					notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
+							applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
 				}
 			}	
-			Integer viewedTeaser = commonRepository.getViewedTeaser(email);
-			if(viewedTeaser != null && viewedTeaser > 0) {
-				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
-						applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
-			}
+			
 		}catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}

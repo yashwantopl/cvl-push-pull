@@ -17,4 +17,6 @@ public interface CommonRepository {
 	public Object getMakerDate(Long applicationId);
 	
 	public Integer getViewedTeaser(String emailId);
+	
+	public String getEmailIdFromUsers(Long userId);
 }
