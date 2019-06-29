@@ -768,7 +768,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setEmi(scoringRequestLoans.getEmi());
             scoringRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
             scoringRequest.setEligibleTenure(eligibleTenure);
-
+            scoringRequest.setFoir(scoringRequestLoans.getFoir());
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
             } else {
@@ -1500,7 +1500,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.AVAILABLE_INCOME_PL:
                                 try {
                                     logger.info("netMonthlyIncome===>{}===grossAnnualIncome===>{}== For ApplicationId ==>{}===>FpProductId===>{}",netMonthlyIncome,grossMonthlyIncome,applicationId,fpProductId);
-                                    scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
+                                    scoreParameterRetailRequest.setFoir(scoringRequest.getFoir());
                                     scoreParameterRetailRequest.setIsAvailableIncome_p(true);
 
                                 } catch (Exception e1) {
