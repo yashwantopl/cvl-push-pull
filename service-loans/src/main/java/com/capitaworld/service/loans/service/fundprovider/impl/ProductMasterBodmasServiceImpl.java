@@ -151,6 +151,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         if (CommonUtils.isObjectNullOrEmpty(productParameterRequest.getId())) {
             fpProductConditions = new FpProductConditions();
         } else {
+            logger.info("product condition id ===> {}",productParameterRequest.getId());
             fpProductConditions = conditionsRepository.findOne(productParameterRequest.getId());
         }
 
@@ -189,6 +190,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 if (CommonUtils.isObjectNullOrEmpty(request.getId())) {
                     fpProParameter = new FpProductParameters();
                 } else {
+                    logger.info("product Parameter id ===> {}",request.getId());
                     fpProParameter = parametersRepository.findOne(request.getId());
                 }
 
@@ -212,6 +214,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 if (CommonUtils.isObjectNullOrEmpty(request.getId())) {
                     fpProductParameters = new FpProductParameters();
                 } else {
+                    logger.info("product Parameter id in else condition ===> {}",request.getId());
                     fpProductParameters = parametersRepository.findOne(request.getId());
                 }
                 fpProductParameters.setLogicalCondition(request.getLogicalCondition());
