@@ -110,9 +110,17 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
 				sidbiBasicDetailRequest.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
 				sidbiBasicDetailRequest.setPincode(corporateApplicantDetail.getRegisteredPincode());
-				sidbiBasicDetailRequest.setMsmeRegistrationNumber(corporateApplicantDetail.getMsmeRegistrationNumber());
-				sidbiBasicDetailRequest.setAadhar(corporateApplicantDetail.getAadhar());
-				
+
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getMsmeRegistrationNumber()) && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAadhar())){
+
+					sidbiBasicDetailRequest.setMsmeUamRegistrationNumber(corporateApplicantDetail.getMsmeRegistrationNumber());
+				}
+				else if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getMsmeRegistrationNumber()) && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAadhar())) {
+					sidbiBasicDetailRequest.setMsmeUamRegistrationNumber(corporateApplicantDetail.getAadhar());
+				}
+				else if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getMsmeRegistrationNumber()) && CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAadhar())) {
+					sidbiBasicDetailRequest.setMsmeUamRegistrationNumber(corporateApplicantDetail.getMsmeRegistrationNumber());
+				}
 				
 				if(corporateApplicantDetail.getEstablishmentMonth()!=null && corporateApplicantDetail.getEstablishmentYear()!=null) {
 					String str="01-"+corporateApplicantDetail.getEstablishmentMonth()+"-"+corporateApplicantDetail.getEstablishmentYear();

@@ -63,6 +63,9 @@ public class FsPastPerformanceDetails implements Serializable {
 	@Column(name="compNetWorthNextYear")
 	private Long compNetWorthNextYear;
 
+	@Column(name="contingent_liabilities")
+	private String contingentLiabilities;
+
 
 	public Long getId() {
 		return id;
@@ -182,5 +185,13 @@ public class FsPastPerformanceDetails implements Serializable {
 
 	public void setCompNetWorthNextYear(Long compNetWorthNextYear) {
 		this.compNetWorthNextYear = compNetWorthNextYear;
+	}
+
+	public String getContingentLiabilities() {
+		return contingentLiabilities;
+	}
+
+	public void setContingentLiabilities(String contingentLiabilities) {
+		this.contingentLiabilities = contingentLiabilities;
 	}
 }
