@@ -88,6 +88,12 @@ public class SidbiBasicDetailRequest implements Serializable{
 	private Integer repaymemtMonths;
 
 	private Double loanAmount;
+
+    private Integer moratoriumPeriodMonths;
+
+    private Date declarationDate;
+
+    private String declarationPlace;
 	
 	public Long getId() {
 		return id;
@@ -417,7 +423,31 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.msmeUamRegistrationDate = msmeUamRegistrationDate;
 	}
 
-	@Override
+    public Integer getMoratoriumPeriodMonths() {
+        return moratoriumPeriodMonths;
+    }
+
+    public void setMoratoriumPeriodMonths(Integer moratoriumPeriodMonths) {
+        this.moratoriumPeriodMonths = moratoriumPeriodMonths;
+    }
+
+    public Date getDeclarationDate() {
+        return declarationDate;
+    }
+
+    public void setDeclarationDate(Date declarationDate) {
+        this.declarationDate = declarationDate;
+    }
+
+    public String getDeclarationPlace() {
+        return declarationPlace;
+    }
+
+    public void setDeclarationPlace(String declarationPlace) {
+        this.declarationPlace = declarationPlace;
+    }
+
+    @Override
 	public String toString() {
 		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
 				+ ", organisationName=" + organisationName + ", constitutionId=" + constitutionId + ", industryId="
