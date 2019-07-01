@@ -29,7 +29,7 @@ public class SidbiBasicDetail implements Serializable{
 	private String organisationName;
 	
 	@Column(name="constitution_id")
-	private Long constitutionId;
+	private Integer constitutionId;
 	
 	@Column(name="industry_id")
 	private Long industryId;
@@ -176,10 +176,6 @@ public class SidbiBasicDetail implements Serializable{
 		return organisationName;
 	}
 
-	public Long getConstitutionId() {
-		return constitutionId;
-	}
-
 	public Long getIndustryId() {
 		return industryId;
 	}
@@ -278,7 +274,11 @@ public class SidbiBasicDetail implements Serializable{
 		this.organisationName = organisationName;
 	}
 
-	public void setConstitutionId(Long constitutionId) {
+	public Integer getConstitutionId() {
+		return constitutionId;
+	}
+
+	public void setConstitutionId(Integer constitutionId) {
 		this.constitutionId = constitutionId;
 	}
 

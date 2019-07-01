@@ -15,7 +15,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private String organisationName;
 	
-	private Long constitutionId;
+	private Integer constitutionId;
 	
 	private Long industryId;
 	
@@ -127,11 +127,11 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.organisationName = organisationName;
 	}
 
-	public Long getConstitutionId() {
+	public Integer getConstitutionId() {
 		return constitutionId;
 	}
 
-	public void setConstitutionId(Long constitutionId) {
+	public void setConstitutionId(Integer constitutionId) {
 		this.constitutionId = constitutionId;
 	}
 
