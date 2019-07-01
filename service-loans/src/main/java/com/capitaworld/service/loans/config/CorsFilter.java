@@ -19,8 +19,13 @@ public class CorsFilter implements Filter {
 			    "Content-Type, Access-Control-Allow-Headers, X-Requested-With,tk_ac,ur_cu,tk_rc,tk_lg,req_auth,*");
 		response.setHeader("X-Frame-Options","ALLOW-FROM *.capitaworld.com");
 		HttpServletRequest request = ((HttpServletRequest) req);
+		String origin = request.getHeader("origin");
 		if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-			response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+			if((origin.contains("http://localhost:") || origin.contains("https://localhost:"))){
+				response.setStatus(HttpServletResponse.SC_OK);
+			}else {
+				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+			}
 		} else {
 			chain.doFilter(req, res);
 		}
