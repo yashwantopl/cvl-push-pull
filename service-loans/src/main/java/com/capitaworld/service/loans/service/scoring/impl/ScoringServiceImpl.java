@@ -1320,15 +1320,20 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.Retail.NO_OF_YEAR_CURRENT_LOCATION_PL:
                                 try {
-                                    Integer year = retailApplicantDetail.getResidenceSinceYear();
-                                    Integer month = retailApplicantDetail.getResidenceSinceMonth();
-                                    Double totalYears = 0.0;
-                                    totalYears+=year;
-                                    if(!CommonUtils.isObjectNullOrEmpty(month)){
-                                        totalYears += (month/12);
+                                    if(retailApplicantDetail.getResidenceSinceYear() != null && retailApplicantDetail.getResidenceSinceMonth() != null) {
+                                        Integer year = retailApplicantDetail.getResidenceSinceYear();
+                                        Integer month = retailApplicantDetail.getResidenceSinceMonth();
+                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
+                                        String s = "01/" + month + "/" + year;
+                                        logger.info("Starting Date of Staying in Current Location For PL==== > {}",s);
+                                        Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
+                                        Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
+                                        logger.info("No Of Years Staying in Current Location For PL==== > {}",noStayLoc);
+                                        scoreParameterRetailRequest.setNoOfYearCurrentLocation(noStayLoc);
+                                        scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
+                                    }else{
+                                        logger.error("NO_OF_YEAR_CURRENT_LOCAITON_PL parameter {},{}: ", retailApplicantDetail.getResidenceSinceYear(),retailApplicantDetail.getResidenceSinceMonth());
                                     }
-                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(totalYears);
-                                    scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
                                 } catch (Exception e) {
                                     logger.error("error while getting NO_OF_YEAR_CURRENT_LOCAITON_PL parameter : ", e);
                                     scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(false);
