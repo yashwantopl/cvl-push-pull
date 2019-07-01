@@ -23,7 +23,6 @@ import com.capitaworld.service.loans.repository.sidbi.PrimaryCollateralSecurityR
 import com.capitaworld.service.loans.service.sidbi.PrimaryCollateralSecurityService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.enums.ParticularOfSecurity;
 
 /**
  * @author vijay.chauhan
@@ -54,7 +53,6 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 				}
 				
 				BeanUtils.copyProperties(primaryCollateralSecurityRequest, primaryCollateralSecurity);
-//				primaryCollateralSecurity.setIsActive(true);
 				primaryCollateralSecurity.setApplicationId(frameRequest.getApplicationId());
 				primaryCollateralSecurity.setModifiedBy(frameRequest.getUserId());
 				primaryCollateralSecurity.setModifiedDate(new Date());
@@ -80,9 +78,6 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 			for (PrimaryCollateralSecurity detail : primaryCollateralSecurity) {
 				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = new PrimaryCollateralSecurityRequest();
 				BeanUtils.copyProperties(detail, primaryCollateralSecurityRequest);
-				
-//				primaryCollateralSecurityRequest.setParticularsId(ParticularOfSecurity.getById(primaryCollateralSecurityRequest.getParticulars())).getId());
-				
 				primaryCollateralSecurityList.add(primaryCollateralSecurityRequest);
 			}
 			return primaryCollateralSecurityList;
