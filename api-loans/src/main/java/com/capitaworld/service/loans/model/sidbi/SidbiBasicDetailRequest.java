@@ -65,11 +65,9 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Date commencementDate;
 	
-	private String msmeRegistrationNumber;
+	private String msmeUamRegistrationNumber;
 	
-	private Date msmeRegistrationDate;
-	
-	private String aadhar;
+	private Date msmeUamRegistrationDate;
 	
 	private String associatedGroup;
 	
@@ -323,30 +321,6 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.commencementDate = commencementDate;
 	}
 
-	public String getMsmeRegistrationNumber() {
-		return msmeRegistrationNumber;
-	}
-
-	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
-		this.msmeRegistrationNumber = msmeRegistrationNumber;
-	}
-
-	public Date getMsmeRegistrationDate() {
-		return msmeRegistrationDate;
-	}
-
-	public void setMsmeRegistrationDate(Date msmeRegistrationDate) {
-		this.msmeRegistrationDate = msmeRegistrationDate;
-	}
-
-	public String getAadhar() {
-		return aadhar;
-	}
-
-	public void setAadhar(String aadhar) {
-		this.aadhar = aadhar;
-	}
-
 	public String getAssociatedGroup() {
 		return associatedGroup;
 	}
@@ -427,51 +401,42 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.loanAmount = loanAmount;
 	}
 
+	public String getMsmeUamRegistrationNumber() {
+		return msmeUamRegistrationNumber;
+	}
+
+	public void setMsmeUamRegistrationNumber(String msmeUamRegistrationNumber) {
+		this.msmeUamRegistrationNumber = msmeUamRegistrationNumber;
+	}
+
+	public Date getMsmeUamRegistrationDate() {
+		return msmeUamRegistrationDate;
+	}
+
+	public void setMsmeUamRegistrationDate(Date msmeUamRegistrationDate) {
+		this.msmeUamRegistrationDate = msmeUamRegistrationDate;
+	}
+
 	@Override
 	public String toString() {
-		return "SidbiBasicDetailRequest{" +
-				"id=" + id +
-				", clientId=" + clientId +
-				", applicationId=" + applicationId +
-				", organisationName='" + organisationName + '\'' +
-				", constitutionId=" + constitutionId +
-				", industryId=" + industryId +
-				", premiseNumber='" + premiseNumber + '\'' +
-				", streetName='" + streetName + '\'' +
-				", landMark='" + landMark + '\'' +
-				", pincode=" + pincode +
-				", exisFactPremiseNumber='" + exisFactPremiseNumber + '\'' +
-				", exisFactStreetName='" + exisFactStreetName + '\'' +
-				", exisFactLandMark='" + exisFactLandMark + '\'' +
-				", exisFactPincode=" + exisFactPincode +
-				", exisFactOwned=" + exisFactOwned +
-				", exisFactRanted=" + exisFactRanted +
-				", exisFactLeased=" + exisFactLeased +
-				", propFactPremiseNumber='" + propFactPremiseNumber + '\'' +
-				", propFactStreetName='" + propFactStreetName + '\'' +
-				", propFactLandMark='" + propFactLandMark + '\'' +
-				", propFactPincode=" + propFactPincode +
-				", propFactOwned=" + propFactOwned +
-				", propFactRanted=" + propFactRanted +
-				", propFactLeased=" + propFactLeased +
-				", landlineNo='" + landlineNo + '\'' +
-				", mobile='" + mobile + '\'' +
-				", email='" + email + '\'' +
-				", establishmentDate=" + establishmentDate +
-				", commencementDate=" + commencementDate +
-				", msmeRegistrationNumber='" + msmeRegistrationNumber + '\'' +
-				", msmeRegistrationDate=" + msmeRegistrationDate +
-				", aadhar='" + aadhar + '\'' +
-				", associatedGroup='" + associatedGroup + '\'' +
-				", sidbiBranch='" + sidbiBranch + '\'' +
-				", exisitngActivity=" + exisitngActivity +
-				", activitySince='" + activitySince + '\'' +
-				", proposedActivity='" + proposedActivity + '\'' +
-				", trialRunEndDate=" + trialRunEndDate +
-				", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE +
-				", repaymemtYears=" + repaymemtYears +
-				", repaymemtMonths=" + repaymemtMonths +
-				", loanAmount=" + loanAmount +
-				'}';
+		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
+				+ ", organisationName=" + organisationName + ", constitutionId=" + constitutionId + ", industryId="
+				+ industryId + ", premiseNumber=" + premiseNumber + ", streetName=" + streetName + ", landMark="
+				+ landMark + ", pincode=" + pincode + ", exisFactPremiseNumber=" + exisFactPremiseNumber
+				+ ", exisFactStreetName=" + exisFactStreetName + ", exisFactLandMark=" + exisFactLandMark
+				+ ", exisFactPincode=" + exisFactPincode + ", exisFactOwned=" + exisFactOwned + ", exisFactRanted="
+				+ exisFactRanted + ", exisFactLeased=" + exisFactLeased + ", propFactPremiseNumber="
+				+ propFactPremiseNumber + ", propFactStreetName=" + propFactStreetName + ", propFactLandMark="
+				+ propFactLandMark + ", propFactPincode=" + propFactPincode + ", propFactOwned=" + propFactOwned
+				+ ", propFactRanted=" + propFactRanted + ", propFactLeased=" + propFactLeased + ", landlineNo="
+				+ landlineNo + ", mobile=" + mobile + ", email=" + email + ", establishmentDate=" + establishmentDate
+				+ ", commencementDate=" + commencementDate + ", msmeUamRegistrationNumber=" + msmeUamRegistrationNumber
+				+ ", msmeUamRegistrationDate=" + msmeUamRegistrationDate + ", associatedGroup=" + associatedGroup
+				+ ", sidbiBranch=" + sidbiBranch + ", exisitngActivity=" + exisitngActivity + ", activitySince="
+				+ activitySince + ", proposedActivity=" + proposedActivity + ", trialRunEndDate=" + trialRunEndDate
+				+ ", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE + ", repaymemtYears=" + repaymemtYears
+				+ ", repaymemtMonths=" + repaymemtMonths + ", loanAmount=" + loanAmount + "]";
 	}
+
+	
 }

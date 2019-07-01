@@ -103,15 +103,12 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "commencement_date")
 	private Date commencementDate;
 	
-	@Column(name= "msme_registration_number")
-	private String msmeRegistrationNumber;
+	@Column(name= "msme_uam_reg_no")
+	private String msmeUamRegistrationNumber;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "msme_registration_date")
-	private Date msmeRegistrationDate;
-	
-	@Column(name = "aadhar")
-	private String aadhar;
+	@Column(name = "msme_uam_reg_date")
+	private Date msmeUamRegistrationDate;
 	
 	@Column(name = "associated_group")
 	private String associatedGroup;
@@ -216,18 +213,6 @@ public class SidbiBasicDetail implements Serializable{
 		return commencementDate;
 	}
 
-	public String getMsmeRegistrationNumber() {
-		return msmeRegistrationNumber;
-	}
-
-	public Date getMsmeRegistrationDate() {
-		return msmeRegistrationDate;
-	}
-
-	public String getAadhar() {
-		return aadhar;
-	}
-
 	public String getAssociatedGroup() {
 		return associatedGroup;
 	}
@@ -330,17 +315,6 @@ public class SidbiBasicDetail implements Serializable{
 		this.commencementDate = commencementDate;
 	}
 
-	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
-		this.msmeRegistrationNumber = msmeRegistrationNumber;
-	}
-
-	public void setMsmeRegistrationDate(Date msmeRegistrationDate) {
-		this.msmeRegistrationDate = msmeRegistrationDate;
-	}
-
-	public void setAadhar(String aadhar) {
-		this.aadhar = aadhar;
-	}
 
 	public void setAssociatedGroup(String associatedGroup) {
 		this.associatedGroup = associatedGroup;
@@ -521,4 +495,22 @@ public class SidbiBasicDetail implements Serializable{
 	public void setRepaymemtMonths(Integer repaymemtMonths) {
 		this.repaymemtMonths = repaymemtMonths;
 	}
+
+	public String getMsmeUamRegistrationNumber() {
+		return msmeUamRegistrationNumber;
+	}
+
+	public void setMsmeUamRegistrationNumber(String msmeUamRegistrationNumber) {
+		this.msmeUamRegistrationNumber = msmeUamRegistrationNumber;
+	}
+
+	public Date getMsmeUamRegistrationDate() {
+		return msmeUamRegistrationDate;
+	}
+
+	public void setMsmeUamRegistrationDate(Date msmeUamRegistrationDate) {
+		this.msmeUamRegistrationDate = msmeUamRegistrationDate;
+	}
+	
+	
 }
