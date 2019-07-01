@@ -12,3 +12,5 @@ ALTER TABLE `loan_application`.`fs_sidbi_primary_collateral_security` CHANGE `pa
 
 ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` CHANGE `msme_registration_date` `msme_uam_reg_date` DATETIME NULL, 
 CHANGE `msme_registration_number` `msme_uam_reg_no` VARCHAR(255) CHARSET latin1 COLLATE latin1_swedish_ci NULL;  
+
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` DROP COLUMN `aadhar`; 
