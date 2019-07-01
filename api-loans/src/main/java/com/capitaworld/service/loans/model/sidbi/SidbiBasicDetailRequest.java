@@ -75,7 +75,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private String sidbiBranch;
 	
-	private Integer exisitngActivity;
+	private String exisitngActivity;
 	
 	private String activitySince;
 	
@@ -361,11 +361,11 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.sidbiBranch = sidbiBranch;
 	}
 
-	public Integer getExisitngActivity() {
+	public String getExisitngActivity() {
 		return exisitngActivity;
 	}
 
-	public void setExisitngActivity(Integer exisitngActivity) {
+	public void setExisitngActivity(String exisitngActivity) {
 		this.exisitngActivity = exisitngActivity;
 	}
 
