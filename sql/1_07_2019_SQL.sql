@@ -11,4 +11,9 @@ ADD COLUMN `existing_charge_holder` VARCHAR(500) NULL AFTER `particulars_of_char
 ALTER TABLE `loan_application`.`fs_sidbi_primary_collateral_security` CHANGE `particulars_id` `particulars` VARCHAR(2000) NULL; 
 
 ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` CHANGE `msme_registration_date` `msme_uam_reg_date` DATETIME NULL, 
-CHANGE `msme_registration_number` `msme_uam_reg_no` VARCHAR(255) CHARSET latin1 COLLATE latin1_swedish_ci NULL;  
+CHANGE `msme_registration_number` `msme_uam_reg_no` VARCHAR(255) CHARSET latin1 COLLATE latin1_swedish_ci NULL;
+
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` ADD COLUMN `moratorium_period_months` INT(2) NULL AFTER `repayment_years`;
+
+ALTER TABLE `loan_application`.`fs_past_performance_details` ADD COLUMN `contingent_liabilities` VARCHAR(50) NULL AFTER `compNetWorthNextYear`;
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` ADD COLUMN `declaration_date` DATETIME NULL AFTER `prop_fact_leased`, ADD COLUMN `declaration_place` VARCHAR(50) NULL AFTER `declaration_date`;

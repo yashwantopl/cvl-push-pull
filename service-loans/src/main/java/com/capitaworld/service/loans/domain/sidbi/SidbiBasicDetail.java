@@ -138,6 +138,15 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name="repayment_months")
 	private Integer repaymemtMonths;
 
+	@Column(name="moratorium_period_months")
+	private Integer moratoriumPeriodMonths;
+
+	@Column(name="declaration_date")
+	private Date declarationDate;
+
+	@Column(name="declaration_place")
+	private String declarationPlace;
+
 	@Column(name="is_active")
 	private Boolean isActive;
 	
@@ -511,6 +520,28 @@ public class SidbiBasicDetail implements Serializable{
 	public void setMsmeUamRegistrationDate(Date msmeUamRegistrationDate) {
 		this.msmeUamRegistrationDate = msmeUamRegistrationDate;
 	}
-	
-	
+
+	public Integer getMoratoriumPeriodMonths() {
+		return moratoriumPeriodMonths;
+	}
+
+	public void setMoratoriumPeriodMonths(Integer moratoriumPeriodMonths) {
+		this.moratoriumPeriodMonths = moratoriumPeriodMonths;
+	}
+
+	public Date getDeclarationDate() {
+		return declarationDate;
+	}
+
+	public void setDeclarationDate(Date declarationDate) {
+		this.declarationDate = declarationDate;
+	}
+
+	public String getDeclarationPlace() {
+		return declarationPlace;
+	}
+
+	public void setDeclarationPlace(String declarationPlace) {
+		this.declarationPlace = declarationPlace;
+	}
 }
