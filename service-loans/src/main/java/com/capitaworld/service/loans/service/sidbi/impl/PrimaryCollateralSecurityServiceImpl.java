@@ -54,7 +54,7 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 				}
 				
 				BeanUtils.copyProperties(primaryCollateralSecurityRequest, primaryCollateralSecurity);
-				primaryCollateralSecurity.setIsActive(true);
+//				primaryCollateralSecurity.setIsActive(true);
 				primaryCollateralSecurity.setApplicationId(frameRequest.getApplicationId());
 				primaryCollateralSecurity.setModifiedBy(frameRequest.getUserId());
 				primaryCollateralSecurity.setModifiedDate(new Date());
@@ -81,7 +81,7 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = new PrimaryCollateralSecurityRequest();
 				BeanUtils.copyProperties(detail, primaryCollateralSecurityRequest);
 				
-				primaryCollateralSecurityRequest.setParticularsName(ParticularOfSecurity.getById(primaryCollateralSecurityRequest.getParticularsId()).getValue());
+//				primaryCollateralSecurityRequest.setParticularsId(ParticularOfSecurity.getById(primaryCollateralSecurityRequest.getParticulars())).getId());
 				
 				primaryCollateralSecurityList.add(primaryCollateralSecurityRequest);
 			}
