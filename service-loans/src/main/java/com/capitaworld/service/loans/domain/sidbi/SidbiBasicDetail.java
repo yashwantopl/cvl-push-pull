@@ -120,7 +120,7 @@ public class SidbiBasicDetail implements Serializable{
 	private String sidbiBranch;
 	
 	@Column(name = "exisitng_activity")
-	private Integer exisitngActivity;
+	private String exisitngActivity;
 	
 	@Column(name = "activity_since")
 	private String activitySince;
@@ -236,7 +236,7 @@ public class SidbiBasicDetail implements Serializable{
 		return sidbiBranch;
 	}
 
-	public Integer getExisitngActivity() {
+	public String getExisitngActivity() {
 		return exisitngActivity;
 	}
 
@@ -350,7 +350,7 @@ public class SidbiBasicDetail implements Serializable{
 		this.sidbiBranch = sidbiBranch;
 	}
 
-	public void setExisitngActivity(Integer exisitngActivity) {
+	public void setExisitngActivity(String exisitngActivity) {
 		this.exisitngActivity = exisitngActivity;
 	}
 
