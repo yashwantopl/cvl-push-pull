@@ -25,11 +25,8 @@ public class ProjectCostDetail implements Serializable{
 	@Column(name="application_id")
 	private Long applicationId;
 	
-	@Column(name="particulars_id")
-	private Integer particularsId;
-	
-	@Column(name="other_particular")
-	private String otherParticular;
+	@Column(name="particular_name")
+	private String particularName;
 	
 	@Column(name="already_incurred")
 	private Double alreadyIncurred;
@@ -39,6 +36,9 @@ public class ProjectCostDetail implements Serializable{
 	
 	@Column(name="total_cost")
 	private Double totalCost;
+	
+	@Column(name="is_editable")
+	private Boolean isEditable;
 	
 	@Column(name="is_active")
 	private Boolean isActive;
@@ -65,9 +65,6 @@ public class ProjectCostDetail implements Serializable{
 		return applicationId;
 	}
 
-	public String getOtherParticular() {
-		return otherParticular;
-	}
 
 	public Double getAlreadyIncurred() {
 		return alreadyIncurred;
@@ -109,9 +106,6 @@ public class ProjectCostDetail implements Serializable{
 		this.applicationId = applicationId;
 	}
 
-	public void setOtherParticular(String otherParticular) {
-		this.otherParticular = otherParticular;
-	}
 
 	public void setAlreadyIncurred(Double alreadyIncurred) {
 		this.alreadyIncurred = alreadyIncurred;
@@ -145,12 +139,21 @@ public class ProjectCostDetail implements Serializable{
 		this.modifiedDate = modifiedDate;
 	}
 
-	public Integer getParticularsId() {
-		return particularsId;
+
+	public String getParticularName() {
+		return particularName;
 	}
 
-	public void setParticularsId(Integer particularsId) {
-		this.particularsId = particularsId;
+	public void setParticularName(String particularName) {
+		this.particularName = particularName;
+	}
+
+	public Boolean getIsEditable() {
+		return isEditable;
+	}
+
+	public void setIsEditable(Boolean isEditable) {
+		this.isEditable = isEditable;
 	}
 
 	
