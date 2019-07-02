@@ -70,7 +70,7 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Double minRiskScoreModelCoApp;
 	private Boolean isRiskScoreRetailCoAppDisplay = false;
 	private Boolean isRiskScoreRetailCoAppMandatory = false;
-
+	
 
 	// Total Current Job Experience (Yrs.)
 	private Integer minCurrentJobExperience;
