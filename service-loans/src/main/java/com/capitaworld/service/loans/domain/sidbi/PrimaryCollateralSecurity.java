@@ -32,14 +32,17 @@ public class PrimaryCollateralSecurity implements Serializable {
 	@Column(name="application_id")
 	private Long applicationId;
 	
-	@Column(name="particulars_id")
-	private Integer particularsId;
+	@Column(name="particulars")
+	private String particulars;
 	
 	@Column(name="other_particular")
 	private String otherParticular;
 	
 	@Column(name="name_Of_owner")
 	private String nameOfOwner;
+	
+	@Column(name="relationship_with_applicant")
+	private String relationshipWithApplicant;
 	
 	@Column(name="nature")
 	private String nature;
@@ -52,6 +55,9 @@ public class PrimaryCollateralSecurity implements Serializable {
 	
 	@Column(name="particulars_of_charge")
 	private String particularsOfCharge;
+
+	@Column(name="existing_charge_holder")
+	private String exisChargeHolder;
 	
 	@Column(name="charge_offered_to_sidbi")
 	private String chargeOfferedToSIDBI;
@@ -90,12 +96,14 @@ public class PrimaryCollateralSecurity implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public Integer getParticularsId() {
-		return particularsId;
+	
+
+	public String getParticulars() {
+		return particulars;
 	}
 
-	public void setParticularsId(Integer particularsId) {
-		this.particularsId = particularsId;
+	public void setParticulars(String particulars) {
+		this.particulars = particulars;
 	}
 
 	public String getOtherParticular() {
@@ -193,6 +201,23 @@ public class PrimaryCollateralSecurity implements Serializable {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+
+	public String getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
+	}
+
+	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
+	}
+
+	public String getExisChargeHolder() {
+		return exisChargeHolder;
+	}
+
+	public void setExisChargeHolder(String exisChargeHolder) {
+		this.exisChargeHolder = exisChargeHolder;
+	}
+
 	
 	
 }

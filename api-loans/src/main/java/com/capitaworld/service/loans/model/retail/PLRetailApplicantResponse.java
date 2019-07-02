@@ -143,6 +143,7 @@ public class PLRetailApplicantResponse implements Serializable {
 	private String permAddDist;
 	private String permAddTaluko;
 	private Double netMonthlyIncome;
+	private Boolean isIncomeCons;
 	
 	
 
@@ -1072,4 +1073,13 @@ public class PLRetailApplicantResponse implements Serializable {
 	public void setPermAddTaluko(String permAddTaluko) {
 		this.permAddTaluko = permAddTaluko;
 	}
+
+	public Boolean getIsIncomeCons() {
+		return isIncomeCons;
+	}
+
+	public void setIsIncomeCons(Boolean isIncomeCons) {
+		this.isIncomeCons = isIncomeCons;
+	}
+	
 }

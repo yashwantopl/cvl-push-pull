@@ -15,7 +15,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private String organisationName;
 	
-	private Long constitutionId;
+	private Integer constitutionId;
 	
 	private Long industryId;
 	
@@ -65,17 +65,15 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Date commencementDate;
 	
-	private String msmeRegistrationNumber;
+	private String msmeUamRegistrationNumber;
 	
-	private Date msmeRegistrationDate;
-	
-	private String aadhar;
+	private Date msmeUamRegistrationDate;
 	
 	private String associatedGroup;
 	
 	private String sidbiBranch;
 	
-	private Integer exisitngActivity;
+	private String exisitngActivity;
 	
 	private String activitySince;
 	
@@ -84,9 +82,26 @@ public class SidbiBasicDetailRequest implements Serializable{
 	private Date trialRunEndDate;
 	
 	private Boolean isCoveredUnderCGTMSE;
-	
-	private Integer repaymemtPeriod;
 
+	private Integer repaymemtYears;
+
+	private Integer repaymemtMonths;
+
+	private Double loanAmount;
+
+    private Integer moratoriumPeriodMonths;
+
+    private Date declarationDate;
+
+    private String declarationPlace;
+    
+    private Boolean isCopyOfExistingFactAddr;
+    
+    private Boolean isCopyOfRegisteredAddr;
+    
+    private String activityDetail;
+    
+	
 	public Long getId() {
 		return id;
 	}
@@ -119,11 +134,11 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.organisationName = organisationName;
 	}
 
-	public Long getConstitutionId() {
+	public Integer getConstitutionId() {
 		return constitutionId;
 	}
 
-	public void setConstitutionId(Long constitutionId) {
+	public void setConstitutionId(Integer constitutionId) {
 		this.constitutionId = constitutionId;
 	}
 
@@ -319,30 +334,6 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.commencementDate = commencementDate;
 	}
 
-	public String getMsmeRegistrationNumber() {
-		return msmeRegistrationNumber;
-	}
-
-	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
-		this.msmeRegistrationNumber = msmeRegistrationNumber;
-	}
-
-	public Date getMsmeRegistrationDate() {
-		return msmeRegistrationDate;
-	}
-
-	public void setMsmeRegistrationDate(Date msmeRegistrationDate) {
-		this.msmeRegistrationDate = msmeRegistrationDate;
-	}
-
-	public String getAadhar() {
-		return aadhar;
-	}
-
-	public void setAadhar(String aadhar) {
-		this.aadhar = aadhar;
-	}
-
 	public String getAssociatedGroup() {
 		return associatedGroup;
 	}
@@ -359,11 +350,11 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.sidbiBranch = sidbiBranch;
 	}
 
-	public Integer getExisitngActivity() {
+	public String getExisitngActivity() {
 		return exisitngActivity;
 	}
 
-	public void setExisitngActivity(Integer exisitngActivity) {
+	public void setExisitngActivity(String exisitngActivity) {
 		this.exisitngActivity = exisitngActivity;
 	}
 
@@ -399,12 +390,94 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.isCoveredUnderCGTMSE = isCoveredUnderCGTMSE;
 	}
 
-	public Integer getRepaymemtPeriod() {
-		return repaymemtPeriod;
+	public Integer getRepaymemtYears() {
+		return repaymemtYears;
 	}
 
-	public void setRepaymemtPeriod(Integer repaymemtPeriod) {
-		this.repaymemtPeriod = repaymemtPeriod;
+	public void setRepaymemtYears(Integer repaymemtYears) {
+		this.repaymemtYears = repaymemtYears;
+	}
+
+	public Integer getRepaymemtMonths() {
+		return repaymemtMonths;
+	}
+
+	public void setRepaymemtMonths(Integer repaymemtMonths) {
+		this.repaymemtMonths = repaymemtMonths;
+	}
+
+	public Double getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(Double loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+
+	public String getMsmeUamRegistrationNumber() {
+		return msmeUamRegistrationNumber;
+	}
+
+	public void setMsmeUamRegistrationNumber(String msmeUamRegistrationNumber) {
+		this.msmeUamRegistrationNumber = msmeUamRegistrationNumber;
+	}
+
+	public Date getMsmeUamRegistrationDate() {
+		return msmeUamRegistrationDate;
+	}
+
+	public void setMsmeUamRegistrationDate(Date msmeUamRegistrationDate) {
+		this.msmeUamRegistrationDate = msmeUamRegistrationDate;
+	}
+
+    public Integer getMoratoriumPeriodMonths() {
+        return moratoriumPeriodMonths;
+    }
+
+    public void setMoratoriumPeriodMonths(Integer moratoriumPeriodMonths) {
+        this.moratoriumPeriodMonths = moratoriumPeriodMonths;
+    }
+
+    public Date getDeclarationDate() {
+        return declarationDate;
+    }
+
+    public void setDeclarationDate(Date declarationDate) {
+        this.declarationDate = declarationDate;
+    }
+
+    public String getDeclarationPlace() {
+        return declarationPlace;
+    }
+
+    public void setDeclarationPlace(String declarationPlace) {
+        this.declarationPlace = declarationPlace;
+    }
+
+    
+
+	public Boolean getIsCopyOfExistingFactAddr() {
+		return isCopyOfExistingFactAddr;
+	}
+
+	public void setIsCopyOfExistingFactAddr(Boolean isCopyOfExistingFactAddr) {
+		this.isCopyOfExistingFactAddr = isCopyOfExistingFactAddr;
+	}
+
+	public Boolean getIsCopyOfRegisteredAddr() {
+		return isCopyOfRegisteredAddr;
+	}
+
+	public void setIsCopyOfRegisteredAddr(Boolean isCopyOfRegisteredAddr) {
+		this.isCopyOfRegisteredAddr = isCopyOfRegisteredAddr;
+	}
+
+	public String getActivityDetail() {
+		return activityDetail;
+	}
+
+	public void setActivityDetail(String activityDetail) {
+		this.activityDetail = activityDetail;
 	}
 
 	@Override
@@ -420,13 +493,13 @@ public class SidbiBasicDetailRequest implements Serializable{
 				+ propFactLandMark + ", propFactPincode=" + propFactPincode + ", propFactOwned=" + propFactOwned
 				+ ", propFactRanted=" + propFactRanted + ", propFactLeased=" + propFactLeased + ", landlineNo="
 				+ landlineNo + ", mobile=" + mobile + ", email=" + email + ", establishmentDate=" + establishmentDate
-				+ ", commencementDate=" + commencementDate + ", msmeRegistrationNumber=" + msmeRegistrationNumber
-				+ ", msmeRegistrationDate=" + msmeRegistrationDate + ", aadhar=" + aadhar + ", associatedGroup="
-				+ associatedGroup + ", sidbiBranch=" + sidbiBranch + ", exisitngActivity=" + exisitngActivity
-				+ ", activitySince=" + activitySince + ", proposedActivity=" + proposedActivity + ", trialRunEndDate="
-				+ trialRunEndDate + ", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE + ", repaymemtPeriod="
-				+ repaymemtPeriod + "]";
+				+ ", commencementDate=" + commencementDate + ", msmeUamRegistrationNumber=" + msmeUamRegistrationNumber
+				+ ", msmeUamRegistrationDate=" + msmeUamRegistrationDate + ", associatedGroup=" + associatedGroup
+				+ ", sidbiBranch=" + sidbiBranch + ", exisitngActivity=" + exisitngActivity + ", activitySince="
+				+ activitySince + ", proposedActivity=" + proposedActivity + ", trialRunEndDate=" + trialRunEndDate
+				+ ", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE + ", repaymemtYears=" + repaymemtYears
+				+ ", repaymemtMonths=" + repaymemtMonths + ", loanAmount=" + loanAmount + "]";
 	}
-	
+
 	
 }

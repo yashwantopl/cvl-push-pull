@@ -14,13 +14,18 @@ public class CorsFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) res;
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setHeader("Access-Control-Allow-Methods", "*");
-		response.setHeader("Access-Control-Max-Age", "3600");
+		response.setHeader("Access-Control-Max-Age", "-1");
 		response.setHeader("Access-Control-Allow-Headers",
 			    "Content-Type, Access-Control-Allow-Headers, X-Requested-With,tk_ac,ur_cu,tk_rc,tk_lg,req_auth,*");
 		response.setHeader("X-Frame-Options","ALLOW-FROM *.capitaworld.com");
 		HttpServletRequest request = ((HttpServletRequest) req);
+		String origin = request.getHeader("origin");
 		if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-			response.setStatus(HttpServletResponse.SC_OK);
+			if((origin.contains("http://localhost:") || origin.contains("https://localhost:"))){
+				response.setStatus(HttpServletResponse.SC_OK);
+			}else {
+				response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+			}
 		} else {
 			chain.doFilter(req, res);
 		}

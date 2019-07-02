@@ -89,6 +89,12 @@ public class RetailProduct extends ProductMasterRequest {
 	private Double minBureauScore;
 
 	private Double maxBureauScore;
+	
+	//Less Than 6 month of Credit History
+	private Integer minBureauScoreLessThan6Month;
+	
+	//No Credit History
+	private Boolean noBureauCreditHistory = true;
 
 	private Boolean isBureauScoreDisplay= false;
 
@@ -909,9 +915,20 @@ public class RetailProduct extends ProductMasterRequest {
 	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
 		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
 	}
-	
-	
 
-	
+	public Integer getMinBureauScoreLessThan6Month() {
+		return minBureauScoreLessThan6Month;
+	}
 
+	public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+		this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+	}
+
+	public Boolean getNoBureauCreditHistory() {
+		return noBureauCreditHistory;
+	}
+
+	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
 }

@@ -225,5 +225,25 @@ public class ProductMasterBodmasController {
 
 
     }
+    @GetMapping(value = "/activeInActiveProduct/{productId}/{applicationStage}/{status}")
+    public ResponseEntity<LoansResponse> activeInActiveProduct(@PathVariable(value = "productId") Long productId, @PathVariable(value = "applicationStage")Integer applicationStage,
+                                                               @PathVariable(value = "status")boolean status, HttpServletRequest request) {
+        // request must not be null
+        CommonDocumentUtils.startHook(logger, "Update active in active product");
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            boolean response = productMasterBodmasService.activeInActiveProduct(userId,productId,applicationStage,status);
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(response);
+            CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
+            return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
 
 }
