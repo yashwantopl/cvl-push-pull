@@ -61,6 +61,13 @@ public class FpProductParameters implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    public FpProductParameters() {
+    }
+
+    public FpProductParameters(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
