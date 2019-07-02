@@ -98,6 +98,7 @@ import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -2140,8 +2141,16 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
             				if(retailApplicantDetail.getEmploymentType() != null && !OccupationNatureNTB.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())) {
-            					scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
-                		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));            					
+            					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(retailApplicantDetail.getEmploymentType()) 
+            							|| OccupationNatureNTB.PENSIONER.getId().equals(retailApplicantDetail.getEmploymentType())
+            							|| OccupationNatureNTB.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
+            						            						
+            					}else {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));
+            					}
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
@@ -2737,8 +2746,16 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
             				if(coApplicantDetail.getEmploymentType() != null && !OccupationNatureNTB.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())) {
-            					scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
-                		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));            					
+            					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(coApplicantDetail.getEmploymentType()) 
+            							|| OccupationNatureNTB.PENSIONER.getId().equals(coApplicantDetail.getEmploymentType())
+            							|| OccupationNatureNTB.OTHERS.getId().equals(coApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
+            						            						
+            					}else {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));
+            					}
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
