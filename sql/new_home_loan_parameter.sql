@@ -693,3 +693,18 @@ ALTER TABLE `scoring_sidbi`.`model_parameter_temp` ADD COLUMN employment_type_id
 
 UPDATE `scoring_sidbi`.`field_mapping` f SET f.`employment_type_id` = 2 WHERE f.`field_master_id` IN (SELECT fm.`id` FROM `scoring_sidbi`.`field_master` fm WHERE fm.`name` IN ('EMPLOYMENT_CATEG_JOB_HL','CURRENT_JOB_EXP_HL'));
 UPDATE `scoring_sidbi`.`field_mapping` f SET f.`employment_type_id` = 3 WHERE f.`field_master_id` IN (SELECT fm.`id` FROM `scoring_sidbi`.`field_master` fm WHERE fm.`name` IN ('EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED_HL'));
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_risk_score_model_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_risk_score_model_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;

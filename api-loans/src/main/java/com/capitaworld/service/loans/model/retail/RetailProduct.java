@@ -118,12 +118,12 @@ public class RetailProduct extends ProductMasterRequest {
 	
 	//Risk Model For Other than Salaried
 	private Double minRiskScoreRetailOthThnSal;
-	private Boolean isRiskScoreRetailOthThnSalDisplay=false;
-	private Boolean isRiskScoreRetailOthThnSalMandatory=false;
+	private Boolean isRiskScoreRetailOthThnSalDisplay=true;
+	private Boolean isRiskScoreRetailOthThnSalMandatory=true;
 	
 	private Double minRiskScoreModelCoAppOthThnSal;
-	private Boolean isRiskScoreRetailCoAppOthThnSalDisplay=false;
-	private Boolean isRiskScoreRetailCoAppOthThnSalMandatory=false;
+	private Boolean isRiskScoreRetailCoAppOthThnSalDisplay=true;
+	private Boolean isRiskScoreRetailCoAppOthThnSalMandatory=true;
 
 	private List<Integer> empWithIds;
 	
