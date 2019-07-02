@@ -37,17 +37,23 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
+			
+			projectCostDetailRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				TotalCostOfProjectRequest totalCostOfProjectRequest = (TotalCostOfProjectRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, TotalCostOfProjectRequest.class);
 				ProjectCostDetail totalCostOfProject = null;
-				if (totalCostOfProjectRequest.getId() != null) {
-					totalCostOfProject = projectCostDetailRepository.findOne(totalCostOfProjectRequest.getId());
-				} else {
-					totalCostOfProject = new ProjectCostDetail();
-					totalCostOfProject.setCreatedBy(frameRequest.getUserId());
-					totalCostOfProject.setCreatedDate(new Date());
-				}
+//				if (totalCostOfProjectRequest.getId() != null) {
+//					totalCostOfProject = projectCostDetailRepository.findOne(totalCostOfProjectRequest.getId());
+//				} else {
+//					totalCostOfProject = new ProjectCostDetail();
+//					totalCostOfProject.setCreatedBy(frameRequest.getUserId());
+//					totalCostOfProject.setCreatedDate(new Date());
+//				}
+				
+				totalCostOfProject = new ProjectCostDetail();
+				totalCostOfProject.setCreatedBy(frameRequest.getUserId());
+				totalCostOfProject.setCreatedDate(new Date());
 				
 				BeanUtils.copyProperties(totalCostOfProjectRequest, totalCostOfProject);
 				totalCostOfProject.setApplicationId(frameRequest.getApplicationId());
