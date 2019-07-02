@@ -163,6 +163,15 @@ public class SidbiBasicDetail implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	@Column(name="is_copy_of_existing_fact_addr")
+	private Boolean isCopyOfExistingFactAddr;
+    
+	@Column(name="is_copy_of_registered_addr")
+    private Boolean isCopyOfRegisteredAddr;
+	
+	@Column(name="activity_detail")
+	private String activityDetail;
 
 	public Long getId() {
 		return id;
@@ -195,8 +204,6 @@ public class SidbiBasicDetail implements Serializable{
 	public Long getPincode() {
 		return pincode;
 	}
-
-	
 
 	public String getLandlineNo() {
 		return landlineNo;
@@ -323,7 +330,14 @@ public class SidbiBasicDetail implements Serializable{
 	public void setCommencementDate(Date commencementDate) {
 		this.commencementDate = commencementDate;
 	}
+	
+	public String getActivityDetail() {
+		return activityDetail;
+	}
 
+	public void setActivityDetail(String activityDetail) {
+		this.activityDetail = activityDetail;
+	}
 
 	public void setAssociatedGroup(String associatedGroup) {
 		this.associatedGroup = associatedGroup;
@@ -544,4 +558,22 @@ public class SidbiBasicDetail implements Serializable{
 	public void setDeclarationPlace(String declarationPlace) {
 		this.declarationPlace = declarationPlace;
 	}
+
+	public Boolean getIsCopyOfExistingFactAddr() {
+		return isCopyOfExistingFactAddr;
+	}
+
+	public void setIsCopyOfExistingFactAddr(Boolean isCopyOfExistingFactAddr) {
+		this.isCopyOfExistingFactAddr = isCopyOfExistingFactAddr;
+	}
+
+	public Boolean getIsCopyOfRegisteredAddr() {
+		return isCopyOfRegisteredAddr;
+	}
+
+	public void setIsCopyOfRegisteredAddr(Boolean isCopyOfRegisteredAddr) {
+		this.isCopyOfRegisteredAddr = isCopyOfRegisteredAddr;
+	}
+	
+	
 }

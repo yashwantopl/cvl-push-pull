@@ -94,6 +94,13 @@ public class SidbiBasicDetailRequest implements Serializable{
     private Date declarationDate;
 
     private String declarationPlace;
+    
+    private Boolean isCopyOfExistingFactAddr;
+    
+    private Boolean isCopyOfRegisteredAddr;
+    
+    private String activityDetail;
+    
 	
 	public Long getId() {
 		return id;
@@ -447,7 +454,33 @@ public class SidbiBasicDetailRequest implements Serializable{
         this.declarationPlace = declarationPlace;
     }
 
-    @Override
+    
+
+	public Boolean getIsCopyOfExistingFactAddr() {
+		return isCopyOfExistingFactAddr;
+	}
+
+	public void setIsCopyOfExistingFactAddr(Boolean isCopyOfExistingFactAddr) {
+		this.isCopyOfExistingFactAddr = isCopyOfExistingFactAddr;
+	}
+
+	public Boolean getIsCopyOfRegisteredAddr() {
+		return isCopyOfRegisteredAddr;
+	}
+
+	public void setIsCopyOfRegisteredAddr(Boolean isCopyOfRegisteredAddr) {
+		this.isCopyOfRegisteredAddr = isCopyOfRegisteredAddr;
+	}
+
+	public String getActivityDetail() {
+		return activityDetail;
+	}
+
+	public void setActivityDetail(String activityDetail) {
+		this.activityDetail = activityDetail;
+	}
+
+	@Override
 	public String toString() {
 		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
 				+ ", organisationName=" + organisationName + ", constitutionId=" + constitutionId + ", industryId="
