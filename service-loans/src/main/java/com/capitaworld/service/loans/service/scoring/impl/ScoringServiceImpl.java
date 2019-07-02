@@ -1709,6 +1709,10 @@ public class ScoringServiceImpl implements ScoringService {
         Boolean isCheckOffPayOutstndAmount = false;
         Boolean isCheckOffNotChangeSalAcc=false;
         // ENDS HERE CHECK OFF
+        
+	    Boolean isCreaditHisotryGreaterSixMonths = false;          
+		Boolean isCreaditHisotryLessThenSixMonths = false;
+		Boolean isNoCreaditHistory = false;  
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1778,6 +1782,8 @@ public class ScoringServiceImpl implements ScoringService {
             
             totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
             
+            ScoringRequest scoringRequest = new ScoringRequest();
+            Double cibilActualScore = 0.0d;
             CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(retailApplicantDetail.getPan());
             cibilRequest.setApplicationId(applicationId);
@@ -1786,6 +1792,20 @@ public class ScoringServiceImpl implements ScoringService {
             	if(cibilResponse == null) {
             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	}
+            	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
+            			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());
+            			 	scoringRequest.setCibilActualScore(cibilActualScore);
+                 	}
+                 	if(cibilActualScore < 300 && cibilActualScore > 900){
+                 			isCreaditHisotryGreaterSixMonths = true;
+                 	}
+                 	if(cibilActualScore< 1 && cibilActualScore > 5){
+                 			isCreaditHisotryLessThenSixMonths = true;
+                 	} 
+                 	if(cibilActualScore ==  -1){ 
+                 			isNoCreaditHistory = false;
+                 	}
+                 	
                 cibilResponseDpd = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
                 if(cibilResponseDpd == null) {
             		return new ResponseEntity<>(new LoansResponse("CIBIL DPD Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -1794,6 +1814,7 @@ public class ScoringServiceImpl implements ScoringService {
             	return new ResponseEntity<>(new LoansResponse("Error while Getting DPD or CIBIL Score for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	
             }
+            
             //Getting is Itr Mannual Filed
             isItrMannualFilled = loanRepository.isITRUploaded(applicationId);
             
@@ -1838,16 +1859,11 @@ public class ScoringServiceImpl implements ScoringService {
             	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
             }
             
-            
             Boolean isBorrowersHavingAccounts = false;
             Boolean isBorrowersAvailingLoans = false;
             Boolean isBorrowersHavingSalaryAccounts = false;
             Boolean isBorrowersAvailingCreaditCards = false;
-            
-        	 
         	// ENDS HERE CHECK OFF LOGIC HERE 
-            
-            
             
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
@@ -1936,6 +1952,9 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
             scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
             // ends here 
+            scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
+            scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
+            scoringRequest.setIsNoCreaditHistory(true);
             
             scoringRequest.setIsWomenApplicant(isWomenApplicant);
 
