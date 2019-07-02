@@ -115,6 +115,15 @@ public class RetailProduct extends ProductMasterRequest {
 	private Boolean isRiskScoreRetailDisplay= false;
 
 	private Boolean isRiskScoreRetailMandatory= false;
+	
+	//Risk Model For Other than Salaried
+	private Double minRiskScoreRetailOthThnSal;
+	private Boolean isRiskScoreRetailOthThnSalDisplay=false;
+	private Boolean isRiskScoreRetailOthThnSalMandatory=false;
+	
+	private Double minRiskScoreModelCoAppOthThnSal;
+	private Boolean isRiskScoreRetailCoAppOthThnSalDisplay=false;
+	private Boolean isRiskScoreRetailCoAppOthThnSalMandatory=false;
 
 	private List<Integer> empWithIds;
 	
@@ -930,5 +939,53 @@ public class RetailProduct extends ProductMasterRequest {
 
 	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
 		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
+
+	public Double getMinRiskScoreRetailOthThnSal() {
+		return minRiskScoreRetailOthThnSal;
+	}
+
+	public void setMinRiskScoreRetailOthThnSal(Double minRiskScoreRetailOthThnSal) {
+		this.minRiskScoreRetailOthThnSal = minRiskScoreRetailOthThnSal;
+	}
+
+	public Boolean getIsRiskScoreRetailOthThnSalDisplay() {
+		return isRiskScoreRetailOthThnSalDisplay;
+	}
+
+	public void setIsRiskScoreRetailOthThnSalDisplay(Boolean isRiskScoreRetailOthThnSalDisplay) {
+		this.isRiskScoreRetailOthThnSalDisplay = isRiskScoreRetailOthThnSalDisplay;
+	}
+
+	public Boolean getIsRiskScoreRetailOthThnSalMandatory() {
+		return isRiskScoreRetailOthThnSalMandatory;
+	}
+
+	public void setIsRiskScoreRetailOthThnSalMandatory(Boolean isRiskScoreRetailOthThnSalMandatory) {
+		this.isRiskScoreRetailOthThnSalMandatory = isRiskScoreRetailOthThnSalMandatory;
+	}
+
+	public Double getMinRiskScoreModelCoAppOthThnSal() {
+		return minRiskScoreModelCoAppOthThnSal;
+	}
+
+	public void setMinRiskScoreModelCoAppOthThnSal(Double minRiskScoreModelCoAppOthThnSal) {
+		this.minRiskScoreModelCoAppOthThnSal = minRiskScoreModelCoAppOthThnSal;
+	}
+
+	public Boolean getIsRiskScoreRetailCoAppOthThnSalDisplay() {
+		return isRiskScoreRetailCoAppOthThnSalDisplay;
+	}
+
+	public void setIsRiskScoreRetailCoAppOthThnSalDisplay(Boolean isRiskScoreRetailCoAppOthThnSalDisplay) {
+		this.isRiskScoreRetailCoAppOthThnSalDisplay = isRiskScoreRetailCoAppOthThnSalDisplay;
+	}
+
+	public Boolean getIsRiskScoreRetailCoAppOthThnSalMandatory() {
+		return isRiskScoreRetailCoAppOthThnSalMandatory;
+	}
+
+	public void setIsRiskScoreRetailCoAppOthThnSalMandatory(Boolean isRiskScoreRetailCoAppOthThnSalMandatory) {
+		this.isRiskScoreRetailCoAppOthThnSalMandatory = isRiskScoreRetailCoAppOthThnSalMandatory;
 	}
 }
