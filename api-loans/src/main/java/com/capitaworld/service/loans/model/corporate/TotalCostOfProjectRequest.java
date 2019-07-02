@@ -30,6 +30,8 @@ public class TotalCostOfProjectRequest implements Serializable {
 	
 	private String otherParticular;
 	
+	private Boolean isEditable;
+	
 
 	public TotalCostOfProjectRequest() {
 		// Do nothing because of X and Y.
@@ -106,6 +108,15 @@ public class TotalCostOfProjectRequest implements Serializable {
 	public void setParticularName(String particularName) {
 		this.particularName = particularName;
 	}
+
+	public Boolean getIsEditable() {
+		return isEditable;
+	}
+
+	public void setIsEditable(Boolean isEditable) {
+		this.isEditable = isEditable;
+	}
+	
 	
 
 	}

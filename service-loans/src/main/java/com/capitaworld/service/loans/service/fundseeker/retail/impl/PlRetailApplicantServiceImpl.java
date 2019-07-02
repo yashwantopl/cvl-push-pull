@@ -1489,12 +1489,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isCibilCompleted",coApplicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",coApplicantDetail.getIsOneFormCompleted());
 				json.put("isIncomeConsider",coApplicantDetail.getIsIncomeConsider());
+				json.put("employmentType",coApplicantDetail.getEmploymentType());
 				return json;
 			}
 		} else {
 			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
 				JSONObject json = new JSONObject();
 				json.put("isBasicInfoFilled",applicantDetail.getIsBasicInfoFilled());
 				json.put("isEmploymentInfoFilled",applicantDetail.getIsEmploymentInfoFilled());
@@ -1503,6 +1503,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isCibilCompleted",applicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",applicantDetail.getIsOneFormCompleted());
                 json.put("isIncomeConsider",true);
+                json.put("employmentType",applicantDetail.getEmploymentType());
 				return json;
 			}
 		}

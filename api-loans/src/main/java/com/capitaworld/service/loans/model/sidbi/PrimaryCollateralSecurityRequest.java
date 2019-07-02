@@ -11,14 +11,17 @@ public class PrimaryCollateralSecurityRequest {
 
 	private Long id;
 	private Integer particularsId;
-	private String particularsName;
+	private String particulars;
 	private String otherParticular;
 	private String nameOfOwner;
+	private String relationshipWithApplicant;
 	private String nature;
 	private String details;
 	private Double marketValue;
 	private String particularsOfCharge;
+	private String exisChargeHolder;
 	private String chargeOfferedToSIDBI;
+	private Boolean isActive;
 	/**
 	 * @return the particularsId
 	 */
@@ -31,17 +34,13 @@ public class PrimaryCollateralSecurityRequest {
 	public void setParticularsId(Integer particularsId) {
 		this.particularsId = particularsId;
 	}
-	/**
-	 * @return the particularsName
-	 */
-	public String getParticularsName() {
-		return particularsName;
+	
+	
+	public String getParticulars() {
+		return particulars;
 	}
-	/**
-	 * @param particularsName the particularsName to set
-	 */
-	public void setParticularsName(String particularsName) {
-		this.particularsName = particularsName;
+	public void setParticulars(String particulars) {
+		this.particulars = particulars;
 	}
 	/**
 	 * @return the otherParticular
@@ -132,6 +131,24 @@ public class PrimaryCollateralSecurityRequest {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
+	}
+	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
+	}
+	public String getExisChargeHolder() {
+		return exisChargeHolder;
+	}
+	public void setExisChargeHolder(String exisChargeHolder) {
+		this.exisChargeHolder = exisChargeHolder;
+	}
+	public Boolean getIsActive() {
+		return isActive;
+	}
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
 	
 	
