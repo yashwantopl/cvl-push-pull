@@ -22,7 +22,13 @@ ALTER TABLE `loan_application`.`fs_past_performance_details` ADD COLUMN `conting
 
 ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` ADD COLUMN `declaration_date` DATETIME NULL AFTER `prop_fact_leased`, ADD COLUMN `declaration_place` VARCHAR(50) NULL AFTER `declaration_date`;
 
+
 ALTER TABLE loan_application.fs_corporate_sidbi_project_cost_details ADD COLUMN particular_name VARCHAR(100) NULL, ADD COLUMN is_editable bit(1) DEFAULT b'0';
 
 ALTER TABLE loan_application.fs_corporate_sidbi_basic_details ADD COLUMN is_copy_of_existing_fact_addr BIT DEFAULT b'0' NULL, ADD COLUMN is_copy_of_registered_addr BIT DEFAULT b'0' NULL, ADD COLUMN activity_detail varchar(255) DEFAULT NULL;
+
+
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` CHANGE `constitution_id` `constitution_id` INT(2) NULL;
+
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` CHANGE `msme_uam_reg_date` `msme_uam_reg_date` DATE NULL, CHANGE `declaration_date` `declaration_date` DATE NULL; 
 
