@@ -279,7 +279,7 @@ public class LoansMain {
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(authUrl);
+		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}
