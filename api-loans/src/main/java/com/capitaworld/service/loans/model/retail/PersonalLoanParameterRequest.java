@@ -189,6 +189,12 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Double minNetTakeHomeSalary;
 	private Boolean isMinNetTakeHomeSalaryDisplay = false;
 	private Boolean isMinNetTakeHomeSalaryMandatory = false;
+	
+	//Less Than 6 month of Credit History
+	private Integer minBureauScoreLessThan6Month;
+	
+	//No Credit History
+	private Boolean noBureauCreditHistory = true;
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -916,8 +922,21 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
 	}
 
-	
-	
+	public Integer getMinBureauScoreLessThan6Month() {
+		return minBureauScoreLessThan6Month;
+	}
+
+	public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+		this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+	}
+
+	public Boolean getNoBureauCreditHistory() {
+		return noBureauCreditHistory;
+	}
+
+	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
 
 	/*
 	 * public Integer getEmploymentId() { return employmentId; }

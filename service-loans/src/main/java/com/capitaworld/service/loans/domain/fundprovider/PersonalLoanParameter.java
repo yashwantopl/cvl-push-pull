@@ -293,6 +293,14 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	
 	@Column(name = "multiplier_income_type ")
 	private Integer multiplierIncomeType;
+	
+	//Less Than 6 month of Credit History
+	@Column(name = "min_bureau_score_less_than6_month")
+	private Integer minBureauScoreLessThan6Month;
+	
+	//No Credit History
+	@Column(name = "no_bureau_credit_history")
+	private Boolean noBureauCreditHistory = true;
 
 
 	public ProductMaster getFpProductId() {
@@ -950,26 +958,20 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
 		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
 	}
-	
-	
-	
-	
 
+	public Integer getMinBureauScoreLessThan6Month() {
+		return minBureauScoreLessThan6Month;
+	}
 
-	
-	
-	
+	public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+		this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+	}
 
-	
-	
-	
-	
+	public Boolean getNoBureauCreditHistory() {
+		return noBureauCreditHistory;
+	}
 
-	
-	
-
-	
-	
-
-	
+	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
 }
