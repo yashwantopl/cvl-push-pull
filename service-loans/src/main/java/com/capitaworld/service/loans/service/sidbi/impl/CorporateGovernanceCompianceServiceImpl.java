@@ -47,27 +47,25 @@ public class CorporateGovernanceCompianceServiceImpl implements CorporateGoverna
 				logger.error("Requested User id is null while saving Corporate governance details {}",corporateGover);
 				throw new LoansException("Validation error kindly refresh");
 			}
-			if(corpoReq.getSelectedOption() == null) {
-				logger.error("Validation error : Selected Option is null while saving Corporate governance details {}",corporateGover);
-				throw new LoansException("Validation error : Select Option field");
+			if(corpoReq.getSelectedOption() != null) {
+				CorporateGovernanceCompliance corpoDomain =new CorporateGovernanceCompliance();
+				BeanUtils.copyProperties(corpoReq, corpoDomain);
+				if(corpoDomain.getId() == null) {
+					corpoDomain.setCreatedBy(corpoReq.getUserId());
+					corpoDomain.setCreatedDate(currentDate);
+				}else {
+					corpoDomain.setModifiedBy(corpoReq.getUserId());
+					corpoDomain.setModifiedDate(currentDate);
+				}
+				try {
+					corpoRepository.save(corpoDomain);
+				}catch (Exception e) {
+					logger.info("Exception in sanving data {}",corpoDomain);
+					logger.error("Exception in saving CorporateGovernance / Compliance :{}",e);
+					throw new LoansException(e.getMessage());
+				}
 			}
 			
-			CorporateGovernanceCompliance corpoDomain =new CorporateGovernanceCompliance();
-			BeanUtils.copyProperties(corpoReq, corpoDomain);
-			if(corpoDomain.getId() == null) {
-				corpoDomain.setCreatedBy(corpoReq.getUserId());
-				corpoDomain.setCreatedDate(currentDate);
-			}else {
-				corpoDomain.setModifiedBy(corpoReq.getUserId());
-				corpoDomain.setModifiedDate(currentDate);
-			}
-			try {
-				corpoRepository.save(corpoDomain);
-			}catch (Exception e) {
-				logger.info("Exception in sanving data {}",corpoDomain);
-				logger.error("Exception in saving CorporateGovernance / Compliance :{}",e);
-				throw new LoansException(e.getMessage());
-			}
 		}
 		return true;
 	}

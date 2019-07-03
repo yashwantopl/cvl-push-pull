@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
+import com.capitaworld.bodmas.domain.BodmasReqRes;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductConditionResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
@@ -233,6 +234,27 @@ public class ProductMasterBodmasController {
         try {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             boolean response = productMasterBodmasService.activeInActiveProduct(userId,productId,applicationStage,status);
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+            loansResponse.setData(response);
+            CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
+            return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
+
+    @GetMapping(value = "/getMatchingParameters/{productId}/{applicationId}")
+    public ResponseEntity<LoansResponse> getMatchingParameters(@PathVariable(value = "productId") Long productId, @PathVariable(value = "applicationId")Long applicationId,
+                                                              HttpServletRequest request) {
+        // request must not be null
+        CommonDocumentUtils.startHook(logger, "Update active in active product");
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            BodmasReqRes response = productMasterBodmasService.getMatchingParameters(applicationId,productId);
             LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(response);
             CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
