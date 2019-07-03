@@ -1799,17 +1799,23 @@ public class ScoringServiceImpl implements ScoringService {
             	}
             	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
             			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());
+            		   	 logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore); 			
             			 	scoringRequest.setCibilActualScore(cibilActualScore);
                  	}
-                 	if(cibilActualScore < 300 && cibilActualScore > 900){
-                 			isCreaditHisotryGreaterSixMonths = true;
-                 	}
-                 	if(cibilActualScore< 1 && cibilActualScore > 5){
-                 			isCreaditHisotryLessThenSixMonths = true;
-                 	} 
-                 	if(cibilActualScore ==  -1){ 
-                 			isNoCreaditHistory = false;
-                 	}
+            	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
+              		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
+              	 logger.info("setIsCreaditHisotryGreaterSixMonths------------------>");
+              	
+              	}
+               	if(cibilActualScore>= 1 && cibilActualScore <= 5){
+              			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
+              		logger.info("setIsCreaditHisotryLessThenSixMonths------------------>");
+              	} 
+              	if(cibilActualScore ==  -1){ 
+              			scoringRequest.setIsNoCreaditHistory(true);
+              				logger.info("setIsNoCreaditHistory------------------>");
+              	}
+              	
                  	
                 cibilResponseDpd = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
                 if(cibilResponseDpd == null) {
