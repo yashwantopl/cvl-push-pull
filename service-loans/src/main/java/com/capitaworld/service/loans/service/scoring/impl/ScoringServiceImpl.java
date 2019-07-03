@@ -840,17 +840,22 @@ public class ScoringServiceImpl implements ScoringService {
              	
              	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
              	cibilActualScore= Double.parseDouble(cibilResponse1.getActualScore());
+             	 logger.info("CIBIL ACTUAL SCORE ---------->"+"aPPLICATIONiD ----------->"+applicationId +" ------------------------"+cibilActualScore);
              	scoringRequest.setCibilActualScore(cibilActualScore);
              	}
              	
              	if(cibilActualScore < 300 && cibilActualScore > 900){
              	scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
+             	 logger.info("setIsCreaditHisotryGreaterSixMonths------------------>");
+             	
              	}
              	if(cibilActualScore< 1 && cibilActualScore > 10){
              		scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
+             		logger.info("setIsCreaditHisotryLessThenSixMonths------------------>");
              	} 
              	if(cibilActualScore ==  -1){ 
              	scoringRequest.setIsNoCreaditHistory(true);
+            	logger.info("setIsNoCreaditHistory------------------>");
              	}
              	
              }catch (Exception e) {
