@@ -22,6 +22,7 @@ import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
+import com.capitaworld.service.notification.utils.NotificationConstants.NotificationProperty.DomainValue;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -103,6 +104,7 @@ public class AsyncComponent {
 					return;
 				}
 			}
+			Long domainId = DomainValue.MSME.getId();
 			logger.info("Call user client for get email and name by user id");
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
@@ -113,10 +115,10 @@ public class AsyncComponent {
 					parameters.put(CommonUtils.PARAMETERS_FS_NAME, request.getName());
 					String[] toIds = { request.getEmail() };
 					sendNotification(toIds, userId.toString(), parameters, NotificationTemplate.LOGOUT_IMMEDIATELY,
-							null, false, null);
+							null, false, null,domainId);
 					logger.info(
 							"Exits, Successfully sent mail when user has no application ---->" + request.getEmail());
-					sendRemainderMailWhenUserHasNoApplication(userId, parameters, toIds);
+					sendRemainderMailWhenUserHasNoApplication(userId, parameters, toIds,domainId);
 				}
 			} else {
 				logger.info("User response null while getting email id and user type");
@@ -146,6 +148,10 @@ public class AsyncComponent {
 			}
 			NotificationTemplate template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS;
 			LoanApplicationRequest loanApplicationRequest = loanApplicationRequestList.get(0);
+			Long domainId = DomainValue.MSME.getId();
+			if(loanApplicationRequest.getLoanTypeMain().equals(CommonUtils.RETAIL)) {
+				domainId = DomainValue.RETAIL.getId();
+			}
 			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest)) {
 
 				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getIsApplicantDetailsFilled())) {
@@ -203,7 +209,7 @@ public class AsyncComponent {
 							parameters.put("total_fp_count", totalCount);
 						}
 						String[] toIds = { request.getEmail() };
-						sendNotification(toIds, userId.toString(), parameters, template, null, false, null);
+						sendNotification(toIds, userId.toString(), parameters, template, null, false, null,domainId );
 						logger.info(
 								"Exits, Successfully sent mail when user not filled first profile or primary data ---->"
 										+ request.getEmail() + "-----Subject----"
@@ -254,7 +260,7 @@ public class AsyncComponent {
 										!CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
 								String[] toIds = { request.getEmail() };
 								sendNotification(toIds, userId.toString(), parameters,
-										NotificationTemplate.LOGOUT_WITHOUT_FILLED_FINAL_DETAILS, null, false, null);
+										NotificationTemplate.LOGOUT_WITHOUT_FILLED_FINAL_DETAILS, null, false, null,request.getDomainId());
 								logger.info(
 										"Exits, Successfully sent mail when User not Fill Final Detail After 3 Hour From Primary Submit---->"
 												+ request.getEmail() + "------appID---" + applicationId);
@@ -289,7 +295,7 @@ public class AsyncComponent {
 	 */
 	@Async
 	private void sendRemainderMailWhenUserHasNoApplication(Long userId, Map<String, Object> parameters,
-			String[] toIds) {
+			String[] toIds,Long domainId) {
 		logger.info("start Sent remainder Mail when user not fill any application till 2 days ------->");
 		try {
 			new Timer().schedule(new java.util.TimerTask() {
@@ -303,7 +309,7 @@ public class AsyncComponent {
 							return;
 						}
 						sendNotification(toIds, userId.toString(), parameters,
-								NotificationTemplate.LOGOUT_IMMEDIATELY_REMAINDER, null, false, null);
+								NotificationTemplate.LOGOUT_IMMEDIATELY_REMAINDER, null, false, null,domainId);
 						logger.info("Logout Immediately remainder,Successfully sent mail to this email ===>" + toIds);
 					} catch (NotificationException e) {
 						logger.error("Error while sent logout immediately reminder mail : ",e);
@@ -328,15 +334,13 @@ public class AsyncComponent {
 		try {
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
-				UsersRequest request = MultipleJSONObjectHelper
-						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 				if (!CommonUtils.isObjectNullOrEmpty(request)) {
 					Map<String, Object> parameters = getFSMapData(userId, applicationId);
 					String[] toIds = { request.getEmail() };
 					sendNotification(toIds, userId.toString(), parameters, NotificationTemplate.PRIMARY_FILL_COMPLETE,
-							null, false, null);
-					logger.info(
-							"Exits, Successfully sent mail when user complete primary form ---->" + request.getEmail());
+							null, false, null,request.getDomainId());
+					logger.info("Exits, Successfully sent mail when user complete primary form ---->{}" , request.getEmail());
 				}
 			}
 		} catch (Exception e) {
@@ -381,7 +385,7 @@ public class AsyncComponent {
 					Map<String, Object> parameters = getFSMapData(userId, applicationId);
 					String[] toIds = { request.getEmail() };
 					sendNotification(toIds, userId.toString(), parameters, NotificationTemplate.FS_GO_MATCHES_PAGE,
-							null, true, 300000);
+							null, true, 300000,DomainValue.MSME.getId());
 					logger.info("Exits, Successfully sent mail when user go first time in matches page---->"
 							+ request.getEmail());
 				}
@@ -452,7 +456,7 @@ public class AsyncComponent {
 		try {
 			Long lastFpProductId = getLastAccessId(fpUserId);
 			if (CommonUtils.isObjectNullOrEmpty(lastFpProductId)) {
-				logger.warn("Return, FP Product Id null or empty =========================>" + fpUserId);
+				logger.warn("Return, FP Product Id null or empty =========================>{}" , fpUserId);
 				return;
 			}
 			Long userId = loanApplicationService.getUserIdByApplicationId(applicationId);
@@ -466,38 +470,41 @@ public class AsyncComponent {
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							String fsName = loanApplicationService.getFsApplicantName(applicationId);
 							parameters.put(CommonUtils.PARAMETERS_FS_NAME, !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "Sir/Madam");
-							LoanApplicationRequest loanBasicDetails = loanApplicationService
-									.getLoanBasicDetails(applicationId, userId);
+							LoanApplicationRequest loanBasicDetails = loanApplicationService .getLoanBasicDetails(applicationId, userId);
 							if (loanBasicDetails != null) {
 								parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID,
 										!CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode())
-												? loanBasicDetails.getApplicationCode()
-												: "NA");
+												? loanBasicDetails.getApplicationCode() : "NA");
 								parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());
 							} else {
 								parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID, "NA");
 								parameters.put("loan", "NA");
 							}
 							String fpName = "Fund Provider";
+							Long domainId=DomainValue.MSME.getId();
+							if(loanBasicDetails != null && loanBasicDetails.getProductId() != null &&
+									(loanBasicDetails.getProductId() == LoanType.HOME_LOAN.getValue() || loanBasicDetails.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
+								domainId = DomainValue.RETAIL.getId();
+							}
+							
 							try {
 //								here generating error 415
-								logger.info("Start Getting Fp Name By Fp Product Id =======>" + lastFpProductId);
+								logger.info("Start Getting Fp Name By Fp Product Id =======>{}" , lastFpProductId);
 								ProposalMappingResponse activeProposal = proposalDetailsClient
 										.getActiveProposalByApplicationID(applicationId);
-								logger.info("Active Proposal:" + activeProposal.getData());
+								logger.info("Active Proposal: {}" , activeProposal.getData());
 								ProposalMappingRequest active = MultipleJSONObjectHelper.getObjectFromMap(
 										(LinkedHashMap<String, Object>) activeProposal.getData(),
 										ProposalMappingRequest.class);
-								logger.info("active proposal:" + active);
+								logger.info("active proposal: {}", active);
 								fpName = active.getFpProductName();
-								logger.info("FP name is:===" + fpName);
-								logger.info("active proposal:" + active.getFpProductId());
+								logger.info("FP name is:==={}" , fpName);
 								Object[] o = productMasterService.getUserDetailsByPrductId(active.getFpProductId());
 								if (o != null) {
 									fpName = o[1].toString();
-									logger.info("Successfully get fo name------->" + fpName);
+									logger.info("Successfully get fo name------->{}" , fpName);
 								} else {
-									logger.info("Fund Provider name can't find using " + lastFpProductId + " id");
+									logger.info("Fund Provider name can't find using {} id" , lastFpProductId );
 								}
 								parameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName);
 							} catch (Exception e) {
@@ -522,7 +529,7 @@ public class AsyncComponent {
 									logger.info("Something went to wrong while get total matches count");
 								}
 							} catch (Exception e) {
-								logger.error("Error while get total suggestion matches list when final details not filling mail sending : ",e);
+								logger.error("Error while get total suggestion matches list when final details not filling mail sending : {}",e);
 								parameters.put(PARAMETERS_TOTAL_MATCHES, 0);
 							}
 /*							String[] toIds = { request.getEmail() };
@@ -538,11 +545,11 @@ public class AsyncComponent {
 								UsersRequest resp = getEmailMobile(userId);
 								if (resp != null && resp.getMobile() != null) {
 									sendSMSNotification(String.valueOf(userId), parameters,
-											NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
-									logger.info("Sms Sent for fp view more details request:" + resp.getMobile());
+											NotificationAlias.SMS_VIEW_MORE_DETAILS,domainId, resp.getMobile());
+									logger.info("Sms Sent for fp view more details request:{}" , resp.getMobile());
 								}
 							} catch (Exception e) {
-								logger.error("mobile number is null when sending sms from AsynchComponent.:" + e);
+								logger.error("mobile number is null when sending sms from AsynchComponent.:{}" , e);
 							}
 						}
 					}
@@ -552,7 +559,7 @@ public class AsyncComponent {
 		}
 	}
 
-	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to)
+	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, Long domainId, String... to)
 			throws NotificationException {
 		NotificationRequest req = new NotificationRequest();
 		req.setClientRefId(userId);
@@ -563,7 +570,7 @@ public class AsyncComponent {
 		notification.setType(NotificationType.SMS);
 		notification.setParameters(parameters);
 		req.addNotification(notification);
-
+		req.setDomainId(domainId);
 		notificationClient.send(req);
 
 	}
@@ -643,9 +650,12 @@ public class AsyncComponent {
 							}
 							logger.info("FPSentDirectRequestToFS, End Parameter fill, And Start sending mail to ---->"
 									+ request.getEmail());
+							Long domainId = DomainValue.MSME.getId();
+							if(loanBasicDetails != null && loanBasicDetails.getProductId() != null && (loanBasicDetails.getProductId() == LoanType.HOME_LOAN.getValue() || loanBasicDetails.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
+								domainId = DomainValue.RETAIL.getId();
+							}
 							String[] toIds = { request.getEmail() };
-							sendNotification(toIds, userId.toString(), parameters,
-									NotificationTemplate.FP_DIRECT_SENT_REQUEST_TO_FP, fpName, false, null);
+							sendNotification(toIds, userId.toString(), parameters,NotificationTemplate.FP_DIRECT_SENT_REQUEST_TO_FP, fpName, false, null,domainId);
 							logger.info(
 									"Exits, Successfully sent mail when fp sent directly request to fs user (FP NAME)---->"
 											+ fpName);
@@ -683,7 +693,7 @@ public class AsyncComponent {
 	}
 
 	private void sendNotification(String[] toIds, String userId, Map<String, Object> parameters,
-			NotificationTemplate template, String fpName, boolean isTimerMail, Integer milisecond)
+			NotificationTemplate template, String fpName, boolean isTimerMail, Integer milisecond,Long domainId)
 			throws NotificationException {
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
@@ -697,6 +707,10 @@ public class AsyncComponent {
 		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
 		notification.setSubject(NotificationTemplate.getSubjectName(template.getValue(), fpName));
 		notificationRequest.addNotification(notification);
+		if(domainId != null)
+			notificationRequest.setDomainId(domainId);
+		else
+			notificationRequest.setDomainId(DomainValue.MSME.getId());
 		// SEND MAIL
 		if (isTimerMail) {
 			sendMailWithTimer(notificationRequest, milisecond,
@@ -770,6 +784,7 @@ public class AsyncComponent {
 	public void sendMailWhenFSSelectOnlinePayment(Long userId, PaymentRequest paymentInfo,
 			NotificationTemplate emailNotificationTemplate, Long sysTemplateId) {
 		try {
+			Long domainId=DomainValue.MSME.getId();
 			if (CommonUtils.isObjectNullOrEmpty(paymentInfo.getEmailAddress())) {
 				logger.info("Email Address null or Empty while send mail when user select online payment");
 			}
@@ -777,24 +792,17 @@ public class AsyncComponent {
 			SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 			String fsName = loanApplicationService.getFsApplicantName(paymentInfo.getApplicationId());
 			parameters.put(CommonUtils.PARAMETERS_FS_NAME, !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
-			parameters.put("entity_name",
-					!CommonUtils.isObjectNullOrEmpty(paymentInfo.getNameOfEntity()) ? paymentInfo.getNameOfEntity()
-							: "NA");
-			parameters.put("mobile_number",
-					!CommonUtils.isObjectNullOrEmpty(paymentInfo.getMobileNumber()) ? paymentInfo.getMobileNumber()
-							: "NA");
+			parameters.put("entity_name",!CommonUtils.isObjectNullOrEmpty(paymentInfo.getNameOfEntity()) ? paymentInfo.getNameOfEntity(): "NA");
+			parameters.put("mobile_number",!CommonUtils.isObjectNullOrEmpty(paymentInfo.getMobileNumber()) ? paymentInfo.getMobileNumber(): "NA");
 
 			String regOfficeAdd = "";
 			if (!CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress())) {
 				regOfficeAdd = !CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress().getPremiseNumber())
-						? paymentInfo.getAddress().getPremiseNumber() + ", "
-						: "";
+						? paymentInfo.getAddress().getPremiseNumber() + ", ": "";
 				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress().getStreetName())
-						? paymentInfo.getAddress().getStreetName() + ", "
-						: "";
+						? paymentInfo.getAddress().getStreetName() + ", ": "";
 				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress().getLandMark())
-						? paymentInfo.getAddress().getLandMark() + ", "
-						: "";
+						? paymentInfo.getAddress().getLandMark() + ", ": "";
 				String countryName = getCountryName(paymentInfo.getAddress().getCountryId());
 				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(countryName) ? countryName + ", " : "";
 				String stateName = getStateName(paymentInfo.getAddress().getStateId());
@@ -810,10 +818,10 @@ public class AsyncComponent {
 			parameters.put("appointment_time", paymentInfo.getAppointmentTime());
 
 			String[] toIds = { paymentInfo.getEmailAddress() };
-			sendNotification(toIds, userId.toString(), parameters, emailNotificationTemplate, null, false, null);
+			sendNotification(toIds, userId.toString(), parameters, emailNotificationTemplate, null, false, null,domainId);
 			if (!CommonUtils.isObjectNullOrEmpty(sysTemplateId)) {
 				String[] toUserIds = { userId.toString() };
-				synNotification(toUserIds, userId, sysTemplateId, parameters, paymentInfo.getApplicationId(), null);
+				synNotification(toUserIds, userId, sysTemplateId, parameters, paymentInfo.getApplicationId(), null,domainId);
 				logger.info("Saved System Notification when FS select Online Payment--------------------------------->"
 						+ paymentInfo.getEmailAddress());
 			}
@@ -840,6 +848,7 @@ public class AsyncComponent {
 			Integer productId, String fsName, Long applicationId) {
 		logger.info("Enter in send mail when aker has lock final details then send to checker ");
 		try {
+			Long domainId = DomainValue.MSME.getId();
 			UsersRequest checkerUserName = getUserNameAndEmail(checkerId);
 			UsersRequest makerUserName = getUserNameAndEmail(makerId);
 			if (CommonUtils.isObjectNullOrEmpty(checkerUserName) || CommonUtils.isObjectNullOrEmpty(makerUserName)) {
@@ -855,6 +864,10 @@ public class AsyncComponent {
 			}
 			parameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName);
 			parameters.put("lone_type", LoanType.getType(productId).getName());
+			if(productId != null && (productId == LoanType.HOME_LOAN.getValue() && productId == LoanType.PERSONAL_LOAN.getValue())) {
+				domainId = DomainValue.RETAIL.getId();
+			}
+			
 /*			String[] toIds = { checkerUserName.getEmail() };
 			String subject = makerUserName.getName() + " has lock final details for " + applicationCode;
 			// STOP THIS MAIL RAHUL WRONG MAIL
@@ -862,8 +875,7 @@ public class AsyncComponent {
 			 NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);
 			logger.info("Successfully send mail ------------------>" + checkerUserName.getEmail()); */
 			String[] toUserIds = { checkerId.toString() };
-			synNotification(toUserIds, makerId, NotificationAlias.SYS_CKR_MKR_FINAL_LOCK, parameters, applicationId,
-					null);
+			synNotification(toUserIds, makerId, NotificationAlias.SYS_CKR_MKR_FINAL_LOCK, parameters, applicationId,null,domainId);
 			logger.info("Successfully send system notification------------------>");
 		} catch (Exception e) {
 			logger.error("Throw exception while sending final lock mail : ",e);
@@ -879,10 +891,11 @@ public class AsyncComponent {
 	 * @param parameters    :- MAP
 	 * @param applicationId :- CURRENT APPLICATION ID
 	 * @param fpProductId   :- NON MANDATOY
+	 * @param domainId   :- MANDATOY
 	 * @return
 	 */
 	private void synNotification(String[] toIds, Long fromId, Long templateId, Map<String, Object> parameters,
-			Long applicationId, Long fpProductId) {
+			Long applicationId, Long fpProductId,Long domainId) {
 
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(fromId.toString());
@@ -898,6 +911,7 @@ public class AsyncComponent {
 		notification.setProductId(fpProductId);
 		notification.setApplicationId(applicationId);
 		notificationRequest.addNotification(notification);
+		notificationRequest.setDomainId(domainId);
 		try {
 			notificationClient.send(notificationRequest);
 		} catch (NotificationException e) {
