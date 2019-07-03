@@ -81,6 +81,8 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Date trialRunEndDate;
 	
+	private Date dateOfCommencementOfCommercialOperations;
+	
 	private Boolean isCoveredUnderCGTMSE;
 
 	private Integer repaymemtYears;
@@ -480,6 +482,15 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.activityDetail = activityDetail;
 	}
 
+	
+	public Date getDateOfCommencementOfCommercialOperations() {
+		return dateOfCommencementOfCommercialOperations;
+	}
+
+	public void setDateOfCommencementOfCommercialOperations(Date dateOfCommencementOfCommercialOperations) {
+		this.dateOfCommencementOfCommercialOperations = dateOfCommencementOfCommercialOperations;
+	}
+
 	@Override
 	public String toString() {
 		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
@@ -497,9 +508,15 @@ public class SidbiBasicDetailRequest implements Serializable{
 				+ ", msmeUamRegistrationDate=" + msmeUamRegistrationDate + ", associatedGroup=" + associatedGroup
 				+ ", sidbiBranch=" + sidbiBranch + ", exisitngActivity=" + exisitngActivity + ", activitySince="
 				+ activitySince + ", proposedActivity=" + proposedActivity + ", trialRunEndDate=" + trialRunEndDate
+				+ ", dateOfCommencementOfCommercialOperations=" + dateOfCommencementOfCommercialOperations
 				+ ", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE + ", repaymemtYears=" + repaymemtYears
-				+ ", repaymemtMonths=" + repaymemtMonths + ", loanAmount=" + loanAmount + "]";
+				+ ", repaymemtMonths=" + repaymemtMonths + ", loanAmount=" + loanAmount + ", moratoriumPeriodMonths="
+				+ moratoriumPeriodMonths + ", declarationDate=" + declarationDate + ", declarationPlace="
+				+ declarationPlace + ", isCopyOfExistingFactAddr=" + isCopyOfExistingFactAddr
+				+ ", isCopyOfRegisteredAddr=" + isCopyOfRegisteredAddr + ", activityDetail=" + activityDetail + "]";
 	}
+
+	
 
 	
 }
