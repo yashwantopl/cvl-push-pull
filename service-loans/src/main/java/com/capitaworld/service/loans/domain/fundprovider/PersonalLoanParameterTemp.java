@@ -180,6 +180,14 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	@Column(name="is_credit_rating_mandatory")
 	private Boolean isEmpRatingMandatory=false;
 	
+	//Less Than 6 month of Credit History
+	@Column(name = "min_bureau_score_less_than6_month")
+	private Integer minBureauScoreLessThan6Month;
+	
+	//No Credit History
+	@Column(name = "no_bureau_credit_history")
+	private Boolean noBureauCreditHistory = true;
+	
 	
 	
 	/*//FP NEW REQUIREMENT
@@ -1158,16 +1166,28 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	}
 
 
-	
 
-	
-	
-	
-	
+	public Integer getMinBureauScoreLessThan6Month() {
+		return minBureauScoreLessThan6Month;
+	}
 
-	
-	
-	
+
+
+	public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+		this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+	}
+
+
+
+	public Boolean getNoBureauCreditHistory() {
+		return noBureauCreditHistory;
+	}
+
+
+
+	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
 
 	
 }
