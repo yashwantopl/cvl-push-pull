@@ -16,6 +16,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.*;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.enums.LoanType;
@@ -422,10 +423,16 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         return true;
     }
 
+    /**
+     * Matching Parameters
+     * @param applicationId
+     * @param productId
+     * @return
+     */
     public BodmasReqRes getMatchingParameters(Long applicationId,Long productId) {
         try {
             List<Long> productIds = new ArrayList<>();
-            productIds.add(productId);
+            productIds.add(productId);//Note : add List of products from Loan type currently static add
             List<FpProductParameters> allByProductId = parametersRepository.findAllByProductId(productIds);
             Object[] connectData = parametersRepository.findByApplicationId(applicationId);
             if(!CommonUtils.isObjectListNull(connectData) && !CommonUtils.isObjectListNull(allByProductId)){
@@ -442,26 +449,44 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 BodmasReqRes bodmasReqRes = bodmasClient.calculateFormulaList(reqRes);
                 if(!CommonUtils.isObjectNullOrEmpty(bodmasReqRes) && !CommonUtils.isObjectNullOrEmpty(bodmasReqRes.getData())){
                     reqRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) bodmasReqRes.getData(),CalculationReqRes.class);
+                    // inactived last Matches value code By application Id
+                    auditRepository.inactiveAllByProductId(applicationId);
                     for (FpProductParameters  parameterResponse :allByProductId) {
                         for (Map.Entry<Long, FormulaReqRes> entry : reqRes.getFormulaMap().entrySet()) {
                             if(parameterResponse.getBodmasFormulaId() == entry.getKey()){
                                 FormulaReqRes formulaReqRes = (FormulaReqRes) entry.getValue();
+                                //save data in Table matched and Ans
                                 saveMatchesValues(parameterResponse,formulaReqRes.getFormulaAnswer(), applicationId);
                             }
                         }
                     }
                 }
+                List<FpProductMatchValueAudit> allByProductId1 = auditRepository.findAllByProductId(applicationId);
+                List<ProductMatchValueAuditResponse> responses = new ArrayList<>();
+                for (FpProductMatchValueAudit matchValueAudit: allByProductId1) {
+                    ProductMatchValueAuditResponse auditResponse = new ProductMatchValueAuditResponse();
+                    auditResponse.setCondition(CommonUtility.logicalCondition(matchValueAudit.getConditionId()));
+                    BeanUtils.copyProperties(matchValueAudit,auditResponse);
+                    responses.add(auditResponse);
+                }
+                bodmasReqRes.setDataList(responses);
                 return bodmasReqRes;
             }
         } catch (BodmasException e) {
-            e.printStackTrace();
+            logger.info("Error while Bodmas Calculations : ", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info("IOException : ", e);
         }
         return null;
     }
 
-
+    /**
+     * Save Match parameters
+     * @param parameterResponse
+     * @param formulaAns
+     * @param applicationId
+     * @return
+     */
     private boolean saveMatchesValues(FpProductParameters  parameterResponse, Double formulaAns, Long applicationId){
 
         FpProductMatchValueAudit formulaValueAudit = new FpProductMatchValueAudit();
@@ -469,7 +494,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         formulaValueAudit.setParameterId(parameterResponse.getId());
         formulaValueAudit.setBodmasFormulaId(parameterResponse.getBodmasFormulaId());
         formulaValueAudit.setFormulaAnswer(formulaAns);
-        formulaValueAudit.setCompareVal(parameterResponse.getCompareValue());
+        formulaValueAudit.setCompareVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getCompareValue()) ? 0 : parameterResponse.getCompareValue());
         formulaValueAudit.setMinVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getMinValue()) ? 0 : parameterResponse.getMinValue());
         formulaValueAudit.setMaxVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getMaxValue()) ? 0 : parameterResponse.getMaxValue());
         formulaValueAudit.setConditionId(parameterResponse.getParameterOperator());
@@ -483,6 +508,15 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         return true;
     }
 
+    /**
+     * calculate by
+     * @param condition
+     * @param formulaAns
+     * @param minValue
+     * @param maxValue
+     * @param compareValue
+     * @return
+     */
     private boolean matchParameterValue(int condition,Double formulaAns,Double minValue, Double maxValue, Double compareValue){
         if(condition == 1){//For Greter than
             return formulaAns > compareValue;
