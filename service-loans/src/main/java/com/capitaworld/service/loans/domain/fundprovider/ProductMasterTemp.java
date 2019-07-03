@@ -86,6 +86,13 @@ public class ProductMasterTemp implements Serializable {
 
 	@Column(name = "score_model_id_coapp_id")
 	private Long scoreModelIdCoAppId;
+	
+	@Column(name = "score_model_id_oth_thn_sal")
+	private Long scoreModelIdOthThnSal;
+	
+	@Column(name = "score_model_id_coApp_id_oth_thn_sal")
+	private Long scoreModelIdCoAppIdOthThnSal;
+	
 
 	@Column(name = "fp_product_mapping_id")
 	private Long fpProductMappingId;
@@ -498,5 +505,17 @@ public class ProductMasterTemp implements Serializable {
 	}
 	public void setPurposeLoanModelId(Long purposeLoanModelId) {
 		this.purposeLoanModelId = purposeLoanModelId;
+	}
+	public Long getScoreModelIdOthThnSal() {
+		return scoreModelIdOthThnSal;
+	}
+	public void setScoreModelIdOthThnSal(Long scoreModelIdOthThnSal) {
+		this.scoreModelIdOthThnSal = scoreModelIdOthThnSal;
+	}
+	public Long getScoreModelIdCoAppIdOthThnSal() {
+		return scoreModelIdCoAppIdOthThnSal;
+	}
+	public void setScoreModelIdCoAppIdOthThnSal(Long scoreModelIdCoAppIdOthThnSal) {
+		this.scoreModelIdCoAppIdOthThnSal = scoreModelIdCoAppIdOthThnSal;
 	}
 }

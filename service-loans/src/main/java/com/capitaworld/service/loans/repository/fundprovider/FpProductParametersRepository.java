@@ -18,4 +18,11 @@ public interface FpProductParametersRepository extends JpaRepository<FpProductPa
 
     @Query(value = "select formula_name from `bodmas_sidbi`.`formula_master` where id =:formulaId", nativeQuery = true)
     public List<String> getFormulaNameById(@Param("formulaId") Long formulaId);
+
+//    @Query("SELECT a FROM FpProductParameters a where a.productId IN(select b.id from ProductMasterTemp b where b.productId IN(:productId)) and a.bodmasFormulaId != NULL")
+    @Query("SELECT a FROM FpProductParameters a where a.productId IN(:productId) and a.bodmasFormulaId != NULL")
+    public List<FpProductParameters> findAllByProductId(@Param("productId") List<Long> productId);
+
+    @Query(value = "select cl.application_id,cl.gstin,cl.pan from connect.connect_log cl where cl.application_id=:applicationId",nativeQuery = true)
+    public Object[] findByApplicationId(@Param("applicationId") Long applicationId);
 }

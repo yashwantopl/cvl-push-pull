@@ -188,6 +188,7 @@ public class HlTeaserViewResponse {
     
     private Object epfData;
 	private String detailedLoanPur;
+	private Double marketValOfProp;
 
 	public Long getRefNo() {
 		return RefNo;
@@ -1220,4 +1221,15 @@ public class HlTeaserViewResponse {
 	public void setCorrAddTaluko(String corrAddTaluko) {
 		this.corrAddTaluko = corrAddTaluko;
 	}
+
+	public Double getMarketValOfProp() {
+		return marketValOfProp;
+	}
+
+	public void setMarketValOfProp(Double marketValOfProp) {
+		this.marketValOfProp = marketValOfProp;
+	}
+
+
+	
 }
