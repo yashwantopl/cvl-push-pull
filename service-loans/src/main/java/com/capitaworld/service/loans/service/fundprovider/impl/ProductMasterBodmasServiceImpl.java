@@ -16,6 +16,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.*;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.enums.LoanType;
@@ -425,7 +426,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
     public BodmasReqRes getMatchingParameters(Long applicationId,Long productId) {
         try {
             List<Long> productIds = new ArrayList<>();
-            productIds.add(productId);
+            productIds.add(productId);//Note : add List of products from Loan type currently static add
             List<FpProductParameters> allByProductId = parametersRepository.findAllByProductId(productIds);
             Object[] connectData = parametersRepository.findByApplicationId(applicationId);
             if(!CommonUtils.isObjectListNull(connectData) && !CommonUtils.isObjectListNull(allByProductId)){
@@ -442,6 +443,8 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 BodmasReqRes bodmasReqRes = bodmasClient.calculateFormulaList(reqRes);
                 if(!CommonUtils.isObjectNullOrEmpty(bodmasReqRes) && !CommonUtils.isObjectNullOrEmpty(bodmasReqRes.getData())){
                     reqRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) bodmasReqRes.getData(),CalculationReqRes.class);
+                    // Note : add inactive Matches value code in here
+                    auditRepository.inactiveAllByProductId(applicationId);
                     for (FpProductParameters  parameterResponse :allByProductId) {
                         for (Map.Entry<Long, FormulaReqRes> entry : reqRes.getFormulaMap().entrySet()) {
                             if(parameterResponse.getBodmasFormulaId() == entry.getKey()){
@@ -451,12 +454,21 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                         }
                     }
                 }
+                List<FpProductMatchValueAudit> allByProductId1 = auditRepository.findAllByProductId(applicationId);
+                List<ProductMatchValueAuditResponse> responses = new ArrayList<>();
+                for (FpProductMatchValueAudit matchValueAudit: allByProductId1) {
+                    ProductMatchValueAuditResponse auditResponse = new ProductMatchValueAuditResponse();
+                    auditResponse.setCondition(CommonUtility.logicalCondition(matchValueAudit.getConditionId()));
+                    BeanUtils.copyProperties(matchValueAudit,auditResponse);
+                    responses.add(auditResponse);
+                }
+                bodmasReqRes.setDataList(responses);
                 return bodmasReqRes;
             }
         } catch (BodmasException e) {
-            e.printStackTrace();
+            logger.info("Error while Bodmas Calculations : ", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info("IOException : ", e);
         }
         return null;
     }
@@ -469,7 +481,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         formulaValueAudit.setParameterId(parameterResponse.getId());
         formulaValueAudit.setBodmasFormulaId(parameterResponse.getBodmasFormulaId());
         formulaValueAudit.setFormulaAnswer(formulaAns);
-        formulaValueAudit.setCompareVal(parameterResponse.getCompareValue());
+        formulaValueAudit.setCompareVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getCompareValue()) ? 0 : parameterResponse.getCompareValue());
         formulaValueAudit.setMinVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getMinValue()) ? 0 : parameterResponse.getMinValue());
         formulaValueAudit.setMaxVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getMaxValue()) ? 0 : parameterResponse.getMaxValue());
         formulaValueAudit.setConditionId(parameterResponse.getParameterOperator());
