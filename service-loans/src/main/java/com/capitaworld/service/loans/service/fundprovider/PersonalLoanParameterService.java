@@ -13,4 +13,14 @@ public interface PersonalLoanParameterService {
 	public Boolean saveOrUpdateTemp(PersonalLoanParameterRequest personalLoanParameterRequest);
 	
 	public Boolean saveMasterFromTempPl(Long mappingId) throws LoansException;
+	
+	public void saveEmiNmiTemp(PersonalLoanParameterRequest personalLoanParameterRequest) ;
+	
+	public void saveEmpStatus(PersonalLoanParameterRequest personalLoanParameterRequest);
+	
+	public void saveSalaryMode(PersonalLoanParameterRequest personalLoanParameterRequest);
+	
+	public void saveEmpWithMaster(PersonalLoanParameterRequest personalLoanParameterRequest) ;
+	
+	public void saveEmpWith(PersonalLoanParameterRequest personalLoanParameterRequest);
 }

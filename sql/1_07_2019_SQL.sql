@@ -10,6 +10,7 @@ ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` ADD COLUMN `de
 ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` ADD COLUMN is_copy_of_existing_fact_addr BIT DEFAULT b'0' NULL, ADD COLUMN is_copy_of_registered_addr BIT DEFAULT b'0' NULL, ADD COLUMN activity_detail varchar(255) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` CHANGE `constitution_id` `constitution_id` INT(2) NULL;
 ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` CHANGE `msme_uam_reg_date` `msme_uam_reg_date` DATE NULL, CHANGE `declaration_date` `declaration_date` DATE NULL;
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` ADD COLUMN `commence_com_op_date` DATETIME NULL AFTER `trial_run_end_date`;
  
 ALTER TABLE `loan_application`.`fs_sidbi_primary_collateral_security` ADD COLUMN `relationship_with_applicant` VARCHAR(2000) NULL AFTER `name_Of_owner`;
 ALTER TABLE `loan_application`.`fs_sidbi_primary_collateral_security` CHANGE `particulars_of_charge` `particulars_of_charge` VARCHAR(20) CHARSET utf8 COLLATE utf8_general_ci NULL, 
@@ -25,3 +26,4 @@ ALTER TABLE `loan_application`.`fs_sidbi_raw_material_details` ADD COLUMN `name_
 ALTER TABLE `loan_application`.`fs_sidbi_facility_details` CHANGE `rupee_term_loan` `rupee_term_loan` DOUBLE NULL;
 ALTER TABLE `loan_application`.`fs_sidbi_facility_details` ADD COLUMN `currency_type` VARCHAR(10) NULL AFTER `foreign_currency`;
  
+  
