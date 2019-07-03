@@ -423,6 +423,12 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         return true;
     }
 
+    /**
+     * Matching Parameters
+     * @param applicationId
+     * @param productId
+     * @return
+     */
     public BodmasReqRes getMatchingParameters(Long applicationId,Long productId) {
         try {
             List<Long> productIds = new ArrayList<>();
@@ -443,12 +449,13 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                 BodmasReqRes bodmasReqRes = bodmasClient.calculateFormulaList(reqRes);
                 if(!CommonUtils.isObjectNullOrEmpty(bodmasReqRes) && !CommonUtils.isObjectNullOrEmpty(bodmasReqRes.getData())){
                     reqRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) bodmasReqRes.getData(),CalculationReqRes.class);
-                    // Note : add inactive Matches value code in here
+                    // inactived last Matches value code By application Id
                     auditRepository.inactiveAllByProductId(applicationId);
                     for (FpProductParameters  parameterResponse :allByProductId) {
                         for (Map.Entry<Long, FormulaReqRes> entry : reqRes.getFormulaMap().entrySet()) {
                             if(parameterResponse.getBodmasFormulaId() == entry.getKey()){
                                 FormulaReqRes formulaReqRes = (FormulaReqRes) entry.getValue();
+                                //save data in Table matched and Ans
                                 saveMatchesValues(parameterResponse,formulaReqRes.getFormulaAnswer(), applicationId);
                             }
                         }
@@ -473,7 +480,13 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         return null;
     }
 
-
+    /**
+     * Save Match parameters
+     * @param parameterResponse
+     * @param formulaAns
+     * @param applicationId
+     * @return
+     */
     private boolean saveMatchesValues(FpProductParameters  parameterResponse, Double formulaAns, Long applicationId){
 
         FpProductMatchValueAudit formulaValueAudit = new FpProductMatchValueAudit();
@@ -495,6 +508,15 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         return true;
     }
 
+    /**
+     * calculate by
+     * @param condition
+     * @param formulaAns
+     * @param minValue
+     * @param maxValue
+     * @param compareValue
+     * @return
+     */
     private boolean matchParameterValue(int condition,Double formulaAns,Double minValue, Double maxValue, Double compareValue){
         if(condition == 1){//For Greter than
             return formulaAns > compareValue;
