@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -46,6 +48,10 @@ public class ProductMasterRequest implements Serializable {
 	private Long scoreModelId;
 
 	private Long scoreModelIdCoAppId;
+	
+	private Long scoreModelIdOthThnSal;
+	
+	private Long scoreModelIdCoAppIdOthThnSal;
 	
 	private Long purposeLoanModelId;
 
@@ -374,6 +380,20 @@ public class ProductMasterRequest implements Serializable {
 		this.isManualFill = isManualFill;
 	}
 
+	public Long getScoreModelIdOthThnSal() {
+		return scoreModelIdOthThnSal;
+	}
 
+	public void setScoreModelIdOthThnSal(Long scoreModelIdOthThnSal) {
+		this.scoreModelIdOthThnSal = scoreModelIdOthThnSal;
+	}
+
+	public Long getScoreModelIdCoAppIdOthThnSal() {
+		return scoreModelIdCoAppIdOthThnSal;
+	}
+
+	public void setScoreModelIdCoAppIdOthThnSal(Long scoreModelIdCoAppIdOthThnSal) {
+		this.scoreModelIdCoAppIdOthThnSal = scoreModelIdCoAppIdOthThnSal;
+	}
 	
 }
