@@ -674,7 +674,6 @@ UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'1' WHERE `field_maste
 
 
 
-
 ==================================28-06-2019===========================================
 
 ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_bureau_score_less_than6_month DOUBLE DEFAULT NULL;
@@ -708,3 +707,7 @@ ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_m
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_display BIT(1) DEFAULT FALSE;
 ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_product_master` ADD COLUMN score_model_id_oth_thn_sal BIGINT DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_product_master_temp` ADD COLUMN score_model_id_oth_thn_sal BIGINT DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_product_master` ADD COLUMN score_model_id_coApp_id_oth_thn_sal BIGINT DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_product_master_temp` ADD COLUMN score_model_id_coApp_id_oth_thn_sal BIGINT DEFAULT NULL;

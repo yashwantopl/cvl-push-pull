@@ -1718,6 +1718,7 @@ public class ScoringServiceImpl implements ScoringService {
 	    Boolean isCreaditHisotryGreaterSixMonths = false;          
 		Boolean isCreaditHisotryLessThenSixMonths = false;
 		Boolean isNoCreaditHistory = false;  
+		Double cibilActualScore = 0.0d;
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1787,8 +1788,6 @@ public class ScoringServiceImpl implements ScoringService {
             
             totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
             
-            ScoringRequest scoringRequest = new ScoringRequest();
-            Double cibilActualScore = 0.0d;
             CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(retailApplicantDetail.getPan());
             cibilRequest.setApplicationId(applicationId);
@@ -1800,20 +1799,19 @@ public class ScoringServiceImpl implements ScoringService {
             	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
             			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());
             		   	 logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore); 			
-            			 	scoringRequest.setCibilActualScore(cibilActualScore);
                  	}
             	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
-              		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
-              	 logger.info("setIsCreaditHisotryGreaterSixMonths------------------>");
+            		 isCreaditHisotryGreaterSixMonths = true;
+              	 logger.info("setIsCreaditHisotryGreaterSixMonths----111111111111111111111111111-------------->");
               	
               	}
                	if(cibilActualScore>= 1 && cibilActualScore <= 5){
-              			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
-              		logger.info("setIsCreaditHisotryLessThenSixMonths------------------>");
+               		isCreaditHisotryLessThenSixMonths = true;
+              		logger.info("setIsCreaditHisotryLessThenSixMonths-------22222222222222222222222222222----------->");
               	} 
               	if(cibilActualScore ==  -1){ 
-              			scoringRequest.setIsNoCreaditHistory(true);
-              				logger.info("setIsNoCreaditHistory------------------>");
+              		isNoCreaditHistory = true; 
+              	logger.info("setIsNoCreaditHistory-----3333333333333333333333333333------------->");
               	}
               	
                  	
@@ -1849,7 +1847,7 @@ public class ScoringServiceImpl implements ScoringService {
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
-        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId);
+        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId,true);
         	}
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
@@ -1966,6 +1964,11 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
             scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
             scoringRequest.setIsNoCreaditHistory(true);
+            
+            scoringRequest.setCibilActualScore(cibilActualScore);
+			scoringRequest.setIsCreaditHisotryGreaterSixMonths(isCreaditHisotryGreaterSixMonths);
+			scoringRequest.setIsCreaditHisotryLessThenSixMonths(isCreaditHisotryLessThenSixMonths);
+			scoringRequest.setIsNoCreaditHistory(isNoCreaditHistory);
             
             scoringRequest.setIsWomenApplicant(isWomenApplicant);
 
@@ -2115,10 +2118,10 @@ public class ScoringServiceImpl implements ScoringService {
             				Double cibilScore = null;
                             try {
                             	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
-                            		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                        cibilScore = Double.parseDouble(cibilResponse.getScore());
-                                        scoreParameterRetailRequest.setCibilScore(cibilScore);
+                            		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
+                                        cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                        scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                         scoreParameterRetailRequest.setCibilScore_p(true);
                                     }                            		
                             	}
@@ -2721,10 +2724,10 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
             				Double cibilScore = null;
                             try {
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                	logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
-                                    cibilScore = Double.parseDouble(cibilResponse.getScore());
-                                    scoreParameterRetailRequest.setCibilScore(cibilScore);
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
+                                	logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
+                                    cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                    scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                     scoreParameterRetailRequest.setCibilScore_p(true);
                                 } 
                             } catch (Exception e) {
