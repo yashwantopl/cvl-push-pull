@@ -15,18 +15,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.sidbi.MeansOfFinanceDetail;
 import com.capitaworld.service.loans.domain.sidbi.SidbiBasicDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
+import com.capitaworld.service.loans.model.sidbi.RawMaterialDetailsRequest;
 import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sidbi.BasicDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
 import com.capitaworld.service.loans.service.sidbi.MeansOfFinanceDetailService;
 import com.capitaworld.service.loans.service.sidbi.ProjectCostDetailService;
+import com.capitaworld.service.loans.service.sidbi.RawMaterialDetailsService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -60,6 +65,12 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 	
 	@Autowired
 	MeansOfFinanceDetailService meansOfFinanceDetailService;
+	
+	@Autowired
+    FacilityDetailsService facilityDetailsService;
+	
+	@Autowired
+	RawMaterialDetailsService rawMaterialDetailsService;
 	
 	@Override
 	public boolean saveOrUpdateAdditionalData(SidbiBasicDetailRequest sidbiBasicDetailRequest, Long userId) throws LoansException {
@@ -186,6 +197,7 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 
 	@Override
 	public LoansResponse validateSidbiForm(Long applicationId, Long userId) throws LoansException {
+		Double totalAmt = 0.00;
 		List<TotalCostOfProjectRequest> projectCostList = projectCostDetailService.getCostOfProjectDetailList(applicationId, userId);
 		if(projectCostList == null || projectCostList.size() == 0) {
 			return new LoansResponse("Please fill atleast one row in Project Cost Details", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -195,8 +207,30 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		
 		if(meansOfFinanceList == null) {
 			return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
-		}else if(meansOfFinanceList != null && meansOfFinanceList.get(0).getTotalCost() == null){
-			return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+		}else if(meansOfFinanceList != null){
+			totalAmt = 0.00;
+			for(TotalCostOfProjectRequest meansOfFinanceDetail : meansOfFinanceList) {
+				totalAmt += meansOfFinanceDetail.getTotalCost() == null ? 0.00 : meansOfFinanceDetail.getTotalCost(); 
+			}
+			
+			if(totalAmt == null || totalAmt == 0.00) {
+				return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+			}
+		}
+		
+		List<FacilityDetailsRequest> facilityResponseDetails = facilityDetailsService.getFacilityDetailsListAppId(applicationId);
+		if(facilityResponseDetails != null) {
+			
+			if(facilityResponseDetails.get(0).getForeignCurrency() == null || facilityResponseDetails.get(0).getForeignCurrency() == 0.00) {
+				return new LoansResponse("Please fill atleast one row in Facility Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
+			}
+		}else {
+			return new LoansResponse("Please fill atleast one row in Facility Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
+		}
+		
+		List<RawMaterialDetailsRequest> rawMaterialDetailsRequests = rawMaterialDetailsService.getRawMaterialDetailsListAppId(applicationId);
+		if(rawMaterialDetailsRequests == null || rawMaterialDetailsRequests.size() == 0) {
+			return new LoansResponse("Please fill atleast one row in Details of Raw material components", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
 		}
 		
 		return null;
