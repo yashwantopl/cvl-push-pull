@@ -136,9 +136,6 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "is_covered_under_cgtmse")
 	private Boolean isCoveredUnderCGTMSE;
 
-	@Column(name="repayment_years")
-	private Integer repaymemtYears;
-
 	@Column(name="repayment_months")
 	private Integer repaymemtMonths;
 
@@ -505,14 +502,6 @@ public class SidbiBasicDetail implements Serializable{
 
 	public void setPropFactLeased(Boolean propFactLeased) {
 		this.propFactLeased = propFactLeased;
-	}
-
-	public Integer getRepaymemtYears() {
-		return repaymemtYears;
-	}
-
-	public void setRepaymemtYears(Integer repaymemtYears) {
-		this.repaymemtYears = repaymemtYears;
 	}
 
 	public Integer getRepaymemtMonths() {
