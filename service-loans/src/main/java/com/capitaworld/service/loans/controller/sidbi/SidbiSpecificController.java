@@ -340,5 +340,29 @@ public class SidbiSpecificController {
 			}
 
 		}
+	    
+	    @GetMapping(value = "/validateSidbiForm/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	    public ResponseEntity<LoansResponse> validateSidbiForm(@PathVariable("applicationId") Long applicationId,
+	            HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
+	            throws LoansException {
+	        try {
+	            CommonDocumentUtils.startHook(logger, "getAdditionalData");
+	            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+	            
+	            if (applicationId == null) {
+	                logger.warn(" applicationId==> User ID ==>{}" , applicationId);
+	                return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+	            }
+	            
+	            LoansResponse loansResponse = sidbiSpecificService.validateSidbiForm(applicationId, userId);
+	            
+	            CommonDocumentUtils.endHook(logger, "getAdditionalData");
+	            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+	        } catch (Exception e) {
+	            logger.error("Error while getAdditionalData==>", e);
+	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
 	
 }
