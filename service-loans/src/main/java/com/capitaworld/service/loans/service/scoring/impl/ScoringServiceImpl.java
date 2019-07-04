@@ -2719,7 +2719,7 @@ public class ScoringServiceImpl implements ScoringService {
             				Double cibilScore = null;
                             try {
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                	logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
+                                	logger.info("Cibil Score Response For HL==== > {}=ApplicationId====>{}",cibilResponse.getActualScore(),applicationId);
                                     cibilScore = Double.parseDouble(cibilResponse.getActualScore());
                                     scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                     scoreParameterRetailRequest.setCibilScore_p(true);
@@ -3018,7 +3018,9 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringClient.calculateScoreList(scoringRequestList);
+            ScoringResponse calculateScoreList = scoringClient.calculateScoreList(scoringRequestList);
+            logger.info("Scoring Response For HOME Loan============>{}",calculateScoreList);
+            logger.info("Scoring Response Status For HOME Loan============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
