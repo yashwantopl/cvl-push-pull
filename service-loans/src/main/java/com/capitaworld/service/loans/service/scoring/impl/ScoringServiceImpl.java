@@ -1544,10 +1544,9 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.Retail.ADDI_INCOME_SPOUSE_PL:
                                 //Not Available in Sheet Document
-                                if(retailApplicantDetail.getAnnualIncomeOfSpouse() != null) {
-                                    scoreParameterRetailRequest.setSpouseIncome(retailApplicantDetail.getAnnualIncomeOfSpouse());
-                                    scoreParameterRetailRequest.setIsSpouseIncome_p(true);
-                                }
+                                // Unmarried or married assign zero income in case income not available
+                                scoreParameterRetailRequest.setSpouseIncome(retailApplicantDetail.getAnnualIncomeOfSpouse() != null ? retailApplicantDetail.getAnnualIncomeOfSpouse() : 0);
+                                scoreParameterRetailRequest.setIsSpouseIncome_p(true);
                                 break;
                             case ScoreParameter.Retail.EMI_NMI_RATIO_PL:
                                 //Already Set NMI and GMI and EMI Above Before Switch Starts
@@ -2156,7 +2155,7 @@ public class ScoringServiceImpl implements ScoringService {
             					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(retailApplicantDetail.getEmploymentType()) 
             							|| OccupationNatureNTB.PENSIONER.getId().equals(retailApplicantDetail.getEmploymentType())
             							|| OccupationNatureNTB.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
-            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(true);
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
             					}else {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
