@@ -1439,6 +1439,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromCoAppId(coAppId);
                 for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 	financialRequest = new FinancialArrangementsDetailRequest();
+                	financialRequest.setId(creditCardsDetail.getId());
                     financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                     financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                     financialRequest.setLoanType("Credit Card");
@@ -1465,6 +1466,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
                 for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 	financialRequest = new FinancialArrangementsDetailRequest();
+                	financialRequest.setId(creditCardsDetail.getId());
                     financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                     financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                     financialRequest.setLoanType("Credit Card");
