@@ -226,7 +226,7 @@ public class ScoringServiceImpl implements ScoringService {
     private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
 
     private static final String SAVING_SCORING_REQUEST_DATA_FOR = "Saving Scoring Request Data for  =====> ";
-    private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated";
+    private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated=====>{}";
     private static final String MSG_APPLICATION_ID = " APPLICATION ID   :: ";
     private static final String MSG_FP_PRODUCT_ID = " FP PRODUCT ID    :: ";
     private static final String MSG_SCORING_MODEL_ID = " SCORING MODEL ID :: ";
@@ -1791,8 +1791,12 @@ public class ScoringServiceImpl implements ScoringService {
             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	}
             	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-            			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());
-            		   	 logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore); 			
+	            		if("000-1".equalsIgnoreCase(cibilResponse.getActualScore())) {
+	            			cibilActualScore= -1d;
+	            		}else {
+	            			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());	
+	            		}
+	            		logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore);
                  	}
             	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
             		 isCreaditHisotryGreaterSixMonths = true;
@@ -2447,7 +2451,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         try {
             scoringClient.calculateScoreList(scoringRequestList);
-            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED,applicationId);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -2714,7 +2718,11 @@ public class ScoringServiceImpl implements ScoringService {
                             try {
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
                                 	logger.info("Cibil Score Response For HL==== > {}=ApplicationId====>{}",cibilResponse.getActualScore(),applicationId);
-                                    cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                	if("000-1".equalsIgnoreCase(cibilResponse.getActualScore())) {
+                                		cibilScore = -1d;
+                                	}else {
+                                		cibilScore = Double.parseDouble(cibilResponse.getActualScore());                                		
+                                	}
                                     scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                     scoreParameterRetailRequest.setCibilScore_p(true);
                                 } 
