@@ -26,4 +26,5 @@ ALTER TABLE `loan_application`.`fs_sidbi_raw_material_details` ADD COLUMN `name_
 ALTER TABLE `loan_application`.`fs_sidbi_facility_details` CHANGE `rupee_term_loan` `rupee_term_loan` DOUBLE NULL;
 ALTER TABLE `loan_application`.`fs_sidbi_facility_details` ADD COLUMN `currency_type` VARCHAR(10) NULL AFTER `foreign_currency`;
  
-  
+ALTER TABLE loan_application.fs_corporate_sidbi_project_cost_details ADD COLUMN particular_name VARCHAR(100) NULL, ADD COLUMN is_editable bit(1) DEFAULT b'0';
+ALTER TABLE loan_application.fs_corporate_sidbi_basic_details ADD COLUMN is_copy_of_existing_fact_addr BIT DEFAULT b'0' NULL, ADD COLUMN is_copy_of_registered_addr BIT DEFAULT b'0' NULL, ADD COLUMN activity_detail varchar(255) DEFAULT NULL;

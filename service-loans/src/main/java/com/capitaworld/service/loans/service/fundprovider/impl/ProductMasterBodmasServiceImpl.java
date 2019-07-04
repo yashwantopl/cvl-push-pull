@@ -413,7 +413,14 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         return masterRequest;
     }
 
-
+    /**
+     * Active Inactive Product
+     * @param userId
+     * @param id
+     * @param stage
+     * @param status
+     * @return
+     */
     public boolean activeInActiveProduct(Long userId, Long id, Integer stage, Boolean status){
         if(stage == 1) {
             productMasterTempRepository.changeStatus(userId , id, status);
@@ -446,11 +453,13 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                     formulaMap.put(parameterResponse.getBodmasFormulaId(), null);
                 }
                 reqRes.setFormulaMap(formulaMap);
+                // calculate parameter by Formulas with equations
                 BodmasReqRes bodmasReqRes = bodmasClient.calculateFormulaList(reqRes);
                 if(!CommonUtils.isObjectNullOrEmpty(bodmasReqRes) && !CommonUtils.isObjectNullOrEmpty(bodmasReqRes.getData())){
                     reqRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) bodmasReqRes.getData(),CalculationReqRes.class);
                     // inactived last Matches value code By application Id
                     auditRepository.inactiveAllByProductId(applicationId);
+                    //Response data save in match table
                     for (FpProductParameters  parameterResponse :allByProductId) {
                         for (Map.Entry<Long, FormulaReqRes> entry : reqRes.getFormulaMap().entrySet()) {
                             if(parameterResponse.getBodmasFormulaId() == entry.getKey()){
@@ -498,6 +507,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
         formulaValueAudit.setMinVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getMinValue()) ? 0 : parameterResponse.getMinValue());
         formulaValueAudit.setMaxVal(CommonUtils.isObjectNullOrEmpty(parameterResponse.getMaxValue()) ? 0 : parameterResponse.getMaxValue());
         formulaValueAudit.setConditionId(parameterResponse.getParameterOperator());
+        //check matches by Logical Conditon
         formulaValueAudit.setIsMatch(matchParameterValue(parameterResponse.getParameterOperator(),formulaAns,parameterResponse.getMinValue(),
                 parameterResponse.getMaxValue(),parameterResponse.getCompareValue()));
         formulaValueAudit.setCreatedBy(parameterResponse.getCreatedBy());
@@ -509,7 +519,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
     }
 
     /**
-     * calculate by
+     * calculate by given Condition
      * @param condition
      * @param formulaAns
      * @param minValue
