@@ -1847,7 +1847,7 @@ public class ScoringServiceImpl implements ScoringService {
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
-        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId);
+        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId,true);
         	}
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
