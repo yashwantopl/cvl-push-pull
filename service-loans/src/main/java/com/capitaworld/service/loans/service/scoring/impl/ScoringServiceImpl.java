@@ -2040,9 +2040,7 @@ public class ScoringServiceImpl implements ScoringService {
             				try {
             					Double totalExperience = 0.0;
             					if(retailApplicantDetail.getEmploymentType() != null) {
-            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId().equals(retailApplicantDetail.getEmploymentType())
-            								|| OccupationNatureNTB.SELF_EMPLOYED_PROFESSIONAL.getId().equals(retailApplicantDetail.getEmploymentType())
-            								|| OccupationNatureNTB.AGRICULTURIST.getId().equals(retailApplicantDetail.getEmploymentType())){
+            						if(!OccupationNatureNTB.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())){
             							if(retailApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("retailApplicantDetail.getBusinessStartDate() For HL====ApplicationId===>{}=====>{}",retailApplicantDetail.getBusinessStartDate(),applicationId);
                         					Integer[] busiFromDate = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBusinessStartDate());
@@ -2159,7 +2157,6 @@ public class ScoringServiceImpl implements ScoringService {
             							|| OccupationNatureNTB.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
-
             					}else {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));
@@ -2176,12 +2173,8 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-                                Long spouseEmployment = 3l; // No Spouse
-                                if(retailApplicantDetail.getSpouseEmployment() != null) {
-                                	spouseEmployment = retailApplicantDetail.getSpouseEmployment().longValue();                                	
-                                }
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
+                                scoreParameterRetailRequest.setSpouseEmploymentDetails(retailApplicantDetail.getSpouseEmployment() != null ? retailApplicantDetail.getSpouseEmployment().longValue() : null);
+                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(retailApplicantDetail.getSpouseEmployment() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
@@ -2252,6 +2245,9 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.ADDI_INCOME_SPOUSE:
 	            				if(retailApplicantDetail.getAnnualIncomeOfSpouse() != null) {
 	            					scoreParameterRetailRequest.setSpouseIncome(retailApplicantDetail.getAnnualIncomeOfSpouse());
+	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
+	            				}else {
+	            					scoreParameterRetailRequest.setSpouseIncome(0.0d);
 	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
 	            				}
             				break;
@@ -2646,9 +2642,7 @@ public class ScoringServiceImpl implements ScoringService {
             					Double totalExperience = 0.0;
             					if(coApplicantDetail.getEmploymentType() != null) {
             						scoreParameterRetailRequest.setWorkingExperience_p(true);
-            						if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId().equals(coApplicantDetail.getEmploymentType())
-            								|| OccupationNatureNTB.SELF_EMPLOYED_PROFESSIONAL.getId().equals(coApplicantDetail.getEmploymentType())
-            								|| OccupationNatureNTB.AGRICULTURIST.getId().equals(coApplicantDetail.getEmploymentType())){
+            						if(!OccupationNatureNTB.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())){
             							if(coApplicantDetail.getBusinessStartDate() != null) {
                         					logger.info("coApplicantDetail.getBusinessStartDate() For HL==== > {}",coApplicantDetail.getBusinessStartDate());
                         					Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBusinessStartDate());
@@ -2762,9 +2756,9 @@ public class ScoringServiceImpl implements ScoringService {
             					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(coApplicantDetail.getEmploymentType()) 
             							|| OccupationNatureNTB.PENSIONER.getId().equals(coApplicantDetail.getEmploymentType())
             							|| OccupationNatureNTB.OTHERS.getId().equals(coApplicantDetail.getEmploymentType())) {
-            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(true);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
-
+            						            						
             					}else {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));
@@ -2782,12 +2776,8 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-                                Long spouseEmployment = 3l; // No Spouse
-                                if(coApplicantDetail.getSpouseEmployment() != null) {
-                                	spouseEmployment = coApplicantDetail.getSpouseEmployment().longValue();                                	
-                                }
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails(spouseEmployment);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
+            					scoreParameterRetailRequest.setSpouseEmploymentDetails(coApplicantDetail.getSpouseEmployment() != null ? coApplicantDetail.getSpouseEmployment().longValue() : null);
+                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(coApplicantDetail.getSpouseEmployment() != null);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
@@ -2833,6 +2823,9 @@ public class ScoringServiceImpl implements ScoringService {
             				//Not Available in Sheet Document
 	            				if(coApplicantDetail.getAnnualIncomeOfSpouse() != null) {
 	            					scoreParameterRetailRequest.setSpouseIncome(coApplicantDetail.getAnnualIncomeOfSpouse());
+	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
+	            				}else {
+	            					scoreParameterRetailRequest.setSpouseIncome(0.0d);
 	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
 	            				}
             				break;
