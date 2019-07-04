@@ -128,6 +128,10 @@ public class SidbiBasicDetail implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "trial_run_end_date")
 	private Date trialRunEndDate;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "commence_com_op_date")
+	private Date dateOfCommencementOfCommercialOperations;
 	
 	@Column(name = "is_covered_under_cgtmse")
 	private Boolean isCoveredUnderCGTMSE;
@@ -574,6 +578,15 @@ public class SidbiBasicDetail implements Serializable{
 	public void setIsCopyOfRegisteredAddr(Boolean isCopyOfRegisteredAddr) {
 		this.isCopyOfRegisteredAddr = isCopyOfRegisteredAddr;
 	}
+
+	public Date getDateOfCommencementOfCommercialOperations() {
+		return dateOfCommencementOfCommercialOperations;
+	}
+
+	public void setDateOfCommencementOfCommercialOperations(Date dateOfCommencementOfCommercialOperations) {
+		this.dateOfCommencementOfCommercialOperations = dateOfCommencementOfCommercialOperations;
+	}
 	
+
 	
 }

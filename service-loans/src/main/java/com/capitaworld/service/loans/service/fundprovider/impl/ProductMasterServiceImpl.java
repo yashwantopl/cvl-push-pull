@@ -61,6 +61,7 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
@@ -296,6 +297,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				}
 				List<DataRequest> industrySecIdList = null,secIdList=null,geogaphicallyCountry=null,geogaphicallyState=null,geogaphicallyCity=null,negativeIndList=null;
+				List<EmiNmiDetailRequest> detailRequests = null;
+				List<Integer> salaryModeIds=null,empStatusIds=null,empWithIds=null;
 				if(!CommonUtils.isObjectNullOrEmpty(addProductRequest.getLoanId()))
 				{
 					switch (loanType) {
@@ -395,6 +398,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyCity=personalLoanParameterRequest.getCityList();
 						//negativeIndList=personalLoanParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
+						detailRequests=personalLoanParameterRequest.getEmiNmiDetailRequestList();
+						salaryModeIds=personalLoanParameterRequest.getSalaryModeIds();
+						empStatusIds=personalLoanParameterRequest.getEmpStatusIds();
+						empWithIds=personalLoanParameterRequest.getEmpWithIds();
 						BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameterTemp,"id");
 						productMasterTemp = personalLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
@@ -531,6 +538,28 @@ public class ProductMasterServiceImpl implements ProductMasterService {
                         tempRepository.save(temp);
                     }
                 }
+				
+				//pl specific copy parameter changes
+				if(LoanType.PERSONAL_LOAN.getId().equals(loanType.getId())) {
+					//save empwith
+					PersonalLoanParameterRequest personalLoanParameterRequest=new  PersonalLoanParameterRequest();
+					personalLoanParameterRequest.setId(productMaster2.getId());
+					personalLoanParameterRequest.setEmpWithIds(empWithIds);
+					personalLoanParameterRequest.setEmiNmiDetailRequestList(detailRequests);
+					personalLoanParameterRequest.setEmpStatusIds(empStatusIds);
+					personalLoanParameterRequest.setSalaryModeIds(salaryModeIds);
+					
+					
+					personalLoanParameterService.saveEmiNmiTemp(personalLoanParameterRequest);
+					
+					//save empstatus
+					personalLoanParameterService.saveEmpStatus(personalLoanParameterRequest);
+					
+					//save salaryModeIds
+					personalLoanParameterService.saveSalaryMode(personalLoanParameterRequest);
+					
+					personalLoanParameterService.saveEmpWith(personalLoanParameterRequest);
+				}
 				
 				//HomeLoan Specific Copy Changes
 			
