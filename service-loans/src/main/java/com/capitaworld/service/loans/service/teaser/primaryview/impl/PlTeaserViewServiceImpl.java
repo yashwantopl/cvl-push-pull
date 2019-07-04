@@ -91,6 +91,7 @@ import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
 import com.capitaworld.service.oneform.enums.LoanPurposePL;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
@@ -742,8 +743,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 	}
 	
 	@Override
-	public PlTeaserViewResponse getPlPrimaryViewDetailsByProposalId(Long toApplicationId, Integer userType, Long userId,
-			Long productMappingId, Boolean isFinal, Long proposalId) {
+	public PlTeaserViewResponse getPlPrimaryViewDetailsByProposalId(Long toApplicationId, Integer userType, Long userId,Long productMappingId, Boolean isFinal, Long proposalId) {
 
 		PlTeaserViewResponse plTeaserViewResponse = new PlTeaserViewResponse();
 
@@ -815,7 +815,44 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
-				plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+				/*plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());*/
+				
+				/*name of emp*/
+				//switch as per EmploymentWithPL id
+				try {
+					switch (plRetailApplicantRequest.getEmploymentWith() != null ? plRetailApplicantRequest.getEmploymentWith() :0) {
+					
+					case 1://central gov
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue()));
+						break;
+					case 2://state gov
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue()));
+						break;
+					case 3://psu
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue()));
+						break;
+					case 4: //company
+						plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
+						break;
+					case 5://educational insitute
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue()));
+						break;
+					case 8: //bank
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue()));
+						break;
+					case 9: //Insurance company
+						plRetailApplicantResponse.setNameOfEmployer(oneFormClient.getMasterTableData(plRetailApplicantRequest.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue()));
+						break;
+
+					default:
+						break;
+					}
+				} catch (Exception e) {
+					logger.info("exception while calling oneform client"+e);
+				}
+				
+				
+				
 				plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentWith() != null ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue().toString() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
