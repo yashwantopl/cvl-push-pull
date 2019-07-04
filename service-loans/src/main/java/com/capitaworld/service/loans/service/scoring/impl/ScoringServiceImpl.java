@@ -2450,7 +2450,9 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringClient.calculateScoreList(scoringRequestList);
+            ScoringResponse calculateScoreList = scoringClient.calculateScoreList(scoringRequestList);
+            logger.info("Scoring Response For HOME Loan============>{}",calculateScoreList);
+            logger.info("Scoring Response Status For HOME Loan ============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED,applicationId);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -3021,8 +3023,8 @@ public class ScoringServiceImpl implements ScoringService {
 
         try {
             ScoringResponse calculateScoreList = scoringClient.calculateScoreList(scoringRequestList);
-            logger.info("Scoring Response For HOME Loan============>{}",calculateScoreList);
-            logger.info("Scoring Response Status For HOME Loan============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
+            logger.info("Scoring Response For HOME Loan for CoAPp============>{}",calculateScoreList);
+            logger.info("Scoring Response Status For HOME Loan for CoAPp============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
