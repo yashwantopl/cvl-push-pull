@@ -226,7 +226,7 @@ public class ScoringServiceImpl implements ScoringService {
     private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
 
     private static final String SAVING_SCORING_REQUEST_DATA_FOR = "Saving Scoring Request Data for  =====> ";
-    private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated";
+    private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated=====>{}";
     private static final String MSG_APPLICATION_ID = " APPLICATION ID   :: ";
     private static final String MSG_FP_PRODUCT_ID = " FP PRODUCT ID    :: ";
     private static final String MSG_SCORING_MODEL_ID = " SCORING MODEL ID :: ";
@@ -2457,7 +2457,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         try {
             scoringClient.calculateScoreList(scoringRequestList);
-            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED,applicationId);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
