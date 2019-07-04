@@ -725,7 +725,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		return true;
 	}
 
-	private void saveSalaryMode(PersonalLoanParameterRequest personalLoanParameterRequest) {
+	public void saveSalaryMode(PersonalLoanParameterRequest personalLoanParameterRequest) {
 		// TODO Auto-generated method stub
 		logger.info("save saveSalaryMode");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getSalaryModeIds()))
@@ -797,7 +797,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		
 	}
 	
-	private void saveEmpStatus(PersonalLoanParameterRequest personalLoanParameterRequest) {
+	public void saveEmpStatus(PersonalLoanParameterRequest personalLoanParameterRequest) {
 
 		logger.info("save saveEmpStatus");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmpStatusIds()))
@@ -843,7 +843,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		
 	}
 
-	private void saveEmpWith(PersonalLoanParameterRequest personalLoanParameterRequest) {
+	public void saveEmpWith(PersonalLoanParameterRequest personalLoanParameterRequest) {
 
 		logger.info("save saveEmpWith");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmpWithIds()))
@@ -865,7 +865,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		logger.info("end saveEmpWith");
 	}
 	
-	private void saveEmiNmiTemp(PersonalLoanParameterRequest personalLoanParameterRequest) {
+	public void saveEmiNmiTemp(PersonalLoanParameterRequest personalLoanParameterRequest) {
 
 		logger.info("save saveEmiNmiTemp");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmiNmiDetailRequestList()))
@@ -916,7 +916,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	
 	
 	
-	private void saveEmpWithMaster(PersonalLoanParameterRequest personalLoanParameterRequest) {
+	public void saveEmpWithMaster(PersonalLoanParameterRequest personalLoanParameterRequest) {
 
 		logger.info("save saveEmpWithMaster");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmpWithIds()))

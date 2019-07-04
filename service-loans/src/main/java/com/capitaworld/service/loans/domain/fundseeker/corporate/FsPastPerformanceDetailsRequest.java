@@ -43,6 +43,8 @@ public class FsPastPerformanceDetailsRequest implements Serializable {
 
 	private Long compNetWorthNextYear;
 
+	private String contingentLiabilities;
+
 
 	public Long getId() {
 		return id;
@@ -162,5 +164,13 @@ public class FsPastPerformanceDetailsRequest implements Serializable {
 
 	public void setCompNetWorthNextYear(Long compNetWorthNextYear) {
 		this.compNetWorthNextYear = compNetWorthNextYear;
+	}
+
+	public String getContingentLiabilities() {
+		return contingentLiabilities;
+	}
+
+	public void setContingentLiabilities(String contingentLiabilities) {
+		this.contingentLiabilities = contingentLiabilities;
 	}
 }

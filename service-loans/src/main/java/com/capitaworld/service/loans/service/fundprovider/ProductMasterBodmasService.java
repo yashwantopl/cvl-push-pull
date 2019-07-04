@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
+import com.capitaworld.bodmas.domain.BodmasReqRes;
 import com.capitaworld.service.loans.model.ProductConditionResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.ProductParameterRequest;
@@ -22,4 +23,6 @@ public interface ProductMasterBodmasService {
     public ProductMasterRequest getProductDetails(Long productId,Integer stage);
 
     public boolean activeInActiveProduct(Long userId,Long productId,Integer applicationStage,Boolean status);
+
+    public BodmasReqRes getMatchingParameters(Long applicationId, Long productId);
 }
