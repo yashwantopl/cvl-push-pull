@@ -84,8 +84,14 @@ public abstract class ProductMaster implements Serializable {
 	private Long purposeLoanModelId;
 	
 	@Column(name = "score_model_id_coapp_id")
-	private Long scoreModelIdCoAppId;	
+	private Long scoreModelIdCoAppId;
 	
+	
+	@Column(name = "score_model_id_oth_thn_sal")
+	private Long scoreModelIdOthThnSal;
+	
+	@Column(name = "score_model_id_coApp_id_oth_thn_sal")
+	private Long scoreModelIdCoAppIdOthThnSal;
 	
 	@Column(name = "business_type_id")
 	private Long businessTypeId;
@@ -312,5 +318,21 @@ public abstract class ProductMaster implements Serializable {
 
 	public void setScoreModelIdCoAppId(Long scoreModelIdCoAppId) {
 		this.scoreModelIdCoAppId = scoreModelIdCoAppId;
+	}
+
+	public Long getScoreModelIdOthThnSal() {
+		return scoreModelIdOthThnSal;
+	}
+
+	public void setScoreModelIdOthThnSal(Long scoreModelIdOthThnSal) {
+		this.scoreModelIdOthThnSal = scoreModelIdOthThnSal;
+	}
+
+	public Long getScoreModelIdCoAppIdOthThnSal() {
+		return scoreModelIdCoAppIdOthThnSal;
+	}
+
+	public void setScoreModelIdCoAppIdOthThnSal(Long scoreModelIdCoAppIdOthThnSal) {
+		this.scoreModelIdCoAppIdOthThnSal = scoreModelIdCoAppIdOthThnSal;
 	}
 }

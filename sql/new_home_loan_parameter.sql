@@ -647,12 +647,14 @@ ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN salary_ac_
 
 ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_gross_monthly_income_range DOUBLE DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN max_gross_monthly_income_range DOUBLE DEFAULT NULL;
-ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_gross_monthly_income_range_display BIT(1) DEFAULT NULL;
-ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_gross_monthly_income_range_mandatory BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_gross_monthly_income_range_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_gross_monthly_income_range_mandatory BIT(1) DEFAULT FALSE;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_gross_monthly_income_range DOUBLE DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN max_gross_monthly_income_range DOUBLE DEFAULT NULL;
-ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_display BIT(1) DEFAULT NULL;
-ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_mandatory BIT(1) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_gross_monthly_income_range_mandatory BIT(1) DEFAULT FALSE;
+
+
 
 
 ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_net_take_home_salary DOUBLE DEFAULT NULL;
@@ -667,3 +669,42 @@ ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_min_net
 
 UPDATE `scoring_sidbi`.`field_master` SET `type` = '2' WHERE `id` = '102'; 
 UPDATE `scoring_sidbi`.`field_mapping` SET `is_active` = b'1' WHERE `field_master_id` = '102'
+
+=================Above Queries Executed in Production on 27-06-2019========================
+
+
+
+
+==================================28-06-2019===========================================
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_bureau_score_less_than6_month DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_bureau_score_less_than6_month DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN no_bureau_credit_history BIT(1) DEFAULT TRUE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN no_bureau_credit_history BIT(1) DEFAULT TRUE;
+
+==================================01-07-2019===========================================
+
+
+ALTER TABLE `scoring_sidbi`.`scoring_model` ADD COLUMN employment_type_id INTEGER DEFAULT NULL;
+ALTER TABLE `scoring_sidbi`.`scoring_model_temp` ADD COLUMN employment_type_id INTEGER DEFAULT NULL;
+ALTER TABLE `scoring_sidbi`.`field_mapping` ADD COLUMN employment_type_id INTEGER DEFAULT NULL;
+ALTER TABLE `scoring_sidbi`.`model_parameter` ADD COLUMN employment_type_id INTEGER DEFAULT NULL;
+ALTER TABLE `scoring_sidbi`.`model_parameter_temp` ADD COLUMN employment_type_id INTEGER DEFAULT NULL;
+
+UPDATE `scoring_sidbi`.`field_mapping` f SET f.`employment_type_id` = 2 WHERE f.`field_master_id` IN (SELECT fm.`id` FROM `scoring_sidbi`.`field_master` fm WHERE fm.`name` IN ('EMPLOYMENT_CATEG_JOB_HL','CURRENT_JOB_EXP_HL'));
+UPDATE `scoring_sidbi`.`field_mapping` f SET f.`employment_type_id` = 3 WHERE f.`field_master_id` IN (SELECT fm.`id` FROM `scoring_sidbi`.`field_master` fm WHERE fm.`name` IN ('EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED_HL'));
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_risk_score_model_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_risk_score_model_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_home_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;

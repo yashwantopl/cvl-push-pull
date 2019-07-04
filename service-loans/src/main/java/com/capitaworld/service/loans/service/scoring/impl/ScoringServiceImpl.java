@@ -98,6 +98,7 @@ import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -768,17 +769,14 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setEmi(scoringRequestLoans.getEmi());
             scoringRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
             scoringRequest.setEligibleTenure(eligibleTenure);
-
+            scoringRequest.setFoir(scoringRequestLoans.getFoir());
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
             } else {
                 scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
             }
 
-
             // start getting relation with bank and loan detail for concession in roi
-
-
             Boolean isBorrowersHavingAccounts=false;
             Boolean isBorrowersAvailingLoans=false;
             Boolean isBorrowersHavingSalaryAccounts=false;
@@ -792,6 +790,11 @@ public class ScoringServiceImpl implements ScoringService {
             Boolean isCheckOffNotChangeSalAcc=false;
             // ENDS HERE CHECK OFF
             
+    		// CIBIL BASED CONCESSION RATE  OF INTEREST
+    		Boolean isCreaditHisotryGreaterSixMonths = false;
+    		Boolean isCreaditHisotryLessThenSixMonths= false;
+    		Boolean isNoCreaditHistory =false;
+    		// ENDS HERE 						
             RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
         	if (!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail)) {
         		
@@ -820,7 +823,44 @@ public class ScoringServiceImpl implements ScoringService {
              scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
              scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
              scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
-        	// ENDS HERE CHECK OFF LOGIC HERE 
+        	// ENDS HERE CHECK OFF LOGIC HERE
+             
+             CibilScoreLogRequest cibilResponse1 = null;
+             
+             CibilRequest cibilRequest1 = new CibilRequest();
+             cibilRequest1.setPan(RetailApplicantDetail.getPan());
+             cibilRequest1.setApplicationId(applicationId);
+             Double cibilActualScore = 0.0d;
+             try {
+             	cibilResponse1 = cibilClient.getCibilScoreByPanCard(cibilRequest1);
+             	
+             	if(cibilResponse1 == null) {
+             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Not Found NULL this appliID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+             	}
+             	
+             	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
+             	cibilActualScore= Double.parseDouble(cibilResponse1.getActualScore());
+             	 logger.info("CIBIL ACTUAL SCORE ---------->"+"aPPLICATIONiD ----------->"+applicationId +" ------------------------"+cibilActualScore);
+             	 	scoringRequest.setCibilActualScore(cibilActualScore);
+             	}
+             	
+             	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
+             		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
+             	 logger.info("setIsCreaditHisotryGreaterSixMonths------------------>");
+             	
+             	}
+              	if(cibilActualScore>= 1 && cibilActualScore <= 5){
+             			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
+             		logger.info("setIsCreaditHisotryLessThenSixMonths------------------>");
+             	} 
+             	if(cibilActualScore ==  -1){ 
+             			scoringRequest.setIsNoCreaditHistory(true);
+             				logger.info("setIsNoCreaditHistory------------------>");
+             	}
+             	
+             }catch (Exception e) {
+                 logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE IN PERSONAL LOAN======>");
+     		}
             
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
@@ -1286,12 +1326,20 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.Retail.NO_OF_YEAR_CURRENT_LOCATION_PL:
                                 try {
-                                    Integer year = retailApplicantDetail.getResidenceSinceYear();
-                                    Integer month = retailApplicantDetail.getResidenceSinceMonth();
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-                                    String s = "01/" + month + "/" + year;
-                                    scoreParameterRetailRequest.setNoOfYearCurrentLocation(Math.ceil(CommonUtils.getAgeFromBirthDate(simpleDateFormat.parse(s)).doubleValue()));
-                                    scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
+                                    if(retailApplicantDetail.getResidenceSinceYear() != null && retailApplicantDetail.getResidenceSinceMonth() != null) {
+                                        Integer year = retailApplicantDetail.getResidenceSinceYear();
+                                        Integer month = retailApplicantDetail.getResidenceSinceMonth();
+                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
+                                        String s = "01/" + month + "/" + year;
+                                        logger.info("Starting Date of Staying in Current Location For PL==== > {}",s);
+                                        Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
+                                        Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
+                                        logger.info("No Of Years Staying in Current Location For PL==== > {}",noStayLoc);
+                                        scoreParameterRetailRequest.setNoOfYearCurrentLocation(noStayLoc);
+                                        scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);
+                                    }else{
+                                        logger.error("NO_OF_YEAR_CURRENT_LOCAITON_PL parameter {},{}: ", retailApplicantDetail.getResidenceSinceYear(),retailApplicantDetail.getResidenceSinceMonth());
+                                    }
                                 } catch (Exception e) {
                                     logger.error("error while getting NO_OF_YEAR_CURRENT_LOCAITON_PL parameter : ", e);
                                     scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(false);
@@ -1466,7 +1514,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.AVAILABLE_INCOME_PL:
                                 try {
                                     logger.info("netMonthlyIncome===>{}===grossAnnualIncome===>{}== For ApplicationId ==>{}===>FpProductId===>{}",netMonthlyIncome,grossMonthlyIncome,applicationId,fpProductId);
-                                    scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
+                                    scoreParameterRetailRequest.setFoir(scoringRequest.getFoir());
                                     scoreParameterRetailRequest.setIsAvailableIncome_p(true);
 
                                 } catch (Exception e1) {
@@ -1666,6 +1714,10 @@ public class ScoringServiceImpl implements ScoringService {
         Boolean isCheckOffPayOutstndAmount = false;
         Boolean isCheckOffNotChangeSalAcc=false;
         // ENDS HERE CHECK OFF
+        
+	    Boolean isCreaditHisotryGreaterSixMonths = false;          
+		Boolean isCreaditHisotryLessThenSixMonths = false;
+		Boolean isNoCreaditHistory = false;  
 
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
@@ -1735,6 +1787,8 @@ public class ScoringServiceImpl implements ScoringService {
             
             totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
             
+            ScoringRequest scoringRequest = new ScoringRequest();
+            Double cibilActualScore = 0.0d;
             CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setPan(retailApplicantDetail.getPan());
             cibilRequest.setApplicationId(applicationId);
@@ -1743,6 +1797,26 @@ public class ScoringServiceImpl implements ScoringService {
             	if(cibilResponse == null) {
             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	}
+            	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
+            			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());
+            		   	 logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore); 			
+            			 	scoringRequest.setCibilActualScore(cibilActualScore);
+                 	}
+            	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
+              		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
+              	 logger.info("setIsCreaditHisotryGreaterSixMonths------------------>");
+              	
+              	}
+               	if(cibilActualScore>= 1 && cibilActualScore <= 5){
+              			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
+              		logger.info("setIsCreaditHisotryLessThenSixMonths------------------>");
+              	} 
+              	if(cibilActualScore ==  -1){ 
+              			scoringRequest.setIsNoCreaditHistory(true);
+              				logger.info("setIsNoCreaditHistory------------------>");
+              	}
+              	
+                 	
                 cibilResponseDpd = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
                 if(cibilResponseDpd == null) {
             		return new ResponseEntity<>(new LoansResponse("CIBIL DPD Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -1751,6 +1825,7 @@ public class ScoringServiceImpl implements ScoringService {
             	return new ResponseEntity<>(new LoansResponse("Error while Getting DPD or CIBIL Score for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	
             }
+            
             //Getting is Itr Mannual Filed
             isItrMannualFilled = loanRepository.isITRUploaded(applicationId);
             
@@ -1795,16 +1870,11 @@ public class ScoringServiceImpl implements ScoringService {
             	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
             }
             
-            
             Boolean isBorrowersHavingAccounts = false;
             Boolean isBorrowersAvailingLoans = false;
             Boolean isBorrowersHavingSalaryAccounts = false;
             Boolean isBorrowersAvailingCreaditCards = false;
-            
-        	 
         	// ENDS HERE CHECK OFF LOGIC HERE 
-            
-            
             
 
             // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
@@ -1893,6 +1963,9 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
             scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
             // ends here 
+            scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
+            scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
+            scoringRequest.setIsNoCreaditHistory(true);
             
             scoringRequest.setIsWomenApplicant(isWomenApplicant);
 
@@ -2079,8 +2152,16 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
             				if(retailApplicantDetail.getEmploymentType() != null && !OccupationNatureNTB.SALARIED.getId().equals(retailApplicantDetail.getEmploymentType())) {
-            					scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
-                		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));            					
+            					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(retailApplicantDetail.getEmploymentType()) 
+            							|| OccupationNatureNTB.PENSIONER.getId().equals(retailApplicantDetail.getEmploymentType())
+            							|| OccupationNatureNTB.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
+            						            						
+            					}else {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));
+            					}
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:
@@ -2676,8 +2757,16 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED:
             				if(coApplicantDetail.getEmploymentType() != null && !OccupationNatureNTB.SALARIED.getId().equals(coApplicantDetail.getEmploymentType())) {
-            					scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
-                		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));            					
+            					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(coApplicantDetail.getEmploymentType()) 
+            							|| OccupationNatureNTB.PENSIONER.getId().equals(coApplicantDetail.getEmploymentType())
+            							|| OccupationNatureNTB.OTHERS.getId().equals(coApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
+            						            						
+            					}else {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));
+            					}
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS:

@@ -29,7 +29,7 @@ public class SidbiBasicDetail implements Serializable{
 	private String organisationName;
 	
 	@Column(name="constitution_id")
-	private Long constitutionId;
+	private Integer constitutionId;
 	
 	@Column(name="industry_id")
 	private Long industryId;
@@ -103,15 +103,12 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "commencement_date")
 	private Date commencementDate;
 	
-	@Column(name= "msme_registration_number")
-	private String msmeRegistrationNumber;
+	@Column(name= "msme_uam_reg_no")
+	private String msmeUamRegistrationNumber;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "msme_registration_date")
-	private Date msmeRegistrationDate;
-	
-	@Column(name = "aadhar")
-	private String aadhar;
+	@Column(name = "msme_uam_reg_date")
+	private Date msmeUamRegistrationDate;
 	
 	@Column(name = "associated_group")
 	private String associatedGroup;
@@ -120,7 +117,7 @@ public class SidbiBasicDetail implements Serializable{
 	private String sidbiBranch;
 	
 	@Column(name = "exisitng_activity")
-	private Integer exisitngActivity;
+	private String exisitngActivity;
 	
 	@Column(name = "activity_since")
 	private String activitySince;
@@ -131,13 +128,29 @@ public class SidbiBasicDetail implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "trial_run_end_date")
 	private Date trialRunEndDate;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "commence_com_op_date")
+	private Date dateOfCommencementOfCommercialOperations;
 	
 	@Column(name = "is_covered_under_cgtmse")
 	private Boolean isCoveredUnderCGTMSE;
-	
-	@Column(name = "repaymemt_period")
-	private Integer repaymemtPeriod;
-	
+
+	@Column(name="repayment_years")
+	private Integer repaymemtYears;
+
+	@Column(name="repayment_months")
+	private Integer repaymemtMonths;
+
+	@Column(name="moratorium_period_months")
+	private Integer moratoriumPeriodMonths;
+
+	@Column(name="declaration_date")
+	private Date declarationDate;
+
+	@Column(name="declaration_place")
+	private String declarationPlace;
+
 	@Column(name="is_active")
 	private Boolean isActive;
 	
@@ -154,6 +167,15 @@ public class SidbiBasicDetail implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	@Column(name="is_copy_of_existing_fact_addr")
+	private Boolean isCopyOfExistingFactAddr;
+    
+	@Column(name="is_copy_of_registered_addr")
+    private Boolean isCopyOfRegisteredAddr;
+	
+	@Column(name="activity_detail")
+	private String activityDetail;
 
 	public Long getId() {
 		return id;
@@ -165,10 +187,6 @@ public class SidbiBasicDetail implements Serializable{
 
 	public String getOrganisationName() {
 		return organisationName;
-	}
-
-	public Long getConstitutionId() {
-		return constitutionId;
 	}
 
 	public Long getIndustryId() {
@@ -191,8 +209,6 @@ public class SidbiBasicDetail implements Serializable{
 		return pincode;
 	}
 
-	
-
 	public String getLandlineNo() {
 		return landlineNo;
 	}
@@ -213,18 +229,6 @@ public class SidbiBasicDetail implements Serializable{
 		return commencementDate;
 	}
 
-	public String getMsmeRegistrationNumber() {
-		return msmeRegistrationNumber;
-	}
-
-	public Date getMsmeRegistrationDate() {
-		return msmeRegistrationDate;
-	}
-
-	public String getAadhar() {
-		return aadhar;
-	}
-
 	public String getAssociatedGroup() {
 		return associatedGroup;
 	}
@@ -233,7 +237,7 @@ public class SidbiBasicDetail implements Serializable{
 		return sidbiBranch;
 	}
 
-	public Integer getExisitngActivity() {
+	public String getExisitngActivity() {
 		return exisitngActivity;
 	}
 
@@ -281,7 +285,11 @@ public class SidbiBasicDetail implements Serializable{
 		this.organisationName = organisationName;
 	}
 
-	public void setConstitutionId(Long constitutionId) {
+	public Integer getConstitutionId() {
+		return constitutionId;
+	}
+
+	public void setConstitutionId(Integer constitutionId) {
 		this.constitutionId = constitutionId;
 	}
 
@@ -326,17 +334,13 @@ public class SidbiBasicDetail implements Serializable{
 	public void setCommencementDate(Date commencementDate) {
 		this.commencementDate = commencementDate;
 	}
-
-	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
-		this.msmeRegistrationNumber = msmeRegistrationNumber;
+	
+	public String getActivityDetail() {
+		return activityDetail;
 	}
 
-	public void setMsmeRegistrationDate(Date msmeRegistrationDate) {
-		this.msmeRegistrationDate = msmeRegistrationDate;
-	}
-
-	public void setAadhar(String aadhar) {
-		this.aadhar = aadhar;
+	public void setActivityDetail(String activityDetail) {
+		this.activityDetail = activityDetail;
 	}
 
 	public void setAssociatedGroup(String associatedGroup) {
@@ -347,7 +351,7 @@ public class SidbiBasicDetail implements Serializable{
 		this.sidbiBranch = sidbiBranch;
 	}
 
-	public void setExisitngActivity(Integer exisitngActivity) {
+	public void setExisitngActivity(String exisitngActivity) {
 		this.exisitngActivity = exisitngActivity;
 	}
 
@@ -387,16 +391,8 @@ public class SidbiBasicDetail implements Serializable{
 		return isCoveredUnderCGTMSE;
 	}
 
-	public Integer getRepaymemtPeriod() {
-		return repaymemtPeriod;
-	}
-
 	public void setIsCoveredUnderCGTMSE(Boolean isCoveredUnderCGTMSE) {
 		this.isCoveredUnderCGTMSE = isCoveredUnderCGTMSE;
-	}
-
-	public void setRepaymemtPeriod(Integer repaymemtPeriod) {
-		this.repaymemtPeriod = repaymemtPeriod;
 	}
 
 	public String getExisFactPremiseNumber() {
@@ -510,6 +506,87 @@ public class SidbiBasicDetail implements Serializable{
 	public void setPropFactLeased(Boolean propFactLeased) {
 		this.propFactLeased = propFactLeased;
 	}
+
+	public Integer getRepaymemtYears() {
+		return repaymemtYears;
+	}
+
+	public void setRepaymemtYears(Integer repaymemtYears) {
+		this.repaymemtYears = repaymemtYears;
+	}
+
+	public Integer getRepaymemtMonths() {
+		return repaymemtMonths;
+	}
+
+	public void setRepaymemtMonths(Integer repaymemtMonths) {
+		this.repaymemtMonths = repaymemtMonths;
+	}
+
+	public String getMsmeUamRegistrationNumber() {
+		return msmeUamRegistrationNumber;
+	}
+
+	public void setMsmeUamRegistrationNumber(String msmeUamRegistrationNumber) {
+		this.msmeUamRegistrationNumber = msmeUamRegistrationNumber;
+	}
+
+	public Date getMsmeUamRegistrationDate() {
+		return msmeUamRegistrationDate;
+	}
+
+	public void setMsmeUamRegistrationDate(Date msmeUamRegistrationDate) {
+		this.msmeUamRegistrationDate = msmeUamRegistrationDate;
+	}
+
+	public Integer getMoratoriumPeriodMonths() {
+		return moratoriumPeriodMonths;
+	}
+
+	public void setMoratoriumPeriodMonths(Integer moratoriumPeriodMonths) {
+		this.moratoriumPeriodMonths = moratoriumPeriodMonths;
+	}
+
+	public Date getDeclarationDate() {
+		return declarationDate;
+	}
+
+	public void setDeclarationDate(Date declarationDate) {
+		this.declarationDate = declarationDate;
+	}
+
+	public String getDeclarationPlace() {
+		return declarationPlace;
+	}
+
+	public void setDeclarationPlace(String declarationPlace) {
+		this.declarationPlace = declarationPlace;
+	}
+
+	public Boolean getIsCopyOfExistingFactAddr() {
+		return isCopyOfExistingFactAddr;
+	}
+
+	public void setIsCopyOfExistingFactAddr(Boolean isCopyOfExistingFactAddr) {
+		this.isCopyOfExistingFactAddr = isCopyOfExistingFactAddr;
+	}
+
+	public Boolean getIsCopyOfRegisteredAddr() {
+		return isCopyOfRegisteredAddr;
+	}
+
+	public void setIsCopyOfRegisteredAddr(Boolean isCopyOfRegisteredAddr) {
+		this.isCopyOfRegisteredAddr = isCopyOfRegisteredAddr;
+	}
+
+	public Date getDateOfCommencementOfCommercialOperations() {
+		return dateOfCommencementOfCommercialOperations;
+	}
+
+	public void setDateOfCommencementOfCommercialOperations(Date dateOfCommencementOfCommercialOperations) {
+		this.dateOfCommencementOfCommercialOperations = dateOfCommencementOfCommercialOperations;
+	}
+	
 
 	
 }

@@ -8,10 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +31,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewR
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.UnsecuredLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -43,8 +47,11 @@ import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryV
 import com.capitaworld.service.loans.service.teaser.primaryview.UnsecuredLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UserTypeRequest;
@@ -102,6 +109,9 @@ public class PrimaryViewController {
 
 	@Autowired
 	private PlTeaserViewService plTeaserViewService;
+	
+	@Autowired
+	private CommonRepository commonRepository;
 
 	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID = "user_verification, Invalid Request... Client Id is not valid : ";
 	private static final String ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG = "user_verification, Invalid Request... Something went wrong : ";
@@ -946,12 +956,13 @@ public class PrimaryViewController {
 		}
 	}
 
-	/* CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
-	 *
-	 * @RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	//CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
+	 
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
-			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws LoansException {
+			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
 
 		// request must not be null
 
@@ -968,7 +979,7 @@ public class PrimaryViewController {
 		}
 		Long applicationId = request.getApplicationId();
 		Long fpProductId = request.getFpProductId();
-		Long proposalId  =null;
+		Long proposalId  = request.getProposalId();
 
 		String toUserId = null;
 		Long notificationId;
@@ -978,23 +989,27 @@ public class PrimaryViewController {
 			Object[] o = productMasterService.getUserDetailsByPrductId(fpProductId);
 			toUserId = o[0].toString();
 		} else {
-			Object[] o = loanApplicationService.getApplicationDetailsById(4479l); // PREVIOUS
+			//Object[] o = loanApplicationService.getApplicationDetailsById(4479l); // PREVIOUS
 			logger.info("THIS IS THE APPLICATION iD =====>"+applicationId);
-			//Object[] o = loanApplicationService.getApplicationDetailsByProposalId(applicationId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID =={} PENDING
+			Object[] o = loanApplicationService.getApplicationDetailsByProposalId(applicationId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID =={} PENDING
 			toUserId = o[0].toString();
 			logger.info("=============>"+toUserId);
 			notificationId = NotificationAlias.SYS_FP_VIEW;
 		}
-
 		try {
-
-			notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
-				applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
-
-		} catch (Exception e) {
+			String email = commonRepository.getEmailIdFromUsers(Long.valueOf(toUserId));
+	        if (!CommonUtils.isObjectNullOrEmpty(email)) {
+	        	Integer viewedTeaser = commonRepository.getViewedTeaser(email);
+				if(viewedTeaser != null && viewedTeaser > 0) {
+					notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
+							applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
+				}
+			}	
+			
+		}catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-	}*/
+	}
 
 	/*CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
 	 *

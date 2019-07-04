@@ -90,6 +90,16 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	private Boolean isBureauScoreDisplay = false;
 	@Column(name = "is_bureau_score_mandatory")
 	private Boolean isBureauScoreMandatory = false;
+	
+	//Less Than 6 month of Credit History
+	@Column(name = "min_bureau_score_less_than6_month")
+	private Integer minBureauScoreLessThan6Month;
+	
+	//No Credit History
+	@Column(name = "no_bureau_credit_history")
+	private Boolean noBureauCreditHistory = true;
+	
+	
 
 	// Maximum DPDs (Satisfactory with No Default: DPD) (Days) (Past 12 Months)
 	@Column(name = "max_dpds")
@@ -99,20 +109,36 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	@Column(name = "is_dpds_mandatory")
 	private Boolean isDpdsMandatory = false;
 	
-	//Risk Model
+	//Risk Model for Salaried
 	@Column(name="min_risk_score_model")
 	private Double minRiskScoreRetail;
 	@Column(name="is_risk_score_model_display")
-	private Boolean isRiskScoreRetailDisplay=false;
+	private Boolean isRiskScoreRetailDisplay=true;
 	@Column(name="is_risk_score_model_mandatory")
-	private Boolean isRiskScoreRetailMandatory=false;
+	private Boolean isRiskScoreRetailMandatory=true;
 	
 	@Column(name="min_risk_score_model_co_app")
 	private Double minRiskScoreModelCoApp;
 	@Column(name="is_risk_score_model_coapp_display")
-	private Boolean isRiskScoreRetailCoAppDisplay=false;
+	private Boolean isRiskScoreRetailCoAppDisplay=true;
 	@Column(name="is_risk_score_model_coapp_mandatory")
-	private Boolean isRiskScoreRetailCoAppMandatory=false;
+	private Boolean isRiskScoreRetailCoAppMandatory=true;
+	
+	
+	//Risk Model For Other than Salaried
+	@Column(name="min_risk_score_model_oth_thn_sal")
+	private Double minRiskScoreRetailOthThnSal;
+	@Column(name="is_risk_score_model_oth_thn_sal_display")
+	private Boolean isRiskScoreRetailOthThnSalDisplay=true;
+	@Column(name="is_risk_score_model_oth_thn_sal_mandatory")
+	private Boolean isRiskScoreRetailOthThnSalMandatory=true;
+	
+	@Column(name="min_risk_score_model_co_app_oth_thn_sal")
+	private Double minRiskScoreModelCoAppOthThnSal;
+	@Column(name="is_risk_score_model_coapp_oth_thn_sal_display")
+	private Boolean isRiskScoreRetailCoAppOthThnSalDisplay=true;
+	@Column(name="is_risk_score_model_coapp_oth_thn_sal_mandatory")
+	private Boolean isRiskScoreRetailCoAppOthThnSalMandatory=true;
 
 
 	// Total Job Experience (Yrs.)
@@ -1025,5 +1051,68 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
 		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
 	}
-	
+
+	public Integer getMinBureauScoreLessThan6Month() {
+		return minBureauScoreLessThan6Month;
+	}
+
+	public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+		this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+	}
+
+	public Boolean getNoBureauCreditHistory() {
+		return noBureauCreditHistory;
+	}
+
+	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
+
+	public Double getMinRiskScoreRetailOthThnSal() {
+		return minRiskScoreRetailOthThnSal;
+	}
+
+	public void setMinRiskScoreRetailOthThnSal(Double minRiskScoreRetailOthThnSal) {
+		this.minRiskScoreRetailOthThnSal = minRiskScoreRetailOthThnSal;
+	}
+
+	public Boolean getIsRiskScoreRetailOthThnSalDisplay() {
+		return isRiskScoreRetailOthThnSalDisplay;
+	}
+
+	public void setIsRiskScoreRetailOthThnSalDisplay(Boolean isRiskScoreRetailOthThnSalDisplay) {
+		this.isRiskScoreRetailOthThnSalDisplay = isRiskScoreRetailOthThnSalDisplay;
+	}
+
+	public Boolean getIsRiskScoreRetailOthThnSalMandatory() {
+		return isRiskScoreRetailOthThnSalMandatory;
+	}
+
+	public void setIsRiskScoreRetailOthThnSalMandatory(Boolean isRiskScoreRetailOthThnSalMandatory) {
+		this.isRiskScoreRetailOthThnSalMandatory = isRiskScoreRetailOthThnSalMandatory;
+	}
+
+	public Double getMinRiskScoreModelCoAppOthThnSal() {
+		return minRiskScoreModelCoAppOthThnSal;
+	}
+
+	public void setMinRiskScoreModelCoAppOthThnSal(Double minRiskScoreModelCoAppOthThnSal) {
+		this.minRiskScoreModelCoAppOthThnSal = minRiskScoreModelCoAppOthThnSal;
+	}
+
+	public Boolean getIsRiskScoreRetailCoAppOthThnSalDisplay() {
+		return isRiskScoreRetailCoAppOthThnSalDisplay;
+	}
+
+	public void setIsRiskScoreRetailCoAppOthThnSalDisplay(Boolean isRiskScoreRetailCoAppOthThnSalDisplay) {
+		this.isRiskScoreRetailCoAppOthThnSalDisplay = isRiskScoreRetailCoAppOthThnSalDisplay;
+	}
+
+	public Boolean getIsRiskScoreRetailCoAppOthThnSalMandatory() {
+		return isRiskScoreRetailCoAppOthThnSalMandatory;
+	}
+
+	public void setIsRiskScoreRetailCoAppOthThnSalMandatory(Boolean isRiskScoreRetailCoAppOthThnSalMandatory) {
+		this.isRiskScoreRetailCoAppOthThnSalMandatory = isRiskScoreRetailCoAppOthThnSalMandatory;
+	}
 }

@@ -135,7 +135,7 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 
 		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
 			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
-			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValueWithoutDecimal(detail.getAssetValue()));
+			otherCurrentAssetRequest.setAssetValueString(!CommonUtils.isObjectNullOrEmpty(detail.getAssetValue()) ? CommonUtils.convertValueWithoutDecimal(detail.getAssetValue()) : null);
 			otherCurrentAssetRequest.setAssetType(!CommonUtils.isObjectNullOrEmpty(detail.getAssetTypesId()) ? StringEscapeUtils.escapeXml(Assets.getById(detail.getAssetTypesId()).getValue()) : "");
 			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
 			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
@@ -166,7 +166,7 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 
 		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
 			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
-			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValueWithoutDecimal(detail.getAssetValue()));
+			otherCurrentAssetRequest.setAssetValueString(!CommonUtils.isObjectNullOrEmpty(detail.getAssetValue()) ? CommonUtils.convertValueWithoutDecimal(detail.getAssetValue()) : null);
 			otherCurrentAssetRequest.setAssetType(!CommonUtils.isObjectNullOrEmpty(detail.getAssetTypesId()) ? StringEscapeUtils.escapeXml(Assets.getById(detail.getAssetTypesId()).getValue()) : "");
 			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
 			otherCurrentAssetRequests.add(otherCurrentAssetRequest);

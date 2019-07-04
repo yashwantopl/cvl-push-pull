@@ -21,10 +21,13 @@ public class FacilityDetails implements Serializable{
     private Long applicationId;
 
     @Column(name="rupee_term_loan")
-    private Long rupeeTermLoan;
+    private Double rupeeTermLoan;
 
 	@Column(name="foreign_currency")
     private Double foreignCurrency;
+
+	@Column(name="currency_type")
+	private String currencyType;
 
     @Column(name="working_capital_fund")
     private Double workingCapitalFund;
@@ -68,11 +71,11 @@ public class FacilityDetails implements Serializable{
         this.applicationId = applicationId;
     }
 
-    public Long getRupeeTermLoan() {
+    public Double getRupeeTermLoan() {
         return rupeeTermLoan;
     }
 
-    public void setRupeeTermLoan(Long rupeeTermLoan) {
+    public void setRupeeTermLoan(Double rupeeTermLoan) {
         this.rupeeTermLoan = rupeeTermLoan;
     }
 
@@ -146,5 +149,13 @@ public class FacilityDetails implements Serializable{
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    public String getCurrencyType() {
+        return currencyType;
+    }
+
+    public void setCurrencyType(String currencyType) {
+        this.currencyType = currencyType;
     }
 }

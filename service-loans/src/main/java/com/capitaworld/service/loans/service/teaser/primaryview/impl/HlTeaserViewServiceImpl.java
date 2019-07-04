@@ -244,6 +244,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
 	
+	Date dateOfProposal =null;
 	@Override
 	public HlTeaserViewResponse getHlTeaserView(Long toApplicationId, Integer userType, Long userId,Long productMappingId, Boolean isFinal, Long proposalId) {
 
@@ -255,8 +256,22 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			logger.info("Profile Details :{}",profile);
 			BeanUtils.copyProperties(profile, hlTeaserViewResponse);
 		} catch (LoansException e2) {
-			logger.error("Exveption in getting profile value from retail profile for application {}",toApplicationId);
+			logger.error("Exveption in getting profile value from retail profile for application {}",toApplicationsId);
 		}*/
+		
+		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
+		try {
+			Object obj = "-";
+			 dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
+		     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
+			}else{
+			hlTeaserViewResponse.setDateOfProposal(obj);
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		// ENDS HERE===================>
 		
 //		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
@@ -269,19 +284,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		hlTeaserViewResponse.setAppId(toApplicationId);
 		
 
-		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
-			try {
-				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
-				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
-			     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
-				}else{
-				hlTeaserViewResponse.setDateOfProposal(obj);
-				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}
-			// ENDS HERE===================>
+		
 
 
 		/* ========= Matches Data ========== */
@@ -395,7 +398,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setSpouseEmployment(plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 				plRetailApplicantResponse.setDesignation(plRetailApplicantRequest.getDesignation()!= null ? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setNoOfDependent(plRetailApplicantRequest.getNoOfDependent());
-				plRetailApplicantResponse.setCategory(plRetailApplicantRequest.getCategory()!=null?String.valueOf(CastCategory.getById(plRetailApplicantRequest.getCategory())):" - ");
+				plRetailApplicantResponse.setCategory(plRetailApplicantRequest.getCategory()!=null?String.valueOf(CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue()):" - ");
 				plRetailApplicantResponse.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
 				plRetailApplicantResponse.setSalaryMode(plRetailApplicantRequest.getSalaryMode()!=null ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue().toString() : "-");
 				plRetailApplicantResponse.setFatherName(plRetailApplicantRequest.getFatherName()!=null ? plRetailApplicantRequest.getFatherName(): "-");
@@ -413,12 +416,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				String operatingBusinessSince = null;
 				if(plRetailApplicantRequest.getBusinessStartDate() != null ) {
 					LocalDate operatingBusinessDiff = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(plRetailApplicantRequest.getBusinessStartDate()));
-					operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
+					
+					operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years " + ((operatingBusinessDiff.getMonthValue() - today.getMonthValue()) != 0 ?  operatingBusinessDiff.getMonthValue()-today.getMonthValue() + " months" : "");
 				}
 				
 				//OccupationNature condition for Total Experiance Calculation
 				if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 2) {
-					plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() != null ? plRetailApplicantRequest.getTotalExperienceYear() + " years" :" ") + " "+ (plRetailApplicantRequest.getTotalExperienceMonth()!= null  ? plRetailApplicantRequest.getTotalExperienceMonth() +" months" : " "));
+					plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() != null ? plRetailApplicantRequest.getTotalExperienceYear() + " years " :" ") + " "+ (plRetailApplicantRequest.getTotalExperienceMonth()!= null  ? plRetailApplicantRequest.getTotalExperienceMonth() +" months" : " "));
 				}else if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 7) {
 					plRetailApplicantResponse.setTotalExperienceYear(null);
 				}else {
@@ -586,7 +590,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		//List<ReferencesRetailDetail> referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromPropsalId(proposalId);
 
 		if(primaryHlDetail != null) {
-			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getMarketValProp() != null ? primaryHlDetail.getMarketValProp() : 0);
+			hlTeaserViewResponse.setPropertyValue(primaryHlDetail.getCostOfProp() != null ? primaryHlDetail.getCostOfProp() : 0);
+			hlTeaserViewResponse.setMarketValOfProp(primaryHlDetail.getMarketValProp() != null ? primaryHlDetail.getMarketValProp() : 0);
 			hlTeaserViewResponse.setPropertyAge((primaryHlDetail.getOldPropYear()!= null ? primaryHlDetail.getOldPropYear() + (primaryHlDetail.getOldPropYear() >1 ? " years"  : " year") :"") + " " +
 												( primaryHlDetail.getOldPropMonth()!= null? primaryHlDetail.getOldPropMonth() + (primaryHlDetail.getOldPropMonth() > 1 ? " months" : " month") :""));
 		}
@@ -981,7 +986,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() !=null ? (coApplicantDetail.getTotalExperienceYear() +" year") : "") + "" + (coApplicantDetail.getTotalExperienceMonth() != null ? (coApplicantDetail.getTotalExperienceMonth() +" months") :  "" ));
 				plRetailApplicantResponse.setResidenceType(coApplicantDetail.getResidenceType() != null ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue().toString() : "-");
-				plRetailApplicantResponse.setCategory(coApplicantDetail.getCategory()!=null?String.valueOf(CastCategory.getById(coApplicantDetail.getCategory())):" - ");
+				plRetailApplicantResponse.setCategory(coApplicantDetail.getCategory()!=null?String.valueOf(CastCategory.getById(coApplicantDetail.getCategory()).getValue()):" - ");
 				plRetailApplicantResponse.setFatherName(coApplicantDetail.getFatherName()!=null ? coApplicantDetail.getFatherName(): "-");
 				plRetailApplicantResponse.setMotherName(coApplicantDetail.getMotherName());
 				plRetailApplicantResponse.setEducationQualificationString(coApplicantDetail.getEducationQualification() != null ? EducationStatusRetailMst.getById(coApplicantDetail.getEducationQualification()).getValue().toString() : "-");
@@ -1011,6 +1016,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setEmail(coApplicantDetail.getEmail());
 				plRetailApplicantResponse.setSalaryMode(coApplicantDetail.getModeOfReceipt()!= null ? SalaryModeMst.getById(coApplicantDetail.getModeOfReceipt()).getValue().toString() : "-");
 				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
+				plRetailApplicantResponse.setIsIncomeCons(coApplicantDetail.getIsIncomeConsider());
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
@@ -1072,7 +1078,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				String operatingBusinessSince = null;
 				if(coApplicantDetail.getBusinessStartDate() != null ) {
 					LocalDate operatingBusinessDiff = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(coApplicantDetail.getBusinessStartDate()));
-					operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
+					operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years " + ((operatingBusinessDiff.getMonthValue() - today.getMonthValue()) != 0 ?  operatingBusinessDiff.getMonthValue()-today.getMonthValue() + " months" : "");
 				}
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
 					plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() != null ? coApplicantDetail.getTotalExperienceYear() + " years" :" ") + " "+ (coApplicantDetail.getTotalExperienceMonth()!= null  ? coApplicantDetail.getTotalExperienceMonth() +" months" : " "));
