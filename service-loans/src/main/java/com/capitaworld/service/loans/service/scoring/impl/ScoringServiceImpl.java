@@ -795,26 +795,27 @@ public class ScoringServiceImpl implements ScoringService {
     		Boolean isCreaditHisotryLessThenSixMonths= false;
     		Boolean isNoCreaditHistory =false;
     		// ENDS HERE 						
-            RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
-        	if (!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail)) {
+          //  RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+        	if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffDirectPayEmi())){
-        			isCheckOffDirectPayEmi  =  RetailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
+        			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
         		}
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
-        			isCheckOffAgreetoPayOutstanding = RetailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
+        			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffDirectPayEmi();
         		}
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffShiftSalAcc())){
-        			isCheckOffShiftSalAcc = RetailApplicantDetail.getIsCheckOffShiftSalAcc();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
+        			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
         		}
 
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffPayOutstndAmount())){
-        			isCheckOffPayOutstndAmount = RetailApplicantDetail.getIsCheckOffPayOutstndAmount();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
+        			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
         		}
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
-        			isCheckOffNotChangeSalAcc = RetailApplicantDetail.getIsCheckOffNotChangeSalAcc();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
+        			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
         	   }
         	}
         	
@@ -828,7 +829,7 @@ public class ScoringServiceImpl implements ScoringService {
              CibilScoreLogRequest cibilResponse1 = null;
              
              CibilRequest cibilRequest1 = new CibilRequest();
-             cibilRequest1.setPan(RetailApplicantDetail.getPan());
+             cibilRequest1.setPan(retailApplicantDetail.getPan());
              cibilRequest1.setApplicationId(applicationId);
              Double cibilActualScore = 0.0d;
              try {
@@ -843,21 +844,15 @@ public class ScoringServiceImpl implements ScoringService {
              	 logger.info("CIBIL ACTUAL SCORE ---------->"+"aPPLICATIONiD ----------->"+applicationId +" ------------------------"+cibilActualScore);
              	 	scoringRequest.setCibilActualScore(cibilActualScore);
              	}
-             	
              	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
              		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
-             	 logger.info("setIsCreaditHisotryGreaterSixMonths------------------>");
-             	
-             	}
+             	 	}
               	if(cibilActualScore>= 1 && cibilActualScore <= 5){
              			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
-             		logger.info("setIsCreaditHisotryLessThenSixMonths------------------>");
-             	} 
+              		} 
              	if(cibilActualScore ==  -1){ 
              			scoringRequest.setIsNoCreaditHistory(true);
-             				logger.info("setIsNoCreaditHistory------------------>");
-             	}
-             	
+             		}
              }catch (Exception e) {
                  logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE IN PERSONAL LOAN======>");
      		}
@@ -985,7 +980,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                 // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+               
 
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                     logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
