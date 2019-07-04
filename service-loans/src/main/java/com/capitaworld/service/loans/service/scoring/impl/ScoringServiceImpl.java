@@ -2247,6 +2247,9 @@ public class ScoringServiceImpl implements ScoringService {
 	            				if(retailApplicantDetail.getAnnualIncomeOfSpouse() != null) {
 	            					scoreParameterRetailRequest.setSpouseIncome(retailApplicantDetail.getAnnualIncomeOfSpouse());
 	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
+	            				}else {
+	            					scoreParameterRetailRequest.setSpouseIncome(0.0d);
+	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
 	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.MON_INCOME_DEPENDANT:
@@ -2821,6 +2824,9 @@ public class ScoringServiceImpl implements ScoringService {
             				//Not Available in Sheet Document
 	            				if(coApplicantDetail.getAnnualIncomeOfSpouse() != null) {
 	            					scoreParameterRetailRequest.setSpouseIncome(coApplicantDetail.getAnnualIncomeOfSpouse());
+	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
+	            				}else {
+	            					scoreParameterRetailRequest.setSpouseIncome(0.0d);
 	            					scoreParameterRetailRequest.setIsSpouseIncome_p(true);
 	            				}
             				break;
