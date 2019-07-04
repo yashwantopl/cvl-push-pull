@@ -1847,7 +1847,7 @@ public class ScoringServiceImpl implements ScoringService {
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
-        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId);
+        		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId,true);
         	}
         }
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
@@ -2118,10 +2118,10 @@ public class ScoringServiceImpl implements ScoringService {
             				Double cibilScore = null;
                             try {
                             	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
-                            		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                        cibilScore = Double.parseDouble(cibilResponse.getScore());
-                                        scoreParameterRetailRequest.setCibilScore(cibilScore);
+                            		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
+                                        cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                        scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                         scoreParameterRetailRequest.setCibilScore_p(true);
                                     }                            		
                             	}
@@ -2724,10 +2724,10 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
             				Double cibilScore = null;
                             try {
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                	logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getScore());
-                                    cibilScore = Double.parseDouble(cibilResponse.getScore());
-                                    scoreParameterRetailRequest.setCibilScore(cibilScore);
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
+                                	logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
+                                    cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                    scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                     scoreParameterRetailRequest.setCibilScore_p(true);
                                 } 
                             } catch (Exception e) {
