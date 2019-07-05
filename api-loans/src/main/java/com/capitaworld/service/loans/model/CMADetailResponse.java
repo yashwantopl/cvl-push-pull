@@ -108,7 +108,6 @@ public class CMADetailResponse implements Serializable{
         
         private Double netIncreaseInCash;
         
-        List<ItrAdditionalFieldDatas> itrAdditionalFieldsDatas;
         
         // ITR Additional Fileds
         private Double dividendsFromInvestments;
@@ -139,12 +138,6 @@ public class CMADetailResponse implements Serializable{
 		}
 		public void setBadDebtsWrittenOff(Double badDebtsWrittenOff) {
 			this.badDebtsWrittenOff = badDebtsWrittenOff;
-		}
-		public List<ItrAdditionalFieldDatas> getItrAdditionalFieldsDatas() {
-			return itrAdditionalFieldsDatas;
-		}
-		public void setItrAdditionalFieldsDatas(List<ItrAdditionalFieldDatas> itrAdditionalFieldsDatas) {
-			this.itrAdditionalFieldsDatas = itrAdditionalFieldsDatas;
 		}
 		public Double getNetIncreaseInCash() {
 			return netIncreaseInCash;
