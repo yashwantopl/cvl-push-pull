@@ -30,3 +30,5 @@ ALTER TABLE loan_application.fs_corporate_sidbi_project_cost_details ADD COLUMN 
 ALTER TABLE loan_application.fs_corporate_sidbi_basic_details ADD COLUMN is_copy_of_existing_fact_addr BIT DEFAULT b'0' NULL, ADD COLUMN is_copy_of_registered_addr BIT DEFAULT b'0' NULL, ADD COLUMN activity_detail varchar(255) DEFAULT NULL;
 
 ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` DROP COLUMN `repayment_years`;
+
+ALTER TABLE `loan_application`.`fs_corporate_sidbi_basic_details` CHANGE `industry_id` `industry_name` VARCHAR(255) NULL;
