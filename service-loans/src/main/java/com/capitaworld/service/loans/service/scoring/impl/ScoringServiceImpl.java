@@ -226,7 +226,7 @@ public class ScoringServiceImpl implements ScoringService {
     private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
 
     private static final String SAVING_SCORING_REQUEST_DATA_FOR = "Saving Scoring Request Data for  =====> ";
-    private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated";
+    private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated=====>{}";
     private static final String MSG_APPLICATION_ID = " APPLICATION ID   :: ";
     private static final String MSG_FP_PRODUCT_ID = " FP PRODUCT ID    :: ";
     private static final String MSG_SCORING_MODEL_ID = " SCORING MODEL ID :: ";
@@ -796,26 +796,27 @@ public class ScoringServiceImpl implements ScoringService {
     		Boolean isCreaditHisotryLessThenSixMonths= false;
     		Boolean isNoCreaditHistory =false;
     		// ENDS HERE 						
-            RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
-        	if (!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail)) {
+          //  RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+        	if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffDirectPayEmi())){
-        			isCheckOffDirectPayEmi  =  RetailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
+        			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
         		}
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
-        			isCheckOffAgreetoPayOutstanding = RetailApplicantDetail.getIsCheckOffDirectPayEmi();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
+        			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffDirectPayEmi();
         		}
         		
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffShiftSalAcc())){
-        			isCheckOffShiftSalAcc = RetailApplicantDetail.getIsCheckOffShiftSalAcc();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
+        			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
         		}
 
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffPayOutstndAmount())){
-        			isCheckOffPayOutstndAmount = RetailApplicantDetail.getIsCheckOffPayOutstndAmount();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
+        			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
         		}
-        		if(!CommonUtils.isObjectNullOrEmpty(RetailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
-        			isCheckOffNotChangeSalAcc = RetailApplicantDetail.getIsCheckOffNotChangeSalAcc();
+        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
+        			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
         	   }
         	}
         	
@@ -829,7 +830,7 @@ public class ScoringServiceImpl implements ScoringService {
              CibilScoreLogRequest cibilResponse1 = null;
              
              CibilRequest cibilRequest1 = new CibilRequest();
-             cibilRequest1.setPan(RetailApplicantDetail.getPan());
+             cibilRequest1.setPan(retailApplicantDetail.getPan());
              cibilRequest1.setApplicationId(applicationId);
              Double cibilActualScore = 0.0d;
              try {
@@ -844,21 +845,15 @@ public class ScoringServiceImpl implements ScoringService {
              	 logger.info("CIBIL ACTUAL SCORE ---------->"+"aPPLICATIONiD ----------->"+applicationId +" ------------------------"+cibilActualScore);
              	 	scoringRequest.setCibilActualScore(cibilActualScore);
              	}
-             	
              	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
              		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
-             	 logger.info("setIsCreaditHisotryGreaterSixMonths------------------>");
-             	
-             	}
+             	 	}
               	if(cibilActualScore>= 1 && cibilActualScore <= 5){
              			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
-             		logger.info("setIsCreaditHisotryLessThenSixMonths------------------>");
-             	} 
+              		} 
              	if(cibilActualScore ==  -1){ 
              			scoringRequest.setIsNoCreaditHistory(true);
-             				logger.info("setIsNoCreaditHistory------------------>");
-             	}
-             	
+             		}
              }catch (Exception e) {
                  logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE IN PERSONAL LOAN======>");
      		}
@@ -986,7 +981,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                 // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
-                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+               
 
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                     logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
@@ -1797,8 +1792,12 @@ public class ScoringServiceImpl implements ScoringService {
             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	}
             	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-            			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());
-            		   	 logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore); 			
+	            		if("000-1".equalsIgnoreCase(cibilResponse.getActualScore())) {
+	            			cibilActualScore= -1d;
+	            		}else {
+	            			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());	
+	            		}
+	            		logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore);
                  	}
             	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
             		 isCreaditHisotryGreaterSixMonths = true;
@@ -2452,8 +2451,10 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringClient.calculateScoreList(scoringRequestList);
-            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            ScoringResponse calculateScoreList = scoringClient.calculateScoreList(scoringRequestList);
+            logger.info("Scoring Response For HOME Loan============>{}",calculateScoreList);
+            logger.info("Scoring Response Status For HOME Loan ============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED,applicationId);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -2719,8 +2720,12 @@ public class ScoringServiceImpl implements ScoringService {
             				Double cibilScore = null;
                             try {
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                	logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
-                                    cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                	logger.info("Cibil Score Response For HL==== > {}=ApplicationId====>{}",cibilResponse.getActualScore(),applicationId);
+                                	if("000-1".equalsIgnoreCase(cibilResponse.getActualScore())) {
+                                		cibilScore = -1d;
+                                	}else {
+                                		cibilScore = Double.parseDouble(cibilResponse.getActualScore());                                		
+                                	}
                                     scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                     scoreParameterRetailRequest.setCibilScore_p(true);
                                 } 
@@ -3018,7 +3023,9 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringClient.calculateScoreList(scoringRequestList);
+            ScoringResponse calculateScoreList = scoringClient.calculateScoreList(scoringRequestList);
+            logger.info("Scoring Response For HOME Loan for CoAPp============>{}",calculateScoreList);
+            logger.info("Scoring Response Status For HOME Loan for CoAPp============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
