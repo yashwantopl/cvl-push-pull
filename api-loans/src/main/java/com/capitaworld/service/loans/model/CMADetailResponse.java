@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.util.List;
+
 
 public class CMADetailResponse implements Serializable{
 
@@ -106,6 +108,44 @@ public class CMADetailResponse implements Serializable{
         
         private Double netIncreaseInCash;
         
+        List<ItrAdditionalFieldDatas> itrAdditionalFieldsDatas;
+        
+        // ITR Additional Fileds
+        private Double dividendsFromInvestments;
+    	private Double profitLossOnSaleOfFixedAssets;
+    	private Double profitLossOnForexFluctuations;
+    	private Double badDebtsWrittenOff;
+    	
+		public Double getDividendsFromInvestments() {
+			return dividendsFromInvestments;
+		}
+		public void setDividendsFromInvestments(Double dividendsFromInvestments) {
+			this.dividendsFromInvestments = dividendsFromInvestments;
+		}
+		public Double getProfitLossOnSaleOfFixedAssets() {
+			return profitLossOnSaleOfFixedAssets;
+		}
+		public void setProfitLossOnSaleOfFixedAssets(Double profitLossOnSaleOfFixedAssets) {
+			this.profitLossOnSaleOfFixedAssets = profitLossOnSaleOfFixedAssets;
+		}
+		public Double getProfitLossOnForexFluctuations() {
+			return profitLossOnForexFluctuations;
+		}
+		public void setProfitLossOnForexFluctuations(Double profitLossOnForexFluctuations) {
+			this.profitLossOnForexFluctuations = profitLossOnForexFluctuations;
+		}
+		public Double getBadDebtsWrittenOff() {
+			return badDebtsWrittenOff;
+		}
+		public void setBadDebtsWrittenOff(Double badDebtsWrittenOff) {
+			this.badDebtsWrittenOff = badDebtsWrittenOff;
+		}
+		public List<ItrAdditionalFieldDatas> getItrAdditionalFieldsDatas() {
+			return itrAdditionalFieldsDatas;
+		}
+		public void setItrAdditionalFieldsDatas(List<ItrAdditionalFieldDatas> itrAdditionalFieldsDatas) {
+			this.itrAdditionalFieldsDatas = itrAdditionalFieldsDatas;
+		}
 		public Double getNetIncreaseInCash() {
 			return netIncreaseInCash;
 		}
