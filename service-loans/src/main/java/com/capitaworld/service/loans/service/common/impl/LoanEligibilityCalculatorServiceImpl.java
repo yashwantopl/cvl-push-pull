@@ -95,9 +95,6 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@Autowired
     private CorporateApplicantDetailRepository applicantRepository;
 	
-	@Value("${com.capitaworld.pl.eligibility.currentFinancialYear}")
-	public Integer currentFinancialYear;
-	
 	// HOME LOAN STARTS
 	@SuppressWarnings("unchecked")
 	private Map<Integer, JSONObject> calculateMinMaxForHomeLoan(HomeLoanEligibilityRequest homeLoanRequest)
