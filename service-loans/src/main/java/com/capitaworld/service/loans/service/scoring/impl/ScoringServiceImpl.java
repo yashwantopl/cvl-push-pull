@@ -770,6 +770,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
             scoringRequest.setEligibleTenure(eligibleTenure);
             scoringRequest.setFoir(scoringRequestLoans.getFoir());
+            scoringRequest.setMinBankRelationshipInMonths(minBankRelationshipInMonths);
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
             } else {
