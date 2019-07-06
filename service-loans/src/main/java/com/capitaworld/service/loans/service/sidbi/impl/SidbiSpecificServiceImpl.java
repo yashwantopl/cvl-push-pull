@@ -3,24 +3,35 @@ package com.capitaworld.service.loans.service.sidbi.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.sidbi.MeansOfFinanceDetail;
 import com.capitaworld.service.loans.domain.sidbi.SidbiBasicDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
+import com.capitaworld.service.loans.model.sidbi.RawMaterialDetailsRequest;
 import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sidbi.BasicDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
+import com.capitaworld.service.loans.service.sidbi.MeansOfFinanceDetailService;
+import com.capitaworld.service.loans.service.sidbi.ProjectCostDetailService;
+import com.capitaworld.service.loans.service.sidbi.RawMaterialDetailsService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -48,6 +59,18 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 	
 	@Autowired
 	FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	ProjectCostDetailService projectCostDetailService;
+	
+	@Autowired
+	MeansOfFinanceDetailService meansOfFinanceDetailService;
+	
+	@Autowired
+    FacilityDetailsService facilityDetailsService;
+	
+	@Autowired
+	RawMaterialDetailsService rawMaterialDetailsService;
 	
 	@Override
 	public boolean saveOrUpdateAdditionalData(SidbiBasicDetailRequest sidbiBasicDetailRequest, Long userId) throws LoansException {
@@ -101,18 +124,29 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		SidbiBasicDetailRequest sidbiBasicDetailRequest = null;
 		try {
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(applicationId);
+			PrimaryCorporateDetail primaryCorpDetailObj = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId); 
 			if(corporateApplicantDetail != null) {
 				sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 				BeanUtils.copyProperties(corporateApplicantDetail, sidbiBasicDetailRequest);
-				
-				sidbiBasicDetailRequest.setIndustryId(corporateApplicantDetail.getKeyVericalFunding());
+
+
+				sidbiBasicDetailRequest.setDateOfCommencementOfCommercialOperations(primaryCorpDetailObj.getCommercialOperationDate());
 				sidbiBasicDetailRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+				sidbiBasicDetailRequest.setConstitutionId(corporateApplicantDetail.getConstitutionId());
 				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
 				sidbiBasicDetailRequest.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
 				sidbiBasicDetailRequest.setPincode(corporateApplicantDetail.getRegisteredPincode());
-				sidbiBasicDetailRequest.setMsmeRegistrationNumber(corporateApplicantDetail.getMsmeRegistrationNumber());
-				sidbiBasicDetailRequest.setAadhar(corporateApplicantDetail.getAadhar());
-				
+
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getMsmeRegistrationNumber()) && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAadhar())){
+
+					sidbiBasicDetailRequest.setMsmeUamRegistrationNumber(corporateApplicantDetail.getMsmeRegistrationNumber());
+				}
+				else if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getMsmeRegistrationNumber()) && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAadhar())) {
+					sidbiBasicDetailRequest.setMsmeUamRegistrationNumber(corporateApplicantDetail.getAadhar());
+				}
+				else if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getMsmeRegistrationNumber()) && CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAadhar())) {
+					sidbiBasicDetailRequest.setMsmeUamRegistrationNumber(corporateApplicantDetail.getMsmeRegistrationNumber());
+				}
 				
 				if(corporateApplicantDetail.getEstablishmentMonth()!=null && corporateApplicantDetail.getEstablishmentYear()!=null) {
 					String str="01-"+corporateApplicantDetail.getEstablishmentMonth()+"-"+corporateApplicantDetail.getEstablishmentYear();
@@ -158,6 +192,47 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 	    	}
 		}
 		return loanAmount;
+	}
+
+	@Override
+	public LoansResponse validateSidbiForm(Long applicationId, Long userId) throws LoansException {
+		Double totalAmt = 0.00;
+		List<TotalCostOfProjectRequest> projectCostList = projectCostDetailService.getCostOfProjectDetailList(applicationId, userId);
+		if(projectCostList == null || projectCostList.size() == 0) {
+			return new LoansResponse("Please fill atleast one row in Project Cost Details", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		
+		List<TotalCostOfProjectRequest> meansOfFinanceList = meansOfFinanceDetailService.getMeansOfFinanceList(applicationId, userId);
+		
+		if(meansOfFinanceList == null) {
+			return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+		}else if(meansOfFinanceList != null){
+			totalAmt = 0.00;
+			for(TotalCostOfProjectRequest meansOfFinanceDetail : meansOfFinanceList) {
+				totalAmt += meansOfFinanceDetail.getTotalCost() == null ? 0.00 : meansOfFinanceDetail.getTotalCost(); 
+			}
+			
+			if(totalAmt == null || totalAmt == 0.00) {
+				return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+			}
+		}
+		
+		List<FacilityDetailsRequest> facilityResponseDetails = facilityDetailsService.getFacilityDetailsListAppId(applicationId);
+		if(facilityResponseDetails != null) {
+			
+			if(facilityResponseDetails.get(0).getForeignCurrency() == null || facilityResponseDetails.get(0).getForeignCurrency() == 0.00) {
+				return new LoansResponse("Please fill atleast one row in Facility Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
+			}
+		}else {
+			return new LoansResponse("Please fill atleast one row in Facility Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
+		}
+		
+		List<RawMaterialDetailsRequest> rawMaterialDetailsRequests = rawMaterialDetailsService.getRawMaterialDetailsListAppId(applicationId);
+		if(rawMaterialDetailsRequests == null || rawMaterialDetailsRequests.size() == 0) {
+			return new LoansResponse("Please fill atleast one row in Details of Raw material components", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
+		}
+		
+		return null;
 	}
 
 	

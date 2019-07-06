@@ -8,6 +8,7 @@ public class FacilityDetailsRequest {
     private Long id;
     private Double rupeeTermLoan;
     private Double foreignCurrency;
+    private String currencyType;
     private Double workingCapitalFund;
     private Double workingCapitalNonFund;
     private Double total;
@@ -68,6 +69,11 @@ public class FacilityDetailsRequest {
 		this.isActive = isActive;
 	}
 
-	
-    
+    public String getCurrencyType() {
+        return currencyType;
+    }
+
+    public void setCurrencyType(String currencyType) {
+        this.currencyType = currencyType;
+    }
 }

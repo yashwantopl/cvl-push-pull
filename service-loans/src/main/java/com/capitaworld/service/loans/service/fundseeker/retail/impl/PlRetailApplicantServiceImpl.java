@@ -349,7 +349,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     
     private void saveFinancialArrangementDetails(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) {
     	List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = plRetailApplicantRequest.getFinancialArrangementsDetailRequestsList();
-        if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
+        List<FinancialArrangementsDetail> financialArrangementsDetails = new ArrayList<>();
+    	
+    	if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
             logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
             for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
             	
@@ -377,15 +379,19 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 
                 if(reqObj.getLoanType() != null && reqObj.getLoanType().equals("Credit Card")) {
                 	if(reqObj.getIsManuallyAdded() != null && reqObj.getIsManuallyAdded() == false) {
-                		creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
                 		saveFinObj.setIsManuallyAdded(false);
                 	}
                 	saveFinObj.setAmount(null);
                 	saveFinObj.setEmi(null);
                 }
                 
-                financialArrangementDetailsRepository.save(saveFinObj);
+                financialArrangementsDetails.add(saveFinObj);
             }
+            
+            if(financialArrangementDetailsRepository.save(financialArrangementsDetails) != null) {
+            	creditCardsDetailRepository.inactive(plRetailApplicantRequest.getApplicationId());
+            }
+            
         }
     }
     
@@ -1433,6 +1439,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromCoAppId(coAppId);
                 for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 	financialRequest = new FinancialArrangementsDetailRequest();
+                	financialRequest.setId(creditCardsDetail.getId());
                     financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                     financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                     financialRequest.setLoanType("Credit Card");
@@ -1459,6 +1466,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
                 for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 	financialRequest = new FinancialArrangementsDetailRequest();
+                	financialRequest.setId(creditCardsDetail.getId());
                     financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                     financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                     financialRequest.setLoanType("Credit Card");
@@ -1489,12 +1497,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isCibilCompleted",coApplicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",coApplicantDetail.getIsOneFormCompleted());
 				json.put("isIncomeConsider",coApplicantDetail.getIsIncomeConsider());
+				json.put("employmentType",coApplicantDetail.getEmploymentType());
 				return json;
 			}
 		} else {
 			RetailApplicantDetail applicantDetail = applicantRepository.findByApplicationId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-				RetailOnformContactInfoReq res = new RetailOnformContactInfoReq();
 				JSONObject json = new JSONObject();
 				json.put("isBasicInfoFilled",applicantDetail.getIsBasicInfoFilled());
 				json.put("isEmploymentInfoFilled",applicantDetail.getIsEmploymentInfoFilled());
@@ -1503,6 +1511,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				json.put("isCibilCompleted",applicantDetail.getIsCibilCompleted());
 				json.put("isOneFormCompleted",applicantDetail.getIsOneFormCompleted());
                 json.put("isIncomeConsider",true);
+                json.put("employmentType",applicantDetail.getEmploymentType());
 				return json;
 			}
 		}

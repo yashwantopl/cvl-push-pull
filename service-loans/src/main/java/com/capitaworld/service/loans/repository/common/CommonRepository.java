@@ -15,4 +15,8 @@ public interface CommonRepository {
 	public Object[] getFpFullName(Long userId); 
 	
 	public Object getMakerDate(Long applicationId);
+	
+	public Integer getViewedTeaser(String emailId);
+	
+	public String getEmailIdFromUsers(Long userId);
 }

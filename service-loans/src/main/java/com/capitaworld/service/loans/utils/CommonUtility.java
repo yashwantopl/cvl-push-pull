@@ -111,6 +111,16 @@ public class CommonUtility {
 		}else {
 			return "";
 		}
-		
+
+	}
+
+	public static String logicalCondition(Integer logicalCondition) {
+		switch (logicalCondition) {
+			case 1 : return "Greater then";
+			case 2 : return "Less Than";
+			case 3 : return "Range";
+			case 4 : return "Equal to";
+			default: return "No Condition";
+		}
 	}
 }
