@@ -13,6 +13,7 @@ public class FacilityDetailsRequest {
     private Double workingCapitalNonFund;
     private Double total;
     private Boolean isActive;
+    private Double inrCurrency;
     public Long getId() {
         return id;
     }
@@ -76,4 +77,21 @@ public class FacilityDetailsRequest {
     public void setCurrencyType(String currencyType) {
         this.currencyType = currencyType;
     }
+
+	public Double getInrCurrency() {
+		return inrCurrency;
+	}
+
+	public void setInrCurrency(Double inrCurrency) {
+		this.inrCurrency = inrCurrency;
+	}
+
+	@Override
+	public String toString() {
+		return "FacilityDetailsRequest [id=" + id + ", rupeeTermLoan=" + rupeeTermLoan + ", foreignCurrency="
+				+ foreignCurrency + ", currencyType=" + currencyType + ", workingCapitalFund=" + workingCapitalFund
+				+ ", workingCapitalNonFund=" + workingCapitalNonFund + ", total=" + total + ", isActive=" + isActive
+				+ ", inrCurrency=" + inrCurrency + "]";
+	}
+    
 }
