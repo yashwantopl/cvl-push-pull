@@ -1056,7 +1056,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     cibilRequest.setApplicationId(applicationId);
 
                                     CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
+                                    if (!CommonUtils.isObjectNseullOrEmpty(cibilResponse.getActualScore())) {
                                         cibil_score = Double.parseDouble(cibilResponse.getActualScore());
                                         scoreParameterRetailRequest.setCibilScore(cibil_score);
                                         scoreParameterRetailRequest.setCibilScore_p(true);
