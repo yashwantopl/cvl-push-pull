@@ -46,7 +46,7 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
 	public IneligibleProposalDetails getSanctionedByApplicationIdAndOrgId(@Param("applicationId")Long applicationId,@Param("userOrgId")Long userOrgId);
 
 	@Modifying
-	@Query(value="update ineligible_proposal_details set is_active =: isActive where application_id =: applicationId", nativeQuery = true)
+	@Query(value="update ineligible_proposal_details set is_active =:isActive where application_id =:applicationId", nativeQuery = true)
 	public Integer updateInEligibleDataBasedonApplicationId(@Param("applicationId")Long applicationId,@Param("isActive")Boolean isActive);
 
 }
