@@ -131,7 +131,6 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 
 
 				sidbiBasicDetailRequest.setDateOfCommencementOfCommercialOperations(primaryCorpDetailObj.getCommercialOperationDate());
-				sidbiBasicDetailRequest.setIndustryId(corporateApplicantDetail.getKeyVericalFunding());
 				sidbiBasicDetailRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
 				sidbiBasicDetailRequest.setConstitutionId(corporateApplicantDetail.getConstitutionId());
 				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
