@@ -1191,7 +1191,10 @@ public class ScoringServiceImpl implements ScoringService {
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.EDUCATIONAL_INSTITUTE.getId().longValue();
                                         }
-                                        else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith())
+                                        else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith()
+                                                || EmploymentWithPL.UNORGANISED_SECTOR.getId() == retailApplicantDetail.getEmploymentWith()
+                                                || EmploymentWithPL.SMALL_SECTOR_PROPRIETORSHIP.getId() == retailApplicantDetail.getEmploymentWith()
+                                                || EmploymentWithPL.SMALL_SECTOR_PARTNERSHIP.getId() == retailApplicantDetail.getEmploymentWith())
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
                                         }
@@ -1200,6 +1203,11 @@ public class ScoringServiceImpl implements ScoringService {
                                                 employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_WITH_BANK.getId().longValue();
                                             else
                                                 employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
+                                        }else if(EmploymentWithPL.SMALL_SECTOR_PVT_LTD_COMPANIES.getId() == retailApplicantDetail.getEmploymentWith()){
+                                            if (true == salaryWithBank)
+                                                employmentWithPlValue = EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue = EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                         }
                                         logger.info("==============employmentWithPlValue: ============ "+employmentWithPlValue + " " +retailApplicantDetail.getEmploymentWith() );
                                         scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
@@ -6334,6 +6342,8 @@ public class ScoringServiceImpl implements ScoringService {
     public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException {
         return scoringClient.sendToChecker(genericCheckerReqResList, userId);
     }
+
+
 
     @Override
     public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes) {
