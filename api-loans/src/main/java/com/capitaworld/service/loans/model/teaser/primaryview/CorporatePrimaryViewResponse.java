@@ -149,6 +149,7 @@ public class CorporatePrimaryViewResponse {
     private String cibilCmrScore;
     
     private String productServiceDesc;
+    private String msmeRankTitle;
     
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
     
@@ -1276,6 +1277,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setGstBankComp(Object gstBankComp) {
 		this.gstBankComp = gstBankComp;
+	}
+	public String getMsmeRankTitle() {
+		return msmeRankTitle;
+	}
+	public void setMsmeRankTitle(String msmeRankTitle) {
+		this.msmeRankTitle = msmeRankTitle;
 	}
 	
 	
