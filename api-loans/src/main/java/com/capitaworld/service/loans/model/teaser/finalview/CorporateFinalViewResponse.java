@@ -241,7 +241,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private String cibilCmrScore;
     private String comercialPanNo;
     private String productServiceDesc;
-    
+    private String msmeRankTitle;
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
 
 	public List<?> getMatchesList() {
@@ -2243,6 +2243,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setComercialPanNo(String comercialPanNo) {
 		this.comercialPanNo = comercialPanNo;
+	}
+
+	public String getMsmeRankTitle() {
+		return msmeRankTitle;
+	}
+
+	public void setMsmeRankTitle(String msmeRankTitle) {
+		this.msmeRankTitle = msmeRankTitle;
 	}
 
 

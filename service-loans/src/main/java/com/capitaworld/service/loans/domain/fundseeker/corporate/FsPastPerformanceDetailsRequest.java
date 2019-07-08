@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FsPastPerformanceDetailsRequest implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final Long serialVersionUID = 1L;
 
 	private Long id;
 
@@ -19,29 +19,29 @@ public class FsPastPerformanceDetailsRequest implements Serializable {
 
 	private Boolean isActive;
 
-	private Long netSalesPastYear1;
+	private Double netSalesPastYear1;
 
-	private Long netSalesPastYear2;
+	private Double netSalesPastYear2;
 
-	private Long netSalesPresentYear;
+	private Double netSalesPresentYear;
 
-	private Long netSalesNextYear;
+	private Double netSalesNextYear;
 
-	private Long netProfitPastYear1;
+	private Double netProfitPastYear1;
 
-	private Long netProfitPastYear2;
+	private Double netProfitPastYear2;
 
-	private Long netProfitPresentYear;
+	private Double netProfitPresentYear;
 
-	private Long netProfitNextYear;
+	private Double netProfitNextYear;
 
-	private Long compNetWorthPastYear1;
+	private Double compNetWorthPastYear1;
 
-	private Long compNetWorthPastYear2;
+	private Double compNetWorthPastYear2;
 
-	private Long compNetWorthPresentYear;
+	private Double compNetWorthPresentYear;
 
-	private Long compNetWorthNextYear;
+	private Double compNetWorthNextYear;
 
 	private String contingentLiabilities;
 
@@ -70,99 +70,99 @@ public class FsPastPerformanceDetailsRequest implements Serializable {
 		isActive = active;
 	}
 
-	public Long getNetSalesPastYear1() {
+	public Double getNetSalesPastYear1() {
 		return netSalesPastYear1;
 	}
 
-	public void setNetSalesPastYear1(Long netSalesPastYear1) {
+	public void setNetSalesPastYear1(Double netSalesPastYear1) {
 		this.netSalesPastYear1 = netSalesPastYear1;
 	}
 
-	public Long getNetSalesPastYear2() {
+	public Double getNetSalesPastYear2() {
 		return netSalesPastYear2;
 	}
 
-	public void setNetSalesPastYear2(Long netSalesPastYear2) {
+	public void setNetSalesPastYear2(Double netSalesPastYear2) {
 		this.netSalesPastYear2 = netSalesPastYear2;
 	}
 
-	public Long getNetSalesPresentYear() {
+	public Double getNetSalesPresentYear() {
 		return netSalesPresentYear;
 	}
 
-	public void setNetSalesPresentYear(Long netSalesPresentYear) {
+	public void setNetSalesPresentYear(Double netSalesPresentYear) {
 		this.netSalesPresentYear = netSalesPresentYear;
 	}
 
-	public Long getNetSalesNextYear() {
+	public Double getNetSalesNextYear() {
 		return netSalesNextYear;
 	}
 
-	public void setNetSalesNextYear(Long netSalesNextYear) {
+	public void setNetSalesNextYear(Double netSalesNextYear) {
 		this.netSalesNextYear = netSalesNextYear;
 	}
 
-	public Long getNetProfitPastYear1() {
+	public Double getNetProfitPastYear1() {
 		return netProfitPastYear1;
 	}
 
-	public void setNetProfitPastYear1(Long netProfitPastYear1) {
+	public void setNetProfitPastYear1(Double netProfitPastYear1) {
 		this.netProfitPastYear1 = netProfitPastYear1;
 	}
 
-	public Long getNetProfitPastYear2() {
+	public Double getNetProfitPastYear2() {
 		return netProfitPastYear2;
 	}
 
-	public void setNetProfitPastYear2(Long netProfitPastYear2) {
+	public void setNetProfitPastYear2(Double netProfitPastYear2) {
 		this.netProfitPastYear2 = netProfitPastYear2;
 	}
 
-	public Long getNetProfitPresentYear() {
+	public Double getNetProfitPresentYear() {
 		return netProfitPresentYear;
 	}
 
-	public void setNetProfitPresentYear(Long netProfitPresentYear) {
+	public void setNetProfitPresentYear(Double netProfitPresentYear) {
 		this.netProfitPresentYear = netProfitPresentYear;
 	}
 
-	public Long getNetProfitNextYear() {
+	public Double getNetProfitNextYear() {
 		return netProfitNextYear;
 	}
 
-	public void setNetProfitNextYear(Long netProfitNextYear) {
+	public void setNetProfitNextYear(Double netProfitNextYear) {
 		this.netProfitNextYear = netProfitNextYear;
 	}
 
-	public Long getCompNetWorthPastYear1() {
+	public Double getCompNetWorthPastYear1() {
 		return compNetWorthPastYear1;
 	}
 
-	public void setCompNetWorthPastYear1(Long compNetWorthPastYear1) {
+	public void setCompNetWorthPastYear1(Double compNetWorthPastYear1) {
 		this.compNetWorthPastYear1 = compNetWorthPastYear1;
 	}
 
-	public Long getCompNetWorthPastYear2() {
+	public Double getCompNetWorthPastYear2() {
 		return compNetWorthPastYear2;
 	}
 
-	public void setCompNetWorthPastYear2(Long compNetWorthPastYear2) {
+	public void setCompNetWorthPastYear2(Double compNetWorthPastYear2) {
 		this.compNetWorthPastYear2 = compNetWorthPastYear2;
 	}
 
-	public Long getCompNetWorthPresentYear() {
+	public Double getCompNetWorthPresentYear() {
 		return compNetWorthPresentYear;
 	}
 
-	public void setCompNetWorthPresentYear(Long compNetWorthPresentYear) {
+	public void setCompNetWorthPresentYear(Double compNetWorthPresentYear) {
 		this.compNetWorthPresentYear = compNetWorthPresentYear;
 	}
 
-	public Long getCompNetWorthNextYear() {
+	public Double getCompNetWorthNextYear() {
 		return compNetWorthNextYear;
 	}
 
-	public void setCompNetWorthNextYear(Long compNetWorthNextYear) {
+	public void setCompNetWorthNextYear(Double compNetWorthNextYear) {
 		this.compNetWorthNextYear = compNetWorthNextYear;
 	}
 
