@@ -1063,7 +1063,16 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
                                     if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                        cibil_score = Double.parseDouble(cibilResponse.getActualScore());
+
+                                        if(cibilResponse.getActualScore().equals("000-1"))
+                                        {
+                                            cibil_score =-1d;
+                                        }
+                                        else
+                                        {
+                                            cibil_score= Double.parseDouble(cibilResponse.getActualScore());
+                                        }
+
                                         scoreParameterRetailRequest.setCibilScore(cibil_score);
                                         scoreParameterRetailRequest.setCibilScore_p(true);
                                     } else {
@@ -2127,7 +2136,15 @@ public class ScoringServiceImpl implements ScoringService {
                             	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
                             		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
                                     if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                        cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+
+                                        if(cibilResponse.getActualScore().equals("000-1"))
+                                        {
+                                            cibilScore =-1d;
+                                        }
+                                        else
+                                        {
+                                            cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                        }
                                         scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                         scoreParameterRetailRequest.setCibilScore_p(true);
                                     }                            		
