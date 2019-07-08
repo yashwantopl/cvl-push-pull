@@ -36,7 +36,7 @@ public class RawMaterialDetails implements Serializable{
     private Long quantityUnitCost;
 
     @Column(name="lead_procure_time")
-    private Integer leadProcureTime;
+    private Double leadProcureTime;
 
     @Column(name="availability")
     private Boolean availability;
@@ -117,11 +117,11 @@ public class RawMaterialDetails implements Serializable{
         this.quantityUnitCost = quantityUnitCost;
     }
 
-    public Integer getLeadProcureTime() {
+    public Double getLeadProcureTime() {
         return leadProcureTime;
     }
 
-    public void setLeadProcureTime(Integer leadProcureTime) {
+    public void setLeadProcureTime(Double leadProcureTime) {
         this.leadProcureTime = leadProcureTime;
     }
 

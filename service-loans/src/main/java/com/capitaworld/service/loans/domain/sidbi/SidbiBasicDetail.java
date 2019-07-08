@@ -119,8 +119,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "exisitng_activity")
 	private String exisitngActivity;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "activity_since")
-	private String activitySince;
+	private Date activitySince;
 	
 	@Column(name = "proposed_activity")
 	private String proposedActivity;
@@ -234,7 +235,7 @@ public class SidbiBasicDetail implements Serializable{
 		return exisitngActivity;
 	}
 
-	public String getActivitySince() {
+	public Date getActivitySince() {
 		return activitySince;
 	}
 
@@ -344,7 +345,7 @@ public class SidbiBasicDetail implements Serializable{
 		this.exisitngActivity = exisitngActivity;
 	}
 
-	public void setActivitySince(String activitySince) {
+	public void setActivitySince(Date activitySince) {
 		this.activitySince = activitySince;
 	}
 
