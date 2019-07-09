@@ -2108,7 +2108,12 @@ public class ScoringServiceImpl implements ScoringService {
             						Integer year = retailApplicantDetail.getResidenceSinceYear();
     	                            Integer month = retailApplicantDetail.getResidenceSinceMonth();
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    	                            String s = "01/" + month + "/" + year;
+    	                            String s = null;
+    	                            if(month < 10) {
+    	                            	s = "01/0" + month + "/" + year;
+    	                            }else {
+    	                            	s = "01/" + month + "/" + year;    	                            	
+    	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
     	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
@@ -2182,8 +2187,12 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails(retailApplicantDetail.getSpouseEmployment() != null ? retailApplicantDetail.getSpouseEmployment().longValue() : null);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(retailApplicantDetail.getSpouseEmployment() != null);
+            					if(retailApplicantDetail.getSpouseEmployment() != null) {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(retailApplicantDetail.getSpouseEmployment().longValue());
+            					}else {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(3l);
+            					}
+            					scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
@@ -2323,7 +2332,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
             				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
-            					value = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
+            					value = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()); // / 6 
             					logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",value);
        					 	}
             				scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
@@ -2713,7 +2722,12 @@ public class ScoringServiceImpl implements ScoringService {
             						Integer year = coApplicantDetail.getResidenceSinceYear();
     	                            Integer month = coApplicantDetail.getResidenceSinceMonth();
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    	                            String s = "01/" + month + "/" + year;
+    	                            String s = null;
+    	                            if(month < 10) {
+    	                            	s = "01/0" + month + "/" + year;
+    	                            }else {
+    	                            	s = "01/" + month + "/" + year;    	                            	
+    	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL CoApplicant==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
     	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
@@ -2791,8 +2805,12 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-            					scoreParameterRetailRequest.setSpouseEmploymentDetails(coApplicantDetail.getSpouseEmployment() != null ? coApplicantDetail.getSpouseEmployment().longValue() : null);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(coApplicantDetail.getSpouseEmployment() != null);
+            					if(coApplicantDetail.getSpouseEmployment() != null) {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(coApplicantDetail.getSpouseEmployment().longValue());
+            					}else {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(3l);
+            					}
+            					scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
@@ -2897,7 +2915,7 @@ public class ScoringServiceImpl implements ScoringService {
             				Double value = 0.0d;
             				if(coApplicantBankStatementData != null) {
             					if(coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
-            						value =  Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;            						
+            						value =  Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit());// / 6;            						
             					}
             					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
        					 		scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
