@@ -2187,8 +2187,12 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails(retailApplicantDetail.getSpouseEmployment() != null ? retailApplicantDetail.getSpouseEmployment().longValue() : null);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(retailApplicantDetail.getSpouseEmployment() != null);
+            					if(retailApplicantDetail.getSpouseEmployment() != null) {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(retailApplicantDetail.getSpouseEmployment().longValue());
+            					}else {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(3l);
+            					}
+            					scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
@@ -2801,8 +2805,12 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-            					scoreParameterRetailRequest.setSpouseEmploymentDetails(coApplicantDetail.getSpouseEmployment() != null ? coApplicantDetail.getSpouseEmployment().longValue() : null);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(coApplicantDetail.getSpouseEmployment() != null);
+            					if(coApplicantDetail.getSpouseEmployment() != null) {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(coApplicantDetail.getSpouseEmployment().longValue());
+            					}else {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(3l);
+            					}
+            					scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
