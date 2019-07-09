@@ -2107,7 +2107,12 @@ public class ScoringServiceImpl implements ScoringService {
             						Integer year = retailApplicantDetail.getResidenceSinceYear();
     	                            Integer month = retailApplicantDetail.getResidenceSinceMonth();
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    	                            String s = "01/" + month + "/" + year;
+    	                            String s = null;
+    	                            if(month < 10) {
+    	                            	s = "01/0" + month + "/" + year;
+    	                            }else {
+    	                            	s = "01/" + month + "/" + year;    	                            	
+    	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
     	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
@@ -2712,7 +2717,12 @@ public class ScoringServiceImpl implements ScoringService {
             						Integer year = coApplicantDetail.getResidenceSinceYear();
     	                            Integer month = coApplicantDetail.getResidenceSinceMonth();
     	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    	                            String s = "01/" + month + "/" + year;
+    	                            String s = null;
+    	                            if(month < 10) {
+    	                            	s = "01/0" + month + "/" + year;
+    	                            }else {
+    	                            	s = "01/" + month + "/" + year;    	                            	
+    	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL CoApplicant==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
     	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
