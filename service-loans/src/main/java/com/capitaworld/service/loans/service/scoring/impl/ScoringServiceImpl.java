@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.scoring.MCLRReqRes;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -6418,5 +6419,71 @@ public class ScoringServiceImpl implements ScoringService {
             logger.error("error while getting year from itr response : ",e);
         }
         return year + 1;
+    }
+
+    @Override
+    public List<GenericCheckerReqRes> sendToCheckerMCLR(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException {
+        return scoringClient.sendToCheckerMCLR(genericCheckerReqResList, userId);
+    }
+
+    @Override
+    public ScoringResponse createJob(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.createJob(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while creating job for MCLR: ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getMCLRForChecker(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getMCLRForChecker(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getMCLRHistory(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getLatestMCLRDetails(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.saveMCLR(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while saving MCLR details : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getEffectiveMCLRDetails(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getEffectiveMCLR(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting effective MCLR details : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+
     }
 }
