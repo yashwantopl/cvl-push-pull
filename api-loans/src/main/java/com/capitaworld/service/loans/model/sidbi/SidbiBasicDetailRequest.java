@@ -3,6 +3,10 @@ package com.capitaworld.service.loans.model.sidbi;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 public class SidbiBasicDetailRequest implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -75,7 +79,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private String exisitngActivity;
 	
-	private String activitySince;
+	private Date activitySince;
 	
 	private String proposedActivity;
 	
@@ -351,11 +355,11 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.exisitngActivity = exisitngActivity;
 	}
 
-	public String getActivitySince() {
+	public Date getActivitySince() {
 		return activitySince;
 	}
 
-	public void setActivitySince(String activitySince) {
+	public void setActivitySince(Date activitySince) {
 		this.activitySince = activitySince;
 	}
 

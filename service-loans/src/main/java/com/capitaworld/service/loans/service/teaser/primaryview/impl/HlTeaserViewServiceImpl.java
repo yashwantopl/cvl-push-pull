@@ -363,6 +363,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						break;
 
 					default:
+						plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());
 						break;
 					}
 					break;
