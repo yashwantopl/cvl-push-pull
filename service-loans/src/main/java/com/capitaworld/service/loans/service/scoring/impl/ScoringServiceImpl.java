@@ -855,12 +855,24 @@ public class ScoringServiceImpl implements ScoringService {
              	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
              		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
              	 	}
+             	 	else
+                    {
+                         scoringRequest.setIsCreaditHisotryGreaterSixMonths(false);
+                    }
               	if(cibilActualScore>= 1 && cibilActualScore <= 5){
              			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
-              		} 
+              		}
+                else
+                {
+                    scoringRequest.setIsCreaditHisotryLessThenSixMonths(false);
+                }
              	if(cibilActualScore ==  -1){ 
              			scoringRequest.setIsNoCreaditHistory(true);
              		}
+             		else
+                {
+                    scoringRequest.setIsNoCreaditHistory(false);
+                }
              }catch (Exception e) {
                  logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE IN PERSONAL LOAN======>");
      		}
