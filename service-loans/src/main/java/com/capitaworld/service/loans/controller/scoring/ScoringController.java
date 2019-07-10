@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.capitaworld.service.rating.exception.RatingException;
+import com.capitaworld.service.scoring.MCLRReqRes;
 import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
+import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -255,6 +257,110 @@ public class ScoringController {
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while getting scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/sendToCheckerMCLR", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes>> sendToCheckerMCLR(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+        logger.info("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> ",genericCheckerReqResList.size());
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes> genericCheckerReqRes = scoringService.sendToCheckerMCLR(genericCheckerReqResList, userId);
+            logger.info("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> ", genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes>>(genericCheckerReqRes, HttpStatus.OK);
+        } catch (Exception e) {
+            List<GenericCheckerReqRes> res = new ArrayList<GenericCheckerReqRes>();
+            GenericCheckerReqRes reqres = new GenericCheckerReqRes();
+            reqres.setActionFlag(false);
+            res.add(reqres);
+            logger.error("Error while saving scoring model detail : ", e);
+            return new ResponseEntity<List<GenericCheckerReqRes>>(res, HttpStatus.OK);
+        }
+    }
+
+
+    @RequestMapping(value = "/create_job", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> createJob(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest httpRequest) {
+
+        try {
+            mclrReqRes.setUserId((Long) httpRequest.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.createJob(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/get_mclr_history", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getMclrHistory(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getMCLRHistoryDetail(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/getLatestMCLRDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getLatestMCLRDetails(@RequestBody MCLRReqRes mclrReqRes,HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getLatestMCLRDetails(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/save_mclr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> saveMCLR(@RequestBody MCLRReqRes mclrReqRes,
+                                                    HttpServletRequest request) throws RatingException {
+
+        try {
+            mclrReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.saveMCLRDetails(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/getMCLRForChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getMCLRForChecker(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest request) {
+        try {
+            mclrReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.getMCLRForChecker(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/getEffectiveMCLR", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getEffectiveMCLR(@RequestBody MCLRReqRes mclrReqRes) {
+
+        try {
+            if(com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(mclrReqRes)){
+                ScoringResponse res=new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+                return new ResponseEntity<ScoringResponse>(res,HttpStatus.OK);
+            }
+            ScoringResponse scoringResponse= scoringService.getEffectiveMCLRDetails(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse,HttpStatus.OK);
+
+        } catch (Exception e) {
+            ScoringResponse res=new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error("Error while getting effective mclr ", e);
+            return new ResponseEntity<ScoringResponse>(res,HttpStatus.OK);
         }
     }
 }

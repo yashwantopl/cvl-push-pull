@@ -319,7 +319,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							workingCapitalParameterRequest.setNewTolTnw(null);
 						}
 						//END set multiple value in temp
-						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id");
+						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id","profitabilityHistory","netWorth");
 						productMasterTemp = workingCapitalParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
@@ -342,7 +342,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
-							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
+							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id","profitabilityHistory","netWorth");
 							productMasterTemp = ntbTermLoanParameterTemp;
 							productMasterTemp.setIsParameterFilled(true);
 						} else {
@@ -362,7 +362,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
-							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
+							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id","profitabilityHistory","netWorth");
 							productMasterTemp = termLoanParameterTemp;
 							productMasterTemp.setIsParameterFilled(true);
 						}
@@ -384,7 +384,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							wcTlParameterRequest.setIsNewTolTnwCheck(false);
 							wcTlParameterRequest.setNewTolTnw(null);
 						}
-						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
+						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id","profitabilityHistory","netWorth");
 						productMasterTemp = wcTlParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;

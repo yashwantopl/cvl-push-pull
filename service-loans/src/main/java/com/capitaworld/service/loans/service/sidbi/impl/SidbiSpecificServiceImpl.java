@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.domain.sidbi.MeansOfFinanceDetail;
 import com.capitaworld.service.loans.domain.sidbi.SidbiBasicDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
