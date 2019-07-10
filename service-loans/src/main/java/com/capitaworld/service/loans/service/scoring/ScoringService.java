@@ -4,8 +4,10 @@ import java.io.IOException;
 
 import java.util.List;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.scoring.MCLRReqRes;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
+import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -57,4 +59,18 @@ public interface ScoringService {
     public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes);
 
     public Integer getFinYear(Long applicationId);
+
+    public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes);
+
+    public ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes);
+
+    public ScoringResponse getMCLRForChecker(MCLRReqRes mclrReqRes);
+
+    public ScoringResponse getEffectiveMCLRDetails(MCLRReqRes mclrReqRes);
+
+    public ScoringResponse createJob(MCLRReqRes mclrReqRes);
+
+    public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes);
+
+    public List<GenericCheckerReqRes> sendToCheckerMCLR(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
 }
