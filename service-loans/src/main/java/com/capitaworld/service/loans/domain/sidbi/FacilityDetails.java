@@ -26,6 +26,9 @@ public class FacilityDetails implements Serializable{
 	@Column(name="foreign_currency")
     private Double foreignCurrency;
 
+	@Column(name="inr_currency")
+	private Double inrCurrency;
+
 	@Column(name="currency_type")
 	private String currencyType;
 
@@ -158,4 +161,13 @@ public class FacilityDetails implements Serializable{
     public void setCurrencyType(String currencyType) {
         this.currencyType = currencyType;
     }
+
+	public Double getInrCurrency() {
+		return inrCurrency;
+	}
+
+	public void setInrCurrency(Double inrCurrency) {
+		this.inrCurrency = inrCurrency;
+	}
+    
 }

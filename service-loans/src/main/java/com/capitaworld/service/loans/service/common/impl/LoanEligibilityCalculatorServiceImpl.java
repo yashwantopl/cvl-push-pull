@@ -10,13 +10,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.itr.api.model.ITRAdditionalFieldsRequest;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
@@ -47,6 +53,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
+
 @Service
 @Transactional
 public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalculatorService {
@@ -73,7 +80,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@Autowired 
 	private  GstClient  gstClient;
 	
-
+	@Autowired
+	private ITRClient itrClient;
+	
 	@Autowired
 	private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
 
@@ -878,6 +887,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
  				Double projectedSales =0.0d; 
  				if(calculations!=null && calculations.getData()!=null){
  					try {
+						@SuppressWarnings("unchecked")
 						GstCalculation calculation = (GstCalculation) MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) calculations.getData(), GstCalculation.class);
 							if(calculation.getProjectedSales()!=null){
 								projectedSales = calculation.getProjectedSales();
@@ -887,9 +897,30 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 						logger.error("EXCEPTION IS GETTING ------project sales ",e);
 					}
  				}
-				
-				// ENDS HERE PROJECTED SALES CALCULATION 
-			}			
+				// ENDS HERE PROJECTED SALES CALCULATION
+ 				
+ 
+ 				List<ITRAdditionalFieldsRequest>  itrResponse = null;
+ 			
+ 				ITRAdditionalFieldsRequest itrRequest = new ITRAdditionalFieldsRequest();
+ 				itrRequest.setApplicationId(applicationId);
+ 				itrResponse = itrClient.getAdditionalDataFields(itrRequest);
+ 						
+ 				if(!CommonUtils.isObjectNullOrEmpty(itrResponse)){
+ 				for(ITRAdditionalFieldsRequest response  : itrResponse){
+ 					Integer currentFinyear  = getFinYear(applicationId);
+ 					logger.info("------------------->"+currentFinyear);
+ 					if(response.getYear().equals(currentFinyear)){
+ 		 				cmaDetailResponse.setDividendsFromInvestments(response.getDividendsFromInvestments());
+ 		 				cmaDetailResponse.setProfitLossOnSaleOfFixedAssets(response.getProfitLossOnSaleOfFixedAssets());
+ 		 				cmaDetailResponse.setProfitLossOnForexFluctuations(response.getProfitLossOnForexFluctuations());
+ 		 				cmaDetailResponse.setBadDebtsWrittenOff(response.getBadDebtsWrittenOff());
+ 						}
+ 					}
+}
+			}	
+			
+			
 			
 		} catch (NullPointerException e) {
 			logger.error("EXCEPTION IS GETTING FOR CMA DATA API======{}===={} ",e);
@@ -898,4 +929,30 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		return cmaDetailResponse ;
 	}
 
+	private Integer getFinYear(Long applicationId){
+			Integer year = 0;
+			ITRConnectionResponse itrConnectionResponse = null;
+			try {
+				itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
+			}catch (Exception e){
+				logger.error("error while calling itr client for getIsUploadAndYearDetails()",e);
+			}
+			try {
+				if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse == null ? null : itrConnectionResponse.getData())){
+					@SuppressWarnings("unchecked")
+					Map<String,Object> map = (Map<String,Object>)itrConnectionResponse.getData();
+					ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
+					if(!CommonUtils.isObjectNullOrEmpty(res) &&!CommonUtils.isObjectNullOrEmpty(res.getYear())){
+						year = Integer.parseInt(res.getYear());
+					}
+				}
+			} catch (IOException e) {
+				logger.error("error while getting year from itr response {}",e);
+			}
+			return year;
+		}
+	
+	
+	
+	
 }

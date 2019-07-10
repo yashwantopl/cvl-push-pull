@@ -711,3 +711,14 @@ ALTER TABLE `loan_application`.`fp_product_master` ADD COLUMN score_model_id_oth
 ALTER TABLE `loan_application`.`fp_product_master_temp` ADD COLUMN score_model_id_oth_thn_sal BIGINT DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_product_master` ADD COLUMN score_model_id_coApp_id_oth_thn_sal BIGINT DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_product_master_temp` ADD COLUMN score_model_id_coApp_id_oth_thn_sal BIGINT DEFAULT NULL;
+
+
+ALTER TABLE `loan_application`.`fp_personal_loan_details` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_personal_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_personal_loan_details` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_personal_loan_details_temp` ADD COLUMN is_risk_score_model_coapp_oth_thn_sal_mandatory BIT(1) DEFAULT FALSE;
+
+ALTER TABLE `loan_application`.`fp_personal_loan_details` ADD COLUMN min_risk_score_model_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_personal_loan_details_temp` ADD COLUMN min_risk_score_model_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_personal_loan_details` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_personal_loan_details_temp` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;

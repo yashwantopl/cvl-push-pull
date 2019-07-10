@@ -11,7 +11,7 @@ public class RawMaterialDetailsRequest {
     private String sourceSuppliers;
     private String paymentTerms;
     private Long quantityUnitCost;
-    private Integer leadProcureTime;
+    private Double leadProcureTime;
     private Boolean availability;
     private String nameOfRawMaterial;
     private Boolean isActive;
@@ -64,11 +64,11 @@ public class RawMaterialDetailsRequest {
         this.quantityUnitCost = quantityUnitCost;
     }
 
-    public Integer getLeadProcureTime() {
+    public Double getLeadProcureTime() {
         return leadProcureTime;
     }
 
-    public void setLeadProcureTime(Integer leadProcureTime) {
+    public void setLeadProcureTime(Double leadProcureTime) {
         this.leadProcureTime = leadProcureTime;
     }
 
