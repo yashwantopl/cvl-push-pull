@@ -703,10 +703,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		try {
 			String cmrScore= cibilClient.getCMRScore(applicationId);
-			if (cmrScore.contains("EXP")) {
+			
+			if (cmrScore != null && cmrScore.contains("EXP")) {
 				map.put("msmeRankingTitle", "To Experian");
-			}else if (cmrScore.contains("CIBIL")) {
+			}else if (cmrScore != null && cmrScore.contains("CIBIL")) {
 				map.put("msmeRankingTitle", "To Cibil");
+			}else {
+				map.put("msmeRankingTitle", "MSME Ranking");
 			}
 			map.put("cibilCmrScore", cmrScore != null ? cmrScore : "Not Found");
 		} catch (Exception e) {
