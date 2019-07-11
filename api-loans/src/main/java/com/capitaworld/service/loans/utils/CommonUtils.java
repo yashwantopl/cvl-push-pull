@@ -1866,5 +1866,27 @@ public enum APIFlags {
 		}
 		return "-";
 	}
+
+//	public static void main(String[] args) throws ParseException {
+//		String strDate = "01/09/2009";
+//		  Calendar c = Calendar.getInstance();
+//		  c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(strDate));
+//		  int year = c.get(Calendar.YEAR);
+//		  int month = c.get(Calendar.MONTH) + 1;
+//		  int date = c.get(Calendar.DATE);
+//		  System.out.println(year);
+//		  System.out.println(month);
+//		  System.out.println(date);
+//		  LocalDate l1 = LocalDate.of(year, month, date);
+//		  LocalDate now1 = LocalDate.now();
+//		  System.out.println(now1);
+//		  Period diff1 = Period.between(l1, now1);
+//		  System.out.println("Years=====>"+diff1.getYears());
+//		  System.out.println("Months=====>"+ diff1.getMonths());
+//		  System.out.println("Days=====>"+diff1.getDays());
+//		  System.out.println(((double)(diff1.getMonths() / 12.0d)));
+//		  System.out.println(((double)diff1.getYears()) + ((double)(diff1.getMonths() / 12.0d)));
+//		  
+//	}
 	
 }
