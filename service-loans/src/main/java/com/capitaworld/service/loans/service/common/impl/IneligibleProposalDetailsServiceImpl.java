@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.common.impl;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import com.capitaworld.api.payment.gateway.exception.GatewayException;
 import com.capitaworld.api.payment.gateway.model.GatewayResponse;
 import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.api.reports.utils.JasperReportEnum;
 import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.loans.model.*;
@@ -45,6 +47,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
@@ -53,6 +56,7 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
+import com.capitaworld.service.notification.model.ContentAttachment;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
@@ -148,6 +152,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
     
     @Autowired
 	private PLCamReportService plCamService;
+
+    @Autowired
+    private SidbiSpecificService sidbiService;
 
     @Value("${isSIDBIFlowForIneligible}")
     private Boolean isSIDBIFlowForIneligible;
@@ -382,7 +389,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	                        notificationParams.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true,null,null);
+								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true,null,null,null);
 					}
 					// ===========================================================================================
 					// 2nd email Step2 Get Details of Bank branch --- Sending mail to Branch
@@ -451,7 +458,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null,null);
 							}
 						}
 
@@ -470,7 +477,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null,null);
 							}
 						}
 
@@ -488,7 +495,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null,null);
 							}
 						}
 
@@ -743,7 +750,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc,String[] cc) throws NotificationException {
+			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc,String[] cc,List<ContentAttachment> content) throws NotificationException {
 		logger.info("Inside send notification===>{}" , toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
@@ -754,7 +761,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			notificationRequest.setIsDynamic(false);
 		}
 		
-		String[] to = { toNo };
+		String[] to = { "maaz.shaikh@onlinepsbloans.com" };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setTemplateId(templateId);
@@ -779,12 +786,17 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				
 				notification.setFileName("CAM.pdf");
 				notification.setContentInBytes(camArr);
+				ContentAttachment contentAttach = new ContentAttachment();
+				contentAttach.setFileName("CAM.pdf");
+				content.add(contentAttach);
 			}
 		}catch (Exception e) {
 			logger.error("Exception in getting cam for ineligible");
 		}
 		// end attach CAM to Mail
-
+		if(content != null && !content.isEmpty()) {
+			notification.setContentAttachments(content);
+		}
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" , toNo);
@@ -1010,13 +1022,33 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						if(fsEmail != null && fsMobile!=null && applicationId != null && !bankLogo.isEmpty()) {
 							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
 							String[] cc = {String.valueOf(param.get("branch_contact_email"))};
+							List<ContentAttachment> documentList=new ArrayList<ContentAttachment>();
+							if(user[0].equals("sidbi")) {
+								try {
+									DecimalFormat decim = new DecimalFormat("####");
+									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
+									param.put("amount", decim.format(loanAmount));
+									ReportRequest request=new ReportRequest();
+									List<Map<String, Object>> dataList=new ArrayList<Map<String,Object>>();
+									dataList.add(param);
+									request.setTemplate(JasperReportEnum.SIDBI_SPECIFIC_DOCUMENT.getName());
+									request.setIsStaticContent(false);
+									request.setData(dataList);
+									request.setParams(new HashMap<>());
+									request.setDocumentName("SdibiDocumentList");
+									documentList.add(new ContentAttachment("SidbiDocumentList.pdf", reportsClient.getReport(request)));
+								}catch (Exception e) {
+									logger.info("Error/Exception while getting document list for sidbi specific ==>{} ...Error==>{}",applicationId,e);
+								}
+							}
+							
 							try {
-								createNotificationForEmail(fsEmail, String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS, subject, applicationId, true, bcc,cc);
+								createNotificationForEmail(fsEmail, String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS, subject, applicationId, true, bcc,cc,documentList);
 							} catch (NotificationException e) {
 								logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
 							}
 						}
-						
+						/*Mail to branch*/
 						UserResponse allBranchUsers = userClient.getAllBranchUsers(branchId);
 						if(!allBranchUsers.getListData().isEmpty()) {
 							List<Map<String,Object>> listData =(List<Map<String,Object>>) allBranchUsers.getListData();
@@ -1031,7 +1063,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 									param.put("bo_name", resp.getUserName()!=null?resp.getUserName():"Sir/Madam");
 									String subject = "Intimation of new proposal";
 									try {
-										createNotificationForEmail(resp.getEmail(), String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP, subject, applicationId, false, bcc,null);
+										createNotificationForEmail(resp.getEmail(), String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP, subject, applicationId, false, bcc,null,null);
 									} catch (NotificationException e) {
 										logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
 									} 
