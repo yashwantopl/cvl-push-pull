@@ -105,6 +105,8 @@ public class SidbiBasicDetailRequest implements Serializable{
     
     private String activityDetail;
     
+    private Integer loanTypeId;
+    
 	
 	public Long getId() {
 		return id;
@@ -486,6 +488,14 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.industryName = industryName;
 	}
 
+	public Integer getLoanTypeId() {
+		return loanTypeId;
+	}
+
+	public void setLoanTypeId(Integer loanTypeId) {
+		this.loanTypeId = loanTypeId;
+	}
+
 	@Override
 	public String toString() {
 		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
@@ -508,8 +518,9 @@ public class SidbiBasicDetailRequest implements Serializable{
 				+ ", loanAmount=" + loanAmount + ", moratoriumPeriodMonths=" + moratoriumPeriodMonths
 				+ ", declarationDate=" + declarationDate + ", declarationPlace=" + declarationPlace
 				+ ", isCopyOfExistingFactAddr=" + isCopyOfExistingFactAddr + ", isCopyOfRegisteredAddr="
-				+ isCopyOfRegisteredAddr + ", activityDetail=" + activityDetail + "]";
+				+ isCopyOfRegisteredAddr + ", activityDetail=" + activityDetail + ", loanTypeId=" + loanTypeId + "]";
 	}
+
 
 	
 }
