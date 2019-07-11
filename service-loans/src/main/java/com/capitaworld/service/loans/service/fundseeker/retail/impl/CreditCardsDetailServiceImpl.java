@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -13,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -122,7 +125,23 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 			Long userId, int applicantType) throws LoansException {
 		try {
 			// Inactive Previous Loans Before Adding new
-			creditCardsDetailRepository.inactive(applicationId);
+			CoApplicantDetail coApplicant = null;
+			GuarantorDetails guarantor = null;
+			switch (applicantType) {
+				case CommonUtils.ApplicantType.APPLICANT:
+					creditCardsDetailRepository.inactive(applicationId);
+					break;
+				case CommonUtils.ApplicantType.COAPPLICANT:
+					creditCardsDetailRepository.inactiveByCoApplicant(applicationId);
+					coApplicant = coApplicantDetailRepository.findOne(applicationId);
+					break;
+				case CommonUtils.ApplicantType.GARRANTOR:
+					creditCardsDetailRepository.inactiveByGuarantor(applicationId);
+					guarantor = guarantorDetailsRepository.findOne(applicationId);
+					break;
+				default:
+					throw new LoansException("Invalid Applicant Type Accept : 1 2 and 3");
+			}
 
 			for (CreditCardsDetailRequest request : creditCardDetail) {
 				CreditCardsDetail crediCardsDetail = new CreditCardsDetail();
@@ -133,21 +152,18 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 				}
 				switch (applicantType) {
 				case CommonUtils.ApplicantType.APPLICANT:
-					creditCardsDetailRepository.inactive(applicationId);
-					crediCardsDetail.setApplicantionId(loanApplicationRepository.findOne(applicationId));
+					crediCardsDetail.setApplicantionId(new LoanApplicationMaster(applicationId));
 					break;
 				case CommonUtils.ApplicantType.COAPPLICANT:
-					creditCardsDetailRepository.inactiveByCoApplicant(applicationId);
-					crediCardsDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(applicationId));
+					crediCardsDetail.setCoApplicantDetailId(coApplicant);
+					crediCardsDetail.setCoApplicantId(applicationId);
 					break;
 				case CommonUtils.ApplicantType.GARRANTOR:
-					creditCardsDetailRepository.inactiveByGuarantor(applicationId);
-					crediCardsDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(applicationId));
+					crediCardsDetail.setGuarantorDetailId(guarantor);
 					break;
 				default:
-					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+					throw new LoansException("Invalid Applicant Type Accept : 1 2 and 3");
 				}
-
 				crediCardsDetail.setModifiedBy(userId);
 				crediCardsDetail.setModifiedDate(new Date());
 				creditCardsDetailRepository.save(crediCardsDetail);
