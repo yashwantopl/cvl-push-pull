@@ -358,4 +358,11 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 	}
+	public String getTutorialsByRoleId(Long userRoleId){
+		List<String> tutorials = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date)) AS CHAR)\n" +
+				"FROM loan_application.`tutorial_upload_manage` tu WHERE tu.isActive = true and tu.id IN (SELECT tr.tutorial_id FROM loan_application.`tutorial_role_mapping` tr WHERE tr.role_id = :userRoleId)")
+				.setParameter("userRoleId", userRoleId)
+				.getResultList();
+		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
+	}
 }
