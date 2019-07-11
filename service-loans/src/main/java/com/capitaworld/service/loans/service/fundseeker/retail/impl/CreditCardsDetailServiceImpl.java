@@ -164,6 +164,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 				default:
 					throw new LoansException("Invalid Applicant Type Accept : 1 2 and 3");
 				}
+				crediCardsDetail.setIsActive(true);
 				crediCardsDetail.setModifiedBy(userId);
 				crediCardsDetail.setModifiedDate(new Date());
 				creditCardsDetailRepository.save(crediCardsDetail);
