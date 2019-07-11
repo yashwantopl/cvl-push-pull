@@ -2059,7 +2059,7 @@ public class ScoringServiceImpl implements ScoringService {
                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
                                 	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBirthDate());
                                 	   logger.info("Age With years and Month == {}==={}", exactAge[0],exactAge[1]);
-                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12));
+                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12.0d));
                                 	   logger.info("Age With Point == {}",age);
                                        scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
@@ -2078,7 +2078,7 @@ public class ScoringServiceImpl implements ScoringService {
                         					Integer[] busiFromDate = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBusinessStartDate());
                         					logger.info("Year For HL====ApplicationId===>{}=====>{}",busiFromDate[0],applicationId);
                         					logger.info("Month For HL====ApplicationId===>{}=====>{}",busiFromDate[1],applicationId);
-                        					totalExperience = (((double) busiFromDate[0]) + ((double)busiFromDate[1] / 12));
+                        					totalExperience = (((double) busiFromDate[0]) + ((double)busiFromDate[1] / 12.0d));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -2089,7 +2089,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         	logger.info("totalExperience Year {}===>{}",retailApplicantDetail.getTotalExperienceYear());
                                         }
                                         if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth())) {
-                                        	totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth()) / 12;
+                                        	totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth()) / 12.0d;
                                         	logger.info("totalExperience Month {}===>{}",retailApplicantDetail.getTotalExperienceMonth());
                                         }
                                         logger.info("totalExperience {}===>{}",totalExperience);
@@ -2130,7 +2130,7 @@ public class ScoringServiceImpl implements ScoringService {
             					if(retailApplicantDetail.getResidenceSinceYear() != null && retailApplicantDetail.getResidenceSinceMonth() != null) {
             						Integer year = retailApplicantDetail.getResidenceSinceYear();
     	                            Integer month = retailApplicantDetail.getResidenceSinceMonth();
-    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
+    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     	                            String s = null;
     	                            if(month < 10) {
     	                            	s = "01/0" + month + "/" + year;
@@ -2139,7 +2139,7 @@ public class ScoringServiceImpl implements ScoringService {
     	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
-    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
+    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12.0d));
     	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",noStayLoc);
     	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(noStayLoc);
     	                            scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);            						
@@ -2202,6 +2202,9 @@ public class ScoringServiceImpl implements ScoringService {
             							|| OccupationNatureNTB.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
+            					}else if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.BUSINESSMAN.getId().longValue());
             					}else {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));
@@ -2679,7 +2682,7 @@ public class ScoringServiceImpl implements ScoringService {
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
                                 	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBirthDate());
-                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12));
+                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12.0d));
                                 	   logger.info("Age With Point == {}",age);
                                        scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
@@ -2699,7 +2702,7 @@ public class ScoringServiceImpl implements ScoringService {
                         					Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBusinessStartDate());
                         					logger.info("Year For HL CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[0],applicationId);
                         					logger.info("Month For HL CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[1],applicationId);
-                        					totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12));
+                        					totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12.0d));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -2710,7 +2713,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         	logger.info("totalExperience Year {}===>{}",coApplicantDetail.getTotalExperienceYear());
                                         }
                                         if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth())) {
-                                        	totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth()) / 12;
+                                        	totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth()) / 12.0d;
                                         	logger.info("totalExperience Month {}===>{}",coApplicantDetail.getTotalExperienceMonth());
                                         }
                                         logger.info("totalExperience {}===>{}",totalExperience);
@@ -2752,7 +2755,7 @@ public class ScoringServiceImpl implements ScoringService {
             					if(coApplicantDetail.getResidenceSinceYear() != null && coApplicantDetail.getResidenceSinceMonth() != null) {
             						Integer year = coApplicantDetail.getResidenceSinceYear();
     	                            Integer month = coApplicantDetail.getResidenceSinceMonth();
-    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
+    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     	                            String s = null;
     	                            if(month < 10) {
     	                            	s = "01/0" + month + "/" + year;
@@ -2761,7 +2764,7 @@ public class ScoringServiceImpl implements ScoringService {
     	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL CoApplicant==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
-    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
+    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12.0d));
     	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",noStayLoc);
     	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(noStayLoc);
     	                            scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);            						
@@ -2816,9 +2819,11 @@ public class ScoringServiceImpl implements ScoringService {
             					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(coApplicantDetail.getEmploymentType()) 
             							|| OccupationNatureNTB.PENSIONER.getId().equals(coApplicantDetail.getEmploymentType())
             							|| OccupationNatureNTB.OTHERS.getId().equals(coApplicantDetail.getEmploymentType())) {
-            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(true);
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
-            						            						
+            					}else if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId().equals(coApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.BUSINESSMAN.getId().longValue());
             					}else {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));
