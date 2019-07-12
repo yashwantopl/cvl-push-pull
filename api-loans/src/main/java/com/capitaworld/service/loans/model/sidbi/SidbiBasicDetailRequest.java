@@ -21,7 +21,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Integer constitutionId;
 	
-	private Long industryId;
+	private String industryName;
 	
 	private String premiseNumber;
 	
@@ -480,14 +480,12 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.dateOfCommencementOfCommercialOperations = dateOfCommencementOfCommercialOperations;
 	}
 
-	
-
-	public Long getIndustryId() {
-		return industryId;
+	public String getIndustryName() {
+		return industryName;
 	}
 
-	public void setIndustryId(Long industryId) {
-		this.industryId = industryId;
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
 	}
 
 	public Integer getLoanTypeId() {
@@ -501,8 +499,8 @@ public class SidbiBasicDetailRequest implements Serializable{
 	@Override
 	public String toString() {
 		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
-				+ ", organisationName=" + organisationName + ", constitutionId=" + constitutionId + ", industryId="
-				+ industryId + ", premiseNumber=" + premiseNumber + ", streetName=" + streetName + ", landMark="
+				+ ", organisationName=" + organisationName + ", constitutionId=" + constitutionId + ", industryName="
+				+ industryName + ", premiseNumber=" + premiseNumber + ", streetName=" + streetName + ", landMark="
 				+ landMark + ", pincode=" + pincode + ", exisFactPremiseNumber=" + exisFactPremiseNumber
 				+ ", exisFactStreetName=" + exisFactStreetName + ", exisFactLandMark=" + exisFactLandMark
 				+ ", exisFactPincode=" + exisFactPincode + ", exisFactOwned=" + exisFactOwned + ", exisFactRanted="

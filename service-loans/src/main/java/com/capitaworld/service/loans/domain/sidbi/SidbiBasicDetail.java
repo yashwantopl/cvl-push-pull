@@ -31,8 +31,8 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name="constitution_id")
 	private Integer constitutionId;
 	
-	@Column(name="industry_id")
-	private Long industryId;
+	@Column(name="industry_name")
+	private String industryName;
 	
 	@Column(name = "premise_number")
 	private String premiseNumber;
@@ -569,14 +569,13 @@ public class SidbiBasicDetail implements Serializable{
 		this.dateOfCommencementOfCommercialOperations = dateOfCommencementOfCommercialOperations;
 	}
 
-	public Long getIndustryId() {
-		return industryId;
+	public String getIndustryName() {
+		return industryName;
 	}
 
-	public void setIndustryId(Long industryId) {
-		this.industryId = industryId;
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
 	}
-
 	
 
 	
