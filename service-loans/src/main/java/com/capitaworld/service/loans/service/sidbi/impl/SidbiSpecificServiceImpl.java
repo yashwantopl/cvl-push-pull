@@ -133,8 +133,11 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 			if(corporateApplicantDetail != null) {
 				sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 				BeanUtils.copyProperties(corporateApplicantDetail, sidbiBasicDetailRequest);
-
-//				primaryCorpDetailObj.getFactoryPremise();
+				if(primaryCorpDetailObj.getFactoryPremise()==4) {
+					sidbiBasicDetailRequest.setFactoryPremise(3);
+				}else {
+					sidbiBasicDetailRequest.setFactoryPremise(primaryCorpDetailObj.getFactoryPremise());
+				}
 				sidbiBasicDetailRequest.setDateOfCommencementOfCommercialOperations(primaryCorpDetailObj.getCommercialOperationDate());
 				sidbiBasicDetailRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
 //				sidbiBasicDetailRequest.setIndustryId(corporateApplicantDetail.getKeyVericalFunding());
