@@ -187,12 +187,15 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		PrimaryCorporateDetail primaryCorpDetailObj = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 		
 		if(primaryCorpDetailObj!=null) {
-			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender() && primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
+			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender() 
+					&& primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
 	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
 	    		
 	    		FinancialArrangementsDetailRequest arrangementsDetailRequest =financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
 	    		loanAmount+=arrangementsDetailRequest.getAmount();
 	    		
+	    	}else if(primaryCorpDetailObj.getAdditionalLoanAmount()!=null){
+	    		loanAmount=primaryCorpDetailObj.getAdditionalLoanAmount();
 	    	}else {
 	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
 	    	}
