@@ -761,7 +761,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			notificationRequest.setIsDynamic(false);
 		}
 		
-		String[] to = { "maaz.shaikh@onlinepsbloans.com" };
+		String[] to = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setTemplateId(templateId);
