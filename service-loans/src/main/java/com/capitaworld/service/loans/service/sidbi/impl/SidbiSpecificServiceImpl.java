@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.domain.sidbi.MeansOfFinanceDetail;
+import com.capitaworld.service.loans.domain.sidbi.FacilityDetails;
 import com.capitaworld.service.loans.domain.sidbi.SidbiBasicDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sidbi.BasicDetailRepository;
+import com.capitaworld.service.loans.repository.sidbi.FacilityDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
 import com.capitaworld.service.loans.service.sidbi.MeansOfFinanceDetailService;
@@ -72,6 +73,9 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 	@Autowired
 	RawMaterialDetailsService rawMaterialDetailsService;
 	
+	@Autowired
+    FacilityDetailsRepository facilityDetailsRepository;
+	
 	@Override
 	public boolean saveOrUpdateAdditionalData(SidbiBasicDetailRequest sidbiBasicDetailRequest, Long userId) throws LoansException {
 
@@ -110,7 +114,8 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 				sidbiBasicDetailRequest = setAutoFilledValue(applicationId,userId);
 			}
 			
-			sidbiBasicDetailRequest.setLoanAmount(getLoanAmountByApplicationId(applicationId));
+			sidbiBasicDetailRequest.setLoanAmount(getLoanAmountByApplicationId(applicationId));			
+			sidbiBasicDetailRequest.setLoanTypeId(primaryCorporateDetailRepository.getPurposeLoanId(applicationId));
 			
 		} catch (Exception e) {
 			logger.error("Exception : ", e);
@@ -131,7 +136,6 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 
 
 				sidbiBasicDetailRequest.setDateOfCommencementOfCommercialOperations(primaryCorpDetailObj.getCommercialOperationDate());
-				sidbiBasicDetailRequest.setIndustryId(corporateApplicantDetail.getKeyVericalFunding());
 				sidbiBasicDetailRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
 				sidbiBasicDetailRequest.setConstitutionId(corporateApplicantDetail.getConstitutionId());
 				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
@@ -218,20 +222,19 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 			}
 		}
 		
-		List<FacilityDetailsRequest> facilityResponseDetails = facilityDetailsService.getFacilityDetailsListAppId(applicationId);
-		if(facilityResponseDetails != null) {
-			
-			if(facilityResponseDetails.get(0).getForeignCurrency() == null || facilityResponseDetails.get(0).getForeignCurrency() == 0.00) {
-				return new LoansResponse("Please fill atleast one row in Facility Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
-			}
-		}else {
+		List<FacilityDetails> facilityDetailsList = facilityDetailsRepository.getFacilityDetailsListAppId(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(facilityDetailsList) && facilityDetailsList.size() == 0){
 			return new LoansResponse("Please fill atleast one row in Facility Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
 		}
 		
-		List<RawMaterialDetailsRequest> rawMaterialDetailsRequests = rawMaterialDetailsService.getRawMaterialDetailsListAppId(applicationId);
-		if(rawMaterialDetailsRequests == null || rawMaterialDetailsRequests.size() == 0) {
-			return new LoansResponse("Please fill atleast one row in Details of Raw material components", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
+		Integer loanType = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
+		if(loanType==2) {
+			List<RawMaterialDetailsRequest> rawMaterialDetailsRequests = rawMaterialDetailsService.getRawMaterialDetailsListAppId(applicationId);
+			if(rawMaterialDetailsRequests == null || rawMaterialDetailsRequests.size() == 0) {
+				return new LoansResponse("Please fill atleast one row in Details of Raw material components", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accPropFacilities");
+			}
 		}
+		
 		
 		return null;
 	}

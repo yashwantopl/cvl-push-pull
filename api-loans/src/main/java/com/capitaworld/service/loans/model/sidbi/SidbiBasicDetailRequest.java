@@ -3,6 +3,10 @@ package com.capitaworld.service.loans.model.sidbi;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 public class SidbiBasicDetailRequest implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -17,7 +21,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Integer constitutionId;
 	
-	private Long industryId;
+	private String industryName;
 	
 	private String premiseNumber;
 	
@@ -75,7 +79,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private String exisitngActivity;
 	
-	private String activitySince;
+	private Date activitySince;
 	
 	private String proposedActivity;
 	
@@ -100,6 +104,8 @@ public class SidbiBasicDetailRequest implements Serializable{
     private Boolean isCopyOfRegisteredAddr;
     
     private String activityDetail;
+    
+    private Integer loanTypeId;
     
 	
 	public Long getId() {
@@ -142,13 +148,6 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.constitutionId = constitutionId;
 	}
 
-	public Long getIndustryId() {
-		return industryId;
-	}
-
-	public void setIndustryId(Long industryId) {
-		this.industryId = industryId;
-	}
 
 	public String getPremiseNumber() {
 		return premiseNumber;
@@ -358,11 +357,11 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.exisitngActivity = exisitngActivity;
 	}
 
-	public String getActivitySince() {
+	public Date getActivitySince() {
 		return activitySince;
 	}
 
-	public void setActivitySince(String activitySince) {
+	public void setActivitySince(Date activitySince) {
 		this.activitySince = activitySince;
 	}
 
@@ -481,56 +480,47 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.dateOfCommencementOfCommercialOperations = dateOfCommencementOfCommercialOperations;
 	}
 
+	public String getIndustryName() {
+		return industryName;
+	}
+
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
+	}
+
+	public Integer getLoanTypeId() {
+		return loanTypeId;
+	}
+
+	public void setLoanTypeId(Integer loanTypeId) {
+		this.loanTypeId = loanTypeId;
+	}
+
 	@Override
 	public String toString() {
-		return "SidbiBasicDetailRequest{" +
-				"id=" + id +
-				", clientId=" + clientId +
-				", applicationId=" + applicationId +
-				", organisationName='" + organisationName + '\'' +
-				", constitutionId=" + constitutionId +
-				", industryId=" + industryId +
-				", premiseNumber='" + premiseNumber + '\'' +
-				", streetName='" + streetName + '\'' +
-				", landMark='" + landMark + '\'' +
-				", pincode=" + pincode +
-				", exisFactPremiseNumber='" + exisFactPremiseNumber + '\'' +
-				", exisFactStreetName='" + exisFactStreetName + '\'' +
-				", exisFactLandMark='" + exisFactLandMark + '\'' +
-				", exisFactPincode=" + exisFactPincode +
-				", exisFactOwned=" + exisFactOwned +
-				", exisFactRanted=" + exisFactRanted +
-				", exisFactLeased=" + exisFactLeased +
-				", propFactPremiseNumber='" + propFactPremiseNumber + '\'' +
-				", propFactStreetName='" + propFactStreetName + '\'' +
-				", propFactLandMark='" + propFactLandMark + '\'' +
-				", propFactPincode=" + propFactPincode +
-				", propFactOwned=" + propFactOwned +
-				", propFactRanted=" + propFactRanted +
-				", propFactLeased=" + propFactLeased +
-				", landlineNo='" + landlineNo + '\'' +
-				", mobile='" + mobile + '\'' +
-				", email='" + email + '\'' +
-				", establishmentDate=" + establishmentDate +
-				", commencementDate=" + commencementDate +
-				", msmeUamRegistrationNumber='" + msmeUamRegistrationNumber + '\'' +
-				", msmeUamRegistrationDate=" + msmeUamRegistrationDate +
-				", associatedGroup='" + associatedGroup + '\'' +
-				", sidbiBranch='" + sidbiBranch + '\'' +
-				", exisitngActivity='" + exisitngActivity + '\'' +
-				", activitySince='" + activitySince + '\'' +
-				", proposedActivity='" + proposedActivity + '\'' +
-				", trialRunEndDate=" + trialRunEndDate +
-				", dateOfCommencementOfCommercialOperations=" + dateOfCommencementOfCommercialOperations +
-				", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE +
-				", repaymemtMonths=" + repaymemtMonths +
-				", loanAmount=" + loanAmount +
-				", moratoriumPeriodMonths=" + moratoriumPeriodMonths +
-				", declarationDate=" + declarationDate +
-				", declarationPlace='" + declarationPlace + '\'' +
-				", isCopyOfExistingFactAddr=" + isCopyOfExistingFactAddr +
-				", isCopyOfRegisteredAddr=" + isCopyOfRegisteredAddr +
-				", activityDetail='" + activityDetail + '\'' +
-				'}';
+		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
+				+ ", organisationName=" + organisationName + ", constitutionId=" + constitutionId + ", industryName="
+				+ industryName + ", premiseNumber=" + premiseNumber + ", streetName=" + streetName + ", landMark="
+				+ landMark + ", pincode=" + pincode + ", exisFactPremiseNumber=" + exisFactPremiseNumber
+				+ ", exisFactStreetName=" + exisFactStreetName + ", exisFactLandMark=" + exisFactLandMark
+				+ ", exisFactPincode=" + exisFactPincode + ", exisFactOwned=" + exisFactOwned + ", exisFactRanted="
+				+ exisFactRanted + ", exisFactLeased=" + exisFactLeased + ", propFactPremiseNumber="
+				+ propFactPremiseNumber + ", propFactStreetName=" + propFactStreetName + ", propFactLandMark="
+				+ propFactLandMark + ", propFactPincode=" + propFactPincode + ", propFactOwned=" + propFactOwned
+				+ ", propFactRanted=" + propFactRanted + ", propFactLeased=" + propFactLeased + ", landlineNo="
+				+ landlineNo + ", mobile=" + mobile + ", email=" + email + ", establishmentDate=" + establishmentDate
+				+ ", commencementDate=" + commencementDate + ", msmeUamRegistrationNumber=" + msmeUamRegistrationNumber
+				+ ", msmeUamRegistrationDate=" + msmeUamRegistrationDate + ", associatedGroup=" + associatedGroup
+				+ ", sidbiBranch=" + sidbiBranch + ", exisitngActivity=" + exisitngActivity + ", activitySince="
+				+ activitySince + ", proposedActivity=" + proposedActivity + ", trialRunEndDate=" + trialRunEndDate
+				+ ", dateOfCommencementOfCommercialOperations=" + dateOfCommencementOfCommercialOperations
+				+ ", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE + ", repaymemtMonths=" + repaymemtMonths
+				+ ", loanAmount=" + loanAmount + ", moratoriumPeriodMonths=" + moratoriumPeriodMonths
+				+ ", declarationDate=" + declarationDate + ", declarationPlace=" + declarationPlace
+				+ ", isCopyOfExistingFactAddr=" + isCopyOfExistingFactAddr + ", isCopyOfRegisteredAddr="
+				+ isCopyOfRegisteredAddr + ", activityDetail=" + activityDetail + ", loanTypeId=" + loanTypeId + "]";
 	}
+
+
+	
 }

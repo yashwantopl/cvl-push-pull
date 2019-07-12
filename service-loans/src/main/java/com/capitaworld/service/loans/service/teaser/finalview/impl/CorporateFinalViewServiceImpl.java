@@ -1207,6 +1207,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		/*get cmr score cibil */	
 		try {
 			String cmrScore= cibilClient.getCMRScore(toApplicationId);
+			if (cmrScore.contains("EXP")) {
+				corporateFinalViewResponse.setMsmeRankTitle("To Experian");
+			}else if (cmrScore.contains("CIBIL")) {
+				corporateFinalViewResponse.setMsmeRankTitle("To Cibil");
+			}
 			corporateFinalViewResponse.setCibilCmrScore(cmrScore != null ? cmrScore : "Not Found");	
 		} catch (Exception e) {
 			logger.error("error while CIBIL CMR score : ",e);

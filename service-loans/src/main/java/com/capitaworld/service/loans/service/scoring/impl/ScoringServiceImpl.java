@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.scoring.MCLRReqRes;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -770,6 +771,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setEligibleLoanAmountCircular(eligibleLoanAmountCircular);
             scoringRequest.setEligibleTenure(eligibleTenure);
             scoringRequest.setFoir(scoringRequestLoans.getFoir());
+            scoringRequest.setMinBankRelationshipInMonths(minBankRelationshipInMonths);
             if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                 scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
             } else {
@@ -840,19 +842,37 @@ public class ScoringServiceImpl implements ScoringService {
              	}
              	
              	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
-             	cibilActualScore= Double.parseDouble(cibilResponse1.getActualScore());
-             	 logger.info("CIBIL ACTUAL SCORE ---------->"+"aPPLICATIONiD ----------->"+applicationId +" ------------------------"+cibilActualScore);
-             	 	scoringRequest.setCibilActualScore(cibilActualScore);
+
+					if ("000-1".equalsIgnoreCase(cibilResponse1.getActualScore())) {
+								cibilActualScore = -1d;
+					} else {
+								cibilActualScore = Double.parseDouble(cibilResponse1.getActualScore());
+					}
+					logger.info("CIBIL ACTUAL SOCRE ------------------>" + "applicationId=====>" + applicationId + "----"+ cibilActualScore);
+					scoringRequest.setCibilActualScore(cibilActualScore);
              	}
+             	
              	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
              		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
              	 	}
+             	 	else
+                    {
+                         scoringRequest.setIsCreaditHisotryGreaterSixMonths(false);
+                    }
               	if(cibilActualScore>= 1 && cibilActualScore <= 5){
              			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
-              		} 
+              		}
+                else
+                {
+                    scoringRequest.setIsCreaditHisotryLessThenSixMonths(false);
+                }
              	if(cibilActualScore ==  -1){ 
              			scoringRequest.setIsNoCreaditHistory(true);
              		}
+             		else
+                {
+                    scoringRequest.setIsNoCreaditHistory(false);
+                }
              }catch (Exception e) {
                  logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE IN PERSONAL LOAN======>");
      		}
@@ -1056,7 +1076,16 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
                                     if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                        cibil_score = Double.parseDouble(cibilResponse.getActualScore());
+
+                                        if(cibilResponse.getActualScore().equals("000-1"))
+                                        {
+                                            cibil_score =-1d;
+                                        }
+                                        else
+                                        {
+                                            cibil_score= Double.parseDouble(cibilResponse.getActualScore());
+                                        }
+
                                         scoreParameterRetailRequest.setCibilScore(cibil_score);
                                         scoreParameterRetailRequest.setCibilScore_p(true);
                                     } else {
@@ -1190,7 +1219,10 @@ public class ScoringServiceImpl implements ScoringService {
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.EDUCATIONAL_INSTITUTE.getId().longValue();
                                         }
-                                        else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith())
+                                        else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith()
+                                                || EmploymentWithPL.UNORGANISED_SECTOR.getId() == retailApplicantDetail.getEmploymentWith()
+                                                || EmploymentWithPL.SMALL_SECTOR_PROPRIETORSHIP.getId() == retailApplicantDetail.getEmploymentWith()
+                                                || EmploymentWithPL.SMALL_SECTOR_PARTNERSHIP.getId() == retailApplicantDetail.getEmploymentWith())
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
                                         }
@@ -1199,6 +1231,11 @@ public class ScoringServiceImpl implements ScoringService {
                                                 employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_WITH_BANK.getId().longValue();
                                             else
                                                 employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
+                                        }else if(EmploymentWithPL.SMALL_SECTOR_PVT_LTD_COMPANIES.getId() == retailApplicantDetail.getEmploymentWith()){
+                                            if (true == salaryWithBank)
+                                                employmentWithPlValue = EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue = EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                         }
                                         logger.info("==============employmentWithPlValue: ============ "+employmentWithPlValue + " " +retailApplicantDetail.getEmploymentWith() );
                                         scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
@@ -1798,19 +1835,15 @@ public class ScoringServiceImpl implements ScoringService {
 	            		}
 	            		logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore);
                  	}
-            	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
-            		 isCreaditHisotryGreaterSixMonths = true;
-              	 logger.info("setIsCreaditHisotryGreaterSixMonths----111111111111111111111111111-------------->");
-              	
-              	}
-               	if(cibilActualScore>= 1 && cibilActualScore <= 5){
-               		isCreaditHisotryLessThenSixMonths = true;
-              		logger.info("setIsCreaditHisotryLessThenSixMonths-------22222222222222222222222222222----------->");
-              	} 
-              	if(cibilActualScore ==  -1){ 
-              		isNoCreaditHistory = true; 
-              	logger.info("setIsNoCreaditHistory-----3333333333333333333333333333------------->");
-              	}
+				if (cibilActualScore >= 300 && cibilActualScore <= 900) {
+						isCreaditHisotryGreaterSixMonths = true;
+				}
+				if (cibilActualScore >= 1 && cibilActualScore <= 5) {
+						isCreaditHisotryLessThenSixMonths = true;
+				}
+				if (cibilActualScore == -1) {
+						isNoCreaditHistory = true;
+				}
               	
                  	
                 cibilResponseDpd = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
@@ -2026,7 +2059,7 @@ public class ScoringServiceImpl implements ScoringService {
                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
                                 	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBirthDate());
                                 	   logger.info("Age With years and Month == {}==={}", exactAge[0],exactAge[1]);
-                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12));
+                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12.0d));
                                 	   logger.info("Age With Point == {}",age);
                                        scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
@@ -2045,7 +2078,7 @@ public class ScoringServiceImpl implements ScoringService {
                         					Integer[] busiFromDate = CommonUtils.getExactAgeFromDate(retailApplicantDetail.getBusinessStartDate());
                         					logger.info("Year For HL====ApplicationId===>{}=====>{}",busiFromDate[0],applicationId);
                         					logger.info("Month For HL====ApplicationId===>{}=====>{}",busiFromDate[1],applicationId);
-                        					totalExperience = (((double) busiFromDate[0]) + ((double)busiFromDate[1] / 12));
+                        					totalExperience = (((double) busiFromDate[0]) + ((double)busiFromDate[1] / 12.0d));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -2056,7 +2089,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         	logger.info("totalExperience Year {}===>{}",retailApplicantDetail.getTotalExperienceYear());
                                         }
                                         if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth())) {
-                                        	totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth()) / 12;
+                                        	totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth()) / 12.0d;
                                         	logger.info("totalExperience Month {}===>{}",retailApplicantDetail.getTotalExperienceMonth());
                                         }
                                         logger.info("totalExperience {}===>{}",totalExperience);
@@ -2097,11 +2130,16 @@ public class ScoringServiceImpl implements ScoringService {
             					if(retailApplicantDetail.getResidenceSinceYear() != null && retailApplicantDetail.getResidenceSinceMonth() != null) {
             						Integer year = retailApplicantDetail.getResidenceSinceYear();
     	                            Integer month = retailApplicantDetail.getResidenceSinceMonth();
-    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    	                            String s = "01/" + month + "/" + year;
+    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    	                            String s = null;
+    	                            if(month < 10) {
+    	                            	s = "01/0" + month + "/" + year;
+    	                            }else {
+    	                            	s = "01/" + month + "/" + year;    	                            	
+    	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
-    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
+    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12.0d));
     	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",noStayLoc);
     	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(noStayLoc);
     	                            scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);            						
@@ -2116,7 +2154,15 @@ public class ScoringServiceImpl implements ScoringService {
                             	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
                             		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
                                     if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                        cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+
+                                        if(cibilResponse.getActualScore().equals("000-1"))
+                                        {
+                                            cibilScore =-1d;
+                                        }
+                                        else
+                                        {
+                                            cibilScore = Double.parseDouble(cibilResponse.getActualScore());
+                                        }
                                         scoreParameterRetailRequest.setCibilActualScore(cibilScore);
                                         scoreParameterRetailRequest.setCibilScore_p(true);
                                     }                            		
@@ -2154,8 +2200,11 @@ public class ScoringServiceImpl implements ScoringService {
             					if(OccupationNatureNTB.AGRICULTURIST.getId().equals(retailApplicantDetail.getEmploymentType()) 
             							|| OccupationNatureNTB.PENSIONER.getId().equals(retailApplicantDetail.getEmploymentType())
             							|| OccupationNatureNTB.OTHERS.getId().equals(retailApplicantDetail.getEmploymentType())) {
-            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(true);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
+            					}else if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId().equals(retailApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(true);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.BUSINESSMAN.getId().longValue());
             					}else {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(retailApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((retailApplicantDetail.getEmploymentWith() != null  ? retailApplicantDetail.getEmploymentWith().longValue() : null));
@@ -2172,8 +2221,12 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails(retailApplicantDetail.getSpouseEmployment() != null ? retailApplicantDetail.getSpouseEmployment().longValue() : null);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(retailApplicantDetail.getSpouseEmployment() != null);
+            					if(retailApplicantDetail.getSpouseEmployment() != null) {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(retailApplicantDetail.getSpouseEmployment().longValue());
+            					}else {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(3l);
+            					}
+            					scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
@@ -2313,7 +2366,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
             				if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
-            					value = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
+            					value = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()); // / 6 
             					logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",value);
        					 	}
             				scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
@@ -2629,7 +2682,7 @@ public class ScoringServiceImpl implements ScoringService {
                         	   try {
                                    if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
                                 	   Integer exactAge [] = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBirthDate());
-                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12));
+                                	   Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12.0d));
                                 	   logger.info("Age With Point == {}",age);
                                        scoreParameterRetailRequest.setAge(age);
                                        scoreParameterRetailRequest.setAge_p(true);
@@ -2649,7 +2702,7 @@ public class ScoringServiceImpl implements ScoringService {
                         					Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(coApplicantDetail.getBusinessStartDate());
                         					logger.info("Year For HL CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[0],applicationId);
                         					logger.info("Month For HL CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[1],applicationId);
-                        					totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12));
+                        					totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12.0d));
                         					logger.info("Total Business Experiance For HL==== > {}",totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                             scoreParameterRetailRequest.setWorkingExperience_p(true);
@@ -2660,7 +2713,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         	logger.info("totalExperience Year {}===>{}",coApplicantDetail.getTotalExperienceYear());
                                         }
                                         if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth())) {
-                                        	totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth()) / 12;
+                                        	totalExperience += Double.valueOf(coApplicantDetail.getTotalExperienceMonth()) / 12.0d;
                                         	logger.info("totalExperience Month {}===>{}",coApplicantDetail.getTotalExperienceMonth());
                                         }
                                         logger.info("totalExperience {}===>{}",totalExperience);
@@ -2702,11 +2755,16 @@ public class ScoringServiceImpl implements ScoringService {
             					if(coApplicantDetail.getResidenceSinceYear() != null && coApplicantDetail.getResidenceSinceMonth() != null) {
             						Integer year = coApplicantDetail.getResidenceSinceYear();
     	                            Integer month = coApplicantDetail.getResidenceSinceMonth();
-    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
-    	                            String s = "01/" + month + "/" + year;
+    	                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    	                            String s = null;
+    	                            if(month < 10) {
+    	                            	s = "01/0" + month + "/" + year;
+    	                            }else {
+    	                            	s = "01/" + month + "/" + year;    	                            	
+    	                            }
     	                            logger.info("Starting Date of Staying in Current Location For HL CoApplicant==== > {}",s);
     	                            Integer[] exactAgeFromDate = CommonUtils.getExactAgeFromDate(simpleDateFormat.parse(s));
-    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12));
+    	                            Double noStayLoc = (((double) exactAgeFromDate[0]) + ((double)exactAgeFromDate[1] / 12.0d));
     	                            logger.info("No Of Years Staying in Current Location For HL==== > {}",noStayLoc);
     	                            scoreParameterRetailRequest.setNoOfYearCurrentLocation(noStayLoc);
     	                            scoreParameterRetailRequest.setIsNoOfYearCurrentLocation_p(true);            						
@@ -2763,7 +2821,9 @@ public class ScoringServiceImpl implements ScoringService {
             							|| OccupationNatureNTB.OTHERS.getId().equals(coApplicantDetail.getEmploymentType())) {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(true);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.AGRICULTURIST_PENSIONER_OTHERS.getId().longValue());
-            						            						
+            					}else if(OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId().equals(coApplicantDetail.getEmploymentType())) {
+            						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(true);
+                    		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus(OccupationHL.BUSINESSMAN.getId().longValue());
             					}else {
             						scoreParameterRetailRequest.setIsEmployementTypeSelfEmpBus_p(coApplicantDetail.getEmploymentWith() != null);
                     		        scoreParameterRetailRequest.setEmploymentTypeSelfEmpBus((coApplicantDetail.getEmploymentWith() != null  ? coApplicantDetail.getEmploymentWith().longValue() : null));
@@ -2781,8 +2841,12 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.SPOUSE_EMPLOYEMENT:
             				try {
-            					scoreParameterRetailRequest.setSpouseEmploymentDetails(coApplicantDetail.getSpouseEmployment() != null ? coApplicantDetail.getSpouseEmployment().longValue() : null);
-                                scoreParameterRetailRequest.setSpouseEmploymentDetails_p(coApplicantDetail.getSpouseEmployment() != null);
+            					if(coApplicantDetail.getSpouseEmployment() != null) {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(coApplicantDetail.getSpouseEmployment().longValue());
+            					}else {
+            						scoreParameterRetailRequest.setSpouseEmploymentDetails(3l);
+            					}
+            					scoreParameterRetailRequest.setSpouseEmploymentDetails_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting SPOUSE_EMPLOYEMENT parameter : ",e);
                             }
@@ -2887,7 +2951,7 @@ public class ScoringServiceImpl implements ScoringService {
             				Double value = 0.0d;
             				if(coApplicantBankStatementData != null) {
             					if(coApplicantBankStatementData.getSummaryInfo() != null && coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
-            						value =  Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;            						
+            						value =  Double.valueOf(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit());// / 6;            						
             					}
             					scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
        					 		scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
@@ -6334,6 +6398,8 @@ public class ScoringServiceImpl implements ScoringService {
         return scoringClient.sendToChecker(genericCheckerReqResList, userId);
     }
 
+
+
     @Override
     public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes) {
         try {
@@ -6397,5 +6463,71 @@ public class ScoringServiceImpl implements ScoringService {
             logger.error("error while getting year from itr response : ",e);
         }
         return year + 1;
+    }
+
+    @Override
+    public List<GenericCheckerReqRes> sendToCheckerMCLR(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException {
+        return scoringClient.sendToCheckerMCLR(genericCheckerReqResList, userId);
+    }
+
+    @Override
+    public ScoringResponse createJob(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.createJob(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while creating job for MCLR: ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getMCLRForChecker(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getMCLRForChecker(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getMCLRHistory(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getLatestMCLRDetails(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.saveMCLR(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while saving MCLR details : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getEffectiveMCLRDetails(MCLRReqRes mclrReqRes) {
+        try {
+            return scoringClient.getEffectiveMCLR(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting effective MCLR details : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+
     }
 }

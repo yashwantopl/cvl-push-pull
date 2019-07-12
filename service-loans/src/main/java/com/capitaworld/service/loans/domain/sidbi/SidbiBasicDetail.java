@@ -31,8 +31,8 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name="constitution_id")
 	private Integer constitutionId;
 	
-	@Column(name="industry_id")
-	private Long industryId;
+	@Column(name="industry_name")
+	private String industryName;
 	
 	@Column(name = "premise_number")
 	private String premiseNumber;
@@ -119,8 +119,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "exisitng_activity")
 	private String exisitngActivity;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "activity_since")
-	private String activitySince;
+	private Date activitySince;
 	
 	@Column(name = "proposed_activity")
 	private String proposedActivity;
@@ -186,10 +187,6 @@ public class SidbiBasicDetail implements Serializable{
 		return organisationName;
 	}
 
-	public Long getIndustryId() {
-		return industryId;
-	}
-
 	public String getPremiseNumber() {
 		return premiseNumber;
 	}
@@ -238,7 +235,7 @@ public class SidbiBasicDetail implements Serializable{
 		return exisitngActivity;
 	}
 
-	public String getActivitySince() {
+	public Date getActivitySince() {
 		return activitySince;
 	}
 
@@ -288,10 +285,6 @@ public class SidbiBasicDetail implements Serializable{
 
 	public void setConstitutionId(Integer constitutionId) {
 		this.constitutionId = constitutionId;
-	}
-
-	public void setIndustryId(Long industryId) {
-		this.industryId = industryId;
 	}
 
 	public void setPremiseNumber(String premiseNumber) {
@@ -352,7 +345,7 @@ public class SidbiBasicDetail implements Serializable{
 		this.exisitngActivity = exisitngActivity;
 	}
 
-	public void setActivitySince(String activitySince) {
+	public void setActivitySince(Date activitySince) {
 		this.activitySince = activitySince;
 	}
 
@@ -574,6 +567,14 @@ public class SidbiBasicDetail implements Serializable{
 
 	public void setDateOfCommencementOfCommercialOperations(Date dateOfCommencementOfCommercialOperations) {
 		this.dateOfCommencementOfCommercialOperations = dateOfCommencementOfCommercialOperations;
+	}
+
+	public String getIndustryName() {
+		return industryName;
+	}
+
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
 	}
 	
 
