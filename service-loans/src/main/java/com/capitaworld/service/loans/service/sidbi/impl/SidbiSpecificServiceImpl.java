@@ -133,10 +133,14 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 			if(corporateApplicantDetail != null) {
 				sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 				BeanUtils.copyProperties(corporateApplicantDetail, sidbiBasicDetailRequest);
-
-
+				if(primaryCorpDetailObj.getFactoryPremise()==4) {
+					sidbiBasicDetailRequest.setFactoryPremise(3);
+				}else {
+					sidbiBasicDetailRequest.setFactoryPremise(primaryCorpDetailObj.getFactoryPremise());
+				}
 				sidbiBasicDetailRequest.setDateOfCommencementOfCommercialOperations(primaryCorpDetailObj.getCommercialOperationDate());
 				sidbiBasicDetailRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+//				sidbiBasicDetailRequest.setIndustryId(corporateApplicantDetail.getKeyVericalFunding());
 				sidbiBasicDetailRequest.setConstitutionId(corporateApplicantDetail.getConstitutionId());
 				sidbiBasicDetailRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
 				sidbiBasicDetailRequest.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
@@ -186,12 +190,15 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		PrimaryCorporateDetail primaryCorpDetailObj = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 		
 		if(primaryCorpDetailObj!=null) {
-			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender() && primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
+			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender() 
+					&& primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
 	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
 	    		
 	    		FinancialArrangementsDetailRequest arrangementsDetailRequest =financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
 	    		loanAmount+=arrangementsDetailRequest.getAmount();
 	    		
+	    	}else if(primaryCorpDetailObj.getAdditionalLoanAmount()!=null){
+	    		loanAmount=primaryCorpDetailObj.getAdditionalLoanAmount();
 	    	}else {
 	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
 	    	}
