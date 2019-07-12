@@ -28,7 +28,7 @@ public interface CreditCardsDetailRepository extends JpaRepository<CreditCardsDe
 	public CreditCardsDetail findByIdAndIsActive(Long id,Boolean isActive);
 	
 	@Modifying
-	@Query("update CreditCardsDetail o set o.isActive = false,o.modifiedDate = NOW() where o.applicantionId.id = :id and o.isActive = true")
+	@Query("update CreditCardsDetail o set o.isActive = false,o.modifiedDate = NOW() where o.applicantionId.id = :id and o.isActive = true and o.coApplicantDetailId IS NULL and o.guarantorDetailId IS NULL")
 	public int inactive(@Param("id") Long id);
 	
 	@Modifying

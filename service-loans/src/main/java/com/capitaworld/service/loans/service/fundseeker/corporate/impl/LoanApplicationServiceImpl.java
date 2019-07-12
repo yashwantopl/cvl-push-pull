@@ -25,6 +25,7 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,25 +87,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.AchievementDetailRequest;
-import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
-import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
-import com.capitaworld.service.loans.model.DashboardProfileResponse;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoanDisbursementRequest;
-import com.capitaworld.service.loans.model.LoanEligibilityRequest;
-import com.capitaworld.service.loans.model.LoanPanCheckRequest;
-import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
-import com.capitaworld.service.loans.model.PaymentRequest;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
-import com.capitaworld.service.loans.model.ReportResponse;
-import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.api_model.CorporateProfileRequest;
 import com.capitaworld.service.loans.model.api_model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.api_model.GuarantorsCorporateDetailRequest;
@@ -8343,4 +8325,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return loanPanCheckRequest;
 	}
 
+
+	@Override
+	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId) {
+		try {
+			String tutorials = loanRepository.getTutorialsByRoleId(userRoleId);
+			if(CommonUtils.isObjectNullOrEmpty(tutorials)) {
+                org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
+                return mapper.readValue(tutorials, new org.codehaus.jackson.type.TypeReference<List<TutorialUploadManageRes>>() {
+                });
+            }
+		} catch (IOException e) {
+			logger.info("error while string to list convert in getTutorialsByRoleId");
+		}
+		return Collections.emptyList();
+	}
 }
