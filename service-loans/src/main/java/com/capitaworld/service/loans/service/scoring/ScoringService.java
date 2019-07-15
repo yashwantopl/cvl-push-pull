@@ -73,4 +73,7 @@ public interface ScoringService {
     public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes);
 
     public List<GenericCheckerReqRes> sendToCheckerMCLR(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
+    
+    public Object [] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans);
+    
 }
