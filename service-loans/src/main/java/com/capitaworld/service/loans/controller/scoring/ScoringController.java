@@ -363,5 +363,35 @@ public class ScoringController {
             return new ResponseEntity<ScoringResponse>(res,HttpStatus.OK);
         }
     }
+    
+    @RequestMapping(value = "/getConcessionDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calcPersonalEligible(@RequestBody ScoringRequestLoans scoringRequestLoans) {
+        if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())) {
+            logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty======>");
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
+        }
+        try {
+        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans);
+        	  logger.info("concesssionResponse ===>concesssionResponse=======>"+concesssionResponse);
+        	  	LoansResponse loanResponse = new LoansResponse();
+            
+        	if(!CommonUtils.isObjectNullOrEmpty(concesssionResponse)){
+        		loanResponse.setData(concesssionResponse);
+        		loanResponse.setMessage("SuccessFully get data");
+            }else {
+            	loanResponse.setMessage("No Data Found");
+            }
+        	
+        	loanResponse.setStatus(HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loanResponse, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            logger.error("Thow exception while getting concession details",e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse("Failure", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+           }
+        } 
 }
 
