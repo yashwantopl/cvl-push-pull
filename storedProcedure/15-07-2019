@@ -1,0 +1,15 @@
+DELIMITER $$
+
+USE `loan_application`$$
+
+DROP PROCEDURE IF EXISTS `spFetchBankAdminTutorialList`$$
+
+CREATE DEFINER=`dbsidbi`@`%` PROCEDURE `spFetchBankAdminTutorialList`(IN userRoleId INT,IN loanType INT)
+BEGIN
+
+SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date)) AS CHAR)
+FROM loan_application.`tutorial_upload_manage` tu WHERE tu.is_active = TRUE AND tu.type =loanType AND tu.id IN (SELECT tr.tutorial_id FROM loan_application.`tutorial_role_mapping` tr WHERE tr.role_id = userRoleId);
+
+END$$
+
+DELIMITER ;
