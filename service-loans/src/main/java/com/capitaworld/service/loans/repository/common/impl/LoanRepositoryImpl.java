@@ -360,11 +360,12 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	public String getTutorialsByRoleId(Long userRoleId, Integer loanType){
-		List<String> tutorials = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date)) AS CHAR)\n" +
-				"FROM loan_application.`tutorial_upload_manage` tu WHERE tu.is_active = true and tu.type =:loanType and tu.id IN (SELECT tr.tutorial_id FROM loan_application.`tutorial_role_mapping` tr WHERE tr.role_id = :userRoleId)")
-				.setParameter("userRoleId", userRoleId)
-				.setParameter("loanType", loanType)
-				.getResultList();
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spFetchBankAdminTutorialList");
+		storedProcedureQuery.registerStoredProcedureParameter("userRoleId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("loanType",Integer.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("userRoleId",userRoleId);
+		storedProcedureQuery.setParameter("loanType",loanType);
+		List<String> tutorials = storedProcedureQuery.getResultList();
 		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
 	}
 }
