@@ -533,7 +533,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(toApplicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? primaryCorporateDetail.getLoanAmount() : 0);
+			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueWithoutDecimal(primaryCorporateDetail.getLoanAmount()) : 0);
 			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
@@ -705,9 +705,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			String cmrScore= cibilClient.getCMRScore(applicationId);
 			
 			if (cmrScore != null && cmrScore.contains("EXP")) {
-				map.put("msmeRankingTitle", "To Experian");
+				map.put("msmeRankingTitle", "Experian");
 			}else if (cmrScore != null && cmrScore.contains("CIBIL")) {
-				map.put("msmeRankingTitle", "To Cibil");
+				map.put("msmeRankingTitle", "Cibil");
 			}else {
 				map.put("msmeRankingTitle", "MSME Ranking");
 			}
@@ -830,6 +830,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
 				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+				
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
