@@ -21,7 +21,6 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
-import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
 import com.capitaworld.service.loans.model.sidbi.RawMaterialDetailsRequest;
 import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -190,19 +189,14 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		PrimaryCorporateDetail primaryCorpDetailObj = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 		
 		if(primaryCorpDetailObj!=null) {
-
-			
 			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender()) {
 				if(primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
 					loanAmount=primaryCorpDetailObj.getLoanAmount();
-					//To Be Added Term Loan 
 					FinancialArrangementsDetailRequest arrangementsDetailRequest =financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
 					loanAmount+=arrangementsDetailRequest.getAmount();
 				}else {
 					loanAmount=primaryCorpDetailObj.getLoanAmount();
 				}
-	    		
-	    		
 	    	}else if(primaryCorpDetailObj.getAdditionalLoanAmount()!=null){
 	    		loanAmount=primaryCorpDetailObj.getAdditionalLoanAmount();
 	    	}else {
