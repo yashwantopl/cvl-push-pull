@@ -8327,9 +8327,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 
 	@Override
-	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId) {
+	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId,Integer loanType) {
 		try {
-			String tutorials = loanRepository.getTutorialsByRoleId(userRoleId);
+			String tutorials = loanRepository.getTutorialsByRoleId(userRoleId, loanType);
 			if(CommonUtils.isObjectNullOrEmpty(tutorials)) {
                 org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
                 return mapper.readValue(tutorials, new org.codehaus.jackson.type.TypeReference<List<TutorialUploadManageRes>>() {

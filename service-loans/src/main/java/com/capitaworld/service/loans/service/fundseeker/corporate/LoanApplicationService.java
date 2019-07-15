@@ -262,5 +262,5 @@ public interface LoanApplicationService {
 	
 	public LoanPanCheckRequest checkAlreadyPANExitsOrNot(LoanPanCheckRequest loanPanCheckRequest);
 
-	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId);
+	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId,Integer loanType);
 }
