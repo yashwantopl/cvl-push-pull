@@ -1515,7 +1515,15 @@ public enum APIFlags {
 	public static String convertValueRound(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(Long.valueOf(Math.round(value)))  : "0";
 	}
-
+	public static Object convertValueIndianCurrency(Object o) {
+		if(o != null) {
+			Format format = com.ibm.icu.text.NumberFormat.getNumberInstance(new Locale("en", "IN"));
+			return format.format(o);	
+		}else {
+			return "-";
+		}
+		
+	}
 	public static String formatValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
 	}
