@@ -41,6 +41,10 @@ public class FinancialArrangementDetailResponseString implements Serializable{
     private Double buerauEmi;
     private Double buerauOutStanding;
     private Double collateralAmt;
+    
+    private String buerauOutStandingStr;
+    private String collateralAmtStr;
+    
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;
@@ -160,6 +164,22 @@ public class FinancialArrangementDetailResponseString implements Serializable{
 
 	public void setCollateralAmt(Double collateralAmt) {
 		this.collateralAmt = collateralAmt;
+	}
+
+	public String getBuerauOutStandingStr() {
+		return buerauOutStandingStr;
+	}
+
+	public void setBuerauOutStandingStr(String buerauOutStandingStr) {
+		this.buerauOutStandingStr = buerauOutStandingStr;
+	}
+
+	public String getCollateralAmtStr() {
+		return collateralAmtStr;
+	}
+
+	public void setCollateralAmtStr(String collateralAmtStr) {
+		this.collateralAmtStr = collateralAmtStr;
 	}
 	
 	
