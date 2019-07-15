@@ -457,11 +457,11 @@ public class CommonController {
 		}
 	}
 
-	@GetMapping(value = "/getTutorialsByRoleId/{roleId}")
-	public ResponseEntity<LoansResponse> getTutorialsByRoleId(@PathVariable("roleId") Long roleId) {
+	@GetMapping(value = "/getTutorialsByRoleId/{roleId}/{loanType}")
+	public ResponseEntity<LoansResponse> getTutorialsByRoleId(@PathVariable("roleId") Long roleId,@PathVariable("loanType") Integer loanType) {
 		logger.info("Enter in getTutorialsByRoleId");
 		try {
-			return new ResponseEntity<>(new LoansResponse(HttpStatus.OK.value(),"Successfully get data !!",applicationService.getTutorialsByRoleId(roleId)), HttpStatus.OK);
+			return new ResponseEntity<>(new LoansResponse(HttpStatus.OK.value(),"Successfully get data !!",applicationService.getTutorialsByRoleId(roleId, loanType)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsByRoleId",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
