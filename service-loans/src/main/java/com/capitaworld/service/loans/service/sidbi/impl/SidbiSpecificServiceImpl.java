@@ -192,21 +192,21 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		if(primaryCorpDetailObj!=null) {
 
 			
-			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender()) {  //&& primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()
-
-	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
-	    		//To Be Added Term Loan 
-	    		if(primaryCorpDetailObj.getPurposeOfLoanId() == 1) {
-	    			loanAmount = 0.0;
-	    			loanAmount = primaryCorpDetailObj.getAdditionalLoanAmount();
-	    			FinancialArrangementsDetailRequest arrangementsDetailRequest =financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
-	    			loanAmount+=arrangementsDetailRequest.getAmount();
-	    		}
+			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender()) {
+				if(primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
+					loanAmount=primaryCorpDetailObj.getLoanAmount();
+					//To Be Added Term Loan 
+					FinancialArrangementsDetailRequest arrangementsDetailRequest =financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
+					loanAmount+=arrangementsDetailRequest.getAmount();
+				}else {
+					loanAmount=primaryCorpDetailObj.getLoanAmount();
+				}
+	    		
 	    		
 	    	}else if(primaryCorpDetailObj.getAdditionalLoanAmount()!=null){
 	    		loanAmount=primaryCorpDetailObj.getAdditionalLoanAmount();
 	    	}else {
-	    		loanAmount= primaryCorpDetailObj.getAdditionalLoanAmount();
+	    		loanAmount=primaryCorpDetailObj.getLoanAmount();
 	    	}
 		}
 		return loanAmount;
