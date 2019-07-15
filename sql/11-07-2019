@@ -1,0 +1,22 @@
+
+//loans tutorial table
+CREATE TABLE `loan_application`.`tutorial_role_mapping` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `tutorial_id` BIGINT(20),
+  `role_id` BIGINT(20),
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `loan_application`.`tutorial_upload_manage` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name_tutorial` VARCHAR(255),
+  `title` VARCHAR(255) ,
+  `url_tutorial` VARCHAR(255) ,
+  `description` VARCHAR(255) ,
+  `type` INT(11) ,
+  `role_id` BIGINT(20) ,
+  `is_active` BIT(1) DEFAULT b'1',
+  `created_by` BIGINT(20) ,
+  `created_date` DATE ,
+  PRIMARY KEY (`id`)
+)

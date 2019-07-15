@@ -100,12 +100,12 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 					
 					if(systems.getId().equals(1)) {
 						Double promoterContribution = primaryCorporateDetail != null ? primaryCorporateDetail.getPromoterContribution() : 0;
-						financeMeansDetailRequest.setAlreadyIncurred(promoterContribution);
+						financeMeansDetailRequest.setToBeIncurred(promoterContribution);
 					}else if(systems.getId().equals(4)) {
 						Integer loanType = primaryCorporateDetail != null ? primaryCorporateDetail.getPurposeOfLoanId() : 0;
 						if(loanType == 1) {
 							Double loanAmt = sidbiSpecificService.getLoanAmountByApplicationId(applicationId);
-							financeMeansDetailRequest.setAlreadyIncurred(loanAmt);
+							financeMeansDetailRequest.setToBeIncurred(loanAmt);
 						}
 					}
 					financeMeansRequests.add(financeMeansDetailRequest);
