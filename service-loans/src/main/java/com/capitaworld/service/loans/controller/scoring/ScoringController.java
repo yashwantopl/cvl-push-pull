@@ -365,7 +365,7 @@ public class ScoringController {
     }
     
     @RequestMapping(value = "/getConcessionDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> calcPersonalEligible(@RequestBody ScoringRequestLoans scoringRequestLoans) {
+    public ResponseEntity<LoansResponse> getRetailConcessionDetails(@RequestBody ScoringRequestLoans scoringRequestLoans) {
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())) {
             logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty======>");
             return new ResponseEntity<LoansResponse>(
