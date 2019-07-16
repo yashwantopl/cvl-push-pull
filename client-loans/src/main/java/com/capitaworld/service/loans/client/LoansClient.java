@@ -17,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.CMADetailResponse;
@@ -274,6 +275,8 @@ public class LoansClient {
     private static final String GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK="/proposal/getDayDiffrenceForMultipleBank";
     
     private static final String SAVE_LOGS_OF_PAYMENT_GATEWAY = "/loan_application/savePaymentGatewayAuditLogs";
+    
+    private static final String GET_CONCESSION_DETAILS = "/score/getConcessionDetails";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2752,6 +2755,21 @@ public class LoansClient {
 		}
 	}
 
+	// FOR RETAIL CONCESSION RELATED
+	public LoansResponse getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans) throws LoansException {
+		String url = loansBaseUrl.concat(GET_CONCESSION_DETAILS);
+		logger.info("Get Retail Concession Details================{}==========={}>>", url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			throw new LoansException();
+		}
+	}
+	
 }
 
 
