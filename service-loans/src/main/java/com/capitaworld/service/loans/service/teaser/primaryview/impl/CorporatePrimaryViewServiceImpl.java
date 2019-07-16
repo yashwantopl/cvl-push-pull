@@ -910,9 +910,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		try {
 				String cmrScore= cibilClient.getCMRScore(applicationId);
 				if (cmrScore != null && cmrScore.contains("EXP")) {
-					corporatePrimaryViewResponse.setMsmeRankTitle("To Experian");
+					corporatePrimaryViewResponse.setMsmeRankTitle("Experian");
 				}else if (cmrScore != null && cmrScore.contains("CIBIL")) {
-					corporatePrimaryViewResponse.setMsmeRankTitle("To Cibil");
+					corporatePrimaryViewResponse.setMsmeRankTitle("Cibil");
 				}else {
 					corporatePrimaryViewResponse.setMsmeRankTitle("MSME Ranking");
 				}

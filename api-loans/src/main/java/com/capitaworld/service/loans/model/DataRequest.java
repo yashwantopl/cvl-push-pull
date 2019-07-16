@@ -10,13 +10,13 @@ public class DataRequest implements Serializable{
 	 * 
 	 * @author harshit
 	 */
-	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String value;
 	private Long productId;
 	private Long mappingId;
 	
-
+	private static final long serialVersionUID = 1L;
+	
 	public DataRequest() {
 		// Do nothing because of X and Y.
 	}
