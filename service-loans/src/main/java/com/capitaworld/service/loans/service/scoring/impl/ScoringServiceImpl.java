@@ -778,220 +778,55 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
             }
 
-            // start getting relation with bank and loan detail for concession in roi
-            Boolean isBorrowersHavingAccounts=false;
-            Boolean isBorrowersAvailingLoans=false;
-            Boolean isBorrowersHavingSalaryAccounts=false;
-            Boolean isBorrowersAvailingCreaditCards=false;
-            
- 		   // LOGIC FOR CHECK OFF RELATED ISSUE
-            Boolean isCheckOffDirectPayEmi = false;
-            Boolean isCheckOffAgreetoPayOutstanding =false;
-            Boolean isCheckOffShiftSalAcc = false;
-            Boolean isCheckOffPayOutstndAmount = false;
-            Boolean isCheckOffNotChangeSalAcc=false;
-            // ENDS HERE CHECK OFF
-            
-    		// CIBIL BASED CONCESSION RATE  OF INTEREST
-    		Boolean isCreaditHisotryGreaterSixMonths = false;
-    		Boolean isCreaditHisotryLessThenSixMonths= false;
-    		Boolean isNoCreaditHistory =false;
-    		// ENDS HERE 						
-          //  RetailApplicantDetail RetailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
-            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
-        	if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
-        		
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
-        			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
-        		}
-        		
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
-        			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffDirectPayEmi();
-        		}
-        		
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
-        			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
-        		}
-
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
-        			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
-        		}
-        		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
-        			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
-        	   }
-        	}
-        	
-        	 scoringRequest.setIsCheckOffDirectPayEmi(isCheckOffDirectPayEmi);
-             scoringRequest.setIsCheckOffAgreetoPayOutstanding(isCheckOffAgreetoPayOutstanding);
-             scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
-             scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
-             scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
-        	// ENDS HERE CHECK OFF LOGIC HERE
-             
-             CibilScoreLogRequest cibilResponse1 = null;
-             
-             CibilRequest cibilRequest1 = new CibilRequest();
-             cibilRequest1.setPan(retailApplicantDetail.getPan());
-             cibilRequest1.setApplicationId(applicationId);
-             Double cibilActualScore = 0.0d;
-             try {
-             	cibilResponse1 = cibilClient.getCibilScoreByPanCard(cibilRequest1);
-             	
-             	if(cibilResponse1 == null) {
-             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Not Found NULL this appliID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-             	}
-             	
-             	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
-
-					if ("000-1".equalsIgnoreCase(cibilResponse1.getActualScore())) {
-								cibilActualScore = -1d;
-					} else {
-								cibilActualScore = Double.parseDouble(cibilResponse1.getActualScore());
-					}
-					logger.info("CIBIL ACTUAL SOCRE ------------------>" + "applicationId=====>" + applicationId + "----"+ cibilActualScore);
-					scoringRequest.setCibilActualScore(cibilActualScore);
-             	}
-             	
-             	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
-             		scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
-             	 	}
-             	 	else
-                    {
-                         scoringRequest.setIsCreaditHisotryGreaterSixMonths(false);
-                    }
-              	if(cibilActualScore>= 1 && cibilActualScore <= 5){
-             			scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
-              		}
-                else
-                {
-                    scoringRequest.setIsCreaditHisotryLessThenSixMonths(false);
-                }
-             	if(cibilActualScore ==  -1){ 
-             			scoringRequest.setIsNoCreaditHistory(true);
-             		}
-             		else
-                {
-                    scoringRequest.setIsNoCreaditHistory(false);
-                }
-             }catch (Exception e) {
-                 logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE IN PERSONAL LOAN======>");
-     		}
-            
-
-            // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
-
-            List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
-
-            if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
-            {
-                for(BankingRelation bankingRelation:bankingRelationList)
-                {
-                    BankList fsOrgObj=null;
-                    try {
-                        fsOrgObj = BankList.fromName(bankingRelation.getBank());
-                    }
-                    catch (Exception e)
-                    {
-                        logger.error("Other Bank Selected By User For Account");
-                    }
-
-                    if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
-                    {
-                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId()))
-                        {
-                            isBorrowersHavingAccounts=true;
-
-                            //  get Salary Account detail
-
-                            try {
-
-                                ReportRequest reportRequest = new ReportRequest();
-                                reportRequest.setApplicationId(applicationId);
-
-                                AnalyzerResponse analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
-
-                                List<String> bankStringsList=(List<String> )analyzerResponse.getData();
-
-                                if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
-                                {
-                                    for (String bankName:bankStringsList)
-                                    {
-                                        BankList fsOrgObjInner=null;
-                                        try {
-                                            fsOrgObjInner = BankList.fromName(bankName);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            logger.error("Other Bank Selected By User For Salary Account");
-                                        }
-
-                                        if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId()))
-                                        {
-                                            if(productMaster.getUserOrgId().toString().equals(fsOrgObjInner.getOrgId()))
-                                            {
-                                                isBorrowersHavingSalaryAccounts=true;
-                                            }
-                                        }
-                                    }
-                                }
-
-                            } catch (Exception e) {
-                                logger.error("error while getting Salary Account Detail: ",e);
-                            }
-
-                        }
-                    }
-                }
-            }
-
-
-            // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
-
-
-            List<FinancialArrangementsDetail> financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
-
-            if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList))
-            {
-                for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
-                {
-                    BankList fsOrgObj=null;
-                    try {
-                        fsOrgObj = BankList.fromName(financialArrangementsDetail.getFinancialInstitutionName());
-                    }
-                    catch (Exception e)
-                    {
-                        logger.error("Other Bank Selected By User For Loan Account");
-                    }
-
-                    if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
-                    {
-                        if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId()))
-                        {
-                            //  get Credit Card Account detail
-                            if(financialArrangementsDetail.getLoanType().toString().equals(CommonUtils.CREDIT_CARD))
-                            {
-                                isBorrowersAvailingCreaditCards=true;
-                            }
-                            else // get Loan Account Detail
-                            {
-                                isBorrowersAvailingLoans=true;
-                            }
-
-                        }
-                    }
-                }
-            }
-
-            scoringRequest.setIsBorrowersHavingAccounts(isBorrowersHavingAccounts);
-            scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
-            scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
-            scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
-
-
-            // End getting relation with bank and loan detail for concession in roi
-
+         
             ///////// End Getting Individual Product Request ///////
+            
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+            
+            /*ScoringRequestLoans requestLoans = new ScoringRequestLoans();
+            requestLoans.setApplicationId(applicationId);
+            requestLoans.setFpProductId(fpProductId);*/
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            logger.info("==========getRetailConcessionDetailS PERSONAL LOAN ========>>>>>"+concessionResp);
+            
+           Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];
+           Boolean  isBorrowersAvailingLoans          =	(Boolean)concessionResp[1];
+           Boolean  isBorrowersHavingSalaryAccounts   = (Boolean)concessionResp[2];
+           Boolean  isBorrowersAvailingCreaditCards   = (Boolean)concessionResp[3];
+           
+           // is Fully Check Off And Partially Check Off
+           Boolean isCheckOffDirectPayEmi             =	(Boolean)concessionResp[4];
+           Boolean  isCheckOffAgreetoPayOutstanding   = (Boolean)concessionResp[5];
+           Boolean  isCheckOffShiftSalAcc             =	(Boolean)concessionResp[6];
+           Boolean  isCheckOffPayOutstndAmount        =	(Boolean)concessionResp[7];
+           Boolean isCheckOffNotChangeSalAcc          =	(Boolean)concessionResp[8];
+           
+           // Cibil BAsed Concession
+           Double cibilActualScore                   =	(Double)concessionResp[9];
+           Boolean isCreaditHisotryGreaterSixMonths   =	(Boolean)concessionResp[10];
+           Boolean isCreaditHisotryLessThenSixMonths = (Boolean)concessionResp[11];
+           Boolean isNoCreaditHistory                =	(Boolean)concessionResp[12];
+           
+          // partially and fully check off related----->
+			scoringRequest.setIsBorrowersHavingAccounts(isBorrowersHavingAccounts);
+          scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
+          scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
+          scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
+       
+          scoringRequest.setIsCheckOffDirectPayEmi(isCheckOffDirectPayEmi);
+          scoringRequest.setIsCheckOffAgreetoPayOutstanding(isCheckOffAgreetoPayOutstanding);
+          scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
+          scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
+          scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
+     	// ENDS HERE CHECK OFF LOGIC HERE
 
+		//  Cibil Based Object related----->
+          scoringRequest.setCibilActualScore(cibilActualScore);
+          scoringRequest.setIsCreaditHisotryGreaterSixMonths(isCreaditHisotryGreaterSixMonths);
+          scoringRequest.setIsCreaditHisotryLessThenSixMonths(isCreaditHisotryLessThenSixMonths);
+          scoringRequest.setIsNoCreaditHistory(isNoCreaditHistory);
+          
+          // SCORING BASED ON CONCESSION RATE OF INTEREST
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
                 logger.info("----------------------------START RETAIL PL ------------------------------");
@@ -1687,6 +1522,235 @@ public class ScoringServiceImpl implements ScoringService {
     }
     
     
+    @Override
+    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans) {
+    	logger.info("Getting Retail Concession Details===={}========{}==>>>>"+scoringRequestLoans.getApplicationId()+""
+    			+ "fpProductId===={}=====>"+scoringRequestLoans.getFpProductId());
+    	
+    		Long applicationId= scoringRequestLoans.getApplicationId();
+    		Long fpProductId = 	scoringRequestLoans.getFpProductId();
+    	
+    		Object[] retailConcessionObj = new Object[15];
+ 			ProductMaster productMaster = productMasterRepository.findOne(fpProductId);
+    					
+    		// start getting relation with bank and loan detail for concession in roi
+                Boolean isBorrowersHavingAccounts=false;
+                Boolean isBorrowersAvailingLoans=false;
+                Boolean isBorrowersHavingSalaryAccounts=false;
+                Boolean isBorrowersAvailingCreaditCards=false;
+                
+     		   // LOGIC FOR CHECK OFF RELATED ISSUE
+                Boolean isCheckOffDirectPayEmi = false;
+                Boolean isCheckOffAgreetoPayOutstanding =false;
+                Boolean isCheckOffShiftSalAcc = false;
+                Boolean isCheckOffPayOutstndAmount = false;
+                Boolean isCheckOffNotChangeSalAcc=false;
+                // ENDS HERE CHECK OFF
+                
+        		// CIBIL BASED CONCESSION RATE  OF INTEREST
+        		Boolean isCreaditHisotryGreaterSixMonths = false;
+        		Boolean isCreaditHisotryLessThenSixMonths= false;
+        		Boolean isNoCreaditHistory =false;
+        		// ENDS HERE 
+        		Boolean isWomenApplicant = false;
+    			
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId); //fs_retail_applicant_details
+            	if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+            		
+            		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){
+            			isCheckOffDirectPayEmi  =  retailApplicantDetail.getIsCheckOffDirectPayEmi();
+            				isCheckOffDirectPayEmi = true;
+            		}
+            		
+            		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding())){
+            			isCheckOffAgreetoPayOutstanding = retailApplicantDetail.getIsCheckOffAgreeToPayOutstanding();
+            				isCheckOffAgreetoPayOutstanding = true;
+            		}
+            		
+            		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffShiftSalAcc())){
+            			isCheckOffShiftSalAcc = retailApplicantDetail.getIsCheckOffShiftSalAcc();
+            				isCheckOffShiftSalAcc = true;
+            		}
+
+            		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffPayOutstndAmount())){
+            			isCheckOffPayOutstndAmount = retailApplicantDetail.getIsCheckOffPayOutstndAmount();
+            				isCheckOffPayOutstndAmount = true;
+            		}
+            		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffNotChangeSalAcc())){
+            			isCheckOffNotChangeSalAcc = retailApplicantDetail.getIsCheckOffNotChangeSalAcc();
+            				isCheckOffNotChangeSalAcc = true;
+            	   }	
+            		
+            		if(Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId())){
+            			isWomenApplicant = true; 
+            		}
+            		
+            	}
+    			// ENDS HERE =========================================================>
+    			
+    			CibilScoreLogRequest cibilResponse1 = null;
+    			
+                 CibilRequest cibilRequest1 = new CibilRequest();
+                 cibilRequest1.setPan(retailApplicantDetail.getPan());
+                 cibilRequest1.setApplicationId(applicationId);
+                 Double cibilActualScore = 0.0d;
+                 try {
+                 	cibilResponse1 = cibilClient.getCibilScoreByPanCard(cibilRequest1);
+                 	
+                 	if(cibilResponse1 == null) {
+                 		logger.info("CIBIL Score Reponse Not Found NULL THIS APPLICATION ID ====>" + applicationId);	
+                 	}
+                 	
+                 	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
+
+    					if ("000-1".equalsIgnoreCase(cibilResponse1.getActualScore())) {
+    								cibilActualScore = -1d;
+    					} else {
+    								cibilActualScore = Double.parseDouble(cibilResponse1.getActualScore());
+    					}
+    					logger.info("CIBIL ACTUAL SOCRE ------------------>" + "applicationId=====>" + applicationId + "----"+ cibilActualScore);
+                 	}
+                 	
+                 	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
+                 		 	isCreaditHisotryGreaterSixMonths = true;
+                 	 	}
+
+                 	 if(cibilActualScore>= 1 && cibilActualScore <= 5){
+                  			isCreaditHisotryLessThenSixMonths = true;
+                  	}
+                  	
+                 	if(cibilActualScore ==  -1){ 
+                 			isNoCreaditHistory = true;
+                 		}
+                 }catch (Exception e) {
+                     logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE========={}");
+         		}
+                
+
+                // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
+
+    		 List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
+                if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
+                {
+                    for(BankingRelation bankingRelation:bankingRelationList)
+                    {
+                        BankList fsOrgObj=null;
+                        try {
+                            fsOrgObj = BankList.fromName(bankingRelation.getBank());
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("Other Bank Selected By User For Account");
+                        }
+
+                        if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
+                        {
+                            if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId()))
+                            {
+                                isBorrowersHavingAccounts=true;
+
+                                //  get Salary Account detail
+
+                                try {
+
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
+
+                                    List<String> bankStringsList=(List<String> )analyzerResponse.getData();
+
+                                    if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
+                                    {
+                                        for (String bankName:bankStringsList)
+                                        {
+                                            BankList fsOrgObjInner=null;
+                                            try {
+                                                fsOrgObjInner = BankList.fromName(bankName);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                logger.error("Other Bank Selected By User For Salary Account");
+                                            }
+
+                                            if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId()))
+                                            {
+                                                if(productMaster.getUserOrgId().toString().equals(fsOrgObjInner.getOrgId()))
+                                                {
+                                                    isBorrowersHavingSalaryAccounts=true;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting Salary Account Detail: ",e);
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
+   			  List<FinancialArrangementsDetail> financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+                if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList))
+                {
+                    for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
+                    {
+                        BankList fsOrgObj=null;
+                        try {
+                            fsOrgObj = BankList.fromName(financialArrangementsDetail.getFinancialInstitutionName());
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("Other Bank Selected By User For Loan Account");
+                        }
+
+                        if(!CommonUtils.isObjectNullOrEmpty(productMaster.getUserOrgId()) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId()))
+                        {
+                            if(productMaster.getUserOrgId().toString().equals(fsOrgObj.getOrgId()))
+                            {
+                                //  get Credit Card Account detail
+                                if(financialArrangementsDetail.getLoanType().toString().equals(CommonUtils.CREDIT_CARD))
+                                {
+                                    isBorrowersAvailingCreaditCards=true;
+                                }
+                                else // get Loan Account Detail
+                                {
+                                    isBorrowersAvailingLoans=true;
+                                }
+
+                            }
+                        }
+                    }
+                }
+               // IS BASED ON CONCESSION RELATED 
+                retailConcessionObj[0] =  isBorrowersHavingAccounts;
+                retailConcessionObj[1] =  isBorrowersAvailingLoans ;
+                retailConcessionObj[2] =  isBorrowersHavingSalaryAccounts;
+                retailConcessionObj[3] =  isBorrowersAvailingCreaditCards;
+                
+                // IS BASED ON PARTIALLY CHECK OFF AND FULLY CHECK OFF RELATED
+                retailConcessionObj[4] =  isCheckOffDirectPayEmi;
+                retailConcessionObj[5] =  isCheckOffAgreetoPayOutstanding;
+                retailConcessionObj[6] =  isCheckOffShiftSalAcc;
+                retailConcessionObj[7] =  isCheckOffPayOutstndAmount;
+                retailConcessionObj[8] =  isCheckOffNotChangeSalAcc;
+                
+                // CIBIL BASED CONCESSION
+                retailConcessionObj[9]= cibilActualScore;
+                retailConcessionObj[10] =  isCreaditHisotryGreaterSixMonths;
+                retailConcessionObj[11] = isCreaditHisotryLessThenSixMonths;
+                retailConcessionObj[12] = isNoCreaditHistory;
+                retailConcessionObj[13] = isWomenApplicant;
+                
+                return retailConcessionObj;
+    	
+    }
+    
+    
+    
 //    private void setLoanPurposeModelFields(ScoreParameterRetailRequest parameterRetailRequest,HomeLoanModelRequest homeLoanModelRequest, RetailApplicantDetail  applicantDetail) {
 //	    if(homeLoanModelRequest != null) {
 //	    	if(LoanPurposeQuestion.PURCHASE_OF_READY_BUILT_HOUSE_FLAT_FROM_THE_EXISTING_OWNERS.getId().equals(applicantDetail.getLoanPurposeQueType())) {
@@ -1736,21 +1800,9 @@ public class ScoringServiceImpl implements ScoringService {
         List<BankingRelation> bankingRelationList = null;
         List<String> bankStringsList = null;
         List<FinancialArrangementsDetail> financialArrangementsDetailList = null;
-        Boolean isWomenApplicant = false;
+       // Boolean isWomenApplicant = false;
         List<Double> incomeOfItrOf3Years = null;
-        // LOGIC FOR CHECK OFF RELATED ISSUE
-        Boolean isCheckOffDirectPayEmi = false;
-        Boolean isCheckOffAgreetoPayOutstanding =false;
-        Boolean isCheckOffShiftSalAcc = false;
-        Boolean isCheckOffPayOutstndAmount = false;
-        Boolean isCheckOffNotChangeSalAcc=false;
-        // ENDS HERE CHECK OFF
-        
-	    Boolean isCreaditHisotryGreaterSixMonths = false;          
-		Boolean isCreaditHisotryLessThenSixMonths = false;
-		Boolean isNoCreaditHistory = false;  
-		Double cibilActualScore = 0.0d;
-
+       
         if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
         	applicationId = scoringRequestLoansList.get(0).getApplicationId();
         	retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
@@ -1759,21 +1811,13 @@ public class ScoringServiceImpl implements ScoringService {
                 return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         	logger.info("retailApplicantDetail.getEmploymentType()=======>{}",retailApplicantDetail.getEmploymentType());
-        	isWomenApplicant = Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId());       	
+        //	isWomenApplicant = Gender.FEMALE.getId().equals(retailApplicantDetail.getGenderId());       	
         	primaryHomLoanDetail = primaryHomeLoanDetailRepository.getByApplication(applicationId);
         	if (CommonUtils.isObjectNullOrEmpty(primaryHomLoanDetail)) {
                 logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                 return new ResponseEntity<>(new LoansResponse("Primary Detail Must Not be null While Calculating Home Loan Scoring", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         	
-        	// FOR CONCESSION CHECK OFF 
-        	isCheckOffDirectPayEmi  =  primaryHomLoanDetail.getIsCheckOffDirectPayEmi() != null ? primaryHomLoanDetail.getIsCheckOffDirectPayEmi() : false ;
-    		isCheckOffAgreetoPayOutstanding = primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding() != null ? primaryHomLoanDetail.getIsCheckOffAgreeToPayOutstanding() : false;
-    		isCheckOffShiftSalAcc = primaryHomLoanDetail.getIsCheckOffShiftSalAcc() != null ? primaryHomLoanDetail.getIsCheckOffShiftSalAcc() : false;
-    		isCheckOffPayOutstndAmount = primaryHomLoanDetail.getIsCheckOffPayOutstndAmount() != null ? primaryHomLoanDetail.getIsCheckOffPayOutstndAmount() : false;
-    		isCheckOffNotChangeSalAcc = primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc() != null ? primaryHomLoanDetail.getIsCheckOffNotChangeSalAcc() : false;
-    		// ENDS HERE 
-    		
         	EligibilityResponse eligibilityResponse = null;
 			try {
 				EligibililityRequest eligibililityRequest = new EligibililityRequest();
@@ -1827,24 +1871,6 @@ public class ScoringServiceImpl implements ScoringService {
             	if(cibilResponse == null) {
             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	}
-            	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-	            		if("000-1".equalsIgnoreCase(cibilResponse.getActualScore())) {
-	            			cibilActualScore= -1d;
-	            		}else {
-	            			cibilActualScore= Double.parseDouble(cibilResponse.getActualScore());	
-	            		}
-	            		logger.info("CIBIL ACTUAL SOCRE ------------------>"+"applicationId"+applicationId+"----"+cibilActualScore);
-                 	}
-				if (cibilActualScore >= 300 && cibilActualScore <= 900) {
-						isCreaditHisotryGreaterSixMonths = true;
-				}
-				if (cibilActualScore >= 1 && cibilActualScore <= 5) {
-						isCreaditHisotryLessThenSixMonths = true;
-				}
-				if (cibilActualScore == -1) {
-						isNoCreaditHistory = true;
-				}
-              	
                  	
                 cibilResponseDpd = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
                 if(cibilResponseDpd == null) {
@@ -1898,75 +1924,6 @@ public class ScoringServiceImpl implements ScoringService {
             	}
             	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
             }
-            
-            Boolean isBorrowersHavingAccounts = false;
-            Boolean isBorrowersAvailingLoans = false;
-            Boolean isBorrowersHavingSalaryAccounts = false;
-            Boolean isBorrowersAvailingCreaditCards = false;
-        	// ENDS HERE CHECK OFF LOGIC HERE 
-            
-
-            // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
-            if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList)){
-                for(BankingRelation bankingRelation : bankingRelationList){
-                    BankList fsOrgObj = null;
-                    try {
-                        fsOrgObj = BankList.fromName(bankingRelation.getBank());
-                    }
-                    catch (Exception e){
-                        logger.error("Other Bank Selected By User For Account == >{}",e);
-                    }
-
-                    if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId())){
-                        if(Long.valueOf(fsOrgObj.getOrgId()).equals(orgId)){
-                            isBorrowersHavingAccounts = true;
-                            //  get Salary Account detail
-                            try {
-                                if(!CommonUtils.isObjectNullOrEmpty(bankStringsList)){
-                                    for (String bankName:bankStringsList){
-                                        BankList fsOrgObjInner = null;
-                                        try {
-                                            fsOrgObjInner = BankList.fromName(bankName);
-                                        }
-                                        catch (Exception e){
-                                            logger.error("Other Bank Selected By User For Salary Account == >{}",e);
-                                        }
-                                        if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner) && !CommonUtils.isObjectNullOrEmpty(fsOrgObjInner.getOrgId())){
-                                            if(Long.valueOf(fsOrgObjInner.getOrgId()).equals(orgId)){
-                                                isBorrowersHavingSalaryAccounts = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch (Exception e) {
-                                logger.error("error while getting Salary Account Detail: {}",e);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
-            if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList)){
-                for(FinancialArrangementsDetail financialArrangementsDetail : financialArrangementsDetailList){
-                    BankList fsOrgObj = null;
-                    try {
-                        fsOrgObj = BankList.fromName(financialArrangementsDetail.getFinancialInstitutionName());
-                    }
-                    catch (Exception e){
-                        logger.error("Other Bank Selected By User For Loan Account===>{}",e);
-                    }
-                    if(!CommonUtils.isObjectNullOrEmpty(orgId) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj) && !CommonUtils.isObjectNullOrEmpty(fsOrgObj.getOrgId())){
-                        if(Long.valueOf(fsOrgObj.getOrgId()).equals(orgId)){
-                            if(financialArrangementsDetail.getLoanType().toString().equals(CommonUtils.CREDIT_CARD)){
-                                isBorrowersAvailingCreaditCards = true;
-                            }else {// get Loan Account Detail
-                                isBorrowersAvailingLoans = true;
-                            }
-                        }
-                    }
-                }
-            }
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -1980,29 +1937,57 @@ public class ScoringServiceImpl implements ScoringService {
             } else {
                 scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
             }
-            scoringRequest.setIsBorrowersHavingAccounts(isBorrowersHavingAccounts);
-            scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
-            scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
-            scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
             
-            // check off related 
-            scoringRequest.setIsCheckOffDirectPayEmi(isCheckOffDirectPayEmi);
-            scoringRequest.setIsCheckOffAgreetoPayOutstanding(isCheckOffAgreetoPayOutstanding);
-            scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
-            scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
-            scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
-            // ends here 
-            scoringRequest.setIsCreaditHisotryGreaterSixMonths(true);
-            scoringRequest.setIsCreaditHisotryLessThenSixMonths(true);
-            scoringRequest.setIsNoCreaditHistory(true);
+            // STARTS HERE CONCESSION BASED ON RATE OF INTEREST:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+            /*            
+            ScoringRequestLoans requestLoans = new ScoringRequestLoans();
+            requestLoans.setApplicationId(applicationId);
+            requestLoans.setFpProductId(fpProductId);*/
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            logger.info("==========getRetailConcessionDetails========>>>>>"+concessionResp);
             
-            scoringRequest.setCibilActualScore(cibilActualScore);
-			scoringRequest.setIsCreaditHisotryGreaterSixMonths(isCreaditHisotryGreaterSixMonths);
-			scoringRequest.setIsCreaditHisotryLessThenSixMonths(isCreaditHisotryLessThenSixMonths);
-			scoringRequest.setIsNoCreaditHistory(isNoCreaditHistory);
-            
-            scoringRequest.setIsWomenApplicant(isWomenApplicant);
+           Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];
+           Boolean  isBorrowersAvailingLoans          =	(Boolean)concessionResp[1];
+           Boolean  isBorrowersHavingSalaryAccounts   = (Boolean)concessionResp[2];
+           Boolean  isBorrowersAvailingCreaditCards   = (Boolean)concessionResp[3];
+           
+           // is Fully Check Off And Partially Check Off
+           Boolean isCheckOffDirectPayEmi             =	(Boolean)concessionResp[4];
+           Boolean  isCheckOffAgreetoPayOutstanding   = (Boolean)concessionResp[5];
+           Boolean  isCheckOffShiftSalAcc             =	(Boolean)concessionResp[6];
+           Boolean  isCheckOffPayOutstndAmount        =	(Boolean)concessionResp[7];
+           Boolean isCheckOffNotChangeSalAcc          =	(Boolean)concessionResp[8];
+           
+           // Cibil BAsed Concession
+           Double cibilActualScore                   =	(Double)concessionResp[9];
+           Boolean isCreaditHisotryGreaterSixMonths   =	(Boolean)concessionResp[10];
+           Boolean isCreaditHisotryLessThenSixMonths = (Boolean)concessionResp[11];
+           Boolean isNoCreaditHistory                =	(Boolean)concessionResp[12];
+           Boolean isWomenApplicant                =	(Boolean)concessionResp[13];
+           
+           
+          // partially and fully check off related----->
+           scoringRequest.setIsBorrowersHavingAccounts(isBorrowersHavingAccounts);
+          scoringRequest.setIsBorrowersAvailingLoans(isBorrowersAvailingLoans);
+          scoringRequest.setIsBorrowersHavingSalaryAccounts(isBorrowersHavingSalaryAccounts);
+          scoringRequest.setIsBorrowersAvailingCreaditCards(isBorrowersAvailingCreaditCards);
+       
+          scoringRequest.setIsCheckOffDirectPayEmi(isCheckOffDirectPayEmi);
+          scoringRequest.setIsCheckOffAgreetoPayOutstanding(isCheckOffAgreetoPayOutstanding);
+          scoringRequest.setIsCheckOffShiftSalAcc(isCheckOffShiftSalAcc);
+          scoringRequest.setIsCheckOffPayOutstndAmount(isCheckOffPayOutstndAmount);
+          scoringRequest.setIsCheckOffNotChangeSalAcc(isCheckOffNotChangeSalAcc);
+     	// ENDS HERE CHECK OFF LOGIC HERE
 
+		//  Cibil Based Object related----->
+          scoringRequest.setCibilActualScore(cibilActualScore);
+          scoringRequest.setIsCreaditHisotryGreaterSixMonths(isCreaditHisotryGreaterSixMonths);
+          scoringRequest.setIsCreaditHisotryLessThenSixMonths(isCreaditHisotryLessThenSixMonths);
+          scoringRequest.setIsNoCreaditHistory(isNoCreaditHistory);
+
+          scoringRequest.setIsWomenApplicant(isWomenApplicant); // Women For HL 
+            
+          // ENDS HERE CONCESSION BASED ON RATE OF INTEREST:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
                 logger.info("scoringRequestLoans.getFoir()=>{}==For ApplicationId====>{}==>For FpProductId===>{}",scoringRequestLoans.getFoir(),applicationId,fpProductId);

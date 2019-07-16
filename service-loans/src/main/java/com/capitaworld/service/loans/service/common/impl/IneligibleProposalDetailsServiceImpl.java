@@ -1027,7 +1027,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								try {
 									DecimalFormat decim = new DecimalFormat("####");
 									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
-									param.put("amount", decim.format(loanAmount));
+									param.put("loanAmount", decim.format(loanAmount));
 									ReportRequest request=new ReportRequest();
 									List<Map<String, Object>> dataList=new ArrayList<Map<String,Object>>();
 									dataList.add(param);

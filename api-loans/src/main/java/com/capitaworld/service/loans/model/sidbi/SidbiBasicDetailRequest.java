@@ -3,10 +3,6 @@ package com.capitaworld.service.loans.model.sidbi;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 public class SidbiBasicDetailRequest implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -30,6 +26,8 @@ public class SidbiBasicDetailRequest implements Serializable{
 	private String landMark;
 	
 	private Long pincode;
+
+	private Integer factoryPremise;
 	
 	private String exisFactPremiseNumber;
 	
@@ -39,11 +37,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Long exisFactPincode;
 	
-	private Boolean exisFactOwned;
-	
-	private Boolean exisFactRanted;
-	
-	private Boolean exisFactLeased;
+	private Integer exisFactoryPremise;
 	
 	private String propFactPremiseNumber;
 	
@@ -53,11 +47,7 @@ public class SidbiBasicDetailRequest implements Serializable{
 	
 	private Long propFactPincode;
 	
-	private Boolean propFactOwned;
-	
-	private Boolean propFactRanted;
-	
-	private Boolean propFactLeased;
+	private Integer propFactoryPremise;
 	
 	private String landlineNo;
 	
@@ -213,30 +203,6 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.exisFactPincode = exisFactPincode;
 	}
 
-	public Boolean getExisFactOwned() {
-		return exisFactOwned;
-	}
-
-	public void setExisFactOwned(Boolean exisFactOwned) {
-		this.exisFactOwned = exisFactOwned;
-	}
-
-	public Boolean getExisFactRanted() {
-		return exisFactRanted;
-	}
-
-	public void setExisFactRanted(Boolean exisFactRanted) {
-		this.exisFactRanted = exisFactRanted;
-	}
-
-	public Boolean getExisFactLeased() {
-		return exisFactLeased;
-	}
-
-	public void setExisFactLeased(Boolean exisFactLeased) {
-		this.exisFactLeased = exisFactLeased;
-	}
-
 	public String getPropFactPremiseNumber() {
 		return propFactPremiseNumber;
 	}
@@ -269,29 +235,6 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.propFactPincode = propFactPincode;
 	}
 
-	public Boolean getPropFactOwned() {
-		return propFactOwned;
-	}
-
-	public void setPropFactOwned(Boolean propFactOwned) {
-		this.propFactOwned = propFactOwned;
-	}
-
-	public Boolean getPropFactRanted() {
-		return propFactRanted;
-	}
-
-	public void setPropFactRanted(Boolean propFactRanted) {
-		this.propFactRanted = propFactRanted;
-	}
-
-	public Boolean getPropFactLeased() {
-		return propFactLeased;
-	}
-
-	public void setPropFactLeased(Boolean propFactLeased) {
-		this.propFactLeased = propFactLeased;
-	}
 
 	public String getLandlineNo() {
 		return landlineNo;
@@ -496,31 +439,30 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.loanTypeId = loanTypeId;
 	}
 
-	@Override
-	public String toString() {
-		return "SidbiBasicDetailRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
-				+ ", organisationName=" + organisationName + ", constitutionId=" + constitutionId + ", industryName="
-				+ industryName + ", premiseNumber=" + premiseNumber + ", streetName=" + streetName + ", landMark="
-				+ landMark + ", pincode=" + pincode + ", exisFactPremiseNumber=" + exisFactPremiseNumber
-				+ ", exisFactStreetName=" + exisFactStreetName + ", exisFactLandMark=" + exisFactLandMark
-				+ ", exisFactPincode=" + exisFactPincode + ", exisFactOwned=" + exisFactOwned + ", exisFactRanted="
-				+ exisFactRanted + ", exisFactLeased=" + exisFactLeased + ", propFactPremiseNumber="
-				+ propFactPremiseNumber + ", propFactStreetName=" + propFactStreetName + ", propFactLandMark="
-				+ propFactLandMark + ", propFactPincode=" + propFactPincode + ", propFactOwned=" + propFactOwned
-				+ ", propFactRanted=" + propFactRanted + ", propFactLeased=" + propFactLeased + ", landlineNo="
-				+ landlineNo + ", mobile=" + mobile + ", email=" + email + ", establishmentDate=" + establishmentDate
-				+ ", commencementDate=" + commencementDate + ", msmeUamRegistrationNumber=" + msmeUamRegistrationNumber
-				+ ", msmeUamRegistrationDate=" + msmeUamRegistrationDate + ", associatedGroup=" + associatedGroup
-				+ ", sidbiBranch=" + sidbiBranch + ", exisitngActivity=" + exisitngActivity + ", activitySince="
-				+ activitySince + ", proposedActivity=" + proposedActivity + ", trialRunEndDate=" + trialRunEndDate
-				+ ", dateOfCommencementOfCommercialOperations=" + dateOfCommencementOfCommercialOperations
-				+ ", isCoveredUnderCGTMSE=" + isCoveredUnderCGTMSE + ", repaymemtMonths=" + repaymemtMonths
-				+ ", loanAmount=" + loanAmount + ", moratoriumPeriodMonths=" + moratoriumPeriodMonths
-				+ ", declarationDate=" + declarationDate + ", declarationPlace=" + declarationPlace
-				+ ", isCopyOfExistingFactAddr=" + isCopyOfExistingFactAddr + ", isCopyOfRegisteredAddr="
-				+ isCopyOfRegisteredAddr + ", activityDetail=" + activityDetail + ", loanTypeId=" + loanTypeId + "]";
+	public Integer getFactoryPremise() {
+		return factoryPremise;
 	}
 
+	public void setFactoryPremise(Integer factoryPremise) {
+		this.factoryPremise = factoryPremise;
+	}
 
+	public Integer getExisFactoryPremise() {
+		return exisFactoryPremise;
+	}
+
+	public void setExisFactoryPremise(Integer exisFactoryPremise) {
+		this.exisFactoryPremise = exisFactoryPremise;
+	}
+
+	public Integer getPropFactoryPremise() {
+		return propFactoryPremise;
+	}
+
+	public void setPropFactoryPremise(Integer propFactoryPremise) {
+		this.propFactoryPremise = propFactoryPremise;
+	}
+
+	
 	
 }
