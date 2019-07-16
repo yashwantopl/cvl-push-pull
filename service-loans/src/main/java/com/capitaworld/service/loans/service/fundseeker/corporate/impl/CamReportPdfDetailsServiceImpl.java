@@ -763,7 +763,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
 				map.put("collateralSecurityList", collateralSecurityDetailService.getData(applicationId));
-				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
+				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -1239,6 +1239,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 			
 			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
+				CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
+				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 			}
 		}catch (Exception e) {
