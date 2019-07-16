@@ -1519,7 +1519,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//COLLATERAL SECURITY			
 			try {
 				/*map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId),null));*/
-				map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(applicationProposalMapping.getProposalId(), userId),null));
+				map.put("collateralSecurity", CommonUtils.convertToDoubleForXmlIndianCurr(securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(applicationProposalMapping.getProposalId(), userId),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Security Details {}", e);
 			}
