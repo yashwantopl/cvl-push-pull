@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.ibm.icu.text.NumberFormat;
 
 public class CommonUtils {
 
@@ -1515,10 +1516,21 @@ public enum APIFlags {
 	public static String convertValueRound(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(Long.valueOf(Math.round(value)))  : "0";
 	}
-	public static Object convertValueIndianCurrency(Object o) {
-		if(o != null) {
-			Format format = com.ibm.icu.text.NumberFormat.getNumberInstance(new Locale("en", "IN"));
-			return format.format(Math.round((Double) o));	
+	public static Object convertValueIndianCurrency(Object value) {
+		if(value != null) {
+			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+			/*formatter.setMinimumFractionDigits(0);*/
+			return formatter.format(value);
+		}else {
+			return "-";
+		}
+		
+	}
+	public static Object convertValueIndianCurrencyWithDecimal(Object value) {
+		if(value != null) {
+			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+			formatter.setMinimumFractionDigits(2);
+			return formatter.format(value);
 		}else {
 			return "-";
 		}
