@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import org.json.simple.JSONObject;
 
@@ -260,4 +261,6 @@ public interface LoanApplicationService {
 	List<LoantypeSelectionResponse> getTypeSelectionData(String userId);
 	
 	public LoanPanCheckRequest checkAlreadyPANExitsOrNot(LoanPanCheckRequest loanPanCheckRequest);
+
+	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId,Integer loanType);
 }

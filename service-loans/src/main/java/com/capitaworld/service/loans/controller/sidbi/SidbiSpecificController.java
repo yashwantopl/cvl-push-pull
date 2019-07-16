@@ -1,5 +1,6 @@
-package com.capitaworld.service.loans.controller.sidbi;
+	package com.capitaworld.service.loans.controller.sidbi;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,11 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
 import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
 import com.capitaworld.service.loans.model.sidbi.PersonalCorporateGuaranteeRequest;
 import com.capitaworld.service.loans.model.sidbi.PrimaryCollateralSecurityRequest;
 import com.capitaworld.service.loans.model.sidbi.RawMaterialDetailsRequest;
+import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
 import com.capitaworld.service.loans.service.sidbi.PersonalCorporateGuaranteeService;
 import com.capitaworld.service.loans.service.sidbi.PrimaryCollateralSecurityService;
@@ -55,6 +57,9 @@ public class SidbiSpecificController {
 
     @Autowired
     RawMaterialDetailsService rawMaterialDetailsService;
+    
+    @Autowired
+	private PrimaryCorporateDetailRepository  primaryCorporateDetailRepository;
     
 	@PostMapping(value = "/savePrimaryCollateralSecurity", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePrimaryCollateralSecurity(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
@@ -361,6 +366,35 @@ public class SidbiSpecificController {
 
 	        } catch (Exception e) {
 	            logger.error("Error while getAdditionalData==>", e);
+	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
+	    
+		@GetMapping(value = "/get/sidbiAdditionalData/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	    public ResponseEntity<LoansResponse> sidbiAdditionalData(@PathVariable("applicationId") Long applicationId,HttpServletRequest request) throws LoansException {
+	        try {
+	            CommonDocumentUtils.startHook(logger, "sidbiAdditionalData");
+	            
+	            if (applicationId == null) {
+	                logger.warn("ID and User Id Require to get Primary Working Details applicationId==> User ID ==>{}" , applicationId);
+	                return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+	            }
+	            
+	            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+	            Double loanAmount = sidbiSpecificService.getLoanAmountByApplicationId(applicationId);
+	            HashMap<String, Object> map =new HashMap<String, Object>();
+	            map.put("loanAmount",loanAmount);
+	            
+	            Integer loanTypeId = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
+	            map.put("loanTypeId",loanTypeId);
+	            
+				loansResponse.setMap(map);
+	            
+	            CommonDocumentUtils.endHook(logger, "sidbiAdditionalData");
+	            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+	        } catch (Exception e) {
+	            logger.error("Error while sidbiAdditionalData==>", e);
 	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
 	    }

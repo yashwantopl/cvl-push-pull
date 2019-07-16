@@ -46,6 +46,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "pincode")
 	private Long pincode;
 	
+	@Column(name = "factory_premise")
+	private Integer factoryPremise;
+	
 	@Column(name = "exis_fact_premise_number")
 	private String exisFactPremiseNumber;
 	
@@ -58,15 +61,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "exis_fact_pincode")
 	private Long exisFactPincode;
 	
-	@Column(name="exis_fact_Owned")
-	private Boolean exisFactOwned;
-	
-	@Column(name="exis_fact_ranted")
-	private Boolean exisFactRanted;
-	
-	@Column(name="exis_fact_leased")
-	private Boolean exisFactLeased;
-	
+	@Column(name = "exis_factory_premise")
+	private Integer exisFactoryPremise;
+		
 	@Column(name = "prop_fact_premise_number")
 	private String propFactPremiseNumber;
 	
@@ -79,15 +76,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "prop_fact_pincode")
 	private Long propFactPincode;
 	
-	@Column(name="prop_fact_Owned")
-	private Boolean propFactOwned;
+	@Column(name = "prop_factory_premise")
+	private Integer propFactoryPremise;
 	
-	@Column(name="prop_fact_ranted")
-	private Boolean propFactRanted;
-	
-	@Column(name="prop_fact_leased")
-	private Boolean propFactLeased;
-		
 	@Column(name = "landline_no")
 	private String landlineNo;
 	
@@ -119,8 +110,9 @@ public class SidbiBasicDetail implements Serializable{
 	@Column(name = "exisitng_activity")
 	private String exisitngActivity;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "activity_since")
-	private String activitySince;
+	private Date activitySince;
 	
 	@Column(name = "proposed_activity")
 	private String proposedActivity;
@@ -234,7 +226,7 @@ public class SidbiBasicDetail implements Serializable{
 		return exisitngActivity;
 	}
 
-	public String getActivitySince() {
+	public Date getActivitySince() {
 		return activitySince;
 	}
 
@@ -344,7 +336,7 @@ public class SidbiBasicDetail implements Serializable{
 		this.exisitngActivity = exisitngActivity;
 	}
 
-	public void setActivitySince(String activitySince) {
+	public void setActivitySince(Date activitySince) {
 		this.activitySince = activitySince;
 	}
 
@@ -416,30 +408,7 @@ public class SidbiBasicDetail implements Serializable{
 		this.exisFactPincode = exisFactPincode;
 	}
 
-	public Boolean getExisFactOwned() {
-		return exisFactOwned;
-	}
-
-	public void setExisFactOwned(Boolean exisFactOwned) {
-		this.exisFactOwned = exisFactOwned;
-	}
-
-	public Boolean getExisFactRanted() {
-		return exisFactRanted;
-	}
-
-	public void setExisFactRanted(Boolean exisFactRanted) {
-		this.exisFactRanted = exisFactRanted;
-	}
-
-	public Boolean getExisFactLeased() {
-		return exisFactLeased;
-	}
-
-	public void setExisFactLeased(Boolean exisFactLeased) {
-		this.exisFactLeased = exisFactLeased;
-	}
-
+	
 	public String getPropFactPremiseNumber() {
 		return propFactPremiseNumber;
 	}
@@ -472,29 +441,6 @@ public class SidbiBasicDetail implements Serializable{
 		this.propFactPincode = propFactPincode;
 	}
 
-	public Boolean getPropFactOwned() {
-		return propFactOwned;
-	}
-
-	public void setPropFactOwned(Boolean propFactOwned) {
-		this.propFactOwned = propFactOwned;
-	}
-
-	public Boolean getPropFactRanted() {
-		return propFactRanted;
-	}
-
-	public void setPropFactRanted(Boolean propFactRanted) {
-		this.propFactRanted = propFactRanted;
-	}
-
-	public Boolean getPropFactLeased() {
-		return propFactLeased;
-	}
-
-	public void setPropFactLeased(Boolean propFactLeased) {
-		this.propFactLeased = propFactLeased;
-	}
 
 	public Integer getRepaymemtMonths() {
 		return repaymemtMonths;
@@ -575,6 +521,31 @@ public class SidbiBasicDetail implements Serializable{
 	public void setIndustryName(String industryName) {
 		this.industryName = industryName;
 	}
+
+	public Integer getFactoryPremise() {
+		return factoryPremise;
+	}
+
+	public void setFactoryPremise(Integer factoryPremise) {
+		this.factoryPremise = factoryPremise;
+	}
+
+	public Integer getExisFactoryPremise() {
+		return exisFactoryPremise;
+	}
+
+	public void setExisFactoryPremise(Integer exisFactoryPremise) {
+		this.exisFactoryPremise = exisFactoryPremise;
+	}
+
+	public Integer getPropFactoryPremise() {
+		return propFactoryPremise;
+	}
+
+	public void setPropFactoryPremise(Integer propFactoryPremise) {
+		this.propFactoryPremise = propFactoryPremise;
+	}
+
 	
 
 	
