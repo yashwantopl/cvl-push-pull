@@ -1,0 +1,3 @@
+ALTER TABLE loan_application.proposal_details ADD COLUMN consession_roi DOUBLE;
+ALTER TABLE loan_application.proposal_details ADD COLUMN mclr_roi DOUBLE;
+ALTER TABLE loan_application.proposal_details ADD COLUMN spread_roi DOUBLE;
