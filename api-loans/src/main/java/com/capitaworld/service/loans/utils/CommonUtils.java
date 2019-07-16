@@ -1518,7 +1518,7 @@ public enum APIFlags {
 	public static Object convertValueIndianCurrency(Object o) {
 		if(o != null) {
 			Format format = com.ibm.icu.text.NumberFormat.getNumberInstance(new Locale("en", "IN"));
-			return format.format(o);	
+			return format.format(Math.round((Double) o));	
 		}else {
 			return "-";
 		}
