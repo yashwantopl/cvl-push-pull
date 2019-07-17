@@ -8339,4 +8339,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return Collections.emptyList();
 	}
+	
+	@Override
+	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId) {
+		return loanRepository.getPrefillProfileStatus(fromLoanId, toLoanId);
+	}
 }
