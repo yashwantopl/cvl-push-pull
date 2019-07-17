@@ -387,7 +387,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public String getApplicationListForPrefillProfile(Long userId) {
 		try {
-			Character charValue = (Character) entityManager
+			List<Character> charValue = (List<Character>) entityManager
 					.createNativeQuery("SELECT JSON_ARRAYAGG(JSON_OBJECT('applicationId',con.`application_id`,'name',CONCAT(IFNULL(fs.`first_name`,''),' ',IFNULL(fs.`middle_name`,''),' ',IFNULL(fs.`last_name`,'')), \r\n" + 
 							"'status',IF(con.`stage_id` = 207,'In-Eligible','In-Principle'),'applicationCode',ap.`application_code`))\r\n" + 
 							"FROM connect.`connect_log` con \r\n" + 
