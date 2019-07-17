@@ -3037,5 +3037,31 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	
+	/**
+	   * RETAIL PREFILLE PROFILE LOAN STATUS API 
+	   * Date :- 17th July 2019
+	   * @author harshit
+	   * @param fromLoanId
+	   * @param toLoanId
+	   * @return
+	   */
+	  @RequestMapping(value = "/getPrefillProfileStatus/{fromLoanId}/{toLoanId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	  public ResponseEntity<LoansResponse> getPrefillProfileStatus(@PathVariable("fromLoanId") Long fromLoanId, @PathVariable("toLoanId") Long toLoanId) {
+	    try {
+	      String status = loanApplicationService.getPrefillProfileStatus(fromLoanId, toLoanId);
+	      if(!CommonUtils.isObjectNullOrEmpty(status)) {
+	        return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),status), HttpStatus.OK);
+	      } else {
+	        return new ResponseEntity<LoansResponse>(new LoansResponse("Error while get prefill profile status", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+	      }
+	    } catch (Exception e) {
+	      logger.error("Error while getPrefillProfileStatus ==>", e);
+	      return new ResponseEntity<LoansResponse>(
+	          new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	          HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	  }
 
 }
