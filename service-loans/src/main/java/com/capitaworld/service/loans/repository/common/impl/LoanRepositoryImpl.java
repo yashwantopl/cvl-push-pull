@@ -368,4 +368,19 @@ public class LoanRepositoryImpl implements LoanRepository {
 		List<String> tutorials = storedProcedureQuery.getResultList();
 		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
 	}
+	
+	@Override
+	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfileCheck");
+			storedProcedureQuery.registerStoredProcedureParameter("fromLoanId",Long.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("toLoanId",Long.class, ParameterMode.IN);
+			storedProcedureQuery.setParameter("fromLoanId",fromLoanId);
+			storedProcedureQuery.setParameter("toLoanId",toLoanId);
+			return (String) storedProcedureQuery.getSingleResult();
+	    } catch (Exception e) {
+	    	logger.error("EXCEPTION spPrefillProfileCheck :=- ", e);
+	    }
+		return null;
+	}
 }
