@@ -108,6 +108,10 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 							financeMeansDetailRequest.setToBeIncurred(loanAmt);
 						}
 					}
+					Double totalCost = (financeMeansDetailRequest.getAlreadyIncurred() != null ? financeMeansDetailRequest.getAlreadyIncurred() : 0)
+							+ (financeMeansDetailRequest.getToBeIncurred() != null ? financeMeansDetailRequest.getToBeIncurred() : 0); 
+					
+					financeMeansDetailRequest.setTotalCost(totalCost);
 					financeMeansRequests.add(financeMeansDetailRequest);
                 }
 			}else {
