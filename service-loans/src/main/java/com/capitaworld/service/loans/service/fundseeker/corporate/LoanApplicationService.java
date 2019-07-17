@@ -265,4 +265,6 @@ public interface LoanApplicationService {
 	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId,Integer loanType);
 	
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId);
+	
+	public String getApplicationListForPrefillProfile(Long userId);
 }

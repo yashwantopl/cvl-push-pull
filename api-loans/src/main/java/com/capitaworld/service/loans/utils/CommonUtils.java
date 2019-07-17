@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -1526,10 +1527,27 @@ public enum APIFlags {
 			/*formatter.setMinimumFractionDigits(0);*/
 			return formatter.format(value);
 		}else {
-			return "-";
+			return null;
 		}
 		
 	}
+	
+	public static Double convertStringCurrencyToDouble(String value) {
+		if(value != null) {
+			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+			try {
+				Number num =formatter.parse(value);
+				return num.doubleValue();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			/*formatter.setMinimumFractionDigits(0);*/
+			
+		}
+		return 0d;
+	}
+	
 	public static Object convertValueIndianCurrencyWithDecimal(Object value) {
 		if(value != null) {
 			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));

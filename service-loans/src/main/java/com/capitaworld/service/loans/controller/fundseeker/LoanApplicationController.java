@@ -3040,28 +3040,58 @@ public class LoanApplicationController {
 	
 	
 	/**
-	   * RETAIL PREFILLE PROFILE LOAN STATUS API 
-	   * Date :- 17th July 2019
-	   * @author harshit
-	   * @param fromLoanId
-	   * @param toLoanId
-	   * @return
-	   */
-	  @RequestMapping(value = "/getPrefillProfileStatus/{fromLoanId}/{toLoanId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	  public ResponseEntity<LoansResponse> getPrefillProfileStatus(@PathVariable("fromLoanId") Long fromLoanId, @PathVariable("toLoanId") Long toLoanId) {
-	    try {
-	      String status = loanApplicationService.getPrefillProfileStatus(fromLoanId, toLoanId);
-	      if(!CommonUtils.isObjectNullOrEmpty(status)) {
-	        return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),status), HttpStatus.OK);
-	      } else {
-	        return new ResponseEntity<LoansResponse>(new LoansResponse("Error while get prefill profile status", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-	      }
+	  * RETAIL PREFILLE PROFILE LOAN STATUS API 
+	  * Date :- 17th July 2019
+	  * @author harshit
+	  * @param fromLoanId
+	  * @param toLoanId
+	  * @return
+	 */
+	@RequestMapping(value = "/getPrefillProfileStatus/{fromLoanId}/{toLoanId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrefillProfileStatus(@PathVariable("fromLoanId") Long fromLoanId, @PathVariable("toLoanId") Long toLoanId) {
+		try {
+			String status = loanApplicationService.getPrefillProfileStatus(fromLoanId, toLoanId);
+			if(!CommonUtils.isObjectNullOrEmpty(status)) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),status), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Error while get prefill profile status", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
 	    } catch (Exception e) {
-	      logger.error("Error while getPrefillProfileStatus ==>", e);
-	      return new ResponseEntity<LoansResponse>(
-	          new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-	          HttpStatus.INTERNAL_SERVER_ERROR);
+	    	logger.error("Error while getPrefillProfileStatus ==>", e);
+	    	return new ResponseEntity<LoansResponse>(
+	    		  new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	    		  HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
-	  }
+	}
+	
+	/**
+	  * RETAIL PREFILLE PROFILE LOAN STATUS API 
+	  * Date :- 17th July 2019
+	  * @author harshit
+	  * @param fromLoanId
+	  * @param toLoanId
+	  * @return
+	 */
+	@RequestMapping(value = "/getApplicationListForPrefillProfile", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApplicationListForPrefillProfile(HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonUtils.isObjectNullOrEmpty(userId)) {
+				logger.error("User Id is null or Empty");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			String rslt = loanApplicationService.getApplicationListForPrefillProfile(userId);
+			if(!CommonUtils.isObjectNullOrEmpty(rslt)) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),rslt), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Error while get application list for prefill profile", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+	    } catch (Exception e) {
+	    	logger.error("Error while getApplicationListForPrefillProfile ==>", e);
+	    	return new ResponseEntity<LoansResponse>(
+	    		  new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	    		  HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
 
 }
