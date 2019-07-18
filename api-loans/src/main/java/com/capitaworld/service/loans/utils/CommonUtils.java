@@ -1552,6 +1552,7 @@ public enum APIFlags {
 		if(value != null) {
 			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
 			formatter.setMinimumFractionDigits(2);
+			formatter.setMaximumFractionDigits(2);
 			return formatter.format(value);
 		}else {
 			return "-";
@@ -1699,7 +1700,7 @@ public enum APIFlags {
 					if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
 						value = Double.parseDouble(decim.format(value));
 						if(data != null) {
-							value = convertValueIndianCurrency(value);
+							value = convertValueIndianCurrencyWithDecimal(value);
 							data.put(field.getName(), value);
 						}else {
 							field.set(obj,value);
