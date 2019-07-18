@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -252,7 +253,7 @@ public class CommonUtils {
 
 	public enum LoanType {
 		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
-				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl");
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl"), MFI(17,"Micro Finance Loan","mfi");
 		private int value;
 		private String name;
 		private String code;
@@ -1507,10 +1508,14 @@ public enum APIFlags {
 	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decimal.format(value) : "0";
+		NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+		formatter.setMaximumFractionDigits(2);
+		return !CommonUtils.isObjectNullOrEmpty(value)? formatter.format(value) : "0";
 	}
 	public static String convertValueWithoutDecimal(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value) : "0";
+		NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+		formatter.setMaximumFractionDigits(0);
+		return !CommonUtils.isObjectNullOrEmpty(value)? formatter.format(value) : "0";
 	}
 	/*Return Round Value with CommaStyle*/
 	public static String convertValueRound(Double value) {
@@ -1522,10 +1527,27 @@ public enum APIFlags {
 			/*formatter.setMinimumFractionDigits(0);*/
 			return formatter.format(value);
 		}else {
-			return "-";
+			return null;
 		}
 		
 	}
+	
+	public static Double convertStringCurrencyToDouble(String value) {
+		if(value != null) {
+			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+			try {
+				Number num =formatter.parse(value);
+				return num.doubleValue();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			/*formatter.setMinimumFractionDigits(0);*/
+			
+		}
+		return 0d;
+	}
+	
 	public static Object convertValueIndianCurrencyWithDecimal(Object value) {
 		if(value != null) {
 			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
@@ -1655,6 +1677,45 @@ public enum APIFlags {
 			}
 		}
 		 return obj;
+	}
+	
+	public static Object convertToDoubleForXmlIndianCurr(Object obj, Map<String, Object>data) throws LoansException {
+		try {
+			if(obj ==  null) {
+				return null;
+			}
+			DecimalFormat decim = new DecimalFormat("0.00");
+			if(obj instanceof Double) {
+				obj = Double.parseDouble(decim.format(obj));
+				return obj;
+			}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for(Field field : fields) {
+					field.setAccessible(true);
+					Object value = field.get(obj);
+					if(data != null) {
+						data.put(field.getName(), value);
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
+						value = Double.parseDouble(decim.format(value));
+						if(data != null) {
+							value = convertValueIndianCurrency(value);
+							data.put(field.getName(), value);
+						}else {
+							field.set(obj,value);
+						}
+					}
+				}
+			}
+			if(data != null) {
+				return data;
+			}
+			return obj;
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
 	}
 	
 	public static Object printFieldsForValue(Object obj, Map<String, Object>data) throws Exception {
