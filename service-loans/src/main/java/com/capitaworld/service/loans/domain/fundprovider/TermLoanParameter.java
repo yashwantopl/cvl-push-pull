@@ -449,6 +449,24 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	
 	@Column(name = "min_conservative_ratio")
 	private BigDecimal minConservativeRatio;
+	
+	@Column(name="main_individual_cibil")
+	private Integer mainIndividualCibil;
+
+	@Column(name="is_main_individual_cibil_display")
+	private Boolean isMainIndividualCibilDisplay = false;
+
+	@Column(name="is_main_individual_cibil_mandatory")
+	private Boolean isMainIndividualCibilMandatory = false;
+
+    @Column(name="commercial_cibil_for_3_month")
+    private Integer commercialCibilFor3Month;
+
+    @Column(name="is_Commercial_cibil_for_3_month_display")
+    private Boolean isCommercialCibilFor3MonthDisplay = false;
+
+    @Column(name="is_Commercial_cibil_for_3_month_mandatory")
+    private Boolean isCommercialCibilFor3MonthMandatory = false;
 
 	/**
 	 * @return the jobId
@@ -1598,6 +1616,55 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	public void setMinConservativeRatio(BigDecimal minConservativeRatio) {
 		this.minConservativeRatio = minConservativeRatio;
 	}
+
+	public Integer getMainIndividualCibil() {
+		return mainIndividualCibil;
+	}
+
+	public void setMainIndividualCibil(Integer mainIndividualCibil) {
+		this.mainIndividualCibil = mainIndividualCibil;
+	}
+
+	public Boolean getIsMainIndividualCibilDisplay() {
+		return isMainIndividualCibilDisplay;
+	}
+
+	public void setIsMainIndividualCibilDisplay(Boolean isMainIndividualCibilDisplay) {
+		this.isMainIndividualCibilDisplay = isMainIndividualCibilDisplay;
+	}
+
+	public Boolean getIsMainIndividualCibilMandatory() {
+		return isMainIndividualCibilMandatory;
+	}
+
+	public void setIsMainIndividualCibilMandatory(Boolean isMainIndividualCibilMandatory) {
+		this.isMainIndividualCibilMandatory = isMainIndividualCibilMandatory;
+	}
+
+	public Integer getCommercialCibilFor3Month() {
+		return commercialCibilFor3Month;
+	}
+
+	public void setCommercialCibilFor3Month(Integer commercialCibilFor3Month) {
+		this.commercialCibilFor3Month = commercialCibilFor3Month;
+	}
+
+	public Boolean getIsCommercialCibilFor3MonthDisplay() {
+		return isCommercialCibilFor3MonthDisplay;
+	}
+
+	public void setIsCommercialCibilFor3MonthDisplay(Boolean isCommercialCibilFor3MonthDisplay) {
+		this.isCommercialCibilFor3MonthDisplay = isCommercialCibilFor3MonthDisplay;
+	}
+
+	public Boolean getIsCommercialCibilFor3MonthMandatory() {
+		return isCommercialCibilFor3MonthMandatory;
+	}
+
+	public void setIsCommercialCibilFor3MonthMandatory(Boolean isCommercialCibilFor3MonthMandatory) {
+		this.isCommercialCibilFor3MonthMandatory = isCommercialCibilFor3MonthMandatory;
+	}
+
 	
 	
 	

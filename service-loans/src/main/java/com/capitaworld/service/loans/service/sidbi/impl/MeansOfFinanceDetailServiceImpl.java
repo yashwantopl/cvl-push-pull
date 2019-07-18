@@ -118,6 +118,10 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 				for (MeansOfFinanceDetail detail : financeMeansDetails) {
 					TotalCostOfProjectRequest financeMeansDetailRequest = new TotalCostOfProjectRequest();
 					BeanUtils.copyProperties(detail, financeMeansDetailRequest);
+					
+					Double totalCost = (financeMeansDetailRequest.getAlreadyIncurred() != null ? financeMeansDetailRequest.getAlreadyIncurred() : 0)
+							+ (financeMeansDetailRequest.getToBeIncurred() != null ? financeMeansDetailRequest.getToBeIncurred() : 0); 
+					financeMeansDetailRequest.setTotalCost(totalCost);
 					financeMeansRequests.add(financeMeansDetailRequest);
 				}
 			}
