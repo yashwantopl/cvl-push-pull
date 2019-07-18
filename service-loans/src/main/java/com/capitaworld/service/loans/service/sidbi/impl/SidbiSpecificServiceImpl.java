@@ -220,9 +220,11 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		}else if(projectCostList != null) {
 			totalAmt = 0.00;
 			for(TotalCostOfProjectRequest projectCostDetail : projectCostList) {
-				totalAmt += projectCostDetail.getTotalCost() == null ? 0.00 : projectCostDetail.getTotalCost(); 
-				pTotalToBeIncurred += projectCostDetail.getToBeIncurred() == null ? 0.00 : projectCostDetail.getToBeIncurred();
-				pTotalAlreadyIncurred += projectCostDetail.getAlreadyIncurred() == null ? 0.00 : projectCostDetail.getAlreadyIncurred();
+				if(!"Plant & Machinery - For Manufacturing unit".contentEquals(projectCostDetail.getParticularName())) {
+					totalAmt += projectCostDetail.getTotalCost() == null ? 0.00 : projectCostDetail.getTotalCost(); 
+					pTotalToBeIncurred += projectCostDetail.getToBeIncurred() == null ? 0.00 : projectCostDetail.getToBeIncurred();
+					pTotalAlreadyIncurred += projectCostDetail.getAlreadyIncurred() == null ? 0.00 : projectCostDetail.getAlreadyIncurred();				
+				}
 			}
 			
 			if(totalAmt == null || totalAmt == 0.00) {
