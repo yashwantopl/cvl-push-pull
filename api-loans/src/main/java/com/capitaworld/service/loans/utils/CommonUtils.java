@@ -253,7 +253,7 @@ public class CommonUtils {
 
 	public enum LoanType {
 		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
-				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl");
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl"), MFI(17,"Micro Finance Loan","mfi");
 		private int value;
 		private String name;
 		private String code;
@@ -1552,6 +1552,7 @@ public enum APIFlags {
 		if(value != null) {
 			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
 			formatter.setMinimumFractionDigits(2);
+			formatter.setMaximumFractionDigits(2);
 			return formatter.format(value);
 		}else {
 			return "-";
@@ -1699,7 +1700,7 @@ public enum APIFlags {
 					if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
 						value = Double.parseDouble(decim.format(value));
 						if(data != null) {
-							value = convertValueIndianCurrency(value);
+							value = convertValueIndianCurrencyWithDecimal(value);
 							data.put(field.getName(), value);
 						}else {
 							field.set(obj,value);
