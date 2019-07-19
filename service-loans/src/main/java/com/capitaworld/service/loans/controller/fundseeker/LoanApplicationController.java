@@ -3075,7 +3075,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getApplicationListForPrefillProfile", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getApplicationListForPrefillProfile(HttpServletRequest request) {
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = 41003l;
 			if (CommonUtils.isObjectNullOrEmpty(userId)) {
 				logger.error("User Id is null or Empty");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -3094,4 +3094,26 @@ public class LoanApplicationController {
 	    }
 	}
 
+	
+	@RequestMapping(value = "/retailPrefillData", method = RequestMethod.POST,consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> retailPrefillData(@RequestBody String json, HttpServletRequest request) {
+		try {
+			Long userId = 41003l;
+			if (CommonUtils.isObjectNullOrEmpty(userId)) {
+				logger.error("User Id is null or Empty");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			Boolean rslt = loanApplicationService.retailPrefillData(json);
+			if(rslt) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully prefill data", HttpStatus.OK.value(),rslt), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Error while prefill profile data", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+	    } catch (Exception e) {
+	    	logger.error("Error while retailPrefillData ==>", e);
+	    	return new ResponseEntity<LoansResponse>(
+	    		  new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	    		  HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
 }

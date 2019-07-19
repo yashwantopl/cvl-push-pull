@@ -60,4 +60,6 @@ public interface LoanRepository {
 	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId);
 	
 	public String getApplicationListForPrefillProfile(Long userId);
+	
+	public Boolean retailPrefillData(String input);
 }
