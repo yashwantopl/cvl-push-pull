@@ -368,4 +368,51 @@ public class LoanRepositoryImpl implements LoanRepository {
 		List<String> tutorials = storedProcedureQuery.getResultList();
 		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
 	}
+	
+	@Override
+	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfileCheck");
+			storedProcedureQuery.registerStoredProcedureParameter("fromLoanId",Long.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("toLoanId",Long.class, ParameterMode.IN);
+			storedProcedureQuery.setParameter("fromLoanId",fromLoanId);
+			storedProcedureQuery.setParameter("toLoanId",toLoanId);
+			return (String) storedProcedureQuery.getSingleResult();
+	    } catch (Exception e) {
+	    	logger.error("EXCEPTION spPrefillProfileCheck :=- ", e);
+	    }
+		return null;
+	}
+	
+	@Override
+	public String getApplicationListForPrefillProfile(Long userId) {
+		try {
+			return (String) entityManager
+					.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('applicationId',con.`application_id`,'name',CONCAT(IFNULL(fs.`first_name`,''),' ',IFNULL(fs.`middle_name`,''),' ',IFNULL(fs.`last_name`,'')), \r\n" + 
+							"'status',IF(con.`stage_id` = 207,'In-Eligible','In-Principle'),'applicationCode',ap.`application_code`)) AS CHAR )\r\n" + 
+							"FROM connect.`connect_log` con \r\n" + 
+							"LEFT JOIN `loan_application`.`fs_retail_applicant_details` fs ON fs.`application_id` = con.`application_id` AND fs.`proposal_mapping_id` IS NULL\r\n" + 
+							"LEFT JOIN `loan_application`.`application_proposal_mapping` ap ON ap.`application_id` = con.`application_id` AND ap.`proposal_id` = con.`proposal_id`\r\n" + 
+							"WHERE con.`id` IN (SELECT cn.`id` FROM connect.`connect_log` cn WHERE cn.`user_id` =:userId AND ((cn.`stage_id` = 207 AND cn.`status` = 6) OR (cn.`stage_id` IN (210,211))) GROUP BY cn.`application_id`);")
+							.setParameter("userId", userId).getSingleResult();
+		} catch (Exception e) {
+			logger.error("Exception while getApplicationListForPrefillProfile  ----->" ,e);
+		}
+		return null;
+		
+	}
+	
+	@Override
+	public Boolean retailPrefillData(String input) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfile");
+			storedProcedureQuery.registerStoredProcedureParameter("input",String.class, ParameterMode.IN);
+			storedProcedureQuery.setParameter("input",input);
+			storedProcedureQuery.execute();
+			return true;
+	    } catch (Exception e) {
+	    	logger.error("EXCEPTION spPrefillProfile :=- ", e);
+	    }
+		return false;
+	}
 }

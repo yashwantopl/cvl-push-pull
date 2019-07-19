@@ -508,23 +508,37 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GstResponse response = gstClient.detailCalculation(req);
 			
 			DecimalFormat df = new DecimalFormat(".##");
-			if (!CommonUtils.isObjectNullOrEmpty(response)) {
+			if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
 				for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
 					resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+					if(resp.getMomSales() != null) {
+                        List<MomSales> momSalesResp1 = resp.getMomSales();
+                        List<MomSales> responseMom= new ArrayList<>();
+                        for (MomSales sales1 : momSalesResp1) {
+                        	
+                        	sales1.setMonth(sales1.getMonth());
+                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
+                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
+                            responseMom.add(sales1);
+                        }
+                        data.put("monthWiseMomSales", responseMom);
+                    }
 					Double totalSales =0.0d;
 					if(resp.getMomSales() != null) {
 						List<MomSales> momSalesResp = resp.getMomSales();
 						for (MomSales sales : momSalesResp) {
 							
-							totalSales += Double.valueOf(sales.getValue());
+							totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
 						}
-						data.put("totalMomSales", df.format(totalSales));
+						map.put("totalMomSales", df.format(totalSales));
 //					resp.setTotalMomSales(totalSales);
 					}
 				}
 				
 				
 				map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
+			}else {
+				logger.info("Gst Data Null for==>"+applicationId);
 			}
 		
 		}catch(Exception e) {
@@ -1240,6 +1254,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 				CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
+				
 				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(req, new HashMap<>()));
 			}
@@ -1519,7 +1534,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//COLLATERAL SECURITY			
 			try {
 				/*map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId),null));*/
-				map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(applicationProposalMapping.getProposalId(), userId),null));
+				map.put("collateralSecurity", CommonUtils.convertToDoubleForXmlIndianCurr(securityCorporateDetailsService.getSecurityCorporateDetailsListFromProposalId(applicationProposalMapping.getProposalId(), userId),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Security Details {}", e);
 			}

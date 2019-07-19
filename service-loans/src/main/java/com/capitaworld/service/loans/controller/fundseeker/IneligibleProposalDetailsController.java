@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.api.payment.gateway.exception.GatewayException;
 import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -215,5 +214,16 @@ public class IneligibleProposalDetailsController {
 		LoansResponse response = new LoansResponse("Success.", HttpStatus.OK.value());
 		response.setFlag(ineligibleProposalDetailsService.checkIsExistOfflineProposalByApplicationId(applicationId));
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/sendInEligibleForSidbi/{applicationId}")
+	public ResponseEntity<LoansResponse> sendInEligibleForSidbi(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in sendInEligibleForSidbi");
+		try {
+			return new ResponseEntity<>(new LoansResponse("Successfully sent mail !!",HttpStatus.OK.value(),ineligibleProposalDetailsService.sendInEligibleForSidbi(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while sendInEligibleForSidbi",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

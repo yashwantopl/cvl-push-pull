@@ -56,4 +56,10 @@ public interface LoanRepository {
 	public String checkPanForAlreayInPrinciplOrNotEligible(Integer typeId,Integer selectedLoanTypeId,Long applicationId,String panNumber);
 
 	public String getTutorialsByRoleId(Long userRoleId, Integer loanType);
+	
+	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId);
+	
+	public String getApplicationListForPrefillProfile(Long userId);
+	
+	public Boolean retailPrefillData(String input);
 }

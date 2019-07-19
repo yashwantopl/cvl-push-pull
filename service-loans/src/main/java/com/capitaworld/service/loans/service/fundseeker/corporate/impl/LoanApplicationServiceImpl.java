@@ -8331,11 +8331,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			String tutorials = loanRepository.getTutorialsByRoleId(userRoleId, loanType);
 			if(!CommonUtils.isObjectNullOrEmpty(tutorials)) {
-                return MultipleJSONObjectHelper.getListOfObjects(tutorials,null, TutorialUploadManageRes.class);
+                org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
+                return mapper.readValue(tutorials, new org.codehaus.jackson.type.TypeReference<List<TutorialUploadManageRes>>() {});
             }
 		} catch (IOException e) {
 			logger.info("error while string to list convert in getTutorialsByRoleId");
 		}
 		return Collections.emptyList();
+	}
+	
+	@Override
+	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId) {
+		return loanRepository.getPrefillProfileStatus(fromLoanId, toLoanId);
+	}
+	
+	@Override
+	public String getApplicationListForPrefillProfile(Long userId) {
+		return loanRepository.getApplicationListForPrefillProfile(userId);
+	}
+	
+	@Override
+	public Boolean retailPrefillData(String input) {
+		return loanRepository.retailPrefillData(input);
 	}
 }

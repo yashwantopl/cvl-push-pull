@@ -19,4 +19,8 @@ public interface CommonRepository {
 	public Integer getViewedTeaser(String emailId);
 	
 	public String getEmailIdFromUsers(Long userId);
+	
+	public String getNoteForHLCam(Long applicationId);
+	
+	public Object[] getInEligibleByApplicationId(Long applicationId);
 }
