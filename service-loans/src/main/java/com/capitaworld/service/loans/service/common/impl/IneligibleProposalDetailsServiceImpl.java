@@ -946,7 +946,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	@Override
-	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId) {
+	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId,Boolean sidbiStatus) {
 		Boolean status=false;
 		Object[] user = {}; 
 		try {
@@ -955,7 +955,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return status;
 		}
 		if(user!=null) {
-			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)  && isSBIFlowForIneligible != null && isSBIFlowForIneligible) || (user[0].equals("sidbi") && isSIDBIFlowForIneligible != null && isSIDBIFlowForIneligible &&  Integer.valueOf(user[1].toString()).equals(1))) {
+			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)  && isSBIFlowForIneligible != null && isSBIFlowForIneligible) || (user[0].equals("sidbi") && isSIDBIFlowForIneligible != null && isSIDBIFlowForIneligible || (sidbiStatus && Integer.valueOf(user[1].toString()).equals(1)) || Integer.valueOf(user[1].toString()).equals(2))) {
 				String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
 				Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
 				if(emailData!=null) {

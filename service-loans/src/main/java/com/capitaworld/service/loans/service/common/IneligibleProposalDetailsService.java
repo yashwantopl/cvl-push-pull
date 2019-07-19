@@ -14,7 +14,7 @@ public interface IneligibleProposalDetailsService {
 
 	public Boolean sendMailToFsAndBankBranch(Long applicationId, Long branchId, Long userOrgId);
 
-	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId);
+	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId,Boolean sidbiStatus);
 
 	public List<ProposalDetailsAdminRequest> getOfflineProposals(Long userOrgId, Long userId,
 			ProposalDetailsAdminRequest request);
