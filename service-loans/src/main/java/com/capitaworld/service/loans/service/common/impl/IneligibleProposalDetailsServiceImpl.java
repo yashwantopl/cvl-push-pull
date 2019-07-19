@@ -1073,12 +1073,13 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						status=true;
 					}
 				}
+			}else {
+				if(user[0].equals("sidbi")){
+					status = true;
+				}
 			}
 		}else {
 			logger.info("User is not from SBI bank specific and WC_renewal");
-			if(user[0].equals("sidbi")){
-				status = true;
-			}
 		}
 		return status;
 	}
