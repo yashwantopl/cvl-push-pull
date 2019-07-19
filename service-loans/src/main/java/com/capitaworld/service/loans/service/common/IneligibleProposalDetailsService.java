@@ -31,5 +31,5 @@ public interface IneligibleProposalDetailsService {
 
 	public Integer getBusinessTypeIdFromApplicationId(Long applicationId);
 
-
+	public String sendInEligibleForSidbi(Long applicationId);
 }

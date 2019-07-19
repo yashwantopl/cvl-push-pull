@@ -427,6 +427,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			logger.error("Error while getting profile Details : ",e);
 		}
 		
+		//Note for restrict Borrower
+		try {
+			String note = commonRepository.getNoteForHLCam(applicationId);
+			map.put("noteOfBorrower", !CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+		}
+		
 		// Product Name
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
