@@ -3075,7 +3075,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getApplicationListForPrefillProfile", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getApplicationListForPrefillProfile(HttpServletRequest request) {
 		try {
-			Long userId = 41003l;
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonUtils.isObjectNullOrEmpty(userId)) {
 				logger.error("User Id is null or Empty");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -3098,7 +3098,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/retailPrefillData", method = RequestMethod.POST,consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> retailPrefillData(@RequestBody String json, HttpServletRequest request) {
 		try {
-			Long userId = 41003l;
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonUtils.isObjectNullOrEmpty(userId)) {
 				logger.error("User Id is null or Empty");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
