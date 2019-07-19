@@ -1256,7 +1256,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
 				
 				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
-				map.put("assLimits",CommonUtils.convertToDoubleForXml(req, new HashMap<>()));
+				map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
 			}
 		}catch (Exception e) {
 			logger.error("Error while getting Eligibility data : ",e);
