@@ -21,4 +21,6 @@ public interface CommonRepository {
 	public String getEmailIdFromUsers(Long userId);
 	
 	public String getNoteForHLCam(Long applicationId);
+	
+	public Object[] getInEligibleByApplicationId(Long applicationId);
 }

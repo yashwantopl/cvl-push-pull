@@ -277,6 +277,7 @@ public class LoansClient {
     private static final String SAVE_LOGS_OF_PAYMENT_GATEWAY = "/loan_application/savePaymentGatewayAuditLogs";
     
     private static final String GET_CONCESSION_DETAILS = "/score/getConcessionDetails";
+    private static final String SEND_MAIL_INELIGIBLE_FOR_SIDBI = "/sendInEligibleForSidbi";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2767,6 +2768,23 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			throw new LoansException();
+		}
+	}
+	
+	// FOR send mail in-eligible
+	public LoansResponse sendInEligibleForSidbi(Long applicationId) throws LoansException {		
+		String url = loansBaseUrl.concat(SEND_MAIL_INELIGIBLE_FOR_SIDBI).concat("/" + applicationId);
+		logger.info("send InEligibleForSidbi================{}==========={}>>", url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			logger.error("Exception in sendInEligibleForSidbi : ",e);
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	

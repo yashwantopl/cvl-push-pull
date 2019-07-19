@@ -8,15 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.api.payment.gateway.exception.GatewayException;
-import com.capitaworld.api.payment.gateway.model.GatewayResponse;
-import com.capitaworld.api.reports.ReportRequest;
-import com.capitaworld.api.reports.utils.JasperReportEnum;
-import com.capitaworld.client.payment.gateway.GatewayClient;
-import com.capitaworld.client.reports.ReportsClient;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +16,32 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.payment.gateway.exception.GatewayException;
+import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.api.reports.utils.JasperReportEnum;
+import com.capitaworld.client.payment.gateway.GatewayClient;
+import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.loans.config.AsyncComponent;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalTransferHistory;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalTransferHistoryRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
@@ -53,7 +52,6 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.ContentAttachment;
@@ -70,8 +68,6 @@ import com.capitaworld.service.users.model.BranchUserResponse;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-
-import net.bytebuddy.agent.builder.AgentBuilder.RedefinitionStrategy.DiscoveryStrategy.Reiterating;
 
 /**
  * Created by KushalCW on 22-09-2018.
@@ -1082,5 +1078,25 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	public Integer getBusinessTypeIdFromApplicationId(Long applicationId){
 		return loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+	}
+	
+	@Override
+	public String sendInEligibleForSidbi(Long applicationId) {
+		
+		Object[] inEligibleObj = commonRepository.getInEligibleByApplicationId(applicationId);
+		
+		if(inEligibleObj!=null) {
+			if(inEligibleObj[0]!=null && inEligibleObj[1]!=null) {
+				Long userOrgId = Long.parseLong(inEligibleObj[0].toString());
+				Integer userOrgId1 = Integer.parseInt(inEligibleObj[0].toString());
+				Long branchId = Long.parseLong(inEligibleObj[1].toString());
+				if(CommonUtils.BankName.SIDBI.getId().equals(userOrgId1)) {
+					sendMailToFsAndBankBranchForSbiBankSpecific(applicationId, branchId, userOrgId);
+					return "Successfully sent mail !!";				
+				}
+			}
+			
+		}
+		return null;
 	}
 }
