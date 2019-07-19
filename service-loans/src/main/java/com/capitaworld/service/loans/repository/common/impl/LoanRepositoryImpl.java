@@ -401,4 +401,18 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 		
 	}
+	
+	@Override
+	public Boolean retailPrefillData(String input) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfile");
+			storedProcedureQuery.registerStoredProcedureParameter("input",String.class, ParameterMode.IN);
+			storedProcedureQuery.setParameter("input",input);
+			storedProcedureQuery.execute();
+			return true;
+	    } catch (Exception e) {
+	    	logger.error("EXCEPTION spPrefillProfile :=- ", e);
+	    }
+		return false;
+	}
 }

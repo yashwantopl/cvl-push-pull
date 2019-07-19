@@ -8349,4 +8349,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public String getApplicationListForPrefillProfile(Long userId) {
 		return loanRepository.getApplicationListForPrefillProfile(userId);
 	}
+	
+	@Override
+	public Boolean retailPrefillData(String input) {
+		return loanRepository.retailPrefillData(input);
+	}
 }
