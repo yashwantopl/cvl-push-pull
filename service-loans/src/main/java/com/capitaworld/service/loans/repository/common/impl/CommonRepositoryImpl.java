@@ -7,14 +7,18 @@ import javax.persistence.ParameterMode;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.repository.common.CommonRepository;
-import com.capitaworld.service.users.model.UsersRequest;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Repository
 public class CommonRepositoryImpl  implements CommonRepository {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CommonRepositoryImpl.class);
 
 	@Autowired
 	private EntityManager manager;
@@ -79,6 +83,31 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		storedProcedureQuery.setParameter("emailId",emailId);
 		storedProcedureQuery.execute();
 		return (Integer) storedProcedureQuery.getSingleResult();
+	}
+	
+	@Override
+	public String getNoteForHLCam(Long applicationId){
+		try {
+			StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("loan_application.spRetailCheckPANAlreadyExist");
+			storedProcedureQuery.registerStoredProcedureParameter("typeId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("selectedLoanTypeId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("panNumber",String.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("loanType",Integer.class, ParameterMode.OUT);
+			storedProcedureQuery.registerStoredProcedureParameter("message",String.class, ParameterMode.OUT);
+			storedProcedureQuery.setParameter("typeId",5);
+			storedProcedureQuery.setParameter("selectedLoanTypeId",-1);
+			storedProcedureQuery.setParameter("applicationId",applicationId);
+			storedProcedureQuery.setParameter("panNumber","NA");
+			storedProcedureQuery.execute();
+			Object result = storedProcedureQuery.getOutputParameterValue("loanType");
+			if(!CommonUtils.isObjectNullOrEmpty(result)) {
+				return (String) storedProcedureQuery.getOutputParameterValue("message");
+			}
+		} catch (Exception e) {
+			logger.error("EXCEPTION spRetailCheckPANAlreadyExist while getting note for HL Cam:=- ", e);
+		}
+		return null;
 	}
 
 	@Override
