@@ -1023,7 +1023,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
 							String[] cc = {String.valueOf(param.get("branch_contact_email"))};
 							List<ContentAttachment> documentList=new ArrayList<ContentAttachment>();
-							if(user[0].equals("sidbi") && isSIDBIFlowForIneligible) {
+							if(user[0].equals("sidbi") && isSIDBIFlowForIneligible && Integer.valueOf(user[1].toString()).equals(1)) {
 								try {
 									DecimalFormat decim = new DecimalFormat("####");
 									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
