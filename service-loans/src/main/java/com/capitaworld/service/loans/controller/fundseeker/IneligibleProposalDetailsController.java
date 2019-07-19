@@ -76,7 +76,7 @@ public class IneligibleProposalDetailsController {
 				Boolean isEligible = ineligibleProposalDetailsService.sendMailToFsAndBankBranchForSbiBankSpecific(
 						inEligibleProposalDetailsRequest.getApplicationId(),
 						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId(),false);
-				if(!isEligible) {
+				if(!isEligible && inEligibleProposalDetailsRequest.getUserOrgId() != 10) {
 					//If users is not from sbi and sidbi specific then this email shoot
 					Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
 							inEligibleProposalDetailsRequest.getApplicationId(),
