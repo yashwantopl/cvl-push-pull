@@ -1091,7 +1091,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				Integer userOrgId1 = Integer.parseInt(inEligibleObj[0].toString());
 				Long branchId = Long.parseLong(inEligibleObj[1].toString());
 				if(CommonUtils.BankName.SIDBI.getId().equals(userOrgId1)) {
-					sendMailToFsAndBankBranchForSbiBankSpecific(applicationId, branchId, userOrgId);
+					sendMailToFsAndBankBranchForSbiBankSpecific(applicationId, branchId, userOrgId, true);
 					return "Successfully sent mail !!";				
 				}
 			}
