@@ -957,6 +957,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		if(user!=null) {
 			if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)  && isSBIFlowForIneligible != null && isSBIFlowForIneligible)
 					|| (user[0].equals("sidbi") && isSIDBIFlowForIneligible != null && isSIDBIFlowForIneligible && ((sidbiStatus && (user[1] == null || Integer.valueOf(user[1].toString()).equals(1))) || Integer.valueOf(user[1].toString()).equals(2)))) {
+			
 				logger.info("Sidbi New condition =={}",(sidbiStatus && (user[1] == null || Integer.valueOf(user[1].toString()).equals(1))) || Integer.valueOf(user[1].toString()).equals(2));
 				logger.info("sidbi renewal condition =={}",Integer.valueOf(user[1].toString()).equals(2));
 				String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
@@ -1075,6 +1076,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			}
 		}else {
 			logger.info("User is not from SBI bank specific and WC_renewal");
+			if(user[0].equals("sidbi")){
+				status = true;
+			}
 		}
 		return status;
 	}
