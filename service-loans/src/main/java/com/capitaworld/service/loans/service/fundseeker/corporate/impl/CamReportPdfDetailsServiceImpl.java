@@ -514,9 +514,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					if(resp.getMomSales() != null) {
                         List<MomSales> momSalesResp1 = resp.getMomSales();
                         List<MomSales> responseMom= new ArrayList<>();
+                        
                         for (MomSales sales1 : momSalesResp1) {
-                        	
-                        	sales1.setMonth(sales1.getMonth());
+                        	StringBuilder str = new StringBuilder(sales1.getMonth());
+                        	sales1.setMonth(str.insert(2, '-').toString());
                         	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
                         	sales1.setIsManualEntry(sales1.getIsManualEntry());
                             responseMom.add(sales1);
