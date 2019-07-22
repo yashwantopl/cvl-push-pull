@@ -436,7 +436,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
 			if(productName != null) {
-				map.put("fpProductName", productName);
+				try {
+					map.put("fpProductName",CommonUtils.printFields(productName, null));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}else {
 				logger.info("product name is null..of productId==>{}", productId);
 			}
