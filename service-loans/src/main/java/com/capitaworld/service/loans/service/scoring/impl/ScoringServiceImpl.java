@@ -2115,6 +2115,8 @@ public class ScoringServiceImpl implements ScoringService {
             						}else {
             							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
             						}
+            					}else {
+            						scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
             					}
             					scoreParameterRetailRequest.setIsResidenceType_p(true);
             				}
@@ -2748,6 +2750,8 @@ public class ScoringServiceImpl implements ScoringService {
             						}else {
             							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
             						}
+            					}else {
+            						scoreParameterRetailRequest.setResidenceType(coApplicantDetail.getResidenceType());
             					}
             					scoreParameterRetailRequest.setIsResidenceType_p(true);
             				}
