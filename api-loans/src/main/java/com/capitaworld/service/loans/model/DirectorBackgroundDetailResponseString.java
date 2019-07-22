@@ -110,8 +110,17 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	private Object visuallyImpaired;
 	private Object residentStatus;
 	private Boolean isGuarantor;
+	private Double loanObligation;
 	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
 	
+	public Double getLoanObligation() {
+		return loanObligation;
+	}
+
+	public void setLoanObligation(Double loanObligation) {
+		this.loanObligation = loanObligation;
+	}
+
 	public String getAddress() {
 		return address;
 	}
