@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.service.irr.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -323,8 +325,6 @@ public class IrrServiceImpl implements IrrService{
 		return false;
 	}
 	
-	
-	
 	@Override
 	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalId) throws LoansException {
 		//JSONObject jSONObject = new JSONObject();
@@ -388,13 +388,13 @@ public class IrrServiceImpl implements IrrService{
 		// -------------------------------------------------------THIRD year data-------------------------------------------------------------------------
 		//========= ==========================================OPERATINGSTATEMENT DETAIL 3 YR========================================================
 		int currentYear = scoringService.getFinYear(aplicationId);
-
+		List<Map<String, Object>> financialYearAndSalesAndPurchase = new ArrayList<>();
 		financialInputRequest.setYear(currentYear-1);
 
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
+		HashMap<String, Object> yearSalesPurchase = new HashMap<>();
 		
 		try {
-			
 			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-1+"");
 			if(operatingStatementDetails != null) {
 				
@@ -486,7 +486,10 @@ public class IrrServiceImpl implements IrrService{
 				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
 					operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
 				financialInputRequest.setDividendPayOutFy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
-				
+				yearSalesPurchase.put("year",currentYear-1);
+				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
+				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}else {
 				log.error("first year os is null ");
 			}
@@ -821,7 +824,11 @@ public class IrrServiceImpl implements IrrService{
 				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
 					operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
 				financialInputRequest.setDividendPayOutSy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);		
-				
+				yearSalesPurchase = new HashMap<>();
+				yearSalesPurchase.put("year",currentYear-2);
+				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
+				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}else {
 				
 				log.error("second year data is null of operating Statement");
@@ -1168,7 +1175,11 @@ public class IrrServiceImpl implements IrrService{
 					operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
 				financialInputRequest.setDividendPayOutTy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
 				
-				
+				yearSalesPurchase = new HashMap<>();
+				yearSalesPurchase.put("year",currentYear-3);
+				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
+				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}else {
 				
 				log.error("os data is null");
@@ -1179,7 +1190,7 @@ public class IrrServiceImpl implements IrrService{
 		} catch (Exception e) {
 			log.error("error while fetching os data : ",e);
 		}
-		
+		financialInputRequest.setYearSalesPurchasList(financialYearAndSalesAndPurchase);
 		
 		//========= ===============================================LIABILITIES DETAIL 1 YR==================================================================
 				
