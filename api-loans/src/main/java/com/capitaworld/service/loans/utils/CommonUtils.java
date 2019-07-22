@@ -1526,10 +1526,11 @@ public enum APIFlags {
 	public static Object convertValueIndianCurrency(Object value) {
 		if(value != null) {
 			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
-			/*formatter.setMinimumFractionDigits(0);*/
+			formatter.setMinimumFractionDigits(0);
+			formatter.setMaximumFractionDigits(0);
 			return formatter.format(value);
 		}else {
-			return null;
+			return 0;
 		}
 		
 	}
@@ -1950,6 +1951,20 @@ public enum APIFlags {
 		}
 		return "-";
 	}
+	/**
+	 * @author nilay.darji
+	 * @param index of array
+	 * 
+	 */
+	public static String getMonthsByIndex(String index) {
+		String getMonths[] =
+		    {
+		        null , "January" , "February" , "March" , "April", "May","June", "July", "August", "September", "October","November", "December"
+		    };
+		return getMonths[Integer.valueOf(index)];
+	} 
+	 
+	 	
 
 //	public static void main(String[] args) throws ParseException {
 //		String strDate = "01/09/2009";
