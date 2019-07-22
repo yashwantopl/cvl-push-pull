@@ -75,7 +75,7 @@ public class IneligibleProposalDetailsController {
 				//This email check if the selected bank is (sbi and wc_renewal) or sidbi specific then this email shoot
 				Boolean isEligible = ineligibleProposalDetailsService.sendMailToFsAndBankBranchForSbiBankSpecific(
 						inEligibleProposalDetailsRequest.getApplicationId(),
-						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
+						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId(),false);
 				if(!isEligible) {
 					//If users is not from sbi and sidbi specific then this email shoot
 					Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
