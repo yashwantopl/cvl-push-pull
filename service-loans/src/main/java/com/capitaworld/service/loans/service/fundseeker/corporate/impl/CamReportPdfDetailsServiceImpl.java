@@ -657,6 +657,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 				}
 				
+				Double loanObligation = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(applicationId , directorBackgroundDetailRequest.getId());
+				directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
+				
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
 				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
 				
@@ -1367,12 +1370,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//		GST Comparision by Maaz
-		try{
+		/*try{
 			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
-		}
+		}*/
 
 		/**ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
