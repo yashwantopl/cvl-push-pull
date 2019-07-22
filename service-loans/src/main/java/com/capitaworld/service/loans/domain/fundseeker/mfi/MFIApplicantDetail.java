@@ -11,8 +11,8 @@ import java.util.Date;
  * @author jaimin.darji
  */
 @Entity
-@Table(name = "fs_mfi_application_details")
-public class MFIApplicationDetail implements Serializable {
+@Table(name = "fs_mfi_applicant_details")
+public class MFIApplicantDetail implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -49,26 +49,78 @@ public class MFIApplicationDetail implements Serializable {
     @Column(name = "gender_id")
     private Integer genderId;
 
+    private String mobile;
+
+    private String email;
+
     @Column(name = "marital_status_id")
     private Integer maritalStatusId;
-
-    @Column(name = "current_address")
-    private String currentAddress;
 
     @Column(name = "address_same_as_aadhar")
     private Boolean addressSameAsAadhar;
 
+    @Column(name = "current_district")
+    private String currentDistrict;
+
+    @Column(name = "aadhar_district")
+    private String aadharDistrict;
+
+    @Column(name = "current_house")
+    private String currentHouse;
+
+    @Column(name = "aadhar_house")
+    private String aadharHouse;
+
+     @Column(name = "current_landmark")
+    private String currentLandmark;
+
+    @Column(name = "aadhar_landmark")
+    private String aadharLandmark;
+
+    @Column(name = "current_location")
+    private String currentLocation;
+
+    @Column(name = "aadhar_location")
+    private String aadharLocation;
+
+    @Column(name = "current_state")
+    private String currentState;
+
+    @Column(name = "aadhar_state")
+    private String aadharState;
+
+    @Column(name = "current_street")
+    private String currentStreet;
+
+    @Column(name = "aadhar_street")
+    private String aadharStreet;
+
+    @Column(name = "current_vtc")
+    private String currentVtc;
+
+    @Column(name = "aadhar_vtc")
+    private String aadharVtc;
+
+    @Column(name = "aadhar_subdist")
+    private String aadharSubdist;
+
+    @Column(name = "current_subdist")
+    private String currentSubdist;
+
+    @Column(name = "aadhar_po")
+    private String aadharPo;
+
+    @Column(name = "current_po")
+    private String currentPo;
+
+    @Column(name = "aadhar_care_of")
+    private String aadharCareOf;
+
     @Column(name = "address_pincode")
     private String addressPincode;
 
-    @Column(name = "aadhar_address")
-    private String aadharAddress;
-
     @Column(name = "aadhar_pincode")
     private String aadharPincode;
-
-    @Column(name = "address_prof_type")
-    private Integer addressProfType;
 
     @Column(name = "father_name")
     private String fatherName;
@@ -346,14 +398,6 @@ public class MFIApplicationDetail implements Serializable {
         this.maritalStatusId = maritalStatusId;
     }
 
-    public String getCurrentAddress() {
-        return currentAddress;
-    }
-
-    public void setCurrentAddress(String currentAddress) {
-        this.currentAddress = currentAddress;
-    }
-
     public Boolean getAddressSameAsAadhar() {
         return addressSameAsAadhar;
     }
@@ -370,28 +414,12 @@ public class MFIApplicationDetail implements Serializable {
         this.addressPincode = addressPincode;
     }
 
-    public String getAadharAddress() {
-        return aadharAddress;
-    }
-
-    public void setAadharAddress(String aadharAddress) {
-        this.aadharAddress = aadharAddress;
-    }
-
     public String getAadharPincode() {
         return aadharPincode;
     }
 
     public void setAadharPincode(String aadharPincode) {
         this.aadharPincode = aadharPincode;
-    }
-
-    public Integer getAddressProfType() {
-        return addressProfType;
-    }
-
-    public void setAddressProfType(Integer addressProfType) {
-        this.addressProfType = addressProfType;
     }
 
     public String getFatherName() {
@@ -898,6 +926,174 @@ public class MFIApplicationDetail implements Serializable {
         this.status = status;
     }
 
+    public String getCurrentDistrict() {
+        return currentDistrict;
+    }
+
+    public void setCurrentDistrict(String currentDistrict) {
+        this.currentDistrict = currentDistrict;
+    }
+
+    public String getAadharDistrict() {
+        return aadharDistrict;
+    }
+
+    public void setAadharDistrict(String aadharDistrict) {
+        this.aadharDistrict = aadharDistrict;
+    }
+
+    public String getCurrentHouse() {
+        return currentHouse;
+    }
+
+    public void setCurrentHouse(String currentHouse) {
+        this.currentHouse = currentHouse;
+    }
+
+    public String getAadharHouse() {
+        return aadharHouse;
+    }
+
+    public void setAadharHouse(String aadharHouse) {
+        this.aadharHouse = aadharHouse;
+    }
+
+    public String getCurrentLandmark() {
+        return currentLandmark;
+    }
+
+    public void setCurrentLandmark(String currentLandmark) {
+        this.currentLandmark = currentLandmark;
+    }
+
+    public String getAadharLandmark() {
+        return aadharLandmark;
+    }
+
+    public void setAadharLandmark(String aadharLandmark) {
+        this.aadharLandmark = aadharLandmark;
+    }
+
+    public String getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(String currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public String getAadharLocation() {
+        return aadharLocation;
+    }
+
+    public void setAadharLocation(String aadharLocation) {
+        this.aadharLocation = aadharLocation;
+    }
+
+    public String getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(String currentState) {
+        this.currentState = currentState;
+    }
+
+    public String getAadharState() {
+        return aadharState;
+    }
+
+    public void setAadharState(String aadharState) {
+        this.aadharState = aadharState;
+    }
+
+    public String getCurrentStreet() {
+        return currentStreet;
+    }
+
+    public void setCurrentStreet(String currentStreet) {
+        this.currentStreet = currentStreet;
+    }
+
+    public String getAadharStreet() {
+        return aadharStreet;
+    }
+
+    public void setAadharStreet(String aadharStreet) {
+        this.aadharStreet = aadharStreet;
+    }
+
+    public String getCurrentVtc() {
+        return currentVtc;
+    }
+
+    public void setCurrentVtc(String currentVtc) {
+        this.currentVtc = currentVtc;
+    }
+
+    public String getAadharVtc() {
+        return aadharVtc;
+    }
+
+    public void setAadharVtc(String aadharVtc) {
+        this.aadharVtc = aadharVtc;
+    }
+
+    public String getAadharSubdist() {
+        return aadharSubdist;
+    }
+
+    public void setAadharSubdist(String aadharSubdist) {
+        this.aadharSubdist = aadharSubdist;
+    }
+
+    public String getCurrentSubdist() {
+        return currentSubdist;
+    }
+
+    public void setCurrentSubdist(String currentSubdist) {
+        this.currentSubdist = currentSubdist;
+    }
+
+    public String getAadharPo() {
+        return aadharPo;
+    }
+
+    public void setAadharPo(String aadharPo) {
+        this.aadharPo = aadharPo;
+    }
+
+    public String getCurrentPo() {
+        return currentPo;
+    }
+
+    public void setCurrentPo(String currentPo) {
+        this.currentPo = currentPo;
+    }
+
+    public String getAadharCareOf() {
+        return aadharCareOf;
+    }
+
+    public void setAadharCareOf(String aadharCareOf) {
+        this.aadharCareOf = aadharCareOf;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "MFIApplicantDetail{" +
@@ -912,12 +1108,28 @@ public class MFIApplicationDetail implements Serializable {
                 ", birthDate=" + birthDate +
                 ", genderId=" + genderId +
                 ", maritalStatusId=" + maritalStatusId +
-                ", currentAddress='" + currentAddress + '\'' +
                 ", addressSameAsAadhar=" + addressSameAsAadhar +
+                ", currentDistrict='" + currentDistrict + '\'' +
+                ", aadharDistrict='" + aadharDistrict + '\'' +
+                ", currentHouse='" + currentHouse + '\'' +
+                ", aadharHouse='" + aadharHouse + '\'' +
+                ", currentLandmark='" + currentLandmark + '\'' +
+                ", aadharLandmark='" + aadharLandmark + '\'' +
+                ", currentLocation='" + currentLocation + '\'' +
+                ", aadharLocation='" + aadharLocation + '\'' +
+                ", currentState='" + currentState + '\'' +
+                ", aadharState='" + aadharState + '\'' +
+                ", currentStreet='" + currentStreet + '\'' +
+                ", aadharStreet='" + aadharStreet + '\'' +
+                ", currentVtc='" + currentVtc + '\'' +
+                ", aadharVtc='" + aadharVtc + '\'' +
+                ", aadharSubdist='" + aadharSubdist + '\'' +
+                ", currentSubdist='" + currentSubdist + '\'' +
+                ", aadharPo='" + aadharPo + '\'' +
+                ", currentPo='" + currentPo + '\'' +
+                ", aadharCareOf='" + aadharCareOf + '\'' +
                 ", addressPincode='" + addressPincode + '\'' +
-                ", aadharAddress='" + aadharAddress + '\'' +
                 ", aadharPincode='" + aadharPincode + '\'' +
-                ", addressProfType=" + addressProfType +
                 ", fatherName='" + fatherName + '\'' +
                 ", motherName='" + motherName + '\'' +
                 ", spouseName='" + spouseName + '\'' +
@@ -979,6 +1191,8 @@ public class MFIApplicationDetail implements Serializable {
                 ", isCurrntLiabilityFilled=" + isCurrntLiabilityFilled +
                 ", isRepaymentDetailsFilled=" + isRepaymentDetailsFilled +
                 ", isConsentFormFilled=" + isConsentFormFilled +
+                ", addressProofType=" + addressProofType +
+                ", status=" + status +
                 '}';
     }
 }

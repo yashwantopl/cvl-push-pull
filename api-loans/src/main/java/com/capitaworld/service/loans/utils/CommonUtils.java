@@ -68,7 +68,9 @@ public class CommonUtils {
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
-	
+	public static final Integer PENDING = 0;
+	public static final Integer APPROVED = 1;
+
 	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
 	
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";

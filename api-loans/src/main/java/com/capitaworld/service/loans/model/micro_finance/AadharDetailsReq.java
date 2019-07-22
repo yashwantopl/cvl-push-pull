@@ -5,7 +5,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.Date;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class AadharDetailsReq {
 
@@ -20,6 +19,8 @@ public class AadharDetailsReq {
     private String nameAsPerAadharCard;
 
     private String firstName;
+    private String mobile;
+    private String email;
 
     private String lastName;
 
@@ -31,13 +32,47 @@ public class AadharDetailsReq {
 
     private Integer maritalStatusId;
 
-    private String currentAddress;
-
     private Boolean addressSameAsAadhar;
 
-    private String addressPincode;
+    private String currentDistrict;
 
-    private String aadharAddress;
+    private String aadharDistrict;
+
+    private String currentHouse;
+
+    private String aadharHouse;
+
+    private String currentLandmark;
+
+    private String aadharLandmark;
+
+    private String currentLocation;
+
+    private String aadharLocation;
+
+    private String currentState;
+
+    private String aadharState;
+
+    private String currentStreet;
+
+    private String aadharStreet;
+
+    private String currentVtc;
+
+    private String aadharVtc;
+
+    private String aadharSubdist;
+
+    private String currentSubdist;
+
+    private String aadharPo;
+
+    private String currentPo;
+
+    private String aadharCareOf;
+
+    private String addressPincode;
 
     private String aadharPincode;
 
@@ -47,83 +82,19 @@ public class AadharDetailsReq {
 
     private String motherName;
 
-    private String spouseName;
-
-    private Date spouseBirthDate;
-
-    private String spouseMobile;
-
-    private Integer noDependent;
-
-    private String nomineeName;
-
-    private Integer relationWithNomineeId;
-
-    private String nomineeAddress;
-
-    private String nomineePincode;
-
-    private Integer religion;
-
-    private Integer educationQualification;
-
-    private Double landHolding;
-
-    private String nameOfFirm;
-
-    private Integer businessType;
-
-    private Integer houseType;
-
-    private Integer loanPurpose;
-
-    private Double loanAmountRequired;
-
-    private Double costOfProject;
-
-    private Double costOfEquipment;
-
-    private Double workingCapOfEquipment;
-
-    private Double totalCostEquipment;
-
-    private Double promoterContribution;
-
-    private Double loanRequiredFromSidbi;
-
-    private Double totalMeanFinance;
-
-    private Double totalCashFlow;
-
-    private Integer repaymentFrequency;
-
-    private Boolean insurenceRequired;
-
-    private String insurenceCompanyName;
-
-    private Double insurencePremium;
-
-    private Long createdBy;
-
-    private Date createdDate;
-
-    private Boolean isActive;
-
-    private Long modifiedBy;
-
-    private Date modifiedDate;
-
-    private Integer loanType;
-
-    private Integer type;
-
-    private String remarks;
-
     private Long userId;
 
     private Integer addressProofType;
 
     private Integer businessTypeId;
+
+    public AadharDetailsReq() {
+    }
+
+    //    fn.applicationId.id,,fn.firstName,mf.lastName,mf.middleName,mf.birthDate,mf.genderId,mf.mobile,mf.email,mf.addressSameAsAadhar,mf.currentDistrict,mf.aadharDistrict,mf.currentHouse,mf.aadharHouse,mf.currentLandmark,mf.aadharLandmark,mf.currentLocation,mf.aadharLocation,mf.currentState,mf.aadharState,mf.currentStreet,mf.aadharStreet,mf.currentVtc,mf.aadharVtc,mf.aadharSubdist,mf.currentSubdist,mf.aadharPo,mf.currentPo,mf.aadharCareOf,mf.addressPincode,mf.aadharPincode,mf.addressProofType
+    public AadharDetailsReq(Long applicationId,String firstName,String lastName,String middleName, Date birthDate,Integer genderId,String mobile,String email,String addressSameAsAadhar,String currentDistrict,String aadharDistrict,String currentHouse,String aadharHouse,
+                            String currentLandmark,String aadharLandmark,String currentLocation,String aadharLocation,String currentState,String aadharState,String currentStreet,String aadharStreet,String currentVtc,String aadharVtc,String aadharSubdist,String currentSubdist,String aadharPo,String currentPo,String aadharCareOf,String addressPincode,String aadharPincode,Integer addressProofType) {
+    }
 
     public Long getId() {
         return id;
@@ -213,14 +184,6 @@ public class AadharDetailsReq {
         this.maritalStatusId = maritalStatusId;
     }
 
-    public String getCurrentAddress() {
-        return currentAddress;
-    }
-
-    public void setCurrentAddress(String currentAddress) {
-        this.currentAddress = currentAddress;
-    }
-
     public Boolean getAddressSameAsAadhar() {
         return addressSameAsAadhar;
     }
@@ -235,14 +198,6 @@ public class AadharDetailsReq {
 
     public void setAddressPincode(String addressPincode) {
         this.addressPincode = addressPincode;
-    }
-
-    public String getAadharAddress() {
-        return aadharAddress;
-    }
-
-    public void setAadharAddress(String aadharAddress) {
-        this.aadharAddress = aadharAddress;
     }
 
     public String getAadharPincode() {
@@ -277,295 +232,6 @@ public class AadharDetailsReq {
         this.motherName = motherName;
     }
 
-    public String getSpouseName() {
-        return spouseName;
-    }
-
-    public void setSpouseName(String spouseName) {
-        this.spouseName = spouseName;
-    }
-
-    public Date getSpouseBirthDate() {
-        return spouseBirthDate;
-    }
-
-    public void setSpouseBirthDate(Date spouseBirthDate) {
-        this.spouseBirthDate = spouseBirthDate;
-    }
-
-    public String getSpouseMobile() {
-        return spouseMobile;
-    }
-
-    public void setSpouseMobile(String spouseMobile) {
-        this.spouseMobile = spouseMobile;
-    }
-
-    public Integer getNoDependent() {
-        return noDependent;
-    }
-
-    public void setNoDependent(Integer noDependent) {
-        this.noDependent = noDependent;
-    }
-
-    public String getNomineeName() {
-        return nomineeName;
-    }
-
-    public void setNomineeName(String nomineeName) {
-        this.nomineeName = nomineeName;
-    }
-
-    public Integer getRelationWithNomineeId() {
-        return relationWithNomineeId;
-    }
-
-    public void setRelationWithNomineeId(Integer relationWithNomineeId) {
-        this.relationWithNomineeId = relationWithNomineeId;
-    }
-
-    public String getNomineeAddress() {
-        return nomineeAddress;
-    }
-
-    public void setNomineeAddress(String nomineeAddress) {
-        this.nomineeAddress = nomineeAddress;
-    }
-
-    public String getNomineePincode() {
-        return nomineePincode;
-    }
-
-    public void setNomineePincode(String nomineePincode) {
-        this.nomineePincode = nomineePincode;
-    }
-
-    public Integer getReligion() {
-        return religion;
-    }
-
-    public void setReligion(Integer religion) {
-        this.religion = religion;
-    }
-
-    public Integer getEducationQualification() {
-        return educationQualification;
-    }
-
-    public void setEducationQualification(Integer educationQualification) {
-        this.educationQualification = educationQualification;
-    }
-
-    public Double getLandHolding() {
-        return landHolding;
-    }
-
-    public void setLandHolding(Double landHolding) {
-        this.landHolding = landHolding;
-    }
-
-    public String getNameOfFirm() {
-        return nameOfFirm;
-    }
-
-    public void setNameOfFirm(String nameOfFirm) {
-        this.nameOfFirm = nameOfFirm;
-    }
-
-    public Integer getBusinessType() {
-        return businessType;
-    }
-
-    public void setBusinessType(Integer businessType) {
-        this.businessType = businessType;
-    }
-
-    public Integer getHouseType() {
-        return houseType;
-    }
-
-    public void setHouseType(Integer houseType) {
-        this.houseType = houseType;
-    }
-
-    public Integer getLoanPurpose() {
-        return loanPurpose;
-    }
-
-    public void setLoanPurpose(Integer loanPurpose) {
-        this.loanPurpose = loanPurpose;
-    }
-
-    public Double getLoanAmountRequired() {
-        return loanAmountRequired;
-    }
-
-    public void setLoanAmountRequired(Double loanAmountRequired) {
-        this.loanAmountRequired = loanAmountRequired;
-    }
-
-    public Double getCostOfProject() {
-        return costOfProject;
-    }
-
-    public void setCostOfProject(Double costOfProject) {
-        this.costOfProject = costOfProject;
-    }
-
-    public Double getCostOfEquipment() {
-        return costOfEquipment;
-    }
-
-    public void setCostOfEquipment(Double costOfEquipment) {
-        this.costOfEquipment = costOfEquipment;
-    }
-
-    public Double getWorkingCapOfEquipment() {
-        return workingCapOfEquipment;
-    }
-
-    public void setWorkingCapOfEquipment(Double workingCapOfEquipment) {
-        this.workingCapOfEquipment = workingCapOfEquipment;
-    }
-
-    public Double getTotalCostEquipment() {
-        return totalCostEquipment;
-    }
-
-    public void setTotalCostEquipment(Double totalCostEquipment) {
-        this.totalCostEquipment = totalCostEquipment;
-    }
-
-    public Double getPromoterContribution() {
-        return promoterContribution;
-    }
-
-    public void setPromoterContribution(Double promoterContribution) {
-        this.promoterContribution = promoterContribution;
-    }
-
-    public Double getLoanRequiredFromSidbi() {
-        return loanRequiredFromSidbi;
-    }
-
-    public void setLoanRequiredFromSidbi(Double loanRequiredFromSidbi) {
-        this.loanRequiredFromSidbi = loanRequiredFromSidbi;
-    }
-
-    public Double getTotalMeanFinance() {
-        return totalMeanFinance;
-    }
-
-    public void setTotalMeanFinance(Double totalMeanFinance) {
-        this.totalMeanFinance = totalMeanFinance;
-    }
-
-    public Double getTotalCashFlow() {
-        return totalCashFlow;
-    }
-
-    public void setTotalCashFlow(Double totalCashFlow) {
-        this.totalCashFlow = totalCashFlow;
-    }
-
-    public Integer getRepaymentFrequency() {
-        return repaymentFrequency;
-    }
-
-    public void setRepaymentFrequency(Integer repaymentFrequency) {
-        this.repaymentFrequency = repaymentFrequency;
-    }
-
-    public Boolean getInsurenceRequired() {
-        return insurenceRequired;
-    }
-
-    public void setInsurenceRequired(Boolean insurenceRequired) {
-        this.insurenceRequired = insurenceRequired;
-    }
-
-    public String getInsurenceCompanyName() {
-        return insurenceCompanyName;
-    }
-
-    public void setInsurenceCompanyName(String insurenceCompanyName) {
-        this.insurenceCompanyName = insurenceCompanyName;
-    }
-
-    public Double getInsurencePremium() {
-        return insurencePremium;
-    }
-
-    public void setInsurencePremium(Double insurencePremium) {
-        this.insurencePremium = insurencePremium;
-    }
-
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public Long getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(Long modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    public String getRemarks() {
-        return remarks;
-    }
-
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
-    public Integer getLoanType() {
-        return loanType;
-    }
-
-    public void setLoanType(Integer loanType) {
-        this.loanType = loanType;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-
     public Integer getAddressProofType() {
         return addressProofType;
     }
@@ -588,5 +254,173 @@ public class AadharDetailsReq {
 
     public void setBusinessTypeId(Integer businessTypeId) {
         this.businessTypeId = businessTypeId;
+    }
+
+    public String getCurrentDistrict() {
+        return currentDistrict;
+    }
+
+    public void setCurrentDistrict(String currentDistrict) {
+        this.currentDistrict = currentDistrict;
+    }
+
+    public String getAadharDistrict() {
+        return aadharDistrict;
+    }
+
+    public void setAadharDistrict(String aadharDistrict) {
+        this.aadharDistrict = aadharDistrict;
+    }
+
+    public String getCurrentHouse() {
+        return currentHouse;
+    }
+
+    public void setCurrentHouse(String currentHouse) {
+        this.currentHouse = currentHouse;
+    }
+
+    public String getAadharHouse() {
+        return aadharHouse;
+    }
+
+    public void setAadharHouse(String aadharHouse) {
+        this.aadharHouse = aadharHouse;
+    }
+
+    public String getCurrentLandmark() {
+        return currentLandmark;
+    }
+
+    public void setCurrentLandmark(String currentLandmark) {
+        this.currentLandmark = currentLandmark;
+    }
+
+    public String getAadharLandmark() {
+        return aadharLandmark;
+    }
+
+    public void setAadharLandmark(String aadharLandmark) {
+        this.aadharLandmark = aadharLandmark;
+    }
+
+    public String getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(String currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public String getAadharLocation() {
+        return aadharLocation;
+    }
+
+    public void setAadharLocation(String aadharLocation) {
+        this.aadharLocation = aadharLocation;
+    }
+
+    public String getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(String currentState) {
+        this.currentState = currentState;
+    }
+
+    public String getAadharState() {
+        return aadharState;
+    }
+
+    public void setAadharState(String aadharState) {
+        this.aadharState = aadharState;
+    }
+
+    public String getCurrentStreet() {
+        return currentStreet;
+    }
+
+    public void setCurrentStreet(String currentStreet) {
+        this.currentStreet = currentStreet;
+    }
+
+    public String getAadharStreet() {
+        return aadharStreet;
+    }
+
+    public void setAadharStreet(String aadharStreet) {
+        this.aadharStreet = aadharStreet;
+    }
+
+    public String getCurrentVtc() {
+        return currentVtc;
+    }
+
+    public void setCurrentVtc(String currentVtc) {
+        this.currentVtc = currentVtc;
+    }
+
+    public String getAadharVtc() {
+        return aadharVtc;
+    }
+
+    public void setAadharVtc(String aadharVtc) {
+        this.aadharVtc = aadharVtc;
+    }
+
+    public String getAadharSubdist() {
+        return aadharSubdist;
+    }
+
+    public void setAadharSubdist(String aadharSubdist) {
+        this.aadharSubdist = aadharSubdist;
+    }
+
+    public String getCurrentSubdist() {
+        return currentSubdist;
+    }
+
+    public void setCurrentSubdist(String currentSubdist) {
+        this.currentSubdist = currentSubdist;
+    }
+
+    public String getAadharPo() {
+        return aadharPo;
+    }
+
+    public void setAadharPo(String aadharPo) {
+        this.aadharPo = aadharPo;
+    }
+
+    public String getCurrentPo() {
+        return currentPo;
+    }
+
+    public void setCurrentPo(String currentPo) {
+        this.currentPo = currentPo;
+    }
+
+    public String getAadharCareOf() {
+        return aadharCareOf;
+    }
+
+    public void setAadharCareOf(String aadharCareOf) {
+        this.aadharCareOf = aadharCareOf;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
