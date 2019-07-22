@@ -209,9 +209,27 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 	@Override
 	public LoansResponse validateSidbiForm(Long applicationId, Long userId) throws LoansException {
 		Double totalAmt = 0.00;
+		Double pTotalToBeIncurred = 0.00;
+		Double pTotalAlreadyIncurred = 0.00;
+		Double aTotalToBeIncurred = 0.00;
+		Double aTotalAlreadyIncurred = 0.00;
+		
 		List<TotalCostOfProjectRequest> projectCostList = projectCostDetailService.getCostOfProjectDetailList(applicationId, userId);
 		if(projectCostList == null || projectCostList.size() == 0) {
-			return new LoansResponse("Please fill atleast one row in Project Cost Details", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new LoansResponse("Please fill atleast one row in Project Cost Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+		}else if(projectCostList != null) {
+			totalAmt = 0.00;
+			for(TotalCostOfProjectRequest projectCostDetail : projectCostList) {
+				if(!"Plant & Machinery - For Manufacturing unit".contentEquals(projectCostDetail.getParticularName())) {
+					totalAmt += projectCostDetail.getTotalCost() == null ? 0.00 : projectCostDetail.getTotalCost(); 
+					pTotalToBeIncurred += projectCostDetail.getToBeIncurred() == null ? 0.00 : projectCostDetail.getToBeIncurred();
+					pTotalAlreadyIncurred += projectCostDetail.getAlreadyIncurred() == null ? 0.00 : projectCostDetail.getAlreadyIncurred();				
+				}
+			}
+			
+			if(totalAmt == null || totalAmt == 0.00) {
+				return new LoansResponse("Please fill atleast one row in Project Cost Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+			}
 		}
 		
 		List<TotalCostOfProjectRequest> meansOfFinanceList = meansOfFinanceDetailService.getMeansOfFinanceList(applicationId, userId);
@@ -222,10 +240,20 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 			totalAmt = 0.00;
 			for(TotalCostOfProjectRequest meansOfFinanceDetail : meansOfFinanceList) {
 				totalAmt += meansOfFinanceDetail.getTotalCost() == null ? 0.00 : meansOfFinanceDetail.getTotalCost(); 
+				aTotalToBeIncurred += meansOfFinanceDetail.getToBeIncurred() == null ? 0.00 : meansOfFinanceDetail.getToBeIncurred();
+				aTotalAlreadyIncurred +=  meansOfFinanceDetail.getAlreadyIncurred() == null ? 0.00 : meansOfFinanceDetail.getAlreadyIncurred();
 			}
 			
 			if(totalAmt == null || totalAmt == 0.00) {
 				return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+			}
+		}
+		
+		if(pTotalToBeIncurred != aTotalToBeIncurred || pTotalAlreadyIncurred != aTotalAlreadyIncurred) {
+			if(! pTotalAlreadyIncurred.equals(aTotalAlreadyIncurred)){
+				return new LoansResponse("Please match total of Already Incurred of project cost detail data with Means of finance details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
+			}else if(! pTotalToBeIncurred.equals(aTotalToBeIncurred)){
+				return new LoansResponse("Please match total of To Be Incurred of project cost detail data with Means of finance details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
 			}
 		}
 		

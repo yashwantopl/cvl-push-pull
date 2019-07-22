@@ -722,3 +722,20 @@ ALTER TABLE `loan_application`.`fp_personal_loan_details` ADD COLUMN min_risk_sc
 ALTER TABLE `loan_application`.`fp_personal_loan_details_temp` ADD COLUMN min_risk_score_model_oth_thn_sal DOUBLE DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_personal_loan_details` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_personal_loan_details_temp` ADD COLUMN min_risk_score_model_co_app_oth_thn_sal DOUBLE DEFAULT NULL;
+
+
+==================================17-07-2019===========================================
+
+ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `statement_analyzer`.`matches_data` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `statement_analyzer`.`prefious_report` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `document_management`.`product_storage_details` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `itr_api`.`itr_tracking` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `loan_application`.`fs_retail_applicant_income_details` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `loan_application`.`fs_retail_co_applicant_income_details` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `loan_application`.`fs_retail_co_applicant_details` ADD COLUMN copy_ref_id BIGINT(20);
+ALTER TABLE `connect`.`connect_other_applicant_log` ADD COLUMN copy_ref_id BIGINT(20);
+
+==================================Above Queries are Executed on Production on 19-07-2019 in Evening ===========================================
+
+ALTER TABLE `itr_api`.`itr_xml_master` ADD COLUMN copy_ref_id BIGINT(20);
