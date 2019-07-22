@@ -101,6 +101,7 @@ import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
@@ -2107,8 +2108,18 @@ public class ScoringServiceImpl implements ScoringService {
                          }
             				break;
             			case ScoreParameter.Retail.HomeLoan.RESIDENCE_TYPE:
-            				scoreParameterRetailRequest.setIsResidenceType_p(retailApplicantDetail.getResidenceType() != null);
-            				scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
+            				if(retailApplicantDetail.getResidenceType() != null) {
+            					if(ResidenceStatusRetailMst.OWNED.getId().equals(retailApplicantDetail.getResidenceType())) {
+            						if(retailApplicantDetail.getIsOwnedProp() == null || retailApplicantDetail.getIsOwnedProp()) {
+            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());            							
+            						}else {
+            							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
+            						}
+            					}else {
+            						scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
+            					}
+            					scoreParameterRetailRequest.setIsResidenceType_p(true);
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.NO_YEARS_STAY_CURR_LOC:
             				try {
@@ -2732,8 +2743,18 @@ public class ScoringServiceImpl implements ScoringService {
                          }
             				break;
             			case ScoreParameter.Retail.HomeLoan.RESIDENCE_TYPE:
-            				scoreParameterRetailRequest.setIsResidenceType_p(coApplicantDetail.getResidenceType() != null);
-            				scoreParameterRetailRequest.setResidenceType(coApplicantDetail.getResidenceType());
+            				if(coApplicantDetail.getResidenceType() != null) {
+            					if(ResidenceStatusRetailMst.OWNED.getId().equals(coApplicantDetail.getResidenceType())) {
+            						if(coApplicantDetail.getIsOwnedProp() == null || coApplicantDetail.getIsOwnedProp()) {
+            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());            							
+            						}else {
+            							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
+            						}
+            					}else {
+            						scoreParameterRetailRequest.setResidenceType(coApplicantDetail.getResidenceType());
+            					}
+            					scoreParameterRetailRequest.setIsResidenceType_p(true);
+            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.NO_YEARS_STAY_CURR_LOC:
             				try {
