@@ -303,6 +303,8 @@ public class CommonUtils {
 				return UNSECURED_LOAN;
 			case 16:
 				return WCTL_LOAN;
+			case 17:
+					return MFI;
 			default :
 				return null;
 			}
