@@ -360,8 +360,207 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
     private Boolean isCommercialCibilFor3MonthMandatory = false;
 
-	
-	
+	// mfi parameter
+
+	private Boolean isLoanAmountDisplay=false;
+
+	private Boolean isLoanAmountMandatory=false;
+
+	private Double minLoanAmount;
+
+	private Double maxLoanAmount;
+
+	// yearly income
+
+	private Boolean isYearlyIncomeRangeDisplay=false;
+
+	private Boolean isYearlyIncomeRangeMandatory=false;
+
+	private Double minYearlyIncomeRange;
+
+	private Double maxYearlyIncomeRange;
+
+	// age of applicant
+
+	private Boolean isAgeApplicantDisplay=false;
+
+	private Boolean isAgeApplicantMandatory=false;
+
+	private Double minApplicantAge;
+
+	private Double maxApplicantAge;
+
+	// bureau score
+
+	private Boolean isBureauScoreDisplay=false;
+
+	private Boolean isBureauScoreMandatory=false;
+
+	private Double minBureauScore;
+
+
+	// activity experience
+
+	private Boolean isActivityExperienceDisplay=false;
+
+	private Boolean isActivityExperienceMandatory=false;
+
+	private Double minActivityExperience;
+
+	private Double maxActivityExperience;
+
+
+	public Boolean getIsLoanAmountDisplay() {
+		return isLoanAmountDisplay;
+	}
+
+	public void setIsLoanAmountDisplay(Boolean loanAmountDisplay) {
+		isLoanAmountDisplay = loanAmountDisplay;
+	}
+
+	public Boolean getIsLoanAmountMandatory() {
+		return isLoanAmountMandatory;
+	}
+
+	public void setIsLoanAmountMandatory(Boolean loanAmountMandatory) {
+		isLoanAmountMandatory = loanAmountMandatory;
+	}
+
+	public Double getMinLoanAmount() {
+		return minLoanAmount;
+	}
+
+	public void setMinLoanAmount(Double minLoanAmount) {
+		this.minLoanAmount = minLoanAmount;
+	}
+
+	public Double getMaxLoanAmount() {
+		return maxLoanAmount;
+	}
+
+	public void setIsMaxLoanAmount(Double maxLoanAmount) {
+		this.maxLoanAmount = maxLoanAmount;
+	}
+
+	public Boolean getIsYearlyIncomeRangeDisplay() {
+		return isYearlyIncomeRangeDisplay;
+	}
+
+	public void setIsYearlyIncomeRangeDisplay(Boolean yearlyIncomeRangeDisplay) {
+		isYearlyIncomeRangeDisplay = yearlyIncomeRangeDisplay;
+	}
+
+	public Boolean getIsYearlyIncomeRangeMandatory() {
+		return isYearlyIncomeRangeMandatory;
+	}
+
+	public void setIsYearlyIncomeRangeMandatory(Boolean yearlyIncomeRangeMandatory) {
+		isYearlyIncomeRangeMandatory = yearlyIncomeRangeMandatory;
+	}
+
+	public Double getMinYearlyIncomeRange() {
+		return minYearlyIncomeRange;
+	}
+
+	public void setMinYearlyIncomeRange(Double minYearlyIncomeRange) {
+		this.minYearlyIncomeRange = minYearlyIncomeRange;
+	}
+
+	public Double getMaxYearlyIncomeRange() {
+		return maxYearlyIncomeRange;
+	}
+
+	public void setMaxYearlyIncomeRange(Double maxYearlyIncomeRange) {
+		this.maxYearlyIncomeRange = maxYearlyIncomeRange;
+	}
+
+	public Boolean getIsAgeApplicantDisplay() {
+		return isAgeApplicantDisplay;
+	}
+
+	public void setIsAgeApplicantDisplay(Boolean ageApplicantDisplay) {
+		isAgeApplicantDisplay = ageApplicantDisplay;
+	}
+
+	public Boolean getIsAgeApplicantMandatory() {
+		return isAgeApplicantMandatory;
+	}
+
+	public void setIsAgeApplicantMandatory(Boolean ageApplicantMandatory) {
+		isAgeApplicantMandatory = ageApplicantMandatory;
+	}
+
+	public Double getMinApplicantAge() {
+		return minApplicantAge;
+	}
+
+	public void setMinApplicantAge(Double minApplicantAge) {
+		this.minApplicantAge = minApplicantAge;
+	}
+
+	public Double getMaxApplicantAge() {
+		return maxApplicantAge;
+	}
+
+	public void setMaxApplicantAge(Double maxApplicantAge) {
+		this.maxApplicantAge = maxApplicantAge;
+	}
+
+	public Boolean getIsBureauScoreDisplay() {
+		return isBureauScoreDisplay;
+	}
+
+	public void setIsBureauScoreDisplay(Boolean bureauScoreDisplay) {
+		isBureauScoreDisplay = bureauScoreDisplay;
+	}
+
+	public Boolean getIsBureauScoreMandatory() {
+		return isBureauScoreMandatory;
+	}
+
+	public void setIsBureauScoreMandatory(Boolean bureauScoreMandatory) {
+		isBureauScoreMandatory = bureauScoreMandatory;
+	}
+
+	public Double getMinBureauScore() {
+		return minBureauScore;
+	}
+
+	public void setMinBureauScore(Double minBureauScore) {
+		this.minBureauScore = minBureauScore;
+	}
+
+	public Boolean getIsActivityExperienceDisplay() {
+		return isActivityExperienceDisplay;
+	}
+
+	public void setIsActivityExperienceDisplay(Boolean activityExperienceDisplay) {
+		isActivityExperienceDisplay = activityExperienceDisplay;
+	}
+
+	public Boolean getIsActivityExperienceMandatory() {
+		return isActivityExperienceMandatory;
+	}
+
+	public void setIsActivityExperienceMandatory(Boolean activityExperienceMandatory) {
+		isActivityExperienceMandatory = activityExperienceMandatory;
+	}
+
+	public Double getMinActivityExperience() {
+		return minActivityExperience;
+	}
+
+	public void setMinActivityExperience(Double minActivityExperience) {
+		this.minActivityExperience = minActivityExperience;
+	}
+
+	public Double getMaxActivityExperience() {
+		return maxActivityExperience;
+	}
+
+	public void setMaxActivityExperience(Double maxActivityExperience) {
+		this.maxActivityExperience = maxActivityExperience;
+	}
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
