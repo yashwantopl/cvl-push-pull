@@ -804,7 +804,7 @@ public class ScoringServiceImpl implements ScoringService {
             /*ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
-            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, null, null, null);
             logger.info("==========getRetailConcessionDetailS PERSONAL LOAN ========>>>>>"+concessionResp);
             
            Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];
@@ -1540,9 +1540,8 @@ public class ScoringServiceImpl implements ScoringService {
         }
     }
     
-    
     @Override
-    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans) {
+    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList) {
     	logger.info("Getting Retail Concession Details===={}========{}==>>>>"+scoringRequestLoans.getApplicationId()+""
     			+ "fpProductId===={}=====>"+scoringRequestLoans.getFpProductId());
     	
@@ -1648,7 +1647,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                 // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
 
-    		 List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
+                 if(bankingRelationList == null) {
+            		  bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);             	 
+                 }
+    		 
                 if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
                 {
                     for(BankingRelation bankingRelation:bankingRelationList)
@@ -1675,9 +1677,10 @@ public class ScoringServiceImpl implements ScoringService {
                                     ReportRequest reportRequest = new ReportRequest();
                                     reportRequest.setApplicationId(applicationId);
 
+                                    if(bankStringsList == null) {
                                     AnalyzerResponse analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
-
-                                    List<String> bankStringsList=(List<String> )analyzerResponse.getData();
+                                    	bankStringsList = (List<String> )analyzerResponse.getData();	
+                                    }
 
                                     if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
                                     {
@@ -1712,7 +1715,9 @@ public class ScoringServiceImpl implements ScoringService {
                 }
 
                 // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
-   			  List<FinancialArrangementsDetail> financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+                if(financialArrangementsDetailList == null ) {
+                	financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);                	
+                }
                 if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList))
                 {
                     for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
@@ -1962,7 +1967,7 @@ public class ScoringServiceImpl implements ScoringService {
             ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
-            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, bankStringsList, bankingRelationList, financialArrangementsDetailList);
             logger.info("==========getRetailConcessionDetails========>>>>>"+concessionResp);
             
            Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];
