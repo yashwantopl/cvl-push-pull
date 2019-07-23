@@ -100,6 +100,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private LapParameterRepository lapParameterRepository;
 
 	@Autowired
+	private MFILoanParameterRepository mfiLoanParameterRepository;
+
+	@Autowired
 	private FundProviderSequenceService fundProviderSequenceService;
 
 	@Autowired
@@ -997,6 +1000,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				case LOAN_AGAINST_SHARES_AND_SECUIRITIES:
 					productMaster = lasParameterRepository.findOne(productMappingId);
+					break;
+				case MFI_LOAN:
+					productMaster = mfiLoanParameterRepository.findOne(productMappingId);
 					break;
 
 				default:
