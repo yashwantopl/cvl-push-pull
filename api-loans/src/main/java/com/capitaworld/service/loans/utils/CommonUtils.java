@@ -1513,6 +1513,7 @@ public enum APIFlags {
 	
 	public static String convertValue(Double value) {
 		NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
 		return !CommonUtils.isObjectNullOrEmpty(value)? formatter.format(value) : "0";
 	}

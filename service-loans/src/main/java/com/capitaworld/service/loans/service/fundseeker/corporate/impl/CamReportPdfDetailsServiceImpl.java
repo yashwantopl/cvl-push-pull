@@ -1956,7 +1956,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		assetDetailsString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValueIndianCurrency(assetsDetails.getOtherIncomeNeedTocCheckAsset()).toString());
 		financialInputRequestDbl.setOtherIncomeNeedTocCheckAsset(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denomination);
 		financialInputRequestString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValueIndianCurrency(financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()).toString());
-		assetDetailsString.setCurrentRatio(CommonUtils.convertValueIndianCurrency(assetsDetails.getCurrentRatio()).toString());
+		assetDetailsString.setCurrentRatio(CommonUtils.convertValue(assetsDetails.getCurrentRatio()).toString());
 		
 		/************************************************** OTHER CALCULATIONS *******************************************************/ 
 		//Profit & Loss Statement
