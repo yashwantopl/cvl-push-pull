@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class MfiApplicationServiceImpl implements MfiApplicationService {
@@ -36,6 +38,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
                 mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
                 mfiApplicationDetail.setStatus(CommonUtils.PENDING);
+                mfiApplicationDetail.setIsActive(true);
                 detailsRepository.save(mfiApplicationDetail);
             }
         } else {
@@ -50,7 +53,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public AadharDetailsReq getAadharDetailsByAppId(Long applicationId) {
-        AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();
-        return aadharDetailsReq;
+        List<AadharDetailsReq> detailsReq = detailsRepository.findAadharDetailsByAppId(applicationId);
+        return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0): null;
     }
 }
