@@ -388,7 +388,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getApplicationListForPrefillProfile(Long userId) {
 		try {
 			return (String) entityManager
-					.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('applicationId',con.`application_id`,'name',CONCAT(IFNULL(fs.`first_name`,''),' ',IFNULL(fs.`last_name`,'')),\r\n" + 
+					.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('applicationId',con.`application_id`,'name',CONCAT(IFNULL(fs.`first_name`,''),' ',IFNULL(fs.`last_name`,'')),\r\n" +  
 							"'status',IF(con.`stage_id` = 207,'In-Eligible','In-Principle'),'applicationCode',\r\n" + 
 							"IF(con.`stage_id` = 207,IF(con.`loan_type_id` = 3,'HomeLoan','PersonalLoan'),CONCAT(IF(con.`loan_type_id` = 3,'HomeLoan','PersonalLoan'),' - Rs.',pp.`el_amount`))\r\n" + 
 							")) AS CHAR ) \r\n" + 
