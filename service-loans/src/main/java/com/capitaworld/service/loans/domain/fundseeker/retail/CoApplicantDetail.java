@@ -489,6 +489,9 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "is_income_consider")
 	private Boolean isIncomeConsider;
+
+	@Column(name="is_owned_prop")
+	private Boolean isOwnedProp;
 	
 
 	public CoApplicantDetail() {
@@ -1724,5 +1727,13 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setIsIncomeConsider(Boolean isIncomeConsider) {
 		this.isIncomeConsider = isIncomeConsider;
+	}
+
+	public Boolean getIsOwnedProp() {
+		return isOwnedProp;
+	}
+
+	public void setIsOwnedProp(Boolean isOwnedProp) {
+		this.isOwnedProp = isOwnedProp;
 	}
 }

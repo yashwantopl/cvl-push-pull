@@ -26,6 +26,7 @@ public class RetailOnformContactInfoReq implements Serializable {
     private Integer type;
     private String pan;
     private Date birthDate;
+	private Boolean isOwnedProp;
     
     
 	public Long getId() {
@@ -106,10 +107,12 @@ public class RetailOnformContactInfoReq implements Serializable {
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
-    
-    
-    
-    
-    
-    
+
+	public Boolean getIsOwnedProp() {
+		return isOwnedProp;
+	}
+
+	public void setIsOwnedProp(Boolean isOwnedProp) {
+		this.isOwnedProp = isOwnedProp;
+	}
 }

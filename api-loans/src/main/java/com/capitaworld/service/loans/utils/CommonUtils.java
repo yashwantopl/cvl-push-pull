@@ -68,7 +68,9 @@ public class CommonUtils {
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
-	
+	public static final Integer PENDING = 0;
+	public static final Integer APPROVED = 1;
+
 	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
 	
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
@@ -301,6 +303,8 @@ public class CommonUtils {
 				return UNSECURED_LOAN;
 			case 16:
 				return WCTL_LOAN;
+			case 17:
+					return MFI;
 			default :
 				return null;
 			}
@@ -1509,6 +1513,7 @@ public enum APIFlags {
 	
 	public static String convertValue(Double value) {
 		NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
 		return !CommonUtils.isObjectNullOrEmpty(value)? formatter.format(value) : "0";
 	}
@@ -1524,10 +1529,11 @@ public enum APIFlags {
 	public static Object convertValueIndianCurrency(Object value) {
 		if(value != null) {
 			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
-			/*formatter.setMinimumFractionDigits(0);*/
+			formatter.setMinimumFractionDigits(0);
+			formatter.setMaximumFractionDigits(0);
 			return formatter.format(value);
 		}else {
-			return null;
+			return 0;
 		}
 		
 	}
@@ -1948,6 +1954,20 @@ public enum APIFlags {
 		}
 		return "-";
 	}
+	/**
+	 * @author nilay.darji
+	 * @param index of array
+	 * 
+	 */
+	public static String getMonthsByIndex(String index) {
+		String getMonths[] =
+		    {
+		        null , "January" , "February" , "March" , "April", "May","June", "July", "August", "September", "October","November", "December"
+		    };
+		return getMonths[Integer.valueOf(index)];
+	} 
+	 
+	 	
 
 //	public static void main(String[] args) throws ParseException {
 //		String strDate = "01/09/2009";

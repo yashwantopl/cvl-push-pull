@@ -144,7 +144,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private Boolean isCheckOffShiftSalAcc;
     private Boolean isCheckOffPayOutstndAmount;
     private Boolean isCheckOffNotChangeSalAcc;
-    
+    private Boolean isOwnedProp;
+
     public Integer getLoanPurposeQueType() {
 		return loanPurposeQueType;
 	}
@@ -1023,5 +1024,13 @@ public class PLRetailApplicantRequest implements Serializable {
 
     public void setRepaymentMode(Integer repaymentMode) {
         this.repaymentMode = repaymentMode;
+    }
+
+    public Boolean getIsOwnedProp() {
+        return isOwnedProp;
+    }
+
+    public void setIsOwnedProp(Boolean isOwnedProp) {
+        this.isOwnedProp = isOwnedProp;
     }
 }
