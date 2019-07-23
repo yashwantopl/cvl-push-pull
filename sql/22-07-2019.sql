@@ -99,7 +99,7 @@ CREATE TABLE `fs_mfi_applicant_details` (
   `is_consent_form_filled` bit(1) DEFAULT b'0',
   `status` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-);
+)
 
 ALTER TABLE `loan_application`.`fs_retail_co_applicant_details` ADD COLUMN `is_owned_prop` BIT(1) DEFAULT b'0' NULL;
 ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `is_owned_prop` BIT(1) DEFAULT b'0' NULL;
