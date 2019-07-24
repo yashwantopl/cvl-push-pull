@@ -1520,8 +1520,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
 					gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ? y.getKey() : " - ");
 					gstPurchaseVsBankStatementMonthly.put("gstDomestic", y.getValue() != null ? CommonUtils.convertStringFormate(y.getValue().toString()) : " - ");
-					gstPurchaseVsBankStatementMonthly.put("gstExp", " - ");
-					gstPurchaseVsBankStatementMonthly.put("gstSalesTotal", " - ");
+					gstPurchaseVsBankStatementMonthly.put("gstExp", "0");
+					gstPurchaseVsBankStatementMonthly.put("gstSalesTotal", "0");
 					gstPurchaseVsBankStatementMonthly.put("itrSales", "0");
 					gstPurchaseVsBankStatementMonthly.put("gstToItr"," - ");
 					for (Map.Entry<String, Object> exp: ((Map<String, Object>) gstData.get("yearWiseExp")).entrySet()) {
@@ -1549,12 +1549,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					}
 					// calculating total
 					totalGstExp +=Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstExp").toString());
-					gstPurchaseVsBankStatementMonthly.put("gstExp", CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("gstExp").toString()));
+					gstPurchaseVsBankStatementMonthly.put("gstExp", gstPurchaseVsBankStatementMonthly.get("gstExp").toString()!= "0"?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("gstExp").toString()):" - ");
 					totalGstDomestic +=y.getValue().toString() != "0"?Double.valueOf(y.getValue().toString()):0;
 					totalOfGstSalesTotal += gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString() != "0"?Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString()):0;
 					gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString() != "0"?CommonUtils.convertStringFormate(Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString())):" - ");
 					totalOfITRSalesTotal += gstPurchaseVsBankStatementMonthly.get("itrSales").toString() != "0" && !gstPurchaseVsBankStatementMonthly.get("itrSales").toString().equals("-")?Double.valueOf(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()):0;
-					gstPurchaseVsBankStatementMonthly.put("itrSales", CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()));
+					gstPurchaseVsBankStatementMonthly.put("itrSales", gstPurchaseVsBankStatementMonthly.get("itrSales").toString() != "0"?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()):" - ");
 					
 					if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
 						bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
