@@ -31,4 +31,9 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
 //    		"			fn.isPersonalDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
 //    public List<PersonalDetailsReq> findPersonalDetailsByAppId(@Param("appId") Long appId);
 
+ 
+    @Query("select mf from MFIApplicantDetail mf where mf.applicationId =:id and mf.isActive = true")
+    public List<MFIApplicantDetail> findByApplicationIdAndIsActive(@Param("applicationId") Long applicationId);
+     
+    
 }
