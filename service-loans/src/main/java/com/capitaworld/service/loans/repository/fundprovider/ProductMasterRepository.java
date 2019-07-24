@@ -40,10 +40,10 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId")
 	public List<ProductMaster> getUserProductActiveInActiveListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15,16)")
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15,16,17)")
 	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16)")
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16,17)")
 	public List<ProductMaster> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId  in (:productIds)")

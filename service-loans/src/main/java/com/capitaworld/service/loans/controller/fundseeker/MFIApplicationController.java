@@ -51,7 +51,7 @@ public class MFIApplicationController {
         }
     }
 
-    @GetMapping(value = "/getAadharDetails/{applicationId}")
+    @GetMapping(value = "/getAadharDetails/{applicationId}",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getAadharDetails(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
         try {
             // request must not be null
@@ -63,12 +63,12 @@ public class MFIApplicationController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            mfiApplicationService.getAadharDetailsByAppId(applicationId);
+            AadharDetailsReq aadharDetailsByAppId = mfiApplicationService.getAadharDetailsByAppId(applicationId);
             CommonDocumentUtils.endHook(logger, "Get Aadhar");
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Aadhar details.", HttpStatus.OK.value()),HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Aadhar details.", HttpStatus.OK.value(),aadharDetailsByAppId),HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("Error while saving save Adhar Details Details ==>", e);
+            logger.error("Error while Get Adhar Details ==>", e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }

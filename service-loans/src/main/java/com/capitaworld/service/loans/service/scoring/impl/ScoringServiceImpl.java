@@ -485,7 +485,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
                                     Long employmentWithPlValue=null;
 
-                                    if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                    if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())  //1
                                     {
                                         if(true == salaryWithBank)
                                             employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
@@ -493,34 +493,51 @@ public class ScoringServiceImpl implements ScoringService {
                                             employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
 
                                     }
-                                    else if(EmploymentWithPL.STATE_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                    else if(EmploymentWithPL.STATE_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith()) //2
                                     {
                                         if(true == salaryWithBank)
                                             employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
                                         else
                                             employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                     }
-                                    else if(EmploymentWithPL.PSU.getId() == retailApplicantDetail.getEmploymentWith())
+                                    else if(EmploymentWithPL.PSU.getId() == retailApplicantDetail.getEmploymentWith())  //3
                                     {
                                         if(true == salaryWithBank)
                                             employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
                                         else
                                             employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                     }
-                                    else if(EmploymentWithPL.CORPORATE.getId() == retailApplicantDetail.getEmploymentWith())
+                                    else if(EmploymentWithPL.CORPORATE.getId() == retailApplicantDetail.getEmploymentWith() 
+                                    		|| EmploymentWithPL.SMALL_SECTOR_PVT_LTD_COMPANIES.getId() == retailApplicantDetail.getEmploymentWith()) //4
                                     {
                                         if(true == salaryWithBank)
                                             employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
                                         else
                                             employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                     }
-                                    else if(EmploymentWithPL.EDUCATIONAL_INSTITUTE.getId() == retailApplicantDetail.getEmploymentWith())
+                                    else if(EmploymentWithPL.EDUCATIONAL_INSTITUTE.getId() == retailApplicantDetail.getEmploymentWith()) //5
                                     {
                                         employmentWithPlValue= EmploymentWithPLScoring.EDUCATIONAL_INSTITUTE.getId().longValue();
                                     }
-                                    else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith())
+                                    else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith() 
+                                    		|| EmploymentWithPL.SMALL_SECTOR_PARTNERSHIP.getId() == retailApplicantDetail.getEmploymentWith() 
+                                    		|| EmploymentWithPL.SMALL_SECTOR_PROPRIETORSHIP.getId() == retailApplicantDetail.getEmploymentWith()
+                                    		|| EmploymentWithPL.UNORGANISED_SECTOR.getId() == retailApplicantDetail.getEmploymentWith()) //6
                                     {
                                         employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
+                                    }else if(EmploymentWithPL.QUASI_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith()) {  //7
+                                    	if(true == salaryWithBank)
+                                            employmentWithPlValue= EmploymentWithPLScoring.QUASI_GOVERNMENT_WITH_BANK.getId().longValue();
+                                        else
+                                            employmentWithPlValue= EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
+                                    }
+                                    else if(EmploymentWithPL.BANK.getId() == retailApplicantDetail.getEmploymentWith()) //8
+                                    {
+                                        employmentWithPlValue= EmploymentWithPLScoring.BANK.getId().longValue();
+                                    }
+                                    else if(EmploymentWithPL.INSURANCE_COMPANY.getId() == retailApplicantDetail.getEmploymentWith()) //9
+                                    {
+                                        employmentWithPlValue= EmploymentWithPLScoring.INSURANCE_COMPANY.getId().longValue();
                                     }
                                     scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
                                     scoreParameterRetailRequest.setCategoryInfo_p(true);
@@ -787,7 +804,7 @@ public class ScoringServiceImpl implements ScoringService {
             /*ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
-            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, null, null, null);
             logger.info("==========getRetailConcessionDetailS PERSONAL LOAN ========>>>>>"+concessionResp);
             
            Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];
@@ -1022,7 +1039,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
                                         Long employmentWithPlValue=null;
 
-                                        if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                        if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())  //1
                                         {
                                             if(true == salaryWithBank)
                                                 employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
@@ -1030,56 +1047,57 @@ public class ScoringServiceImpl implements ScoringService {
                                                 employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
 
                                         }
-                                        else if(EmploymentWithPL.STATE_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                        else if(EmploymentWithPL.STATE_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith()) //2
                                         {
                                             if(true == salaryWithBank)
                                                 employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
                                             else
                                                 employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                         }
-                                        else if(EmploymentWithPL.PSU.getId() == retailApplicantDetail.getEmploymentWith())
+                                        else if(EmploymentWithPL.PSU.getId() == retailApplicantDetail.getEmploymentWith())  //3
                                         {
                                             if(true == salaryWithBank)
                                                 employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
                                             else
                                                 employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                         }
-                                        else if(EmploymentWithPL.CORPORATE.getId() == retailApplicantDetail.getEmploymentWith())
+                                        else if(EmploymentWithPL.CORPORATE.getId() == retailApplicantDetail.getEmploymentWith() 
+                                        		|| EmploymentWithPL.SMALL_SECTOR_PVT_LTD_COMPANIES.getId() == retailApplicantDetail.getEmploymentWith()) //4
                                         {
                                             if(true == salaryWithBank)
                                                 employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
                                             else
                                                 employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
                                         }
-                                        else if(EmploymentWithPL.EDUCATIONAL_INSTITUTE.getId() == retailApplicantDetail.getEmploymentWith())
+                                        else if(EmploymentWithPL.EDUCATIONAL_INSTITUTE.getId() == retailApplicantDetail.getEmploymentWith()) //5
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.EDUCATIONAL_INSTITUTE.getId().longValue();
                                         }
-                                        else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith()
-                                                || EmploymentWithPL.UNORGANISED_SECTOR.getId() == retailApplicantDetail.getEmploymentWith()
-                                                || EmploymentWithPL.SMALL_SECTOR_PROPRIETORSHIP.getId() == retailApplicantDetail.getEmploymentWith()
-                                                || EmploymentWithPL.SMALL_SECTOR_PARTNERSHIP.getId() == retailApplicantDetail.getEmploymentWith())
+                                        else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith() 
+                                        		|| EmploymentWithPL.SMALL_SECTOR_PARTNERSHIP.getId() == retailApplicantDetail.getEmploymentWith() 
+                                        		|| EmploymentWithPL.SMALL_SECTOR_PROPRIETORSHIP.getId() == retailApplicantDetail.getEmploymentWith()
+                                        		|| EmploymentWithPL.UNORGANISED_SECTOR.getId() == retailApplicantDetail.getEmploymentWith()) //6
                                         {
                                             employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
-                                        }
-                                        else if(EmploymentWithPL.QUASI_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith()){
-                                            if(true==salaryWithBank)
-                                                employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_WITH_BANK.getId().longValue();
+                                        }else if(EmploymentWithPL.QUASI_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith()) {  //7
+                                        	if(true == salaryWithBank)
+                                                employmentWithPlValue= EmploymentWithPLScoring.QUASI_GOVERNMENT_WITH_BANK.getId().longValue();
                                             else
-                                                employmentWithPlValue = EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
-                                        }else if(EmploymentWithPL.SMALL_SECTOR_PVT_LTD_COMPANIES.getId() == retailApplicantDetail.getEmploymentWith()){
-                                            if (true == salaryWithBank)
-                                                employmentWithPlValue = EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
-                                            else
-                                                employmentWithPlValue = EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+                                                employmentWithPlValue= EmploymentWithPLScoring.QUASI_GOVERNMENT_NOT_WITH_BANK.getId().longValue();
                                         }
-                                        logger.info("==============employmentWithPlValue: ============ "+employmentWithPlValue + " " +retailApplicantDetail.getEmploymentWith() );
+                                        else if(EmploymentWithPL.BANK.getId() == retailApplicantDetail.getEmploymentWith()) //8
+                                        {
+                                            employmentWithPlValue= EmploymentWithPLScoring.BANK.getId().longValue();
+                                        }
+                                        else if(EmploymentWithPL.INSURANCE_COMPANY.getId() == retailApplicantDetail.getEmploymentWith()) //9
+                                        {
+                                            employmentWithPlValue= EmploymentWithPLScoring.INSURANCE_COMPANY.getId().longValue();
+                                        }
                                         scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
                                         scoreParameterRetailRequest.setCategoryInfo_p(true);
                                     } else {
                                         scoreParameterRetailRequest.setCategoryInfo_p(false);
                                     }
-
                                 } catch (Exception e) {
                                     logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
@@ -1522,9 +1540,8 @@ public class ScoringServiceImpl implements ScoringService {
         }
     }
     
-    
     @Override
-    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans) {
+    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList) {
     	logger.info("Getting Retail Concession Details===={}========{}==>>>>"+scoringRequestLoans.getApplicationId()+""
     			+ "fpProductId===={}=====>"+scoringRequestLoans.getFpProductId());
     	
@@ -1630,7 +1647,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                 // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
 
-    		 List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
+                 if(bankingRelationList == null) {
+            		  bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);             	 
+                 }
+    		 
                 if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
                 {
                     for(BankingRelation bankingRelation:bankingRelationList)
@@ -1657,9 +1677,10 @@ public class ScoringServiceImpl implements ScoringService {
                                     ReportRequest reportRequest = new ReportRequest();
                                     reportRequest.setApplicationId(applicationId);
 
+                                    if(bankStringsList == null) {
                                     AnalyzerResponse analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
-
-                                    List<String> bankStringsList=(List<String> )analyzerResponse.getData();
+                                    	bankStringsList = (List<String> )analyzerResponse.getData();	
+                                    }
 
                                     if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
                                     {
@@ -1694,7 +1715,9 @@ public class ScoringServiceImpl implements ScoringService {
                 }
 
                 // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
-   			  List<FinancialArrangementsDetail> financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+                if(financialArrangementsDetailList == null ) {
+                	financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);                	
+                }
                 if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList))
                 {
                     for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
@@ -1944,7 +1967,7 @@ public class ScoringServiceImpl implements ScoringService {
             ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
-            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, bankStringsList, bankingRelationList, financialArrangementsDetailList);
             logger.info("==========getRetailConcessionDetails========>>>>>"+concessionResp);
             
            Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];

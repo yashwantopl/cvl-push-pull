@@ -303,6 +303,8 @@ public class CommonUtils {
 				return UNSECURED_LOAN;
 			case 16:
 				return WCTL_LOAN;
+			case 17:
+					return MFI;
 			default :
 				return null;
 			}
@@ -1512,6 +1514,7 @@ public enum APIFlags {
 	
 	public static String convertValue(Double value) {
 		NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
 		return !CommonUtils.isObjectNullOrEmpty(value)? formatter.format(value) : "0";
 	}
