@@ -83,6 +83,26 @@ public class MFILoanParameterRequest extends ProductMasterRequest implements Ser
 
     private Object workflowData;
 
+    private List<DataRequest> industrylist = Collections.emptyList();
+
+    private List<DataRequest> industryMasterList = Collections.emptyList();
+
+    public List<DataRequest> getIndustrylist() {
+        return industrylist;
+    }
+
+    public void setIndustrylist(List<DataRequest> industrylist) {
+        this.industrylist = industrylist;
+    }
+
+    public List<DataRequest> getIndustryMasterList() {
+        return industryMasterList;
+    }
+
+    public void setIndustryMasterList(List<DataRequest> industryMasterList) {
+        this.industryMasterList = industryMasterList;
+    }
+
     public Object getWorkflowData() {
         return workflowData;
     }
