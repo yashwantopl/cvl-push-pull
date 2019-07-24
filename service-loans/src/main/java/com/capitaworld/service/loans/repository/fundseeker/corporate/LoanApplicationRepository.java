@@ -323,9 +323,19 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
 	public List<BigInteger> getFPAssignedToCheckerProposalsByNPUserIdPagination(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
 
+	//fp - MFI - checker - for approved or submitted - pagination
+	@Query(value = "select lm.application_id from fs_loan_application_master lm where lm.np_org_id=:npOrgId and lm.product_id=:productId and lm.ddr_status_id =:id and lm.np_org_id=:npOrgId and lm.business_type_id=:businessTypeId and lm.is_active = true order by lm.modified_date desc",nativeQuery = true)
+	public List<BigInteger> getFPAssignedToCheckerProposalsByNPUserOrgIdPagination( @Param("id") Long ddrStatusId,@Param("npOrgId") Long npOrgId, @Param("productId") Long productId,@Param("businessTypeId") Long businessTypeId);
+
 	//fp - checker - for approved or submitted - count
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
-	public List<BigInteger> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
+	@Query(value = "SELECT lm.application_id FROM fs_loan_application_master lm WHERE np_org_id =:npOrgId AND lm.status=:id AND is_active=TRUE and product_id=:fpProductId",nativeQuery = true)
+	public List<BigInteger> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,
+																 @Param("npOrgId") Long npOrgId,
+																 @Param("fpProductId") Long fpProductId);
+
+	//fp - checker - for approved or submitted - count MFI
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.org_id=:orgId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
+	public List<BigInteger> getFPAssignedToCheckerMFIProposalsCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("orgId") Long orgId,@Param("fpProductId") Long fpProductId);
 
     //fp - checker - for reverted applications - pagination
     @Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
