@@ -6675,7 +6675,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MFI.PURPOSE_OF_LOAN_MFI:
                                 if(mfiApplicantDetail.getLoanPurpose() != null) {
                                     scoreParameterMFIRequest.setLoanPurpose_p(mfiApplicantDetail.getLoanPurpose() != null);
-                                    scoreParameterMFIRequest.setLoanPurpose(mfiApplicantDetail.getLoanPurpose());
+                                    scoreParameterMFIRequest.setLoanPurpose(Integer.parseInt(mfiApplicantDetail.getLoanPurpose()));
                                 }
                                 break;
                             case ScoreParameter.MFI.DEPENDENTS_IN_THE_FAMILY_MFI:
@@ -6894,7 +6894,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MFI.PURPOSE_OF_LOAN_MFI:
                                 if(mfiCoApplicantDetails.getLoanPurpose() != null) {
                                     scoreParameterMFIRequest.setLoanPurpose_p(mfiCoApplicantDetails.getLoanPurpose() != null);
-                                    scoreParameterMFIRequest.setLoanPurpose(mfiCoApplicantDetails.getLoanPurpose());
+                                    scoreParameterMFIRequest.setLoanPurpose(Integer.parseInt(mfiCoApplicantDetails.getLoanPurpose()));
                                 }
                                 break;
                             case ScoreParameter.MFI.DEPENDENTS_IN_THE_FAMILY_MFI:
