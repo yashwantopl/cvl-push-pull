@@ -1611,7 +1611,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
 					}
 				}
-				totalOfGstToItr = totalOfGstPurchase/totalOfITRPurchase*100;
+				if(totalOfITRPurchase != 0) {
+					totalOfGstToItr = totalOfGstPurchase/totalOfITRPurchase*100;
+				}
 				comparisionData.put("gstVsItrYearlyPurchase", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
 				comparisionData.put("gstVsItrYearlyPurchaseTotalOfGstPurchase", totalOfGstPurchase!= 0?CommonUtils.convertStringFormate(totalOfGstPurchase.toString()): " - ");
 				comparisionData.put("gstVsItrYearlyPurchaseTotalOfITRPurchase", totalOfITRPurchase !=0 ?totalOfITRPurchase: " - ");
