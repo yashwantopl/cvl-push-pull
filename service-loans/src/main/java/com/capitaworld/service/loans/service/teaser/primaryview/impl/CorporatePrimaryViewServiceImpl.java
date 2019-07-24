@@ -11,8 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.DateFormatter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,7 +25,6 @@ import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.analyzer.exceptions.AnalyzerException;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
@@ -41,7 +38,6 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
-import com.capitaworld.service.gst.exceptions.GstException;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.util.DateComparator2;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
@@ -1368,13 +1364,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		/*LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
-		corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);*/
+		LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
+		corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 			
 		return corporatePrimaryViewResponse;
 	}
 
-	/*@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Override
 	public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest) {
 		LinkedHashMap<String,Object>comparisionData=new LinkedHashMap<>();
@@ -1629,7 +1625,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		
 		return comparisionData;
-	}*/
+	}
 
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
