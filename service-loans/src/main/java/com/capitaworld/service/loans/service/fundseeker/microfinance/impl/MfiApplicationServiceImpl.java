@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -76,7 +77,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId) {
-		List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId);
+		List<PersonalDetailsReq> detailsReq = new ArrayList<>();
+//		List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId);
 		return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
 	}
 

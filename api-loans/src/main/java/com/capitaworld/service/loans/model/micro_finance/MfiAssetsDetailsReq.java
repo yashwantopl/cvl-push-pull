@@ -9,7 +9,7 @@ public class MfiAssetsDetailsReq implements Serializable {
 
     private Long applicationId;
 
-    private Integer assets_type;
+    private Integer assetsType;
 
     private String assetOwnerDetail;
 
@@ -37,12 +37,12 @@ public class MfiAssetsDetailsReq implements Serializable {
         this.applicationId = applicationId;
     }
 
-    public Integer getAssets_type() {
-        return assets_type;
+    public Integer getAssetsType() {
+        return assetsType;
     }
 
-    public void setAssets_type(Integer assets_type) {
-        this.assets_type = assets_type;
+    public void setAssetsType(Integer assetsType) {
+        this.assetsType = assetsType;
     }
 
     public String getAssetOwnerDetail() {
