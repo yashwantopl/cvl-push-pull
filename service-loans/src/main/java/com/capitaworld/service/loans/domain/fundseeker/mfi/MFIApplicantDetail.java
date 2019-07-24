@@ -346,6 +346,56 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "address_proof_type")
 	private Integer addressProofType;
 
+	@Column(name="address_proof_img")
+	private byte[] addressProofImg;
+	@Column(name="consent_form_img")
+	private byte[] consentFormImg;
+	@Column(name="profile_img")
+	private byte[] profileImg;
+	@Column(name="ship_shgi_installment")
+	private Double shipShgiInstallment;
+	@Column(name="other_installment")
+	private Double otherInstallment;
+	@Column(name="loan_installment")
+	private Double loanInstallment;
+	@Column(name="education_expense")
+	private Double educationExpense;
+	@Column(name="medical_expense")
+	private Double medicalExpense;
+	@Column(name="food_expense")
+	private Double foodExpense;
+	@Column(name="other_expense")
+	private Double otherExpense;
+	@Column(name="business_name_brief")
+	private String businessNameBrief;
+	@Column(name="monthly_cashflow")
+	private Double monthlyCashflow;
+	@Column(name="monthly_expenditure")
+	private Double monthlyExpenditure;
+	@Column(name="monthly_income")
+	private Double monthlyIncome;
+	@Column(name="ppi_no_family_member")
+	private Integer ppiNoFamilyMember;
+	@Column(name="ppi_acadamic_head_family")
+	private Integer ppiAcadamicHeadFamily;
+	@Column(name="ppi_rafrigerator_in_family")
+	private Integer ppiRafrigeratorInFamily;
+	@Column(name="ppi_stove_in_family")
+	private Integer ppiStoveInFamily;
+	@Column(name="ppi_pressure_cooker_in_family")
+	private Integer ppiPressureCookerInFamily;
+	@Column(name="ppi_tv_in_family")
+	private Integer ppiTvInFamily;
+	@Column(name="ppi_fan_in_family")
+	private Integer ppiFanInFamily;
+	@Column(name="ppi_vehicle_in_family")
+	private Integer ppiVehicleInFamily;
+	@Column(name="ppi_dressing_table_in_family")
+	private Integer ppiDressingTableInFamily;
+	@Column(name="ppi_other_table_in_family")
+	private Integer ppiOtherTableInFamily;
+
+
 	private Integer status;
 
 	public Long getId() {
@@ -1252,4 +1302,187 @@ public class MFIApplicantDetail implements Serializable {
 		this.nomineeBirthDate = nomineeBirthDate;
 	}
 
+	public byte[] getAddressProofImg() {
+		return addressProofImg;
+	}
+
+	public void setAddressProofImg(byte[] addressProofImg) {
+		this.addressProofImg = addressProofImg;
+	}
+
+	public byte[] getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(byte[] profileImg) {
+		this.profileImg = profileImg;
+	}
+
+	public Double getShipShgiInstallment() {
+		return shipShgiInstallment;
+	}
+
+	public void setShipShgiInstallment(Double shipShgiInstallment) {
+		this.shipShgiInstallment = shipShgiInstallment;
+	}
+
+	public Double getOtherInstallment() {
+		return otherInstallment;
+	}
+
+	public void setOtherInstallment(Double otherInstallment) {
+		this.otherInstallment = otherInstallment;
+	}
+
+	public Double getLoanInstallment() {
+		return loanInstallment;
+	}
+
+	public void setLoanInstallment(Double loanInstallment) {
+		this.loanInstallment = loanInstallment;
+	}
+
+	public Double getEducationExpense() {
+		return educationExpense;
+	}
+
+	public void setEducationExpense(Double educationExpense) {
+		this.educationExpense = educationExpense;
+	}
+
+	public Double getMedicalExpense() {
+		return medicalExpense;
+	}
+
+	public void setMedicalExpense(Double medicalExpense) {
+		this.medicalExpense = medicalExpense;
+	}
+
+	public Double getFoodExpense() {
+		return foodExpense;
+	}
+
+	public void setFoodExpense(Double foodExpense) {
+		this.foodExpense = foodExpense;
+	}
+
+	public Double getOtherExpense() {
+		return otherExpense;
+	}
+
+	public void setOtherExpense(Double otherExpense) {
+		this.otherExpense = otherExpense;
+	}
+
+	public String getBusinessNameBrief() {
+		return businessNameBrief;
+	}
+
+	public void setBusinessNameBrief(String businessNameBrief) {
+		this.businessNameBrief = businessNameBrief;
+	}
+
+	public Double getMonthlyCashflow() {
+		return monthlyCashflow;
+	}
+
+	public void setMonthlyCashflow(Double monthlyCashflow) {
+		this.monthlyCashflow = monthlyCashflow;
+	}
+
+	public Double getMonthlyExpenditure() {
+		return monthlyExpenditure;
+	}
+
+	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+		this.monthlyExpenditure = monthlyExpenditure;
+	}
+
+	public Double getMonthlyIncome() {
+		return monthlyIncome;
+	}
+
+	public void setMonthlyIncome(Double monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
+
+	public Integer getPpiNoFamilyMember() {
+		return ppiNoFamilyMember;
+	}
+
+	public void setPpiNoFamilyMember(Integer ppiNoFamilyMember) {
+		this.ppiNoFamilyMember = ppiNoFamilyMember;
+	}
+
+	public Integer getPpiAcadamicHeadFamily() {
+		return ppiAcadamicHeadFamily;
+	}
+
+	public void setPpiAcadamicHeadFamily(Integer ppiAcadamicHeadFamily) {
+		this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
+	}
+
+	public Integer getPpiRafrigeratorInFamily() {
+		return ppiRafrigeratorInFamily;
+	}
+
+	public void setPpiRafrigeratorInFamily(Integer ppiRafrigeratorInFamily) {
+		this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
+	}
+
+	public Integer getPpiStoveInFamily() {
+		return ppiStoveInFamily;
+	}
+
+	public void setPpiStoveInFamily(Integer ppiStoveInFamily) {
+		this.ppiStoveInFamily = ppiStoveInFamily;
+	}
+
+	public Integer getPpiPressureCookerInFamily() {
+		return ppiPressureCookerInFamily;
+	}
+
+	public void setPpiPressureCookerInFamily(Integer ppiPressureCookerInFamily) {
+		this.ppiPressureCookerInFamily = ppiPressureCookerInFamily;
+	}
+
+	public Integer getPpiTvInFamily() {
+		return ppiTvInFamily;
+	}
+
+	public void setPpiTvInFamily(Integer ppiTvInFamily) {
+		this.ppiTvInFamily = ppiTvInFamily;
+	}
+
+	public Integer getPpiFanInFamily() {
+		return ppiFanInFamily;
+	}
+
+	public void setPpiFanInFamily(Integer ppiFanInFamily) {
+		this.ppiFanInFamily = ppiFanInFamily;
+	}
+
+	public Integer getPpiVehicleInFamily() {
+		return ppiVehicleInFamily;
+	}
+
+	public void setPpiVehicleInFamily(Integer ppiVehicleInFamily) {
+		this.ppiVehicleInFamily = ppiVehicleInFamily;
+	}
+
+	public Integer getPpiDressingTableInFamily() {
+		return ppiDressingTableInFamily;
+	}
+
+	public void setPpiDressingTableInFamily(Integer ppiDressingTableInFamily) {
+		this.ppiDressingTableInFamily = ppiDressingTableInFamily;
+	}
+
+	public Integer getPpiOtherTableInFamily() {
+		return ppiOtherTableInFamily;
+	}
+
+	public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
+		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+	}
 }

@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class AadharDetailsReq {
+public class AadharDetailsReq implements Serializable {
 
     private Long id;
 
@@ -23,11 +24,8 @@ public class AadharDetailsReq {
     private String firstName;
     private String mobile;
     private String email;
-
     private String lastName;
-
     private String middleName;
-
     private Date birthDate;
 
     private Integer genderId;
@@ -89,6 +87,9 @@ public class AadharDetailsReq {
     private Integer addressProofType;
 
     private Integer businessTypeId;
+
+    private  byte[] profilePic;
+    private  byte[] addressProofImg;
 
     public AadharDetailsReq() {
     }
@@ -455,5 +456,21 @@ public class AadharDetailsReq {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public byte[] getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(byte[] profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public byte[] getAddressProofImg() {
+        return addressProofImg;
+    }
+
+    public void setAddressProofImg(byte[] addressProofImg) {
+        this.addressProofImg = addressProofImg;
     }
 }
