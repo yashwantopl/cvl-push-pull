@@ -57,6 +57,9 @@ public class GstRelatedParty {
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
+	@Column(name="is_active")
+	private Boolean isActive;
+
 	public Long getId() {
 		return id;
 	}
@@ -159,6 +162,14 @@ public class GstRelatedParty {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
 
 	@Override

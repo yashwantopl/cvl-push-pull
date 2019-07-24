@@ -695,6 +695,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public LoanApplicationRequest getMFIAppDetails(Long id, Long userId,Long userOrdId) throws LoansException {
+		try {
+			return null;
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_INDIVIDUAL_LOAN_DETAILS,e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public LoanApplicationRequest get(Long id, Long userId,Long userOrdId) throws LoansException {
 		try {
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();

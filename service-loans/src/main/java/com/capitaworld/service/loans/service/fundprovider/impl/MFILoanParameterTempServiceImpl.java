@@ -5,15 +5,20 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
-import com.capitaworld.service.loans.domain.fundprovider.MFILoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.MFILoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
-import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
+import com.capitaworld.service.loans.domain.fundprovider.MFIMappingTemp;
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.mfi.MFILoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.MFILoanParameterTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MFIMappingMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MFIMappingTempRepository;
 import com.capitaworld.service.loans.service.fundprovider.MFILoanParameterTempService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.OrgResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 @Service
 @Transactional
@@ -34,11 +36,26 @@ public class MFILoanParameterTempServiceImpl implements MFILoanParameterTempServ
 
     private static final Logger logger = LoggerFactory.getLogger(PersonalLoanParameterServiceImpl.class);
 
+    private static final String ERROR_WHILE_GET_MFI_REQUEST_TEMP_MSG = "error while getMFIRequestTemp : ";
+    private static final String ERROR_WHILE_GET_MFI_REQUEST_MASTER_MSG = "error while getMFIRequestMaster : ";
+
     @Autowired
     private MFILoanParameterTempRepository mfiLoanParameterTempRepository;
 
     @Autowired
+    private MFIMappingMasterRepository mfiMappingMasterRepository;
+
+    @Autowired
+    private MFIMappingTempRepository mfiMappingTempRepository;
+
+    @Autowired
+    private OneFormClient oneFormClient;
+
+    @Autowired
     private WorkflowClient workflowClient;
+
+    @Autowired
+    private UsersClient usersClient;
 
     @Override
     public MFILoanParameterRequest getMFILoanParameterRequest(Long id,Long role,Long userId) {
@@ -51,6 +68,42 @@ public class MFILoanParameterTempServiceImpl implements MFILoanParameterTempServ
 
         mfiLoanParameterRequest.setJobId(mfiLoanParameterTemp.getJobId());
 
+        // get list of fp mfi
+
+        List<Long> mfiList = mfiMappingTempRepository.getMfiByProductId(mfiLoanParameterRequest.getId());
+        if (!mfiList.isEmpty()) {
+            try {
+                UsersRequest usersRequest=new UsersRequest();
+                usersRequest.setOrgIdList(mfiList);
+                usersRequest = usersClient.listMfiByOrgId(usersRequest);
+                List<DataRequest> dataRequests = new ArrayList<>(usersRequest.getOrgResponseList().size());
+                for (OrgResponse orgResponse : usersRequest.getOrgResponseList()) {
+                    DataRequest dataRequest = new DataRequest();
+                    BeanUtils.copyProperties(orgResponse,dataRequest);
+                    dataRequests.add(dataRequest);
+                }
+                mfiLoanParameterRequest.setIndustrylist(dataRequests);
+            } catch (Exception e) {
+                logger.error(ERROR_WHILE_GET_MFI_REQUEST_TEMP_MSG, e);
+            }
+        }
+
+        // get list of master mfi
+
+        try {
+            UsersRequest usersRequest=new UsersRequest();
+            usersRequest.setOrgType(2);
+            usersRequest = usersClient.listMfiByOrgType(usersRequest);
+            List<DataRequest> dataRequests = new ArrayList<>(usersRequest.getOrgResponseList().size());
+            for (OrgResponse orgResponse : usersRequest.getOrgResponseList()) {
+                DataRequest dataRequest = new DataRequest();
+                BeanUtils.copyProperties(orgResponse,dataRequest);
+                dataRequests.add(dataRequest);
+            }
+            mfiLoanParameterRequest.setIndustryMasterList(dataRequests);
+        } catch (Exception e) {
+            logger.error(ERROR_WHILE_GET_MFI_REQUEST_MASTER_MSG, e);
+        }
         //set workflow buttons
 
         if (!CommonUtils.isObjectNullOrEmpty(mfiLoanParameterTemp.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
@@ -127,8 +180,36 @@ public class MFILoanParameterTempServiceImpl implements MFILoanParameterTempServ
         mfiLoanParameterTemp = mfiLoanParameterTempRepository.save(mfiLoanParameterTemp);
         mfiLoanParameterRequest.setId(mfiLoanParameterTemp.getId());
 
+
+        // start mfi mapping saving
+        mfiMappingTempRepository.inActiveMappingByFpProductId(mfiLoanParameterTemp.getId());
+        saveMFIMappingTemp(mfiLoanParameterRequest);
+        // end mfi mapping saving
+
         CommonDocumentUtils.endHook(logger, "saveOrUpdateTemp");
         return true;
 
     }
+
+
+    private void saveMFIMappingTemp(MFILoanParameterRequest mfiLoanParameterRequest) {
+        logger.info("start saveMFIMappingTemp");
+        MFIMappingTemp mfiMappingTemp = null;
+        logger.info("" + mfiLoanParameterRequest.getIndustrylist());
+        for (DataRequest dataRequest : mfiLoanParameterRequest.getIndustrylist()) {
+            mfiMappingTemp = new MFIMappingTemp();
+            mfiMappingTemp.setFpProductId(mfiLoanParameterRequest.getId());
+            mfiMappingTemp.setOrgId(dataRequest.getId());
+            mfiMappingTemp.setCreatedBy(mfiLoanParameterRequest.getUserId());
+            mfiMappingTemp.setModifiedBy(mfiLoanParameterRequest.getUserId());
+            mfiMappingTemp.setCreatedDate(new Date());
+            mfiMappingTemp.setModifiedDate(new Date());
+            mfiMappingTemp.setIsActive(true);
+            // create by and update
+            mfiMappingTempRepository.save(mfiMappingTemp);
+        }
+        logger.info("end saveMFIMappingTemp");
+    }
+
+
 }
