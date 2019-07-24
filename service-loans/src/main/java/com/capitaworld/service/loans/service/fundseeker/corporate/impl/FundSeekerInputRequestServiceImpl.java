@@ -265,8 +265,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			
 			
-			Boolean saveRelatedParty = saveRelatedParty(fundSeekerInputRequest.getSelectedRelativeParty());
-			logger.info("Saved : ==>{}",saveRelatedParty);
+			saveRelatedParty(fundSeekerInputRequest.getSelectedRelativeParty());
 			return true;
 		} catch (Exception e) {
 			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
@@ -1172,13 +1171,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	public Boolean saveRelatedParty(GstRelatedPartyRequest[] relativeParty) {
 		Boolean status = false;
-		for (GstRelatedPartyRequest request : relativeParty) {
-			GstRelatedParty gstParty=new GstRelatedParty();
-			BeanUtils.copyProperties(request, gstParty);
-			gstParty.setCreatedBy(request.getCreatedBy());
-			gstParty.setCreatedDate(new Date());
-			gstRelatedPartyRepository.save(gstParty);
-			status = true;
+		if(relativeParty!=null && relativeParty.length > 0) {
+			for (GstRelatedPartyRequest request : relativeParty) {
+				GstRelatedParty gstParty=new GstRelatedParty();
+				BeanUtils.copyProperties(request, gstParty);
+				gstParty.setCreatedBy(request.getCreatedBy());
+				gstParty.setCreatedDate(new Date());
+				gstRelatedPartyRepository.save(gstParty);
+				status = true;
+			}
 		}
 		
 		return status;
