@@ -1171,7 +1171,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	public Boolean saveRelatedParty(GstRelatedPartyRequest[] relativeParty) {
 		Boolean status = false;
-		if(!CommonUtils.isObjectListNull(relativeParty )) {
+		if(relativeParty!=null && relativeParty.length > 0) {
 			for (GstRelatedPartyRequest request : relativeParty) {
 				GstRelatedParty gstParty=new GstRelatedParty();
 				BeanUtils.copyProperties(request, gstParty);
