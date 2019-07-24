@@ -2902,7 +2902,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 
         List<Object[]> result = null;
-		if(basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.SMECC)
+		if(basicDetailsRequest != null && basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.SMECC)
         {
             result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), userResponse.getBranchList());
         }

@@ -1,12 +1,15 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+
+import java.io.Serializable;
 import java.util.Date;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class AadharDetailsReq {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class AadharDetailsReq implements Serializable {
 
     private Long id;
 
@@ -21,11 +24,8 @@ public class AadharDetailsReq {
     private String firstName;
     private String mobile;
     private String email;
-
     private String lastName;
-
     private String middleName;
-
     private Date birthDate;
 
     private Integer genderId;
@@ -88,12 +88,46 @@ public class AadharDetailsReq {
 
     private Integer businessTypeId;
 
+    private  byte[] profilePic;
+    private  byte[] addressProofImg;
+
     public AadharDetailsReq() {
     }
 
     //    fn.applicationId.id,,fn.firstName,mf.lastName,mf.middleName,mf.birthDate,mf.genderId,mf.mobile,mf.email,mf.addressSameAsAadhar,mf.currentDistrict,mf.aadharDistrict,mf.currentHouse,mf.aadharHouse,mf.currentLandmark,mf.aadharLandmark,mf.currentLocation,mf.aadharLocation,mf.currentState,mf.aadharState,mf.currentStreet,mf.aadharStreet,mf.currentVtc,mf.aadharVtc,mf.aadharSubdist,mf.currentSubdist,mf.aadharPo,mf.currentPo,mf.aadharCareOf,mf.addressPincode,mf.aadharPincode,mf.addressProofType
-    public AadharDetailsReq(Long applicationId,String firstName,String lastName,String middleName, Date birthDate,Integer genderId,String mobile,String email,String addressSameAsAadhar,String currentDistrict,String aadharDistrict,String currentHouse,String aadharHouse,
+    public AadharDetailsReq(Long applicationId,String firstName,String lastName,String middleName, Date birthDate,Integer genderId,String mobile,String email,Boolean addressSameAsAadhar,String currentDistrict,String aadharDistrict,String currentHouse,String aadharHouse,
                             String currentLandmark,String aadharLandmark,String currentLocation,String aadharLocation,String currentState,String aadharState,String currentStreet,String aadharStreet,String currentVtc,String aadharVtc,String aadharSubdist,String currentSubdist,String aadharPo,String currentPo,String aadharCareOf,String addressPincode,String aadharPincode,Integer addressProofType) {
+        this.applicationId = applicationId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleName = middleName;
+        this.birthDate = birthDate;
+        this.genderId = genderId;
+        this.mobile = mobile;
+        this.email = email;
+        this.addressSameAsAadhar = addressSameAsAadhar;
+        this.currentDistrict = currentDistrict;
+        this.aadharDistrict = aadharDistrict;
+        this.currentHouse = currentHouse;
+        this.aadharHouse = aadharHouse;
+        this.currentLandmark = currentLandmark;
+        this.aadharLandmark = aadharLandmark;
+        this.currentLocation =currentLocation;
+        this.aadharLocation = aadharLocation;
+        this.currentState = currentState;
+        this.aadharState = aadharState;
+        this.currentStreet = currentStreet;
+        this.aadharStreet = aadharStreet;
+        this.currentVtc = currentVtc;
+        this.aadharVtc = aadharVtc;
+        this.aadharSubdist = aadharSubdist;
+        this.currentSubdist = currentSubdist;
+        this.aadharPo = aadharPo;
+        this.currentPo = currentPo;
+        this.aadharCareOf = aadharCareOf;
+        this.addressPincode = addressPincode;
+        this.aadharPincode = aadharPincode;
+        this.addressProofType = addressProofType;
     }
 
     public Long getId() {
@@ -422,5 +456,21 @@ public class AadharDetailsReq {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public byte[] getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(byte[] profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public byte[] getAddressProofImg() {
+        return addressProofImg;
+    }
+
+    public void setAddressProofImg(byte[] addressProofImg) {
+        this.addressProofImg = addressProofImg;
     }
 }
