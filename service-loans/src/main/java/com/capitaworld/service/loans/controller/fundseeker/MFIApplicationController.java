@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.controller.fundseeker;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -149,7 +152,17 @@ public class MFIApplicationController {
    		}
    	}
     
-    
-    
+    @RequestMapping(value = "/getMfiDetails/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  	public ResponseEntity<LoansResponse> getMfiApplicantIncomeDetails(@PathVariable("applicationId") Long applicationId){
+  		logger.info("ENTER HERE MFI GET APPLIANT DETAILS====={}======{}======>" + applicationId);
+  		try {
+  			List<MfiReqResponse> list = mfiApplicationService.getMfiApplicantDetails(applicationId);
+  			logger.info("GET DETAIILS FOR MFI APPLICANTS DETAILS PURPOSE----->" + list.size());
+  			return new ResponseEntity<LoansResponse>(new LoansResponse("SUCCESSFULLY RETRIVE MFI RESPONSE", HttpStatus.OK.value(), list),HttpStatus.OK);	
+  		} catch (Exception e) {
+  			logger.error("THROW EXCEPTION WHILE GETTING MFI DETAILS ====={}======{}====>",e);
+  			return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+  		}
+  	}
     
 }
