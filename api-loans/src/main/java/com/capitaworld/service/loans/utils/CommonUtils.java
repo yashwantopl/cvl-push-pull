@@ -1509,6 +1509,7 @@ public enum APIFlags {
 	
 	/***********************************************CAM UTILS*********************************************************/
 	static DecimalFormat decimal = new DecimalFormat("#,##0.00");
+	static DecimalFormat decimalForDouble = new DecimalFormat("###0.00");
 	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
@@ -1564,6 +1565,19 @@ public enum APIFlags {
 			return "-";
 		}
 		
+	}
+	
+	public static Object convertStringFormate(Object value) {
+		
+//		Double a;
+		try {
+//			a = (Double) decimal.parse(value);
+			
+			return String.valueOf(convertValueIndianCurrency(decimal.parse(String.valueOf(value))));
+		} catch (ParseException e) {
+			logger.error(EXCEPTION, e);
+		}
+		return "0";
 	}
 	public static String formatValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
