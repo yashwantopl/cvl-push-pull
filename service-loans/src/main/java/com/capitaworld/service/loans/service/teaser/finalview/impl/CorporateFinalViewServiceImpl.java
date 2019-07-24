@@ -1207,9 +1207,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		/*get cmr score cibil */	
 		try {
 			String cmrScore= cibilClient.getCMRScore(toApplicationId);
-			if (cmrScore.contains("EXP")) {
+			if (cmrScore != null && cmrScore.contains("EXP")) {
 				corporateFinalViewResponse.setMsmeRankTitle("Experian");
-			}else if (cmrScore.contains("CIBIL")) {
+			}else if (cmrScore != null && cmrScore.contains("CIBIL")) {
 				corporateFinalViewResponse.setMsmeRankTitle("Cibil");
 			}
 			corporateFinalViewResponse.setCibilCmrScore(cmrScore != null ? cmrScore : "Not Found");	
@@ -1912,7 +1912,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		}*/
 
-		if (primaryCorporateDetail.getProductId() == 1) {
+		if (applicationProposalMapping.getProductId() == 1) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
@@ -2028,7 +2028,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 
 		}
-		if (primaryCorporateDetail.getProductId() == 2) {
+		if (applicationProposalMapping.getProductId() == 2) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_LAST_AUDITED_ANNUAL_REPORT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
@@ -2143,7 +2143,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
-		if (primaryCorporateDetail.getProductId() == 15) {
+		if (applicationProposalMapping.getProductId() == 15) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_LAST_AUDITED_ANNUAL_REPORT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
@@ -2259,7 +2259,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 		}
 
-		if (primaryCorporateDetail.getProductId() == 16) {
+		if (applicationProposalMapping.getProductId() == 16) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_LAST_AUDITED_ANNUAL_REPORT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
