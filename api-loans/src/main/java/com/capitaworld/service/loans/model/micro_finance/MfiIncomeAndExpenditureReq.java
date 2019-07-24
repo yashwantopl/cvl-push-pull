@@ -14,7 +14,7 @@ public class MfiIncomeAndExpenditureReq {
     private Double medicalExpense;
     private Double foodExpense;
     private Double otherExpense;
-    private String businessNameBrief;
+    private Integer businessNameBrief;
     private Double monthlyCashflow;
     private Double monthlyExpenditure;
     private Double monthlyIncome;
@@ -110,11 +110,11 @@ public class MfiIncomeAndExpenditureReq {
         this.otherExpense = otherExpense;
     }
 
-    public String getBusinessNameBrief() {
+    public Integer getBusinessNameBrief() {
         return businessNameBrief;
     }
 
-    public void setBusinessNameBrief(String businessNameBrief) {
+    public void setBusinessNameBrief(Integer businessNameBrief) {
         this.businessNameBrief = businessNameBrief;
     }
 
