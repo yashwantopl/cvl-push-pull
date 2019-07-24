@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
@@ -1371,6 +1372,231 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		return nhbsApplicationsResponseList;
 	}
 
+	@Override
+	public List<NhbsApplicationsResponse> getListOfCheckerMFIProposalsFP(NhbsApplicationRequest request) {
+		logger.info("entry in getListOfCheckerProposalsFP()");
+		Long branchId = null;
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setId(request.getUserId());
+		usersRequest.setUserOrgId(request.getUserOrgId());
+		try {
+			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequest);
+			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+					BranchBasicDetailsRequest.class);
+			branchId = branchBasicDetailsRequest.getId();
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
+		}
+		List<BigInteger> applicationIdList ;
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MFI_CHECKER== request.getUserRoleId()){
+			//List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchIdAndFpProductId(branchId,request.getFpProductId());
+			if(request.getDdrStatusId()==CommonUtils.DdrStatus.OPEN){
+				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+						request.getDdrStatusId(),
+						request.getUserOrgId(),
+						request.getProductTypeId(),
+						request.getBusinessTypeId());
+			}/*else if(request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
+				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.APPROVED,request.getBusinessTypeId());
+			}else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
+				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerReverted(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.REVERTED,request.getBusinessTypeId());
+			}*/else{
+				applicationIdList = applicationProposalMappingRepository.getFPCheckerProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.OPEN,request.getUserId(),branchId,request.getFpProductId(),request.getBusinessTypeId());
+			}
+			//applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+		}else{
+			applicationIdList = null;
+		}
+
+		List<NhbsApplicationsResponse> nhbsApplicationsResponseList =null;
+		if(!CommonUtils.isListNullOrEmpty(applicationIdList)) {
+			nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
+			for (BigInteger proposalId : applicationIdList) {
+				LoanApplicationMaster proposalMapping = loanApplicationRepository.findOne(proposalId.longValue());
+				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
+				nhbsApplicationsResponse.setApplicationType(proposalMapping.getProductId());
+				nhbsApplicationsResponse.setUserId(proposalMapping.getUserId());
+				nhbsApplicationsResponse.setApplicationId(proposalMapping.getId());
+				nhbsApplicationsResponse.setApplicationCode(proposalMapping.getApplicationCode());
+				// nhbsApplicationsResponse.setProposalId(proposalMapping.getProposalId());
+				nhbsApplicationsResponse.setBusinessTypeId(proposalMapping.getBusinessTypeId());
+				nhbsApplicationsResponse.setApprovalDate(proposalMapping.getApprovedDate());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getDdrStatusId())) {
+					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(proposalMapping.getDdrStatusId().intValue()));
+					nhbsApplicationsResponse.setDdrStatusId(proposalMapping.getDdrStatusId().intValue());
+				} else {
+					nhbsApplicationsResponse.setDdrStatus("-");
+				}
+
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) ||
+						CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
+
+					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndProposalIdAndUserId(proposalMapping.getUserId(), proposalMapping.getId(), nhbsApplicationsResponse.getProposalId());
+					if (applicantDetail != null) {
+						nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
+						try {
+							// Setting City Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+								nhbsApplicationsResponse.setCity(
+										CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+							}
+
+							// Setting State Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+								nhbsApplicationsResponse.setState(CommonDocumentUtils
+										.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+							}
+
+							// Country State Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+										.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+							}
+						} catch (Exception e) {
+							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
+						}
+					}
+				} 				// get profile pic
+				DocumentRequest documentRequest = new DocumentRequest();
+				documentRequest.setApplicationId(proposalMapping.getId());
+				//documentRequest.setProposalMappingId(proposalMapping.getProposalId());
+				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+				documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(proposalMapping.getProductId()));
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse StorsgeResponse = null;
+
+							StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+									StorageDetailsResponse.class);
+
+							if (!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
+								imagePath = StorsgeResponse.getFilePath();
+							else
+								imagePath = null;
+						}
+					}
+					nhbsApplicationsResponse.setClientProfilePic(imagePath);
+
+				} catch (DocumentException | IOException e) {
+					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE,e);
+				}
+
+				if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalLocked())) {
+					nhbsApplicationsResponse.setOneFormFilled(proposalMapping.getIsFinalLocked() ? LITERAL_LOCKED : LITERAL_UNLOCKED);
+				} else {
+					nhbsApplicationsResponse.setOneFormFilled(LITERAL_UNLOCKED);
+				}
+
+
+				nhbsApplicationsResponse.setApplicationDate(proposalMapping.getCreatedDate());
+				if (request.getDdrStatusId() == CommonUtils.DdrStatus.SUBMITTED) {
+					List<ApplicationStatusAudit> applicationStatusAuditList = new ArrayList<>();
+					if(proposalMapping.getBusinessTypeId()  == BusinessType.RETAIL_HOME_LOAN.getId()){
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPChecker(proposalMapping.getId(), ApplicationStatus.ASSIGNED,proposalMapping.getId());
+					}else{
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getId(), proposalMapping.getId(), CommonUtils.DdrStatus.IN_PROGRESS);
+					}
+					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
+						nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+				} else if (request.getDdrStatusId() == CommonUtils.DdrStatus.REVERTED) {
+					List<ApplicationStatusAudit> applicationStatusAuditList = new ArrayList<>();
+					if(proposalMapping.getBusinessTypeId()  == BusinessType.RETAIL_HOME_LOAN.getId()){
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPChecker(proposalMapping.getId(), ApplicationStatus.REVERTED,proposalMapping.getId());
+					}else {
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getId(), proposalMapping.getId(), CommonUtils.DdrStatus.SUBMITTED);
+					}
+					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
+						nhbsApplicationsResponse.setRevertDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+				} else if (request.getDdrStatusId() == CommonUtils.DdrStatus.APPROVED) {
+					List<ApplicationStatusAudit> applicationStatusAuditList = new ArrayList<>();
+					if(proposalMapping.getBusinessTypeId()  == BusinessType.RETAIL_HOME_LOAN.getId()){
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPChecker(proposalMapping.getId(),CommonUtils.ApplicationStatus.APPROVED,proposalMapping.getId());
+					}else {
+						applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnDDRStatusForFPChecker(proposalMapping.getId(), proposalMapping.getId(), CommonUtils.DdrStatus.SUBMITTED);
+					}
+					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
+						nhbsApplicationsResponse.setApprovalDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+				}
+
+
+				if (proposalMapping.getApplicationStatusMaster().getId() >= CommonUtils.ApplicationStatus.ASSIGNED) {
+					if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getFpMakerId())) {
+						UsersRequest usersRequestForMaker = new UsersRequest();
+						usersRequestForMaker.setId(proposalMapping.getFpMakerId());
+						try {
+							UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							nhbsApplicationsResponse.setMakerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "" : fundProviderDetailsRequest.getLastName()));
+						} catch (Exception e) {
+							logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
+						}
+					}
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPMaker(proposalMapping.getId(), proposalMapping.getId(), CommonUtils.ApplicationStatus.OPEN);
+					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
+						nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+				} else {
+					nhbsApplicationsResponse.setMakerName("-");
+				}
+//				if ((proposalMapping.getApplicationStatusMaster().getId() >= CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER) ||
+//						(proposalMapping.getDdrStatusId() >= CommonUtils.DdrStatus.SUBMITTED)) {
+				if ((proposalMapping.getApplicationStatusMaster().getId() >= CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER)) {
+					if (!CommonUtils.isObjectNullOrEmpty(proposalMapping.getNpUserId())) {
+						UsersRequest usersRequestForMaker = new UsersRequest();
+						usersRequestForMaker.setId(proposalMapping.getNpUserId());
+						try {
+							UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "" : fundProviderDetailsRequest.getLastName()));
+						} catch (Exception e) {
+							logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
+						}
+					}
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdAndProposalIdBasedOnStatusForFPMaker(proposalMapping.getId(), proposalMapping.getId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
+					if (!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)) {
+						nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+				} else {
+					nhbsApplicationsResponse.setCheckerName("-");
+				}
+
+				ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationId(nhbsApplicationsResponse.getApplicationId());
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(nhbsApplicationsResponse.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
+					if (!applicationProposalMapping.getOrgId().equals(usersRequest.getUserOrgId())) {
+						nhbsApplicationsResponse.setSanction(true);
+					}
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)
+						&& (CommonUtils.isObjectNullOrEmpty(nhbsApplicationsResponse.isSanction()) || !nhbsApplicationsResponse.isSanction())){
+					if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getUserOrgId())
+							&& !ineligibleProposalDetails.getUserOrgId().equals(usersRequest.getUserOrgId().toString())){
+						if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsDisbursed()) && ineligibleProposalDetails.getIsDisbursed() == true)
+							nhbsApplicationsResponse.setSanction(true);
+						else if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails.getIsSanctioned()) && ineligibleProposalDetails.getIsSanctioned() == true)
+							nhbsApplicationsResponse.setSanction(true);
+					}else{
+						nhbsApplicationsResponse.setSanction(false);
+					}
+				}
+				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+			}
+		}
+
+		logger.info("exit from getListOfCheckerProposalsFP()");
+		return nhbsApplicationsResponseList;
+	}
+
     @Override
 	public JSONObject getFPProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId) {
 		logger.info("entry in getFPProposalCount()");
@@ -1436,6 +1662,59 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 		}
 		logger.info("exit from getFPProposalCount()");
+		logger.info(countObj.toJSONString());
+		return countObj;
+	}
+
+	@Override
+	public JSONObject getFPMFIProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId) {
+		logger.info("entry in getFPMFIProposalCount()");
+
+		Long branchId = null;
+		UsersRequest usersRequestForBranch = new UsersRequest();
+		usersRequestForBranch.setId(nhbsApplicationRequest.getUserId());
+		try {
+			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequestForBranch);
+			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+					BranchBasicDetailsRequest.class);
+			branchId = branchBasicDetailsRequest.getId();
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
+		}
+
+		JSONObject countObj = new JSONObject();
+		nhbsApplicationRequest.setProductTypeId(17L);
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MFI_CHECKER == nhbsApplicationRequest.getUserRoleId()){
+
+			// Pending proposal
+			List<BigInteger> allOtherCheckerApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.ApplicationStatus.OPEN,
+					npOrgId,
+					nhbsApplicationRequest.getProductTypeId());
+			countObj.put("allOtherProposalCount", allOtherCheckerApplicationIdList.size());
+
+			// Sent to Sidbi checker
+			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(ApplicationStatus.ASSIGNED,npOrgId,
+					nhbsApplicationRequest.getProductTypeId());
+			countObj.put("assignToMFICheckerPropsalCount", assignToMFICheckerPropsalCount.size());
+
+
+			// Sanction proposal Count
+			List<BigInteger> sanctionPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount((long) CommonUtils.ApplicationStatusMessage.SANCTIONED.getId(),npOrgId,
+					nhbsApplicationRequest.getProductTypeId());
+			countObj.put("sanctionPropsalCount", sanctionPropsalCount.size());
+
+			// Disbursed proposal Count
+			List<BigInteger> dibusedPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount((long) CommonUtils.ApplicationStatusMessage.DISBURSED.getId(),npOrgId,
+					nhbsApplicationRequest.getProductTypeId());
+			countObj.put("dibusedPropsalCount", dibusedPropsalCount.size());
+
+			// Disbursed proposal Count
+			List<BigInteger> rejectedProposalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount((long) CommonUtils.ApplicationStatusMessage.REJECT.getId(),npOrgId,
+					nhbsApplicationRequest.getProductTypeId());
+			countObj.put("rejectedProposalCount", rejectedProposalCount.size());
+
+		}
+		logger.info("exit from getFPMFIProposalCount()");
 		logger.info(countObj.toJSONString());
 		return countObj;
 	}
