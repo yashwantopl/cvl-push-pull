@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
@@ -93,5 +94,27 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			detailsRepository.save(mfiApplicationDetail);
 		}
 		return true;
+	}
+
+	@Override
+	public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId) {
+		logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"+applicationId);
+		List<MFIApplicantDetail> appDetailList = detailsRepository.findByApplicationIdAndIsActive(applicationId);
+		List<MfiReqResponse> appResponseList = new ArrayList<>(appDetailList.size());
+		MfiReqResponse appIncomeReq = null;
+		
+		for(MFIApplicantDetail appIncomeDetail : appDetailList) {
+				appIncomeReq = new MfiReqResponse();
+				BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
+				appResponseList.add(appIncomeReq);
+		}
+		return appResponseList;
+		
+/*		logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"+applicationId);
+		MFIApplicantDetail detailsResp = detailsRepository.findByApplicationIdAndIsActive(applicationId,true);
+		logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"+detailsResp);
+		MfiReqResponse mfiResp = new MfiReqResponse();
+		BeanUtils.copyProperties(detailsResp, mfiResp);*/
+	//	return  null;
 	}
 }
