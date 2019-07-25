@@ -1,95 +1,100 @@
 package com.capitaworld.service.loans.domain.fundseeker.mfi;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
+import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+
+import java.io.Serializable;
+import java.util.List;
+
+@Entity
 @Table(name = "fs_mfi_assets_liability_details")
 public class MfiAssetsLiabilityDetails implements Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "application_id")
-    private Long applicationId;
+	@Column(name = "application_id")
+	private Long applicationId;
 
-    @Column(name = "assets_type")
-    private Integer assets_type;
+	@Column(name = "assets_liability_type")
+	private Integer assetsLiabilityType;
 
-    @Column(name = "asset_owner_detail")
-    private String asset_owner_detail;
+	@Column(name = "asset_owner_detail")
+	private String assetOwnerDetail;
 
-    private Double amount;
+	private Double amount;
 
-    private Double outstanding;
+	private Double outstanding;
 
-    private Integer particulars;
+	private Integer particulars;
 
-    private Integer type; // for assets or liability
+	private Integer type; // for assets or liability
 
+	public Long getId() {
+		return id;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getApplicationId() {
+		return applicationId;
+	}
 
-    public Long getApplicationId() {
-        return applicationId;
-    }
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
 
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
-    }
+	public Double getAmount() {
+		return amount;
+	}
 
-    public Integer getAssets_type() {
-        return assets_type;
-    }
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
 
-    public void setAssets_type(Integer assets_type) {
-        this.assets_type = assets_type;
-    }
+	public Double getOutstanding() {
+		return outstanding;
+	}
 
-    public String getAsset_owner_detail() {
-        return asset_owner_detail;
-    }
+	public void setOutstanding(Double outstanding) {
+		this.outstanding = outstanding;
+	}
 
-    public void setAsset_owner_detail(String asset_owner_detail) {
-        this.asset_owner_detail = asset_owner_detail;
-    }
+	public Integer getParticulars() {
+		return particulars;
+	}
 
-    public Double getAmount() {
-        return amount;
-    }
+	public void setParticulars(Integer particulars) {
+		this.particulars = particulars;
+	}
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
+	public Integer getType() {
+		return type;
+	}
 
-    public Double getOutstanding() {
-        return outstanding;
-    }
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
-    public void setOutstanding(Double outstanding) {
-        this.outstanding = outstanding;
-    }
+	public Integer getAssetsLiabilityType() {
+		return assetsLiabilityType;
+	}
 
-    public Integer getParticulars() {
-        return particulars;
-    }
+	public void setAssetsLiabilityType(Integer assetsLiabilityType) {
+		this.assetsLiabilityType = assetsLiabilityType;
+	}
 
-    public void setParticulars(Integer particulars) {
-        this.particulars = particulars;
-    }
+	public String getAssetOwnerDetail() {
+		return assetOwnerDetail;
+	}
 
-    public Integer getType() {
-        return type;
-    }
+	public void setAssetOwnerDetail(String assetOwnerDetail) {
+		this.assetOwnerDetail = assetOwnerDetail;
+	}
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
 }

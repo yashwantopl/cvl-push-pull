@@ -1,16 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.model.micro_finance.*;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiBankDetailsRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -18,16 +11,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiAssetsLiabilityDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
+import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
+import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiAssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiBankDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
 public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MfiApplicationServiceImpl.class.getName());
+	private static final Integer ASSETS = 1;
+	private static final Integer LIABILITY = 2;
 
 	@Autowired
 	private MfiApplicationDetailsRepository detailsRepository;
@@ -37,9 +49,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private MfiBankDetailsRepository bankDetailsRepository;
-	
+
 	@Autowired
 	private MfiIncomeDetailsRepository MfiIncomeDetailsRepository;
+
+	@Autowired
+	private MfiAssetsDetailsRepository MfiAssetsDetailsRepository;
 
 	@Override
 	public boolean saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -74,7 +89,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	@Override
 	public boolean saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq) {
 		// TODO Auto-generated method stub
-		System.out.println("personalDetailsReq.getId()=======>" + personalDetailsReq.getId());
 		MFIApplicantDetail mfiApplicationDetail;
 		if (null != personalDetailsReq.getId()) {
 			mfiApplicationDetail = detailsRepository.findOne(personalDetailsReq.getId());
@@ -107,26 +121,28 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId) {
-		logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"+applicationId);
+		logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>" + applicationId);
 		List<MFIApplicantDetail> appDetailList = detailsRepository.findByApplicationIdAndIsActive(applicationId);
 		List<MfiReqResponse> appResponseList = new ArrayList<>(appDetailList.size());
 		MfiReqResponse appIncomeReq = null;
-		
-		for(MFIApplicantDetail appIncomeDetail : appDetailList) {
-				appIncomeReq = new MfiReqResponse();
-				BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
-				appResponseList.add(appIncomeReq);
+
+		for (MFIApplicantDetail appIncomeDetail : appDetailList) {
+			appIncomeReq = new MfiReqResponse();
+			BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
+			appResponseList.add(appIncomeReq);
 		}
 		return appResponseList;
-		
-/*		logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"+applicationId);
-		MFIApplicantDetail detailsResp = detailsRepository.findByApplicationIdAndIsActive(applicationId,true);
-		logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"+detailsResp);
-		MfiReqResponse mfiResp = new MfiReqResponse();
-		BeanUtils.copyProperties(detailsResp, mfiResp);*/
-	//	return  null;
-	}
 
+		/*
+		 * logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"
+		 * +applicationId); MFIApplicantDetail detailsResp =
+		 * detailsRepository.findByApplicationIdAndIsActive(applicationId,true);
+		 * logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"
+		 * +detailsResp); MfiReqResponse mfiResp = new MfiReqResponse();
+		 * BeanUtils.copyProperties(detailsResp, mfiResp);
+		 */
+		// return null;
+	}
 
 	@Override
 	public boolean saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq) {
@@ -141,23 +157,23 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	public MfiBankDetailsReq fetchBankDetail(Long applicationId) {
 		MfiBankDetailsReq mfiBankDetailsReq = new MfiBankDetailsReq();
 		MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
-		BeanUtils.copyProperties(byApplicationId,mfiBankDetailsReq);
+		BeanUtils.copyProperties(byApplicationId, mfiBankDetailsReq);
 		return mfiBankDetailsReq;
 	}
 
 	@Override
-	public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId){
+	public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId) {
 		List<MfiApplicantDetailsReq> mfiApplicantDetailsReqs = new ArrayList<>();
 		List<MFIApplicantDetail> all = detailsRepository.findByApplicationIdAndIsActive(applicationId);
-		for (MFIApplicantDetail applicantDetail:all) {
+		for (MFIApplicantDetail applicantDetail : all) {
 			MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
-			BeanUtils.copyProperties(applicantDetail,detailsReq);
+			BeanUtils.copyProperties(applicantDetail, detailsReq);
 			mfiApplicantDetailsReqs.add(detailsReq);
 		}
 		return mfiApplicantDetailsReqs;
 
 	}
-	
+
 	@Override
 	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId) {
 		List<ProjectDetailsReq> detailsReq = detailsRepository.findProjectDetailsByAppId(applicationId);
@@ -182,20 +198,68 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 			}
 		}
-
-		
 		return true;
 	}
 
 	@Override
 	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId) {
-		List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
-		if(!CommonUtils.isListNullOrEmpty(detailsReq)) {
+		List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository
+				.findIncomeAndExpenditureDetailsByAppId(applicationId);
+		if (!CommonUtils.isListNullOrEmpty(detailsReq)) {
 			MfiIncomeAndExpenditureReq expenditureReq = detailsReq.get(0);
-			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
-			expenditureReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
+			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository
+					.findIncomeDetailsByAppId(applicationId);
+			expenditureReq.setIncomeDetailsReqList(
+					!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
 			return expenditureReq;
-		}		
+		}
 		return null;
 	}
+
+	@Override
+	public boolean saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
+		MfiAssetsLiabilityDetails mfiAssetsLiabilityDetails = null;
+		MFIApplicantDetail mfiApplicationDetail = null;
+		List<MfiAssetsDetailsReq> mfiAssetsDetailsReqs = mfiAssetsDetailsReq.getAssetsDetails();
+		List<MfiAssetsDetailsReq> mfiLiabilityDetailsReqs = mfiAssetsDetailsReq.getLiabilityDetails();
+		if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReqs)) { // to save assets details
+			for (MfiAssetsDetailsReq mfiassetsDetailsReq : mfiAssetsDetailsReqs) {
+				mfiAssetsLiabilityDetails = new MfiAssetsLiabilityDetails();
+				BeanUtils.copyProperties(mfiassetsDetailsReq, mfiAssetsLiabilityDetails);
+				mfiAssetsLiabilityDetails.setApplicationId(mfiassetsDetailsReq.getApplicationId());
+				mfiAssetsLiabilityDetails.setType(ASSETS);
+				MfiAssetsDetailsRepository.save(mfiAssetsLiabilityDetails);
+			}
+		}
+		if (!CommonUtils.isListNullOrEmpty(mfiLiabilityDetailsReqs)) { // to save liability details
+			for (MfiAssetsDetailsReq mfiDetailsReq : mfiLiabilityDetailsReqs) {
+				mfiAssetsLiabilityDetails = new MfiAssetsLiabilityDetails();
+				BeanUtils.copyProperties(mfiDetailsReq, mfiAssetsLiabilityDetails);
+				mfiAssetsLiabilityDetails.setApplicationId(mfiDetailsReq.getApplicationId());
+				mfiAssetsLiabilityDetails.setType(LIABILITY);
+				MfiAssetsDetailsRepository.save(mfiAssetsLiabilityDetails);
+			}
+		}
+		
+		if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReqs) //update in applicant details
+				|| !CommonUtils.isListNullOrEmpty(mfiLiabilityDetailsReqs)) {
+			mfiApplicationDetail = detailsRepository.findOne(mfiAssetsDetailsReq.getId());
+			mfiApplicationDetail.setIsAssetsDetailsFilled(true);
+			detailsRepository.save(mfiApplicationDetail);
+		}
+		return true;
+	}
+
+	@Override
+	public MfiAssetsDetailsReq getAssetsLiabilityDetailsAppId(Long applicationId) {
+
+		MfiAssetsDetailsReq mfiAssetsDetailsReq = null;
+		List<MfiAssetsDetailsReq> detailsReq = MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId);
+		List<MfiAssetsDetailsReq> liabilityReq = MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId);
+		mfiAssetsDetailsReq = new MfiAssetsDetailsReq();
+		mfiAssetsDetailsReq.setAssetsDetails(detailsReq);
+		mfiAssetsDetailsReq.setLiabilityDetails(liabilityReq);
+		return mfiAssetsDetailsReq;
+	}
+
 }
