@@ -12,7 +12,7 @@ public class ProjectDetailsReq {
 	private Long id;
 	private Long applicationId;
 	private Integer loanType;
-	private Integer loanPurpose;
+	private String loanPurpose;
 	private Double loanAmountRequired;
 	private Double costOfProject;
 	private Double costOfEquipment;
@@ -28,7 +28,7 @@ public class ProjectDetailsReq {
 	private Double insurencePremium;
 	private Boolean isProjectDetailsFilled;
 
-	public ProjectDetailsReq(Long applicationId, Integer loanType, Integer loanPurpose, Double loanAmountRequired,
+	public ProjectDetailsReq(Long applicationId, Integer loanType, String loanPurpose, Double loanAmountRequired,
 			Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
 			Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
 			Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
@@ -69,11 +69,11 @@ public class ProjectDetailsReq {
 		this.loanAmountRequired = loanAmountRequired;
 	}
 
-	public Integer getLoanPurpose() {
+	public String getLoanPurpose() {
 		return loanPurpose;
 	}
 
-	public void setLoanPurpose(Integer loanPurpose) {
+	public void setLoanPurpose(String loanPurpose) {
 		this.loanPurpose = loanPurpose;
 	}
 

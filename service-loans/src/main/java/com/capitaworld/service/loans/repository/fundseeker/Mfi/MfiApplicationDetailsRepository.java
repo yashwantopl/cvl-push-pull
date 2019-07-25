@@ -31,15 +31,15 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     public List<MFIApplicantDetail> findByApplicationIdAndIsActive(@Param("applicationId") Long applicationId);
      
 
-    @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" + 
-    		"			fn.relationWithNomineeId, fn.nomineeAddress, fn.nomineePincode, fn.educationQualification,\n" + 
-    		"			fn.religion,fn.landHolding,fn.houseType,fn.nameOfFirm,\n" + 
-    		"		fn.businessType, fn.nomineeState, fn.nomineeCity,\n" + 
-    		"			fn.nomineeDistrict,fn.nomineeLocation, fn.nomineeHouseNo,fn.nomineeLandmark,\n" + 
-    		"			fn.academicReligion, fn.academicCaste, fn.isAcademicLifeInsurance, fn.houseOwnership,\n" + 
-    		"			fn.areaType, fn.businessPremises, fn.expInSameLine, fn.academicSumInsured,\n" + 
-    		"			fn.isPersonalDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
-    public List<PersonalDetailsReq> findPersonalDetailsByAppId(@Param("appId") Long appId);
+//    @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" +
+//    		"			fn.relationWithNomineeId, fn.nomineeAddress, fn.nomineePincode, fn.educationQualification,\n" +
+//    		"			fn.religion,fn.landHolding,fn.houseType,fn.nameOfFirm,\n" +
+//    		"		fn.businessType, fn.nomineeState, fn.nomineeCity,\n" +
+//    		"			fn.nomineeDistrict,fn.nomineeLocation, fn.nomineeHouseNo,fn.nomineeLandmark,\n" +
+//    		"			fn.academicReligion, fn.academicCaste, fn.isAcademicLifeInsurance, fn.houseOwnership,\n" +
+//    		"			fn.areaType, fn.businessPremises, fn.expInSameLine, fn.academicSumInsured,\n" +
+//    		"			fn.isPersonalDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
+//    public List<PersonalDetailsReq> findPersonalDetailsByAppId(@Param("appId") Long appId);
     
     @Query("select new com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq(fn.applicationId.id,fn.loanType,fn.loanPurpose,fn.loanAmountRequired,fn.costOfProject,fn.costOfEquipment,fn.workingCapOfEquipment,fn.totalCostEquipment,fn.promoterContribution,fn.loanRequiredFromSidbi,fn.totalMeanFinance,fn.totalCashFlow,fn.repaymentFrequency,fn.insurenceRequired,fn.insurenceCompanyName,fn.insurencePremium,fn.isProjectDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
     public List<ProjectDetailsReq> findProjectDetailsByAppId(@Param("appId") Long appId);
