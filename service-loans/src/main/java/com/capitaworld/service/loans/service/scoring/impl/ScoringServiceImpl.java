@@ -13,7 +13,12 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.*;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.scoring.MCLRReqRes;
+import com.capitaworld.service.scoring.model.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -62,10 +67,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrang
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
-import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
@@ -109,13 +110,6 @@ import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
-import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
-import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
-import com.capitaworld.service.scoring.model.ModelParameterResponse;
-import com.capitaworld.service.scoring.model.ScoreParameterRetailRequest;
-import com.capitaworld.service.scoring.model.ScoringParameterRequest;
-import com.capitaworld.service.scoring.model.ScoringRequest;
-import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
@@ -221,6 +215,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private ProductMasterRepository productMasterRepository;
+
+    @Autowired
+    private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -804,7 +801,7 @@ public class ScoringServiceImpl implements ScoringService {
             /*ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
-            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, null, null, null);
             logger.info("==========getRetailConcessionDetailS PERSONAL LOAN ========>>>>>"+concessionResp);
             
            Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];
@@ -1540,9 +1537,8 @@ public class ScoringServiceImpl implements ScoringService {
         }
     }
     
-    
     @Override
-    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans) {
+    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList) {
     	logger.info("Getting Retail Concession Details===={}========{}==>>>>"+scoringRequestLoans.getApplicationId()+""
     			+ "fpProductId===={}=====>"+scoringRequestLoans.getFpProductId());
     	
@@ -1648,7 +1644,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                 // check isBorrowersHavingAccounts and isBorrowersHavingSalaryAccounts
 
-    		 List<BankingRelation> bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);
+                 if(bankingRelationList == null) {
+            		  bankingRelationList = bankingRelationlRepository.listBankRelationAppId(applicationId);             	 
+                 }
+    		 
                 if(!CommonUtils.isObjectNullOrEmpty(bankingRelationList))
                 {
                     for(BankingRelation bankingRelation:bankingRelationList)
@@ -1675,9 +1674,10 @@ public class ScoringServiceImpl implements ScoringService {
                                     ReportRequest reportRequest = new ReportRequest();
                                     reportRequest.setApplicationId(applicationId);
 
+                                    if(bankStringsList == null) {
                                     AnalyzerResponse analyzerResponse = analyzerClient.getSalaryDetailsFromReport(reportRequest);
-
-                                    List<String> bankStringsList=(List<String> )analyzerResponse.getData();
+                                    	bankStringsList = (List<String> )analyzerResponse.getData();	
+                                    }
 
                                     if(!CommonUtils.isObjectNullOrEmpty(bankStringsList))
                                     {
@@ -1712,7 +1712,9 @@ public class ScoringServiceImpl implements ScoringService {
                 }
 
                 // check isBorrowersAvailingLoans and isBorrowersAvailingCreaditCards
-   			  List<FinancialArrangementsDetail> financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+                if(financialArrangementsDetailList == null ) {
+                	financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);                	
+                }
                 if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailList))
                 {
                     for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
@@ -1962,7 +1964,7 @@ public class ScoringServiceImpl implements ScoringService {
             ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
-            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans);
+            Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, bankStringsList, bankingRelationList, financialArrangementsDetailList);
             logger.info("==========getRetailConcessionDetails========>>>>>"+concessionResp);
             
            Boolean  isBorrowersHavingAccounts	  =	(Boolean)concessionResp[0];
@@ -2129,7 +2131,7 @@ public class ScoringServiceImpl implements ScoringService {
             				if(retailApplicantDetail.getResidenceType() != null) {
             					if(ResidenceStatusRetailMst.OWNED.getId().equals(retailApplicantDetail.getResidenceType())) {
             						if(retailApplicantDetail.getIsOwnedProp() == null || retailApplicantDetail.getIsOwnedProp()) {
-            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());            							
+            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
             						}else {
             							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
             						}
@@ -2764,7 +2766,7 @@ public class ScoringServiceImpl implements ScoringService {
             				if(coApplicantDetail.getResidenceType() != null) {
             					if(ResidenceStatusRetailMst.OWNED.getId().equals(coApplicantDetail.getResidenceType())) {
             						if(coApplicantDetail.getIsOwnedProp() == null || coApplicantDetail.getIsOwnedProp()) {
-            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());            							
+            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
             						}else {
             							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
             						}
@@ -6553,5 +6555,415 @@ public class ScoringServiceImpl implements ScoringService {
             return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
+    }
+
+    @Override
+    public ResponseEntity<LoansResponse> calculateMFILoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
+
+        Long applicationId = null;
+        ScoringRequestLoans scoringRequestLoansReq = null;
+        List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
+
+        MFIApplicantDetail mfiApplicantDetail =null;
+        if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)){
+            applicationId = scoringRequestLoansList.get(0).getApplicationId();
+            mfiApplicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(applicationId,1);
+        }
+        for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
+        {
+            ScoreParameterMFIRequest scoreParameterMFIRequest = null;
+            Long scoreModelId = scoringRequestLoans.getScoringModelCoAppId();
+            if(scoreModelId == null) {
+                scoreModelId = scoringRequestLoans.getScoringModelId();
+            }
+            logger.info("Scoring model Id For App===>{}",scoreModelId);
+            Long fpProductId = scoringRequestLoans.getFpProductId();
+            logger.info("Fp Product Id For App===>{}",fpProductId);
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setFpProductId(fpProductId);
+            scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setUserId(scoringRequestLoans.getUserId());
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MFI_LOAN);
+            scoringRequest.setEmi(scoringRequestLoans.getEmi());
+
+            if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
+                scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
+            } else {
+                scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
+            }
+
+            ///////// End  Getting Old Request ///////
+
+            if (CommonUtils.isObjectNullOrEmpty(scoreParameterMFIRequest)) {
+                scoreParameterMFIRequest= new ScoreParameterMFIRequest();
+                scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
+
+                logger.info("----------------------------START MFI HL ------------------------------");
+
+                logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
+
+                // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
+                if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
+                    // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+                    List<ModelParameterResponse> listFieldByBusinessTypeId = Collections.emptyList();
+                    try {
+                        listFieldByBusinessTypeId = scoringClient.listFieldByBusinessTypeIdForCoApplicant(scoringRequest);
+                    } catch (Exception e) {
+                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
+                    }
+
+                    for (ModelParameterResponse modelParameterResponse : listFieldByBusinessTypeId) {
+                        FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                        fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                        fundSeekerInputRequest.setName(modelParameterResponse.getName());
+                        switch (modelParameterResponse.getName()) {
+                            case ScoreParameter.MFI.AGE_OF_BORROWER_MFI:
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getBirthDate())) {
+                                        Integer exactAge [] = CommonUtils.getExactAgeFromDate(mfiApplicantDetail.getBirthDate());
+                                        Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12.0d));
+                                        logger.info("Age With Point == {}",age);
+                                        scoreParameterMFIRequest.setAgeOfBorrower(age.longValue());
+                                        scoreParameterMFIRequest.setAgeOfBorrower_p(true);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting AGE_OF_BORROWER_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI:
+                                try {
+                                    Double totalExperience = 0.0;
+                                    /*if(mfiApplicantDetail.getEmploymentType() != null) {
+                                        scoreParameterMFIRequest.setWorkingExperience_p(true);
+                                        if(!OccupationNatureNTB.SALARIED.getId().equals(mfiApplicantDetail.getEmploymentType())){
+                                            if(mfiApplicantDetail.getBusinessStartDate() != null) {
+                                                logger.info("ApplicantDetail.getBusinessStartDate() For MFI==== > {}",mfiApplicantDetail.getBusinessStartDate());
+                                                Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(mfiApplicantDetail.getBusinessStartDate());
+                                                logger.info("Year For MFI ====ApplicationId===>{}=====>{}",diifFromDate[0],applicationId);
+                                                logger.info("Month For MFI ===ApplicationId===>{}=====>{}",diifFromDate[1],applicationId);
+                                                totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12.0d));
+                                                logger.info("Total Business Experience For MFI==== > {}",totalExperience);
+                                                scoreParameterMFIRequest.setWorkingExperience(totalExperience);
+                                                scoreParameterMFIRequest.setWorkingExperience_p(true);
+                                            }
+                                        }else {
+                                            if (!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getTotalExperienceYear())) {
+                                                totalExperience += Double.valueOf(mfiApplicantDetail.getTotalExperienceYear());
+                                                logger.info("totalExperience Year {}===>{}",mfiApplicantDetail.getTotalExperienceYear());
+                                            }
+                                            if (!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getTotalExperienceMonth())) {
+                                                totalExperience += Double.valueOf(mfiApplicantDetail.getTotalExperienceMonth()) / 12.0d;
+                                                logger.info("totalExperience Month {}===>{}",mfiApplicantDetail.getTotalExperienceMonth());
+                                            }
+                                            logger.info("totalExperience {}===>{}",totalExperience);
+                                            scoreParameterMFIRequest.setWorkingExperience(totalExperience);
+                                        }
+                                    }*/
+                                } catch (Exception e) {
+                                    logger.error("error while getting EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.ACADEMIC_QUALIFICATION_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setAcademicQualification_p(mfiApplicantDetail.getEducationQualification() != null);
+                                    scoreParameterMFIRequest.setAcademicQualification((mfiApplicantDetail.getEducationQualification() != null  ? mfiApplicantDetail.getEducationQualification().longValue() : null));
+                                } catch (Exception e) {
+                                    logger.error("error while getting MARITAL_STATUS parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.PURPOSE_OF_LOAN_MFI:
+                                if(mfiApplicantDetail.getLoanPurpose() != null) {
+                                    scoreParameterMFIRequest.setLoanPurpose_p(mfiApplicantDetail.getLoanPurpose() != null);
+                                    scoreParameterMFIRequest.setLoanPurpose(Integer.parseInt(mfiApplicantDetail.getLoanPurpose()));
+                                }
+                                break;
+                            case ScoreParameter.MFI.DEPENDENTS_IN_THE_FAMILY_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setDependents(mfiApplicantDetail.getNoDependent());
+                                    scoreParameterMFIRequest.setDependents_p(mfiApplicantDetail.getNoDependent() != null);
+                                } catch (Exception e) {
+                                    logger.error("error while getting DEPENDENTS_IN_THE_FAMILY_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.OWNERSHIP_OF_HOUSE_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setOwnershipOfHouse((mfiApplicantDetail.getHouseType() != null ? mfiApplicantDetail.getHouseType().longValue() : null));
+                                    scoreParameterMFIRequest.setOwnerShipOfHouse_p(mfiApplicantDetail.getHouseType() != null);
+                                } catch (Exception e) {
+                                    logger.error("error while getting OWNERSHIP_OF_HOUSE_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.ANNUAL_INCOME_AS_APPLICABLE_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setAnnualIncome((mfiApplicantDetail.getInsurencePremium () != null ? mfiApplicantDetail.getInsurencePremium ().longValue() : null));
+                                    scoreParameterMFIRequest.setAnnualIncome_p(mfiApplicantDetail.getInsurencePremium () != null);
+                                } catch (Exception e) {
+                                    logger.error("error while getting ANNUAL_INCOME_AS_APPLICABLE_MFI parameter : ",e);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    logger.info("----------------------------END-------------------------------------------");
+
+                    Gson g = new Gson();
+                    ScoringRequestDetail scoringRequestDetail = new ScoringRequestDetail();
+
+                    try {
+                        scoringRequestDetail.setApplicationId(applicationId);
+                        scoringRequestDetail.setRequest(g.toJson(scoreParameterMFIRequest));
+                        scoringRequestDetail.setCreatedDate(new Date());
+                        scoringRequestDetail.setCoAppId(scoringRequestLoans.getCoApplicantId());
+                        scoringRequestDetail.setIsActive(true);
+                        scoringRequestDetailRepository.save(scoringRequestDetail);
+
+                        logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
+                    } catch (Exception e) {
+                        logger.error(CommonUtils.EXCEPTION,e);
+                    }
+                }
+            }
+            scoringRequest.setScoreParameterMFIRequest(scoreParameterMFIRequest);
+            scoringRequestList.add(scoringRequest);
+        }
+
+        try {
+            ScoringResponse calculateScoreList = scoringClient.calculateScoreList(scoringRequestList);
+            logger.info("Scoring Response For MFI Loan for App============>{}",calculateScoreList);
+            logger.info("Scoring Response Status For MFI Loan for App============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(ERROR_WHILE_CALLING_SCORING,e);
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+    }
+
+    @Override
+    public ResponseEntity<LoansResponse> calculateMFILoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList) {
+
+        Long orgId = null;
+        Long applicationId = null;
+        Long coApplicantId = null;
+        ScoringRequestLoans scoringRequestLoansReq = null;
+        MFIApplicantDetail mfiCoApplicantDetails = null ;
+        if(!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
+            scoringRequestLoansReq = scoringRequestLoansList.get(0);
+            applicationId = scoringRequestLoansReq.getApplicationId();
+            coApplicantId = scoringRequestLoansReq.getCoApplicantId();
+            mfiCoApplicantDetails = mfiApplicationDetailsRepository.findByAppIdAndType(applicationId,1);
+            logger.info("Calculating Scoring For CoApplicant and ApplicationId============{}==================>{}",coApplicantId,applicationId);
+            //coApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(coApplicantId, true);
+            if (CommonUtils.isObjectNullOrEmpty(mfiCoApplicantDetails)) {
+                logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
+                return new ResponseEntity<>(new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+            }
+            logger.info("coApplicantDetail.getEmploymentType()===============>{}");
+
+        }
+        List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
+        Integer minBankRelationshipInMonths = null;
+        for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
+        {
+            applicationId = scoringRequestLoans.getApplicationId();
+
+            ScoreParameterMFIRequest scoreParameterMFIRequest = null;
+            Long scoreModelId = scoringRequestLoans.getScoringModelCoAppId();
+            if(scoreModelId == null) {
+                scoreModelId = scoringRequestLoans.getScoringModelId();
+            }
+            logger.info("Scoring model Id For CoApp===>{}",scoreModelId);
+            Long fpProductId = scoringRequestLoans.getFpProductId();
+            logger.info("Fp Product Id For CoApp===>{}",fpProductId);
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setFpProductId(fpProductId);
+            scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setUserId(scoringRequestLoans.getUserId());
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MFI_LOAN);
+            scoringRequest.setEmi(scoringRequestLoans.getEmi());
+
+            if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
+                scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
+            } else {
+                scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
+            }
+
+            orgId = scoringRequestLoans.getOrgId();
+            if(orgId != null) {
+                BankList bankEnum = BankList.fromOrgId(orgId.toString());
+                if(bankEnum != null) {
+                    logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
+                    minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgNameAndCoApplicantId(applicationId, bankEnum.getName(),coApplicantId);
+                }
+                logger.info("Min Banking Relationship in Month CoApplicant === >{}",minBankRelationshipInMonths);
+            }
+
+            ///////// End  Getting Old Request ///////
+
+            if (CommonUtils.isObjectNullOrEmpty(scoreParameterMFIRequest)) {
+                scoreParameterMFIRequest= new ScoreParameterMFIRequest();
+                scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
+                logger.info("Is Income Consider For CoApplicant============>{}=======>{}",scoringRequestLoans.getIsConsiderCoAppIncome(), coApplicantId);
+                logger.info("Result of Average Eligibility Call For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getElAmountOnAverageScoring(),applicationId,fpProductId,coApplicantId);
+                logger.info("FOIR For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getFoir(),applicationId,fpProductId,applicationId,fpProductId,coApplicantId);
+                logger.info("----------------------------START MFI LOAN ------------------------------");
+
+                logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
+
+                // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
+                if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
+                    // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+                    List<ModelParameterResponse> listFieldByBusinessTypeIdForCoApplicant = Collections.emptyList();
+                    try {
+                        listFieldByBusinessTypeIdForCoApplicant = scoringClient.listFieldByBusinessTypeIdForCoApplicant(scoringRequest);
+                    } catch (Exception e) {
+                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
+                    }
+
+                    for (ModelParameterResponse modelParameterResponse : listFieldByBusinessTypeIdForCoApplicant) {
+                        FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                        fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                        fundSeekerInputRequest.setName(modelParameterResponse.getName());
+                        logger.info("Parameter For CoApplicant==>{}",modelParameterResponse.getName());
+
+//                        scoreParameterRetailRequest.setLoanAmtProposed(scoringRequestLoans.getElAmountOnAverageScoring());
+                        switch (modelParameterResponse.getName()) {
+                            case ScoreParameter.MFI.AGE_OF_BORROWER_MFI:
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(mfiCoApplicantDetails.getBirthDate())) {
+                                        Integer exactAge [] = CommonUtils.getExactAgeFromDate(mfiCoApplicantDetails.getBirthDate());
+                                        Double age = (((double) exactAge[0]) + ((double)exactAge[1] / 12.0d));
+                                        logger.info("Age With Point == {}",age);
+                                        scoreParameterMFIRequest.setAgeOfBorrower(age.longValue());
+                                        scoreParameterMFIRequest.setAgeOfBorrower_p(true);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting AGE_OF_BORROWER_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI:
+                                try {
+                                    Double totalExperience = 0.0;
+/*
+                                    if(mfiCoApplicantDetails.getEmploymentType() != null) {
+                                        scoreParameterMFIRequest.setWorkingExperience_p(true);
+                                        if(!OccupationNatureNTB.SALARIED.getId().equals(mfiCoApplicantDetails.getEmploymentType())){
+                                            if(mfiCoApplicantDetails.getBusinessStartDate() != null) {
+                                                logger.info("coApplicantDetail.getBusinessStartDate() For MFI==== > {}",mfiCoApplicantDetails.getBusinessStartDate());
+                                                Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(mfiCoApplicantDetails.getBusinessStartDate());
+                                                logger.info("Year For MFI CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[0],applicationId);
+                                                logger.info("Month For MFI CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[1],applicationId);
+                                                totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12.0d));
+                                                logger.info("Total Business Experiance For MFI==== > {}",totalExperience);
+                                                scoreParameterMFIRequest.setWorkingExperience(totalExperience);
+                                                scoreParameterMFIRequest.setWorkingExperience_p(true);
+                                            }
+                                        }else {
+                                            if (!CommonUtils.isObjectNullOrEmpty(mfiCoApplicantDetails.getTotalExperienceYear())) {
+                                                totalExperience += Double.valueOf(mfiCoApplicantDetails.getTotalExperienceYear());
+                                                logger.info("totalExperience Year {}===>{}",mfiCoApplicantDetails.getTotalExperienceYear());
+                                            }
+                                            if (!CommonUtils.isObjectNullOrEmpty(mfiCoApplicantDetails.getTotalExperienceMonth())) {
+                                                totalExperience += Double.valueOf(mfiCoApplicantDetails.getTotalExperienceMonth()) / 12.0d;
+                                                logger.info("totalExperience Month {}===>{}",mfiCoApplicantDetails.getTotalExperienceMonth());
+                                            }
+                                            logger.info("totalExperience {}===>{}",totalExperience);
+                                            scoreParameterMFIRequest.setWorkingExperience(totalExperience);
+                                        }
+                                    }
+*/
+                                } catch (Exception e) {
+                                    logger.error("error while getting EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.ACADEMIC_QUALIFICATION_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setAcademicQualification_p(mfiCoApplicantDetails.getEducationQualification() != null);
+                                    scoreParameterMFIRequest.setAcademicQualification((mfiCoApplicantDetails.getEducationQualification() != null  ? mfiCoApplicantDetails.getEducationQualification().longValue() : null));
+                                } catch (Exception e) {
+                                    logger.error("error while getting MARITAL_STATUS parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.PURPOSE_OF_LOAN_MFI:
+                                if(mfiCoApplicantDetails.getLoanPurpose() != null) {
+                                    scoreParameterMFIRequest.setLoanPurpose_p(mfiCoApplicantDetails.getLoanPurpose() != null);
+                                    scoreParameterMFIRequest.setLoanPurpose(Integer.parseInt(mfiCoApplicantDetails.getLoanPurpose()));
+                                }
+                                break;
+                            case ScoreParameter.MFI.DEPENDENTS_IN_THE_FAMILY_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setDependents(mfiCoApplicantDetails.getNoDependent());
+                                    scoreParameterMFIRequest.setDependents_p(mfiCoApplicantDetails.getNoDependent() != null);
+                                } catch (Exception e) {
+                                    logger.error("error while getting DEPENDENTS_IN_THE_FAMILY_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.OWNERSHIP_OF_HOUSE_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setOwnershipOfHouse((mfiCoApplicantDetails.getHouseType() != null ? mfiCoApplicantDetails.getHouseType().longValue() : null));
+                                    scoreParameterMFIRequest.setOwnerShipOfHouse_p(mfiCoApplicantDetails.getHouseType() != null);
+                                } catch (Exception e) {
+                                    logger.error("error while getting OWNERSHIP_OF_HOUSE_MFI parameter : ",e);
+                                }
+                                break;
+                            case ScoreParameter.MFI.ANNUAL_INCOME_AS_APPLICABLE_MFI:
+                                try {
+                                    scoreParameterMFIRequest.setAnnualIncome((mfiCoApplicantDetails.getInsurencePremium() != null ? mfiCoApplicantDetails.getInsurencePremium().longValue() : null));
+                                    scoreParameterMFIRequest.setAnnualIncome_p(mfiCoApplicantDetails.getInsurencePremium() != null);
+                                } catch (Exception e) {
+                                    logger.error("error while getting ANNUAL_INCOME_AS_APPLICABLE_MFI parameter : ",e);
+                                }
+                                break;
+                            default:
+                                break;
+
+                        }
+                    }
+//                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
+
+                    logger.info("----------------------------END-------------------------------------------");
+
+                    Gson g = new Gson();
+                    ScoringRequestDetail scoringRequestDetail = new ScoringRequestDetail();
+
+                    try {
+                        scoringRequestDetail.setApplicationId(applicationId);
+                        scoringRequestDetail.setRequest(g.toJson(scoreParameterMFIRequest));
+                        scoringRequestDetail.setCreatedDate(new Date());
+                        scoringRequestDetail.setCoAppId(scoringRequestLoans.getCoApplicantId());
+                        scoringRequestDetail.setIsActive(true);
+                        scoringRequestDetailRepository.save(scoringRequestDetail);
+
+                        logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
+                    } catch (Exception e) {
+                        logger.error(CommonUtils.EXCEPTION,e);
+                    }
+                }
+            }
+            scoringRequest.setScoreParameterMFIRequest(scoreParameterMFIRequest);
+            scoringRequest.setCoAppId(coApplicantId);
+            scoringRequestList.add(scoringRequest);
+        }
+
+        try {
+            ScoringResponse calculateScoreList = scoringClient.calculateScoreList(scoringRequestList);
+            logger.info("Scoring Response For MFI Loan for CoAPp============>{}",calculateScoreList);
+            logger.info("Scoring Response Status For MFI Loan for CoAPp============>{}",calculateScoreList != null ? calculateScoreList.getStatus() : calculateScoreList);
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(ERROR_WHILE_CALLING_SCORING,e);
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
     }
 }

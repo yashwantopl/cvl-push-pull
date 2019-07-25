@@ -372,7 +372,7 @@ public class ScoringController {
                     new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
         }
         try {
-        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans);
+        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null);
         	  logger.info("concesssionResponse ===>concesssionResponse=======>"+concesssionResponse);
         	  	LoansResponse loanResponse = new LoansResponse();
             
@@ -392,6 +392,17 @@ public class ScoringController {
                     new LoansResponse("Failure", HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
            }
-        } 
+        }
+
+    @PostMapping(value = "/calculate_score/mfi_list", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreMFI(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+        return scoringService.calculateMFILoanScoringList(scoringRequestLoansList);
+    }
+
+    @PostMapping(value = "/calculate_score/mfi_list_coapplicant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreMFIForCoApplicant(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+        return scoringService.calculateMFILoanScoringListForCoApplicant(scoringRequestLoansList);
+    }
+
 }
 
