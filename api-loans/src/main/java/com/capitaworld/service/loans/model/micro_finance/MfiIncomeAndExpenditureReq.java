@@ -29,17 +29,18 @@ public class MfiIncomeAndExpenditureReq {
 	private Integer ppiVehicleInFamily;
 	private Integer ppiDressingTableInFamily;
 	private Integer ppiOtherTableInFamily;
-	
-	
-	
+
+
+	public MfiIncomeAndExpenditureReq() {
+	}
 
 	public MfiIncomeAndExpenditureReq(Long applicationId,
-			Double shipShgiInstallment, Double otherInstallment, Double loanInstallment, Double educationExpense,
-			Double medicalExpense, Double foodExpense, Double otherExpense, Integer businessInBrief,
-			Double monthlyCashflow, Double monthlyExpenditure, Double monthlyIncome, Integer ppiNoFamilyMember,
-			Integer ppiAcadamicHeadFamily, Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily,
-			Integer ppiPressureCookerInFamily, Integer ppiTvInFamily, Integer ppiFanInFamily,
-			Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily, Integer ppiOtherTableInFamily) {
+									  Double shipShgiInstallment, Double otherInstallment, Double loanInstallment, Double educationExpense,
+									  Double medicalExpense, Double foodExpense, Double otherExpense, Integer businessInBrief,
+									  Double monthlyCashflow, Double monthlyExpenditure, Double monthlyIncome, Integer ppiNoFamilyMember,
+									  Integer ppiAcadamicHeadFamily, Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily,
+									  Integer ppiPressureCookerInFamily, Integer ppiTvInFamily, Integer ppiFanInFamily,
+									  Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily, Integer ppiOtherTableInFamily) {
 		super();
 		this.applicationId = applicationId;
 		this.shipShgiInstallment = shipShgiInstallment;

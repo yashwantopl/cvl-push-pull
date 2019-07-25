@@ -20,7 +20,7 @@ import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
  */
 public interface MfiIncomeDetailsRepository extends JpaRepository<MfiIncomeDetails,Long> {
 	
-	@Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq(fn.applicationId.id,fn.occupation,fn.netIncome,fn.frequencyIncome,fn.monthlyIncome,fn.yearlyIncome) from MfiIncomeDetails fn where fn.applicationId.id = :appId")
+	@Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq(fn.applicationId,fn.occupation,fn.netIncome,fn.frequencyIncome,fn.monthlyIncome,fn.yearlyIncome,fn.relationId) from MfiIncomeDetails fn where fn.applicationId = :appId")
 	public List<MfiIncomeDetailsReq> findIncomeDetailsByAppId(@Param("appId") Long appId);
 	
 }

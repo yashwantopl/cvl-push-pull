@@ -1,87 +1,140 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 public class MfiAssetsDetailsReq implements Serializable {
 
-    private Long id;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    private Long applicationId;
+	private Long id;
 
-    private Integer assetsType;
+	private Long applicationId;
 
-    private String assetOwnerDetail;
+	private Integer assetsLiabilityType;
 
-    private Double amount;
+	private String assetOwnerDetail;
 
-    private Double outstanding;
+	private Double amount;
 
-    private Integer particulars;
+	private Double outstanding;
 
-    private Integer type; // for assets or liability
+	private Integer particulars;
 
-    public Long getId() {
-        return id;
-    }
+	private Integer type; // for assets or liability
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	private List<MfiAssetsDetailsReq> assetsDetails;
+	private List<MfiAssetsDetailsReq> liabilityDetails;
 
-    public Long getApplicationId() {
-        return applicationId;
-    }
+	public MfiAssetsDetailsReq() {
+		super();
+	}
 
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
-    }
+	// for assets
+	public MfiAssetsDetailsReq(Long applicationId, Integer assetsLiabilityType, String assetOwnerDetail, Double amount,
+			Integer particulars, Integer type) {
+		this.applicationId = applicationId;
+		this.assetsLiabilityType = assetsLiabilityType;
+		this.assetOwnerDetail = assetOwnerDetail;
+		this.amount = amount;
+		this.particulars = particulars;
+		this.type = type;
+	}
+	
+	//for liability
+	public MfiAssetsDetailsReq(Long applicationId, Integer assetsLiabilityType, Double amount, Double outstanding,
+			Integer type) {
+		this.applicationId = applicationId;
+		this.assetsLiabilityType = assetsLiabilityType;
+		this.amount = amount;
+		this.outstanding = outstanding;
+		this.type = type;
+	}
+	
+	
 
-    public Integer getAssetsType() {
-        return assetsType;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setAssetsType(Integer assetsType) {
-        this.assetsType = assetsType;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getAssetOwnerDetail() {
-        return assetOwnerDetail;
-    }
+	public Long getApplicationId() {
+		return applicationId;
+	}
 
-    public void setAssetOwnerDetail(String assetOwnerDetail) {
-        this.assetOwnerDetail = assetOwnerDetail;
-    }
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
 
-    public Double getAmount() {
-        return amount;
-    }
+	public Integer getAssetsLiabilityType() {
+		return assetsLiabilityType;
+	}
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
+	public void setAssetsLiabilityType(Integer assetsLiabilityType) {
+		this.assetsLiabilityType = assetsLiabilityType;
+	}
 
-    public Double getOutstanding() {
-        return outstanding;
-    }
+	public String getAssetOwnerDetail() {
+		return assetOwnerDetail;
+	}
 
-    public void setOutstanding(Double outstanding) {
-        this.outstanding = outstanding;
-    }
+	public void setAssetOwnerDetail(String assetOwnerDetail) {
+		this.assetOwnerDetail = assetOwnerDetail;
+	}
 
-    public Integer getParticulars() {
-        return particulars;
-    }
+	public Double getAmount() {
+		return amount;
+	}
 
-    public void setParticulars(Integer particulars) {
-        this.particulars = particulars;
-    }
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
 
-    public Integer getType() {
-        return type;
-    }
+	public Double getOutstanding() {
+		return outstanding;
+	}
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
+	public void setOutstanding(Double outstanding) {
+		this.outstanding = outstanding;
+	}
+
+	public Integer getParticulars() {
+		return particulars;
+	}
+
+	public void setParticulars(Integer particulars) {
+		this.particulars = particulars;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public List<MfiAssetsDetailsReq> getAssetsDetails() {
+		return assetsDetails;
+	}
+
+	public void setAssetsDetails(List<MfiAssetsDetailsReq> assetsDetails) {
+		this.assetsDetails = assetsDetails;
+	}
+
+	public List<MfiAssetsDetailsReq> getLiabilityDetails() {
+		return liabilityDetails;
+	}
+
+	public void setLiabilityDetails(List<MfiAssetsDetailsReq> liabilityDetails) {
+		this.liabilityDetails = liabilityDetails;
+	}
+
 }

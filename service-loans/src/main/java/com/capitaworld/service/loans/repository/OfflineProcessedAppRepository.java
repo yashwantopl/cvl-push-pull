@@ -1,13 +1,15 @@
 package com.capitaworld.service.loans.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.model.common.ReportRequest;
 
 
 public interface OfflineProcessedAppRepository{
 
-	public String getInEligibleRecordList(Long userId);
+	public String getInEligibleRecordList(Long userId,Date fromDate,Date toDate);
 
 	public IneligibleProposalDetails findByAppliationId(Long applicationId,Long orgId);
 
@@ -15,11 +17,11 @@ public interface OfflineProcessedAppRepository{
 
 	public Integer checkBeforeOfflineSanctioned(Long appId);
 	
-	public String getSanctionedApplicationList(Long userId);
+	public String getSanctionedApplicationList(Long userId,Date fromDate,Date toDate);
 	
-	public String getDisbursedApplicationList(Long userId);
+	public String getDisbursedApplicationList(Long userId,Date fromDate,Date toDate);
 	
-	public String getRejectProposalsList(Long userId);
+	public String getRejectProposalsList(Long userId,Date fromDate,Date toDate);
 
 	public String getOtherProposalsList(Long userId);
 
