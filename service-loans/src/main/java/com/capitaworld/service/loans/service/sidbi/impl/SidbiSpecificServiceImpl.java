@@ -35,6 +35,7 @@ import com.capitaworld.service.loans.service.sidbi.RawMaterialDetailsService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -272,6 +273,12 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		
 		
 		return null;
+	}
+
+	@Override
+	public SidbiCurrencyRate getValuesIn(Long applicationId, Long userId) throws LoansException {
+		SidbiBasicDetailRequest sidbiBasicDetailRequest = this.getAdditionalData(applicationId, userId);
+		return SidbiCurrencyRate.getById(sidbiBasicDetailRequest.getAllAmountValuesIn());
 	}
 
 	

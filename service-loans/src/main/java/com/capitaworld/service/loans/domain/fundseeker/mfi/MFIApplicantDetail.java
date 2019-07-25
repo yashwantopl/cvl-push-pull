@@ -176,7 +176,7 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer houseType;
 
 	@Column(name = "loan_purpose")
-	private Integer loanPurpose;
+	private String loanPurpose;
 
 	@Column(name = "loan_amount_required")
 	private Double loanAmountRequired;
@@ -266,7 +266,7 @@ public class MFIApplicantDetail implements Serializable {
 	private String businessPremises;
 
 	@Column(name = "exp_in_same_line")
-	private String expInSameLine;
+	private Integer expInSameLine;
 
 	@Column(name = "academic_sum_insured")
 	private String academicSumInsured;
@@ -395,6 +395,12 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer ppiDressingTableInFamily;
 	@Column(name = "ppi_other_table_in_family")
 	private Integer ppiOtherTableInFamily;
+
+	@Column(name = "client_type")
+	private Integer clientType;
+
+	@Column(name = "purpose_of_loan")
+	private Integer purposeOfLoan;
 
 	private Integer status;
 
@@ -639,11 +645,11 @@ public class MFIApplicantDetail implements Serializable {
 	}
 
 
-	public Integer getLoanPurpose() {
+	public String getLoanPurpose() {
 		return loanPurpose;
 	}
 
-	public void setLoanPurpose(Integer loanPurpose) {
+	public void setLoanPurpose(String loanPurpose) {
 		this.loanPurpose = loanPurpose;
 	}
 
@@ -1279,11 +1285,11 @@ public class MFIApplicantDetail implements Serializable {
 		this.businessPremises = businessPremises;
 	}
 
-	public String getExpInSameLine() {
+	public Integer getExpInSameLine() {
 		return expInSameLine;
 	}
 
-	public void setExpInSameLine(String expInSameLine) {
+	public void setExpInSameLine(Integer expInSameLine) {
 		this.expInSameLine = expInSameLine;
 	}
 
@@ -1494,5 +1500,13 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
 		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+	}
+
+	public Integer getPurposeOfLoan() {
+		return purposeOfLoan;
+	}
+
+	public void setPurposeOfLoan(Integer purposeOfLoan) {
+		this.purposeOfLoan = purposeOfLoan;
 	}
 }

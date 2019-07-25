@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.model.common.ReportRequest;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -33,8 +34,8 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	 * RETURN DATA BASED ON ROLE ID
 	 */
 	@Override
-	public String getApplicationList(Long userId) {
-		return offlineProcessedAppRepository.getInEligibleRecordList(userId);
+	public String getApplicationList(ReportRequest reportRequest) {
+		return offlineProcessedAppRepository.getInEligibleRecordList(reportRequest.getId(),reportRequest.getFromDate(),reportRequest.getToDate());
 //		if(lst.isEmpty()) {
 //			return Collections.emptyList();
 //		}
@@ -73,8 +74,8 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	 * Rejection List By Organization Id
 	 */
 	@Override
-	public String getRejectProposalList(Long userId) {
-		return offlineProcessedAppRepository.getRejectProposalsList(userId);
+	public String getRejectProposalList(ReportRequest reportRequest) {
+		return offlineProcessedAppRepository.getRejectProposalsList(reportRequest.getId(),reportRequest.getFromDate(),reportRequest.getToDate());
 //		if(lst.isEmpty()) {
 //			return Collections.emptyList();
 //		}
@@ -146,8 +147,8 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	}
 
 	@Override
-	public String getSanctionedApplicationList(Long userId) {
-		return offlineProcessedAppRepository.getSanctionedApplicationList(userId);
+	public String getSanctionedApplicationList(ReportRequest reportRequest) {
+		return offlineProcessedAppRepository.getSanctionedApplicationList(reportRequest.getId(),reportRequest.getFromDate(),reportRequest.getToDate());
 //		if(lst.isEmpty()) {
 //			return Collections.emptyList();
 //		}
@@ -174,8 +175,8 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	}
 
 	@Override
-	public String getDisbursedApplicationList(Long userId) {
-		return offlineProcessedAppRepository.getDisbursedApplicationList(userId);
+	public String getDisbursedApplicationList(ReportRequest reportRequest) {
+		return offlineProcessedAppRepository.getDisbursedApplicationList(reportRequest.getId(),reportRequest.getFromDate(),reportRequest.getToDate());
 //		if(lst.isEmpty()) {
 //			return Collections.emptyList();
 //		}

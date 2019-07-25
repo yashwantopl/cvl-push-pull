@@ -97,7 +97,8 @@ public class SidbiBasicDetailRequest implements Serializable{
     
     private Integer loanTypeId;
     
-	
+    private Integer allAmountValuesIn;
+    private Boolean isLockedAllAmountValuesIn;
 	public Long getId() {
 		return id;
 	}
@@ -463,6 +464,20 @@ public class SidbiBasicDetailRequest implements Serializable{
 		this.propFactoryPremise = propFactoryPremise;
 	}
 
-	
-	
+	public Integer getAllAmountValuesIn() {
+		return allAmountValuesIn;
+	}
+
+	public void setAllAmountValuesIn(Integer allAmountValuesIn) {
+		this.allAmountValuesIn = allAmountValuesIn;
+	}
+
+	public Boolean getIsLockedAllAmountValuesIn() {
+		return isLockedAllAmountValuesIn;
+	}
+
+	public void setIsLockedAllAmountValuesIn(Boolean isLockedAllAmountValuesIn) {
+		this.isLockedAllAmountValuesIn = isLockedAllAmountValuesIn;
+	}
+
 }
