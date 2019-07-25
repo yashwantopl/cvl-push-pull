@@ -154,17 +154,6 @@ public class FundSeekerInputRequestResponse {
     
     private Double additionalLoanAmount;
     
-    private GstRelatedPartyRequest[] selectedRelativeParty;
-
-	
-    public GstRelatedPartyRequest[] getSelectedRelativeParty() {
-		return selectedRelativeParty;
-	}
-
-	public void setSelectedRelativeParty(
-			GstRelatedPartyRequest[] selectedRelativeParty) {
-		this.selectedRelativeParty = selectedRelativeParty;
-	}
 	public Long getUserId() {
         return userId;
     }
@@ -738,7 +727,6 @@ public class FundSeekerInputRequestResponse {
 				+ enhancementAmount + ", isAdditionalAmount="
 				+ isAdditionalAmount + ", isAllowSwitchExistingLender="
 				+ isAllowSwitchExistingLender + ", additionalLoanAmount="
-				+ additionalLoanAmount + ", selectedRelativeParty="
-				+ Arrays.toString(selectedRelativeParty) + "]";
+				+ additionalLoanAmount + "]";
 	}
 }
