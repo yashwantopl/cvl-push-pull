@@ -401,6 +401,26 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "purpose_of_loan")
 	private Integer purposeOfLoan;
+	@Column(name = "is_business_premise_visited")
+	private Boolean isBusinessPremiseVisited;
+	@Column(name = "repayment_track")
+	private Integer repaymentTrack;
+	@Column(name = "creadit_worthiness")
+	private Integer creaditWorthiness;
+	@Column(name = "loan_liability_ratio")
+	private Integer loanLiabilityRatio;
+	@Column(name = "loan_amount_recomandation")
+	private double loanAmountRecomandation;
+	@Column(name = "tenure_recomandation")
+	private Integer tenureRecomandation;
+	@Column(name = "moratorium_recomandation")
+	private Integer moratoriumRecomandation;
+	@Column(name = "interest_rate_recomandation")
+	private Integer interestRateRecomandation;
+	@Column(name = "installment_recomandation")
+	private Integer installmentRecomandation;
+
+	private Integer competition;
 
 	private Integer status;
 
@@ -1508,5 +1528,93 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setPurposeOfLoan(Integer purposeOfLoan) {
 		this.purposeOfLoan = purposeOfLoan;
+	}
+
+	public Integer getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(Integer clientType) {
+		this.clientType = clientType;
+	}
+
+	public Boolean getIsBusinessPremiseVisited() {
+		return isBusinessPremiseVisited;
+	}
+
+	public void setIsBusinessPremiseVisited(Boolean isBusinessPremiseVisited) {
+		this.isBusinessPremiseVisited = isBusinessPremiseVisited;
+	}
+
+	public Integer getRepaymentTrack() {
+		return repaymentTrack;
+	}
+
+	public void setRepaymentTrack(Integer repaymentTrack) {
+		this.repaymentTrack = repaymentTrack;
+	}
+
+	public Integer getCreaditWorthiness() {
+		return creaditWorthiness;
+	}
+
+	public void setCreaditWorthiness(Integer creaditWorthiness) {
+		this.creaditWorthiness = creaditWorthiness;
+	}
+
+	public Integer getLoanLiabilityRatio() {
+		return loanLiabilityRatio;
+	}
+
+	public void setLoanLiabilityRatio(Integer loanLiabilityRatio) {
+		this.loanLiabilityRatio = loanLiabilityRatio;
+	}
+
+	public double getLoanAmountRecomandation() {
+		return loanAmountRecomandation;
+	}
+
+	public void setLoanAmountRecomandation(double loanAmountRecomandation) {
+		this.loanAmountRecomandation = loanAmountRecomandation;
+	}
+
+	public Integer getTenureRecomandation() {
+		return tenureRecomandation;
+	}
+
+	public void setTenureRecomandation(Integer tenureRecomandation) {
+		this.tenureRecomandation = tenureRecomandation;
+	}
+
+	public Integer getMoratoriumRecomandation() {
+		return moratoriumRecomandation;
+	}
+
+	public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
+		this.moratoriumRecomandation = moratoriumRecomandation;
+	}
+
+	public Integer getInterestRateRecomandation() {
+		return interestRateRecomandation;
+	}
+
+	public void setInterestRateRecomandation(Integer interestRateRecomandation) {
+		this.interestRateRecomandation = interestRateRecomandation;
+	}
+
+	public Integer getInstallmentRecomandation() {
+		return installmentRecomandation;
+	}
+
+	public void setInstallmentRecomandation(Integer installmentRecomandation) {
+		this.installmentRecomandation = installmentRecomandation;
+	}
+
+	public Integer getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Integer competition) {
+		this.competition = competition;
 	}
 }
