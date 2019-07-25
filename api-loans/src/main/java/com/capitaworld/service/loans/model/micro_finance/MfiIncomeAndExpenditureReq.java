@@ -4,221 +4,256 @@ import java.util.List;
 
 public class MfiIncomeAndExpenditureReq {
 
-    private Long id;
-    private Long applicationId;
-    private List<MfiIncomeDetailsReq> incomeDetailsReqList;
-    private Double shipShgiInstallment;
-    private Double otherInstallment;
-    private Double loanInstallment;
-    private Double educationExpense;
-    private Double medicalExpense;
-    private Double foodExpense;
-    private Double otherExpense;
-    private Integer businessNameBrief;
-    private Double monthlyCashflow;
-    private Double monthlyExpenditure;
-    private Double monthlyIncome;
+	private Long id;
+	private Long applicationId;
+	private List<MfiIncomeDetailsReq> incomeDetailsReqList;
+	private Double shipShgiInstallment;
+	private Double otherInstallment;
+	private Double loanInstallment;
+	private Double educationExpense;
+	private Double medicalExpense;
+	private Double foodExpense;
+	private Double otherExpense;
+	private Integer businessInBrief;
+	private Double monthlyCashflow;
+	private Double monthlyExpenditure;
+	private Double monthlyIncome;
 
-    private Integer ppiNoFamilyMember;
-    private Integer ppiAcadamicHeadFamily;
-    private Integer ppiRafrigeratorInFamily;
-    private Integer ppiStoveInFamily;
-    private Integer ppiPressureCookerInFamily;
-    private Integer ppiTvInFamily;
-    private Integer ppiFanInFamily;
-    private Integer ppiVehicleInFamily;
-    private Integer ppiDressingTableInFamily;
-    private Integer ppiOtherTableInFamily;
+	private Integer ppiNoFamilyMember;
+	private Integer ppiAcadamicHeadFamily;
+	private Integer ppiRafrigeratorInFamily;
+	private Integer ppiStoveInFamily;
+	private Integer ppiPressureCookerInFamily;
+	private Integer ppiTvInFamily;
+	private Integer ppiFanInFamily;
+	private Integer ppiVehicleInFamily;
+	private Integer ppiDressingTableInFamily;
+	private Integer ppiOtherTableInFamily;
+	
+	
+	
 
-    public Long getId() {
-        return id;
-    }
+	public MfiIncomeAndExpenditureReq(Long applicationId,
+			Double shipShgiInstallment, Double otherInstallment, Double loanInstallment, Double educationExpense,
+			Double medicalExpense, Double foodExpense, Double otherExpense, Integer businessInBrief,
+			Double monthlyCashflow, Double monthlyExpenditure, Double monthlyIncome, Integer ppiNoFamilyMember,
+			Integer ppiAcadamicHeadFamily, Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily,
+			Integer ppiPressureCookerInFamily, Integer ppiTvInFamily, Integer ppiFanInFamily,
+			Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily, Integer ppiOtherTableInFamily) {
+		super();
+		this.applicationId = applicationId;
+		this.shipShgiInstallment = shipShgiInstallment;
+		this.otherInstallment = otherInstallment;
+		this.loanInstallment = loanInstallment;
+		this.educationExpense = educationExpense;
+		this.medicalExpense = medicalExpense;
+		this.foodExpense = foodExpense;
+		this.otherExpense = otherExpense;
+		this.businessInBrief = businessInBrief;
+		this.monthlyCashflow = monthlyCashflow;
+		this.monthlyExpenditure = monthlyExpenditure;
+		this.monthlyIncome = monthlyIncome;
+		this.ppiNoFamilyMember = ppiNoFamilyMember;
+		this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
+		this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
+		this.ppiStoveInFamily = ppiStoveInFamily;
+		this.ppiPressureCookerInFamily = ppiPressureCookerInFamily;
+		this.ppiTvInFamily = ppiTvInFamily;
+		this.ppiFanInFamily = ppiFanInFamily;
+		this.ppiVehicleInFamily = ppiVehicleInFamily;
+		this.ppiDressingTableInFamily = ppiDressingTableInFamily;
+		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public Long getApplicationId() {
-        return applicationId;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
-    }
+	public Long getApplicationId() {
+		return applicationId;
+	}
 
-    public List<MfiIncomeDetailsReq> getIncomeDetailsReqList() {
-        return incomeDetailsReqList;
-    }
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
 
-    public void setIncomeDetailsReqList(List<MfiIncomeDetailsReq> incomeDetailsReqList) {
-        this.incomeDetailsReqList = incomeDetailsReqList;
-    }
+	public List<MfiIncomeDetailsReq> getIncomeDetailsReqList() {
+		return incomeDetailsReqList;
+	}
 
-    public Double getShipShgiInstallment() {
-        return shipShgiInstallment;
-    }
+	public void setIncomeDetailsReqList(List<MfiIncomeDetailsReq> incomeDetailsReqList) {
+		this.incomeDetailsReqList = incomeDetailsReqList;
+	}
 
-    public void setShipShgiInstallment(Double shipShgiInstallment) {
-        this.shipShgiInstallment = shipShgiInstallment;
-    }
+	public Double getShipShgiInstallment() {
+		return shipShgiInstallment;
+	}
 
-    public Double getOtherInstallment() {
-        return otherInstallment;
-    }
+	public void setShipShgiInstallment(Double shipShgiInstallment) {
+		this.shipShgiInstallment = shipShgiInstallment;
+	}
 
-    public void setOtherInstallment(Double otherInstallment) {
-        this.otherInstallment = otherInstallment;
-    }
+	public Double getOtherInstallment() {
+		return otherInstallment;
+	}
 
-    public Double getLoanInstallment() {
-        return loanInstallment;
-    }
+	public void setOtherInstallment(Double otherInstallment) {
+		this.otherInstallment = otherInstallment;
+	}
 
-    public void setLoanInstallment(Double loanInstallment) {
-        this.loanInstallment = loanInstallment;
-    }
+	public Double getLoanInstallment() {
+		return loanInstallment;
+	}
 
-    public Double getEducationExpense() {
-        return educationExpense;
-    }
+	public void setLoanInstallment(Double loanInstallment) {
+		this.loanInstallment = loanInstallment;
+	}
 
-    public void setEducationExpense(Double educationExpense) {
-        this.educationExpense = educationExpense;
-    }
+	public Double getEducationExpense() {
+		return educationExpense;
+	}
 
-    public Double getMedicalExpense() {
-        return medicalExpense;
-    }
+	public void setEducationExpense(Double educationExpense) {
+		this.educationExpense = educationExpense;
+	}
 
-    public void setMedicalExpense(Double medicalExpense) {
-        this.medicalExpense = medicalExpense;
-    }
+	public Double getMedicalExpense() {
+		return medicalExpense;
+	}
 
-    public Double getFoodExpense() {
-        return foodExpense;
-    }
+	public void setMedicalExpense(Double medicalExpense) {
+		this.medicalExpense = medicalExpense;
+	}
 
-    public void setFoodExpense(Double foodExpense) {
-        this.foodExpense = foodExpense;
-    }
+	public Double getFoodExpense() {
+		return foodExpense;
+	}
 
-    public Double getOtherExpense() {
-        return otherExpense;
-    }
+	public void setFoodExpense(Double foodExpense) {
+		this.foodExpense = foodExpense;
+	}
 
-    public void setOtherExpense(Double otherExpense) {
-        this.otherExpense = otherExpense;
-    }
+	public Double getOtherExpense() {
+		return otherExpense;
+	}
 
-    public Integer getBusinessNameBrief() {
-        return businessNameBrief;
-    }
+	public void setOtherExpense(Double otherExpense) {
+		this.otherExpense = otherExpense;
+	}
 
-    public void setBusinessNameBrief(Integer businessNameBrief) {
-        this.businessNameBrief = businessNameBrief;
-    }
+	public Integer getBusinessInBrief() {
+		return businessInBrief;
+	}
 
-    public Double getMonthlyCashflow() {
-        return monthlyCashflow;
-    }
+	public void setBusinessInBrief(Integer businessInBrief) {
+		this.businessInBrief = businessInBrief;
+	}
 
-    public void setMonthlyCashflow(Double monthlyCashflow) {
-        this.monthlyCashflow = monthlyCashflow;
-    }
+	public Double getMonthlyCashflow() {
+		return monthlyCashflow;
+	}
 
-    public Double getMonthlyExpenditure() {
-        return monthlyExpenditure;
-    }
+	public void setMonthlyCashflow(Double monthlyCashflow) {
+		this.monthlyCashflow = monthlyCashflow;
+	}
 
-    public void setMonthlyExpenditure(Double monthlyExpenditure) {
-        this.monthlyExpenditure = monthlyExpenditure;
-    }
+	public Double getMonthlyExpenditure() {
+		return monthlyExpenditure;
+	}
 
-    public Double getMonthlyIncome() {
-        return monthlyIncome;
-    }
+	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+		this.monthlyExpenditure = monthlyExpenditure;
+	}
 
-    public void setMonthlyIncome(Double monthlyIncome) {
-        this.monthlyIncome = monthlyIncome;
-    }
+	public Double getMonthlyIncome() {
+		return monthlyIncome;
+	}
 
-    public Integer getPpiNoFamilyMember() {
-        return ppiNoFamilyMember;
-    }
+	public void setMonthlyIncome(Double monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
 
-    public void setPpiNoFamilyMember(Integer ppiNoFamilyMember) {
-        this.ppiNoFamilyMember = ppiNoFamilyMember;
-    }
+	public Integer getPpiNoFamilyMember() {
+		return ppiNoFamilyMember;
+	}
 
-    public Integer getPpiAcadamicHeadFamily() {
-        return ppiAcadamicHeadFamily;
-    }
+	public void setPpiNoFamilyMember(Integer ppiNoFamilyMember) {
+		this.ppiNoFamilyMember = ppiNoFamilyMember;
+	}
 
-    public void setPpiAcadamicHeadFamily(Integer ppiAcadamicHeadFamily) {
-        this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
-    }
+	public Integer getPpiAcadamicHeadFamily() {
+		return ppiAcadamicHeadFamily;
+	}
 
-    public Integer getPpiRafrigeratorInFamily() {
-        return ppiRafrigeratorInFamily;
-    }
+	public void setPpiAcadamicHeadFamily(Integer ppiAcadamicHeadFamily) {
+		this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
+	}
 
-    public void setPpiRafrigeratorInFamily(Integer ppiRafrigeratorInFamily) {
-        this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
-    }
+	public Integer getPpiRafrigeratorInFamily() {
+		return ppiRafrigeratorInFamily;
+	}
 
-    public Integer getPpiStoveInFamily() {
-        return ppiStoveInFamily;
-    }
+	public void setPpiRafrigeratorInFamily(Integer ppiRafrigeratorInFamily) {
+		this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
+	}
 
-    public void setPpiStoveInFamily(Integer ppiStoveInFamily) {
-        this.ppiStoveInFamily = ppiStoveInFamily;
-    }
+	public Integer getPpiStoveInFamily() {
+		return ppiStoveInFamily;
+	}
 
-    public Integer getPpiPressureCookerInFamily() {
-        return ppiPressureCookerInFamily;
-    }
+	public void setPpiStoveInFamily(Integer ppiStoveInFamily) {
+		this.ppiStoveInFamily = ppiStoveInFamily;
+	}
 
-    public void setPpiPressureCookerInFamily(Integer ppiPressureCookerInFamily) {
-        this.ppiPressureCookerInFamily = ppiPressureCookerInFamily;
-    }
+	public Integer getPpiPressureCookerInFamily() {
+		return ppiPressureCookerInFamily;
+	}
 
-    public Integer getPpiTvInFamily() {
-        return ppiTvInFamily;
-    }
+	public void setPpiPressureCookerInFamily(Integer ppiPressureCookerInFamily) {
+		this.ppiPressureCookerInFamily = ppiPressureCookerInFamily;
+	}
 
-    public void setPpiTvInFamily(Integer ppiTvInFamily) {
-        this.ppiTvInFamily = ppiTvInFamily;
-    }
+	public Integer getPpiTvInFamily() {
+		return ppiTvInFamily;
+	}
 
-    public Integer getPpiFanInFamily() {
-        return ppiFanInFamily;
-    }
+	public void setPpiTvInFamily(Integer ppiTvInFamily) {
+		this.ppiTvInFamily = ppiTvInFamily;
+	}
 
-    public void setPpiFanInFamily(Integer ppiFanInFamily) {
-        this.ppiFanInFamily = ppiFanInFamily;
-    }
+	public Integer getPpiFanInFamily() {
+		return ppiFanInFamily;
+	}
 
-    public Integer getPpiVehicleInFamily() {
-        return ppiVehicleInFamily;
-    }
+	public void setPpiFanInFamily(Integer ppiFanInFamily) {
+		this.ppiFanInFamily = ppiFanInFamily;
+	}
 
-    public void setPpiVehicleInFamily(Integer ppiVehicleInFamily) {
-        this.ppiVehicleInFamily = ppiVehicleInFamily;
-    }
+	public Integer getPpiVehicleInFamily() {
+		return ppiVehicleInFamily;
+	}
 
-    public Integer getPpiDressingTableInFamily() {
-        return ppiDressingTableInFamily;
-    }
+	public void setPpiVehicleInFamily(Integer ppiVehicleInFamily) {
+		this.ppiVehicleInFamily = ppiVehicleInFamily;
+	}
 
-    public void setPpiDressingTableInFamily(Integer ppiDressingTableInFamily) {
-        this.ppiDressingTableInFamily = ppiDressingTableInFamily;
-    }
+	public Integer getPpiDressingTableInFamily() {
+		return ppiDressingTableInFamily;
+	}
 
-    public Integer getPpiOtherTableInFamily() {
-        return ppiOtherTableInFamily;
-    }
+	public void setPpiDressingTableInFamily(Integer ppiDressingTableInFamily) {
+		this.ppiDressingTableInFamily = ppiDressingTableInFamily;
+	}
 
-    public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
-        this.ppiOtherTableInFamily = ppiOtherTableInFamily;
-    }
+	public Integer getPpiOtherTableInFamily() {
+		return ppiOtherTableInFamily;
+	}
+
+	public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
+		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+	}
 }

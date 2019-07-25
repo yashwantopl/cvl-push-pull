@@ -4,11 +4,15 @@ import java.util.Date;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * @author harsukh.ghumaliya
  *
  */
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class PersonalDetailsReq {
 
 	private Long id;
@@ -28,15 +32,15 @@ public class PersonalDetailsReq {
 	private String nomineePincode;
 
 	private Integer educationQualification;
-	private String religion;
-	private String cast;
+	private Integer religion;
+//	private String cast;
 	private Double landHolding;
 	private Integer houseType;
 
 	private String nameOfFirm;
 	private Integer businessType;
-	private Boolean lifeInsurance;
-	private String sumInsured;
+//	private Boolean lifeInsurance;
+//	private String sumInsured;
 
 	private String nomineeState;
 	private String nomineeCity;
@@ -55,19 +59,17 @@ public class PersonalDetailsReq {
 	private Boolean isPersonalDetailsFilled;
 
 	public PersonalDetailsReq() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
+
 
 	public PersonalDetailsReq(Long applicationId, String fatherName, String motherName, String spouseName,
 			Date spouseBirthDate, Integer noDependent, String spouseMobile, String nomineeName, Date nomineeBirthDate,
 			Integer relationWithNomineeId, String nomineeAddress, String nomineePincode, Integer educationQualification,
-			String religion, String cast, Double landHolding, Integer houseType, String nameOfFirm,
-			Integer businessType, Boolean lifeInsurance, String sumInsured, String nomineeState, String nomineeCity,
-			String nomineeDistrict, String nomineeLocation, String nomineeHouseNo, String nomineeLandmark,
-			String academicReligion, String academicCaste, Boolean isAcademicLifeInsurance, String houseOwnership,
-			String areaType, String businessPremises, String expInSameLine, String academicSumInsured,
-			Boolean isPersonalDetailsFilled) {
+			Integer religion, Double landHolding, Integer houseType, String nameOfFirm, Integer businessType,
+			String nomineeState, String nomineeCity, String nomineeDistrict, String nomineeLocation,
+			String nomineeHouseNo, String nomineeLandmark, String academicReligion, String academicCaste,
+			Boolean isAcademicLifeInsurance, String houseOwnership, String areaType, String businessPremises,
+			String expInSameLine, String academicSumInsured, Boolean isPersonalDetailsFilled) {
 		super();
 		this.applicationId = applicationId;
 		this.fatherName = fatherName;
@@ -83,13 +85,10 @@ public class PersonalDetailsReq {
 		this.nomineePincode = nomineePincode;
 		this.educationQualification = educationQualification;
 		this.religion = religion;
-		this.cast = cast;
 		this.landHolding = landHolding;
 		this.houseType = houseType;
 		this.nameOfFirm = nameOfFirm;
 		this.businessType = businessType;
-		this.lifeInsurance = lifeInsurance;
-		this.sumInsured = sumInsured;
 		this.nomineeState = nomineeState;
 		this.nomineeCity = nomineeCity;
 		this.nomineeDistrict = nomineeDistrict;
@@ -109,6 +108,9 @@ public class PersonalDetailsReq {
 
 
 
+
+
+
 	public Long getId() {
 		return id;
 	}
@@ -117,13 +119,6 @@ public class PersonalDetailsReq {
 		this.id = id;
 	}
 
-	public String getSumInsured() {
-		return sumInsured;
-	}
-
-	public void setSumInsured(String sumInsured) {
-		this.sumInsured = sumInsured;
-	}
 
 	public String getFatherName() {
 		return fatherName;
@@ -213,21 +208,15 @@ public class PersonalDetailsReq {
 		this.educationQualification = educationQualification;
 	}
 
-	public String getReligion() {
+
+	public Integer getReligion() {
 		return religion;
 	}
 
-	public void setReligion(String religion) {
+	public void setReligion(Integer religion) {
 		this.religion = religion;
 	}
 
-	public String getCast() {
-		return cast;
-	}
-
-	public void setCast(String cast) {
-		this.cast = cast;
-	}
 
 	public Double getLandHolding() {
 		return landHolding;
@@ -277,13 +266,13 @@ public class PersonalDetailsReq {
 		this.businessPremises = businessPremises;
 	}
 
-	public Boolean getLifeInsurance() {
-		return lifeInsurance;
-	}
-
-	public void setLifeInsurance(Boolean lifeInsurance) {
-		this.lifeInsurance = lifeInsurance;
-	}
+//	public Boolean getLifeInsurance() {
+//		return lifeInsurance;
+//	}
+//
+//	public void setLifeInsurance(Boolean lifeInsurance) {
+//		this.lifeInsurance = lifeInsurance;
+//	}
 
 	public Date getNomineeBirthDate() {
 		return nomineeBirthDate;
@@ -403,45 +392,6 @@ public class PersonalDetailsReq {
 
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
-	}
-
-	@Override
-	public String toString() {
-		return "PersonalDetailsReq [id=" + id + ", applicationId=" + applicationId + ", fatherName=" + fatherName
-				+ ", motherName=" + motherName + ", spouseName=" + spouseName + ", spouseBirthDate=" + spouseBirthDate
-				+ ", noDependent=" + noDependent + ", spouseMobile=" + spouseMobile + ", nomineeName=" + nomineeName
-				+ ", nomineeBirthDate=" + nomineeBirthDate + ", relationWithNomineeId=" + relationWithNomineeId
-				+ ", nomineeAddress=" + nomineeAddress + ", nomineePincode=" + nomineePincode
-				+ ", educationQualification=" + educationQualification + ", religion=" + religion + ", cast=" + cast
-				+ ", landHolding=" + landHolding + ", houseType=" + houseType + ", nameOfFirm=" + nameOfFirm
-				+ ", businessType=" + businessType + ", lifeInsurance=" + lifeInsurance + ", sumInsured=" + sumInsured
-				+ ", nomineeState=" + nomineeState + ", nomineeCity=" + nomineeCity + ", nomineeDistrict="
-				+ nomineeDistrict + ", nomineeLocation=" + nomineeLocation + ", nomineeHouseNo=" + nomineeHouseNo
-				+ ", nomineeLandmark=" + nomineeLandmark + ", academicReligion=" + academicReligion + ", academicCaste="
-				+ academicCaste + ", isAcademicLifeInsurance=" + isAcademicLifeInsurance + ", houseOwnership="
-				+ houseOwnership + ", areaType=" + areaType + ", businessPremises=" + businessPremises
-				+ ", expInSameLine=" + expInSameLine + ", academicSumInsured=" + academicSumInsured
-				+ ", isPersonalDetailsFilled=" + isPersonalDetailsFilled + ", getId()=" + getId() + ", getSumInsured()="
-				+ getSumInsured() + ", getFatherName()=" + getFatherName() + ", getMotherName()=" + getMotherName()
-				+ ", getSpouseName()=" + getSpouseName() + ", getSpouseBirthDate()=" + getSpouseBirthDate()
-				+ ", getSpouseMobile()=" + getSpouseMobile() + ", getNoDependent()=" + getNoDependent()
-				+ ", getRelationWithNomineeId()=" + getRelationWithNomineeId() + ", getNomineeName()="
-				+ getNomineeName() + ", getNomineeAddress()=" + getNomineeAddress() + ", getNomineePincode()="
-				+ getNomineePincode() + ", getEducationQualification()=" + getEducationQualification()
-				+ ", getReligion()=" + getReligion() + ", getCast()=" + getCast() + ", getLandHolding()="
-				+ getLandHolding() + ", getHouseOwnership()=" + getHouseOwnership() + ", getAreaType()=" + getAreaType()
-				+ ", getNameOfFirm()=" + getNameOfFirm() + ", getBusinessType()=" + getBusinessType()
-				+ ", getBusinessPremises()=" + getBusinessPremises() + ", getLifeInsurance()=" + getLifeInsurance()
-				+ ", getNomineeBirthDate()=" + getNomineeBirthDate() + ", getNomineeState()=" + getNomineeState()
-				+ ", getNomineeCity()=" + getNomineeCity() + ", getNomineeDistrict()=" + getNomineeDistrict()
-				+ ", getNomineeLocation()=" + getNomineeLocation() + ", getNomineeHouseNo()=" + getNomineeHouseNo()
-				+ ", getNomineeLandmark()=" + getNomineeLandmark() + ", getAcademicReligion()=" + getAcademicReligion()
-				+ ", getAcademicCaste()=" + getAcademicCaste() + ", getIsAcademicLifeInsurance()="
-				+ getIsAcademicLifeInsurance() + ", getExpInSameLine()=" + getExpInSameLine()
-				+ ", getAcademicSumInsured()=" + getAcademicSumInsured() + ", getHouseType()=" + getHouseType()
-				+ ", getIsPersonalDetailsFilled()=" + getIsPersonalDetailsFilled() + ", getApplicationId()="
-				+ getApplicationId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
 	}
 
 }
