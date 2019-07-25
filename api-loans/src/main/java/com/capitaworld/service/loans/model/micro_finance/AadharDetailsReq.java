@@ -83,6 +83,7 @@ public class AadharDetailsReq implements Serializable {
     private String motherName;
 
     private Long userId;
+    private Long orgId;
 
     private Integer addressProofType;
 
@@ -472,5 +473,13 @@ public class AadharDetailsReq implements Serializable {
 
     public void setAddressProofImg(byte[] addressProofImg) {
         this.addressProofImg = addressProofImg;
+    }
+
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
     }
 }

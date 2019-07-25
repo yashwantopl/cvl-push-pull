@@ -35,17 +35,19 @@ public class MFIApplicationController {
     public ResponseEntity<LoansResponse> saveAdharDetails(@RequestBody AadharDetailsReq aadharDetailsReq, HttpServletRequest request) {
         try {
             // request must not be null
-            CommonDocumentUtils.startHook(logger, "save");
+            CommonDocumentUtils.startHook(logger, "save aadhar details");
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 
             if (userId == null) {
                 logger.warn("userId  can not be empty ==>" + userId);
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             aadharDetailsReq.setUserId(userId);
-            mfiApplicationService.saveOrUpdateAadharDetails(aadharDetailsReq);
+            aadharDetailsReq.setOrgId(userOrgId);
+            AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(aadharDetailsReq);
             CommonDocumentUtils.endHook(logger, "save");
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value(),aadharDetails),HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("Error while saving save Adhar Details Details ==>", e);

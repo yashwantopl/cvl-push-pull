@@ -6,7 +6,7 @@ import com.capitaworld.service.loans.model.micro_finance.*;
 
 public interface MfiApplicationService {
 
-    public boolean saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq);
+    public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq);
 
     public AadharDetailsReq getAadharDetailsByAppId(Long applicationId);
     
