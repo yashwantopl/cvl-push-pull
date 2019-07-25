@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -42,27 +39,36 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	private MfiIncomeDetailsRepository MfiIncomeDetailsRepository;
 
 	@Override
-	public boolean saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
+	public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
 		MFIApplicantDetail mfiApplicationDetail;
 		if (aadharDetailsReq.getId() == null) {
-			Long applicationId = applicationService.createMsmeLoan(aadharDetailsReq.getUserId(), true,
-					aadharDetailsReq.getBusinessTypeId());
+			Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
+					aadharDetailsReq.getBusinessTypeId(),aadharDetailsReq.getOrgId());
 			if (applicationId != null) {
 				mfiApplicationDetail = new MFIApplicantDetail();
 				BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
 				mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 				mfiApplicationDetail.setStatus(CommonUtils.PENDING);
 				mfiApplicationDetail.setIsActive(true);
+				mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
+				mfiApplicationDetail.setCreatedDate(new Date());
 				detailsRepository.save(mfiApplicationDetail);
+                aadharDetailsReq.setId(mfiApplicationDetail.getId());
+                aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
 			}
 		} else {
 			mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
 			BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
 			mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(aadharDetailsReq.getApplicationId()));
 			mfiApplicationDetail.setStatus(CommonUtils.PENDING);
+			mfiApplicationDetail.setModifiedBy(aadharDetailsReq.getUserId());
+			mfiApplicationDetail.setModifiedDate(new Date());
 			detailsRepository.save(mfiApplicationDetail);
 		}
-		return true;
+		AadharDetailsReq detailsReq = new AadharDetailsReq();
+		detailsReq.setId(aadharDetailsReq.getId());
+		detailsReq.setApplicationId(aadharDetailsReq.getApplicationId());
+		return detailsReq;
 	}
 
 	@Override
@@ -73,8 +79,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public boolean saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq) {
-		// TODO Auto-generated method stub
-		System.out.println("personalDetailsReq.getId()=======>" + personalDetailsReq.getId());
 		MFIApplicantDetail mfiApplicationDetail;
 		if (null != personalDetailsReq.getId()) {
 			mfiApplicationDetail = detailsRepository.findOne(personalDetailsReq.getId());
@@ -87,14 +91,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId) {
-		List<PersonalDetailsReq> detailsReq = new ArrayList<>();
-//		List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId);
+		List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId);
 		return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
 	}
 
 	@Override
 	public boolean saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq) {
-		// TODO Auto-generated method stub
 		MFIApplicantDetail mfiApplicationDetail;
 		if (null != projectDetailsReq.getId()) {
 			mfiApplicationDetail = detailsRepository.findOne(projectDetailsReq.getId());
