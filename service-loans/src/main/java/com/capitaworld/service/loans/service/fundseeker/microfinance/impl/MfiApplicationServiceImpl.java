@@ -75,9 +75,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	public boolean saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq) {
 		// TODO Auto-generated method stub
 		System.out.println("personalDetailsReq.getId()=======>" + personalDetailsReq.getId());
-		MFIApplicantDetail mfiApplicationDetail = null;
+		MFIApplicantDetail mfiApplicationDetail;
 		if (null != personalDetailsReq.getId()) {
-//			mfiApplicationDetail = detailsRepository.findOne(personalDetailsReq.getId());
+			mfiApplicationDetail = detailsRepository.findOne(personalDetailsReq.getId());
 			BeanUtils.copyProperties(personalDetailsReq, mfiApplicationDetail);
 			mfiApplicationDetail.setIsPersonalDetailsFilled(true);
 			detailsRepository.save(mfiApplicationDetail);
