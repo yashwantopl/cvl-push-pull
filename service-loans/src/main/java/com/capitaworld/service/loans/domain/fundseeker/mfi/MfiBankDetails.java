@@ -1,10 +1,10 @@
 package com.capitaworld.service.loans.domain.fundseeker.mfi;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
+@Entity
 @Table(name = "fs_mfi_bank_details")
 public class MfiBankDetails implements Serializable {
     private static final long serialVersionUID = 1L;
