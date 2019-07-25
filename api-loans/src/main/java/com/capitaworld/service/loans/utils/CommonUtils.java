@@ -637,6 +637,18 @@ public class CommonUtils {
 		public static final int SERVICE_PROVIDER = 3;
 		public static final int NETWORK_PARTNER = 4;
 	}
+	
+	public static final class mfiDataDisplayType {
+		private mfiDataDisplayType () {
+			// Do nothing because of X and Y.
+		}
+		public static final int MFI_APPLICANT_DETAILS_DETAILS_TYPE = 1;
+		public static final int MFI_MATCHES_DISPLAY_TYPE = 2;
+		public static final int MFI_SCORING_DISPLAY_TYPE = 3;
+		public static final int MFI_ASSESSMENT_TYPE = 4;
+	}
+	
+	
 
 	public static final class UploadUserType {
 		private UploadUserType() {
