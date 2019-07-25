@@ -6643,33 +6643,10 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.MFI.EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI:
                                 try {
-                                    Double totalExperience = 0.0;
-                                    /*if(mfiApplicantDetail.getEmploymentType() != null) {
+                                    if(mfiApplicantDetail.getExpInSameLine() != null) {
                                         scoreParameterMFIRequest.setWorkingExperience_p(true);
-                                        if(!OccupationNatureNTB.SALARIED.getId().equals(mfiApplicantDetail.getEmploymentType())){
-                                            if(mfiApplicantDetail.getBusinessStartDate() != null) {
-                                                logger.info("ApplicantDetail.getBusinessStartDate() For MFI==== > {}",mfiApplicantDetail.getBusinessStartDate());
-                                                Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(mfiApplicantDetail.getBusinessStartDate());
-                                                logger.info("Year For MFI ====ApplicationId===>{}=====>{}",diifFromDate[0],applicationId);
-                                                logger.info("Month For MFI ===ApplicationId===>{}=====>{}",diifFromDate[1],applicationId);
-                                                totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12.0d));
-                                                logger.info("Total Business Experience For MFI==== > {}",totalExperience);
-                                                scoreParameterMFIRequest.setWorkingExperience(totalExperience);
-                                                scoreParameterMFIRequest.setWorkingExperience_p(true);
-                                            }
-                                        }else {
-                                            if (!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getTotalExperienceYear())) {
-                                                totalExperience += Double.valueOf(mfiApplicantDetail.getTotalExperienceYear());
-                                                logger.info("totalExperience Year {}===>{}",mfiApplicantDetail.getTotalExperienceYear());
-                                            }
-                                            if (!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getTotalExperienceMonth())) {
-                                                totalExperience += Double.valueOf(mfiApplicantDetail.getTotalExperienceMonth()) / 12.0d;
-                                                logger.info("totalExperience Month {}===>{}",mfiApplicantDetail.getTotalExperienceMonth());
-                                            }
-                                            logger.info("totalExperience {}===>{}",totalExperience);
-                                            scoreParameterMFIRequest.setWorkingExperience(totalExperience);
-                                        }
-                                    }*/
+                                        scoreParameterMFIRequest.setWorkingExperience(Double.valueOf(mfiApplicantDetail.getExpInSameLine()));
+                                    }
                                 } catch (Exception e) {
                                     logger.error("error while getting EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI parameter : ",e);
                                 }
@@ -6685,7 +6662,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MFI.PURPOSE_OF_LOAN_MFI:
                                 if(mfiApplicantDetail.getLoanPurpose() != null) {
                                     scoreParameterMFIRequest.setLoanPurpose_p(mfiApplicantDetail.getLoanPurpose() != null);
-                                    scoreParameterMFIRequest.setLoanPurpose(Integer.parseInt(mfiApplicantDetail.getLoanPurpose()));
+                                    scoreParameterMFIRequest.setLoanPurpose(mfiApplicantDetail.getPurposeOfLoan());
                                 }
                                 break;
                             case ScoreParameter.MFI.DEPENDENTS_IN_THE_FAMILY_MFI:
@@ -6860,35 +6837,10 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.MFI.EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI:
                                 try {
-                                    Double totalExperience = 0.0;
-/*
-                                    if(mfiCoApplicantDetails.getEmploymentType() != null) {
+                                    if(mfiCoApplicantDetails.getExpInSameLine() != null) {
                                         scoreParameterMFIRequest.setWorkingExperience_p(true);
-                                        if(!OccupationNatureNTB.SALARIED.getId().equals(mfiCoApplicantDetails.getEmploymentType())){
-                                            if(mfiCoApplicantDetails.getBusinessStartDate() != null) {
-                                                logger.info("coApplicantDetail.getBusinessStartDate() For MFI==== > {}",mfiCoApplicantDetails.getBusinessStartDate());
-                                                Integer[] diifFromDate = CommonUtils.getExactAgeFromDate(mfiCoApplicantDetails.getBusinessStartDate());
-                                                logger.info("Year For MFI CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[0],applicationId);
-                                                logger.info("Month For MFI CoApplicant====ApplicationId===>{}=====>{}",diifFromDate[1],applicationId);
-                                                totalExperience = (((double) diifFromDate[0]) + ((double)diifFromDate[1] / 12.0d));
-                                                logger.info("Total Business Experiance For MFI==== > {}",totalExperience);
-                                                scoreParameterMFIRequest.setWorkingExperience(totalExperience);
-                                                scoreParameterMFIRequest.setWorkingExperience_p(true);
-                                            }
-                                        }else {
-                                            if (!CommonUtils.isObjectNullOrEmpty(mfiCoApplicantDetails.getTotalExperienceYear())) {
-                                                totalExperience += Double.valueOf(mfiCoApplicantDetails.getTotalExperienceYear());
-                                                logger.info("totalExperience Year {}===>{}",mfiCoApplicantDetails.getTotalExperienceYear());
-                                            }
-                                            if (!CommonUtils.isObjectNullOrEmpty(mfiCoApplicantDetails.getTotalExperienceMonth())) {
-                                                totalExperience += Double.valueOf(mfiCoApplicantDetails.getTotalExperienceMonth()) / 12.0d;
-                                                logger.info("totalExperience Month {}===>{}",mfiCoApplicantDetails.getTotalExperienceMonth());
-                                            }
-                                            logger.info("totalExperience {}===>{}",totalExperience);
-                                            scoreParameterMFIRequest.setWorkingExperience(totalExperience);
-                                        }
+                                        scoreParameterMFIRequest.setWorkingExperience(Double.valueOf(mfiCoApplicantDetails.getExpInSameLine()));
                                     }
-*/
                                 } catch (Exception e) {
                                     logger.error("error while getting EXPERIENCE_IN_THE_BUSINESS_WORKING_MFI parameter : ",e);
                                 }
@@ -6904,7 +6856,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MFI.PURPOSE_OF_LOAN_MFI:
                                 if(mfiCoApplicantDetails.getLoanPurpose() != null) {
                                     scoreParameterMFIRequest.setLoanPurpose_p(mfiCoApplicantDetails.getLoanPurpose() != null);
-                                    scoreParameterMFIRequest.setLoanPurpose(Integer.parseInt(mfiCoApplicantDetails.getLoanPurpose()));
+                                    scoreParameterMFIRequest.setLoanPurpose(mfiCoApplicantDetails.getPurposeOfLoan());
                                 }
                                 break;
                             case ScoreParameter.MFI.DEPENDENTS_IN_THE_FAMILY_MFI:

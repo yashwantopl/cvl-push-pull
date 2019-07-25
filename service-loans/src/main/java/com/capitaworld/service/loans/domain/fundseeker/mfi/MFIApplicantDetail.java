@@ -400,6 +400,9 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "client_type")
 	private Integer clientType;
 
+	@Column(name = "purpose_of_loan")
+	private Integer purposeOfLoan;
+
 	private Integer status;
 
 	public Long getId() {
