@@ -19,9 +19,11 @@ import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.sidbi.ProjectCostDetailRepository;
 import com.capitaworld.service.loans.service.sidbi.ProjectCostDetailService;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 
 @Service
 @Transactional
@@ -34,14 +36,19 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
+	@Autowired
+	SidbiSpecificService sidbiSpecificService;
+	
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			
 			projectCostDetailRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
-				TotalCostOfProjectRequest totalCostOfProjectRequest = (TotalCostOfProjectRequest) MultipleJSONObjectHelper
-						.getObjectFromMap(obj, TotalCostOfProjectRequest.class);
+				TotalCostOfProjectRequest totalCostOfProjectRequest = (TotalCostOfProjectRequest) MultipleJSONObjectHelper.getObjectFromMap(obj, TotalCostOfProjectRequest.class);
+				
+				convertAbsoluteValues(totalCostOfProjectRequest, frameRequest.getApplicationId(), frameRequest.getUserId());
+				
 				ProjectCostDetail totalCostOfProject = null;
 //				if (totalCostOfProjectRequest.getId() != null) {
 //					totalCostOfProject = projectCostDetailRepository.findOne(totalCostOfProjectRequest.getId());
@@ -82,8 +89,9 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 					totalCostOfProjectRequest.size());
 
 			for (ProjectCostDetail detail : totalCostOfProjectRequest) {
-				TotalCostOfProjectRequest totalCostofProjectRequest = new TotalCostOfProjectRequest();
+				TotalCostOfProjectRequest totalCostofProjectRequest = new TotalCostOfProjectRequest();				
 				BeanUtils.copyProperties(detail, totalCostofProjectRequest);
+				this.convertValuesIn(totalCostofProjectRequest, applicationId, userId);
 				totalCostOfProjectRequests.add(totalCostofProjectRequest);
 			}
 			return totalCostOfProjectRequests;
@@ -107,5 +115,23 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 			Integer denominationId = loanApplicationRepository.getDenominationId(applicationId, userId);
 			totalCost=totalCost*Denomination.getById(denominationId).getDigit();
 			return totalCost;
+	}
+	
+	private void convertAbsoluteValues(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId, userId);
+
+		totalCostOfProject.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred()==null ? null :totalCostOfProject.getAlreadyIncurred()*sidbiCurrencyRateObj.getRate());
+		totalCostOfProject.setToBeIncurred(totalCostOfProject.getToBeIncurred()==null ? null :totalCostOfProject.getToBeIncurred()*sidbiCurrencyRateObj.getRate());
+		totalCostOfProject.setTotalCost(totalCostOfProject.getTotalCost()==null ? null :totalCostOfProject.getTotalCost()*sidbiCurrencyRateObj.getRate());
+		
+	}
+	
+	private void convertValuesIn(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId, userId);
+		
+		totalCostOfProject.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred()==null ? null :totalCostOfProject.getAlreadyIncurred()/sidbiCurrencyRateObj.getRate());
+		totalCostOfProject.setToBeIncurred(totalCostOfProject.getToBeIncurred()==null ? null :totalCostOfProject.getToBeIncurred()/sidbiCurrencyRateObj.getRate());
+		totalCostOfProject.setTotalCost(totalCostOfProject.getTotalCost()==null ? null :totalCostOfProject.getTotalCost()/sidbiCurrencyRateObj.getRate());
+		
 	}
 }
