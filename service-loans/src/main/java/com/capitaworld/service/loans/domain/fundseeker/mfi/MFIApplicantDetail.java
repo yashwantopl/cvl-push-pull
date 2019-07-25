@@ -266,7 +266,7 @@ public class MFIApplicantDetail implements Serializable {
 	private String businessPremises;
 
 	@Column(name = "exp_in_same_line")
-	private String expInSameLine;
+	private Integer expInSameLine;
 
 	@Column(name = "academic_sum_insured")
 	private String academicSumInsured;
@@ -1281,11 +1281,11 @@ public class MFIApplicantDetail implements Serializable {
 		this.businessPremises = businessPremises;
 	}
 
-	public String getExpInSameLine() {
+	public Integer getExpInSameLine() {
 		return expInSameLine;
 	}
 
-	public void setExpInSameLine(String expInSameLine) {
+	public void setExpInSameLine(Integer expInSameLine) {
 		this.expInSameLine = expInSameLine;
 	}
 

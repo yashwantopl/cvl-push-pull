@@ -54,7 +54,7 @@ public class PersonalDetailsReq {
 	private String houseOwnership;
 	private String areaType;
 	private String businessPremises;
-	private String expInSameLine;
+	private Integer expInSameLine;
 	private String academicSumInsured;
 	private Boolean isPersonalDetailsFilled;
 
@@ -69,7 +69,7 @@ public class PersonalDetailsReq {
 			String nomineeState, String nomineeCity, String nomineeDistrict, String nomineeLocation,
 			String nomineeHouseNo, String nomineeLandmark, String academicReligion, String academicCaste,
 			Boolean isAcademicLifeInsurance, String houseOwnership, String areaType, String businessPremises,
-			String expInSameLine, String academicSumInsured, Boolean isPersonalDetailsFilled) {
+			Integer expInSameLine, String academicSumInsured, Boolean isPersonalDetailsFilled) {
 		super();
 		this.applicationId = applicationId;
 		this.fatherName = fatherName;
@@ -354,11 +354,11 @@ public class PersonalDetailsReq {
 		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
 	}
 
-	public String getExpInSameLine() {
+	public Integer getExpInSameLine() {
 		return expInSameLine;
 	}
 
-	public void setExpInSameLine(String expInSameLine) {
+	public void setExpInSameLine(Integer expInSameLine) {
 		this.expInSameLine = expInSameLine;
 	}
 
