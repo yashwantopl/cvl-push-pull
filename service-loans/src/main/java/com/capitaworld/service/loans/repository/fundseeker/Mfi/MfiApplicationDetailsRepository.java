@@ -31,13 +31,13 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     public List<MFIApplicantDetail> findByApplicationIdAndIsActive(@Param("applicationId") Long applicationId);
      
 
-    @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" + 
-    		"			fn.relationWithNomineeId, fn.nomineeAddress, fn.nomineePincode, fn.educationQualification,\n" + 
-    		"			fn.religion,fn.landHolding,fn.houseType,fn.nameOfFirm,\n" + 
-    		"		fn.businessType, fn.nomineeState, fn.nomineeCity,\n" + 
-    		"			fn.nomineeDistrict,fn.nomineeLocation, fn.nomineeHouseNo,fn.nomineeLandmark,\n" + 
-    		"			fn.academicReligion, fn.academicCaste, fn.isAcademicLifeInsurance, fn.houseOwnership,\n" + 
-    		"			fn.areaType, fn.businessPremises, fn.expInSameLine, fn.academicSumInsured,\n" + 
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" +
+    		"			fn.relationWithNomineeId, fn.nomineeAddress, fn.nomineePincode, fn.educationQualification,\n" +
+    		"			fn.religion,fn.landHolding,fn.houseType,fn.nameOfFirm,\n" +
+    		"		fn.businessType, fn.nomineeState, fn.nomineeCity,\n" +
+    		"			fn.nomineeDistrict,fn.nomineeLocation, fn.nomineeHouseNo,fn.nomineeLandmark,\n" +
+    		"			fn.academicReligion, fn.academicCaste, fn.isAcademicLifeInsurance, fn.houseOwnership,\n" +
+    		"			fn.areaType, fn.businessPremises, fn.expInSameLine, fn.academicSumInsured,\n" +
     		"			fn.isPersonalDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
     public List<PersonalDetailsReq> findPersonalDetailsByAppId(@Param("appId") Long appId);
     
