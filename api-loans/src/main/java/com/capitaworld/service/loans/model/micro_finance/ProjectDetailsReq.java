@@ -12,7 +12,7 @@ public class ProjectDetailsReq {
 	private Long id;
 	private Long applicationId;
 	private Integer loanType;
-	private String loanPurpose;
+	private Integer loanPurpose;
 	private Double loanAmountRequired;
 	private Double costOfProject;
 	private Double costOfEquipment;
@@ -28,6 +28,31 @@ public class ProjectDetailsReq {
 	private Double insurencePremium;
 	private Boolean isProjectDetailsFilled;
 
+	public ProjectDetailsReq(Long applicationId, Integer loanType, Integer loanPurpose, Double loanAmountRequired,
+			Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
+			Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
+			Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
+			Boolean isProjectDetailsFilled) {
+		super();
+		this.applicationId = applicationId;
+		this.loanType = loanType;
+		this.loanPurpose = loanPurpose;
+		this.loanAmountRequired = loanAmountRequired;
+		this.costOfProject = costOfProject;
+		this.costOfEquipment = costOfEquipment;
+		this.workingCapOfEquipment = workingCapOfEquipment;
+		this.totalCostEquipment = totalCostEquipment;
+		this.promoterContribution = promoterContribution;
+		this.loanRequiredFromSidbi = loanRequiredFromSidbi;
+		this.totalMeanFinance = totalMeanFinance;
+		this.totalCashFlow = totalCashFlow;
+		this.repaymentFrequency = repaymentFrequency;
+		this.insurenceRequired = insurenceRequired;
+		this.insurenceCompanyName = insurenceCompanyName;
+		this.insurencePremium = insurencePremium;
+		this.isProjectDetailsFilled = isProjectDetailsFilled;
+	}
+
 	public Integer getLoanType() {
 		return loanType;
 	}
@@ -36,20 +61,20 @@ public class ProjectDetailsReq {
 		this.loanType = loanType;
 	}
 
-	public String getLoanPurpose() {
-		return loanPurpose;
-	}
-
-	public void setLoanPurpose(String loanPurpose) {
-		this.loanPurpose = loanPurpose;
-	}
-
 	public Double getLoanAmountRequired() {
 		return loanAmountRequired;
 	}
 
 	public void setLoanAmountRequired(Double loanAmountRequired) {
 		this.loanAmountRequired = loanAmountRequired;
+	}
+
+	public Integer getLoanPurpose() {
+		return loanPurpose;
+	}
+
+	public void setLoanPurpose(Integer loanPurpose) {
+		this.loanPurpose = loanPurpose;
 	}
 
 	public Double getCostOfProject() {

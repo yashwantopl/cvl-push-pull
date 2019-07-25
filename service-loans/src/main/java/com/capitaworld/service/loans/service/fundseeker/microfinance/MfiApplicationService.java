@@ -24,4 +24,10 @@ public interface MfiApplicationService {
 
     public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId);
     
+ public ProjectDetailsReq getProjectDetailsAppId(Long applicationId);
+    
+    public boolean saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
+    
+    public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId);
+
 }
