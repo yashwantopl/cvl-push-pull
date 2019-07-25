@@ -60,6 +60,9 @@ public class GstRelatedParty {
 	@Column(name="is_active")
 	private Boolean isActive;
 
+	@Column(name="per_of_invoice_value")
+	private Long perOfInvoiceValue;
+	
 	public Long getId() {
 		return id;
 	}
@@ -171,6 +174,15 @@ public class GstRelatedParty {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+
+	public Long getPerOfInvoiceValue() {
+		return perOfInvoiceValue;
+	}
+
+	public void setPerOfInvoiceValue(Long perOfInvoiceValue) {
+		this.perOfInvoiceValue = perOfInvoiceValue;
+	}
 
 	@Override
 	public String toString() {
@@ -180,7 +192,8 @@ public class GstRelatedParty {
 				+ ", transactionType=" + transactionType + ", pan=" + pan
 				+ ", invoiceValue=" + invoiceValue + ", createdBy=" + createdBy
 				+ ", modifiedBy=" + modifiedBy + ", createdDate=" + createdDate
-				+ ", modifiedDate=" + modifiedDate + "]";
+				+ ", modifiedDate=" + modifiedDate + ", isActive=" + isActive
+				+ ", perOfInvoiceValue=" + perOfInvoiceValue + "]";
 	}
 
 	

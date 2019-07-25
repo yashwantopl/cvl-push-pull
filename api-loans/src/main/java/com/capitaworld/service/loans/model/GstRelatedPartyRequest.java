@@ -22,6 +22,8 @@ public class GstRelatedPartyRequest {
 
 	private String transactionType;
 	
+	private Long perOfInvoiceValue;
+	
 	private String pan;
 	
 	private Double invoiceValue;
@@ -137,12 +139,21 @@ public class GstRelatedPartyRequest {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public Long getPerOfInvoiceValue() {
+		return perOfInvoiceValue;
+	}
+
+	public void setPerOfInvoiceValue(Long perOfInvoiceValue) {
+		this.perOfInvoiceValue = perOfInvoiceValue;
+	}
+
 	@Override
 	public String toString() {
 		return "GstRelatedPartyRequest [id=" + id + ", applicationId="
 				+ applicationId + ", gstPartyName=" + gstPartyName + ", sales="
 				+ sales + ", purchase=" + purchase + ", gstin=" + gstin
-				+ ", transactionType=" + transactionType + ", pan=" + pan
+				+ ", transactionType=" + transactionType
+				+ ", perOfInvoiceValue=" + perOfInvoiceValue + ", pan=" + pan
 				+ ", invoiceValue=" + invoiceValue + ", createdBy=" + createdBy
 				+ ", modifiedBy=" + modifiedBy + ", createdDate=" + createdDate
 				+ ", modifiedDate=" + modifiedDate + "]";
