@@ -25,7 +25,9 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.domain.common.MaxInvestmentBankwise;
 import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.repository.common.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,10 +109,6 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.repository.common.LoanRepository;
-import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
-import com.capitaworld.service.loans.repository.common.MinMaxProductDetailRepository;
-import com.capitaworld.service.loans.repository.common.PaymentGatewayAuditMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
@@ -375,6 +373,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ApplicationProposalMappingService appPropMappService;
+
+	@Autowired
+	private MaxInvestmentBankwiseRepository maxInvestmentBankwiseRepository;
 
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
@@ -8363,5 +8364,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Boolean retailPrefillData(String input) {
 		return loanRepository.retailPrefillData(input);
+	}
+
+	@Override
+	public String getMaxInvestmentSizeFromBank(String bankCode){
+		MaxInvestmentBankwise maxInvestmentBankwise = maxInvestmentBankwiseRepository.getInvestmentSizeByBankCode(bankCode.replace("\"",""));
+		if(!CommonUtils.isObjectNullOrEmpty(maxInvestmentBankwise)){
+			Double maxValInCr = maxInvestmentBankwise.getMaxInvestmentSize()/10000000 ;
+			String maxValStr = maxValInCr.toString();
+			String decimalValues = maxValStr.substring(maxValStr.indexOf(".")+1);
+			int length = decimalValues.length();
+			DecimalFormat dfForNoDecimal = new DecimalFormat("#");
+			DecimalFormat dfForTwoDecimal = new DecimalFormat("#.##");
+			dfForTwoDecimal.setMinimumFractionDigits(2);
+			if(length > 1 || (length ==1 && !decimalValues.equals("0"))){
+				return dfForTwoDecimal.format(maxValInCr);
+			}
+			return dfForNoDecimal.format(maxValInCr);
+		}
+		return null;
 	}
 }
