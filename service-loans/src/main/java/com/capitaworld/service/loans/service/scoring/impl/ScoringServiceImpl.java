@@ -1472,9 +1472,19 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterRetailRequest.setMinBankingRelationship(minBankRelationshipInMonths == null ? 0 : minBankRelationshipInMonths);
                                 break;
                             case ScoreParameter.Retail.RESIDENCE_TYPE_PL:
-                                scoreParameterRetailRequest.setIsResidenceType_p(retailApplicantDetail.getResidenceType() != null);
-                                scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
-                                break;
+                            	if(retailApplicantDetail.getResidenceType() != null) {
+                					if(ResidenceStatusRetailMst.OWNED.getId().equals(retailApplicantDetail.getResidenceType())) {
+                						if(retailApplicantDetail.getIsOwnedProp() == null || retailApplicantDetail.getIsOwnedProp()) {
+                							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
+                						}else {
+                							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
+                						}
+                					}else {
+                						scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
+                					}
+                					scoreParameterRetailRequest.setIsResidenceType_p(true);
+                				}
+                				break;
                             case ScoreParameter.Retail.REPAYMENT_MODE_PL:
                                 scoreParameterRetailRequest.setRepaymentMode(retailApplicantDetail.getRepaymentMode());
                                 scoreParameterRetailRequest.setRepaymentMode_p(retailApplicantDetail.getRepaymentMode() != null);
