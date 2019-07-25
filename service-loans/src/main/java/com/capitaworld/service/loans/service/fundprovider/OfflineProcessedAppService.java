@@ -1,18 +1,16 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
-import java.util.List;
-
-import com.capitaworld.service.loans.model.OfflineProcessedApplicationRequest;
+import com.capitaworld.service.loans.model.common.ReportRequest;
 
 public interface OfflineProcessedAppService {
 
-	public String getApplicationList(Long userId);
+	public String getApplicationList(ReportRequest reportRequest);
 
-	public String getSanctionedApplicationList(Long userId);
+	public String getSanctionedApplicationList(ReportRequest reportRequest);
 
-	public String getDisbursedApplicationList(Long userId);
+	public String getDisbursedApplicationList(ReportRequest reportRequest);
 
-	public String getRejectProposalList(Long userId);
+	public String getRejectProposalList(ReportRequest reportRequest);
 
 	public String getOtherProposalList(Long userId);
 	
