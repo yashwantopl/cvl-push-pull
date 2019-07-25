@@ -176,7 +176,7 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer houseType;
 
 	@Column(name = "loan_purpose")
-	private Integer loanPurpose;
+	private String loanPurpose;
 
 	@Column(name = "loan_amount_required")
 	private Double loanAmountRequired;
@@ -395,6 +395,8 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer ppiDressingTableInFamily;
 	@Column(name = "ppi_other_table_in_family")
 	private Integer ppiOtherTableInFamily;
+	@Column(name = "purpose_of_loan")
+	private Integer purposeOfLoan;
 
 	@Column(name = "purpose_of_loan")
 	private Integer purposeOfLoan;
@@ -642,11 +644,11 @@ public class MFIApplicantDetail implements Serializable {
 	}
 
 
-	public Integer getLoanPurpose() {
+	public String getLoanPurpose() {
 		return loanPurpose;
 	}
 
-	public void setLoanPurpose(Integer loanPurpose) {
+	public void setLoanPurpose(String loanPurpose) {
 		this.loanPurpose = loanPurpose;
 	}
 
