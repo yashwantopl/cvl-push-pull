@@ -13,6 +13,7 @@ public class ProjectDetailsReq {
 	private Long applicationId;
 	private Integer loanType;
 	private String loanPurpose;
+	private Integer purposeOfLoan;
 	private Double loanAmountRequired;
 	private Double costOfProject;
 	private Double costOfEquipment;
@@ -28,7 +29,7 @@ public class ProjectDetailsReq {
 	private Double insurencePremium;
 	private Boolean isProjectDetailsFilled;
 
-	public ProjectDetailsReq(Long applicationId, Integer loanType, String loanPurpose, Double loanAmountRequired,
+	public ProjectDetailsReq(Long applicationId, Integer loanType, Integer purposeOfLoan, Double loanAmountRequired,
 			Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
 			Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
 			Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
@@ -36,7 +37,7 @@ public class ProjectDetailsReq {
 		super();
 		this.applicationId = applicationId;
 		this.loanType = loanType;
-		this.loanPurpose = loanPurpose;
+		this.purposeOfLoan = purposeOfLoan;
 		this.loanAmountRequired = loanAmountRequired;
 		this.costOfProject = costOfProject;
 		this.costOfEquipment = costOfEquipment;
@@ -197,28 +198,36 @@ public class ProjectDetailsReq {
 		this.applicationId = applicationId;
 	}
 
-	@Override
-	public String toString() {
-		return "ProjectDetailsReq [id=" + id + ", applicationId=" + applicationId + ", loanType=" + loanType
-				+ ", loanPurpose=" + loanPurpose + ", loanAmountRequired=" + loanAmountRequired + ", costOfProject="
-				+ costOfProject + ", costOfEquipment=" + costOfEquipment + ", workingCapOfEquipment="
-				+ workingCapOfEquipment + ", totalCostEquipment=" + totalCostEquipment + ", promoterContribution="
-				+ promoterContribution + ", loanRequiredFromSidbi=" + loanRequiredFromSidbi + ", totalMeanFinance="
-				+ totalMeanFinance + ", totalCashFlow=" + totalCashFlow + ", repaymentFrequency=" + repaymentFrequency
-				+ ", insurenceRequired=" + insurenceRequired + ", insurenceCompanyName=" + insurenceCompanyName
-				+ ", insurencePremium=" + insurencePremium + ", isProjectDetailsFilled=" + isProjectDetailsFilled
-				+ ", getLoanType()=" + getLoanType() + ", getLoanPurpose()=" + getLoanPurpose()
-				+ ", getLoanAmountRequired()=" + getLoanAmountRequired() + ", getCostOfProject()=" + getCostOfProject()
-				+ ", getCostOfEquipment()=" + getCostOfEquipment() + ", getWorkingCapOfEquipment()="
-				+ getWorkingCapOfEquipment() + ", getTotalCostEquipment()=" + getTotalCostEquipment()
-				+ ", getPromoterContribution()=" + getPromoterContribution() + ", getLoanRequiredFromSidbi()="
-				+ getLoanRequiredFromSidbi() + ", getTotalMeanFinance()=" + getTotalMeanFinance()
-				+ ", getTotalCashFlow()=" + getTotalCashFlow() + ", getRepaymentFrequency()=" + getRepaymentFrequency()
-				+ ", getInsurenceRequired()=" + getInsurenceRequired() + ", getInsurenceCompanyName()="
-				+ getInsurenceCompanyName() + ", getInsurencePremium()=" + getInsurencePremium() + ", getId()="
-				+ getId() + ", getIsProjectDetailsFilled()=" + getIsProjectDetailsFilled() + ", getApplicationId()="
-				+ getApplicationId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
+	public Integer getPurposeOfLoan() {
+		return purposeOfLoan;
 	}
 
+	public void setPurposeOfLoan(Integer purposeOfLoan) {
+		this.purposeOfLoan = purposeOfLoan;
+	}
+
+	@Override
+	public String toString() {
+		return "ProjectDetailsReq{" +
+				"id=" + id +
+				", applicationId=" + applicationId +
+				", loanType=" + loanType +
+				", loanPurpose='" + loanPurpose + '\'' +
+				", purposeOfLoan='" + purposeOfLoan + '\'' +
+				", loanAmountRequired=" + loanAmountRequired +
+				", costOfProject=" + costOfProject +
+				", costOfEquipment=" + costOfEquipment +
+				", workingCapOfEquipment=" + workingCapOfEquipment +
+				", totalCostEquipment=" + totalCostEquipment +
+				", promoterContribution=" + promoterContribution +
+				", loanRequiredFromSidbi=" + loanRequiredFromSidbi +
+				", totalMeanFinance=" + totalMeanFinance +
+				", totalCashFlow=" + totalCashFlow +
+				", repaymentFrequency=" + repaymentFrequency +
+				", insurenceRequired=" + insurenceRequired +
+				", insurenceCompanyName='" + insurenceCompanyName + '\'' +
+				", insurencePremium=" + insurencePremium +
+				", isProjectDetailsFilled=" + isProjectDetailsFilled +
+				'}';
+	}
 }
