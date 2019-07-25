@@ -2,11 +2,10 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
-import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
+import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiBankDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -31,6 +30,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private LoanApplicationService applicationService;
+
+	@Autowired
+	private MfiBankDetailsRepository bankDetailsRepository;
 
 	@Override
 	public boolean saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -116,5 +118,36 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MfiReqResponse mfiResp = new MfiReqResponse();
 		BeanUtils.copyProperties(detailsResp, mfiResp);*/
 	//	return  null;
+	}
+
+
+	@Override
+	public boolean saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq) {
+		MfiBankDetails mfiBankDetails = new MfiBankDetails();
+		BeanUtils.copyProperties(bankDetailsReq, mfiBankDetails);
+		bankDetailsRepository.save(mfiBankDetails);
+		detailsRepository.updateBankFilledFlag(bankDetailsReq.getApplicationId());
+		return true;
+	}
+
+	@Override
+	public MfiBankDetailsReq fetchBankDetail(Long applicationId) {
+		MfiBankDetailsReq mfiBankDetailsReq = new MfiBankDetailsReq();
+		MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
+		BeanUtils.copyProperties(byApplicationId,mfiBankDetailsReq);
+		return mfiBankDetailsReq;
+	}
+
+	@Override
+	public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId){
+		List<MfiApplicantDetailsReq> mfiApplicantDetailsReqs = new ArrayList<>();
+		List<MFIApplicantDetail> all = detailsRepository.findByApplicationIdAndIsActive(applicationId);
+		for (MFIApplicantDetail applicantDetail:all) {
+			MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
+			BeanUtils.copyProperties(applicantDetail,detailsReq);
+			mfiApplicantDetailsReqs.add(detailsReq);
+		}
+		return mfiApplicantDetailsReqs;
+
 	}
 }

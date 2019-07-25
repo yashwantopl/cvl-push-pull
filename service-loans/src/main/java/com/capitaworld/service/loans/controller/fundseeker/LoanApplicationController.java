@@ -3151,4 +3151,26 @@ public class LoanApplicationController {
 	    		  HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+
+	@RequestMapping(value = "/getBsData", method = RequestMethod.POST,consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getBsData(@RequestBody String bCode, HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonUtils.isObjectNullOrEmpty(bCode)) {
+				logger.error("User Id is null or Empty");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			String data = loanApplicationService.getMaxInvestmentSizeFromBank(bCode);
+			if(!CommonUtils.isObjectNullOrEmpty(data)) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found", HttpStatus.OK.value(),data), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("No Data Found", HttpStatus.NO_CONTENT.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getBsData ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

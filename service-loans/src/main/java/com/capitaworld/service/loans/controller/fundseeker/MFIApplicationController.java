@@ -1,10 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
-import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -163,6 +160,76 @@ public class MFIApplicationController {
   			logger.error("THROW EXCEPTION WHILE GETTING MFI DETAILS ====={}======{}====>",e);
   			return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
   		}
-  	}
+    }
+
+
+
+    @PostMapping(value = "/saveBankDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveBankDetails(@RequestBody MfiBankDetailsReq mfiBankDetailsReq, HttpServletRequest request) {
+        try {
+            logger.info("service call saveProjectDetails----------->");
+            CommonDocumentUtils.startHook(logger, "save");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            mfiApplicationService.saveOrUpdateBankDetails(mfiBankDetailsReq);
+            CommonDocumentUtils.endHook(logger, "save");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while saving save Project Details Details ==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
+
+    @GetMapping(value = "/getBankDetails/{applicationId}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getBankDetails(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+        try {
+
+            CommonDocumentUtils.startHook(logger, "Get Bank Details");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            MfiBankDetailsReq mfiBankDetailsReq = mfiApplicationService.fetchBankDetail(applicationId);
+            CommonDocumentUtils.endHook(logger, "Get Bank Details");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Bank details.", HttpStatus.OK.value(),mfiBankDetailsReq),HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Get Bank Details ==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    @GetMapping(value = "/getAllApplicantDetails/{applicationId}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getAllApplicantDetails(@PathVariable("applicationId") Long applicationId,HttpServletRequest request) {
+        try {
+
+            CommonDocumentUtils.startHook(logger, "Get Bank Details");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            List<MfiApplicantDetailsReq> allApplicantDetails = mfiApplicationService.getAllApplicantDetails(applicationId);
+            CommonDocumentUtils.endHook(logger, "Get Bank Details");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch All Applicant details.", HttpStatus.OK.value(),allApplicantDetails),HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Get All applicant Details ==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
     
 }

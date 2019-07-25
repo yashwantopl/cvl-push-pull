@@ -6,6 +6,7 @@ import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,6 +21,9 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     @Query("select new com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq(fn.applicationId.id,fn.firstName,fn.lastName,fn.middleName,fn.birthDate,fn.genderId,fn.mobile,fn.email,fn.addressSameAsAadhar,fn.currentDistrict,fn.aadharDistrict,fn.currentHouse,fn.aadharHouse,fn.currentLandmark,fn.aadharLandmark,fn.currentLocation,fn.aadharLocation,fn.currentState,fn.aadharState,fn.currentStreet,fn.aadharStreet,fn.currentVtc,fn.aadharVtc,fn.aadharSubdist,fn.currentSubdist,fn.aadharPo,fn.currentPo,fn.aadharCareOf,fn.addressPincode,fn.aadharPincode,fn.addressProofType) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
     public List<AadharDetailsReq> findAadharDetailsByAppId(@Param("appId") Long appId);
 
+    @Modifying
+    @Query("update MFIApplicantDetail set isBankDetailsFilled = true where applicationId.id =:appId")
+    public int updateBankFilledFlag(@Param("appId") Long appId);
 
 //    @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" +
 //    		"			fn.relationWithNomineeId, fn.nomineeAddress, fn.nomineePincode, fn.educationQualification,\n" +
