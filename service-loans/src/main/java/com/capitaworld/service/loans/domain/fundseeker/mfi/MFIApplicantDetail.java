@@ -397,6 +397,8 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer ppiOtherTableInFamily;
 	@Column(name = "purpose_of_loan")
 	private Integer purposeOfLoan;
+	@Column(name = "client_type")
+	private Integer clientType;
 
 	private Integer status;
 
