@@ -27,7 +27,7 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     @Query("update MFIApplicantDetail set isBankDetailsFilled = true where applicationId.id =:appId")
     public int updateBankFilledFlag(@Param("appId") Long appId);
  
-    @Query("select mf from MFIApplicantDetail mf where mf.applicationId =:id and mf.isActive = true")
+    @Query("select mf from MFIApplicantDetail mf where mf.applicationId.id =:applicationId and mf.isActive = true")
     public List<MFIApplicantDetail> findByApplicationIdAndIsActive(@Param("applicationId") Long applicationId);
      
 
