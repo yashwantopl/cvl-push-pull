@@ -3,11 +3,13 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
 import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiBankDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,6 +37,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private MfiBankDetailsRepository bankDetailsRepository;
+	
+	@Autowired
+	private MfiIncomeDetailsRepository MfiIncomeDetailsRepository;
 
 	@Override
 	public boolean saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -149,5 +156,46 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 		return mfiApplicantDetailsReqs;
 
+	}
+	
+	@Override
+	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId) {
+		List<ProjectDetailsReq> detailsReq = detailsRepository.findProjectDetailsByAppId(applicationId);
+		return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
+	}
+
+	@Override
+	public boolean saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq) {
+		MFIApplicantDetail mfiApplicationDetail = null;
+		MfiIncomeDetails mfiIncomeDetails = null;
+		if (null != mfiIncomeAndExpenditureReq.getId()) {
+			mfiApplicationDetail = detailsRepository.findOne(mfiIncomeAndExpenditureReq.getId());
+			BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, mfiApplicationDetail);
+			mfiApplicationDetail.setIsIncomeDetailsFilled(true);
+			detailsRepository.save(mfiApplicationDetail);
+		}
+		List<MfiIncomeDetailsReq> mfiIncomeDetailsReqs = mfiIncomeAndExpenditureReq.getIncomeDetailsReqList();
+		if (!CommonUtils.isListNullOrEmpty(mfiIncomeDetailsReqs)) {
+			for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeDetailsReqs) {
+				mfiIncomeDetails = new MfiIncomeDetails();
+				BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
+				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+			}
+		}
+
+		
+		return true;
+	}
+
+	@Override
+	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId) {
+		List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
+		if(!CommonUtils.isListNullOrEmpty(detailsReq)) {
+			MfiIncomeAndExpenditureReq expenditureReq = detailsReq.get(0);
+			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
+			expenditureReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
+			return expenditureReq;
+		}		
+		return null;
 	}
 }

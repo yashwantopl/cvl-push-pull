@@ -143,7 +143,7 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "nominee_name")
 	private String nomineeName;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "nominee_birth_date")
 	private Date nomineeBirthDate;
@@ -157,6 +157,7 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "nominee_pincode")
 	private String nomineePincode;
 
+	@Column(name = "religion")
 	private Integer religion;
 
 	@Column(name = "education_qualification")
@@ -175,7 +176,7 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer houseType;
 
 	@Column(name = "loan_purpose")
-	private String loanPurpose;
+	private Integer loanPurpose;
 
 	@Column(name = "loan_amount_required")
 	private Double loanAmountRequired;
@@ -346,55 +347,54 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "address_proof_type")
 	private Integer addressProofType;
 
-	@Column(name="address_proof_img")
+	@Column(name = "address_proof_img")
 	private byte[] addressProofImg;
-	@Column(name="consent_form_img")
+	@Column(name = "consent_form_img")
 	private byte[] consentFormImg;
-	@Column(name="profile_img")
+	@Column(name = "profile_img")
 	private byte[] profileImg;
-	@Column(name="ship_shgi_installment")
+	@Column(name = "ship_shgi_installment")
 	private Double shipShgiInstallment;
-	@Column(name="other_installment")
+	@Column(name = "other_installment")
 	private Double otherInstallment;
-	@Column(name="loan_installment")
+	@Column(name = "loan_installment")
 	private Double loanInstallment;
-	@Column(name="education_expense")
+	@Column(name = "education_expense")
 	private Double educationExpense;
-	@Column(name="medical_expense")
+	@Column(name = "medical_expense")
 	private Double medicalExpense;
-	@Column(name="food_expense")
+	@Column(name = "food_expense")
 	private Double foodExpense;
-	@Column(name="other_expense")
+	@Column(name = "other_expense")
 	private Double otherExpense;
-	@Column(name="business_name_brief")
-	private String businessNameBrief;
-	@Column(name="monthly_cashflow")
+	@Column(name = "business_in_brief")
+	private Integer businessInBrief;
+	@Column(name = "monthly_cashflow")
 	private Double monthlyCashflow;
-	@Column(name="monthly_expenditure")
+	@Column(name = "monthly_expenditure")
 	private Double monthlyExpenditure;
-	@Column(name="monthly_income")
+	@Column(name = "monthly_income")
 	private Double monthlyIncome;
-	@Column(name="ppi_no_family_member")
+	@Column(name = "ppi_no_family_member")
 	private Integer ppiNoFamilyMember;
-	@Column(name="ppi_acadamic_head_family")
+	@Column(name = "ppi_acadamic_head_family")
 	private Integer ppiAcadamicHeadFamily;
-	@Column(name="ppi_rafrigerator_in_family")
+	@Column(name = "ppi_rafrigerator_in_family")
 	private Integer ppiRafrigeratorInFamily;
-	@Column(name="ppi_stove_in_family")
+	@Column(name = "ppi_stove_in_family")
 	private Integer ppiStoveInFamily;
-	@Column(name="ppi_pressure_cooker_in_family")
+	@Column(name = "ppi_pressure_cooker_in_family")
 	private Integer ppiPressureCookerInFamily;
-	@Column(name="ppi_tv_in_family")
+	@Column(name = "ppi_tv_in_family")
 	private Integer ppiTvInFamily;
-	@Column(name="ppi_fan_in_family")
+	@Column(name = "ppi_fan_in_family")
 	private Integer ppiFanInFamily;
-	@Column(name="ppi_vehicle_in_family")
+	@Column(name = "ppi_vehicle_in_family")
 	private Integer ppiVehicleInFamily;
-	@Column(name="ppi_dressing_table_in_family")
+	@Column(name = "ppi_dressing_table_in_family")
 	private Integer ppiDressingTableInFamily;
-	@Column(name="ppi_other_table_in_family")
+	@Column(name = "ppi_other_table_in_family")
 	private Integer ppiOtherTableInFamily;
-
 
 	private Integer status;
 
@@ -638,11 +638,12 @@ public class MFIApplicantDetail implements Serializable {
 		this.houseType = houseType;
 	}
 
-	public String getLoanPurpose() {
+
+	public Integer getLoanPurpose() {
 		return loanPurpose;
 	}
 
-	public void setLoanPurpose(String loanPurpose) {
+	public void setLoanPurpose(Integer loanPurpose) {
 		this.loanPurpose = loanPurpose;
 	}
 
@@ -1292,7 +1293,7 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setAcademicSumInsured(String academicSumInsured) {
 		this.academicSumInsured = academicSumInsured;
-	}	
+	}
 
 	public Date getNomineeBirthDate() {
 		return nomineeBirthDate;
@@ -1374,12 +1375,21 @@ public class MFIApplicantDetail implements Serializable {
 		this.otherExpense = otherExpense;
 	}
 
-	public String getBusinessNameBrief() {
-		return businessNameBrief;
+	public byte[] getConsentFormImg() {
+		return consentFormImg;
 	}
 
-	public void setBusinessNameBrief(String businessNameBrief) {
-		this.businessNameBrief = businessNameBrief;
+	public void setConsentFormImg(byte[] consentFormImg) {
+		this.consentFormImg = consentFormImg;
+	}
+
+
+	public Integer getBusinessInBrief() {
+		return businessInBrief;
+	}
+
+	public void setBusinessInBrief(Integer businessInBrief) {
+		this.businessInBrief = businessInBrief;
 	}
 
 	public Double getMonthlyCashflow() {

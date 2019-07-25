@@ -231,5 +231,78 @@ public class MFIApplicationController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
+
+    @GetMapping(value = "/getProjectDetails/{applicationId}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getProjectDetails(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+        try {
+
+        	CommonDocumentUtils.startHook(logger, "Get Project Details");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            ProjectDetailsReq projectDetailsByAppId = mfiApplicationService.getProjectDetailsAppId(applicationId);
+            CommonDocumentUtils.endHook(logger, "Get Project Details");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Project details.", HttpStatus.OK.value(),projectDetailsByAppId),HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Get Project Details ==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
+    
+    
+    @PostMapping(value = "/saveIncomeExpenditureDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+   	public ResponseEntity<LoansResponse> saveIncomeExpenditureDetails(@RequestBody MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq,
+   			HttpServletRequest request) {
+   		try {
+   			logger.info("service call saveIncomeExpenditureDetails----------->");
+   			CommonDocumentUtils.startHook(logger, "save");
+   			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+   			if (userId == null) {
+   				logger.warn("userId  can not be empty ==>" + userId);
+   				return new ResponseEntity<LoansResponse>(
+   						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+   			}
+   			mfiApplicationService.saveOrUpdateIncomeExpenditureDetails(mfiIncomeAndExpenditureReq);
+   			CommonDocumentUtils.endHook(logger, "save");
+   			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+   					HttpStatus.OK);
+
+   		} catch (Exception e) {
+   			logger.error("Error while saving save Income Expenditure Details Details ==>", e);
+   			return new ResponseEntity<LoansResponse>(
+   					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+   					HttpStatus.OK);
+   		}
+   	}
+    
+    
+    @GetMapping(value = "/getIncomeExpenditureDetails/{applicationId}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getIncomeExpenditureDetails(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+        try {
+
+        	CommonDocumentUtils.startHook(logger, "Get Income Expenditure Details");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = mfiApplicationService.getIncomeExpenditureDetailsAppId(applicationId);
+            CommonDocumentUtils.endHook(logger, "Get Income Expenditure Details");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Income Expenditure details.", HttpStatus.OK.value(),mfiIncomeAndExpenditureReq),HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Get Income Expenditure Details ==>", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
     
 }

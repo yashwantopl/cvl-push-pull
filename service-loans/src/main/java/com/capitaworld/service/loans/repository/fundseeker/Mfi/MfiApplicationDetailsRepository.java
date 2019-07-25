@@ -3,7 +3,9 @@ package com.capitaworld.service.loans.repository.fundseeker.Mfi;
 
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,20 +26,24 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     @Modifying
     @Query("update MFIApplicantDetail set isBankDetailsFilled = true where applicationId.id =:appId")
     public int updateBankFilledFlag(@Param("appId") Long appId);
-
-//    @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" +
-//    		"			fn.relationWithNomineeId, fn.nomineeAddress, fn.nomineePincode, fn.educationQualification,\n" +
-//    		"			fn.religion,fn.cast,fn.landHolding,fn.houseType,fn.nameOfFirm,\n" +
-//    		"		fn.businessType, fn.lifeInsurance, fn.sumInsured, fn.nomineeState, fn.nomineeCity,\n" +
-//    		"			fn.nomineeDistrict,fn.nomineeLocation, fn.nomineeHouseNo,fn.nomineeLandmark,\n" +
-//    		"			fn.academicReligion, fn.academicCaste, fn.isAcademicLifeInsurance, fn.houseOwnership,\n" +
-//    		"			fn.areaType, fn.businessPremises, fn.expInSameLine, fn.academicSumInsured,\n" +
-//    		"			fn.isPersonalDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
-//    public List<PersonalDetailsReq> findPersonalDetailsByAppId(@Param("appId") Long appId);
-
  
     @Query("select mf from MFIApplicantDetail mf where mf.applicationId.id =:applicationId and mf.isActive = true")
     public List<MFIApplicantDetail> findByApplicationIdAndIsActive(@Param("applicationId") Long applicationId);
      
+
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" + 
+    		"			fn.relationWithNomineeId, fn.nomineeAddress, fn.nomineePincode, fn.educationQualification,\n" + 
+    		"			fn.religion,fn.landHolding,fn.houseType,fn.nameOfFirm,\n" + 
+    		"		fn.businessType, fn.nomineeState, fn.nomineeCity,\n" + 
+    		"			fn.nomineeDistrict,fn.nomineeLocation, fn.nomineeHouseNo,fn.nomineeLandmark,\n" + 
+    		"			fn.academicReligion, fn.academicCaste, fn.isAcademicLifeInsurance, fn.houseOwnership,\n" + 
+    		"			fn.areaType, fn.businessPremises, fn.expInSameLine, fn.academicSumInsured,\n" + 
+    		"			fn.isPersonalDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
+    public List<PersonalDetailsReq> findPersonalDetailsByAppId(@Param("appId") Long appId);
     
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq(fn.applicationId.id,fn.loanType,fn.loanPurpose,fn.loanAmountRequired,fn.costOfProject,fn.costOfEquipment,fn.workingCapOfEquipment,fn.totalCostEquipment,fn.promoterContribution,fn.loanRequiredFromSidbi,fn.totalMeanFinance,fn.totalCashFlow,fn.repaymentFrequency,fn.insurenceRequired,fn.insurenceCompanyName,fn.insurencePremium,fn.isProjectDetailsFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
+    public List<ProjectDetailsReq> findProjectDetailsByAppId(@Param("appId") Long appId);
+    
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq(fn.applicationId.id,fn.shipShgiInstallment,fn.otherInstallment,fn.loanInstallment,fn.educationExpense,fn.medicalExpense,fn.foodExpense,fn.otherExpense,fn.businessInBrief,fn.monthlyCashflow,fn.monthlyExpenditure,fn.monthlyIncome,fn.ppiNoFamilyMember,fn.ppiAcadamicHeadFamily,fn.ppiRafrigeratorInFamily,fn.ppiStoveInFamily,fn.ppiPressureCookerInFamily,fn.ppiTvInFamily,fn.ppiFanInFamily,fn.ppiVehicleInFamily,fn.ppiDressingTableInFamily,fn.ppiOtherTableInFamily) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
+	public List<MfiIncomeAndExpenditureReq> findIncomeAndExpenditureDetailsByAppId(@Param("appId") Long appId);
 }
