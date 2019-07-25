@@ -29,11 +29,14 @@ public class ProjectDetailsReq {
 	private Double insurencePremium;
 	private Boolean isProjectDetailsFilled;
 
+	public ProjectDetailsReq() {
+	}
+
 	public ProjectDetailsReq(Long applicationId, Integer loanType, Integer purposeOfLoan, Double loanAmountRequired,
-			Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
-			Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
-			Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
-			Boolean isProjectDetailsFilled) {
+							 Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
+							 Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
+							 Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
+							 Boolean isProjectDetailsFilled) {
 		super();
 		this.applicationId = applicationId;
 		this.loanType = loanType;
