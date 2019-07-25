@@ -106,6 +106,15 @@ public class CoApplicantRequest {
 	private Integer designation;
 	private Integer educationQualification;
 	private Boolean isIncomeConsider;
+	private Boolean isOwnedProp;
+
+	public Boolean getIsOwnedProp() {
+		return isOwnedProp;
+	}
+
+	public void setIsOwnedProp(Boolean isOwnedProp) {
+		this.isOwnedProp = isOwnedProp;
+	}
 
 	public CoApplicantRequest() {
 	}
