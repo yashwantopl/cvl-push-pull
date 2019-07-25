@@ -799,6 +799,7 @@ public class CommonUtils {
 		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/error".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/mca/error".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getBsData".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {

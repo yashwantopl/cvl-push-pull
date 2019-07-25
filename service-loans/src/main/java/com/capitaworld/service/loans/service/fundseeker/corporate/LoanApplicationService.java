@@ -269,4 +269,6 @@ public interface LoanApplicationService {
 	public String getApplicationListForPrefillProfile(Long userId);
 	
 	public Boolean retailPrefillData(String input);
+
+	public String getMaxInvestmentSizeFromBank(String bankCode);
 }
