@@ -347,6 +347,18 @@ public class CommonUtils {
 		public static String[] getCORPORATE() {
 			return CORPORATE;
 		}
+		
+		private static final String[] AUDIT_FIELDS = { "createdBy", "modifiedBy", "createdDate", "modifiedDate", "isActive"};
+
+		public static String[] getAuditFields() {
+			return AUDIT_FIELDS;
+		}
+		
+		private static final String[] AUDIT_FIELDS_WITH_ID = { "createdBy", "modifiedBy", "createdDate", "modifiedDate", "isActive","id"};
+
+		public static String[] getAuditFieldsWithId() {
+			return AUDIT_FIELDS_WITH_ID;
+		}
 
 		public static final String ID = "id";
 

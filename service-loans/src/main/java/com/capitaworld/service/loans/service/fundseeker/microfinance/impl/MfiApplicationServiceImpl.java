@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.micro_finance.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,15 +18,6 @@ import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiAssetsLiabilityDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
-import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiAssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiBankDetailsRepository;
@@ -172,11 +164,25 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId) {
 		List<MfiApplicantDetailsReq> mfiApplicantDetailsReqs = new ArrayList<>();
 		List<MFIApplicantDetail> all = detailsRepository.findByApplicationIdAndIsActive(applicationId);
+
 		for (MFIApplicantDetail applicantDetail : all) {
+
 			MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
 			BeanUtils.copyProperties(applicantDetail, detailsReq);
+			//for bank details
+			MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
+			BeanUtils.copyProperties(byApplicationId, detailsReq);
+			//for assets and liability
+			List<MfiAssetsDetailsReq> assetsReq = MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId);
+			detailsReq.setAssetsDetails(assetsReq);
+			List<MfiAssetsDetailsReq> liabilityReq = MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId);
+			detailsReq.setAssetsDetails(liabilityReq);
+			//for Income
+			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
+			detailsReq.setIncomeDetailsReqList(incomeDetails);
 			mfiApplicantDetailsReqs.add(detailsReq);
 		}
+
 		return mfiApplicantDetailsReqs;
 
 	}
@@ -210,17 +216,26 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId) {
-		List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository
-				.findIncomeAndExpenditureDetailsByAppId(applicationId);
+		List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
 		if (!CommonUtils.isListNullOrEmpty(detailsReq)) {
 			MfiIncomeAndExpenditureReq expenditureReq = detailsReq.get(0);
-			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository
-					.findIncomeDetailsByAppId(applicationId);
-			expenditureReq.setIncomeDetailsReqList(
-					!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
+			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
+			expenditureReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
 			return expenditureReq;
 		}
 		return null;
+	}
+
+	/**
+	 *
+	 * @param applicationId
+	 * @param type 1 for Applicant 2 for co-applicant
+	 * @return
+	 */
+	@Override
+	public FlagCheckMFI findAllFlag(Long applicationId,Integer type) {
+		return detailsRepository.getFlagDetailByApplicationId(applicationId,type);
+
 	}
 
 	@Override
