@@ -11,8 +11,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.GstRelatedParty;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.RelatedPartyService;
 
 /**
@@ -23,6 +25,9 @@ public class RelatedPartyServiceImpl implements RelatedPartyService {
 
 	@Autowired
 	private GstRelatedpartyRepository gstRelatedPartyRepository;
+	
+	@Autowired
+	private CorporateApplicantDetailRepository corporateRepository;
 	
 	@Modifying
 	@Transactional(rollbackOn=Exception.class)
@@ -51,5 +56,28 @@ public class RelatedPartyServiceImpl implements RelatedPartyService {
 		
 		return status;
 	}
+	
+	@Modifying
+	@Transactional(rollbackOn=Exception.class)
+	@Override
+	public Boolean saveRelatedPartyFlag(GstRelatedPartyRequest relativeParty)  throws Exception {
+		Boolean status = false;
+		if(relativeParty!=null) {
+			CorporateApplicantDetail corporate = corporateRepository.findByApplicationIdIdAndIsActive(relativeParty.getApplicationId(), true);
+			if(corporate != null && corporate.getApplicationId() != null) {
+				corporate.setIsNoneOfRelatedPartySelected(relativeParty.getIsNoneRelativePartyOfSelected());
+				corporate.setModifiedDate(new Date());
+				corporate.setModifiedBy(relativeParty.getUserId());
+				if(corporateRepository.save(corporate) != null) {
+					status = true;
+				}
+			}
+	
+		}
+		
+		return status;
+	}
+
+	
 
 }

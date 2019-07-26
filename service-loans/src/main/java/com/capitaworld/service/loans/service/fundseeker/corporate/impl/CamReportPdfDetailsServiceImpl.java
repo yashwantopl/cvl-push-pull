@@ -72,6 +72,7 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -1328,6 +1329,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.error("Error while getting ITR data : ",e);
 		}
+		
+		//gstRelatedParty Data Fetch
+		try {
+			List<GstRelatedPartyRequest> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(10000731l);
+			map.put("gstPartyRelatedData", !CommonUtils.isObjectListNull(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
+		}
 
 
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
@@ -1380,12 +1389,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//		GST Comparision by Maaz
-		/*try{
+		try{
 			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
-		}*/
+		}
 
 		/**ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);

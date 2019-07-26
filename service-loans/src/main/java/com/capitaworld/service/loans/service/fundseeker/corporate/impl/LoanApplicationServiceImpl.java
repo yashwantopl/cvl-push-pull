@@ -25,8 +25,10 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.domain.GstRelatedParty;
 import com.capitaworld.service.loans.domain.common.MaxInvestmentBankwise;
 import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
 import com.capitaworld.service.loans.repository.common.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -376,6 +378,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private MaxInvestmentBankwiseRepository maxInvestmentBankwiseRepository;
+	
+	@Autowired
+	private GstRelatedpartyRepository gstRelatedpartyRepository;
 
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
@@ -8355,6 +8360,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			selectionList.add(response);			
 		}
 		return selectionList;
+	}
+	
+	@Override
+	public List<GstRelatedPartyRequest> getGstRelatedPartyDetails(Long applicationId){
+		if(!CommonUtils.isObjectNullOrEmpty(applicationId)){
+			List<GstRelatedPartyRequest> gstRelatedPartyRequests = new ArrayList<GstRelatedPartyRequest>();
+			try {
+				List<GstRelatedParty> gstRelatedPartyDetails = gstRelatedpartyRepository.findAllByApplicationIdAndIsActiveIsTrue(applicationId);
+				for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
+					GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
+					BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
+					gstRelatedPartyRequests.add(gstRelatedPartyRequest);
+				}
+				return  gstRelatedPartyRequests;
+			}
+			catch (Exception e)
+			{
+				logger.error("Error/exception while Fetching gstRelated Data in MSME of applicationId==>{}  ..Error==>{}", applicationId ,e);
+			}
+		}
+		return null;
 	}
 	
 	@Override

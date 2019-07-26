@@ -8,4 +8,6 @@ import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 public interface RelatedPartyService {
 
 	public Boolean saveRelatedParty(GstRelatedPartyRequest[] request)  throws Exception;
+	
+	public Boolean saveRelatedPartyFlag(GstRelatedPartyRequest request) throws Exception;
 }

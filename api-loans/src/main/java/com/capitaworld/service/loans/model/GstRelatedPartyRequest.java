@@ -35,6 +35,19 @@ public class GstRelatedPartyRequest {
 	private Date createdDate;
 	
 	private Date modifiedDate;
+	
+	private Boolean isNoneRelativePartyOfSelected;
+
+	private Long userId;
+	
+	public Boolean getIsNoneRelativePartyOfSelected() {
+		return isNoneRelativePartyOfSelected;
+	}
+
+	public void setIsNoneRelativePartyOfSelected(
+			Boolean isNoneRelativePartyOfSelected) {
+		this.isNoneRelativePartyOfSelected = isNoneRelativePartyOfSelected;
+	}
 
 	public Long getId() {
 		return id;
@@ -146,6 +159,15 @@ public class GstRelatedPartyRequest {
 	public void setPerOfInvoiceValue(Long perOfInvoiceValue) {
 		this.perOfInvoiceValue = perOfInvoiceValue;
 	}
+	
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
 	@Override
 	public String toString() {
@@ -156,7 +178,9 @@ public class GstRelatedPartyRequest {
 				+ ", perOfInvoiceValue=" + perOfInvoiceValue + ", pan=" + pan
 				+ ", invoiceValue=" + invoiceValue + ", createdBy=" + createdBy
 				+ ", modifiedBy=" + modifiedBy + ", createdDate=" + createdDate
-				+ ", modifiedDate=" + modifiedDate + "]";
+				+ ", modifiedDate=" + modifiedDate
+				+ ", isNoneRelativePartyOfSelected="
+				+ isNoneRelativePartyOfSelected + ", userId=" + userId + "]";
 	}
 	
 	
