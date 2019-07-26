@@ -225,6 +225,9 @@ public class CorporateApplicantDetail implements Serializable {
     @Column(name="cast_category")
     private String castCategory;
 
+    @Column(name="is_noneof_related_party_selected")
+    private Boolean isNoneOfRelatedPartySelected;;
+
     
     
 	/**
@@ -748,6 +751,15 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setCastCategory(String castCategory) {
 		this.castCategory = castCategory;
+	}
+
+	public Boolean getIsNoneOfRelatedPartySelected() {
+		return isNoneOfRelatedPartySelected;
+	}
+
+	public void setIsNoneOfRelatedPartySelected(
+			Boolean isNoneOfRelatedPartySelected) {
+		this.isNoneOfRelatedPartySelected = isNoneOfRelatedPartySelected;
 	}
 	
 	
