@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.model.micro_finance.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
-import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -349,6 +342,25 @@ public class MFIApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Get Assets liability Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	@GetMapping(value = "/findAllFlag/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> findAllFlag(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type,
+			HttpServletRequest request) {
+		try {
+
+			CommonDocumentUtils.startHook(logger, "Get Assets Liability Details");
+
+			FlagCheckMFI allFlag = mfiApplicationService.findAllFlag(applicationId, type);
+			CommonDocumentUtils.endHook(logger, "Get Flag Details");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Flag details.",
+					HttpStatus.OK.value(), allFlag), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Get Flag Details ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
