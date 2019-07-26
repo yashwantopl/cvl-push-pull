@@ -410,7 +410,7 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "loan_liability_ratio")
 	private Integer loanLiabilityRatio;
 	@Column(name = "loan_amount_recomandation")
-	private double loanAmountRecomandation;
+	private Double loanAmountRecomandation;
 	@Column(name = "tenure_recomandation")
 	private Integer tenureRecomandation;
 	@Column(name = "moratorium_recomandation")
@@ -1570,11 +1570,11 @@ public class MFIApplicantDetail implements Serializable {
 		this.loanLiabilityRatio = loanLiabilityRatio;
 	}
 
-	public double getLoanAmountRecomandation() {
+	public Double getLoanAmountRecomandation() {
 		return loanAmountRecomandation;
 	}
 
-	public void setLoanAmountRecomandation(double loanAmountRecomandation) {
+	public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
 		this.loanAmountRecomandation = loanAmountRecomandation;
 	}
 
