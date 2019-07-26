@@ -398,6 +398,12 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	private Double minBureauScore;
 
+	//Less Than 6 month of Credit History
+	private Integer minBureauScoreLessThan6Month;
+
+	//No Credit History
+	private Boolean noBureauCreditHistory = true;
+
 
 	// activity experience
 
@@ -409,6 +415,43 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	private Double maxActivityExperience;
 
+	// geo graphical location
+
+	private Boolean isGeographicalDisplayMFI=false;
+
+	private Boolean isGeographicalMandatoryMFI=false;
+
+	public Boolean getIsGeographicalDisplayMFI() {
+		return isGeographicalDisplayMFI;
+	}
+
+	public void setIsGeographicalDisplayMFI(Boolean geographicalDisplayMFI) {
+		isGeographicalDisplayMFI = geographicalDisplayMFI;
+	}
+
+	public Boolean getIsGeographicalMandatoryMFI() {
+		return isGeographicalMandatoryMFI;
+	}
+
+	public void setIsGeographicalMandatoryMFI(Boolean geographicalMandatoryMFI) {
+		isGeographicalMandatoryMFI = geographicalMandatoryMFI;
+	}
+
+	public Integer getMinBureauScoreLessThan6Month() {
+		return minBureauScoreLessThan6Month;
+	}
+
+	public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+		this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+	}
+
+	public Boolean getNoBureauCreditHistory() {
+		return noBureauCreditHistory;
+	}
+
+	public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+		this.noBureauCreditHistory = noBureauCreditHistory;
+	}
 
 	public Boolean getIsLoanAmountDisplay() {
 		return isLoanAmountDisplay;

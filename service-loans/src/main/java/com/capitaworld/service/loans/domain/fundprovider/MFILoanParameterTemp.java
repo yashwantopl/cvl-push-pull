@@ -72,6 +72,14 @@ public class MFILoanParameterTemp extends ProductMasterTemp implements Serializa
     @Column(name="min_bureau")
     private Double minBureauScore;
 
+    //Less Than 6 month of Credit History
+    @Column(name = "min_bureau_score_less_than6_month")
+    private Integer minBureauScoreLessThan6Month;
+
+    //No Credit History
+    @Column(name = "no_bureau_credit_history")
+    private Boolean noBureauCreditHistory = true;
+
 
     // activity experience
 
@@ -109,8 +117,50 @@ public class MFILoanParameterTemp extends ProductMasterTemp implements Serializa
     private Integer assessmentMethodId;
 
 
+    // geo graphical location
+
+    @Column(name="is_geographical_display_mfi")
+    private Boolean isGeographicalDisplayMFI=false;
+
+    @Column(name="is_geographical_mandatory_mfi")
+    private Boolean isGeographicalMandatoryMFI=false;
+
+
+    public Boolean getIsGeographicalDisplayMFI() {
+        return isGeographicalDisplayMFI;
+    }
+
+    public void setIsGeographicalDisplayMFI(Boolean geographicalDisplayMFI) {
+        isGeographicalDisplayMFI = geographicalDisplayMFI;
+    }
+
+    public Boolean getIsGeographicalMandatoryMFI() {
+        return isGeographicalMandatoryMFI;
+    }
+
+    public void setIsGeographicalMandatoryMFI(Boolean geographicalMandatoryMFI) {
+        isGeographicalMandatoryMFI = geographicalMandatoryMFI;
+    }
+
+
     public MFILoanParameterTemp() {
         // Do nothing because of X and Y.
+    }
+
+    public Integer getMinBureauScoreLessThan6Month() {
+        return minBureauScoreLessThan6Month;
+    }
+
+    public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+        this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+    }
+
+    public Boolean getNoBureauCreditHistory() {
+        return noBureauCreditHistory;
+    }
+
+    public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+        this.noBureauCreditHistory = noBureauCreditHistory;
     }
 
     public Boolean getIsRiskModelScoreDisplay() {
