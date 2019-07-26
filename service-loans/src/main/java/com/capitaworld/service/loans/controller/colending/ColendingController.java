@@ -33,7 +33,8 @@ public class ColendingController {
 
     @RequestMapping(value = "/client/list/fs",method = RequestMethod.POST,consumes= MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> clientListFs(@RequestBody UsersRequest usersRequest, HttpServletRequest request){
-        if(CommonUtils.isObjectNullOrEmpty(usersRequest) ||
+        Long userId = Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString());
+        if(CommonUtils.isObjectNullOrEmpty(usersRequest) || CommonUtils.isObjectNullOrEmpty(userId) ||
                 CommonUtils.isObjectNullOrEmpty(usersRequest.getPageIndex()) ||
                 CommonUtils.isObjectNullOrEmpty(usersRequest.getSize())){
             return new ResponseEntity<UserResponse>(
@@ -42,7 +43,7 @@ public class ColendingController {
                     HttpStatus.OK);
         }
         try {
-            List<ClientListingCoLending> clientList = coLendingFlowService.clientListCoLending(Integer.parseInt(usersRequest.getPageIndex().toString()),Integer.parseInt(usersRequest.getSize().toString()),Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()));
+            List<ClientListingCoLending> clientList = coLendingFlowService.clientListCoLending(Integer.parseInt(usersRequest.getPageIndex().toString()),Integer.parseInt(usersRequest.getSize().toString()),userId);
 
             if(clientList != null && !clientList.isEmpty()){
                 logger.info(CO_LENDING_CLIENT_LIST_MSG);
