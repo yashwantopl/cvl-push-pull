@@ -89,7 +89,7 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 				sidbiBasicDetail.setIsActive(true);
 			}
 			
-			
+			BeanUtils.copyProperties(sidbiBasicDetailRequest, sidbiBasicDetail);
 
 			sidbiBasicDetail.setModifiedBy(userId);
 			sidbiBasicDetail.setModifiedDate(new Date());
