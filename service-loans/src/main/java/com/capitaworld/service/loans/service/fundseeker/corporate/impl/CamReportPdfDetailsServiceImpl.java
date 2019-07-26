@@ -1287,14 +1287,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			// CURRENTLY PENDING DATA-ID NOT EXISTS IN application_proposal_mapping-->applicationProposalMapping
 			String companyId = loanApplicationMaster.getMcaCompanyId();
-			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
-			if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
-				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
-			}
-
-			McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
-			if(mcaFinancialAndDetailsRes.getData()!=null){
-				map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+			
+			if(companyId != null) {
+				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
+				if (mcaStatusResponse!= null && mcaStatusResponse.getData()!= null && mcaStatusResponse.getData().equals(true)) {
+					McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+					if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
+						map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
+					}
+					McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+					if(mcaFinancialAndDetailsRes.getData()!=null){
+						map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+					}
+				}
+				map.put("mcaCheckStatus",mcaStatusResponse.getData()!= null ?  mcaStatusResponse.getData() : null);
+				
+			}else {
+				map.put("mcaNotApplicable",true);
 			}
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
