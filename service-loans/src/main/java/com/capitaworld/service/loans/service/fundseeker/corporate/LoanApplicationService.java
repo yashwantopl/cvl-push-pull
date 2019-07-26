@@ -275,4 +275,6 @@ public interface LoanApplicationService {
 	public Boolean retailPrefillData(String input);
 
 	public String getMaxInvestmentSizeFromBank(String bankCode);
+	
+	public List<GstRelatedPartyRequest> getGstRelatedPartyDetails(Long applicationId);
 }
