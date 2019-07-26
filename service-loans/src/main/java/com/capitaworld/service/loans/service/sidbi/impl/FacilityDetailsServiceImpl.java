@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -18,11 +16,13 @@ import com.capitaworld.service.loans.domain.sidbi.FacilityDetails;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
-import com.capitaworld.service.loans.model.sidbi.PersonalCorporateGuaranteeRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sidbi.FacilityDetailsRepository;
 import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 
 /**
  * Created by pooja.patel on 19-06-2019.
@@ -56,7 +56,7 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
                     facilityDetails.setCreatedBy(frameRequest.getUserId());
                     facilityDetails.setCreatedDate(new Date());
                 }
-
+                this.convertAbsoluteValues(facilityDetailsRequest, frameRequest.getApplicationId());
                 BeanUtils.copyProperties(facilityDetailsRequest, facilityDetails);
                 facilityDetails.setApplicationId(frameRequest.getApplicationId());
                 facilityDetails.setModifiedBy(frameRequest.getUserId());
@@ -74,7 +74,7 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
     }
 
 	@Override
-	public List<FacilityDetailsRequest> getFacilityDetailsListAppId(Long applicationId) throws LoansException {
+	public List<FacilityDetailsRequest> getFacilityDetailsListAppId(Long applicationId,Long userId) throws LoansException {
 		List<FacilityDetailsRequest> facilityDetailsRequestList = null;
 		try {
 			List<FacilityDetails> facilityDetailsList = facilityDetailsRepository.getFacilityDetailsListAppId(applicationId);
@@ -92,13 +92,14 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
                 else {
                     facilityDetailsRequest.setWorkingCapitalFund(loanAmt);
                 }
+			    this.convertValuesIn(facilityDetailsRequest, applicationId);
                 facilityDetailsRequestList.add(facilityDetailsRequest);
             }
             else {
                 for (FacilityDetails detail : facilityDetailsList) {
                     FacilityDetailsRequest facilityDetailsRequest = new FacilityDetailsRequest();
                     BeanUtils.copyProperties(detail, facilityDetailsRequest);
-
+                    this.convertValuesIn(facilityDetailsRequest, applicationId);
                     facilityDetailsRequestList.add(facilityDetailsRequest);
                 }
             }
@@ -110,5 +111,36 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	private void convertAbsoluteValues(FacilityDetailsRequest facilityDetailsRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 
+		facilityDetailsRequest.setRupeeTermLoan(facilityDetailsRequest.getRupeeTermLoan()==null ? null : 
+			facilityDetailsRequest.getRupeeTermLoan()*sidbiCurrencyRateObj.getRate());
+
+		facilityDetailsRequest.setInrCurrency(facilityDetailsRequest.getInrCurrency()==null ? null : 
+			facilityDetailsRequest.getInrCurrency()*sidbiCurrencyRateObj.getRate());
+		
+		facilityDetailsRequest.setWorkingCapitalFund(facilityDetailsRequest.getWorkingCapitalFund()==null ? null : 
+			facilityDetailsRequest.getWorkingCapitalFund()*sidbiCurrencyRateObj.getRate());
+		
+		facilityDetailsRequest.setWorkingCapitalNonFund(facilityDetailsRequest.getWorkingCapitalNonFund()==null ? null : 
+			facilityDetailsRequest.getWorkingCapitalNonFund()*sidbiCurrencyRateObj.getRate());
+		
+		facilityDetailsRequest.setTotal(facilityDetailsRequest.getTotal()==null ? null : 
+			facilityDetailsRequest.getTotal()*sidbiCurrencyRateObj.getRate());
+		
+		
+	}
+	
+	private void convertValuesIn(FacilityDetailsRequest facilityDetailsRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+		
+		facilityDetailsRequest.setRupeeTermLoan(CommonUtils.convertTwoDecimalValuesIn(facilityDetailsRequest.getRupeeTermLoan(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setInrCurrency(CommonUtils.convertTwoDecimalValuesIn(facilityDetailsRequest.getInrCurrency(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setWorkingCapitalFund(CommonUtils.convertTwoDecimalValuesIn(facilityDetailsRequest.getWorkingCapitalFund(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setWorkingCapitalNonFund(CommonUtils.convertTwoDecimalValuesIn(facilityDetailsRequest.getWorkingCapitalNonFund(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setTotal(CommonUtils.convertTwoDecimalValuesIn(facilityDetailsRequest.getTotal(), sidbiCurrencyRateObj.getRate()));
+		
+		
+	}
 }

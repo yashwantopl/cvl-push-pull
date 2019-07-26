@@ -118,7 +118,7 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 	}
 	
 	private void convertAbsoluteValues(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
-		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId, userId);
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 
 		totalCostOfProject.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred()==null ? null :totalCostOfProject.getAlreadyIncurred()*sidbiCurrencyRateObj.getRate());
 		totalCostOfProject.setToBeIncurred(totalCostOfProject.getToBeIncurred()==null ? null :totalCostOfProject.getToBeIncurred()*sidbiCurrencyRateObj.getRate());
@@ -127,11 +127,11 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 	}
 	
 	private void convertValuesIn(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
-		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId, userId);
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 		
-		totalCostOfProject.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred()==null ? null :totalCostOfProject.getAlreadyIncurred()/sidbiCurrencyRateObj.getRate());
-		totalCostOfProject.setToBeIncurred(totalCostOfProject.getToBeIncurred()==null ? null :totalCostOfProject.getToBeIncurred()/sidbiCurrencyRateObj.getRate());
-		totalCostOfProject.setTotalCost(totalCostOfProject.getTotalCost()==null ? null :totalCostOfProject.getTotalCost()/sidbiCurrencyRateObj.getRate());
+		totalCostOfProject.setAlreadyIncurred(CommonUtils.convertTwoDecimalValuesIn(totalCostOfProject.getAlreadyIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setToBeIncurred(CommonUtils.convertTwoDecimalValuesIn(totalCostOfProject.getToBeIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setTotalCost(CommonUtils.convertTwoDecimalValuesIn(totalCostOfProject.getTotalCost(), sidbiCurrencyRateObj.getRate()));
 		
 	}
 }

@@ -2017,5 +2017,13 @@ public enum APIFlags {
 //		  System.out.println(((double)diff1.getYears()) + ((double)(diff1.getMonths() / 12.0d)));
 //		  
 //	}
-	
+
+	public static Double convertTwoDecimalValuesIn(Double amount,Integer rate) {
+		if(amount!=null) {
+			DecimalFormat decim = new DecimalFormat("0.00");
+			amount=amount/rate;
+			amount = Double.parseDouble(decim.format(amount));
+		}
+		return amount;
+	}
 }
