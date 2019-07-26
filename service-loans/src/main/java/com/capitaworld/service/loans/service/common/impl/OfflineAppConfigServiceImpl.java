@@ -28,12 +28,12 @@ public class OfflineAppConfigServiceImpl implements OfflineAppConfigService{
 		OfflineAppConfig offlineAppConfig = offlineAppConfigRepository.findFirstByOrgIdAndBusinessTypeIdAndIsActiveOrderByIdDesc(appConfigRequest.getOrgId(), appConfigRequest.getBusinessTypeId(), true);
 		if(offlineAppConfig == null) {
 			offlineAppConfig = new OfflineAppConfig();
-			BeanUtils.copyProperties(appConfigRequest, offlineAppConfig,CommonUtils.IgnorableCopy.getAuditFieldsWithId());
+			BeanUtils.copyProperties(appConfigRequest, offlineAppConfig,CommonUtils.IgnorableCopy.getAuditFields());
 			offlineAppConfig.setCreatedBy(userId);
 			offlineAppConfig.setCreatedDate(new Date());
 			offlineAppConfig.setIsActive(true);
 		}else {
-			BeanUtils.copyProperties(appConfigRequest, offlineAppConfig,CommonUtils.IgnorableCopy.getAuditFields());
+			BeanUtils.copyProperties(appConfigRequest, offlineAppConfig,CommonUtils.IgnorableCopy.getAuditFieldsWithId());
 			offlineAppConfig.setModifiedDate(new Date());
 		}
 		return prepareRequestFromDomain(offlineAppConfigRepository.save(offlineAppConfig),null);
