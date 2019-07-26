@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.domain.fundseeker.mfi;
 import javax.persistence.*;
 import java.io.Serializable;
 
+@Entity
 @Table(name = "fs_mfi_income_details")
 public class MfiIncomeDetails implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -13,6 +14,8 @@ public class MfiIncomeDetails implements Serializable {
 
     @Column(name = "application_id")
     private Long applicationId;
+    @Column(name = "relation_id")
+    private Integer relationId;
 
     @Column(name = "occupation")
     private Integer occupation;
@@ -83,5 +86,13 @@ public class MfiIncomeDetails implements Serializable {
 
     public void setYearlyIncome(Double yearlyIncome) {
         this.yearlyIncome = yearlyIncome;
+    }
+
+    public Integer getRelationId() {
+        return relationId;
+    }
+
+    public void setRelationId(Integer relationId) {
+        this.relationId = relationId;
     }
 }

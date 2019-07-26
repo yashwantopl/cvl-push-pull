@@ -23,7 +23,24 @@ public class MfiIncomeDetailsReq implements Serializable {
 
     private Double yearlyIncome;
 
-    public Long getId() {
+    private Integer relationId;
+
+    public MfiIncomeDetailsReq() {
+    }
+
+    public MfiIncomeDetailsReq(Long applicationId, Integer occupation, Double netIncome, Integer frequencyIncome,
+                               Double monthlyIncome, Double yearlyIncome, Integer relationId) {
+		super();
+		this.applicationId = applicationId;
+		this.occupation = occupation;
+		this.netIncome = netIncome;
+		this.frequencyIncome = frequencyIncome;
+		this.monthlyIncome = monthlyIncome;
+		this.yearlyIncome = yearlyIncome;
+		this.relationId = relationId;
+	}
+
+	public Long getId() {
         return id;
     }
 
@@ -77,5 +94,13 @@ public class MfiIncomeDetailsReq implements Serializable {
 
     public void setYearlyIncome(Double yearlyIncome) {
         this.yearlyIncome = yearlyIncome;
+    }
+
+    public Integer getRelationId() {
+        return relationId;
+    }
+
+    public void setRelationId(Integer relationId) {
+        this.relationId = relationId;
     }
 }

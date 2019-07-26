@@ -25,7 +25,11 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.domain.GstRelatedParty;
+import com.capitaworld.service.loans.domain.common.MaxInvestmentBankwise;
 import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
+import com.capitaworld.service.loans.repository.common.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,10 +111,6 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.repository.common.LoanRepository;
-import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
-import com.capitaworld.service.loans.repository.common.MinMaxProductDetailRepository;
-import com.capitaworld.service.loans.repository.common.PaymentGatewayAuditMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
@@ -375,6 +375,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ApplicationProposalMappingService appPropMappService;
+
+	@Autowired
+	private MaxInvestmentBankwiseRepository maxInvestmentBankwiseRepository;
+	
+	@Autowired
+	private GstRelatedpartyRepository gstRelatedpartyRepository;
 
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
@@ -6082,6 +6088,46 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public Long createMfiLoan(Long userId,Boolean isActive,Integer businessTypeId,Long userOrgId){
+		logger.info("IsActive======================>{}", isActive);
+
+		if (isActive != null && isActive) {
+			int inActiveCount = loanApplicationRepository.inActiveCorporateLoan(userId);
+			logger.info("Inactivated Application Count of Users are ====== {} ", inActiveCount);
+		}
+		logger.info("Entry in createMFiLoan--------------------------->" + userId);
+//		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId, businessTypeId);
+//		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
+//			logger.info("Corporate Application Id is Already Exists===>{}", corporateLoan.getId());
+//			return corporateLoan.getId();
+//		}
+		logger.info("Successfully get result");
+		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		corporateLoan.setCreatedBy(userId);
+		corporateLoan.setCreatedDate(new Date());
+		corporateLoan.setUserId(userId);
+		corporateLoan.setFpMakerId(userId);
+		corporateLoan.setNpOrgId(userOrgId);
+		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
+		corporateLoan.setBusinessTypeId(businessTypeId);
+		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
+		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
+		logger.info("Going to Create new Corporate UserId===>{}", userId);
+		corporateLoan = loanApplicationRepository.save(corporateLoan);
+		logger.info("Created New Corporate Loan of User Id==>{}", userId);
+		logger.info("Setting Last Application is as Last access Id in User Table---->" + corporateLoan.getIsActive());
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
+		usersRequest.setId(userId);
+		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Exit in createMsmeLoan");
+		return corporateLoan.getId();
+	}
+
+	@Override
 	public Long createMsmeLoan(Long userId, Boolean isActive, Integer businessTypeId) {
 		logger.info("IsActive======================>{}", isActive);
 
@@ -8317,6 +8363,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	@Override
+	public List<GstRelatedPartyRequest> getGstRelatedPartyDetails(Long applicationId){
+		if(!CommonUtils.isObjectNullOrEmpty(applicationId)){
+			List<GstRelatedPartyRequest> gstRelatedPartyRequests = new ArrayList<GstRelatedPartyRequest>();
+			try {
+				List<GstRelatedParty> gstRelatedPartyDetails = gstRelatedpartyRepository.findAllByApplicationIdAndIsActiveIsTrue(applicationId);
+				for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
+					GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
+					BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
+					gstRelatedPartyRequests.add(gstRelatedPartyRequest);
+				}
+				return  gstRelatedPartyRequests;
+			}
+			catch (Exception e)
+			{
+				logger.error("Error/exception while Fetching gstRelated Data in MSME of applicationId==>{}  ..Error==>{}", applicationId ,e);
+			}
+		}
+		return null;
+	}
+	
+	@Override
 	public LoanPanCheckRequest checkAlreadyPANExitsOrNot(LoanPanCheckRequest loanPanCheckRequest) {
 		String msg = null;
 		if(loanPanCheckRequest.getTypeId() == 2) {
@@ -8363,5 +8430,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Boolean retailPrefillData(String input) {
 		return loanRepository.retailPrefillData(input);
+	}
+
+	@Override
+	public String getMaxInvestmentSizeFromBank(String bankCode){
+		MaxInvestmentBankwise maxInvestmentBankwise = maxInvestmentBankwiseRepository.getInvestmentSizeByBankCode(bankCode.replace("\"",""));
+		if(!CommonUtils.isObjectNullOrEmpty(maxInvestmentBankwise)){
+			Double maxValInCr = maxInvestmentBankwise.getMaxInvestmentSize()/10000000 ;
+			String maxValStr = maxValInCr.toString();
+			String decimalValues = maxValStr.substring(maxValStr.indexOf(".")+1);
+			int length = decimalValues.length();
+			DecimalFormat dfForNoDecimal = new DecimalFormat("#");
+			DecimalFormat dfForTwoDecimal = new DecimalFormat("#.##");
+			dfForTwoDecimal.setMinimumFractionDigits(2);
+			if(length > 1 || (length ==1 && !decimalValues.equals("0"))){
+				return dfForTwoDecimal.format(maxValInCr);
+			}
+			return dfForNoDecimal.format(maxValInCr);
+		}
+		return null;
 	}
 }
