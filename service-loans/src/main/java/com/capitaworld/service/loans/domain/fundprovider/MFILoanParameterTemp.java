@@ -117,6 +117,32 @@ public class MFILoanParameterTemp extends ProductMasterTemp implements Serializa
     private Integer assessmentMethodId;
 
 
+    // geo graphical location
+
+    @Column(name="is_geographical_display_mfi")
+    private Boolean isGeographicalDisplayMFI=false;
+
+    @Column(name="is_geographical_mandatory_mfi")
+    private Boolean isGeographicalMandatoryMFI=false;
+
+
+    public Boolean getIsGeographicalDisplayMFI() {
+        return isGeographicalDisplayMFI;
+    }
+
+    public void setIsGeographicalDisplayMFI(Boolean geographicalDisplayMFI) {
+        isGeographicalDisplayMFI = geographicalDisplayMFI;
+    }
+
+    public Boolean getIsGeographicalMandatoryMFI() {
+        return isGeographicalMandatoryMFI;
+    }
+
+    public void setIsGeographicalMandatoryMFI(Boolean geographicalMandatoryMFI) {
+        isGeographicalMandatoryMFI = geographicalMandatoryMFI;
+    }
+
+
     public MFILoanParameterTemp() {
         // Do nothing because of X and Y.
     }

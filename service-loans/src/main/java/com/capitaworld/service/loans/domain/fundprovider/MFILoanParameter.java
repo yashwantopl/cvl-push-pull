@@ -116,7 +116,30 @@ public class MFILoanParameter extends ProductMaster implements Serializable {
     @Column(name="assessment_method_id")
     private Integer assessmentMethodId;
 
+    // geo graphical location
 
+    @Column(name="is_geographical_display_mfi")
+    private Boolean isGeographicalDisplayMFI=false;
+
+    @Column(name="is_geographical_mandatory_mfi")
+    private Boolean isGeographicalMandatoryMFI=false;
+
+
+    public Boolean getIsGeographicalDisplayMFI() {
+        return isGeographicalDisplayMFI;
+    }
+
+    public void setIsGeographicalDisplayMFI(Boolean geographicalDisplayMFI) {
+        isGeographicalDisplayMFI = geographicalDisplayMFI;
+    }
+
+    public Boolean getIsGeographicalMandatoryMFI() {
+        return isGeographicalMandatoryMFI;
+    }
+
+    public void setIsGeographicalMandatoryMFI(Boolean geographicalMandatoryMFI) {
+        isGeographicalMandatoryMFI = geographicalMandatoryMFI;
+    }
 
 
     public MFILoanParameter() {
