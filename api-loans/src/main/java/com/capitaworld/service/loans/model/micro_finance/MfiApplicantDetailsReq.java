@@ -274,8 +274,25 @@ public class MfiApplicantDetailsReq {
     private Integer installmentRecomandation;
     private Integer clientType;
 
+	private Integer businessInBrief;
+	
+    public Integer getBusinessInBrief() {
+		return businessInBrief;
+	}
 
-    public Long getApplicationId() {
+	public void setBusinessInBrief(Integer businessInBrief) {
+		this.businessInBrief = businessInBrief;
+	}
+
+	public Boolean getIsBusinessPremiseVisited() {
+		return isBusinessPremiseVisited;
+	}
+
+	public void setIsBusinessPremiseVisited(Boolean isBusinessPremiseVisited) {
+		this.isBusinessPremiseVisited = isBusinessPremiseVisited;
+	}
+
+	public Long getApplicationId() {
         return applicationId;
     }
 
