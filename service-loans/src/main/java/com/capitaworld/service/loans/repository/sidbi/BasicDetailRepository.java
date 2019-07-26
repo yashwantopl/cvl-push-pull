@@ -11,5 +11,6 @@ public interface BasicDetailRepository extends JpaRepository<SidbiBasicDetail, L
 	@Query("from SidbiBasicDetail cr where cr.applicationId =:applicationId and cr.createdBy =:userId and cr.isActive=true")
 	public SidbiBasicDetail getByApplicationAndUserId(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
 	
-	
+	@Query("from SidbiBasicDetail cr where cr.applicationId =:applicationId and cr.isActive=true")
+	public SidbiBasicDetail getSidbiBasicDetailByAppId( @Param("applicationId") Long applicationId);
 }

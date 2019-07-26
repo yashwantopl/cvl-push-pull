@@ -16,5 +16,7 @@ public interface SidbiSpecificService {
 	
 	LoansResponse validateSidbiForm(Long applicationId, Long userId) throws LoansException;
 	
-	public SidbiCurrencyRate getValuesIn(Long applicationId, Long userId) throws LoansException;
+	public SidbiCurrencyRate getValuesIn(Long applicationId) throws LoansException;
+	
+	SidbiBasicDetailRequest getSidbiBasicDetailByAppId(Long applicationId) throws LoansException;
 }
