@@ -1128,7 +1128,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.info("mca comp id==>>{}" , companyId);
 
 			if (companyId != null) {
-
+				corporatePrimaryViewResponse.setMcaNotApplicable(Boolean.FALSE);
 				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
 				if (mcaStatusResponse != null) {
@@ -1154,6 +1154,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::CompanyId==>{}  AppId==>{}", companyId ,toApplicationId);
 				}
 			} else {
+				corporatePrimaryViewResponse.setMcaNotApplicable(Boolean.TRUE);
 				logger.warn("Mca Company Id is Null");
 
 			}

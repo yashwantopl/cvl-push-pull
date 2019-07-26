@@ -181,6 +181,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object promotersContribution;
     private Object promotersContributionPer;
     private Object mcaData;
+    private Boolean mcaNotApplicable;
     private Object nameAsPerItr;
     private Object mcaCheckStatus;
     private Object gstData;
@@ -2251,6 +2252,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setMsmeRankTitle(String msmeRankTitle) {
 		this.msmeRankTitle = msmeRankTitle;
+	}
+
+	public Boolean getMcaNotApplicable() {
+		return mcaNotApplicable;
+	}
+
+	public void setMcaNotApplicable(Boolean mcaNotApplicable) {
+		this.mcaNotApplicable = mcaNotApplicable;
 	}
 
 
