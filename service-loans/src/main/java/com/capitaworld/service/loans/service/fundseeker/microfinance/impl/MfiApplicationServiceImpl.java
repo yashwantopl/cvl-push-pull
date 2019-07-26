@@ -180,7 +180,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			//for Income
 			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
 			detailsReq.setIncomeDetailsReqList(incomeDetails);
+			
+			// FOR PARENT(MfiIncomeAndExpenditureReq)
+			List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
+			BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
+			
 			mfiApplicantDetailsReqs.add(detailsReq);
+			
 		}
 
 		return mfiApplicantDetailsReqs;
