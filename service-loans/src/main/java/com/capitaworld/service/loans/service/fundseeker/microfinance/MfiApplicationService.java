@@ -34,6 +34,8 @@ public interface MfiApplicationService {
 	public boolean saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq);
 	
 	public MfiAssetsDetailsReq getAssetsLiabilityDetailsAppId(Long applicationId);
+
+	public FlagCheckMFI findAllFlag(Long applicationId,Integer type);
 	
 
 }

@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
 import java.util.Date;
+import java.util.List;
 
 public class MfiApplicantDetailsReq {
 
@@ -243,6 +244,36 @@ public class MfiApplicantDetailsReq {
     private Integer ppiVehicleInFamily;
     private Integer ppiDressingTableInFamily;
     private Integer ppiOtherTableInFamily;
+
+    private List<MfiAssetsDetailsReq> assetsDetails;
+    private List<MfiAssetsDetailsReq> liabilityDetails;
+
+    private Long bankId;
+
+    private String branchName;
+
+    private String accountNo;
+
+    private String ifscCode;
+
+    private Integer accountType;
+
+    private byte[] passbookImg;
+
+    private List<MfiIncomeDetailsReq> incomeDetailsReqList;
+    private Integer purposeOfLoan;
+
+    private Boolean isBusinessPremiseVisited;
+    private Integer repaymentTrack;
+    private Integer creaditWorthiness;
+    private Integer loanLiabilityRatio;
+    private Double loanAmountRecomandation;
+    private Integer tenureRecomandation;
+    private Integer moratoriumRecomandation;
+    private Integer interestRateRecomandation;
+    private Integer installmentRecomandation;
+    private Integer clientType;
+
 
     public Long getApplicationId() {
         return applicationId;
@@ -1322,5 +1353,165 @@ public class MfiApplicantDetailsReq {
 
     public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
         this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+    }
+
+    public List<MfiAssetsDetailsReq> getAssetsDetails() {
+        return assetsDetails;
+    }
+
+    public void setAssetsDetails(List<MfiAssetsDetailsReq> assetsDetails) {
+        this.assetsDetails = assetsDetails;
+    }
+
+    public List<MfiAssetsDetailsReq> getLiabilityDetails() {
+        return liabilityDetails;
+    }
+
+    public void setLiabilityDetails(List<MfiAssetsDetailsReq> liabilityDetails) {
+        this.liabilityDetails = liabilityDetails;
+    }
+
+    public Long getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(Long bankId) {
+        this.bankId = bankId;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public String getAccountNo() {
+        return accountNo;
+    }
+
+    public void setAccountNo(String accountNo) {
+        this.accountNo = accountNo;
+    }
+
+    public String getIfscCode() {
+        return ifscCode;
+    }
+
+    public void setIfscCode(String ifscCode) {
+        this.ifscCode = ifscCode;
+    }
+
+    public Integer getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(Integer accountType) {
+        this.accountType = accountType;
+    }
+
+    public byte[] getPassbookImg() {
+        return passbookImg;
+    }
+
+    public void setPassbookImg(byte[] passbookImg) {
+        this.passbookImg = passbookImg;
+    }
+
+    public List<MfiIncomeDetailsReq> getIncomeDetailsReqList() {
+        return incomeDetailsReqList;
+    }
+
+    public void setIncomeDetailsReqList(List<MfiIncomeDetailsReq> incomeDetailsReqList) {
+        this.incomeDetailsReqList = incomeDetailsReqList;
+    }
+
+    public Integer getPurposeOfLoan() {
+        return purposeOfLoan;
+    }
+
+    public void setPurposeOfLoan(Integer purposeOfLoan) {
+        this.purposeOfLoan = purposeOfLoan;
+    }
+
+    public Boolean getBusinessPremiseVisited() {
+        return isBusinessPremiseVisited;
+    }
+
+    public void setBusinessPremiseVisited(Boolean businessPremiseVisited) {
+        isBusinessPremiseVisited = businessPremiseVisited;
+    }
+
+    public Integer getRepaymentTrack() {
+        return repaymentTrack;
+    }
+
+    public void setRepaymentTrack(Integer repaymentTrack) {
+        this.repaymentTrack = repaymentTrack;
+    }
+
+    public Integer getCreaditWorthiness() {
+        return creaditWorthiness;
+    }
+
+    public void setCreaditWorthiness(Integer creaditWorthiness) {
+        this.creaditWorthiness = creaditWorthiness;
+    }
+
+    public Integer getLoanLiabilityRatio() {
+        return loanLiabilityRatio;
+    }
+
+    public void setLoanLiabilityRatio(Integer loanLiabilityRatio) {
+        this.loanLiabilityRatio = loanLiabilityRatio;
+    }
+
+    public Double getLoanAmountRecomandation() {
+        return loanAmountRecomandation;
+    }
+
+    public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
+        this.loanAmountRecomandation = loanAmountRecomandation;
+    }
+
+    public Integer getTenureRecomandation() {
+        return tenureRecomandation;
+    }
+
+    public void setTenureRecomandation(Integer tenureRecomandation) {
+        this.tenureRecomandation = tenureRecomandation;
+    }
+
+    public Integer getMoratoriumRecomandation() {
+        return moratoriumRecomandation;
+    }
+
+    public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
+        this.moratoriumRecomandation = moratoriumRecomandation;
+    }
+
+    public Integer getInterestRateRecomandation() {
+        return interestRateRecomandation;
+    }
+
+    public void setInterestRateRecomandation(Integer interestRateRecomandation) {
+        this.interestRateRecomandation = interestRateRecomandation;
+    }
+
+    public Integer getInstallmentRecomandation() {
+        return installmentRecomandation;
+    }
+
+    public void setInstallmentRecomandation(Integer installmentRecomandation) {
+        this.installmentRecomandation = installmentRecomandation;
+    }
+
+    public Integer getClientType() {
+        return clientType;
+    }
+
+    public void setClientType(Integer clientType) {
+        this.clientType = clientType;
     }
 }
