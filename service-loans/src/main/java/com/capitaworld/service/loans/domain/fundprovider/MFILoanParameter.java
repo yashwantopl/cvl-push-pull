@@ -72,6 +72,14 @@ public class MFILoanParameter extends ProductMaster implements Serializable {
     @Column(name="min_bureau")
     private Double minBureauScore;
 
+    //Less Than 6 month of Credit History
+    @Column(name = "min_bureau_score_less_than6_month")
+    private Integer minBureauScoreLessThan6Month;
+
+    //No Credit History
+    @Column(name = "no_bureau_credit_history")
+    private Boolean noBureauCreditHistory = true;
+
 
     // activity experience
 
@@ -113,6 +121,22 @@ public class MFILoanParameter extends ProductMaster implements Serializable {
 
     public MFILoanParameter() {
         // Do nothing because of X and Y.
+    }
+
+    public Integer getMinBureauScoreLessThan6Month() {
+        return minBureauScoreLessThan6Month;
+    }
+
+    public void setMinBureauScoreLessThan6Month(Integer minBureauScoreLessThan6Month) {
+        this.minBureauScoreLessThan6Month = minBureauScoreLessThan6Month;
+    }
+
+    public Boolean getNoBureauCreditHistory() {
+        return noBureauCreditHistory;
+    }
+
+    public void setNoBureauCreditHistory(Boolean noBureauCreditHistory) {
+        this.noBureauCreditHistory = noBureauCreditHistory;
     }
 
     public Boolean getIsRiskModelScoreDisplay() {
