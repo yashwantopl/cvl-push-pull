@@ -94,6 +94,7 @@ public class CorporatePrimaryViewResponse {
     private Object promotersContribution;
     private Object promotersContributionPer;
     private Object mcaData;
+    private Boolean mcaNotApplicable;
     private Object hufReport;
     private Object cibilConsumerReport;
     private Object nameAsPerItr;
@@ -1290,6 +1291,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setBankComparisionData(Object bankComparisionData) {
 		this.bankComparisionData = bankComparisionData;
+	}
+	public Boolean getMcaNotApplicable() {
+		return mcaNotApplicable;
+	}
+	public void setMcaNotApplicable(Boolean mcaNotApplicable) {
+		this.mcaNotApplicable = mcaNotApplicable;
 	}
 	
 	
