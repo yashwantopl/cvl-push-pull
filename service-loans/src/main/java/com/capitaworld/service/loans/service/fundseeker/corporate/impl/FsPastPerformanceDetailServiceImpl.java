@@ -144,8 +144,8 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 
 		pastPerformanceDetailsRequest.setNetSalesPastYear1(pastPerformanceDetailsRequest.getNetSalesPastYear1()==null ? null :
 			pastPerformanceDetailsRequest.getNetSalesPastYear1()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetSalesPastYear1(pastPerformanceDetailsRequest.getNetSalesPastYear2()==null ? null :
-			pastPerformanceDetailsRequest.getNetSalesPastYear1()*sidbiCurrencyRateObj.getRate());
+		pastPerformanceDetailsRequest.setNetSalesPastYear2(pastPerformanceDetailsRequest.getNetSalesPastYear2()==null ? null :
+			pastPerformanceDetailsRequest.getNetSalesPastYear2()*sidbiCurrencyRateObj.getRate());
 		pastPerformanceDetailsRequest.setNetSalesPresentYear(pastPerformanceDetailsRequest.getNetSalesPresentYear()==null ? null :
 			pastPerformanceDetailsRequest.getNetSalesPresentYear()*sidbiCurrencyRateObj.getRate());
 		pastPerformanceDetailsRequest.setNetSalesNextYear(pastPerformanceDetailsRequest.getNetSalesNextYear()==null ? null :
@@ -153,8 +153,8 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 		
 		pastPerformanceDetailsRequest.setNetProfitPastYear1(pastPerformanceDetailsRequest.getNetProfitPastYear1()==null ? null :
 			pastPerformanceDetailsRequest.getNetProfitPastYear1()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetProfitPastYear1(pastPerformanceDetailsRequest.getNetProfitPastYear2()==null ? null :
-			pastPerformanceDetailsRequest.getNetProfitPastYear1()*sidbiCurrencyRateObj.getRate());
+		pastPerformanceDetailsRequest.setNetProfitPastYear2(pastPerformanceDetailsRequest.getNetProfitPastYear2()==null ? null :
+			pastPerformanceDetailsRequest.getNetProfitPastYear2()*sidbiCurrencyRateObj.getRate());
 		pastPerformanceDetailsRequest.setNetProfitPresentYear(pastPerformanceDetailsRequest.getNetProfitPresentYear()==null ? null :
 			pastPerformanceDetailsRequest.getNetProfitPresentYear()*sidbiCurrencyRateObj.getRate());
 		pastPerformanceDetailsRequest.setNetProfitNextYear(pastPerformanceDetailsRequest.getNetProfitNextYear()==null ? null :
@@ -162,8 +162,8 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 		
 		pastPerformanceDetailsRequest.setCompNetWorthPastYear1(pastPerformanceDetailsRequest.getCompNetWorthPastYear1()==null ? null :
 			pastPerformanceDetailsRequest.getCompNetWorthPastYear1()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setCompNetWorthPastYear1(pastPerformanceDetailsRequest.getCompNetWorthPastYear2()==null ? null :
-			pastPerformanceDetailsRequest.getCompNetWorthPastYear1()*sidbiCurrencyRateObj.getRate());
+		pastPerformanceDetailsRequest.setCompNetWorthPastYear2(pastPerformanceDetailsRequest.getCompNetWorthPastYear2()==null ? null :
+			pastPerformanceDetailsRequest.getCompNetWorthPastYear2()*sidbiCurrencyRateObj.getRate());
 		pastPerformanceDetailsRequest.setCompNetWorthPresentYear(pastPerformanceDetailsRequest.getCompNetWorthPresentYear()==null ? null :
 			pastPerformanceDetailsRequest.getCompNetWorthPresentYear()*sidbiCurrencyRateObj.getRate());
 		pastPerformanceDetailsRequest.setCompNetWorthNextYear(pastPerformanceDetailsRequest.getCompNetWorthNextYear()==null ? null :
