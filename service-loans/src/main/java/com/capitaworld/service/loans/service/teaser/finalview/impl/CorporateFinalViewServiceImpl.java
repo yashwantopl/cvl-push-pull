@@ -1726,6 +1726,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.info("mca comp id==>>{}" , companyId);
 
 			if (companyId != null) {
+				corporateFinalViewResponse.setMcaNotApplicable(Boolean.FALSE);
 				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
 				if (mcaStatusResponse != null) {
@@ -1747,6 +1748,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::CompanyId==>{}   AppId==>{}", companyId ,toApplicationId);
 				}
 			} else {
+				corporateFinalViewResponse.setMcaNotApplicable(Boolean.TRUE);
 				logger.warn("Mca Company Id is Null");
 			}
 		} catch (Exception e) {
