@@ -3261,14 +3261,14 @@ public class FPAsyncComponent {
 					}
 				}else {
 					Object[] fpFullName = commonRepo.getFpFullName(makerUserId);
-					String makerName=fpFullName[0]!=null?String.valueOf(fpFullName[0])+" "+fpFullName[1]!=null?String.valueOf(fpFullName[1]):"Maker":"Maker";
+					String makerName=fpFullName[0]!=null?String.valueOf(fpFullName[0])+" "+fpFullName[1]!=null?String.valueOf(fpFullName[1]):LITERAL_MAKER:LITERAL_MAKER;
 					param.put(PARAMETERS_MAKER_NAME, makerName);
 					
 					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),11);
 					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
 					//	Mail to Admin Checker where pusrpose of loan created or purpose of loan approved after send back
 					for (UsersRequest req : adminMakerList) {
-						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():"Sir/Madam";
+						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():SIR_MADAM;
 						 param.put(USER_NAME, fpName);
 						
 						if(workFlowAction == WorkflowUtils.Action.PENDING) {
