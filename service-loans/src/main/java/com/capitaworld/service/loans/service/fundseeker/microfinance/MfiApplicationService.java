@@ -37,5 +37,8 @@ public interface MfiApplicationService {
 
 	public FlagCheckMFI findAllFlag(Long applicationId,Integer type);
 	
+	public boolean saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq);
+	
+	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
 
 }

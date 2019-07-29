@@ -395,7 +395,7 @@ public class ScoringController {
         }
 
     @PostMapping(value = "/calculate_score/mfi_list", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> calculateScoreMFI(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+    public ResponseEntity<LoansResponse> calculateMFILoanScoringList(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
         return scoringService.calculateMFILoanScoringList(scoringRequestLoansList);
     }
 

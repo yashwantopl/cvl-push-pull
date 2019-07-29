@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
-import java.awt.geom.Area;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -6609,7 +6608,7 @@ public class ScoringServiceImpl implements ScoringService {
                 scoreParameterMFIRequest = new ScoreParameterMFIRequest();
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
 
-                logger.info("----------------------------START MFI HL ------------------------------");
+                logger.info("----------------------------START MFI  ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 

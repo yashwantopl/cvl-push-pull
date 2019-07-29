@@ -101,7 +101,7 @@ public class ProjectCostDetailController {
 			JSONObject result = loanApplicationService.getCurrencyAndDenomination(applicationId,userId);
 //			String data = result.get("currency").toString();
 //			data = data.concat(" In "+ result.get("denomination").toString());
-			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId, userId);
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 			MasterResponse mastResponse = new MasterResponse();
             BeanUtils.copyProperties(sidbiCurrencyRateObj, mastResponse);
 			loansResponse.setData(mastResponse);

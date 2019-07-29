@@ -21,8 +21,10 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.sidbi.PrimaryCollateralSecurityRequest;
 import com.capitaworld.service.loans.repository.sidbi.PrimaryCollateralSecurityRepository;
 import com.capitaworld.service.loans.service.sidbi.PrimaryCollateralSecurityService;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 
 /**
  * @author vijay.chauhan
@@ -38,6 +40,9 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 	@Autowired
 	private PrimaryCollateralSecurityRepository primaryCollateralSecuRepository;
 	
+	@Autowired
+	SidbiSpecificService sidbiSpecificService;
+	
 	@Override 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
@@ -51,7 +56,7 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 					primaryCollateralSecurity.setCreatedBy(frameRequest.getUserId());
 					primaryCollateralSecurity.setCreatedDate(new Date());
 				}
-				
+				this.convertAbsoluteValues(primaryCollateralSecurityRequest, frameRequest.getApplicationId());
 				BeanUtils.copyProperties(primaryCollateralSecurityRequest, primaryCollateralSecurity);
 				primaryCollateralSecurity.setApplicationId(frameRequest.getApplicationId());
 				primaryCollateralSecurity.setModifiedBy(frameRequest.getUserId());
@@ -76,8 +81,9 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 			primaryCollateralSecurityList = new ArrayList<>(primaryCollateralSecurity.size());
 
 			for (PrimaryCollateralSecurity detail : primaryCollateralSecurity) {
-				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = new PrimaryCollateralSecurityRequest();
+				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = new PrimaryCollateralSecurityRequest();				
 				BeanUtils.copyProperties(detail, primaryCollateralSecurityRequest);
+				this.convertValuesIn(primaryCollateralSecurityRequest, applicationId);
 				primaryCollateralSecurityList.add(primaryCollateralSecurityRequest);
 			}
 			return primaryCollateralSecurityList;
@@ -90,4 +96,17 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 
 	}
 		
+	private void convertAbsoluteValues(PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+
+		primaryCollateralSecurityRequest.setMarketValue(CommonUtils.convertTwoDecimalAbsoluteValues(primaryCollateralSecurityRequest.getMarketValue(), sidbiCurrencyRateObj.getRate()));
+		
+	}
+	
+	private void convertValuesIn(PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+		primaryCollateralSecurityRequest.setMarketValue(CommonUtils.convertTwoDecimalValuesIn(primaryCollateralSecurityRequest.getMarketValue(), sidbiCurrencyRateObj.getRate()));
+		
+		
+	}
 }

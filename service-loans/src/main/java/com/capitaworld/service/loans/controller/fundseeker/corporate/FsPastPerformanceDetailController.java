@@ -1,24 +1,33 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FsPastPerformanceDetailsRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FsPastPerformanceDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.impl.FsPastPerformanceDetailServiceImpl;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
+import com.capitaworld.service.oneform.model.MasterResponse;
 
 @RestController
 @RequestMapping("/past_performance_detail")
@@ -29,6 +38,8 @@ public class FsPastPerformanceDetailController {
 	@Autowired
 	private FsPastPerformanceDetailsService fsPastPerformanceDetailsService;
 
+	@Autowired
+	SidbiSpecificService sidbiSpecificService;
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService; 
@@ -94,11 +105,12 @@ public class FsPastPerformanceDetailController {
 
 			List<FsPastPerformanceDetailsRequest> response = fsPastPerformanceDetailsService.getPastPerformanceList(applicationId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			JSONObject result = loanApplicationService.getCurrencyAndDenomination(applicationId,userId);
-			String data = result.get("currency").toString();
-			data = data.concat(" In "+ result.get("denomination").toString());
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+			MasterResponse mastResponse = new MasterResponse();
+            BeanUtils.copyProperties(sidbiCurrencyRateObj, mastResponse);
+			loansResponse.setData(mastResponse);
 			loansResponse.setListData(response);
-			loansResponse.setData(data);
+			
 			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 

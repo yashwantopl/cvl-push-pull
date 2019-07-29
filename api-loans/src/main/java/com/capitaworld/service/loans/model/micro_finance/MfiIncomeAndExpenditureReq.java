@@ -30,18 +30,23 @@ public class MfiIncomeAndExpenditureReq {
 	private Integer ppiDressingTableInFamily;
 	private Integer ppiOtherTableInFamily;
 
-
+	private Boolean isIncomeDetailsFilled;
+	private Boolean isFamilyIncomeFilled;
+	private Boolean isFamilyExpenseFilled;
+	private Boolean isExpectedIncomeFilled;
+	private Boolean isPPIFilled;
+	
+	
 	public MfiIncomeAndExpenditureReq() {
 	}
 
-	public MfiIncomeAndExpenditureReq(Long applicationId,
-									  Double shipShgiInstallment, Double otherInstallment, Double loanInstallment, Double educationExpense,
-									  Double medicalExpense, Double foodExpense, Double otherExpense, Integer businessInBrief,
-									  Double monthlyCashflow, Double monthlyExpenditure, Double monthlyIncome, Integer ppiNoFamilyMember,
-									  Integer ppiAcadamicHeadFamily, Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily,
-									  Integer ppiPressureCookerInFamily, Integer ppiTvInFamily, Integer ppiFanInFamily,
-									  Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily, Integer ppiOtherTableInFamily) {
-		super();
+	public MfiIncomeAndExpenditureReq(Long applicationId, Double shipShgiInstallment, Double otherInstallment,
+			Double loanInstallment, Double educationExpense, Double medicalExpense, Double foodExpense,
+			Double otherExpense, Integer businessInBrief, Double monthlyCashflow, Double monthlyExpenditure,
+			Double monthlyIncome, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
+			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
+			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
+			Integer ppiOtherTableInFamily) {
 		this.applicationId = applicationId;
 		this.shipShgiInstallment = shipShgiInstallment;
 		this.otherInstallment = otherInstallment;
@@ -257,4 +262,45 @@ public class MfiIncomeAndExpenditureReq {
 	public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
 		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
 	}
+
+	public Boolean getIsFamilyIncomeFilled() {
+		return isFamilyIncomeFilled;
+	}
+
+	public void setIsFamilyIncomeFilled(Boolean isFamilyIncomeFilled) {
+		this.isFamilyIncomeFilled = isFamilyIncomeFilled;
+	}
+
+	public Boolean getIsFamilyExpenseFilled() {
+		return isFamilyExpenseFilled;
+	}
+
+	public void setIsFamilyExpenseFilled(Boolean isFamilyExpenseFilled) {
+		this.isFamilyExpenseFilled = isFamilyExpenseFilled;
+	}
+
+	public Boolean getIsExpectedIncomeFilled() {
+		return isExpectedIncomeFilled;
+	}
+
+	public void setIsExpectedIncomeFilled(Boolean isExpectedIncomeFilled) {
+		this.isExpectedIncomeFilled = isExpectedIncomeFilled;
+	}
+
+	public Boolean getIsPPIFilled() {
+		return isPPIFilled;
+	}
+
+	public void setIsPPIFilled(Boolean isPPIFilled) {
+		this.isPPIFilled = isPPIFilled;
+	}
+
+	public Boolean getIsIncomeDetailsFilled() {
+		return isIncomeDetailsFilled;
+	}
+
+	public void setIsIncomeDetailsFilled(Boolean isIncomeDetailsFilled) {
+		this.isIncomeDetailsFilled = isIncomeDetailsFilled;
+	}
+
 }

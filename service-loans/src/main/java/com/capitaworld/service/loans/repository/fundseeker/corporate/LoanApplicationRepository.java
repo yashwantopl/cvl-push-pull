@@ -311,6 +311,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and (lm.status =:id or lm.status =:revertedId or lm.status =:submitId) and lm.fp_maker_id=:npUserId and pd.is_active=true and lm.is_active = true",nativeQuery = true)
 	public List<BigInteger> getFPAssignedTabPropsByNPUserIdCount(@Param("id") Long applicationStatusAssignId, @Param("revertedId") Long applicationRevertedStatusId, @Param("submitId") Long applicationSubmitStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
+	@Query(value = "select lg.modified_date from connect.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage AND lg.status=:status ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
+	Date getInEligibleModifiedDate(@Param("applicationId")  Long applicationId,@Param("stage")  Integer stage,@Param("status")  Integer status);
+	
 	//fp - maker - all other proposals - pagination
 	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status >=:id and lm.fp_maker_id!=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
 	public List<BigInteger> getFPProposalsWithOthersForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
