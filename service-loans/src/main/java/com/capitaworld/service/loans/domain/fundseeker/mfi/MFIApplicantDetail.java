@@ -396,11 +396,10 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "ppi_other_table_in_family")
 	private Integer ppiOtherTableInFamily;
 
-	@Column(name = "client_type")
-	private Integer clientType;
-
 	@Column(name = "purpose_of_loan")
 	private Integer purposeOfLoan;
+	@Column(name = "client_type")
+	private Integer clientType;
 	@Column(name = "is_business_premise_visited")
 	private Boolean isBusinessPremiseVisited;
 	@Column(name = "repayment_track")
@@ -408,7 +407,9 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "creadit_worthiness")
 	private Integer creaditWorthiness;
 	@Column(name = "loan_liability_ratio")
-	private Integer loanLiabilityRatio;
+	private String loanLiabilityRatio;
+	@Column(name = "competition")
+	private Integer competition;
 	@Column(name = "loan_amount_recomandation")
 	private Double loanAmountRecomandation;
 	@Column(name = "tenure_recomandation")
@@ -416,12 +417,16 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "moratorium_recomandation")
 	private Integer moratoriumRecomandation;
 	@Column(name = "interest_rate_recomandation")
-	private Integer interestRateRecomandation;
+	private Double interestRateRecomandation;
 	@Column(name = "installment_recomandation")
 	private Integer installmentRecomandation;
-
-	private Integer competition;
-
+	@Column(name = "is_loanassessment_details_filled")
+	private Boolean isLoanassessmentDetailsFilled;
+	@Column(name = "total_expense")
+	private Double totalExpense;
+	
+	@Column(name = "total_monthly_income_for_family")
+	private Double totalMonthlyIncomeForFamily;
 	private Integer status;
 
 	public Long getId() {
@@ -1562,14 +1567,32 @@ public class MFIApplicantDetail implements Serializable {
 		this.creaditWorthiness = creaditWorthiness;
 	}
 
-	public Integer getLoanLiabilityRatio() {
-		return loanLiabilityRatio;
+
+	public Boolean getIsLoanassessmentDetailsFilled() {
+		return isLoanassessmentDetailsFilled;
 	}
 
-	public void setLoanLiabilityRatio(Integer loanLiabilityRatio) {
-		this.loanLiabilityRatio = loanLiabilityRatio;
+	public void setIsLoanassessmentDetailsFilled(Boolean isLoanassessmentDetailsFilled) {
+		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
 	}
 
+	public Double getTotalExpense() {
+		return totalExpense;
+	}
+
+	public void setTotalExpense(Double totalExpense) {
+		this.totalExpense = totalExpense;
+	}
+
+	public Double getTotalMonthlyIncomeForFamily() {
+		return totalMonthlyIncomeForFamily;
+	}
+
+	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
+		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
+	}
+
+	
 	public Double getLoanAmountRecomandation() {
 		return loanAmountRecomandation;
 	}
@@ -1594,11 +1617,19 @@ public class MFIApplicantDetail implements Serializable {
 		this.moratoriumRecomandation = moratoriumRecomandation;
 	}
 
-	public Integer getInterestRateRecomandation() {
+	public String getLoanLiabilityRatio() {
+		return loanLiabilityRatio;
+	}
+
+	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
+		this.loanLiabilityRatio = loanLiabilityRatio;
+	}
+
+	public Double getInterestRateRecomandation() {
 		return interestRateRecomandation;
 	}
 
-	public void setInterestRateRecomandation(Integer interestRateRecomandation) {
+	public void setInterestRateRecomandation(Double interestRateRecomandation) {
 		this.interestRateRecomandation = interestRateRecomandation;
 	}
 

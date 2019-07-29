@@ -27,16 +27,21 @@ public class ProjectDetailsReq {
 	private Boolean insurenceRequired;
 	private String insurenceCompanyName;
 	private Double insurencePremium;
+	
 	private Boolean isProjectDetailsFilled;
+	private Boolean isApplyLoanFilled;
+	private Boolean isCostProjectFilled;
+	private Boolean isMeanFinanceFilled;
+	private Boolean isRepaymentDetailsFilled;
 
 	public ProjectDetailsReq() {
 	}
 
 	public ProjectDetailsReq(Long applicationId, Integer loanType, Integer purposeOfLoan, Double loanAmountRequired,
-							 Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
-							 Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
-							 Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
-							 Boolean isProjectDetailsFilled) {
+			Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
+			Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
+			Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
+			Boolean isProjectDetailsFilled) {
 		super();
 		this.applicationId = applicationId;
 		this.loanType = loanType;
@@ -209,28 +214,49 @@ public class ProjectDetailsReq {
 		this.purposeOfLoan = purposeOfLoan;
 	}
 
+	public Boolean getIsApplyLoanFilled() {
+		return isApplyLoanFilled;
+	}
+
+	public void setIsApplyLoanFilled(Boolean isApplyLoanFilled) {
+		this.isApplyLoanFilled = isApplyLoanFilled;
+	}
+
+	public Boolean getIsCostProjectFilled() {
+		return isCostProjectFilled;
+	}
+
+	public void setIsCostProjectFilled(Boolean isCostProjectFilled) {
+		this.isCostProjectFilled = isCostProjectFilled;
+	}
+
+	public Boolean getIsMeanFinanceFilled() {
+		return isMeanFinanceFilled;
+	}
+
+	public void setIsMeanFinanceFilled(Boolean isMeanFinanceFilled) {
+		this.isMeanFinanceFilled = isMeanFinanceFilled;
+	}
+	
+
+	public Boolean getIsRepaymentDetailsFilled() {
+		return isRepaymentDetailsFilled;
+	}
+
+	public void setIsRepaymentDetailsFilled(Boolean isRepaymentDetailsFilled) {
+		this.isRepaymentDetailsFilled = isRepaymentDetailsFilled;
+	}
+
 	@Override
 	public String toString() {
-		return "ProjectDetailsReq{" +
-				"id=" + id +
-				", applicationId=" + applicationId +
-				", loanType=" + loanType +
-				", loanPurpose='" + loanPurpose + '\'' +
-				", purposeOfLoan='" + purposeOfLoan + '\'' +
-				", loanAmountRequired=" + loanAmountRequired +
-				", costOfProject=" + costOfProject +
-				", costOfEquipment=" + costOfEquipment +
-				", workingCapOfEquipment=" + workingCapOfEquipment +
-				", totalCostEquipment=" + totalCostEquipment +
-				", promoterContribution=" + promoterContribution +
-				", loanRequiredFromSidbi=" + loanRequiredFromSidbi +
-				", totalMeanFinance=" + totalMeanFinance +
-				", totalCashFlow=" + totalCashFlow +
-				", repaymentFrequency=" + repaymentFrequency +
-				", insurenceRequired=" + insurenceRequired +
-				", insurenceCompanyName='" + insurenceCompanyName + '\'' +
-				", insurencePremium=" + insurencePremium +
-				", isProjectDetailsFilled=" + isProjectDetailsFilled +
-				'}';
+		return "ProjectDetailsReq{" + "id=" + id + ", applicationId=" + applicationId + ", loanType=" + loanType
+				+ ", loanPurpose='" + loanPurpose + '\'' + ", purposeOfLoan='" + purposeOfLoan + '\''
+				+ ", loanAmountRequired=" + loanAmountRequired + ", costOfProject=" + costOfProject
+				+ ", costOfEquipment=" + costOfEquipment + ", workingCapOfEquipment=" + workingCapOfEquipment
+				+ ", totalCostEquipment=" + totalCostEquipment + ", promoterContribution=" + promoterContribution
+				+ ", loanRequiredFromSidbi=" + loanRequiredFromSidbi + ", totalMeanFinance=" + totalMeanFinance
+				+ ", totalCashFlow=" + totalCashFlow + ", repaymentFrequency=" + repaymentFrequency
+				+ ", insurenceRequired=" + insurenceRequired + ", insurenceCompanyName='" + insurenceCompanyName + '\''
+				+ ", insurencePremium=" + insurencePremium + ", isProjectDetailsFilled=" + isProjectDetailsFilled + '}';
 	}
 }

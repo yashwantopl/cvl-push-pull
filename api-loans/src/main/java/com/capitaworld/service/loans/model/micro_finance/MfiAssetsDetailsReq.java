@@ -29,7 +29,13 @@ public class MfiAssetsDetailsReq implements Serializable {
 
 	private List<MfiAssetsDetailsReq> assetsDetails;
 	private List<MfiAssetsDetailsReq> liabilityDetails;
-
+	
+	private Boolean isAssetsDetailsFilled;
+	
+	private boolean isCurrentAssetsFilled;
+	private boolean isFixedAssetsFilled;
+	private boolean isCurrntLiabilityFilled;
+	
 	public MfiAssetsDetailsReq() {
 		super();
 	}
@@ -136,5 +142,38 @@ public class MfiAssetsDetailsReq implements Serializable {
 	public void setLiabilityDetails(List<MfiAssetsDetailsReq> liabilityDetails) {
 		this.liabilityDetails = liabilityDetails;
 	}
+
+	public Boolean getIsAssetsDetailsFilled() {
+		return isAssetsDetailsFilled;
+	}
+
+	public void setIsAssetsDetailsFilled(Boolean isAssetsDetailsFilled) {
+		this.isAssetsDetailsFilled = isAssetsDetailsFilled;
+	}
+
+	public boolean isCurrentAssetsFilled() {
+		return isCurrentAssetsFilled;
+	}
+
+	public void setCurrentAssetsFilled(boolean isCurrentAssetsFilled) {
+		this.isCurrentAssetsFilled = isCurrentAssetsFilled;
+	}
+
+	public boolean isFixedAssetsFilled() {
+		return isFixedAssetsFilled;
+	}
+
+	public void setFixedAssetsFilled(boolean isFixedAssetsFilled) {
+		this.isFixedAssetsFilled = isFixedAssetsFilled;
+	}
+
+	public boolean isCurrntLiabilityFilled() {
+		return isCurrntLiabilityFilled;
+	}
+
+	public void setCurrntLiabilityFilled(boolean isCurrntLiabilityFilled) {
+		this.isCurrntLiabilityFilled = isCurrntLiabilityFilled;
+	}
+	
 
 }
