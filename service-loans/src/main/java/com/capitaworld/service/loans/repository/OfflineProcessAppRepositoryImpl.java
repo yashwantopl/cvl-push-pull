@@ -33,6 +33,8 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
@@ -77,9 +79,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	public String getSanctionedApplicationList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineSanctionedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
@@ -88,9 +92,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	public String getDisbursedApplicationList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineDisbursedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
@@ -99,9 +105,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	public String getRejectProposalsList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineRejectProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.model.micro_finance.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -75,20 +75,10 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getAadharDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getAadharDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getAadharDetails(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
-			// request must not be null
-			CommonDocumentUtils.startHook(logger, "Get Aadhar");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
 			AadharDetailsReq aadharDetailsByAppId = mfiApplicationService.getAadharDetailsByAppId(applicationId);
 			CommonDocumentUtils.endHook(logger, "Get Aadhar");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Aadhar details.",
@@ -128,20 +118,10 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getPersonalDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getPersonalDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getPersonalDetails(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
-
-			CommonDocumentUtils.startHook(logger, "Get Personal Details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
 			PersonalDetailsReq personalrDetailsByAppId = mfiApplicationService.getPersonalDetailsAppId(applicationId);
 			CommonDocumentUtils.endHook(logger, "Get Personal Details");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Personal details.",
@@ -181,7 +161,7 @@ public class MFIApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getMfiDetails/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getMfiDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getMfiApplicantIncomeDetails(
 			@PathVariable("applicationId") Long applicationId) {
 		logger.info("ENTER HERE MFI GET APPLIANT DETAILS====={}======{}======>" + applicationId);
@@ -224,19 +204,12 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getBankDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getBankDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getBankDetails(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Bank Details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
 
 			MfiBankDetailsReq mfiBankDetailsReq = mfiApplicationService.fetchBankDetail(applicationId);
 			CommonDocumentUtils.endHook(logger, "Get Bank Details");
@@ -252,19 +225,12 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getAllApplicantDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getAllApplicantDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getAllApplicantDetails(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Bank Details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
 
 			List<MfiApplicantDetailsReq> allApplicantDetails = mfiApplicationService
 					.getAllApplicantDetails(applicationId);
@@ -280,19 +246,12 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getProjectDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getProjectDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getProjectDetails(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Project Details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
 
 			ProjectDetailsReq projectDetailsByAppId = mfiApplicationService.getProjectDetailsAppId(applicationId);
 			CommonDocumentUtils.endHook(logger, "Get Project Details");
@@ -333,19 +292,12 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getIncomeExpenditureDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getIncomeExpenditureDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getIncomeExpenditureDetails(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Income Expenditure Details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
 
 			MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = mfiApplicationService
 					.getIncomeExpenditureDetailsAppId(applicationId);
@@ -387,19 +339,12 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getAssetsLiabilityDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getAssetsLiabilityDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getAssetsLiabilityDetails(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Assets Liability Details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
 
 			MfiAssetsDetailsReq mfiAssetsDetailsReq = mfiApplicationService
 					.getAssetsLiabilityDetailsAppId(applicationId);
@@ -409,6 +354,25 @@ public class MFIApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Get Assets liability Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	@GetMapping(value = "/findAllFlag/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> findAllFlag(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type,
+			HttpServletRequest request) {
+		try {
+
+			CommonDocumentUtils.startHook(logger, "Get Assets Liability Details");
+
+			FlagCheckMFI allFlag = mfiApplicationService.findAllFlag(applicationId, type);
+			CommonDocumentUtils.endHook(logger, "Get Flag Details");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Flag details.",
+					HttpStatus.OK.value(), allFlag), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Get Flag Details ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

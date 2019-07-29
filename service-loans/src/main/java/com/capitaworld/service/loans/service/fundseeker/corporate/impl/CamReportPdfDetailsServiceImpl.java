@@ -72,6 +72,7 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -1287,14 +1288,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			// CURRENTLY PENDING DATA-ID NOT EXISTS IN application_proposal_mapping-->applicationProposalMapping
 			String companyId = loanApplicationMaster.getMcaCompanyId();
-			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
-			if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
-				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
-			}
-
-			McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
-			if(mcaFinancialAndDetailsRes.getData()!=null){
-				map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+			
+			if(companyId != null) {
+				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
+				if (mcaStatusResponse!= null && mcaStatusResponse.getData()!= null && mcaStatusResponse.getData().equals(true)) {
+					McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+					if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
+						map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
+					}
+					McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+					if(mcaFinancialAndDetailsRes.getData()!=null){
+						map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+					}
+				}
+				map.put("mcaCheckStatus",mcaStatusResponse.getData()!= null ?  mcaStatusResponse.getData() : null);
+				
+			}else {
+				map.put("mcaNotApplicable",true);
 			}
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -1318,6 +1328,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		}catch(Exception e) {
 			logger.error("Error while getting ITR data : ",e);
+		}
+		
+		//gstRelatedParty Data Fetch
+		try {
+			List<GstRelatedPartyRequest> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(10000731l);
+			map.put("gstPartyRelatedData", !CommonUtils.isObjectListNull(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
 
 
@@ -1371,12 +1389,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//		GST Comparision by Maaz
-		/*try{
+		try{
 			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
-		}*/
+		}
 
 		/**ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);

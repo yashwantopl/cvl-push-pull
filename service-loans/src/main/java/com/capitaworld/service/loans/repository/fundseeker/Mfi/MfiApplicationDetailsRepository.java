@@ -2,18 +2,14 @@ package com.capitaworld.service.loans.repository.fundseeker.Mfi;
 
 
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.*;
+
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Date;
 import java.util.List;
 
 public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplicantDetail,Long> {
@@ -46,11 +42,11 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     public List<ProjectDetailsReq> findProjectDetailsByAppId(@Param("appId") Long appId);
     
     @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq(fn.applicationId.id,fn.shipShgiInstallment,fn.otherInstallment,fn.loanInstallment,fn.educationExpense,fn.medicalExpense,fn.foodExpense,fn.otherExpense,fn.businessInBrief,fn.monthlyCashflow,fn.monthlyExpenditure,fn.monthlyIncome,fn.ppiNoFamilyMember,fn.ppiAcadamicHeadFamily,fn.ppiRafrigeratorInFamily,fn.ppiStoveInFamily,fn.ppiPressureCookerInFamily,fn.ppiTvInFamily,fn.ppiFanInFamily,fn.ppiVehicleInFamily,fn.ppiDressingTableInFamily,fn.ppiOtherTableInFamily) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
-	public List<MfiIncomeAndExpenditureReq> findIncomeAndExpenditureDetailsByAppId(@Param("appId") Long appId);
-    
+	public List<MfiIncomeAndExpenditureReq> findIncomeAndExpenditureDetailsByAppId(@Param("appId") Long appId);  
     
     @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq(fn.applicationId.id,fn.purposeOfLoan,fn.clientType,fn.isBusinessPremiseVisited,fn.repaymentTrack,fn.creaditWorthiness,fn.loanLiabilityRatio,fn.competition,fn.loanAmountRecomandation,fn.tenureRecomandation,fn.moratoriumRecomandation,fn.interestRateRecomandation,fn.installmentRecomandation) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true")
     public List<MfiLoanAssessmentDetailsReq> findLoanAssessmentDetailsByAppId(@Param("appId") Long appId);
-    
-    
+
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.FlagCheckMFI(fn.applicationId.id,fn.isPersonalDetailsFilled,fn.isFamilyDetailsFilled,fn.isNomineeDetailsFilled,fn.isAcadamicDetailsFilled,fn.isBankDetailsFilled,fn.isAccountDetailsFilled,fn.isExistingLoanDetailsFilled,fn.isIncomeDetailsFilled,fn.isFamilyIncomeFilled,fn.isFamilyExpenseFilled,fn.isExpectedIncomeFilled,fn.isPPIFilled,fn.isProjectDetailsFilled,fn.isApplyLoanFilled,fn.isCostProjectFilled,fn.isMeanFinanceFilled,fn.isCashFlowDetailsFilled,fn.isAssetsDetailsFilled,fn.isCurrentAssetsFilled,fn.isFixedAssetsFilled,fn.isCurrntLiabilityFilled,fn.isRepaymentDetailsFilled,fn.isConsentFormFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true and type=:type")
+    public FlagCheckMFI getFlagDetailByApplicationId(@Param("appId") Long appId,@Param("type") Integer type);
 }

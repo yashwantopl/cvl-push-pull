@@ -37,9 +37,7 @@ public class MfiIncomeAndExpenditureReq {
 	private Boolean isPPIFilled;
 	
 	
-
 	public MfiIncomeAndExpenditureReq() {
-		super();
 	}
 
 	public MfiIncomeAndExpenditureReq(Long applicationId, Double shipShgiInstallment, Double otherInstallment,
@@ -49,7 +47,6 @@ public class MfiIncomeAndExpenditureReq {
 			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
 			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
 			Integer ppiOtherTableInFamily) {
-		super();
 		this.applicationId = applicationId;
 		this.shipShgiInstallment = shipShgiInstallment;
 		this.otherInstallment = otherInstallment;

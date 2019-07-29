@@ -197,6 +197,9 @@ public class LoansClient {
 	private static final String CALCULATE_SCORING = "/score/calculate_score";
 
 	private static final String CALCULATE_SCORING_EXISTING_LIST = "/score/calculate_score/corporate_existing_list";
+	private static final String CALCULATE_SCORING_MFI_LIST = "/score/calculate_score/mfi_list";
+	private static final String CALCULATE_SCORING_MFI_CO_APPLICANT_LIST = "/score/calculate_score/mfi_list_coapplicant";
+
 
 	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
 	private static final String CALCULATE_SCORING_RETAIL_HL_LIST = "/score/calculate_score/retail_hl_list";
@@ -1857,6 +1860,34 @@ public class LoansClient {
 
 	public LoansResponse calculateScoringCorporateExistingList(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
 		String url = loansBaseUrl.concat(CALCULATE_SCORING_EXISTING_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<>(scoringRequestLoansList,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in calculateScoringCorporateExistingList : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+
+	public LoansResponse calculateScoringMFIList(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_MFI_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<>(scoringRequestLoansList,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in calculateScoringCorporateExistingList : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+
+	public LoansResponse calculateScoringMFICOApplicantList(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_MFI_CO_APPLICANT_LIST);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");

@@ -427,8 +427,6 @@ public class MFIApplicantDetail implements Serializable {
 	
 	@Column(name = "total_monthly_income_for_family")
 	private Double totalMonthlyIncomeForFamily;
-	
-	
 	private Integer status;
 
 	public Long getId() {
@@ -1569,61 +1567,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.creaditWorthiness = creaditWorthiness;
 	}
 
-	public String getLoanLiabilityRatio() {
-		return loanLiabilityRatio;
-	}
-
-	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
-		this.loanLiabilityRatio = loanLiabilityRatio;
-	}
-
-	public Integer getCompetition() {
-		return competition;
-	}
-
-	public void setCompetition(Integer competition) {
-		this.competition = competition;
-	}
-
-	public Double getLoanAmountRecomandation() {
-		return loanAmountRecomandation;
-	}
-
-	public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
-		this.loanAmountRecomandation = loanAmountRecomandation;
-	}
-
-	public Integer getTenureRecomandation() {
-		return tenureRecomandation;
-	}
-
-	public void setTenureRecomandation(Integer tenureRecomandation) {
-		this.tenureRecomandation = tenureRecomandation;
-	}
-
-	public Integer getMoratoriumRecomandation() {
-		return moratoriumRecomandation;
-	}
-
-	public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
-		this.moratoriumRecomandation = moratoriumRecomandation;
-	}
-
-	public Double getInterestRateRecomandation() {
-		return interestRateRecomandation;
-	}
-
-	public void setInterestRateRecomandation(Double interestRateRecomandation) {
-		this.interestRateRecomandation = interestRateRecomandation;
-	}
-
-	public Integer getInstallmentRecomandation() {
-		return installmentRecomandation;
-	}
-
-	public void setInstallmentRecomandation(Integer installmentRecomandation) {
-		this.installmentRecomandation = installmentRecomandation;
-	}
 
 	public Boolean getIsLoanassessmentDetailsFilled() {
 		return isLoanassessmentDetailsFilled;
@@ -1649,4 +1592,60 @@ public class MFIApplicantDetail implements Serializable {
 		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
 	}
 
+	
+	public Double getLoanAmountRecomandation() {
+		return loanAmountRecomandation;
+	}
+
+	public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
+		this.loanAmountRecomandation = loanAmountRecomandation;
+	}
+
+	public Integer getTenureRecomandation() {
+		return tenureRecomandation;
+	}
+
+	public void setTenureRecomandation(Integer tenureRecomandation) {
+		this.tenureRecomandation = tenureRecomandation;
+	}
+
+	public Integer getMoratoriumRecomandation() {
+		return moratoriumRecomandation;
+	}
+
+	public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
+		this.moratoriumRecomandation = moratoriumRecomandation;
+	}
+
+	public String getLoanLiabilityRatio() {
+		return loanLiabilityRatio;
+	}
+
+	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
+		this.loanLiabilityRatio = loanLiabilityRatio;
+	}
+
+	public Double getInterestRateRecomandation() {
+		return interestRateRecomandation;
+	}
+
+	public void setInterestRateRecomandation(Double interestRateRecomandation) {
+		this.interestRateRecomandation = interestRateRecomandation;
+	}
+
+	public Integer getInstallmentRecomandation() {
+		return installmentRecomandation;
+	}
+
+	public void setInstallmentRecomandation(Integer installmentRecomandation) {
+		this.installmentRecomandation = installmentRecomandation;
+	}
+
+	public Integer getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Integer competition) {
+		this.competition = competition;
+	}
 }

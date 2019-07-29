@@ -27,8 +27,28 @@ public class RelatedPartyController {
 	@PostMapping(value="save",consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveRelatedParty(@RequestBody GstRelatedPartyRequest[] relatedPartyRequest) {
 		LoansResponse response=new LoansResponse();
+		/*if(relatedPartyRequest != null && relatedPartyRequest.length > 0) {
+			response.setData(false);
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
+		}*/
+		
 		try {
 			response.setData(service.saveRelatedParty(relatedPartyRequest));
+			response.setStatus(HttpStatus.OK.value());
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);	
+		}catch (Exception e) {
+			response.setData(false);
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
+		}
+	}
+	
+	@PostMapping(value="saveRelatedPartyFlag",consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveRelatedPartyFlag(@RequestBody GstRelatedPartyRequest relatedPartyRequest) {
+		LoansResponse response=new LoansResponse();
+		try {
+			response.setData(service.saveRelatedPartyFlag(relatedPartyRequest));
 			response.setStatus(HttpStatus.OK.value());
 			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);	
 		}catch (Exception e) {

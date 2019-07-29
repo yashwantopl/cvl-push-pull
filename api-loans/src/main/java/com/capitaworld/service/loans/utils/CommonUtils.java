@@ -347,6 +347,18 @@ public class CommonUtils {
 		public static String[] getCORPORATE() {
 			return CORPORATE;
 		}
+		
+		private static final String[] AUDIT_FIELDS = { "createdBy", "modifiedBy", "createdDate", "modifiedDate", "isActive"};
+
+		public static String[] getAuditFields() {
+			return AUDIT_FIELDS;
+		}
+		
+		private static final String[] AUDIT_FIELDS_WITH_ID = { "createdBy", "modifiedBy", "createdDate", "modifiedDate", "isActive","id"};
+
+		public static String[] getAuditFieldsWithId() {
+			return AUDIT_FIELDS_WITH_ID;
+		}
 
 		public static final String ID = "id";
 
@@ -1303,7 +1315,8 @@ public class CommonUtils {
 		EXISTING_BUSINESS(1, "Existing Business"),
 		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
 		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
-		RETAIL_HOME_LOAN(5, "Retail Home Loan");
+		RETAIL_HOME_LOAN(5, "Retail Home Loan"),
+		MFI(6, "Micro FInance Institute");
 
 		private Integer id;
 		private String value;
@@ -2017,5 +2030,13 @@ public enum APIFlags {
 //		  System.out.println(((double)diff1.getYears()) + ((double)(diff1.getMonths() / 12.0d)));
 //		  
 //	}
-	
+
+	public static Double convertTwoDecimalValuesIn(Double amount,Integer rate) {
+		if(amount!=null) {
+			DecimalFormat decim = new DecimalFormat("0.00");
+			amount=amount/rate;
+			amount = Double.parseDouble(decim.format(amount));
+		}
+		return amount;
+	}
 }

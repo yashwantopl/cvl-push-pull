@@ -6609,7 +6609,7 @@ public class ScoringServiceImpl implements ScoringService {
                 scoreParameterMFIRequest= new ScoreParameterMFIRequest();
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
 
-                logger.info("----------------------------START MFI HL ------------------------------");
+                logger.info("----------------------------START MFI  ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
@@ -6660,10 +6660,17 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             case ScoreParameter.MFI.PURPOSE_OF_LOAN_MFI:
-                                if(mfiApplicantDetail.getLoanPurpose() != null) {
-                                    scoreParameterMFIRequest.setLoanPurpose_p(mfiApplicantDetail.getLoanPurpose() != null);
-                                    scoreParameterMFIRequest.setLoanPurpose(mfiApplicantDetail.getPurposeOfLoan());
+                                try {
+                                    if(!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getLoanPurpose())) {
+                                        scoreParameterMFIRequest.setLoanPurpose_p(mfiApplicantDetail.getLoanPurpose() != null);
+                                        scoreParameterMFIRequest.setLoanPurpose(mfiApplicantDetail.getPurposeOfLoan());
+                                    }
                                 }
+                                catch (Exception e)
+                                {
+                                    logger.error("error while getting PURPOSE_OF_LOAN_MFI parameter : ",e);
+                                }
+
                                 break;
                             case ScoreParameter.MFI.DEPENDENTS_IN_THE_FAMILY_MFI:
                                 try {
