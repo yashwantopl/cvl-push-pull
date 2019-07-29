@@ -170,6 +170,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		return mfiBankDetailsReq;
 	}
 
+
 	@Override
 	public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId) {
 		List<MfiApplicantDetailsReq> mfiApplicantDetailsReqs = new ArrayList<>();
@@ -181,16 +182,16 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			BeanUtils.copyProperties(applicantDetail, detailsReq);
 			//for bank details
 			MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
-			BeanUtils.copyProperties(byApplicationId, detailsReq);
+			if(byApplicationId != null) {
+				BeanUtils.copyProperties(byApplicationId, detailsReq);
+			}
 			//for assets and liability
-			List<MfiAssetsDetailsReq> assetsReq = MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId);
-			detailsReq.setAssetsDetails(assetsReq);
-			List<MfiAssetsDetailsReq> liabilityReq = MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId);
-			detailsReq.setAssetsDetails(liabilityReq);
+			detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId));
+			detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId));
 			//for Income
 			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
 			detailsReq.setIncomeDetailsReqList(incomeDetails);
-			
+
 			// FOR PARENT(MfiIncomeAndExpenditureReq)
 			List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
 			BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
