@@ -24,6 +24,7 @@ import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
@@ -39,28 +40,32 @@ public class MFIApplicationController {
 	@Autowired
 	private MfiApplicationService mfiApplicationService;
 
-    /**
-     * save Aadhar detail For create new Application in MFI Application
-     * @param aadharDetailsReq
-     * @param request
-     * @return
-     */
-    @PostMapping(value = "/saveAdharDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> saveAdharDetails(@RequestBody AadharDetailsReq aadharDetailsReq, HttpServletRequest request) {
-        try {
-            // request must not be null
-            CommonDocumentUtils.startHook(logger, "save aadhar details");
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
-            if (userId == null) {
-                logger.warn("userId  can not be empty ==>" + userId);
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
-            aadharDetailsReq.setUserId(userId);
-            aadharDetailsReq.setOrgId(userOrgId);
-            AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(aadharDetailsReq);
-            CommonDocumentUtils.endHook(logger, "save");
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value(),aadharDetails),HttpStatus.OK);
+	/**
+	 * save Aadhar detail For create new Application in MFI Application
+	 * 
+	 * @param aadharDetailsReq
+	 * @param request
+	 * @return
+	 */
+	@PostMapping(value = "/saveAdharDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestBody AadharDetailsReq aadharDetailsReq,
+			HttpServletRequest request) {
+		try {
+			// request must not be null
+			CommonDocumentUtils.startHook(logger, "save aadhar details");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			aadharDetailsReq.setUserId(userId);
+			aadharDetailsReq.setOrgId(userOrgId);
+			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(aadharDetailsReq);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully Saved.", HttpStatus.OK.value(), aadharDetails), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving save Adhar Details Details ==>", e);
@@ -404,6 +409,60 @@ public class MFIApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Get Assets liability Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@PostMapping(value = "/saveLoanAssessmentDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanAssessmentDetails(
+			@RequestBody MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq, HttpServletRequest request) {
+		try {
+			logger.info("service call saveLoanAssessmentDetails----------->");
+			CommonDocumentUtils.startHook(logger, "save");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			mfiApplicationService.saveOrUpdateLoanAssessmentDetails(mfiLoanAssessmentDetailsReq);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving save Loan Assessment Details Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@GetMapping(value = "/getLoanAssessmentDetails/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLoanAssessmentDetails(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
+		try {
+
+			CommonDocumentUtils.startHook(logger, "Get Loan Assessment Details");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService
+					.getLoanAssessmentDetailsAppId(applicationId);
+			CommonDocumentUtils.endHook(logger, "Get Loan Assessment Details");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
+					HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Get Loan Assessment Details ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
