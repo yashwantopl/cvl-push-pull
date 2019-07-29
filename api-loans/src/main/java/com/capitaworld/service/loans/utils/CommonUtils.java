@@ -190,6 +190,27 @@ public class CommonUtils {
 		public static final Long BILLIONS = 100000000l;
 		public static final Long ABSOLUTE = 1l;
 	}
+	
+	public static final class OfflineApplicationConfig {
+		private OfflineApplicationConfig(){
+			// Do nothing because of X and Y.
+		}
+		static final class BankSpecific{
+			private BankSpecific(){
+				// Do nothing because of X and Y.
+			}
+			public static final String ON = "1";
+			public static final String OFF = "0";
+		}
+		
+		static final class MarketPlace{
+			private MarketPlace(){
+				// Do nothing because of X and Y.
+			}
+			public static final String ON = "1";
+			public static final String OFF = "0";
+		}
+	}
 
 	public static final class DenominationId {
 		private DenominationId() {
@@ -2035,6 +2056,14 @@ public enum APIFlags {
 		if(amount!=null) {
 			DecimalFormat decim = new DecimalFormat("0.00");
 			amount=amount/rate;
+			amount = Double.parseDouble(decim.format(amount));
+		}
+		return amount;
+	}
+	public static Double convertTwoDecimalAbsoluteValues(Double amount,Integer rate) {
+		if(amount!=null) {
+			DecimalFormat decim = new DecimalFormat("0.00");
+			amount=amount*rate;
 			amount = Double.parseDouble(decim.format(amount));
 		}
 		return amount;
