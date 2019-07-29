@@ -69,7 +69,7 @@ public class ColendingController {
     public ResponseEntity<UserResponse> nbfcClientCount(HttpServletRequest request){
         if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
             return new ResponseEntity<UserResponse>(
-                    new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
                     HttpStatus.OK);
         }
         try {
@@ -82,7 +82,7 @@ public class ColendingController {
             }else{
                 logger.info(SOMETHING_WENT_WRONG_WHILE_FETCHING_CO_LENDING_CLIENT_COUNT_MSG);
                 return new ResponseEntity<UserResponse>(
-                        new UserResponse("Something went wrong while fetching co-lending client count..!-->", HttpStatus.BAD_REQUEST.value()),
+                        new UserResponse("Something went wrong while fetching co-lending client count..!-->", HttpStatus.INTERNAL_SERVER_ERROR.value()),
                         HttpStatus.OK);
             }
         } catch (Exception e) {
