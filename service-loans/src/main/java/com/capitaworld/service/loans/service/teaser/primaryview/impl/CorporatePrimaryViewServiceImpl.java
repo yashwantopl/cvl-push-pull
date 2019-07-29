@@ -1550,12 +1550,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					}
 					// calculating total
 					totalGstExp +=Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstExp").toString());
-					gstPurchaseVsBankStatementMonthly.put("gstExp", gstPurchaseVsBankStatementMonthly.get("gstExp").toString()!= "0"?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("gstExp").toString()):" - ");
+					gstPurchaseVsBankStatementMonthly.put("gstExp", gstPurchaseVsBankStatementMonthly.get("gstExp").toString().equals("0")?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("gstExp").toString()):" - ");
 					totalGstDomestic +=!y.getValue().toString().equals("0")?Double.valueOf(y.getValue().toString()):0;
 					totalOfGstSalesTotal += gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString().equals("0")?Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString()):0;
-					gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString() != "0"?CommonUtils.convertStringFormate(Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString())):" - ");
+					gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString().equals("0")?CommonUtils.convertStringFormate(Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString())):" - ");
 					totalOfITRSalesTotal += gstPurchaseVsBankStatementMonthly.get("itrSales").toString().equals("0") && !gstPurchaseVsBankStatementMonthly.get("itrSales").toString().equals("-")?Double.valueOf(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()):0;
-					gstPurchaseVsBankStatementMonthly.put("itrSales", gstPurchaseVsBankStatementMonthly.get("itrSales").toString() != "0"?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()):" - ");
+					gstPurchaseVsBankStatementMonthly.put("itrSales", gstPurchaseVsBankStatementMonthly.get("itrSales").toString().equals("0")?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()):" - ");
 					
 					if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
 						bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
