@@ -396,12 +396,39 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "ppi_other_table_in_family")
 	private Integer ppiOtherTableInFamily;
 
-	@Column(name = "client_type")
-	private Integer clientType;
-
 	@Column(name = "purpose_of_loan")
 	private Integer purposeOfLoan;
-
+	@Column(name = "client_type")
+	private Integer clientType;
+	@Column(name = "is_business_premise_visited")
+	private Boolean isBusinessPremiseVisited;
+	@Column(name = "repayment_track")
+	private Integer repaymentTrack;
+	@Column(name = "creadit_worthiness")
+	private Integer creaditWorthiness;
+	@Column(name = "loan_liability_ratio")
+	private String loanLiabilityRatio;
+	@Column(name = "competition")
+	private Integer competition;
+	@Column(name = "loan_amount_recomandation")
+	private Double loanAmountRecomandation;
+	@Column(name = "tenure_recomandation")
+	private Integer tenureRecomandation;
+	@Column(name = "moratorium_recomandation")
+	private Integer moratoriumRecomandation;
+	@Column(name = "interest_rate_recomandation")
+	private Double interestRateRecomandation;
+	@Column(name = "installment_recomandation")
+	private Integer installmentRecomandation;
+	@Column(name = "is_loanassessment_details_filled")
+	private Boolean isLoanassessmentDetailsFilled;
+	@Column(name = "total_expense")
+	private Double totalExpense;
+	
+	@Column(name = "total_monthly_income_for_family")
+	private Double totalMonthlyIncomeForFamily;
+	
+	
 	private Integer status;
 
 	public Long getId() {
@@ -1509,4 +1536,117 @@ public class MFIApplicantDetail implements Serializable {
 	public void setPurposeOfLoan(Integer purposeOfLoan) {
 		this.purposeOfLoan = purposeOfLoan;
 	}
+
+	public Integer getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(Integer clientType) {
+		this.clientType = clientType;
+	}
+
+	public Boolean getIsBusinessPremiseVisited() {
+		return isBusinessPremiseVisited;
+	}
+
+	public void setIsBusinessPremiseVisited(Boolean isBusinessPremiseVisited) {
+		this.isBusinessPremiseVisited = isBusinessPremiseVisited;
+	}
+
+	public Integer getRepaymentTrack() {
+		return repaymentTrack;
+	}
+
+	public void setRepaymentTrack(Integer repaymentTrack) {
+		this.repaymentTrack = repaymentTrack;
+	}
+
+	public Integer getCreaditWorthiness() {
+		return creaditWorthiness;
+	}
+
+	public void setCreaditWorthiness(Integer creaditWorthiness) {
+		this.creaditWorthiness = creaditWorthiness;
+	}
+
+	public String getLoanLiabilityRatio() {
+		return loanLiabilityRatio;
+	}
+
+	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
+		this.loanLiabilityRatio = loanLiabilityRatio;
+	}
+
+	public Integer getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Integer competition) {
+		this.competition = competition;
+	}
+
+	public Double getLoanAmountRecomandation() {
+		return loanAmountRecomandation;
+	}
+
+	public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
+		this.loanAmountRecomandation = loanAmountRecomandation;
+	}
+
+	public Integer getTenureRecomandation() {
+		return tenureRecomandation;
+	}
+
+	public void setTenureRecomandation(Integer tenureRecomandation) {
+		this.tenureRecomandation = tenureRecomandation;
+	}
+
+	public Integer getMoratoriumRecomandation() {
+		return moratoriumRecomandation;
+	}
+
+	public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
+		this.moratoriumRecomandation = moratoriumRecomandation;
+	}
+
+	public Double getInterestRateRecomandation() {
+		return interestRateRecomandation;
+	}
+
+	public void setInterestRateRecomandation(Double interestRateRecomandation) {
+		this.interestRateRecomandation = interestRateRecomandation;
+	}
+
+	public Integer getInstallmentRecomandation() {
+		return installmentRecomandation;
+	}
+
+	public void setInstallmentRecomandation(Integer installmentRecomandation) {
+		this.installmentRecomandation = installmentRecomandation;
+	}
+
+	public Boolean getIsLoanassessmentDetailsFilled() {
+		return isLoanassessmentDetailsFilled;
+	}
+
+	public void setIsLoanassessmentDetailsFilled(Boolean isLoanassessmentDetailsFilled) {
+		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
+	}
+
+	public Double getTotalExpense() {
+		return totalExpense;
+	}
+
+	public void setTotalExpense(Double totalExpense) {
+		this.totalExpense = totalExpense;
+	}
+
+	public Double getTotalMonthlyIncomeForFamily() {
+		return totalMonthlyIncomeForFamily;
+	}
+
+	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
+		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
+	}
+
 }

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PersonalDetailsReq {
 
 	private Long id;
@@ -57,10 +57,12 @@ public class PersonalDetailsReq {
 	private Integer expInSameLine;
 	private String academicSumInsured;
 	private Boolean isPersonalDetailsFilled;
+	private Boolean isFamilyDetailsFilled;
+	private Boolean isNomineeDetailsFilled;
+	private Boolean isAcadamicDetailsFilled;
 
 	public PersonalDetailsReq() {
 	}
-
 
 	public PersonalDetailsReq(Long applicationId, String fatherName, String motherName, String spouseName,
 			Date spouseBirthDate, Integer noDependent, String spouseMobile, String nomineeName, Date nomineeBirthDate,
@@ -106,11 +108,6 @@ public class PersonalDetailsReq {
 		this.isPersonalDetailsFilled = isPersonalDetailsFilled;
 	}
 
-
-
-
-
-
 	public Long getId() {
 		return id;
 	}
@@ -118,7 +115,6 @@ public class PersonalDetailsReq {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 
 	public String getFatherName() {
 		return fatherName;
@@ -208,7 +204,6 @@ public class PersonalDetailsReq {
 		this.educationQualification = educationQualification;
 	}
 
-
 	public Integer getReligion() {
 		return religion;
 	}
@@ -216,7 +211,6 @@ public class PersonalDetailsReq {
 	public void setReligion(Integer religion) {
 		this.religion = religion;
 	}
-
 
 	public Double getLandHolding() {
 		return landHolding;
@@ -392,6 +386,30 @@ public class PersonalDetailsReq {
 
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
+	}
+
+	public Boolean getIsFamilyDetailsFilled() {
+		return isFamilyDetailsFilled;
+	}
+
+	public void setIsFamilyDetailsFilled(Boolean isFamilyDetailsFilled) {
+		this.isFamilyDetailsFilled = isFamilyDetailsFilled;
+	}
+
+	public Boolean getIsNomineeDetailsFilled() {
+		return isNomineeDetailsFilled;
+	}
+
+	public void setIsNomineeDetailsFilled(Boolean isNomineeDetailsFilled) {
+		this.isNomineeDetailsFilled = isNomineeDetailsFilled;
+	}
+
+	public Boolean getIsAcadamicDetailsFilled() {
+		return isAcadamicDetailsFilled;
+	}
+
+	public void setIsAcadamicDetailsFilled(Boolean isAcadamicDetailsFilled) {
+		this.isAcadamicDetailsFilled = isAcadamicDetailsFilled;
 	}
 
 }

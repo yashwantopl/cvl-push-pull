@@ -4,1323 +4,1343 @@ import java.util.Date;
 
 public class MfiApplicantDetailsReq {
 
-    private Long applicationId;
+	private Long applicationId;
 
+	private Long applicationProposalMapping;
 
-    private Long applicationProposalMapping;
+	private String aadharNumber;
 
-    private String aadharNumber;
+	private String nameAsPerAadharCard;
 
-    private String nameAsPerAadharCard;
+	private String firstName;
 
-    private String firstName;
+	private String lastName;
 
-    private String lastName;
+	private String middleName;
 
-    private String middleName;
+	private Date birthDate;
 
-    private Date birthDate;
+	private Integer genderId;
 
-    private Integer genderId;
+	private String mobile;
 
-    private String mobile;
+	private String email;
 
-    private String email;
+	private Integer maritalStatusId;
 
-    private Integer maritalStatusId;
+	private Boolean addressSameAsAadhar;
 
-    private Boolean addressSameAsAadhar;
+	private String currentDistrict;
 
-    private String currentDistrict;
+	private String aadharDistrict;
 
-    private String aadharDistrict;
+	private String currentHouse;
 
-    private String currentHouse;
+	private String aadharHouse;
 
-    private String aadharHouse;
+	private String currentLandmark;
 
-    private String currentLandmark;
+	private String aadharLandmark;
 
-    private String aadharLandmark;
+	private String currentLocation;
 
-    private String currentLocation;
+	private String aadharLocation;
 
-    private String aadharLocation;
+	private String currentState;
 
-    private String currentState;
+	private String aadharState;
 
-    private String aadharState;
+	private String currentStreet;
 
-    private String currentStreet;
+	private String aadharStreet;
 
-    private String aadharStreet;
+	private String currentVtc;
 
-    private String currentVtc;
+	private String aadharVtc;
 
-    private String aadharVtc;
+	private String aadharSubdist;
 
-    private String aadharSubdist;
+	private String currentSubdist;
 
-    private String currentSubdist;
+	private String aadharPo;
 
-    private String aadharPo;
+	private String currentPo;
 
-    private String currentPo;
+	private String aadharCareOf;
 
-    private String aadharCareOf;
+	private String addressPincode;
 
-    private String addressPincode;
+	private String aadharPincode;
 
-    private String aadharPincode;
+	private String fatherName;
 
-    private String fatherName;
+	private String motherName;
 
-    private String motherName;
+	private String spouseName;
 
-    private String spouseName;
+	private Date spouseBirthDate;
 
-    private Date spouseBirthDate;
+	private String spouseMobile;
 
-    private String spouseMobile;
+	private Integer noDependent;
 
-    private Integer noDependent;
+	private String nomineeName;
 
-    private String nomineeName;
+	private Date nomineeBirthDate;
 
-    private Date nomineeBirthDate;
+	private Integer relationWithNomineeId;
 
-    private Integer relationWithNomineeId;
+	private String nomineeAddress;
 
-    private String nomineeAddress;
+	private String nomineePincode;
 
-    private String nomineePincode;
+	private Integer religion;
 
-    private Integer religion;
+	private Integer educationQualification;
 
-    private Integer educationQualification;
+	private Double landHolding;
 
-    private Double landHolding;
+	private String nameOfFirm;
 
-    private String nameOfFirm;
+	private Integer businessType;
 
-    private Integer businessType;
+	private Integer houseType;
 
-    private Integer houseType;
+	private String loanPurpose;
 
-    private String loanPurpose;
+	private Double loanAmountRequired;
 
-    private Double loanAmountRequired;
+	private Double costOfProject;
 
-    private Double costOfProject;
+	private Double costOfEquipment;
 
-    private Double costOfEquipment;
+	private Double workingCapOfEquipment;
 
-    private Double workingCapOfEquipment;
+	private Double totalCostEquipment;
 
-    private Double totalCostEquipment;
+	private Double promoterContribution;
 
-    private Double promoterContribution;
+	private Double loanRequiredFromSidbi;
 
-    private Double loanRequiredFromSidbi;
+	private Double totalMeanFinance;
 
-    private Double totalMeanFinance;
+	private Double totalCashFlow;
 
-    private Double totalCashFlow;
+	private Integer repaymentFrequency;
 
-    private Integer repaymentFrequency;
+	private Boolean insurenceRequired;
 
-    private Boolean insurenceRequired;
+	private String insurenceCompanyName;
 
-    private String insurenceCompanyName;
+	private Double insurencePremium;
 
-    private Double insurencePremium;
+	private Long createdBy;
 
-    private Long createdBy;
+	private Date createdDate;
 
-    private Date createdDate;
+	private Boolean isActive;
 
-    private Boolean isActive;
+	private Long modifiedBy;
 
-    private Long modifiedBy;
+	private Date modifiedDate;
 
-    private Date modifiedDate;
+	private Integer loanType;
 
-    private Integer loanType;
+	private String nomineeState;
+	private String nomineeCity;
+	private String nomineeDistrict;
+	private String nomineeLocation;
+	private String nomineeHouseNo;
+	private String nomineeLandmark;
+	private String academicReligion;
+	private String academicCaste;
+	private Boolean isAcademicLifeInsurance;
 
-    private String nomineeState;
-    private String nomineeCity;
-    private String nomineeDistrict;
-    private String nomineeLocation;
-    private String nomineeHouseNo;
-    private String nomineeLandmark;
-    private String academicReligion;
-    private String academicCaste;
-    private Boolean isAcademicLifeInsurance;
+	private String houseOwnership;
 
-    private String houseOwnership;
+	private String areaType;
 
-    private String areaType;
+	private String businessPremises;
 
-    private String businessPremises;
+	private String expInSameLine;
 
-    private String expInSameLine;
+	private String academicSumInsured;
 
-    private String academicSumInsured;
+	private Integer type;
 
-    private Integer type;
+	private String remarks;
 
-    private String remarks;
+	private Boolean isPersonalDetailsFilled;
 
-    private Boolean isPersonalDetailsFilled;
+	private Boolean isFamilyDetailsFilled;
 
-    private Boolean isFamilyDetailsFilled;
+	private Boolean isNomineeDetailsFilled;
 
-    private Boolean isNomineeDetailsFilled;
+	private Boolean isAcadamicDetailsFilled;
 
-    private Boolean isAcadamicDetailsFilled;
+	private Boolean isBankDetailsFilled;
 
-    private Boolean isBankDetailsFilled;
+	private Boolean isAccountDetailsFilled;
 
-    private Boolean isAccountDetailsFilled;
+	private Boolean isExistingLoanDetailsFilled;
 
-    private Boolean isExistingLoanDetailsFilled;
+	private Boolean isIncomeDetailsFilled;
 
-    private Boolean isIncomeDetailsFilled;
+	private Boolean isFamilyIncomeFilled;
 
-    private Boolean isFamilyIncomeFilled;
+	private Boolean isFamilyExpenseFilled;
 
-    private Boolean isFamilyExpenseFilled;
+	private Boolean isExpectedIncomeFilled;
 
-    private Boolean isExpectedIncomeFilled;
+	private Boolean isPPIFilled;
 
-    private Boolean isPPIFilled;
+	private Boolean isProjectDetailsFilled;
 
-    private Boolean isProjectDetailsFilled;
+	private Boolean isApplyLoanFilled;
 
-    private Boolean isApplyLoanFilled;
+	private Boolean isCostProjectFilled;
 
-    private Boolean isCostProjectFilled;
+	private Boolean isMeanFinanceFilled;
 
-    private Boolean isMeanFinanceFilled;
+	private Boolean isCashFlowDetailsFilled;
 
-    private Boolean isCashFlowDetailsFilled;
+	private Boolean isAssetsDetailsFilled;
 
-    private Boolean isAssetsDetailsFilled;
+	private Boolean isCurrentAssetsFilled;
 
-    private Boolean isCurrentAssetsFilled;
+	private Boolean isFixedAssetsFilled;
 
-    private Boolean isFixedAssetsFilled;
+	private Boolean isCurrntLiabilityFilled;
 
-    private Boolean isCurrntLiabilityFilled;
+	private Boolean isRepaymentDetailsFilled;
 
-    private Boolean isRepaymentDetailsFilled;
+	private Boolean isConsentFormFilled;
 
-    private Boolean isConsentFormFilled;
+	private Boolean isLoanassessmentDetailsFilled;
 
-    private Integer addressProofType;
+	private Integer addressProofType;
 
-    private byte[] addressProofImg;
-    private byte[] consentFormImg;
-    private byte[] profileImg;
-    private Double shipShgiInstallment;
-    private Double otherInstallment;
-    private Double loanInstallment;
-    private Double educationExpense;
-    private Double medicalExpense;
-    private Double foodExpense;
-    private Double otherExpense;
-    private String businessNameBrief;
-    private Double monthlyCashflow;
-    private Double monthlyExpenditure;
-    private Double monthlyIncome;
-    private Integer ppiNoFamilyMember;
-    private Integer ppiAcadamicHeadFamily;
-    private Integer ppiRafrigeratorInFamily;
-    private Integer ppiStoveInFamily;
-    private Integer ppiPressureCookerInFamily;
-    private Integer ppiTvInFamily;
-    private Integer ppiFanInFamily;
-    private Integer ppiVehicleInFamily;
-    private Integer ppiDressingTableInFamily;
-    private Integer ppiOtherTableInFamily;
+	private byte[] addressProofImg;
+	private byte[] consentFormImg;
+	private byte[] profileImg;
+	private Double shipShgiInstallment;
+	private Double otherInstallment;
+	private Double loanInstallment;
+	private Double educationExpense;
+	private Double medicalExpense;
+	private Double foodExpense;
+	private Double otherExpense;
+	private String businessNameBrief;
+	private Double monthlyCashflow;
+	private Double monthlyExpenditure;
+	private Double monthlyIncome;
+	private Integer ppiNoFamilyMember;
+	private Integer ppiAcadamicHeadFamily;
+	private Integer ppiRafrigeratorInFamily;
+	private Integer ppiStoveInFamily;
+	private Integer ppiPressureCookerInFamily;
+	private Integer ppiTvInFamily;
+	private Integer ppiFanInFamily;
+	private Integer ppiVehicleInFamily;
+	private Integer ppiDressingTableInFamily;
+	private Integer ppiOtherTableInFamily;
 
-    public Long getApplicationId() {
-        return applicationId;
-    }
+	private Double totalMonthlyIncomeForFamily;
 
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
-    }
+	public Long getApplicationId() {
+		return applicationId;
+	}
 
-    public Long getApplicationProposalMapping() {
-        return applicationProposalMapping;
-    }
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
 
-    public void setApplicationProposalMapping(Long applicationProposalMapping) {
-        this.applicationProposalMapping = applicationProposalMapping;
-    }
+	public Long getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
 
-    public String getAadharNumber() {
-        return aadharNumber;
-    }
+	public void setApplicationProposalMapping(Long applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
 
-    public void setAadharNumber(String aadharNumber) {
-        this.aadharNumber = aadharNumber;
-    }
+	public String getAadharNumber() {
+		return aadharNumber;
+	}
 
-    public String getNameAsPerAadharCard() {
-        return nameAsPerAadharCard;
-    }
+	public void setAadharNumber(String aadharNumber) {
+		this.aadharNumber = aadharNumber;
+	}
 
-    public void setNameAsPerAadharCard(String nameAsPerAadharCard) {
-        this.nameAsPerAadharCard = nameAsPerAadharCard;
-    }
+	public String getNameAsPerAadharCard() {
+		return nameAsPerAadharCard;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public void setNameAsPerAadharCard(String nameAsPerAadharCard) {
+		this.nameAsPerAadharCard = nameAsPerAadharCard;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public String getMiddleName() {
-        return middleName;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
+	public String getMiddleName() {
+		return middleName;
+	}
 
-    public Date getBirthDate() {
-        return birthDate;
-    }
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
 
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
+	public Date getBirthDate() {
+		return birthDate;
+	}
 
-    public Integer getGenderId() {
-        return genderId;
-    }
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
+	}
 
-    public void setGenderId(Integer genderId) {
-        this.genderId = genderId;
-    }
+	public Integer getGenderId() {
+		return genderId;
+	}
 
-    public String getMobile() {
-        return mobile;
-    }
+	public void setGenderId(Integer genderId) {
+		this.genderId = genderId;
+	}
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
+	public String getMobile() {
+		return mobile;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public Integer getMaritalStatusId() {
-        return maritalStatusId;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setMaritalStatusId(Integer maritalStatusId) {
-        this.maritalStatusId = maritalStatusId;
-    }
+	public Integer getMaritalStatusId() {
+		return maritalStatusId;
+	}
 
-    public Boolean getAddressSameAsAadhar() {
-        return addressSameAsAadhar;
-    }
+	public void setMaritalStatusId(Integer maritalStatusId) {
+		this.maritalStatusId = maritalStatusId;
+	}
 
-    public void setAddressSameAsAadhar(Boolean addressSameAsAadhar) {
-        this.addressSameAsAadhar = addressSameAsAadhar;
-    }
+	public Boolean getAddressSameAsAadhar() {
+		return addressSameAsAadhar;
+	}
 
-    public String getCurrentDistrict() {
-        return currentDistrict;
-    }
+	public void setAddressSameAsAadhar(Boolean addressSameAsAadhar) {
+		this.addressSameAsAadhar = addressSameAsAadhar;
+	}
 
-    public void setCurrentDistrict(String currentDistrict) {
-        this.currentDistrict = currentDistrict;
-    }
+	public String getCurrentDistrict() {
+		return currentDistrict;
+	}
 
-    public String getAadharDistrict() {
-        return aadharDistrict;
-    }
+	public void setCurrentDistrict(String currentDistrict) {
+		this.currentDistrict = currentDistrict;
+	}
 
-    public void setAadharDistrict(String aadharDistrict) {
-        this.aadharDistrict = aadharDistrict;
-    }
+	public String getAadharDistrict() {
+		return aadharDistrict;
+	}
 
-    public String getCurrentHouse() {
-        return currentHouse;
-    }
+	public void setAadharDistrict(String aadharDistrict) {
+		this.aadharDistrict = aadharDistrict;
+	}
 
-    public void setCurrentHouse(String currentHouse) {
-        this.currentHouse = currentHouse;
-    }
+	public String getCurrentHouse() {
+		return currentHouse;
+	}
 
-    public String getAadharHouse() {
-        return aadharHouse;
-    }
+	public void setCurrentHouse(String currentHouse) {
+		this.currentHouse = currentHouse;
+	}
 
-    public void setAadharHouse(String aadharHouse) {
-        this.aadharHouse = aadharHouse;
-    }
+	public String getAadharHouse() {
+		return aadharHouse;
+	}
 
-    public String getCurrentLandmark() {
-        return currentLandmark;
-    }
+	public void setAadharHouse(String aadharHouse) {
+		this.aadharHouse = aadharHouse;
+	}
 
-    public void setCurrentLandmark(String currentLandmark) {
-        this.currentLandmark = currentLandmark;
-    }
+	public String getCurrentLandmark() {
+		return currentLandmark;
+	}
 
-    public String getAadharLandmark() {
-        return aadharLandmark;
-    }
+	public void setCurrentLandmark(String currentLandmark) {
+		this.currentLandmark = currentLandmark;
+	}
 
-    public void setAadharLandmark(String aadharLandmark) {
-        this.aadharLandmark = aadharLandmark;
-    }
+	public String getAadharLandmark() {
+		return aadharLandmark;
+	}
 
-    public String getCurrentLocation() {
-        return currentLocation;
-    }
+	public void setAadharLandmark(String aadharLandmark) {
+		this.aadharLandmark = aadharLandmark;
+	}
 
-    public void setCurrentLocation(String currentLocation) {
-        this.currentLocation = currentLocation;
-    }
+	public String getCurrentLocation() {
+		return currentLocation;
+	}
 
-    public String getAadharLocation() {
-        return aadharLocation;
-    }
+	public void setCurrentLocation(String currentLocation) {
+		this.currentLocation = currentLocation;
+	}
 
-    public void setAadharLocation(String aadharLocation) {
-        this.aadharLocation = aadharLocation;
-    }
+	public String getAadharLocation() {
+		return aadharLocation;
+	}
 
-    public String getCurrentState() {
-        return currentState;
-    }
+	public void setAadharLocation(String aadharLocation) {
+		this.aadharLocation = aadharLocation;
+	}
 
-    public void setCurrentState(String currentState) {
-        this.currentState = currentState;
-    }
+	public String getCurrentState() {
+		return currentState;
+	}
 
-    public String getAadharState() {
-        return aadharState;
-    }
+	public void setCurrentState(String currentState) {
+		this.currentState = currentState;
+	}
 
-    public void setAadharState(String aadharState) {
-        this.aadharState = aadharState;
-    }
+	public String getAadharState() {
+		return aadharState;
+	}
 
-    public String getCurrentStreet() {
-        return currentStreet;
-    }
+	public void setAadharState(String aadharState) {
+		this.aadharState = aadharState;
+	}
 
-    public void setCurrentStreet(String currentStreet) {
-        this.currentStreet = currentStreet;
-    }
+	public String getCurrentStreet() {
+		return currentStreet;
+	}
 
-    public String getAadharStreet() {
-        return aadharStreet;
-    }
+	public void setCurrentStreet(String currentStreet) {
+		this.currentStreet = currentStreet;
+	}
 
-    public void setAadharStreet(String aadharStreet) {
-        this.aadharStreet = aadharStreet;
-    }
+	public String getAadharStreet() {
+		return aadharStreet;
+	}
 
-    public String getCurrentVtc() {
-        return currentVtc;
-    }
+	public void setAadharStreet(String aadharStreet) {
+		this.aadharStreet = aadharStreet;
+	}
 
-    public void setCurrentVtc(String currentVtc) {
-        this.currentVtc = currentVtc;
-    }
+	public String getCurrentVtc() {
+		return currentVtc;
+	}
 
-    public String getAadharVtc() {
-        return aadharVtc;
-    }
+	public void setCurrentVtc(String currentVtc) {
+		this.currentVtc = currentVtc;
+	}
 
-    public void setAadharVtc(String aadharVtc) {
-        this.aadharVtc = aadharVtc;
-    }
+	public String getAadharVtc() {
+		return aadharVtc;
+	}
 
-    public String getAadharSubdist() {
-        return aadharSubdist;
-    }
+	public void setAadharVtc(String aadharVtc) {
+		this.aadharVtc = aadharVtc;
+	}
 
-    public void setAadharSubdist(String aadharSubdist) {
-        this.aadharSubdist = aadharSubdist;
-    }
+	public String getAadharSubdist() {
+		return aadharSubdist;
+	}
 
-    public String getCurrentSubdist() {
-        return currentSubdist;
-    }
+	public void setAadharSubdist(String aadharSubdist) {
+		this.aadharSubdist = aadharSubdist;
+	}
 
-    public void setCurrentSubdist(String currentSubdist) {
-        this.currentSubdist = currentSubdist;
-    }
+	public String getCurrentSubdist() {
+		return currentSubdist;
+	}
 
-    public String getAadharPo() {
-        return aadharPo;
-    }
+	public void setCurrentSubdist(String currentSubdist) {
+		this.currentSubdist = currentSubdist;
+	}
 
-    public void setAadharPo(String aadharPo) {
-        this.aadharPo = aadharPo;
-    }
+	public String getAadharPo() {
+		return aadharPo;
+	}
 
-    public String getCurrentPo() {
-        return currentPo;
-    }
+	public void setAadharPo(String aadharPo) {
+		this.aadharPo = aadharPo;
+	}
 
-    public void setCurrentPo(String currentPo) {
-        this.currentPo = currentPo;
-    }
+	public String getCurrentPo() {
+		return currentPo;
+	}
 
-    public String getAadharCareOf() {
-        return aadharCareOf;
-    }
+	public void setCurrentPo(String currentPo) {
+		this.currentPo = currentPo;
+	}
 
-    public void setAadharCareOf(String aadharCareOf) {
-        this.aadharCareOf = aadharCareOf;
-    }
+	public String getAadharCareOf() {
+		return aadharCareOf;
+	}
 
-    public String getAddressPincode() {
-        return addressPincode;
-    }
+	public void setAadharCareOf(String aadharCareOf) {
+		this.aadharCareOf = aadharCareOf;
+	}
 
-    public void setAddressPincode(String addressPincode) {
-        this.addressPincode = addressPincode;
-    }
+	public String getAddressPincode() {
+		return addressPincode;
+	}
 
-    public String getAadharPincode() {
-        return aadharPincode;
-    }
+	public void setAddressPincode(String addressPincode) {
+		this.addressPincode = addressPincode;
+	}
 
-    public void setAadharPincode(String aadharPincode) {
-        this.aadharPincode = aadharPincode;
-    }
+	public String getAadharPincode() {
+		return aadharPincode;
+	}
 
-    public String getFatherName() {
-        return fatherName;
-    }
+	public void setAadharPincode(String aadharPincode) {
+		this.aadharPincode = aadharPincode;
+	}
 
-    public void setFatherName(String fatherName) {
-        this.fatherName = fatherName;
-    }
+	public String getFatherName() {
+		return fatherName;
+	}
 
-    public String getMotherName() {
-        return motherName;
-    }
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
 
-    public void setMotherName(String motherName) {
-        this.motherName = motherName;
-    }
+	public String getMotherName() {
+		return motherName;
+	}
 
-    public String getSpouseName() {
-        return spouseName;
-    }
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
 
-    public void setSpouseName(String spouseName) {
-        this.spouseName = spouseName;
-    }
+	public String getSpouseName() {
+		return spouseName;
+	}
 
-    public Date getSpouseBirthDate() {
-        return spouseBirthDate;
-    }
+	public void setSpouseName(String spouseName) {
+		this.spouseName = spouseName;
+	}
 
-    public void setSpouseBirthDate(Date spouseBirthDate) {
-        this.spouseBirthDate = spouseBirthDate;
-    }
+	public Date getSpouseBirthDate() {
+		return spouseBirthDate;
+	}
 
-    public String getSpouseMobile() {
-        return spouseMobile;
-    }
+	public void setSpouseBirthDate(Date spouseBirthDate) {
+		this.spouseBirthDate = spouseBirthDate;
+	}
 
-    public void setSpouseMobile(String spouseMobile) {
-        this.spouseMobile = spouseMobile;
-    }
+	public String getSpouseMobile() {
+		return spouseMobile;
+	}
 
-    public Integer getNoDependent() {
-        return noDependent;
-    }
+	public void setSpouseMobile(String spouseMobile) {
+		this.spouseMobile = spouseMobile;
+	}
 
-    public void setNoDependent(Integer noDependent) {
-        this.noDependent = noDependent;
-    }
+	public Integer getNoDependent() {
+		return noDependent;
+	}
 
-    public String getNomineeName() {
-        return nomineeName;
-    }
+	public void setNoDependent(Integer noDependent) {
+		this.noDependent = noDependent;
+	}
 
-    public void setNomineeName(String nomineeName) {
-        this.nomineeName = nomineeName;
-    }
+	public String getNomineeName() {
+		return nomineeName;
+	}
 
-    public Date getNomineeBirthDate() {
-        return nomineeBirthDate;
-    }
+	public void setNomineeName(String nomineeName) {
+		this.nomineeName = nomineeName;
+	}
 
-    public void setNomineeBirthDate(Date nomineeBirthDate) {
-        this.nomineeBirthDate = nomineeBirthDate;
-    }
+	public Date getNomineeBirthDate() {
+		return nomineeBirthDate;
+	}
 
-    public Integer getRelationWithNomineeId() {
-        return relationWithNomineeId;
-    }
+	public void setNomineeBirthDate(Date nomineeBirthDate) {
+		this.nomineeBirthDate = nomineeBirthDate;
+	}
 
-    public void setRelationWithNomineeId(Integer relationWithNomineeId) {
-        this.relationWithNomineeId = relationWithNomineeId;
-    }
+	public Integer getRelationWithNomineeId() {
+		return relationWithNomineeId;
+	}
 
-    public String getNomineeAddress() {
-        return nomineeAddress;
-    }
+	public void setRelationWithNomineeId(Integer relationWithNomineeId) {
+		this.relationWithNomineeId = relationWithNomineeId;
+	}
 
-    public void setNomineeAddress(String nomineeAddress) {
-        this.nomineeAddress = nomineeAddress;
-    }
+	public String getNomineeAddress() {
+		return nomineeAddress;
+	}
 
-    public String getNomineePincode() {
-        return nomineePincode;
-    }
+	public void setNomineeAddress(String nomineeAddress) {
+		this.nomineeAddress = nomineeAddress;
+	}
 
-    public void setNomineePincode(String nomineePincode) {
-        this.nomineePincode = nomineePincode;
-    }
+	public String getNomineePincode() {
+		return nomineePincode;
+	}
 
-    public Integer getReligion() {
-        return religion;
-    }
+	public void setNomineePincode(String nomineePincode) {
+		this.nomineePincode = nomineePincode;
+	}
 
-    public void setReligion(Integer religion) {
-        this.religion = religion;
-    }
+	public Integer getReligion() {
+		return religion;
+	}
 
-    public Integer getEducationQualification() {
-        return educationQualification;
-    }
+	public void setReligion(Integer religion) {
+		this.religion = religion;
+	}
 
-    public void setEducationQualification(Integer educationQualification) {
-        this.educationQualification = educationQualification;
-    }
+	public Integer getEducationQualification() {
+		return educationQualification;
+	}
 
-    public Double getLandHolding() {
-        return landHolding;
-    }
+	public void setEducationQualification(Integer educationQualification) {
+		this.educationQualification = educationQualification;
+	}
 
-    public void setLandHolding(Double landHolding) {
-        this.landHolding = landHolding;
-    }
+	public Double getLandHolding() {
+		return landHolding;
+	}
 
-    public String getNameOfFirm() {
-        return nameOfFirm;
-    }
+	public void setLandHolding(Double landHolding) {
+		this.landHolding = landHolding;
+	}
 
-    public void setNameOfFirm(String nameOfFirm) {
-        this.nameOfFirm = nameOfFirm;
-    }
+	public String getNameOfFirm() {
+		return nameOfFirm;
+	}
 
-    public Integer getBusinessType() {
-        return businessType;
-    }
+	public void setNameOfFirm(String nameOfFirm) {
+		this.nameOfFirm = nameOfFirm;
+	}
 
-    public void setBusinessType(Integer businessType) {
-        this.businessType = businessType;
-    }
+	public Integer getBusinessType() {
+		return businessType;
+	}
 
-    public Integer getHouseType() {
-        return houseType;
-    }
+	public void setBusinessType(Integer businessType) {
+		this.businessType = businessType;
+	}
 
-    public void setHouseType(Integer houseType) {
-        this.houseType = houseType;
-    }
+	public Integer getHouseType() {
+		return houseType;
+	}
 
-    public String getLoanPurpose() {
-        return loanPurpose;
-    }
+	public void setHouseType(Integer houseType) {
+		this.houseType = houseType;
+	}
 
-    public void setLoanPurpose(String loanPurpose) {
-        this.loanPurpose = loanPurpose;
-    }
+	public String getLoanPurpose() {
+		return loanPurpose;
+	}
 
-    public Double getLoanAmountRequired() {
-        return loanAmountRequired;
-    }
+	public void setLoanPurpose(String loanPurpose) {
+		this.loanPurpose = loanPurpose;
+	}
 
-    public void setLoanAmountRequired(Double loanAmountRequired) {
-        this.loanAmountRequired = loanAmountRequired;
-    }
+	public Double getLoanAmountRequired() {
+		return loanAmountRequired;
+	}
 
-    public Double getCostOfProject() {
-        return costOfProject;
-    }
+	public void setLoanAmountRequired(Double loanAmountRequired) {
+		this.loanAmountRequired = loanAmountRequired;
+	}
 
-    public void setCostOfProject(Double costOfProject) {
-        this.costOfProject = costOfProject;
-    }
+	public Double getCostOfProject() {
+		return costOfProject;
+	}
 
-    public Double getCostOfEquipment() {
-        return costOfEquipment;
-    }
+	public void setCostOfProject(Double costOfProject) {
+		this.costOfProject = costOfProject;
+	}
 
-    public void setCostOfEquipment(Double costOfEquipment) {
-        this.costOfEquipment = costOfEquipment;
-    }
+	public Double getCostOfEquipment() {
+		return costOfEquipment;
+	}
 
-    public Double getWorkingCapOfEquipment() {
-        return workingCapOfEquipment;
-    }
+	public void setCostOfEquipment(Double costOfEquipment) {
+		this.costOfEquipment = costOfEquipment;
+	}
 
-    public void setWorkingCapOfEquipment(Double workingCapOfEquipment) {
-        this.workingCapOfEquipment = workingCapOfEquipment;
-    }
+	public Double getWorkingCapOfEquipment() {
+		return workingCapOfEquipment;
+	}
 
-    public Double getTotalCostEquipment() {
-        return totalCostEquipment;
-    }
+	public void setWorkingCapOfEquipment(Double workingCapOfEquipment) {
+		this.workingCapOfEquipment = workingCapOfEquipment;
+	}
 
-    public void setTotalCostEquipment(Double totalCostEquipment) {
-        this.totalCostEquipment = totalCostEquipment;
-    }
+	public Double getTotalCostEquipment() {
+		return totalCostEquipment;
+	}
 
-    public Double getPromoterContribution() {
-        return promoterContribution;
-    }
+	public void setTotalCostEquipment(Double totalCostEquipment) {
+		this.totalCostEquipment = totalCostEquipment;
+	}
 
-    public void setPromoterContribution(Double promoterContribution) {
-        this.promoterContribution = promoterContribution;
-    }
+	public Double getPromoterContribution() {
+		return promoterContribution;
+	}
 
-    public Double getLoanRequiredFromSidbi() {
-        return loanRequiredFromSidbi;
-    }
+	public void setPromoterContribution(Double promoterContribution) {
+		this.promoterContribution = promoterContribution;
+	}
 
-    public void setLoanRequiredFromSidbi(Double loanRequiredFromSidbi) {
-        this.loanRequiredFromSidbi = loanRequiredFromSidbi;
-    }
+	public Double getLoanRequiredFromSidbi() {
+		return loanRequiredFromSidbi;
+	}
 
-    public Double getTotalMeanFinance() {
-        return totalMeanFinance;
-    }
+	public void setLoanRequiredFromSidbi(Double loanRequiredFromSidbi) {
+		this.loanRequiredFromSidbi = loanRequiredFromSidbi;
+	}
 
-    public void setTotalMeanFinance(Double totalMeanFinance) {
-        this.totalMeanFinance = totalMeanFinance;
-    }
+	public Double getTotalMeanFinance() {
+		return totalMeanFinance;
+	}
 
-    public Double getTotalCashFlow() {
-        return totalCashFlow;
-    }
+	public void setTotalMeanFinance(Double totalMeanFinance) {
+		this.totalMeanFinance = totalMeanFinance;
+	}
 
-    public void setTotalCashFlow(Double totalCashFlow) {
-        this.totalCashFlow = totalCashFlow;
-    }
+	public Double getTotalCashFlow() {
+		return totalCashFlow;
+	}
 
-    public Integer getRepaymentFrequency() {
-        return repaymentFrequency;
-    }
+	public void setTotalCashFlow(Double totalCashFlow) {
+		this.totalCashFlow = totalCashFlow;
+	}
 
-    public void setRepaymentFrequency(Integer repaymentFrequency) {
-        this.repaymentFrequency = repaymentFrequency;
-    }
+	public Integer getRepaymentFrequency() {
+		return repaymentFrequency;
+	}
 
-    public Boolean getInsurenceRequired() {
-        return insurenceRequired;
-    }
+	public void setRepaymentFrequency(Integer repaymentFrequency) {
+		this.repaymentFrequency = repaymentFrequency;
+	}
 
-    public void setInsurenceRequired(Boolean insurenceRequired) {
-        this.insurenceRequired = insurenceRequired;
-    }
+	public Boolean getInsurenceRequired() {
+		return insurenceRequired;
+	}
 
-    public String getInsurenceCompanyName() {
-        return insurenceCompanyName;
-    }
+	public void setInsurenceRequired(Boolean insurenceRequired) {
+		this.insurenceRequired = insurenceRequired;
+	}
 
-    public void setInsurenceCompanyName(String insurenceCompanyName) {
-        this.insurenceCompanyName = insurenceCompanyName;
-    }
+	public String getInsurenceCompanyName() {
+		return insurenceCompanyName;
+	}
 
-    public Double getInsurencePremium() {
-        return insurencePremium;
-    }
+	public void setInsurenceCompanyName(String insurenceCompanyName) {
+		this.insurenceCompanyName = insurenceCompanyName;
+	}
 
-    public void setInsurencePremium(Double insurencePremium) {
-        this.insurencePremium = insurencePremium;
-    }
+	public Double getInsurencePremium() {
+		return insurencePremium;
+	}
 
-    public Long getCreatedBy() {
-        return createdBy;
-    }
+	public void setInsurencePremium(Double insurencePremium) {
+		this.insurencePremium = insurencePremium;
+	}
 
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
+	public Long getCreatedBy() {
+		return createdBy;
+	}
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
+	public Date getCreatedDate() {
+		return createdDate;
+	}
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
+	public Boolean getIsActive() {
+		return isActive;
+	}
 
-    public Long getModifiedBy() {
-        return modifiedBy;
-    }
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
-    public void setModifiedBy(Long modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
+	public Long getModifiedBy() {
+		return modifiedBy;
+	}
 
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
 
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
 
-    public Integer getLoanType() {
-        return loanType;
-    }
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
 
-    public void setLoanType(Integer loanType) {
-        this.loanType = loanType;
-    }
+	public Integer getLoanType() {
+		return loanType;
+	}
 
-    public String getNomineeState() {
-        return nomineeState;
-    }
+	public void setLoanType(Integer loanType) {
+		this.loanType = loanType;
+	}
 
-    public void setNomineeState(String nomineeState) {
-        this.nomineeState = nomineeState;
-    }
+	public String getNomineeState() {
+		return nomineeState;
+	}
 
-    public String getNomineeCity() {
-        return nomineeCity;
-    }
+	public void setNomineeState(String nomineeState) {
+		this.nomineeState = nomineeState;
+	}
 
-    public void setNomineeCity(String nomineeCity) {
-        this.nomineeCity = nomineeCity;
-    }
+	public String getNomineeCity() {
+		return nomineeCity;
+	}
 
-    public String getNomineeDistrict() {
-        return nomineeDistrict;
-    }
+	public void setNomineeCity(String nomineeCity) {
+		this.nomineeCity = nomineeCity;
+	}
 
-    public void setNomineeDistrict(String nomineeDistrict) {
-        this.nomineeDistrict = nomineeDistrict;
-    }
+	public String getNomineeDistrict() {
+		return nomineeDistrict;
+	}
 
-    public String getNomineeLocation() {
-        return nomineeLocation;
-    }
+	public void setNomineeDistrict(String nomineeDistrict) {
+		this.nomineeDistrict = nomineeDistrict;
+	}
 
-    public void setNomineeLocation(String nomineeLocation) {
-        this.nomineeLocation = nomineeLocation;
-    }
+	public String getNomineeLocation() {
+		return nomineeLocation;
+	}
 
-    public String getNomineeHouseNo() {
-        return nomineeHouseNo;
-    }
+	public void setNomineeLocation(String nomineeLocation) {
+		this.nomineeLocation = nomineeLocation;
+	}
 
-    public void setNomineeHouseNo(String nomineeHouseNo) {
-        this.nomineeHouseNo = nomineeHouseNo;
-    }
+	public String getNomineeHouseNo() {
+		return nomineeHouseNo;
+	}
 
-    public String getNomineeLandmark() {
-        return nomineeLandmark;
-    }
+	public void setNomineeHouseNo(String nomineeHouseNo) {
+		this.nomineeHouseNo = nomineeHouseNo;
+	}
 
-    public void setNomineeLandmark(String nomineeLandmark) {
-        this.nomineeLandmark = nomineeLandmark;
-    }
+	public String getNomineeLandmark() {
+		return nomineeLandmark;
+	}
 
-    public String getAcademicReligion() {
-        return academicReligion;
-    }
+	public void setNomineeLandmark(String nomineeLandmark) {
+		this.nomineeLandmark = nomineeLandmark;
+	}
 
-    public void setAcademicReligion(String academicReligion) {
-        this.academicReligion = academicReligion;
-    }
+	public String getAcademicReligion() {
+		return academicReligion;
+	}
 
-    public String getAcademicCaste() {
-        return academicCaste;
-    }
+	public void setAcademicReligion(String academicReligion) {
+		this.academicReligion = academicReligion;
+	}
 
-    public void setAcademicCaste(String academicCaste) {
-        this.academicCaste = academicCaste;
-    }
+	public String getAcademicCaste() {
+		return academicCaste;
+	}
 
-    public Boolean getIsAcademicLifeInsurance() {
-        return isAcademicLifeInsurance;
-    }
+	public void setAcademicCaste(String academicCaste) {
+		this.academicCaste = academicCaste;
+	}
 
-    public void setIsAcademicLifeInsurance(Boolean isAcademicLifeInsurance) {
-        this.isAcademicLifeInsurance = isAcademicLifeInsurance;
-    }
+	public Boolean getIsAcademicLifeInsurance() {
+		return isAcademicLifeInsurance;
+	}
 
-    public String getHouseOwnership() {
-        return houseOwnership;
-    }
+	public void setIsAcademicLifeInsurance(Boolean isAcademicLifeInsurance) {
+		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
+	}
 
-    public void setHouseOwnership(String houseOwnership) {
-        this.houseOwnership = houseOwnership;
-    }
+	public String getHouseOwnership() {
+		return houseOwnership;
+	}
 
-    public String getAreaType() {
-        return areaType;
-    }
+	public void setHouseOwnership(String houseOwnership) {
+		this.houseOwnership = houseOwnership;
+	}
 
-    public void setAreaType(String areaType) {
-        this.areaType = areaType;
-    }
+	public String getAreaType() {
+		return areaType;
+	}
 
-    public String getBusinessPremises() {
-        return businessPremises;
-    }
+	public void setAreaType(String areaType) {
+		this.areaType = areaType;
+	}
 
-    public void setBusinessPremises(String businessPremises) {
-        this.businessPremises = businessPremises;
-    }
+	public String getBusinessPremises() {
+		return businessPremises;
+	}
 
-    public String getExpInSameLine() {
-        return expInSameLine;
-    }
+	public void setBusinessPremises(String businessPremises) {
+		this.businessPremises = businessPremises;
+	}
 
-    public void setExpInSameLine(String expInSameLine) {
-        this.expInSameLine = expInSameLine;
-    }
+	public String getExpInSameLine() {
+		return expInSameLine;
+	}
 
-    public String getAcademicSumInsured() {
-        return academicSumInsured;
-    }
+	public void setExpInSameLine(String expInSameLine) {
+		this.expInSameLine = expInSameLine;
+	}
 
-    public void setAcademicSumInsured(String academicSumInsured) {
-        this.academicSumInsured = academicSumInsured;
-    }
+	public String getAcademicSumInsured() {
+		return academicSumInsured;
+	}
 
-    public Integer getType() {
-        return type;
-    }
+	public void setAcademicSumInsured(String academicSumInsured) {
+		this.academicSumInsured = academicSumInsured;
+	}
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
+	public Integer getType() {
+		return type;
+	}
 
-    public String getRemarks() {
-        return remarks;
-    }
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
+	public String getRemarks() {
+		return remarks;
+	}
 
-    public Boolean getIsPersonalDetailsFilled() {
-        return isPersonalDetailsFilled;
-    }
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
 
-    public void setIsPersonalDetailsFilled(Boolean isPersonalDetailsFilled) {
-        this.isPersonalDetailsFilled = isPersonalDetailsFilled;
-    }
+	public Boolean getIsPersonalDetailsFilled() {
+		return isPersonalDetailsFilled;
+	}
 
-    public Boolean getIsFamilyDetailsFilled() {
-        return isFamilyDetailsFilled;
-    }
+	public void setIsPersonalDetailsFilled(Boolean isPersonalDetailsFilled) {
+		this.isPersonalDetailsFilled = isPersonalDetailsFilled;
+	}
 
-    public void setIsFamilyDetailsFilled(Boolean isFamilyDetailsFilled) {
-        this.isFamilyDetailsFilled = isFamilyDetailsFilled;
-    }
+	public Boolean getIsFamilyDetailsFilled() {
+		return isFamilyDetailsFilled;
+	}
 
-    public Boolean getIsNomineeDetailsFilled() {
-        return isNomineeDetailsFilled;
-    }
+	public void setIsFamilyDetailsFilled(Boolean isFamilyDetailsFilled) {
+		this.isFamilyDetailsFilled = isFamilyDetailsFilled;
+	}
 
-    public void setIsNomineeDetailsFilled(Boolean isNomineeDetailsFilled) {
-        this.isNomineeDetailsFilled = isNomineeDetailsFilled;
-    }
+	public Boolean getIsNomineeDetailsFilled() {
+		return isNomineeDetailsFilled;
+	}
 
-    public Boolean getIsAcadamicDetailsFilled() {
-        return isAcadamicDetailsFilled;
-    }
+	public void setIsNomineeDetailsFilled(Boolean isNomineeDetailsFilled) {
+		this.isNomineeDetailsFilled = isNomineeDetailsFilled;
+	}
 
-    public void setIsAcadamicDetailsFilled(Boolean isAcadamicDetailsFilled) {
-        this.isAcadamicDetailsFilled = isAcadamicDetailsFilled;
-    }
+	public Boolean getIsAcadamicDetailsFilled() {
+		return isAcadamicDetailsFilled;
+	}
 
-    public Boolean getIsBankDetailsFilled() {
-        return isBankDetailsFilled;
-    }
+	public void setIsAcadamicDetailsFilled(Boolean isAcadamicDetailsFilled) {
+		this.isAcadamicDetailsFilled = isAcadamicDetailsFilled;
+	}
 
-    public void setIsBankDetailsFilled(Boolean isBankDetailsFilled) {
-        this.isBankDetailsFilled = isBankDetailsFilled;
-    }
+	public Boolean getIsBankDetailsFilled() {
+		return isBankDetailsFilled;
+	}
 
-    public Boolean getIsAccountDetailsFilled() {
-        return isAccountDetailsFilled;
-    }
+	public void setIsBankDetailsFilled(Boolean isBankDetailsFilled) {
+		this.isBankDetailsFilled = isBankDetailsFilled;
+	}
 
-    public void setIsAccountDetailsFilled(Boolean isAccountDetailsFilled) {
-        this.isAccountDetailsFilled = isAccountDetailsFilled;
-    }
+	public Boolean getIsAccountDetailsFilled() {
+		return isAccountDetailsFilled;
+	}
 
-    public Boolean getIsExistingLoanDetailsFilled() {
-        return isExistingLoanDetailsFilled;
-    }
+	public void setIsAccountDetailsFilled(Boolean isAccountDetailsFilled) {
+		this.isAccountDetailsFilled = isAccountDetailsFilled;
+	}
 
-    public void setIsExistingLoanDetailsFilled(Boolean isExistingLoanDetailsFilled) {
-        this.isExistingLoanDetailsFilled = isExistingLoanDetailsFilled;
-    }
+	public Boolean getIsExistingLoanDetailsFilled() {
+		return isExistingLoanDetailsFilled;
+	}
 
-    public Boolean getIsIncomeDetailsFilled() {
-        return isIncomeDetailsFilled;
-    }
+	public void setIsExistingLoanDetailsFilled(Boolean isExistingLoanDetailsFilled) {
+		this.isExistingLoanDetailsFilled = isExistingLoanDetailsFilled;
+	}
 
-    public void setIsIncomeDetailsFilled(Boolean isIncomeDetailsFilled) {
-        this.isIncomeDetailsFilled = isIncomeDetailsFilled;
-    }
+	public Boolean getIsIncomeDetailsFilled() {
+		return isIncomeDetailsFilled;
+	}
 
-    public Boolean getIsFamilyIncomeFilled() {
-        return isFamilyIncomeFilled;
-    }
+	public void setIsIncomeDetailsFilled(Boolean isIncomeDetailsFilled) {
+		this.isIncomeDetailsFilled = isIncomeDetailsFilled;
+	}
 
-    public void setIsFamilyIncomeFilled(Boolean isFamilyIncomeFilled) {
-        this.isFamilyIncomeFilled = isFamilyIncomeFilled;
-    }
+	public Boolean getIsFamilyIncomeFilled() {
+		return isFamilyIncomeFilled;
+	}
 
-    public Boolean getIsFamilyExpenseFilled() {
-        return isFamilyExpenseFilled;
-    }
+	public void setIsFamilyIncomeFilled(Boolean isFamilyIncomeFilled) {
+		this.isFamilyIncomeFilled = isFamilyIncomeFilled;
+	}
 
-    public void setIsFamilyExpenseFilled(Boolean isFamilyExpenseFilled) {
-        this.isFamilyExpenseFilled = isFamilyExpenseFilled;
-    }
+	public Boolean getIsFamilyExpenseFilled() {
+		return isFamilyExpenseFilled;
+	}
 
-    public Boolean getIsExpectedIncomeFilled() {
-        return isExpectedIncomeFilled;
-    }
+	public void setIsFamilyExpenseFilled(Boolean isFamilyExpenseFilled) {
+		this.isFamilyExpenseFilled = isFamilyExpenseFilled;
+	}
 
-    public void setIsExpectedIncomeFilled(Boolean isExpectedIncomeFilled) {
-        this.isExpectedIncomeFilled = isExpectedIncomeFilled;
-    }
+	public Boolean getIsExpectedIncomeFilled() {
+		return isExpectedIncomeFilled;
+	}
 
-    public Boolean getIsPPIFilled() {
-        return isPPIFilled;
-    }
+	public void setIsExpectedIncomeFilled(Boolean isExpectedIncomeFilled) {
+		this.isExpectedIncomeFilled = isExpectedIncomeFilled;
+	}
 
-    public void setIsPPIFilled(Boolean isPPIFilled) {
-        this.isPPIFilled = isPPIFilled;
-    }
+	public Boolean getIsPPIFilled() {
+		return isPPIFilled;
+	}
 
-    public Boolean getIsProjectDetailsFilled() {
-        return isProjectDetailsFilled;
-    }
+	public void setIsPPIFilled(Boolean isPPIFilled) {
+		this.isPPIFilled = isPPIFilled;
+	}
 
-    public void setIsProjectDetailsFilled(Boolean isProjectDetailsFilled) {
-        this.isProjectDetailsFilled = isProjectDetailsFilled;
-    }
+	public Boolean getIsProjectDetailsFilled() {
+		return isProjectDetailsFilled;
+	}
 
-    public Boolean getIsApplyLoanFilled() {
-        return isApplyLoanFilled;
-    }
+	public void setIsProjectDetailsFilled(Boolean isProjectDetailsFilled) {
+		this.isProjectDetailsFilled = isProjectDetailsFilled;
+	}
 
-    public void setIsApplyLoanFilled(Boolean isApplyLoanFilled) {
-        this.isApplyLoanFilled = isApplyLoanFilled;
-    }
+	public Boolean getIsApplyLoanFilled() {
+		return isApplyLoanFilled;
+	}
 
-    public Boolean getIsCostProjectFilled() {
-        return isCostProjectFilled;
-    }
+	public void setIsApplyLoanFilled(Boolean isApplyLoanFilled) {
+		this.isApplyLoanFilled = isApplyLoanFilled;
+	}
 
-    public void setIsCostProjectFilled(Boolean isCostProjectFilled) {
-        this.isCostProjectFilled = isCostProjectFilled;
-    }
+	public Boolean getIsCostProjectFilled() {
+		return isCostProjectFilled;
+	}
 
-    public Boolean getIsMeanFinanceFilled() {
-        return isMeanFinanceFilled;
-    }
+	public void setIsCostProjectFilled(Boolean isCostProjectFilled) {
+		this.isCostProjectFilled = isCostProjectFilled;
+	}
 
-    public void setIsMeanFinanceFilled(Boolean isMeanFinanceFilled) {
-        this.isMeanFinanceFilled = isMeanFinanceFilled;
-    }
+	public Boolean getIsMeanFinanceFilled() {
+		return isMeanFinanceFilled;
+	}
 
-    public Boolean getIsCashFlowDetailsFilled() {
-        return isCashFlowDetailsFilled;
-    }
+	public void setIsMeanFinanceFilled(Boolean isMeanFinanceFilled) {
+		this.isMeanFinanceFilled = isMeanFinanceFilled;
+	}
 
-    public void setIsCashFlowDetailsFilled(Boolean isCashFlowDetailsFilled) {
-        this.isCashFlowDetailsFilled = isCashFlowDetailsFilled;
-    }
+	public Boolean getIsCashFlowDetailsFilled() {
+		return isCashFlowDetailsFilled;
+	}
 
-    public Boolean getIsAssetsDetailsFilled() {
-        return isAssetsDetailsFilled;
-    }
+	public void setIsCashFlowDetailsFilled(Boolean isCashFlowDetailsFilled) {
+		this.isCashFlowDetailsFilled = isCashFlowDetailsFilled;
+	}
 
-    public void setIsAssetsDetailsFilled(Boolean isAssetsDetailsFilled) {
-        this.isAssetsDetailsFilled = isAssetsDetailsFilled;
-    }
+	public Boolean getIsAssetsDetailsFilled() {
+		return isAssetsDetailsFilled;
+	}
 
-    public Boolean getIsCurrentAssetsFilled() {
-        return isCurrentAssetsFilled;
-    }
+	public void setIsAssetsDetailsFilled(Boolean isAssetsDetailsFilled) {
+		this.isAssetsDetailsFilled = isAssetsDetailsFilled;
+	}
 
-    public void setIsCurrentAssetsFilled(Boolean isCurrentAssetsFilled) {
-        this.isCurrentAssetsFilled = isCurrentAssetsFilled;
-    }
+	public Boolean getIsCurrentAssetsFilled() {
+		return isCurrentAssetsFilled;
+	}
 
-    public Boolean getIsFixedAssetsFilled() {
-        return isFixedAssetsFilled;
-    }
+	public void setIsCurrentAssetsFilled(Boolean isCurrentAssetsFilled) {
+		this.isCurrentAssetsFilled = isCurrentAssetsFilled;
+	}
 
-    public void setIsFixedAssetsFilled(Boolean isFixedAssetsFilled) {
-        this.isFixedAssetsFilled = isFixedAssetsFilled;
-    }
+	public Boolean getIsFixedAssetsFilled() {
+		return isFixedAssetsFilled;
+	}
 
-    public Boolean getIsCurrntLiabilityFilled() {
-        return isCurrntLiabilityFilled;
-    }
+	public void setIsFixedAssetsFilled(Boolean isFixedAssetsFilled) {
+		this.isFixedAssetsFilled = isFixedAssetsFilled;
+	}
 
-    public void setIsCurrntLiabilityFilled(Boolean isCurrntLiabilityFilled) {
-        this.isCurrntLiabilityFilled = isCurrntLiabilityFilled;
-    }
+	public Boolean getIsCurrntLiabilityFilled() {
+		return isCurrntLiabilityFilled;
+	}
 
-    public Boolean getIsRepaymentDetailsFilled() {
-        return isRepaymentDetailsFilled;
-    }
+	public void setIsCurrntLiabilityFilled(Boolean isCurrntLiabilityFilled) {
+		this.isCurrntLiabilityFilled = isCurrntLiabilityFilled;
+	}
 
-    public void setIsRepaymentDetailsFilled(Boolean isRepaymentDetailsFilled) {
-        this.isRepaymentDetailsFilled = isRepaymentDetailsFilled;
-    }
+	public Boolean getIsRepaymentDetailsFilled() {
+		return isRepaymentDetailsFilled;
+	}
 
-    public Boolean getIsConsentFormFilled() {
-        return isConsentFormFilled;
-    }
+	public void setIsRepaymentDetailsFilled(Boolean isRepaymentDetailsFilled) {
+		this.isRepaymentDetailsFilled = isRepaymentDetailsFilled;
+	}
 
-    public void setIsConsentFormFilled(Boolean isConsentFormFilled) {
-        this.isConsentFormFilled = isConsentFormFilled;
-    }
+	public Boolean getIsConsentFormFilled() {
+		return isConsentFormFilled;
+	}
 
-    public Integer getAddressProofType() {
-        return addressProofType;
-    }
+	public void setIsConsentFormFilled(Boolean isConsentFormFilled) {
+		this.isConsentFormFilled = isConsentFormFilled;
+	}
 
-    public void setAddressProofType(Integer addressProofType) {
-        this.addressProofType = addressProofType;
-    }
+	public Integer getAddressProofType() {
+		return addressProofType;
+	}
 
-    public byte[] getAddressProofImg() {
-        return addressProofImg;
-    }
+	public void setAddressProofType(Integer addressProofType) {
+		this.addressProofType = addressProofType;
+	}
 
-    public void setAddressProofImg(byte[] addressProofImg) {
-        this.addressProofImg = addressProofImg;
-    }
+	public byte[] getAddressProofImg() {
+		return addressProofImg;
+	}
 
-    public byte[] getConsentFormImg() {
-        return consentFormImg;
-    }
+	public void setAddressProofImg(byte[] addressProofImg) {
+		this.addressProofImg = addressProofImg;
+	}
 
-    public void setConsentFormImg(byte[] consentFormImg) {
-        this.consentFormImg = consentFormImg;
-    }
+	public byte[] getConsentFormImg() {
+		return consentFormImg;
+	}
 
-    public byte[] getProfileImg() {
-        return profileImg;
-    }
+	public void setConsentFormImg(byte[] consentFormImg) {
+		this.consentFormImg = consentFormImg;
+	}
 
-    public void setProfileImg(byte[] profileImg) {
-        this.profileImg = profileImg;
-    }
+	public byte[] getProfileImg() {
+		return profileImg;
+	}
 
-    public Double getShipShgiInstallment() {
-        return shipShgiInstallment;
-    }
+	public void setProfileImg(byte[] profileImg) {
+		this.profileImg = profileImg;
+	}
 
-    public void setShipShgiInstallment(Double shipShgiInstallment) {
-        this.shipShgiInstallment = shipShgiInstallment;
-    }
+	public Double getShipShgiInstallment() {
+		return shipShgiInstallment;
+	}
 
-    public Double getOtherInstallment() {
-        return otherInstallment;
-    }
+	public void setShipShgiInstallment(Double shipShgiInstallment) {
+		this.shipShgiInstallment = shipShgiInstallment;
+	}
 
-    public void setOtherInstallment(Double otherInstallment) {
-        this.otherInstallment = otherInstallment;
-    }
+	public Double getOtherInstallment() {
+		return otherInstallment;
+	}
 
-    public Double getLoanInstallment() {
-        return loanInstallment;
-    }
+	public void setOtherInstallment(Double otherInstallment) {
+		this.otherInstallment = otherInstallment;
+	}
 
-    public void setLoanInstallment(Double loanInstallment) {
-        this.loanInstallment = loanInstallment;
-    }
+	public Double getLoanInstallment() {
+		return loanInstallment;
+	}
 
-    public Double getEducationExpense() {
-        return educationExpense;
-    }
+	public void setLoanInstallment(Double loanInstallment) {
+		this.loanInstallment = loanInstallment;
+	}
 
-    public void setEducationExpense(Double educationExpense) {
-        this.educationExpense = educationExpense;
-    }
+	public Double getEducationExpense() {
+		return educationExpense;
+	}
 
-    public Double getMedicalExpense() {
-        return medicalExpense;
-    }
+	public void setEducationExpense(Double educationExpense) {
+		this.educationExpense = educationExpense;
+	}
 
-    public void setMedicalExpense(Double medicalExpense) {
-        this.medicalExpense = medicalExpense;
-    }
+	public Double getMedicalExpense() {
+		return medicalExpense;
+	}
 
-    public Double getFoodExpense() {
-        return foodExpense;
-    }
+	public void setMedicalExpense(Double medicalExpense) {
+		this.medicalExpense = medicalExpense;
+	}
 
-    public void setFoodExpense(Double foodExpense) {
-        this.foodExpense = foodExpense;
-    }
+	public Double getFoodExpense() {
+		return foodExpense;
+	}
 
-    public Double getOtherExpense() {
-        return otherExpense;
-    }
+	public void setFoodExpense(Double foodExpense) {
+		this.foodExpense = foodExpense;
+	}
 
-    public void setOtherExpense(Double otherExpense) {
-        this.otherExpense = otherExpense;
-    }
+	public Double getOtherExpense() {
+		return otherExpense;
+	}
 
-    public String getBusinessNameBrief() {
-        return businessNameBrief;
-    }
+	public void setOtherExpense(Double otherExpense) {
+		this.otherExpense = otherExpense;
+	}
 
-    public void setBusinessNameBrief(String businessNameBrief) {
-        this.businessNameBrief = businessNameBrief;
-    }
+	public String getBusinessNameBrief() {
+		return businessNameBrief;
+	}
 
-    public Double getMonthlyCashflow() {
-        return monthlyCashflow;
-    }
+	public void setBusinessNameBrief(String businessNameBrief) {
+		this.businessNameBrief = businessNameBrief;
+	}
 
-    public void setMonthlyCashflow(Double monthlyCashflow) {
-        this.monthlyCashflow = monthlyCashflow;
-    }
+	public Double getMonthlyCashflow() {
+		return monthlyCashflow;
+	}
 
-    public Double getMonthlyExpenditure() {
-        return monthlyExpenditure;
-    }
+	public void setMonthlyCashflow(Double monthlyCashflow) {
+		this.monthlyCashflow = monthlyCashflow;
+	}
 
-    public void setMonthlyExpenditure(Double monthlyExpenditure) {
-        this.monthlyExpenditure = monthlyExpenditure;
-    }
+	public Double getMonthlyExpenditure() {
+		return monthlyExpenditure;
+	}
 
-    public Double getMonthlyIncome() {
-        return monthlyIncome;
-    }
+	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+		this.monthlyExpenditure = monthlyExpenditure;
+	}
 
-    public void setMonthlyIncome(Double monthlyIncome) {
-        this.monthlyIncome = monthlyIncome;
-    }
+	public Double getMonthlyIncome() {
+		return monthlyIncome;
+	}
 
-    public Integer getPpiNoFamilyMember() {
-        return ppiNoFamilyMember;
-    }
+	public void setMonthlyIncome(Double monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
 
-    public void setPpiNoFamilyMember(Integer ppiNoFamilyMember) {
-        this.ppiNoFamilyMember = ppiNoFamilyMember;
-    }
+	public Integer getPpiNoFamilyMember() {
+		return ppiNoFamilyMember;
+	}
 
-    public Integer getPpiAcadamicHeadFamily() {
-        return ppiAcadamicHeadFamily;
-    }
+	public void setPpiNoFamilyMember(Integer ppiNoFamilyMember) {
+		this.ppiNoFamilyMember = ppiNoFamilyMember;
+	}
 
-    public void setPpiAcadamicHeadFamily(Integer ppiAcadamicHeadFamily) {
-        this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
-    }
+	public Integer getPpiAcadamicHeadFamily() {
+		return ppiAcadamicHeadFamily;
+	}
 
-    public Integer getPpiRafrigeratorInFamily() {
-        return ppiRafrigeratorInFamily;
-    }
+	public void setPpiAcadamicHeadFamily(Integer ppiAcadamicHeadFamily) {
+		this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
+	}
 
-    public void setPpiRafrigeratorInFamily(Integer ppiRafrigeratorInFamily) {
-        this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
-    }
+	public Integer getPpiRafrigeratorInFamily() {
+		return ppiRafrigeratorInFamily;
+	}
 
-    public Integer getPpiStoveInFamily() {
-        return ppiStoveInFamily;
-    }
+	public void setPpiRafrigeratorInFamily(Integer ppiRafrigeratorInFamily) {
+		this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
+	}
 
-    public void setPpiStoveInFamily(Integer ppiStoveInFamily) {
-        this.ppiStoveInFamily = ppiStoveInFamily;
-    }
+	public Integer getPpiStoveInFamily() {
+		return ppiStoveInFamily;
+	}
 
-    public Integer getPpiPressureCookerInFamily() {
-        return ppiPressureCookerInFamily;
-    }
+	public void setPpiStoveInFamily(Integer ppiStoveInFamily) {
+		this.ppiStoveInFamily = ppiStoveInFamily;
+	}
 
-    public void setPpiPressureCookerInFamily(Integer ppiPressureCookerInFamily) {
-        this.ppiPressureCookerInFamily = ppiPressureCookerInFamily;
-    }
+	public Integer getPpiPressureCookerInFamily() {
+		return ppiPressureCookerInFamily;
+	}
 
-    public Integer getPpiTvInFamily() {
-        return ppiTvInFamily;
-    }
+	public void setPpiPressureCookerInFamily(Integer ppiPressureCookerInFamily) {
+		this.ppiPressureCookerInFamily = ppiPressureCookerInFamily;
+	}
 
-    public void setPpiTvInFamily(Integer ppiTvInFamily) {
-        this.ppiTvInFamily = ppiTvInFamily;
-    }
+	public Integer getPpiTvInFamily() {
+		return ppiTvInFamily;
+	}
 
-    public Integer getPpiFanInFamily() {
-        return ppiFanInFamily;
-    }
+	public void setPpiTvInFamily(Integer ppiTvInFamily) {
+		this.ppiTvInFamily = ppiTvInFamily;
+	}
 
-    public void setPpiFanInFamily(Integer ppiFanInFamily) {
-        this.ppiFanInFamily = ppiFanInFamily;
-    }
+	public Integer getPpiFanInFamily() {
+		return ppiFanInFamily;
+	}
 
-    public Integer getPpiVehicleInFamily() {
-        return ppiVehicleInFamily;
-    }
+	public void setPpiFanInFamily(Integer ppiFanInFamily) {
+		this.ppiFanInFamily = ppiFanInFamily;
+	}
 
-    public void setPpiVehicleInFamily(Integer ppiVehicleInFamily) {
-        this.ppiVehicleInFamily = ppiVehicleInFamily;
-    }
+	public Integer getPpiVehicleInFamily() {
+		return ppiVehicleInFamily;
+	}
 
-    public Integer getPpiDressingTableInFamily() {
-        return ppiDressingTableInFamily;
-    }
+	public void setPpiVehicleInFamily(Integer ppiVehicleInFamily) {
+		this.ppiVehicleInFamily = ppiVehicleInFamily;
+	}
 
-    public void setPpiDressingTableInFamily(Integer ppiDressingTableInFamily) {
-        this.ppiDressingTableInFamily = ppiDressingTableInFamily;
-    }
+	public Integer getPpiDressingTableInFamily() {
+		return ppiDressingTableInFamily;
+	}
 
-    public Integer getPpiOtherTableInFamily() {
-        return ppiOtherTableInFamily;
-    }
+	public void setPpiDressingTableInFamily(Integer ppiDressingTableInFamily) {
+		this.ppiDressingTableInFamily = ppiDressingTableInFamily;
+	}
 
-    public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
-        this.ppiOtherTableInFamily = ppiOtherTableInFamily;
-    }
+	public Integer getPpiOtherTableInFamily() {
+		return ppiOtherTableInFamily;
+	}
+
+	public void setPpiOtherTableInFamily(Integer ppiOtherTableInFamily) {
+		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+	}
+
+	public Boolean getIsLoanassessmentDetailsFilled() {
+		return isLoanassessmentDetailsFilled;
+	}
+
+	public void setIsLoanassessmentDetailsFilled(Boolean isLoanassessmentDetailsFilled) {
+		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
+	}
+
+	public Double getTotalMonthlyIncomeForFamily() {
+		return totalMonthlyIncomeForFamily;
+	}
+
+	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
+		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
+	}
+	
 }

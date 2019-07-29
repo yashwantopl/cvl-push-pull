@@ -6,86 +6,97 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MfiBankDetailsReq implements Serializable {
 
-    private Long id;
+	private Long id;
 
-    private Long applicationId;
+	private Long applicationId;
 
-    private Long bankId;
+	private Long bankId;
 
-    private String branchName;
+	private String branchName;
 
-    private String accountNo;
+	private String accountNo;
 
-    private String ifscCode;
+	private String ifscCode;
 
-    private Integer accountType;
+	private Integer accountType;
 
-    private byte[] passbookImg;
+	private byte[] passbookImg;
 
-    public Long getId() {
-        return id;
-    }
+	private Boolean isBankDetailsFilled;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public Long getApplicationId() {
-        return applicationId;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
-    }
+	public Long getApplicationId() {
+		return applicationId;
+	}
 
-    public Long getBankId() {
-        return bankId;
-    }
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
 
-    public void setBankId(Long bankId) {
-        this.bankId = bankId;
-    }
+	public Long getBankId() {
+		return bankId;
+	}
 
-    public String getBranchName() {
-        return branchName;
-    }
+	public void setBankId(Long bankId) {
+		this.bankId = bankId;
+	}
 
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
+	public String getBranchName() {
+		return branchName;
+	}
 
-    public String getAccountNo() {
-        return accountNo;
-    }
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
 
-    public void setAccountNo(String accountNo) {
-        this.accountNo = accountNo;
-    }
+	public String getAccountNo() {
+		return accountNo;
+	}
 
-    public String getIfscCode() {
-        return ifscCode;
-    }
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
 
-    public void setIfscCode(String ifscCode) {
-        this.ifscCode = ifscCode;
-    }
+	public String getIfscCode() {
+		return ifscCode;
+	}
 
-    public Integer getAccountType() {
-        return accountType;
-    }
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
+	}
 
-    public void setAccountType(Integer accountType) {
-        this.accountType = accountType;
-    }
+	public Integer getAccountType() {
+		return accountType;
+	}
 
-    public byte[] getPassbookImg() {
-        return passbookImg;
-    }
+	public void setAccountType(Integer accountType) {
+		this.accountType = accountType;
+	}
 
-    public void setPassbookImg(byte[] passbookImg) {
-        this.passbookImg = passbookImg;
-    }
+	public byte[] getPassbookImg() {
+		return passbookImg;
+	}
+
+	public void setPassbookImg(byte[] passbookImg) {
+		this.passbookImg = passbookImg;
+	}
+
+	public Boolean getIsBankDetailsFilled() {
+		return isBankDetailsFilled;
+	}
+
+	public void setIsBankDetailsFilled(Boolean isBankDetailsFilled) {
+		this.isBankDetailsFilled = isBankDetailsFilled;
+	}
+
 }
