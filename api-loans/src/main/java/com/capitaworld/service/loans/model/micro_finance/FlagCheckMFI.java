@@ -267,4 +267,12 @@ public class FlagCheckMFI {
     public void setIsConsentFormFilled(Boolean isConsentFormFilled) {
         this.isConsentFormFilled = isConsentFormFilled;
     }
+
+    public Long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(Long applicationId) {
+        this.applicationId = applicationId;
+    }
 }
