@@ -108,10 +108,32 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		try {
 			sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 			SidbiBasicDetail sidbiBasicDetail = basicDetailRepository.getByApplicationAndUserId(userId, applicationId);
-			if(sidbiBasicDetail != null) {
+			if(sidbiBasicDetail == null) {
+				
+				sidbiBasicDetailRequest = setAutoFilledValue(applicationId,userId);
+				
+				
+				sidbiBasicDetail = new SidbiBasicDetail();
+				
+				
+				sidbiBasicDetailRequest.setId(null);								
+				BeanUtils.copyProperties(sidbiBasicDetailRequest, sidbiBasicDetail);
+				
+				sidbiBasicDetail.setCreatedBy(userId);
+				sidbiBasicDetail.setCreatedDate(new Date());
+				sidbiBasicDetail.setIsActive(true);
+				sidbiBasicDetail.setModifiedBy(userId);
+				sidbiBasicDetail.setModifiedDate(new Date());
+				sidbiBasicDetail.setAllAmountValuesIn(SidbiCurrencyRate.RUPEES_IN_LAKH.getId());
+				sidbiBasicDetail.setIsLockedAllAmountValuesIn(true);
+				sidbiBasicDetail.setApplicationId(applicationId);
+				
+				basicDetailRepository.save(sidbiBasicDetail);
+				
+				sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);
 			}else {
-				sidbiBasicDetailRequest = setAutoFilledValue(applicationId,userId);
+				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);				
 			}
 			
 			sidbiBasicDetailRequest.setLoanAmount(getLoanAmountByApplicationId(applicationId));			
@@ -275,10 +297,29 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		return null;
 	}
 
+	
 	@Override
-	public SidbiCurrencyRate getValuesIn(Long applicationId, Long userId) throws LoansException {
-		SidbiBasicDetailRequest sidbiBasicDetailRequest = this.getAdditionalData(applicationId, userId);
+	public SidbiCurrencyRate getValuesIn(Long applicationId) throws LoansException {
+		SidbiBasicDetailRequest sidbiBasicDetailRequest = this.getSidbiBasicDetailByAppId(applicationId);
 		return SidbiCurrencyRate.getById(sidbiBasicDetailRequest.getAllAmountValuesIn());
+	}
+
+	@Override
+	public SidbiBasicDetailRequest getSidbiBasicDetailByAppId(Long applicationId) throws LoansException {
+		SidbiBasicDetailRequest sidbiBasicDetailRequest = null;
+		try {
+			sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
+			SidbiBasicDetail sidbiBasicDetail = basicDetailRepository.getSidbiBasicDetailByAppId(applicationId);
+			if(sidbiBasicDetail != null) {
+				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);
+			}
+			
+		} catch (Exception e) {
+			logger.error("Exception : ", e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+		
+		return sidbiBasicDetailRequest;
 	}
 
 	

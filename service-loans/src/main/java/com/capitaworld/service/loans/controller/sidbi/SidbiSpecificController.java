@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,6 +37,8 @@ import com.capitaworld.service.loans.service.sidbi.RawMaterialDetailsService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
+import com.capitaworld.service.oneform.model.MasterResponse;
 
 @RestController
 @RequestMapping("/sidbi")
@@ -105,6 +108,12 @@ public class SidbiSpecificController {
 			List<PrimaryCollateralSecurityRequest> response = primaryCollateralSecurityService.getPrimaryCollateralSecurityListAppId(frameRequest.getApplicationId());
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(frameRequest.getApplicationId());
+			MasterResponse mastResponse = new MasterResponse();
+            BeanUtils.copyProperties(sidbiCurrencyRateObj, mastResponse);
+			loansResponse.setData(mastResponse);
+			
 			CommonDocumentUtils.endHook(logger, "getPrimaryCollateralSecurityList");
 			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 			
@@ -222,6 +231,12 @@ public class SidbiSpecificController {
 			List<PersonalCorporateGuaranteeRequest> response = personalCorporateGuaranteeService.getPersonalCorporateGuaranteeListAppId(frameRequest.getApplicationId());
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(frameRequest.getApplicationId());
+			MasterResponse mastResponse = new MasterResponse();
+            BeanUtils.copyProperties(sidbiCurrencyRateObj, mastResponse);
+			loansResponse.setData(mastResponse);
+			
 			CommonDocumentUtils.endHook(logger, "getPersonalCorporateGuaranteeList");
 			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 			
@@ -315,23 +330,28 @@ public class SidbiSpecificController {
 		public ResponseEntity<LoansResponse> getFacilityDetailsList(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "getFacilityDetailsList");
-
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (frameRequest == null) {
 				logger.warn("frameRequest must not be empty ==>{}" , frameRequest);
 				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			try {
-				
+				frameRequest.setUserId(userId);
 				if (frameRequest.getApplicationId() == null) {
 					logger.warn("ID Require to get Facility Details List Details ==>{}" , frameRequest.getApplicationId());
 					return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 
-				List<FacilityDetailsRequest> response = facilityDetailsService.getFacilityDetailsListAppId(frameRequest.getApplicationId());
+				List<FacilityDetailsRequest> response = facilityDetailsService.getFacilityDetailsListAppId(frameRequest.getApplicationId(),userId);
 				LoansResponse loansResponse = null;
 				if (response.size()>0) {
 					loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 					loansResponse.setListData(response);
+					
+					SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(frameRequest.getApplicationId());
+					MasterResponse mastResponse = new MasterResponse();
+		            BeanUtils.copyProperties(sidbiCurrencyRateObj, mastResponse);
+					loansResponse.setData(mastResponse);
 				}
 				else {
 					loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());

@@ -440,7 +440,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				try {
 					map.put("fpProductName",CommonUtils.printFields(productName, null));
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("error"+e);
 				}
 			}else {
 				logger.info("product name is null..of productId==>{}", productId);

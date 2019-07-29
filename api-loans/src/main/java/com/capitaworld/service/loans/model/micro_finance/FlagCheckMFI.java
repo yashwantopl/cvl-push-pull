@@ -5,6 +5,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class FlagCheckMFI {
 
+    private Long applicationId;
+
     private Boolean isPersonalDetailsFilled;
 
     private Boolean isFamilyDetailsFilled;
@@ -54,9 +56,37 @@ public class FlagCheckMFI {
     public FlagCheckMFI() {
     }
 
+    public FlagCheckMFI(Long applicationId, Boolean isPersonalDetailsFilled, Boolean isFamilyDetailsFilled, Boolean isNomineeDetailsFilled, Boolean isAcadamicDetailsFilled, Boolean isBankDetailsFilled, Boolean isAccountDetailsFilled, Boolean isExistingLoanDetailsFilled, Boolean isIncomeDetailsFilled, Boolean isFamilyIncomeFilled, Boolean isFamilyExpenseFilled, Boolean isExpectedIncomeFilled, Boolean isPPIFilled, Boolean isProjectDetailsFilled, Boolean isApplyLoanFilled, Boolean isCostProjectFilled, Boolean isMeanFinanceFilled, Boolean isCashFlowDetailsFilled, Boolean isAssetsDetailsFilled, Boolean isCurrentAssetsFilled, Boolean isFixedAssetsFilled, Boolean isCurrntLiabilityFilled, Boolean isRepaymentDetailsFilled, Boolean isConsentFormFilled) {
+        this.applicationId = applicationId;
+        this.isPersonalDetailsFilled = isPersonalDetailsFilled;
+        this.isFamilyDetailsFilled = isFamilyDetailsFilled;
+        this.isNomineeDetailsFilled = isNomineeDetailsFilled;
+        this.isAcadamicDetailsFilled = isAcadamicDetailsFilled;
+        this.isBankDetailsFilled = isBankDetailsFilled;
+        this.isAccountDetailsFilled = isAccountDetailsFilled;
+        this.isExistingLoanDetailsFilled = isExistingLoanDetailsFilled;
+        this.isIncomeDetailsFilled = isIncomeDetailsFilled;
+        this.isFamilyIncomeFilled = isFamilyIncomeFilled;
+        this.isFamilyExpenseFilled = isFamilyExpenseFilled;
+        this.isExpectedIncomeFilled = isExpectedIncomeFilled;
+        this.isPPIFilled = isPPIFilled;
+        this.isProjectDetailsFilled = isProjectDetailsFilled;
+        this.isApplyLoanFilled = isApplyLoanFilled;
+        this.isCostProjectFilled = isCostProjectFilled;
+        this.isMeanFinanceFilled = isMeanFinanceFilled;
+        this.isCashFlowDetailsFilled = isCashFlowDetailsFilled;
+        this.isAssetsDetailsFilled = isAssetsDetailsFilled;
+        this.isCurrentAssetsFilled = isCurrentAssetsFilled;
+        this.isFixedAssetsFilled = isFixedAssetsFilled;
+        this.isCurrntLiabilityFilled = isCurrntLiabilityFilled;
+        this.isRepaymentDetailsFilled = isRepaymentDetailsFilled;
+        this.isConsentFormFilled = isConsentFormFilled;
+    }
+
     public Boolean getIsPersonalDetailsFilled() {
         return isPersonalDetailsFilled;
     }
+
 
     public void setIsPersonalDetailsFilled(Boolean isPersonalDetailsFilled) {
         this.isPersonalDetailsFilled = isPersonalDetailsFilled;
