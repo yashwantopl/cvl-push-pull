@@ -1485,8 +1485,8 @@ public class FPAsyncComponent {
 	public void sendMailToFsWhenMakerAcceptPorposal(String fsName, Map<String, Object> proposalresp,String assignedMakerName,LoanApplicationRequest applicationRequest, UsersRequest signUpUser, String address,Long notificationAliasId,Long domainId){
 		logger.info("Sending email to fs when maker accept proposal {}",proposalresp);
 		Map<String, Object> mailParameter = new HashMap<String, Object>();
-		mailParameter.put(CommonUtils.PARAMETERS_FS_NAME, !fsName.equals(null) && !fsName.equals("") ? fsName : "NA");
-		mailParameter.put("entity_name", !fsName.equals(null) && !fsName.equals("")  ? fsName : "NA");
+		mailParameter.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null && !fsName.equals("") ? fsName : "NA");
+		mailParameter.put("entity_name", fsName != null && !fsName.equals("")  ? fsName : "NA");
 		mailParameter.put(CommonUtils.PARAMETERS_LOAN_TYPE,
 				proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE) != null ? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() : "NA");
 		mailParameter.put(PARAMETERS_MAKER_NAME, assignedMakerName);
@@ -1760,7 +1760,7 @@ public class FPAsyncComponent {
 						if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
 							Map<String, Object> smsParameters = new HashMap<>();
 							String to = "91" + hoObj.getMobile();
-							smsParameters.put(PARAMETERS_MAKER_NAME, !makerName.equals(null) && !makerName.equals("") ? makerName : LITERAL_MAKER);
+							smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null && !makerName.equals("") ? makerName : LITERAL_MAKER);
 							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 							sendSMSNotification(hoObj.getId().toString(), smsParameters,NotificationAlias.SMS_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER,domainId,to);
@@ -1768,7 +1768,7 @@ public class FPAsyncComponent {
 	
 						if (!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
 							Map<String, Object> sysParameters = new HashMap<>();
-							sysParameters.put(PARAMETERS_MAKER_NAME, !makerName.equals(null) && !makerName.equals("") ? makerName : LITERAL_MAKER);
+							sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null && !makerName.equals("") ? makerName : LITERAL_MAKER);
 							sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 							sysParameters.put(PARAMETERS_PRODUCT_TYPE,
 							   proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() : "NA");
@@ -1819,7 +1819,7 @@ public class FPAsyncComponent {
 							} else {
 								name = name != null ? name : PARAMETERS_SIR_MADAM;
 							}
-							parameters.put(PARAMETERS_BO_NAME,!name.equals(null) && !name.equals("") ? name : PARAMETERS_SIR_MADAM);
+							parameters.put(PARAMETERS_BO_NAME,name != null && !name.equals("") ? name : PARAMETERS_SIR_MADAM);
 							createNotificationForEmail(to, request.getUserId().toString(), parameters,
 									NotificationAlias.EMAIL_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject,domainId);
 						}
@@ -1827,20 +1827,20 @@ public class FPAsyncComponent {
 						if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
 							Map<String, Object> smsParameters = new HashMap<>();
 							String to = "91" + boObj.getMobile();
-							smsParameters.put(PARAMETERS_MAKER_NAME,!makerName.equals(null) && !makerName.equals("")? makerName : LITERAL_MAKER);
-							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, !fsName.equals(null) && !fsName.equals("")? fsName : "NA");
+							smsParameters.put(PARAMETERS_MAKER_NAME,makerName != null && !makerName.equals("")? makerName : LITERAL_MAKER);
+							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null && !fsName.equals("")? fsName : "NA");
 							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 							sendSMSNotification(boObj.getId().toString(), smsParameters,NotificationAlias.SMS_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, domainId,to);
 						}
 	
 						if (!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
 							Map<String, Object> sysParameters = new HashMap<>();
-							sysParameters.put(PARAMETERS_MAKER_NAME, !makerName.equals(null) && !makerName.equals("")? makerName : LITERAL_MAKER);
-							sysParameters.put(PARAMETERS_CHECKER_NAME, !checkerName.equals(null) && !checkerName.equals("") ? checkerName : LITERAL_CHECKER);
+							sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null && !makerName.equals("")? makerName : LITERAL_MAKER);
+							sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null && !checkerName.equals("") ? checkerName : LITERAL_CHECKER);
 							sysParameters.put(PARAMETERS_PRODUCT_TYPE, proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
 											? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
 											: "NA");
-							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME,!fsName.equals(null) && !fsName.equals("") ? fsName : "NA");
+							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME,fsName != null && !fsName.equals("") ? fsName : "NA");
 							sendSYSNotification(request.getApplicationId(), boObj.getId().toString(), sysParameters,
 									NotificationAlias.SYS_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER,boObj.getId().toString(), domainId, boObj.getId().toString());
 						}
@@ -1897,7 +1897,7 @@ public class FPAsyncComponent {
 			if (LITERAL_NULL.equals(makerName)) {
 				makerName = LITERAL_MAKER;
 			} else {
-				makerName = !makerName.equals(null) && !makerName.equals("") ? makerName : LITERAL_MAKER;
+				makerName = makerName != null && !makerName.equals("") ? makerName : LITERAL_MAKER;
 			}
 			// =========================================Getting Checker=====================================
 			UserResponse checkerResponse = null;
@@ -1930,10 +1930,10 @@ public class FPAsyncComponent {
 			if (LITERAL_NULL.equals(checkerName)) {
 				checkerName = PARAMETERS_SIR_MADAM;
 			} else {
-				checkerName = !checkerName.equals(null) && !checkerName.equals("") ? checkerName : PARAMETERS_SIR_MADAM;
+				checkerName = checkerName!=null && !checkerName.equals("") ? checkerName : PARAMETERS_SIR_MADAM;
 			}
 			SimpleDateFormat form = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
-			parameters.put(PARAMETERS_MAKER_NAME, !makerName.equals(null) && !makerName.equals("") ? makerName : LITERAL_MAKER);
+			parameters.put(PARAMETERS_MAKER_NAME, makerName != null && !makerName.equals("") ? makerName : LITERAL_MAKER);
 			parameters.put(PARAMETERS_CHECKER_NAME, checkerName);
 			parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID, request.getApplicationId().toString());
 			if (!CommonUtils.isObjectNullOrEmpty(lastModifiedDate)) {
@@ -2893,7 +2893,7 @@ public class FPAsyncComponent {
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())){
 			
-				if((applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() || applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue())) {
+				if((applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() || applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
 					domainId= DomainValue.RETAIL.getId();
 				}
 				// ===========================Email to Maker======================================
@@ -3261,14 +3261,14 @@ public class FPAsyncComponent {
 					}
 				}else {
 					Object[] fpFullName = commonRepo.getFpFullName(makerUserId);
-					String makerName=fpFullName[0]!=null?String.valueOf(fpFullName[0])+" "+fpFullName[1]!=null?String.valueOf(fpFullName[1]):"Maker":"Maker";
+					String makerName=fpFullName[0]!=null?String.valueOf(fpFullName[0])+" "+fpFullName[1]!=null?String.valueOf(fpFullName[1]):LITERAL_MAKER:LITERAL_MAKER;
 					param.put(PARAMETERS_MAKER_NAME, makerName);
 					
 					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),11);
 					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
 					//	Mail to Admin Checker where pusrpose of loan created or purpose of loan approved after send back
 					for (UsersRequest req : adminMakerList) {
-						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():"Sir/Madam";
+						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():SIR_MADAM;
 						 param.put(USER_NAME, fpName);
 						
 						if(workFlowAction == WorkflowUtils.Action.PENDING) {

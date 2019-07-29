@@ -21,8 +21,10 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.sidbi.PersonalCorporateGuaranteeRequest;
 import com.capitaworld.service.loans.repository.sidbi.PersonalCorporateGuaranteeRepository;
 import com.capitaworld.service.loans.service.sidbi.PersonalCorporateGuaranteeService;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 
 /**
  * @author vijay.chauhan
@@ -38,6 +40,9 @@ private static final Logger logger = LoggerFactory.getLogger(PrimaryCollateralSe
 	@Autowired
 	private PersonalCorporateGuaranteeRepository personalCorporateGuaranteeRepository;
 	
+	@Autowired
+	SidbiSpecificService sidbiSpecificService;
+	
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
@@ -51,7 +56,7 @@ private static final Logger logger = LoggerFactory.getLogger(PrimaryCollateralSe
 					personalCorporateGuarantee.setCreatedBy(frameRequest.getUserId());
 					personalCorporateGuarantee.setCreatedDate(new Date());
 				}
-				
+				this.convertAbsoluteValues(personalCorporateGuaranteeRequest, frameRequest.getApplicationId());
 				BeanUtils.copyProperties(personalCorporateGuaranteeRequest, personalCorporateGuarantee);				
 				personalCorporateGuarantee.setApplicationId(frameRequest.getApplicationId());
 				personalCorporateGuarantee.setModifiedBy(frameRequest.getUserId());
@@ -78,7 +83,7 @@ private static final Logger logger = LoggerFactory.getLogger(PrimaryCollateralSe
 			for (PersonalCorporateGuarantee detail : personalCorporateGuaranteeList) {
 				PersonalCorporateGuaranteeRequest personalCorporateGuaranteeRequest = new PersonalCorporateGuaranteeRequest();
 				BeanUtils.copyProperties(detail, personalCorporateGuaranteeRequest);
-				
+				this.convertValuesIn(personalCorporateGuaranteeRequest, applicationId);
 				personalCorporateGuaranteeRequestList.add(personalCorporateGuaranteeRequest);
 			}
 			return personalCorporateGuaranteeRequestList;
@@ -90,5 +95,16 @@ private static final Logger logger = LoggerFactory.getLogger(PrimaryCollateralSe
 		}
 		
 	}
-
+	private void convertAbsoluteValues(PersonalCorporateGuaranteeRequest personalCorporateGuaranteeRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+		
+		personalCorporateGuaranteeRequest.setNetWorth(CommonUtils.convertTwoDecimalAbsoluteValues(personalCorporateGuaranteeRequest.getNetWorth(), sidbiCurrencyRateObj.getRate()));
+		
+	}
+	
+	private void convertValuesIn(PersonalCorporateGuaranteeRequest personalCorporateGuaranteeRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+		personalCorporateGuaranteeRequest.setNetWorth(CommonUtils.convertTwoDecimalValuesIn(personalCorporateGuaranteeRequest.getNetWorth(), sidbiCurrencyRateObj.getRate()));
+		
+	}
 }

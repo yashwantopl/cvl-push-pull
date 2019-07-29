@@ -1,22 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FsPastPerformanceDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FsPastPerformanceDetailsRequest;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.corporate.CMARequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FsPastPerformanceDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FsPastPerformanceDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OperatingStatementDetailsService;
-import com.capitaworld.service.loans.service.scoring.ScoringService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -24,9 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FsPastPerformanceDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FsPastPerformanceDetailsRequest;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FsPastPerformanceDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FsPastPerformanceDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OperatingStatementDetailsService;
+import com.capitaworld.service.loans.service.scoring.ScoringService;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 
 @Service
 @Transactional
@@ -47,6 +48,9 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 
 	@Autowired
 	private ScoringService scoringService;
+	
+	@Autowired
+	SidbiSpecificService sidbiSpecificService;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -60,7 +64,7 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 				} else {
 					fsPastPerformanceDetails = new FsPastPerformanceDetails();
 				}
-
+				this.convertAbsoluteValues(fsPastPerformanceDetailRequest, frameRequest.getApplicationId());
 				BeanUtils.copyProperties(fsPastPerformanceDetailRequest, fsPastPerformanceDetails);
 				fsPastPerformanceDetails.setApplicationId(frameRequest.getApplicationId());
 				fsPastPerformanceDetails.setActive(true);
@@ -82,8 +86,7 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 			Integer year = scoringService.getFinYear(applicationId);
 			int pastYear1 = year - 1;
 			int pastYear2 = year - 2;
-			List<FsPastPerformanceDetails> fsPastPerformanceDetails = fsPastPerformanceDetailRepository
-					.getList(applicationId);
+			List<FsPastPerformanceDetails> fsPastPerformanceDetails = fsPastPerformanceDetailRepository.getList(applicationId);
 			if(CommonUtils.isListNullOrEmpty(fsPastPerformanceDetails)){
 
 				fsPastPerformanceDetails = new ArrayList<>();
@@ -120,13 +123,13 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 				}
 				fsPastPerformanceDetails.add(fsPastPerformanceDetails1);
 			}
-			List<FsPastPerformanceDetailsRequest> fsPastPerformanceDetailsRequests = new ArrayList<>(
-					fsPastPerformanceDetails.size());
+			List<FsPastPerformanceDetailsRequest> fsPastPerformanceDetailsRequests = new ArrayList<>(fsPastPerformanceDetails.size());
 
 			for (FsPastPerformanceDetails detail : fsPastPerformanceDetails) {
-				FsPastPerformanceDetailsRequest financeMeansDetailRequest = new FsPastPerformanceDetailsRequest();
-				BeanUtils.copyProperties(detail, financeMeansDetailRequest);
-				fsPastPerformanceDetailsRequests.add(financeMeansDetailRequest);
+				FsPastPerformanceDetailsRequest pastPerformanceDetailsRequest = new FsPastPerformanceDetailsRequest();
+				BeanUtils.copyProperties(detail, pastPerformanceDetailsRequest);
+				this.convertValuesIn(pastPerformanceDetailsRequest, applicationId);
+				fsPastPerformanceDetailsRequests.add(pastPerformanceDetailsRequest);
 			}
 			return fsPastPerformanceDetailsRequests;
 		} catch (Exception e) {
@@ -135,5 +138,47 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 		}
 
 	}
+	
+	private void convertAbsoluteValues(FsPastPerformanceDetailsRequest pastPerformanceDetailsRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 
+		pastPerformanceDetailsRequest.setNetSalesPastYear1(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesPastYear2(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesPresentYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesNextYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesNextYear(), sidbiCurrencyRateObj.getRate()));
+		
+		pastPerformanceDetailsRequest.setNetProfitPastYear1(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitPastYear2(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitPresentYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitNextYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitNextYear(), sidbiCurrencyRateObj.getRate()));
+		
+		pastPerformanceDetailsRequest.setCompNetWorthPastYear1(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthPastYear2(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthPresentYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthNextYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthNextYear(), sidbiCurrencyRateObj.getRate()));
+		
+		
+	}
+	
+	private void convertValuesIn(FsPastPerformanceDetailsRequest pastPerformanceDetailsRequest,Long applicationId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+		
+		pastPerformanceDetailsRequest.setNetSalesPastYear1(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetSalesPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesPastYear2(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetSalesPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesPresentYear(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetSalesPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesNextYear(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetSalesNextYear(), sidbiCurrencyRateObj.getRate()));
+		
+		pastPerformanceDetailsRequest.setNetProfitPastYear1(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetProfitPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitPastYear2(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetProfitPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitPresentYear(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetProfitPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitNextYear(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getNetProfitNextYear(), sidbiCurrencyRateObj.getRate()));
+		
+		pastPerformanceDetailsRequest.setCompNetWorthPastYear1(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getCompNetWorthPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthPastYear2(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getCompNetWorthPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthPresentYear(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getCompNetWorthPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthNextYear(CommonUtils.convertTwoDecimalValuesIn(pastPerformanceDetailsRequest.getCompNetWorthNextYear(), sidbiCurrencyRateObj.getRate()));
+				
+	}
+
+	
 }

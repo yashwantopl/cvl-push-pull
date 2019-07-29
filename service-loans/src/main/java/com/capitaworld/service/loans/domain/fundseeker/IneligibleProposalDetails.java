@@ -73,6 +73,9 @@ public class IneligibleProposalDetails implements Serializable{
 
     @Column(name = "business_type_id")
 	private Integer businessTypeId;
+    
+    @Column(name = "addi_fields")
+	private String addiFields;
 
     @Column(name="reopen_reason")
     private String reopenReason;
@@ -214,4 +217,11 @@ public class IneligibleProposalDetails implements Serializable{
 		this.reopenReason = reopenReason;
 	}
 
+	public String getAddiFields() {
+		return addiFields;
+	}
+
+	public void setAddiFields(String addiFields) {
+		this.addiFields = addiFields;
+	}
 }
