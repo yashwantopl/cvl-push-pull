@@ -39,8 +39,6 @@ public interface ScoringService {
 
     public ResponseEntity<LoansResponse> calculateMFILoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
 
-    public ResponseEntity<LoansResponse> calculateMFILoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList);
-
     //////////////
 
     public ResponseEntity<LoansResponse> calculateScoringTest(ScoringRequestLoans scoringRequestLoans);
