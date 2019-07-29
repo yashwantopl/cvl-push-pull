@@ -79,7 +79,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 	private UsersClient usersClient;
 
 	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
-	private static final String ERROR_WHILE_GETTING_SP_CLIENT_COUNT = "Error while getting SP client count.";
+	private static final String ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT = "Error while getting NBFC client count.";
 
 	@Override
 	public List<ClientListingCoLending> clientListCoLending(int pageIndex,int size,Long npUserId) throws LoansException {
@@ -230,21 +230,21 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 	}
 	
-	/*@Override
-	public JSONObject spClientCount(Long spId) throws LoansException {
+	@Override
+	public JSONObject nbfcClientCount(Long nbfcUserId) throws LoansException {
 		try {
-			UserResponse response = usersClient.getSPClientCount(spId);
+			UserResponse response = usersClient.getNbfcClientCount(nbfcUserId);
 			if(!CommonUtils.isObjectNullOrEmpty(response.getData())){
 				return MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getData(), JSONObject.class);
 			}
 		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GETTING_SP_CLIENT_COUNT,e);
-			throw new LoansException(ERROR_WHILE_GETTING_SP_CLIENT_COUNT);
+			logger.error(ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT,e);
+			throw new LoansException(ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT);
 		}
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public List<SpSysNotifyResponse> spClientNotifications(Long spId) throws LoansException {
 		String[] userTypeIds = {"fs","fp"};
 		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
