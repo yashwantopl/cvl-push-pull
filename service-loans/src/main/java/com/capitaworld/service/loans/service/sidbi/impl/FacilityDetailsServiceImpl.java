@@ -113,22 +113,12 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
 	}
 	private void convertAbsoluteValues(FacilityDetailsRequest facilityDetailsRequest,Long applicationId) throws LoansException {
 		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
-
-		facilityDetailsRequest.setRupeeTermLoan(facilityDetailsRequest.getRupeeTermLoan()==null ? null : 
-			facilityDetailsRequest.getRupeeTermLoan()*sidbiCurrencyRateObj.getRate());
-
-		facilityDetailsRequest.setInrCurrency(facilityDetailsRequest.getInrCurrency()==null ? null : 
-			facilityDetailsRequest.getInrCurrency()*sidbiCurrencyRateObj.getRate());
 		
-		facilityDetailsRequest.setWorkingCapitalFund(facilityDetailsRequest.getWorkingCapitalFund()==null ? null : 
-			facilityDetailsRequest.getWorkingCapitalFund()*sidbiCurrencyRateObj.getRate());
-		
-		facilityDetailsRequest.setWorkingCapitalNonFund(facilityDetailsRequest.getWorkingCapitalNonFund()==null ? null : 
-			facilityDetailsRequest.getWorkingCapitalNonFund()*sidbiCurrencyRateObj.getRate());
-		
-		facilityDetailsRequest.setTotal(facilityDetailsRequest.getTotal()==null ? null : 
-			facilityDetailsRequest.getTotal()*sidbiCurrencyRateObj.getRate());
-		
+		facilityDetailsRequest.setRupeeTermLoan(CommonUtils.convertTwoDecimalAbsoluteValues(facilityDetailsRequest.getRupeeTermLoan(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setInrCurrency(CommonUtils.convertTwoDecimalAbsoluteValues(facilityDetailsRequest.getInrCurrency(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setWorkingCapitalFund(CommonUtils.convertTwoDecimalAbsoluteValues(facilityDetailsRequest.getWorkingCapitalFund(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setWorkingCapitalNonFund(CommonUtils.convertTwoDecimalAbsoluteValues(facilityDetailsRequest.getWorkingCapitalNonFund(), sidbiCurrencyRateObj.getRate()));
+		facilityDetailsRequest.setTotal(CommonUtils.convertTwoDecimalAbsoluteValues(facilityDetailsRequest.getTotal(), sidbiCurrencyRateObj.getRate()));
 		
 	}
 	

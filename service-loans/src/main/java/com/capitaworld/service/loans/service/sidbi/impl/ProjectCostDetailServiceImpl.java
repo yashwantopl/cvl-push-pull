@@ -119,11 +119,10 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 	
 	private void convertAbsoluteValues(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
 		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
-
-		totalCostOfProject.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred()==null ? null :totalCostOfProject.getAlreadyIncurred()*sidbiCurrencyRateObj.getRate());
-		totalCostOfProject.setToBeIncurred(totalCostOfProject.getToBeIncurred()==null ? null :totalCostOfProject.getToBeIncurred()*sidbiCurrencyRateObj.getRate());
-		totalCostOfProject.setTotalCost(totalCostOfProject.getTotalCost()==null ? null :totalCostOfProject.getTotalCost()*sidbiCurrencyRateObj.getRate());
 		
+		totalCostOfProject.setAlreadyIncurred(CommonUtils.convertTwoDecimalAbsoluteValues(totalCostOfProject.getAlreadyIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setToBeIncurred(CommonUtils.convertTwoDecimalAbsoluteValues(totalCostOfProject.getToBeIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setTotalCost(CommonUtils.convertTwoDecimalAbsoluteValues(totalCostOfProject.getTotalCost(), sidbiCurrencyRateObj.getRate()));
 	}
 	
 	private void convertValuesIn(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
