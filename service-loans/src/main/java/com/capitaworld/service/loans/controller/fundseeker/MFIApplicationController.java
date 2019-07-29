@@ -448,6 +448,10 @@ public class MFIApplicationController {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Loan Assessment Details");
+			if(applicationId == null){
+				logger.warn("applicationId  can not be empty ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 			MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getLoanAssessmentDetailsAppId(applicationId);
 			CommonDocumentUtils.endHook(logger, "Get Loan Assessment Details");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
@@ -455,6 +459,28 @@ public class MFIApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Get Loan Assessment Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
+		try {
+
+			CommonDocumentUtils.startHook(logger, "getCashFlowAssesmentByAppId");
+			if(applicationId == null){
+				logger.warn("applicationId  can not be empty ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId,type);
+			CommonDocumentUtils.endHook(logger, "getCashFlowAssesmentByAppId");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
+					HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getCashFlowAssesmentByAppId ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

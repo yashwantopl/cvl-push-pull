@@ -327,4 +327,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
 	}
 
+	@Override
+	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type) {
+		return detailsRepository.getCashFlowAssesmentByAppId(applicationId, type);
+	}
+
 }

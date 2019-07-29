@@ -30,12 +30,30 @@ public class MfiLoanAssessmentDetailsReq {
 	private Double interestRateRecomandation;
 	private Integer installmentRecomandation;
 	private Boolean isLoanassessmentDetailsFilled;
-	
-	
+
+	//For Cash Flow Assessment
+	private Double incomeFromOccupation;
+	private Double existingExpensesOfFamily;
+	private Double netSaving;
+	private Double expectedIncome;
+	private Double totalCashFlow;
+
+	public MfiLoanAssessmentDetailsReq() {
+	}
+
+	public MfiLoanAssessmentDetailsReq(Long applicationId, Double incomeFromOccupation, Double existingExpensesOfFamily, Double netSaving, Double expectedIncome, Double totalCashFlow) {
+		this.applicationId = applicationId;
+		this.incomeFromOccupation = incomeFromOccupation;
+		this.existingExpensesOfFamily = existingExpensesOfFamily;
+		this.netSaving = netSaving;
+		this.expectedIncome = expectedIncome;
+		this.totalCashFlow = totalCashFlow;
+	}
+
 	public MfiLoanAssessmentDetailsReq(Long applicationId, Integer purposeOfLoan, Integer clientType,
-			Boolean isBusinessPremiseVisited, Integer repaymentTrack, Integer creaditWorthiness,
-			String loanLiabilityRatio, Integer competition, Double loanAmountRecomandation, Integer tenureRecomandation,
-			Integer moratoriumRecomandation, Double interestRateRecomandation, Integer installmentRecomandation) {
+									   Boolean isBusinessPremiseVisited, Integer repaymentTrack, Integer creaditWorthiness,
+									   String loanLiabilityRatio, Integer competition, Double loanAmountRecomandation, Integer tenureRecomandation,
+									   Integer moratoriumRecomandation, Double interestRateRecomandation, Integer installmentRecomandation) {
 		super();
 		this.applicationId = applicationId;
 		this.purposeOfLoan = purposeOfLoan;
@@ -141,5 +159,44 @@ public class MfiLoanAssessmentDetailsReq {
 	public void setIsLoanassessmentDetailsFilled(Boolean isLoanassessmentDetailsFilled) {
 		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
 	}
-	
+
+	public Double getIncomeFromOccupation() {
+		return incomeFromOccupation;
+	}
+
+	public void setIncomeFromOccupation(Double incomeFromOccupation) {
+		this.incomeFromOccupation = incomeFromOccupation;
+	}
+
+	public Double getExistingExpensesOfFamily() {
+		return existingExpensesOfFamily;
+	}
+
+	public void setExistingExpensesOfFamily(Double existingExpensesOfFamily) {
+		this.existingExpensesOfFamily = existingExpensesOfFamily;
+	}
+
+	public Double getNetSaving() {
+		return netSaving;
+	}
+
+	public void setNetSaving(Double netSaving) {
+		this.netSaving = netSaving;
+	}
+
+	public Double getExpectedIncome() {
+		return expectedIncome;
+	}
+
+	public void setExpectedIncome(Double expectedIncome) {
+		this.expectedIncome = expectedIncome;
+	}
+
+	public Double getTotalCashFlow() {
+		return totalCashFlow;
+	}
+
+	public void setTotalCashFlow(Double totalCashFlow) {
+		this.totalCashFlow = totalCashFlow;
+	}
 }
