@@ -97,8 +97,8 @@ private static final Logger logger = LoggerFactory.getLogger(PrimaryCollateralSe
 	}
 	private void convertAbsoluteValues(PersonalCorporateGuaranteeRequest personalCorporateGuaranteeRequest,Long applicationId) throws LoansException {
 		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
-
-		personalCorporateGuaranteeRequest.setNetWorth(personalCorporateGuaranteeRequest.getNetWorth()==null ? null :personalCorporateGuaranteeRequest.getNetWorth()*sidbiCurrencyRateObj.getRate());
+		
+		personalCorporateGuaranteeRequest.setNetWorth(CommonUtils.convertTwoDecimalAbsoluteValues(personalCorporateGuaranteeRequest.getNetWorth(), sidbiCurrencyRateObj.getRate()));
 		
 	}
 	

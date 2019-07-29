@@ -142,32 +142,20 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 	private void convertAbsoluteValues(FsPastPerformanceDetailsRequest pastPerformanceDetailsRequest,Long applicationId) throws LoansException {
 		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 
-		pastPerformanceDetailsRequest.setNetSalesPastYear1(pastPerformanceDetailsRequest.getNetSalesPastYear1()==null ? null :
-			pastPerformanceDetailsRequest.getNetSalesPastYear1()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetSalesPastYear2(pastPerformanceDetailsRequest.getNetSalesPastYear2()==null ? null :
-			pastPerformanceDetailsRequest.getNetSalesPastYear2()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetSalesPresentYear(pastPerformanceDetailsRequest.getNetSalesPresentYear()==null ? null :
-			pastPerformanceDetailsRequest.getNetSalesPresentYear()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetSalesNextYear(pastPerformanceDetailsRequest.getNetSalesNextYear()==null ? null :
-			pastPerformanceDetailsRequest.getNetSalesNextYear()*sidbiCurrencyRateObj.getRate());
+		pastPerformanceDetailsRequest.setNetSalesPastYear1(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesPastYear2(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesPresentYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetSalesNextYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetSalesNextYear(), sidbiCurrencyRateObj.getRate()));
 		
-		pastPerformanceDetailsRequest.setNetProfitPastYear1(pastPerformanceDetailsRequest.getNetProfitPastYear1()==null ? null :
-			pastPerformanceDetailsRequest.getNetProfitPastYear1()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetProfitPastYear2(pastPerformanceDetailsRequest.getNetProfitPastYear2()==null ? null :
-			pastPerformanceDetailsRequest.getNetProfitPastYear2()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetProfitPresentYear(pastPerformanceDetailsRequest.getNetProfitPresentYear()==null ? null :
-			pastPerformanceDetailsRequest.getNetProfitPresentYear()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setNetProfitNextYear(pastPerformanceDetailsRequest.getNetProfitNextYear()==null ? null :
-			pastPerformanceDetailsRequest.getNetProfitNextYear()*sidbiCurrencyRateObj.getRate());
+		pastPerformanceDetailsRequest.setNetProfitPastYear1(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitPastYear2(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitPresentYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setNetProfitNextYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getNetProfitNextYear(), sidbiCurrencyRateObj.getRate()));
 		
-		pastPerformanceDetailsRequest.setCompNetWorthPastYear1(pastPerformanceDetailsRequest.getCompNetWorthPastYear1()==null ? null :
-			pastPerformanceDetailsRequest.getCompNetWorthPastYear1()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setCompNetWorthPastYear2(pastPerformanceDetailsRequest.getCompNetWorthPastYear2()==null ? null :
-			pastPerformanceDetailsRequest.getCompNetWorthPastYear2()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setCompNetWorthPresentYear(pastPerformanceDetailsRequest.getCompNetWorthPresentYear()==null ? null :
-			pastPerformanceDetailsRequest.getCompNetWorthPresentYear()*sidbiCurrencyRateObj.getRate());
-		pastPerformanceDetailsRequest.setCompNetWorthNextYear(pastPerformanceDetailsRequest.getCompNetWorthNextYear()==null ? null :
-			pastPerformanceDetailsRequest.getCompNetWorthNextYear()*sidbiCurrencyRateObj.getRate());
+		pastPerformanceDetailsRequest.setCompNetWorthPastYear1(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthPastYear1(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthPastYear2(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthPastYear2(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthPresentYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthPresentYear(), sidbiCurrencyRateObj.getRate()));
+		pastPerformanceDetailsRequest.setCompNetWorthNextYear(CommonUtils.convertTwoDecimalAbsoluteValues(pastPerformanceDetailsRequest.getCompNetWorthNextYear(), sidbiCurrencyRateObj.getRate()));
 		
 		
 	}

@@ -99,7 +99,7 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 	private void convertAbsoluteValues(PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest,Long applicationId) throws LoansException {
 		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 
-		primaryCollateralSecurityRequest.setMarketValue(primaryCollateralSecurityRequest.getMarketValue()==null ? null :primaryCollateralSecurityRequest.getMarketValue()*sidbiCurrencyRateObj.getRate());
+		primaryCollateralSecurityRequest.setMarketValue(CommonUtils.convertTwoDecimalAbsoluteValues(primaryCollateralSecurityRequest.getMarketValue(), sidbiCurrencyRateObj.getRate()));
 		
 	}
 	

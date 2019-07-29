@@ -2039,4 +2039,12 @@ public enum APIFlags {
 		}
 		return amount;
 	}
+	public static Double convertTwoDecimalAbsoluteValues(Double amount,Integer rate) {
+		if(amount!=null) {
+			DecimalFormat decim = new DecimalFormat("0.00");
+			amount=amount*rate;
+			amount = Double.parseDouble(decim.format(amount));
+		}
+		return amount;
+	}
 }
