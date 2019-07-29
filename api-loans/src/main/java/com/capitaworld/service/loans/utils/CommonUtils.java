@@ -1573,7 +1573,7 @@ public enum APIFlags {
 				return num.doubleValue();
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.info("error==>"+e);
 			}
 			/*formatter.setMinimumFractionDigits(0);*/
 			
