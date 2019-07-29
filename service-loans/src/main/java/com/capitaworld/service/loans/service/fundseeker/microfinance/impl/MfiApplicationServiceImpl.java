@@ -187,7 +187,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 			//for assets and liability
 			detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId));
-			detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId));
+			detailsReq.setLiabilityDetails(MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId));
 			//for Income
 			List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
 			detailsReq.setIncomeDetailsReqList(incomeDetails);
