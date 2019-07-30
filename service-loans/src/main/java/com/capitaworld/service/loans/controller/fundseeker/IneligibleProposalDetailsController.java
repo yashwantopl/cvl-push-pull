@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -38,9 +38,8 @@ public class IneligibleProposalDetailsController {
 	private IneligibleProposalDetailsService ineligibleProposalDetailsService;
 	
 	@Autowired
-	private GatewayClient gatewayClient;
+	private LoanRepository loanRepository;
 	
-
 /**
  * need to change the method sendMailToFsAndBankBranch of applicationId to proposalId
  * */
@@ -56,16 +55,32 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+		
+		if(CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getUserId())) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			inEligibleProposalDetailsRequest.setUserId(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userId)) {
+				inEligibleProposalDetailsRequest.setUserId(userId);
+			}
 		}
 
-		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			inEligibleProposalDetailsRequest.setUserId(userId);
+		Boolean isSendMail = null;
+		InEligibleProposalDetailsRequest proposalDetailsRequest = ineligibleProposalDetailsService.get(inEligibleProposalDetailsRequest.getApplicationId());
+		if(proposalDetailsRequest != null) {
+			Boolean isCampaignUser = loanRepository.isCampaignUser(inEligibleProposalDetailsRequest.getUserId());
+			if(isCampaignUser) {
+				if(CommonUtils.OfflineApplicationConfig.BankSpecific.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
+					isSendMail = true;
+				}else {
+					isSendMail = false;;
+				}				
+			}else {
+				if(CommonUtils.OfflineApplicationConfig.MarketPlace.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
+					isSendMail = true;
+				}else {
+					isSendMail = false;;
+				}
+			}
 		}
-
 		Integer isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
 		Integer fsBusinessType = ineligibleProposalDetailsService.getBusinessTypeIdFromApplicationId(inEligibleProposalDetailsRequest.getApplicationId());
 		if (isDetailsSaved == 2) {
@@ -78,7 +93,7 @@ public class IneligibleProposalDetailsController {
 						inEligibleProposalDetailsRequest.getApplicationId(),
 						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId(),false);
 			}	
-				if(!isEligible) {
+				if(!isEligible && (isSendMail != null && isSendMail)) {
 					//If users is not from sbi and sidbi specific then this email shoot
 					Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
 							inEligibleProposalDetailsRequest.getApplicationId(),
@@ -90,7 +105,7 @@ public class IneligibleProposalDetailsController {
 					}
 				}
 			
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value(),isSendMail),
 					HttpStatus.OK);
 		} else  if (isDetailsSaved == 1) {
 			return new ResponseEntity<LoansResponse>(
