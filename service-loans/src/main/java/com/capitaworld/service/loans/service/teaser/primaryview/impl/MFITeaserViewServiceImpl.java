@@ -100,7 +100,7 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 			matchRequest.setApplicationId(applicationId);
 			matchRequest.setProductId(productMappingId);
 			matchRequest.setBusinessTypeId(bussnessTypeId);
-			MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfMFI((matchRequest)); 
+			MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfMFI(matchRequest); 
 			mfiTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 		} catch (Exception e) {
 			logger.error("EXCEPTION IS GETTING WHILE GET MATCHES DATA====={}======={}" , e);
