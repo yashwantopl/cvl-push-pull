@@ -62,7 +62,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	@Override
 	public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
 		MFIApplicantDetail mfiApplicationDetail;
-		if (aadharDetailsReq.getId() == null) {
+        String serverSideValidation = serverSideValidation(CommonUtils.BASIC_DETAILS, aadharDetailsReq);
+        if(!CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+            aadharDetailsReq.setMessage(serverSideValidation);
+            return aadharDetailsReq;
+        }
+
+        if (aadharDetailsReq.getId() == null) {
 			Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
 					aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
 			if (applicationId != null) {
@@ -144,16 +150,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			appResponseList.add(appIncomeReq);
 		}
 		return appResponseList;
-
-		/*
-		 * logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"
-		 * +applicationId); MFIApplicantDetail detailsResp =
-		 * detailsRepository.findByApplicationIdAndIsActive(applicationId,true);
-		 * logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>"
-		 * +detailsResp); MfiReqResponse mfiResp = new MfiReqResponse();
-		 * BeanUtils.copyProperties(detailsResp, mfiResp);
-		 */
-		// return null;
 	}
 
 	@Override
@@ -311,6 +307,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	public boolean saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
 
 		if (null != mfiLoanAssessmentDetailsReq.getId()) {
+//            serverSideValidation(1,mfiLoanAssessmentDetailsReq);
 			MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiLoanAssessmentDetailsReq.getId());
 			BeanUtils.copyProperties(mfiLoanAssessmentDetailsReq, mfiApplicationDetail);
 			mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
@@ -329,7 +326,53 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type) {
-		return detailsRepository.getCashFlowAssesmentByAppId(applicationId, type);
+//		return detailsRepository.getCashFlowAssesmentByAppId(applicationId, type); //temp commented for some error
+		return null;
 	}
+
+
+    private String serverSideValidation(Integer type, Object validationJson) {
+
+        if (type == CommonUtils.BASIC_DETAILS) {
+            AadharDetailsReq aadharDetailsReq = (AadharDetailsReq) validationJson;
+            if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getFirstName()) || CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getLastName())) {
+                return "First Name or last name is empty";
+            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getGenderId())) {
+                return "Gender is empty";
+            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getMaritalStatusId())) {
+                return "Marital status is empty";
+            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getBirthDate())) {
+                return "Date of birth is empty";
+            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getAddressProfType())) {
+                return "Address proof is empty";
+            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofNo())) {
+                return "Address proof number is empty";
+            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getAadharPincode())) {
+                return "pincode is empty";
+            }
+        } else if(type == CommonUtils.PERSONAL_DETAILS){
+            PersonalDetailsReq personalDetailsReq = (PersonalDetailsReq) validationJson;
+            if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getFatherName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getSpouseName()) ||
+                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNoDependent()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getSpouseBirthDate())){
+                return "Some required fields in Family Details are Missing";
+            } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getRelationWithNomineeId()) ||
+                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeBirthDate()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineePincode()) ||
+                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeDistrict()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeCity()) ||
+                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeState()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeAddress())){
+                return "Some required fields in Nominee's details are missing";
+            } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getEducationQualification()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getReligion()) ||
+                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicCaste())){
+                return "Some required fields in Acadamic and other details are missing";
+            } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getLandHolding()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAreaType()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessType()) ||
+                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getHouseOwnership()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNameOfFirm()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessPremises())
+            || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getExpInSameLine())){
+                return "Some required fields in Business and Other details are missing";
+            }
+        } else if(type == CommonUtils.BANK_DETAILS){
+            MfiBankDetailsReq mfiBankDetailsReq = (MfiBankDetailsReq) validationJson;
+//            if()
+        }
+        return null;
+    }
 
 }

@@ -70,6 +70,17 @@ public class CommonUtils {
 	public static final Long TL_LESS_TWO = 20000000L;
 	public static final Integer PENDING = 0;
 	public static final Integer APPROVED = 1;
+	public static final Integer BASIC_DETAILS = 0;
+	public static final Integer PERSONAL_DETAILS = 1;
+	public static final Integer BANK_DETAILS = 2;
+	public static final Integer INCOME_EXPENDITURE = 3;
+	public static final Integer PROJECT_DETAILS = 4;
+	public static final Integer ASSETS_LIABILITY = 5;
+	public static final Integer LOAN_ASSESMENT = 6;
+
+
+
+
 
 	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
 	
@@ -2054,18 +2065,25 @@ public enum APIFlags {
 
 	public static Double convertTwoDecimalValuesIn(Double amount,Integer rate) {
 		if(amount!=null) {
-			DecimalFormat decim = new DecimalFormat("0.00");
 			amount=amount/rate;
-			amount = Double.parseDouble(decim.format(amount));
+			amount = convertTwoDecimal(amount);
 		}
 		return amount;
 	}
 	public static Double convertTwoDecimalAbsoluteValues(Double amount,Integer rate) {
 		if(amount!=null) {
-			DecimalFormat decim = new DecimalFormat("0.00");
 			amount=amount*rate;
+			
+			amount = convertTwoDecimal(amount);
+		}
+		return amount;
+	}
+	public static Double convertTwoDecimal(Double amount) {
+		if(amount!=null) {
+			DecimalFormat decim = new DecimalFormat("0.00");			
 			amount = Double.parseDouble(decim.format(amount));
 		}
 		return amount;
 	}
+	
 }

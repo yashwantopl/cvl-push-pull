@@ -86,8 +86,10 @@ public class AadharDetailsReq implements Serializable {
     private Long orgId;
 
     private Integer addressProofType;
+    private String addressProofNo;
 
     private Integer businessTypeId;
+    private String message;
 
     private  byte[] profilePic;
     private  byte[] addressProofImg;
@@ -481,5 +483,21 @@ public class AadharDetailsReq implements Serializable {
 
     public void setOrgId(Long orgId) {
         this.orgId = orgId;
+    }
+
+    public String getAddressProofNo() {
+        return addressProofNo;
+    }
+
+    public void setAddressProofNo(String addressProofNo) {
+        this.addressProofNo = addressProofNo;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
