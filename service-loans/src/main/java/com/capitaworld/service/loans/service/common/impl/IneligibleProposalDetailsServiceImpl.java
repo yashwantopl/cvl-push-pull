@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -1106,5 +1107,16 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			
 		}
 		return null;
+	}
+
+	@Override
+	public InEligibleProposalDetailsRequest get(Long applicationId) {
+		IneligibleProposalDetails ineliApp = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(applicationId, true);
+		if(ineliApp == null) {
+			return null;
+		}
+		InEligibleProposalDetailsRequest detailsRequest = new InEligibleProposalDetailsRequest();
+		BeanUtils.copyProperties(ineliApp, detailsRequest);
+		return detailsRequest;
 	}
 }
