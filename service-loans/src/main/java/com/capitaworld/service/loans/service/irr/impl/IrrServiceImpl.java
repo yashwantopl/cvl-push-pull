@@ -1190,7 +1190,7 @@ public class IrrServiceImpl implements IrrService{
 		} catch (Exception e) {
 			log.error("error while fetching os data : ",e);
 		}
-//		financialInputRequest.setYearSalesPurchasList(financialYearAndSalesAndPurchase);
+		financialInputRequest.setYearSalesPurchasList(financialYearAndSalesAndPurchase);
 		
 		//========= ===============================================LIABILITIES DETAIL 1 YR==================================================================
 				
