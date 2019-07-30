@@ -277,8 +277,7 @@ public class PrimaryViewController {
 	
 	@GetMapping(value = "/MfiPrimaryDetails/{applicationId}/{productMappingId}/{mfiFpType}")  
 	public @ResponseBody ResponseEntity<LoansResponse> MFiPrimayView(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productMappingId,
-			@RequestParam(value = "mfiFpType") Integer mfiFpType, HttpServletRequest request) {
-
+			@PathVariable(value = "mfiFpType") Integer mfiFpType,@RequestParam(value = "clientId", required = false) HttpServletRequest request) {
 		logger.info("ENTER HERE GET MICRO FINANCE DETAILS HERE ====={}======{}" , applicationId , productMappingId,mfiFpType);
 		// GET USER ID AND USER TYPE
 		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
