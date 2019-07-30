@@ -277,6 +277,12 @@ public class MfiApplicantDetailsReq {
     private Integer clientType;
 
 	private Integer businessInBrief;
+
+	//For Cash Flow Assessment
+	private Double incomeFromOccupation;
+	private Double existingExpensesOfFamily;
+	private Double netSaving;
+	private Double expectedIncome;
 	
     public Integer getBusinessInBrief() {
 		return businessInBrief;
@@ -1551,5 +1557,35 @@ public class MfiApplicantDetailsReq {
         this.clientType = clientType;
     }
 
-    
+	public Double getIncomeFromOccupation() {
+		return incomeFromOccupation;
+	}
+
+	public void setIncomeFromOccupation(Double incomeFromOccupation) {
+		this.incomeFromOccupation = incomeFromOccupation;
+	}
+
+	public Double getExistingExpensesOfFamily() {
+		return existingExpensesOfFamily;
+	}
+
+	public void setExistingExpensesOfFamily(Double existingExpensesOfFamily) {
+		this.existingExpensesOfFamily = existingExpensesOfFamily;
+	}
+
+	public Double getNetSaving() {
+		return netSaving;
+	}
+
+	public void setNetSaving(Double netSaving) {
+		this.netSaving = netSaving;
+	}
+
+	public Double getExpectedIncome() {
+		return expectedIncome;
+	}
+
+	public void setExpectedIncome(Double expectedIncome) {
+		this.expectedIncome = expectedIncome;
+	}
 }
