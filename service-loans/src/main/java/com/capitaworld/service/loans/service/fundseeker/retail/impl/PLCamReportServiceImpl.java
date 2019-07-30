@@ -309,7 +309,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				if (resNameAsPerITR != null) {
 					itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
 					nameAsPerItr = itrBasicDetailsResponse.getName();
-					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : null);
 				} else {
 					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 				}

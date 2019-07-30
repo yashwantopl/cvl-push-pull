@@ -716,15 +716,29 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
+		
+		ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+		String nameAsPerItr = null;
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
+				itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+				nameAsPerItr = itrBasicDetailsResponse.getName();
 				hlTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 			} else {
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
 		} catch (Exception e) {
 			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+		}
+		
+		
+		
+		String fullName = plRetailApplicantResponse.getFullName();
+		if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equalsIgnoreCase(nameAsPerItr)) {
+			hlTeaserViewResponse.setNameEditedByUser("-");
+		}else {
+		    hlTeaserViewResponse.setNameEditedByUser(fullName);	
 		}
 		
 		
