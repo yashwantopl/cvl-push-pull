@@ -404,7 +404,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 		} else if(type == CommonUtils.PROJECT_DETAILS){
         	ProjectDetailsReq projectDetailsReq = (ProjectDetailsReq) validationJson;
-        	if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanType()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanAmountRequired()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanPurpose())){
+        	if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanType()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanAmountRequired()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPurposeOfLoan())){
 				return "Some required fields in Loan Applied are missing In project detail section";
 			}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getRepaymentFrequency())){
 				return "Some required fields in Loan Applied are missing In project detail section";
