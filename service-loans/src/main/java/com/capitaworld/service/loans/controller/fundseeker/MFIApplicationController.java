@@ -105,6 +105,10 @@ public class MFIApplicationController {
 				logger.warn("userId  can not be empty ==>" + userId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+            if(personalDetailsReq.getId() == null){
+                logger.warn("Id  can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
 			boolean personalDetails = mfiApplicationService.saveOrUpdatePersonalDetails(personalDetailsReq);
 			if(personalDetails) {
 				CommonDocumentUtils.endHook(logger, "save personal details");
@@ -153,6 +157,10 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+            if(projectDetailsReq.getId() == null){
+                logger.warn("Id  can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
 			boolean projectDetails = mfiApplicationService.saveOrUpdateProjectDetails(projectDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			if(projectDetails) {
@@ -202,6 +210,10 @@ public class MFIApplicationController {
 				logger.warn("userId  can not be empty ==>" + userId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+            if(mfiBankDetailsReq.getApplicationId() == null){
+                logger.warn("applicationId  can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
 			boolean bankDetails = mfiApplicationService.saveOrUpdateBankDetails(mfiBankDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save bank details");
 			if(bankDetails){
@@ -295,6 +307,10 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+            if(mfiIncomeAndExpenditureReq.getId() == null){
+                logger.warn("Id  can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
 			boolean expenditureDetails = mfiApplicationService.saveOrUpdateIncomeExpenditureDetails(mfiIncomeAndExpenditureReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			if(expenditureDetails) {
@@ -347,6 +363,10 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+            if(mfiAssetsDetailsReq.getId() == null || mfiAssetsDetailsReq.getApplicationId() == null){
+                logger.warn("Id / application id  can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
 			boolean assetsLiabilityDetails = mfiApplicationService.saveOrUpdateAssetsLiabilityDetails(mfiAssetsDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			if(assetsLiabilityDetails){
@@ -424,6 +444,10 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+            if(mfiLoanAssessmentDetailsReq.getId() == null){
+                logger.warn("Id  can not be empty ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
 			boolean loanAssessmentDetails = mfiApplicationService.saveOrUpdateLoanAssessmentDetails(mfiLoanAssessmentDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			if(loanAssessmentDetails) {

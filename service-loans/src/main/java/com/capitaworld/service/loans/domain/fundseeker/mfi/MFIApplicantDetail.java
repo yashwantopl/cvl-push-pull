@@ -346,6 +346,8 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "address_proof_type")
 	private Integer addressProofType;
+	@Column(name = "address_proof_no")
+	private String addressProofNo;
 
 	@Column(name = "address_proof_img")
 	private byte[] addressProofImg;
@@ -1647,5 +1649,13 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setCompetition(Integer competition) {
 		this.competition = competition;
+	}
+
+	public String getAddressProofNo() {
+		return addressProofNo;
+	}
+
+	public void setAddressProofNo(String addressProofNo) {
+		this.addressProofNo = addressProofNo;
 	}
 }
