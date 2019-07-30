@@ -369,6 +369,10 @@ public class MFIApplicantDetail implements Serializable {
 	private Double foodExpense;
 	@Column(name = "other_expense")
 	private Double otherExpense;
+	@Column(name = "house_hold_expense")
+	private Double houseHoldExpense;
+	@Column(name = "clothes_expense")
+	private Double clothesExpense;
 	@Column(name = "business_in_brief")
 	private Integer businessInBrief;
 	@Column(name = "monthly_cashflow")
@@ -1657,5 +1661,21 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setAddressProofNo(String addressProofNo) {
 		this.addressProofNo = addressProofNo;
+	}
+
+	public Double getHouseHoldExpense() {
+		return houseHoldExpense;
+	}
+
+	public void setHouseHoldExpense(Double houseHoldExpense) {
+		this.houseHoldExpense = houseHoldExpense;
+	}
+
+	public Double getClothesExpense() {
+		return clothesExpense;
+	}
+
+	public void setClothesExpense(Double clothesExpense) {
+		this.clothesExpense = clothesExpense;
 	}
 }

@@ -14,6 +14,8 @@ public class MfiIncomeAndExpenditureReq {
 	private Double medicalExpense;
 	private Double foodExpense;
 	private Double otherExpense;
+	private Double houseHoldExpense;
+	private Double clothesExpense;
 	private Integer businessInBrief;
 	private Double monthlyCashflow;
 	private Double monthlyExpenditure;
@@ -303,4 +305,19 @@ public class MfiIncomeAndExpenditureReq {
 		this.isIncomeDetailsFilled = isIncomeDetailsFilled;
 	}
 
+	public Double getHouseHoldExpense() {
+		return houseHoldExpense;
+	}
+
+	public void setHouseHoldExpense(Double houseHoldExpense) {
+		this.houseHoldExpense = houseHoldExpense;
+	}
+
+	public Double getClothesExpense() {
+		return clothesExpense;
+	}
+
+	public void setClothesExpense(Double clothesExpense) {
+		this.clothesExpense = clothesExpense;
+	}
 }

@@ -64,8 +64,7 @@ public class MFIApplicationController {
 			aadharDetailsReq.setOrgId(userOrgId);
 			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(aadharDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Successfully Saved.", HttpStatus.OK.value(), aadharDetails), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(aadharDetails.getMessage(), HttpStatus.OK.value(), aadharDetails), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving save Adhar Details Details ==>", e);
@@ -109,12 +108,19 @@ public class MFIApplicationController {
                 logger.warn("Id  can not be empty ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
-			boolean personalDetails = mfiApplicationService.saveOrUpdatePersonalDetails(personalDetailsReq);
-			if(personalDetails) {
+			Object personalDetails = mfiApplicationService.saveOrUpdatePersonalDetails(personalDetailsReq);
+			if(personalDetails instanceof Boolean) {
+				boolean personalInfo = (Boolean) personalDetails;
 				CommonDocumentUtils.endHook(logger, "save personal details");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+				if(personalInfo) {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+							HttpStatus.OK);
+				} else {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+							HttpStatus.OK);
+				}
 			} else {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(personalDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
@@ -161,14 +167,20 @@ public class MFIApplicationController {
                 logger.warn("Id  can not be empty ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
-			boolean projectDetails = mfiApplicationService.saveOrUpdateProjectDetails(projectDetailsReq);
+			Object projectDetails = mfiApplicationService.saveOrUpdateProjectDetails(projectDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
-			if(projectDetails) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-						HttpStatus.OK);
+			if(projectDetails instanceof Boolean) {
+				boolean projectInfo = (Boolean) projectDetails;
+				if(projectInfo) {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+							HttpStatus.OK);
+				} else {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+							HttpStatus.OK);
+				}
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(projectDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 
@@ -214,14 +226,20 @@ public class MFIApplicationController {
                 logger.warn("applicationId  can not be empty ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
-			boolean bankDetails = mfiApplicationService.saveOrUpdateBankDetails(mfiBankDetailsReq);
+			Object bankDetails = mfiApplicationService.saveOrUpdateBankDetails(mfiBankDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save bank details");
-			if(bankDetails){
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-						HttpStatus.OK);
+			if(bankDetails instanceof Boolean){
+				boolean bankDetail = (Boolean) bankDetails;
+				if(bankDetail) {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+							HttpStatus.OK);
+				} else {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+							HttpStatus.OK);
+				}
 			} else{
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(bankDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 

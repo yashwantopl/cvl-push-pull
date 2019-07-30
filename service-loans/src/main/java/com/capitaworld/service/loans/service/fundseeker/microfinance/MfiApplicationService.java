@@ -11,15 +11,15 @@ public interface MfiApplicationService {
 
 	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId);
 
-	public boolean saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq);
+	public Object saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq);
 
 	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId);
 
-	public boolean saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
+	public Object saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
 
 	public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId);
 
-	public boolean saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq);
+	public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq);
 
 	public MfiBankDetailsReq fetchBankDetail(Long applicationId);
 
