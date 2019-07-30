@@ -77,7 +77,7 @@ public class ColendingController {
             if(!nbfcClientCount.isEmpty()){
                 logger.info("co-lending's client count");
                 return new ResponseEntity<UserResponse>(
-                        new UserResponse(nbfcClientCount,"co-lendng's client count", HttpStatus.OK.value()),
+                        new UserResponse(nbfcClientCount,"co-lending's client count", HttpStatus.OK.value()),
                         HttpStatus.OK);
             }else{
                 logger.info(SOMETHING_WENT_WRONG_WHILE_FETCHING_CO_LENDING_CLIENT_COUNT_MSG);
