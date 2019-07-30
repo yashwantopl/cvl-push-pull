@@ -1527,7 +1527,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
 							
 							for (Map<String, Object> itrSales:  financialInputRequest.getYearSalesPurchasList()) {
-								if(itrSales != null  && yearWiseDomestic.getKey().contains(String.valueOf(itrSales.get("year"))) && yearWiseDomestic.getKey().equals(exp.getKey())) {
+								if(itrSales != null  && !String.valueOf(itrSales.get("year")).equals("2017") && yearWiseDomestic.getKey().contains(String.valueOf(itrSales.get("year"))) && yearWiseDomestic.getKey().equals(exp.getKey())) {
 								
 									LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
 									gstPurchaseVsBankStatementMonthly.put("year", yearWiseDomestic.getKey() != null ? yearWiseDomestic.getKey() : " - ");
@@ -1588,7 +1588,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
 						financialInputRequest.getYearSalesPurchasList().stream().sorted(new DateComparator2());		
 						for(Map<String, Object> fi: financialInputRequest.getYearSalesPurchasList()) {
-							if(fi != null && y.getKey().contains(String.valueOf(fi.get("year")))) {
+							if(fi != null && !String.valueOf(fi.get("year")).equals("2017") && y.getKey().contains(String.valueOf(fi.get("year")))) {
 								LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
 								gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ?y.getKey().toString() : " - ");
 								gstPurchaseVsBankStatementMonthly.put("gstPurchase", y.getValue()!= null ?CommonUtils.convertStringFormate(y.getValue().toString()) : " - ");
