@@ -63,14 +63,24 @@ public class IneligibleProposalDetailsController {
 			}
 		}
 
-		Boolean isCampaignUser = loanRepository.isCampaignUser(inEligibleProposalDetailsRequest.getUserId());
-		if(isCampaignUser) {
-			InEligibleProposalDetailsRequest proposalDetailsRequest = ineligibleProposalDetailsService.get(inEligibleProposalDetailsRequest.getApplicationId());
-			if(proposalDetailsRequest != null && CommonUtils.OfflineApplicationConfig.BankSpecific.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
-				
+		Boolean isSendMail = null;
+		InEligibleProposalDetailsRequest proposalDetailsRequest = ineligibleProposalDetailsService.get(inEligibleProposalDetailsRequest.getApplicationId());
+		if(proposalDetailsRequest != null) {
+			Boolean isCampaignUser = loanRepository.isCampaignUser(inEligibleProposalDetailsRequest.getUserId());
+			if(isCampaignUser) {
+				if(CommonUtils.OfflineApplicationConfig.BankSpecific.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
+					isSendMail = true;
+				}else {
+					isSendMail = false;;
+				}				
+			}else {
+				if(CommonUtils.OfflineApplicationConfig.MarketPlace.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
+					isSendMail = true;
+				}else {
+					isSendMail = false;;
+				}
 			}
 		}
-		
 		Integer isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
 		Integer fsBusinessType = ineligibleProposalDetailsService.getBusinessTypeIdFromApplicationId(inEligibleProposalDetailsRequest.getApplicationId());
 		if (isDetailsSaved == 2) {
@@ -83,7 +93,7 @@ public class IneligibleProposalDetailsController {
 						inEligibleProposalDetailsRequest.getApplicationId(),
 						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId(),false);
 			}	
-				if(!isEligible) {
+				if(!isEligible && (isSendMail != null && isSendMail)) {
 					//If users is not from sbi and sidbi specific then this email shoot
 					Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
 							inEligibleProposalDetailsRequest.getApplicationId(),
@@ -95,7 +105,7 @@ public class IneligibleProposalDetailsController {
 					}
 				}
 			
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value(),isSendMail),
 					HttpStatus.OK);
 		} else  if (isDetailsSaved == 1) {
 			return new ResponseEntity<LoansResponse>(
