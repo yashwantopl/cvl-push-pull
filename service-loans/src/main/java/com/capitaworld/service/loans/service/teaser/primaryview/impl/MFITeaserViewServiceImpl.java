@@ -11,10 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.eligibility.model.MFIRequest;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.teaser.primaryview.MFITeaserViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.teaser.primaryview.MFITeaserViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
@@ -36,13 +41,25 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 	@Autowired
 	private EligibilityClient eligibilityClient;
 	
+	@Autowired
+	private MatchEngineClient matchEngineClient;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 	
 	@Override
 	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId,Long productMappingId,Integer mfiFpType) {
 		logger.info("ENTER HERE getPrimaryMFiDetails======{}====={}>>{}" , applicationId ,productMappingId,mfiFpType);
 		
 		MFITeaserViewResponse mfiTeaserViewResponse = new MFITeaserViewResponse();
-
+		
+		Integer bussnessTypeId =null;
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId); // FOR BUSSNESS TYPE ID RELATED
+		
+		if(loanApplicationMaster!=null){
+			bussnessTypeId = loanApplicationMaster.getBusinessTypeId();
+		}
+		
 		if(mfiFpType!= null && mfiFpType == CommonUtils.mfiDataDisplayType.MFI_SCORING_DISPLAY_TYPE){ //1. FOR SCORING RELATED
 			
 		ScoringRequest scoringRequest = new ScoringRequest();  
@@ -77,6 +94,18 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 		//ENDS HERE ASSESSMENT AND SCORING RELATED CODDE HERE ====================================================================================== 
 		}
 		
+		if(mfiFpType!= null && mfiFpType == CommonUtils.mfiDataDisplayType.MFI_MATCHES_DISPLAY_TYPE){ //FOR MFI MATCHE ENGINE DATA
+		try {
+			MatchRequest matchRequest = new MatchRequest();
+			matchRequest.setApplicationId(applicationId);
+			matchRequest.setProductId(productMappingId);
+			matchRequest.setBusinessTypeId(bussnessTypeId);
+			MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfMFI(matchRequest); 
+			mfiTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+		} catch (Exception e) {
+			logger.error("EXCEPTION IS GETTING WHILE GET MATCHES DATA====={}======={}" , e);
+		}
+	}	
 		return mfiTeaserViewResponse;
 	}
 
