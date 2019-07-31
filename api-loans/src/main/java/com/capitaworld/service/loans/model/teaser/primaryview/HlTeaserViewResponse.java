@@ -189,6 +189,28 @@ public class HlTeaserViewResponse {
     private Object epfData;
 	private String detailedLoanPur;
 	private Double marketValOfProp;
+	private Boolean isNameEdited;
+	private String nameEditedByUser;
+	
+	
+	
+	
+
+	public String getNameEditedByUser() {
+		return nameEditedByUser;
+	}
+
+	public void setNameEditedByUser(String nameEditedByUser) {
+		this.nameEditedByUser = nameEditedByUser;
+	}
+
+	public Boolean getIsNameEdited() {
+		return isNameEdited;
+	}
+
+	public void setIsNameEdited(Boolean isNameEdited) {
+		this.isNameEdited = isNameEdited;
+	}
 
 	public Long getRefNo() {
 		return RefNo;
