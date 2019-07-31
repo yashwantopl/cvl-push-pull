@@ -232,8 +232,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq) {
+	public Object saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq) {
 		Double totalIncome = 0.0, totalExpense = 0.0;
+		String serverSideValidation = serverSideValidation(CommonUtils.INCOME_EXPENDITURE, mfiIncomeAndExpenditureReq);
+
+		if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+			return serverSideValidation;
+		}
 		if (null != mfiIncomeAndExpenditureReq.getId()) {
 			List<MfiIncomeDetailsReq> mfiIncomeDetailsReqs = mfiIncomeAndExpenditureReq.getIncomeDetailsReqList();
 			if (!CommonUtils.isListNullOrEmpty(mfiIncomeDetailsReqs)) {
@@ -397,19 +402,23 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         	if(CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMedicalExpense())
 					|| CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getEducationExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getFoodExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getLoanInstallment())
 					|| CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getShipShgiInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getHouseHoldExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getClothesExpense())) {
-				return "Some required fields in family monthly income are missing in Income and Expenditure section";
+				return "Some required fields in family monthly Expenses are missing in Income and Expenditure section";
 			} else if(CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getBusinessInBrief()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyCashflow()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyExpenditure())
 					|| CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyIncome())){
 				return "Some required fields in expected increase income are missing in Income and Expenditure section";
+			} else if(CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getPpiNoFamilyMember()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getPpiAcadamicHeadFamily()) ){
+				return "Some required fields in Progress out of poverty index are missing in Income and Expenditure section";
 			}
 		} else if(type == CommonUtils.PROJECT_DETAILS){
         	ProjectDetailsReq projectDetailsReq = (ProjectDetailsReq) validationJson;
         	if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanType()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanAmountRequired()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPurposeOfLoan())){
 				return "Some required fields in Loan Applied are missing In project detail section";
 			}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getRepaymentFrequency())){
-				return "Some required fields in Loan Applied are missing In project detail section";
-        	}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getCostOfEquipment()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getWorkingCapOfEquipment()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPromoterContribution()) ||CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanRequiredFromSidbi())){
-				return "Some required fields in cost/mean of finance are missing In project detail section";
+				return "Some required fields in Repayment & insurence are missing In project detail section";
+        	}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getCostOfEquipment()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getWorkingCapOfEquipment())){
+				return "Some required fields in cost of finance are missing In project detail section";
+        	}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPromoterContribution()) ||CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanRequiredFromSidbi())){
+				return "Some required fields in mean of finance are missing In project detail section";
 			}
 		}
         return null;
