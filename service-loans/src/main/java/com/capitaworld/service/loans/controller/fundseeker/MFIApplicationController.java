@@ -537,4 +537,34 @@ public class MFIApplicationController {
 		}
 	}
 
+	@GetMapping(value = "/getApplicationsByStatus/{status}")
+	public ResponseEntity<LoansResponse> getPendingApplications(@PathVariable("status") Integer status,HttpServletRequest request) {
+		try {
+
+			CommonDocumentUtils.startHook(logger, "getApplicationsByStatus");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			if (userOrgId == null) {
+				logger.warn("user Org Id  can not be empty ==>" + userOrgId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			AadharDetailsReq pendingApplications = mfiApplicationService.getApplicationsByStatus(userOrgId, userId,status);
+			CommonDocumentUtils.endHook(logger, "getApplicationsByStatus");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Application status details.",
+					HttpStatus.OK.value(), pendingApplications), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while get CashFlow Assesment By AppId ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
 }
