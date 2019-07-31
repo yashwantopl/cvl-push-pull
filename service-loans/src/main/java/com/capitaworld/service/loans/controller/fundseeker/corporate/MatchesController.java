@@ -249,8 +249,9 @@ public class MatchesController {
 			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
+				LoansResponse loansResponse=new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
+				loansResponse.setData(matchResponse.getData());
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
