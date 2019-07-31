@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import com.capitaworld.api.eligibility.model.MFIRequest;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.teaser.primaryview.MFITeaserViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.teaser.primaryview.MFITeaserViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -47,14 +49,18 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 	
+/*	@Autowired
+	private  ProposalDetailsRepository proposalDetailsRepository;*/
+	
 	@Override
-	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId,Long productMappingId,Integer mfiFpType) {
-		logger.info("ENTER HERE getPrimaryMFiDetails======{}====={}>>{}" , applicationId ,productMappingId,mfiFpType);
+	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId,Integer mfiFpType) {
+		logger.info("ENTER HERE getPrimaryMFiDetails======{}====={}>>{}" , applicationId,mfiFpType);
 		
 		MFITeaserViewResponse mfiTeaserViewResponse = new MFITeaserViewResponse();
 		
 		Integer bussnessTypeId =null;
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId); // FOR BUSSNESS TYPE ID RELATED
+		Long productMappingId = 1441l;//proposalDetailsRepository.getFpProductIdByApplicationId(applicationId); // GETTING FP PRODUCT ID BY APPLICATION ID 
 		
 		if(loanApplicationMaster!=null){
 			bussnessTypeId = loanApplicationMaster.getBusinessTypeId();
@@ -101,7 +107,7 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 			matchRequest.setProductId(productMappingId);
 			matchRequest.setBusinessTypeId(bussnessTypeId);
 			MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfMFI(matchRequest); 
-			mfiTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+				mfiTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 		} catch (Exception e) {
 			logger.error("EXCEPTION IS GETTING WHILE GET MATCHES DATA====={}======={}" , e);
 		}
