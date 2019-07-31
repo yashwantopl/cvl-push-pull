@@ -1404,7 +1404,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							 Date parse = sdf1.parse(String.valueOf(entry.getKey()));	
 							 if(monthWiseExpAndDomestic.getKey().equals(sdf .format(parse))) {
 								 LinkedHashMap<String,Object>gstSalesVsBankStatementMonthly = new LinkedHashMap<>();
-								 gstSalesVsBankStatementMonthly.put("month", monthWiseExpAndDomestic.getKey());
+								 gstSalesVsBankStatementMonthly.put("month", sdf1.format(monthWiseExpAndDomestic.getKey()));
 								 Double gstValue =Double.valueOf(String.valueOf(monthWiseExpAndDomestic.getValue()));
 								 gstSalesVsBankStatementMonthly.put("gstValue", monthWiseExpAndDomestic.getValue() != null && gstValue  != 0 ? convertValue(gstValue):" - ");
 								 gstSalesVsBankStatementMonthly.put("bsValue",0);
@@ -1465,7 +1465,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 								 if(bsMapEntry != null && entry.getKey().equals(sdf.format(parse))) {
 										
 									 	LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
-										gstPurchaseVsBankStatementMonthly.put("month", entry.getKey());
+										gstPurchaseVsBankStatementMonthly.put("month", sdf1.format(entry.getKey()));
 										gstPurchaseVsBankStatementMonthly.put("gstValue", entry.getValue() != null ? CommonUtils.convertStringFormate(entry.getValue().toString()):" - " );
 										gstPurchaseVsBankStatementMonthly.put("bsValue", 0);
 										gstPurchaseVsBankStatementMonthly.put("bsDivededBygst", 0);
