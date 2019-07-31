@@ -43,4 +43,6 @@ public interface MfiApplicationService {
 
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
 
+	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status);
+
 }

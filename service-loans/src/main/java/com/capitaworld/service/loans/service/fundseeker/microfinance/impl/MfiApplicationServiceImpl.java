@@ -451,8 +451,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         return null;
     }
 
-    public void getPendingApplications(){
-    }
-    public void getApprovedApplications(){
-    }
+	/**
+	 *
+	 * @param orgId
+	 * @param userId
+	 * @param status
+	 * @return
+	 */
+	@Override
+	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status){
+		if(status == 1){
+			return detailsRepository.getPendingApplications(userId,orgId);
+		} else {
+			return detailsRepository.getApprovedApplications(userId,orgId);
+		}
+
+	}
 }
