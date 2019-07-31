@@ -11,6 +11,8 @@ import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 public interface IneligibleProposalDetailsService {
 
 	public Integer save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest);
+	
+	public InEligibleProposalDetailsRequest get(Long applicationId);
 
 	public Boolean sendMailToFsAndBankBranch(Long applicationId, Long branchId, Long userOrgId);
 

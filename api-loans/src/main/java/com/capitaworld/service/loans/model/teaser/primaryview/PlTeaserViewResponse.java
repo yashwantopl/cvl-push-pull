@@ -205,7 +205,16 @@ public class PlTeaserViewResponse {
     private String previousJobYear;
     private String tenureReq;
 	private Boolean isNameEdited;
+	private String nameEditedByUser;
+	
+	
     
+	public String getNameEditedByUser() {
+		return nameEditedByUser;
+	}
+	public void setNameEditedByUser(String nameEditedByUser) {
+		this.nameEditedByUser = nameEditedByUser;
+	}
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
