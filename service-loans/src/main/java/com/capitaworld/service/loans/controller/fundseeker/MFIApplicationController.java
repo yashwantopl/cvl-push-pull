@@ -467,18 +467,22 @@ public class MFIApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
             if(mfiLoanAssessmentDetailsReq.getId() == null){
-                logger.warn("Id  can not be empty ==>");
+                logger.warn("Id can not be empty ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
-			boolean loanAssessmentDetails = mfiApplicationService.saveOrUpdateLoanAssessmentDetails(mfiLoanAssessmentDetailsReq);
+			Object loanAssessmentDetails = mfiApplicationService.saveOrUpdateLoanAssessmentDetails(mfiLoanAssessmentDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
-			if(loanAssessmentDetails) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-						HttpStatus.OK);
+			if(loanAssessmentDetails instanceof Boolean) {
+                boolean loanAssessmentDetail = (Boolean) loanAssessmentDetails;
+                if(loanAssessmentDetail) {
+                    return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+                            HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+                            HttpStatus.OK);
+                }
 			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(loanAssessmentDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
