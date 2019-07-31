@@ -199,6 +199,8 @@ public class LoansClient {
 	private static final String CALCULATE_SCORING_EXISTING_LIST = "/score/calculate_score/corporate_existing_list";
 	private static final String CALCULATE_SCORING_MFI_LIST = "/score/calculate_score/mfi_list";
 	private static final String CALCULATE_SCORING_MFI_CO_APPLICANT_LIST = "/score/calculate_score/mfi_list_coapplicant";
+	
+	private static final String GET_MFI_APPLICANT_DETAILS = "/mfi/getAllApplicantDetails";
 
 
 	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
@@ -2611,6 +2613,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in isExistOfflineProposalsByApplicationId : ", e);
 			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse getMfiApplicantDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_MFI_APPLICANT_DETAILS).concat("/" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {			
+			logger.error("{}",e);
+			throw new LoansException("Loans service is not available While executing getMfiApplicantDetails()...");
 		}
 	}
 

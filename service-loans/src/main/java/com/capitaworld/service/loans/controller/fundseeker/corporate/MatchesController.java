@@ -35,6 +35,7 @@ public class MatchesController {
 
 	private static final String MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG = "matchRequest must not be empty ==>";
 	private static final String MATCHES_SUCCESSFULLY_SAVED_MSG = "Matches Successfully Saved";
+	private static final String MATCHES_LIST_SUCCESSFULLY_GET = "Matches list Successfully get";
 	private static final String MATCH_FS_CORPORATE = "matchFSCorporate";
 
 	@Autowired
@@ -246,11 +247,12 @@ public class MatchesController {
 
 		try {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfFundSeekerMFI(matchRequest);
-			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
+			CommonDocumentUtils.endHook(logger, "calculateMatchesOfFundSeekerMFI");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
+				LoansResponse loansResponse=new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
+				loansResponse.setData(matchResponse.getData());
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -279,12 +281,47 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 
 		try {
-			MatchDisplayResponse matchResponse = engineClient.matchListMFIProduct(matchRequest);
-			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
+			MatchResponse matchResponse = engineClient.matchListMFIProduct(matchRequest);
+			CommonDocumentUtils.endHook(logger, "matchListMFIProduct");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
+				LoansResponse loansResponse=new LoansResponse(MATCHES_LIST_SUCCESSFULLY_GET, HttpStatus.OK.value());
+				loansResponse.setData(matchResponse);
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+			}
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while List Matches for MFI Fundseeker ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+
+	@RequestMapping(value = "/${mfi}/addProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> addProposal(@RequestBody MatchRequest matchRequest,
+															 HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
+		CommonDocumentUtils.startHook(logger, "addProposal");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		matchRequest.setUserId(userId);
+
+		try {
+			MatchResponse matchResponse = engineClient.addProposal(matchRequest);
+			CommonDocumentUtils.endHook(logger, "addProposal");
+			if (matchResponse != null && matchResponse.getStatus() == 200) {
+
+				LoansResponse loansResponse=new LoansResponse(MATCHES_LIST_SUCCESSFULLY_GET, HttpStatus.OK.value());
+				loansResponse.setData(matchResponse);
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
