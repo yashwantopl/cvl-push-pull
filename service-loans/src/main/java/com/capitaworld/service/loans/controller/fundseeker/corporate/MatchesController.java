@@ -301,6 +301,40 @@ public class MatchesController {
 		}
 
 	}
+
+	@RequestMapping(value = "/${mfi}/addProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> addProposal(@RequestBody MatchRequest matchRequest,
+															 HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
+		CommonDocumentUtils.startHook(logger, "addProposal");
+		Long userId = null;
+		if(CommonDocumentUtils.isThisClientApplication(request)){
+			userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		matchRequest.setUserId(userId);
+
+		try {
+			MatchResponse matchResponse = engineClient.addProposal(matchRequest);
+			CommonDocumentUtils.endHook(logger, "addProposal");
+			if (matchResponse != null && matchResponse.getStatus() == 200) {
+
+				LoansResponse loansResponse=new LoansResponse(MATCHES_LIST_SUCCESSFULLY_GET, HttpStatus.OK.value());
+				loansResponse.setData(matchResponse);
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+			}
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while List Matches for MFI Fundseeker ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
 	
 	
 	@RequestMapping(value = "/saveSuggestionList", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
