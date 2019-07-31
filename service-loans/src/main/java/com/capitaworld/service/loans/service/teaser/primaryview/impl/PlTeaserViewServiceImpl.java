@@ -756,7 +756,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).intValue()) + " Years");
 		plTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		plTeaserViewResponse.setAppId(toApplicationId);
-		
+		 
 
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
@@ -1142,13 +1142,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
+		ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+		String nameAsPerItr = null;
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
-				
-				
-				ITRBasicDetailsResponse itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
-				plTeaserViewResponse.setNameAsPerItr(itrBasicDetailsResponse.getName() != null ? itrBasicDetailsResponse.getName(): "NA");
+				itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+				nameAsPerItr = itrBasicDetailsResponse.getName();
+				plTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 			} else {
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
@@ -1167,10 +1168,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
 		 }*/
 		String fullName = plRetailApplicantResponse.getFullName();
-		if(!CommonUtils.isObjectNullOrEmpty(fullName.trim()) && fullName.equalsIgnoreCase(String.valueOf(plTeaserViewResponse.getNameAsPerItr()))){
-			plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
-		}else{
-			plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equalsIgnoreCase(nameAsPerItr)) {
+			plTeaserViewResponse.setNameEditedByUser("-");
+		}else {
+			plTeaserViewResponse.setNameEditedByUser(fullName);	
 		}
 
 
