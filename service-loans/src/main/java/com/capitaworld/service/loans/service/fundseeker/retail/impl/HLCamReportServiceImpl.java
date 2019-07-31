@@ -467,8 +467,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
 		}
 		
-		
-		
 		// Product Name
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
@@ -649,6 +647,29 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}catch (Exception e) {
 					logger.error("Error/Exception while fetching name Of Employer in CoApplicants in HL Cam Report of applicationId==>{} with EmploymentType==>{}  and EmploymentWith=={}" , applicationId, coApplicantDetail.getEmploymentType() ,coApplicantDetail.getEmploymentWith());
 				}
+				
+				ITRBasicDetailsResponse itrBasicDetailsResponse = new ITRBasicDetailsResponse();
+				itrBasicDetailsResponse.setApplicationId(applicationId);
+				itrBasicDetailsResponse.setCoAppId(coApplicantDetail.getId());
+				try {
+					ITRBasicDetailsResponse itrResponse = itrClient.getAppOrCoAppBasicDetails(itrBasicDetailsResponse);
+					if (itrResponse != null) {
+						coApp.put("coAppNameAsPerItr" ,itrResponse.getName());
+					}else {
+						logger.info("ITR name is empty for application==>{} and coAppId==>{}",applicationId ,coApplicantDetail.getId());
+					}
+					
+					// for name is edited or not:
+					String fullName = (coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") +" "+ (coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") +" "+ (coApplicantDetail.getLastName() != null ?  coApplicantDetail.getLastName() : "");
+					if(!CommonUtils.isObjectNullOrEmpty(fullName) && !CommonUtils.isObjectNullOrEmpty(itrResponse) && fullName.equalsIgnoreCase(itrResponse.getName())){
+						coApp.put("nameEditedOfCoApp","-");
+					}else{
+						coApp.put("nameEditedOfCoApp",fullName);
+					}
+				} catch (Exception e) {
+					logger.error("Error while fetching itr data from itrClient fro CoApplicant",e);
+				}
+				
 
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
 				coApp.put("setIncomeConsider", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsIncomeConsider()) ? coApplicantDetail.getIsIncomeConsider() == true ? "Yes" : "No" : "-");
