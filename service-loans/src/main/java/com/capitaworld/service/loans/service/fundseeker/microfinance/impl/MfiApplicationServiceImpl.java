@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import org.slf4j.Logger;
@@ -204,16 +205,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
 			
 			mfiApplicantDetailsReqs.add(detailsReq);
-
-			// get Proposal Details
-
-			ProposalDetails proposalDetails=proposalDetailsRepository.getByApplicationIdAndFPProductId(applicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
-			{
-				detailsReq.setFpProductId(proposalDetails.getFpProductId());
-				detailsReq.setProposalStatusId(proposalDetails.getProposalStatusId().getId());
-				detailsReq.setProposalMappingId(proposalDetails.getId());
-			}
 			
 		}
 
@@ -389,5 +380,25 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         }
         return null;
     }
+
+
+	@Override
+	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce) {
+
+		ProposalRequestResponce proposalRequestResponceNew =new ProposalRequestResponce();
+			// get Proposal Details
+
+			ProposalDetails proposalDetails=proposalDetailsRepository.getByApplicationIdAndFPProductId(proposalRequestResponceNew.getApplicationId());
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				proposalRequestResponceNew.setFpProductId(proposalDetails.getFpProductId());
+				proposalRequestResponceNew.setProposalStatusId(proposalDetails.getProposalStatusId().getId());
+				proposalRequestResponceNew.setProposalMappingId(proposalDetails.getId());
+				proposalRequestResponceNew.setApplicationId(proposalDetails.getApplicationId());
+			}
+
+		return proposalRequestResponceNew;
+
+	}
 
 }
