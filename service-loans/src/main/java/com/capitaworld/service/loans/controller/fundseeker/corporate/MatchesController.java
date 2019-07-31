@@ -35,6 +35,7 @@ public class MatchesController {
 
 	private static final String MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG = "matchRequest must not be empty ==>";
 	private static final String MATCHES_SUCCESSFULLY_SAVED_MSG = "Matches Successfully Saved";
+	private static final String MATCHES_LIST_SUCCESSFULLY_GET = "Matches list Successfully get";
 	private static final String MATCH_FS_CORPORATE = "matchFSCorporate";
 
 	@Autowired
@@ -246,7 +247,7 @@ public class MatchesController {
 
 		try {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfFundSeekerMFI(matchRequest);
-			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
+			CommonDocumentUtils.endHook(logger, "calculateMatchesOfFundSeekerMFI");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 
 				LoansResponse loansResponse=new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
@@ -281,11 +282,12 @@ public class MatchesController {
 
 		try {
 			MatchDisplayResponse matchResponse = engineClient.matchListMFIProduct(matchRequest);
-			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
+			CommonDocumentUtils.endHook(logger, "matchListMFIProduct");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
+				LoansResponse loansResponse=new LoansResponse(MATCHES_LIST_SUCCESSFULLY_GET, HttpStatus.OK.value());
+				loansResponse.setListData(matchResponse.getMatchDisplayObjectList());
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
