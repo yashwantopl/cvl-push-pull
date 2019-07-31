@@ -200,7 +200,7 @@ public class LoansClient {
 	private static final String CALCULATE_SCORING_MFI_LIST = "/score/calculate_score/mfi_list";
 	private static final String CALCULATE_SCORING_MFI_CO_APPLICANT_LIST = "/score/calculate_score/mfi_list_coapplicant";
 	
-	private static final String GET_MFI_APPLICANT_DETAILS = "/getAllApplicantDetails";
+	private static final String GET_MFI_APPLICANT_DETAILS = "/mfi/getAllApplicantDetails";
 
 
 	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
