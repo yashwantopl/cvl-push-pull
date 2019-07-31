@@ -7,12 +7,6 @@ public class MfiApplicantDetailsReq {
 
 	private Long applicationId;
 
-	private Long proposalMappingId;
-
-	private Long fpProductId;
-
-	private Long proposalStatusId;
-
 	private Long applicationProposalMapping;
 
 	private String aadharNumber;
@@ -323,30 +317,6 @@ public class MfiApplicantDetailsReq {
 
 	public void setIsBusinessPremiseVisited(Boolean isBusinessPremiseVisited) {
 		this.isBusinessPremiseVisited = isBusinessPremiseVisited;
-	}
-
-	public Long getProposalStatusId() {
-		return proposalStatusId;
-	}
-
-	public void setProposalStatusId(Long proposalStatusId) {
-		this.proposalStatusId = proposalStatusId;
-	}
-
-	public Long getProposalMappingId() {
-		return proposalMappingId;
-	}
-
-	public void setProposalMappingId(Long proposalMappingId) {
-		this.proposalMappingId = proposalMappingId;
-	}
-
-	public Long getFpProductId() {
-		return fpProductId;
-	}
-
-	public void setFpProductId(Long fpProductId) {
-		this.fpProductId = fpProductId;
 	}
 
 	public Long getApplicationId() {
