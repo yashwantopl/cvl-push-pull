@@ -50,6 +50,12 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     @Query("select new com.capitaworld.service.loans.model.micro_finance.FlagCheckMFI(fn.applicationId.id,fn.isPersonalDetailsFilled,fn.isFamilyDetailsFilled,fn.isNomineeDetailsFilled,fn.isAcadamicDetailsFilled,fn.isBankDetailsFilled,fn.isAccountDetailsFilled,fn.isExistingLoanDetailsFilled,fn.isIncomeDetailsFilled,fn.isFamilyIncomeFilled,fn.isFamilyExpenseFilled,fn.isExpectedIncomeFilled,fn.isPPIFilled,fn.isProjectDetailsFilled,fn.isApplyLoanFilled,fn.isCostProjectFilled,fn.isMeanFinanceFilled,fn.isCashFlowDetailsFilled,fn.isAssetsDetailsFilled,fn.isCurrentAssetsFilled,fn.isFixedAssetsFilled,fn.isCurrntLiabilityFilled,fn.isRepaymentDetailsFilled,fn.isConsentFormFilled) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true and type=:type")
     public FlagCheckMFI getFlagDetailByApplicationId(@Param("appId") Long appId,@Param("type") Integer type);
 
-//    @Query("select com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq(fn.applicationId,fn.monthlyIncome,fn.totalExpense,(fn.monthlyIncome - fn.totalExpense),fn.totalMonthlyIncomeForFamily,((fn.monthlyIncome - fn.totalExpense)+fn.totalMonthlyIncomeForFamily)) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true and type=:type")
-//    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(@Param("appId") Long appId,@Param("type") Integer type);
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq(fn.applicationId.id,fn.monthlyIncome,fn.totalExpense,(fn.monthlyIncome - fn.totalExpense),fn.totalMonthlyIncomeForFamily,((fn.monthlyIncome - fn.totalExpense)+fn.totalMonthlyIncomeForFamily)) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true and type=:type")
+    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(@Param("appId") Long appId,@Param("type") Integer type);
+
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq(ma.id,ma.applicationId.id,ma.firstName,ma.lastName) from MFIApplicantDetail ma where ma.applicationId.id In(select lm.id from LoanApplicationMaster lm where lm.isActive = true and lm.applicationStatusMaster.status IN (9,10) and lm.fpMakerId =:userId and lm.npOrgId =:userOrgId)")
+    public AadharDetailsReq getPendingApplications(@Param("userId") Long userId,@Param("userOrgId") Long userOrgId);
+
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq(ma.id,ma.applicationId.id,ma.firstName,ma.lastName,sm.status) from MFIApplicantDetail ma Left Join ma.applicationId lm Left Join lm.applicationStatusMaster sm where sm.id IN (11,12,13,14,15,16) and lm.fpMakerId =:userId and lm.npOrgId =:userOrgId")
+    public AadharDetailsReq getApprovedApplications(@Param("userId") Long userId,@Param("userOrgId") Long userOrgId);
 }

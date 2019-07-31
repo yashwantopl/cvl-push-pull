@@ -90,11 +90,27 @@ public class AadharDetailsReq implements Serializable {
 
     private Integer businessTypeId;
     private String message;
+    private String status;
 
     private  byte[] profilePic;
     private  byte[] addressProofImg;
 
     public AadharDetailsReq() {
+    }
+
+    public AadharDetailsReq(Long id, Long applicationId, String firstName, String lastName) {
+        this.id = id;
+        this.applicationId = applicationId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public AadharDetailsReq(Long id, Long applicationId, String firstName, String lastName,String status) {
+        this.id = id;
+        this.applicationId = applicationId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.status = status;
     }
 
     //    fn.applicationId.id,,fn.firstName,mf.lastName,mf.middleName,mf.birthDate,mf.genderId,mf.mobile,mf.email,mf.addressSameAsAadhar,mf.currentDistrict,mf.aadharDistrict,mf.currentHouse,mf.aadharHouse,mf.currentLandmark,mf.aadharLandmark,mf.currentLocation,mf.aadharLocation,mf.currentState,mf.aadharState,mf.currentStreet,mf.aadharStreet,mf.currentVtc,mf.aadharVtc,mf.aadharSubdist,mf.currentSubdist,mf.aadharPo,mf.currentPo,mf.aadharCareOf,mf.addressPincode,mf.aadharPincode,mf.addressProofType

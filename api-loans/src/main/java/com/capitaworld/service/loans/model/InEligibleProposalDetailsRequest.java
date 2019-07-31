@@ -133,6 +133,15 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 	public void setReOpenReason(String reOpenReason) {
 		this.reOpenReason = reOpenReason;
 	}
+	
+
+	public String getAddiFields() {
+		return addiFields;
+	}
+
+	public void setAddiFields(String addiFields) {
+		this.addiFields = addiFields;
+	}
 
 	@Override
 	public String toString() {

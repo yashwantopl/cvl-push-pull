@@ -249,6 +249,7 @@ public class MfiApplicantDetailsReq {
 	private Double totalMonthlyIncomeForFamily;
     private List<MfiAssetsDetailsReq> assetsDetails;
     private List<MfiAssetsDetailsReq> liabilityDetails;
+	private Double totalExpense;
 
     private Long bankId;
 
@@ -277,7 +278,31 @@ public class MfiApplicantDetailsReq {
     private Integer clientType;
 
 	private Integer businessInBrief;
-	
+
+	//For Cash Flow Assessment
+	private Double incomeFromOccupation;
+	private Double existingExpensesOfFamily;
+	private Double netSaving;
+	private Double expectedIncome;
+	private Integer competition;
+	private Long id;
+
+	private Integer addressProfType;
+
+	private String addressProofNo;
+
+	private Integer businessTypeId;
+
+	private Double amount;
+
+	private Double outstanding;
+
+	private Integer particulars;
+
+	private Double houseHoldExpense;
+	private Double clothesExpense;
+
+
     public Integer getBusinessInBrief() {
 		return businessInBrief;
 	}
@@ -1550,5 +1575,123 @@ public class MfiApplicantDetailsReq {
         this.clientType = clientType;
     }
 
-    
+	public Double getIncomeFromOccupation() {
+		return incomeFromOccupation;
+	}
+
+	public void setIncomeFromOccupation(Double incomeFromOccupation) {
+		this.incomeFromOccupation = incomeFromOccupation;
+	}
+
+	public Double getExistingExpensesOfFamily() {
+		return existingExpensesOfFamily;
+	}
+
+	public void setExistingExpensesOfFamily(Double existingExpensesOfFamily) {
+		this.existingExpensesOfFamily = existingExpensesOfFamily;
+	}
+
+	public Double getNetSaving() {
+		return netSaving;
+	}
+
+	public void setNetSaving(Double netSaving) {
+		this.netSaving = netSaving;
+	}
+
+	public Double getExpectedIncome() {
+		return expectedIncome;
+	}
+
+	public void setExpectedIncome(Double expectedIncome) {
+		this.expectedIncome = expectedIncome;
+	}
+
+	public Double getTotalExpense() {
+		return totalExpense;
+	}
+
+	public void setTotalExpense(Double totalExpense) {
+		this.totalExpense = totalExpense;
+	}
+
+	public Integer getAddressProfType() {
+		return addressProfType;
+	}
+
+	public void setAddressProfType(Integer addressProfType) {
+		this.addressProfType = addressProfType;
+	}
+
+	public String getAddressProofNo() {
+		return addressProofNo;
+	}
+
+	public void setAddressProofNo(String addressProofNo) {
+		this.addressProofNo = addressProofNo;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(Double outstanding) {
+		this.outstanding = outstanding;
+	}
+
+	public Integer getParticulars() {
+		return particulars;
+	}
+
+	public void setParticulars(Integer particulars) {
+		this.particulars = particulars;
+	}
+
+	public Double getHouseHoldExpense() {
+		return houseHoldExpense;
+	}
+
+	public void setHouseHoldExpense(Double houseHoldExpense) {
+		this.houseHoldExpense = houseHoldExpense;
+	}
+
+	public Double getClothesExpense() {
+		return clothesExpense;
+	}
+
+	public void setClothesExpense(Double clothesExpense) {
+		this.clothesExpense = clothesExpense;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Integer competition) {
+		this.competition = competition;
+	}
 }

@@ -70,8 +70,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MFIApplicantDetail mfiApplicationDetail;
         String serverSideValidation = serverSideValidation(CommonUtils.BASIC_DETAILS, aadharDetailsReq);
         if(!CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
-            aadharDetailsReq.setMessage(serverSideValidation);
-            return aadharDetailsReq;
+			AadharDetailsReq detailsReq = new AadharDetailsReq();
+			detailsReq.setMessage(serverSideValidation);
+            return detailsReq;
         }
 
         if (aadharDetailsReq.getId() == null) {
@@ -101,6 +102,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		AadharDetailsReq detailsReq = new AadharDetailsReq();
 		detailsReq.setId(aadharDetailsReq.getId());
 		detailsReq.setApplicationId(aadharDetailsReq.getApplicationId());
+		detailsReq.setMessage("Successfully Saved");
 		return detailsReq;
 	}
 
@@ -111,7 +113,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq) {
+	public Object saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq) {
+		String serverSideValidation = serverSideValidation(CommonUtils.PERSONAL_DETAILS, personalDetailsReq);
+
+		if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+			return serverSideValidation;
+		}
 		MFIApplicantDetail mfiApplicationDetail;
 		if (null != personalDetailsReq.getId()) {
 			mfiApplicationDetail = detailsRepository.findOne(personalDetailsReq.getId());
@@ -131,10 +138,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq) {
+	public Object saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq) {
 		MFIApplicantDetail mfiApplicationDetail;
+		String serverSideValidation = serverSideValidation(CommonUtils.PROJECT_DETAILS, projectDetailsReq);
+
+		if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+			return serverSideValidation;
+		}
 		if (null != projectDetailsReq.getId()) {
 			mfiApplicationDetail = detailsRepository.findOne(projectDetailsReq.getId());
+			projectDetailsReq.setTotalCostEquipment(projectDetailsReq.getCostOfEquipment() + projectDetailsReq.getWorkingCapOfEquipment());
+			projectDetailsReq.setTotalMeanFinance(projectDetailsReq.getPromoterContribution() + projectDetailsReq.getLoanRequiredFromSidbi());
 			BeanUtils.copyProperties(projectDetailsReq, mfiApplicationDetail);
 			mfiApplicationDetail.setIsProjectDetailsFilled(true);
 			detailsRepository.save(mfiApplicationDetail);
@@ -159,7 +173,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq) {
+	public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq) {
+		String serverSideValidation = serverSideValidation(CommonUtils.BANK_DETAILS, bankDetailsReq);
+
+		if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+			return serverSideValidation;
+		}
 		if(bankDetailsReq.getApplicationId() != null){
 			MfiBankDetails mfiBankDetails = new MfiBankDetails();
 			BeanUtils.copyProperties(bankDetailsReq, mfiBankDetails);
@@ -219,8 +238,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq) {
+	public Object saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq) {
 		Double totalIncome = 0.0, totalExpense = 0.0;
+		String serverSideValidation = serverSideValidation(CommonUtils.INCOME_EXPENDITURE, mfiIncomeAndExpenditureReq);
+
+		if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+			return serverSideValidation;
+		}
 		if (null != mfiIncomeAndExpenditureReq.getId()) {
 			List<MfiIncomeDetailsReq> mfiIncomeDetailsReqs = mfiIncomeAndExpenditureReq.getIncomeDetailsReqList();
 			if (!CommonUtils.isListNullOrEmpty(mfiIncomeDetailsReqs)) {
@@ -236,8 +260,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, mfiApplicationDetail);
 			mfiApplicationDetail.setIsIncomeDetailsFilled(true);
 			mfiApplicationDetail.setTotalMonthlyIncomeForFamily(CommonUtils.isObjectNullOrEmpty(totalIncome) ? 0.0 : totalIncome);
-			totalExpense = mfiApplicationDetail.getEducationExpense() + mfiApplicationDetail.getMedicalExpense()
-					+ mfiApplicationDetail.getFoodExpense() + mfiApplicationDetail.getOtherExpense();
+			totalExpense = mfiApplicationDetail.getEducationExpense() + mfiApplicationDetail.getMedicalExpense() + mfiApplicationDetail.getHouseHoldExpense()
+					+ mfiApplicationDetail.getFoodExpense() + mfiApplicationDetail.getOtherExpense() + mfiApplicationDetail.getClothesExpense();
 			mfiApplicationDetail.setTotalExpense(CommonUtils.isObjectNullOrEmpty(totalExpense) ? 0.0 : totalExpense);
 			detailsRepository.save(mfiApplicationDetail);
 			return true;
@@ -310,10 +334,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
-
-		if (null != mfiLoanAssessmentDetailsReq.getId()) {
-//            serverSideValidation(1,mfiLoanAssessmentDetailsReq);
+	public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
+        String serverSideValidation = serverSideValidation(CommonUtils.LOAN_ASSESMENT, mfiLoanAssessmentDetailsReq);
+        if (CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+            return serverSideValidation;
+        }
+        if (null != mfiLoanAssessmentDetailsReq.getId()) {
 			MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiLoanAssessmentDetailsReq.getId());
 			BeanUtils.copyProperties(mfiLoanAssessmentDetailsReq, mfiApplicationDetail);
 			mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
@@ -332,8 +358,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type) {
-//		return detailsRepository.getCashFlowAssesmentByAppId(applicationId, type); //temp commented for some error
-		return null;
+		return detailsRepository.getCashFlowAssesmentByAppId(applicationId, type);
 	}
 
 
@@ -350,36 +375,73 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getBirthDate())) {
                 return "Date of birth is empty";
             } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getAddressProfType())) {
-                return "Address proof is empty";
+                return "Address proof type is empty";
             } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofNo())) {
                 return "Address proof number is empty";
-            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getAadharPincode())) {
+            } else if (CommonUtils.isObjectNullOrEmpty(aadharDetailsReq.getAddressPincode())) {
                 return "pincode is empty";
             }
         } else if(type == CommonUtils.PERSONAL_DETAILS){
             PersonalDetailsReq personalDetailsReq = (PersonalDetailsReq) validationJson;
             if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getFatherName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getSpouseName()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNoDependent()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getSpouseBirthDate())){
-                return "Some required fields in Family Details are Missing";
+                return "Some required fields in Family Details are Missing Personal Detail section";
             } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getRelationWithNomineeId()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeBirthDate()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineePincode()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeDistrict()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeCity()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeState()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeAddress())){
-                return "Some required fields in Nominee's details are missing";
+                return "Some required fields in Nominee's details are missing Personal Detail section";
             } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getEducationQualification()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getReligion()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicCaste())){
-                return "Some required fields in Acadamic and other details are missing";
+                return "Some required fields in Acadamic and other details are missing Personal Detail section";
             } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getLandHolding()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAreaType()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessType()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getHouseOwnership()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNameOfFirm()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessPremises())
             || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getExpInSameLine())){
-                return "Some required fields in Business and Other details are missing";
+                return "Some required fields in Business and Other details are missing Personal Detail section";
             }
         } else if(type == CommonUtils.BANK_DETAILS){
             MfiBankDetailsReq mfiBankDetailsReq = (MfiBankDetailsReq) validationJson;
-//            if()
+            if(CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getBankId()) || CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getAccountNo()) || CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getAccountType())
+					|| CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getBranchName()) || CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getIfscCode())){
+				return "Some required fields in Bank details are missing";
+			}
+		} else if(type == CommonUtils.INCOME_EXPENDITURE){
+        	MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = (MfiIncomeAndExpenditureReq) validationJson;
+        	if(CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMedicalExpense())
+					|| CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getEducationExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getFoodExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getLoanInstallment())
+					|| CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getShipShgiInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getHouseHoldExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getClothesExpense())) {
+				return "Some required fields in family monthly Expenses are missing in Income and Expenditure section";
+			} else if(CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getBusinessInBrief()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyCashflow()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyExpenditure())
+					|| CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyIncome())){
+				return "Some required fields in expected increase income are missing in Income and Expenditure section";
+			} else if(CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getPpiNoFamilyMember()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getPpiAcadamicHeadFamily()) ){
+				return "Some required fields in Progress out of poverty index are missing in Income and Expenditure section";
+			}
+		} else if(type == CommonUtils.PROJECT_DETAILS){
+        	ProjectDetailsReq projectDetailsReq = (ProjectDetailsReq) validationJson;
+        	if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanType()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanAmountRequired()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPurposeOfLoan())){
+				return "Some required fields in Loan Applied are missing In project detail section";
+			}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getRepaymentFrequency())){
+				return "Some required fields in Repayment & insurence are missing In project detail section";
+        	}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getCostOfEquipment()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getWorkingCapOfEquipment())){
+				return "Some required fields in cost of finance are missing In project detail section";
+        	}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPromoterContribution()) ||CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanRequiredFromSidbi())){
+				return "Some required fields in mean of finance are missing In project detail section";
+			}
+		} else if (type == CommonUtils.LOAN_ASSESMENT){
+            MfiLoanAssessmentDetailsReq assessmentDetailsReq = (MfiLoanAssessmentDetailsReq) validationJson;
+            if(CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
+                || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanLiabilityRatio()) ||CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition()) ){
+                return "Some required fields in mean of missing in Loan Assesment detail section";
+            } else if(CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
+                    CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation()) ||
+                    CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInterestRateRecomandation())){
+                return "Some required fields in mean of missing in Loan Reccommendation detail section";
+            }
         }
         return null;
     }
+
 
 
 	@Override
@@ -399,6 +461,16 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 		return proposalRequestResponceNew;
 
+	}
+
+
+	@Override
+	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status){
+		if(status == 1){
+			return detailsRepository.getPendingApplications(userId,orgId);
+		} else {
+			return detailsRepository.getApprovedApplications(userId,orgId);
+		}
 	}
 
 }

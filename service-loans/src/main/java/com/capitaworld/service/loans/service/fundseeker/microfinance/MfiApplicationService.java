@@ -11,15 +11,15 @@ public interface MfiApplicationService {
 
 	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId);
 
-	public boolean saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq);
+	public Object saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq);
 
 	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId);
 
-	public boolean saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
+	public Object saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
 
 	public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId);
 
-	public boolean saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq);
+	public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq);
 
 	public MfiBankDetailsReq fetchBankDetail(Long applicationId);
 
@@ -27,7 +27,7 @@ public interface MfiApplicationService {
 
 	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId);
 
-	public boolean saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
+	public Object saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
 
 	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId);
 	
@@ -37,12 +37,16 @@ public interface MfiApplicationService {
 
 	public FlagCheckMFI findAllFlag(Long applicationId,Integer type);
 	
-	public boolean saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq);
+	public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq);
 	
 	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
 
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
 
+
 	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce);
+
+	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status);
+
 
 }
