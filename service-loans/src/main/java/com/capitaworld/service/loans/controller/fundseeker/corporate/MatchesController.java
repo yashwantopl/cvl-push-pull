@@ -281,12 +281,12 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 
 		try {
-			MatchDisplayResponse matchResponse = engineClient.matchListMFIProduct(matchRequest);
+			MatchResponse matchResponse = engineClient.matchListMFIProduct(matchRequest);
 			CommonDocumentUtils.endHook(logger, "matchListMFIProduct");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 
 				LoansResponse loansResponse=new LoansResponse(MATCHES_LIST_SUCCESSFULLY_GET, HttpStatus.OK.value());
-				loansResponse.setListData(matchResponse.getMatchDisplayObjectList());
+				loansResponse.setData(matchResponse);
 				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
