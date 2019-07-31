@@ -249,6 +249,7 @@ public class MfiApplicantDetailsReq {
 	private Double totalMonthlyIncomeForFamily;
     private List<MfiAssetsDetailsReq> assetsDetails;
     private List<MfiAssetsDetailsReq> liabilityDetails;
+	private Double totalExpense;
 
     private Long bankId;
 
@@ -1587,5 +1588,13 @@ public class MfiApplicantDetailsReq {
 
 	public void setExpectedIncome(Double expectedIncome) {
 		this.expectedIncome = expectedIncome;
+	}
+
+	public Double getTotalExpense() {
+		return totalExpense;
+	}
+
+	public void setTotalExpense(Double totalExpense) {
+		this.totalExpense = totalExpense;
 	}
 }

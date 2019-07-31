@@ -27,7 +27,7 @@ public interface MfiApplicationService {
 
 	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId);
 
-	public boolean saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
+	public Object saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
 
 	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId);
 	
