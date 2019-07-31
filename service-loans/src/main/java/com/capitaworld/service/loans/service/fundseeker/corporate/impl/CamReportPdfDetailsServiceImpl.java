@@ -1379,7 +1379,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("top5FundReceived", top5FundReceived);
 				map.put("top5FundTransfered", top5FundTransfered);
 				map.put("bouncedChequeList", bouncedChequeList);
-				map.put("customerInfo", customerInfo);
+				map.put("customerInfo", !CommonUtils.isObjectListNull(customerInfo) ? customerInfo : null);
 				map.put("summaryInfo", summaryInfo);
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 
