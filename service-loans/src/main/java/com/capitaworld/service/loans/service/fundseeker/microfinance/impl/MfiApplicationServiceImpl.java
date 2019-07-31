@@ -328,10 +328,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
-
-		if (null != mfiLoanAssessmentDetailsReq.getId()) {
-//            serverSideValidation(1,mfiLoanAssessmentDetailsReq);
+	public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
+        String serverSideValidation = serverSideValidation(CommonUtils.LOAN_ASSESMENT, mfiLoanAssessmentDetailsReq);
+        if (CommonUtils.isObjectNullOrEmpty(serverSideValidation)){
+            return serverSideValidation;
+        }
+        if (null != mfiLoanAssessmentDetailsReq.getId()) {
 			MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiLoanAssessmentDetailsReq.getId());
 			BeanUtils.copyProperties(mfiLoanAssessmentDetailsReq, mfiApplicationDetail);
 			mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
@@ -420,8 +422,22 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         	}else if(CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPromoterContribution()) ||CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanRequiredFromSidbi())){
 				return "Some required fields in mean of finance are missing In project detail section";
 			}
-		}
+		} else if (type == CommonUtils.LOAN_ASSESMENT){
+            MfiLoanAssessmentDetailsReq assessmentDetailsReq = (MfiLoanAssessmentDetailsReq) validationJson;
+            if(CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
+                || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanLiabilityRatio()) ||CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition()) ){
+                return "Some required fields in mean of missing in Loan Assesment detail section";
+            } else if(CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
+                    CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation()) ||
+                    CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInterestRateRecomandation())){
+                return "Some required fields in mean of missing in Loan Reccommendation detail section";
+            }
+        }
         return null;
     }
 
+    public void getPendingApplications(){
+    }
+    public void getApprovedApplications(){
+    }
 }
