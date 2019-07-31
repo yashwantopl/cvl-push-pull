@@ -432,6 +432,30 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
 			map.put("proposedEmi", proposalMappingRequestString.getEmi() != null ? CommonUtils.convertValue(proposalMappingRequestString.getEmi()) : "-");
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			
+			//For ROI Calculation
+			Map<String , Object> roiData = new LinkedHashMap<String, Object>();
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
+				Double effectiveRoi = null;
+				Double finalRoi = null;
+				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
+				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
+				if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
+					effectiveRoi = proposalMappingRequestString.getMclrRoi() + proposalMappingRequestString.getSpreadRoi();
+				}else {
+					effectiveRoi = proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi() : proposalMappingRequestString.getSpreadRoi();
+				}
+				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
+				roiData.put("concessionRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? proposalMappingRequestString.getConsessionRoi() : "-");
+				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? proposalMappingRequestString.getConcessionBasedOnType() : "");
+				if(effectiveRoi != null) {
+					finalRoi = !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? effectiveRoi - proposalMappingRequestString.getConsessionRoi() : null;
+				}else {
+					finalRoi = null;
+				}
+				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? finalRoi : "-");
+			}
+			map.put("roiData", !CommonUtils.isObjectNullOrEmpty(roiData) ? roiData : null);
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
