@@ -380,7 +380,7 @@ public class MatchesController {
 	@RequestMapping(value = "/${mfi}/getProposalDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getProposalDetails(@RequestBody ProposalRequestResponce proposalRequestResponce,
 													 HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		CommonDocumentUtils.startHook(logger, "getProposalDetails");
+		CommonDocumentUtils.startHook(logger, "getProposalDetails==>"+proposalRequestResponce.getApplicationId());
 		try {
 				ProposalRequestResponce proposalRequestResponceNew=mfiApplicationService.getProposalDetails(proposalRequestResponce);
 				LoansResponse loansResponse=new LoansResponse(MATCHES_LIST_SUCCESSFULLY_GET, HttpStatus.OK.value());
