@@ -741,3 +741,5 @@ ALTER TABLE `connect`.`connect_other_applicant_log` ADD COLUMN copy_ref_id BIGIN
 ALTER TABLE `itr_api`.`itr_xml_master` ADD COLUMN copy_ref_id BIGINT(20);
 ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN modified_date DATETIME;
 ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN from_date DATETIME;
+ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN field_value VARCHAR(100);
+ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN field_type INT;
