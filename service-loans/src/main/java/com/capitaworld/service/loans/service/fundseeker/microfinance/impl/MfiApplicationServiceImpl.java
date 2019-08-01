@@ -60,7 +60,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     private ProposalDetailsRepository proposalDetailsRepository;
 
     @Autowired
-    private MfiExpenseExpectedIncomeDetailRepository detailRepository;
+    private MfiExpenseExpectedIncomeDetailRepository expectedIncomeDetailRepository;
 
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -286,7 +286,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             //  Total Cash Flow
             expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
             expectedIncomeDetails.setIsActive(true);
-            detailRepository.save(expectedIncomeDetails);
+            expectedIncomeDetailRepository.save(expectedIncomeDetails);
 
             //save PPI and is income filled true
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiIncomeAndExpenditureReq.getId());
@@ -386,8 +386,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId, Integer type) {
-        return null;
-//        return detailsRepository.getCashFlowAssesmentByAppId(applicationId, type);
+        return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId);
     }
 
 
