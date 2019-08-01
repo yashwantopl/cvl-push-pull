@@ -250,26 +250,26 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "nominee_landmark")
 	private String nomineeLandmark;
 	@Column(name = "academic_religion")
-	private String academicReligion;
+	private Integer academicReligion;
 	@Column(name = "academic_caste")
-	private String academicCaste;
+	private Integer academicCaste;
 	@Column(name = "is_academic_life_insurance")
-	private Boolean isAcademicLifeInsurance;
+	private Integer isAcademicLifeInsurance;
 
 	@Column(name = "house_ownership")
-	private String houseOwnership;
+	private Integer houseOwnership;
 
 	@Column(name = "area_type")
-	private String areaType;
+	private Integer areaType;
 
 	@Column(name = "business_premises")
-	private String businessPremises;
+	private Integer businessPremises;
 
 	@Column(name = "exp_in_same_line")
 	private Integer expInSameLine;
 
 	@Column(name = "academic_sum_insured")
-	private String academicSumInsured;
+	private Double academicSumInsured;
 
 	private Integer type;
 
@@ -1268,52 +1268,60 @@ public class MFIApplicantDetail implements Serializable {
 		this.nomineeLandmark = nomineeLandmark;
 	}
 
-	public String getAcademicReligion() {
-		return academicReligion;
-	}
-
-	public void setAcademicReligion(String academicReligion) {
-		this.academicReligion = academicReligion;
-	}
-
-	public String getAcademicCaste() {
-		return academicCaste;
-	}
-
-	public void setAcademicCaste(String academicCaste) {
-		this.academicCaste = academicCaste;
-	}
-
-	public Boolean getIsAcademicLifeInsurance() {
+	public Integer getIsAcademicLifeInsurance() {
 		return isAcademicLifeInsurance;
 	}
 
-	public void setIsAcademicLifeInsurance(Boolean isAcademicLifeInsurance) {
+	public void setIsAcademicLifeInsurance(Integer isAcademicLifeInsurance) {
 		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
 	}
 
-	public String getHouseOwnership() {
+	public Integer getAcademicReligion() {
+		return academicReligion;
+	}
+
+	public void setAcademicReligion(Integer academicReligion) {
+		this.academicReligion = academicReligion;
+	}
+
+	public Integer getAcademicCaste() {
+		return academicCaste;
+	}
+
+	public void setAcademicCaste(Integer academicCaste) {
+		this.academicCaste = academicCaste;
+	}
+
+	public Integer getHouseOwnership() {
 		return houseOwnership;
 	}
 
-	public void setHouseOwnership(String houseOwnership) {
+	public void setHouseOwnership(Integer houseOwnership) {
 		this.houseOwnership = houseOwnership;
 	}
 
-	public String getAreaType() {
+	public Integer getAreaType() {
 		return areaType;
 	}
 
-	public void setAreaType(String areaType) {
+	public void setAreaType(Integer areaType) {
 		this.areaType = areaType;
 	}
 
-	public String getBusinessPremises() {
+	public Integer getBusinessPremises() {
 		return businessPremises;
 	}
 
-	public void setBusinessPremises(String businessPremises) {
+	public void setBusinessPremises(Integer businessPremises) {
 		this.businessPremises = businessPremises;
+	}
+
+	public Double getAcademicSumInsured() {
+		return academicSumInsured;
+	}
+
+	public void setAcademicSumInsured(Double academicSumInsured) {
+		this.academicSumInsured = academicSumInsured;
 	}
 
 	public Integer getExpInSameLine() {
@@ -1324,13 +1332,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.expInSameLine = expInSameLine;
 	}
 
-	public String getAcademicSumInsured() {
-		return academicSumInsured;
-	}
-
-	public void setAcademicSumInsured(String academicSumInsured) {
-		this.academicSumInsured = academicSumInsured;
-	}
 
 	public Date getNomineeBirthDate() {
 		return nomineeBirthDate;

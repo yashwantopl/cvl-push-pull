@@ -153,19 +153,15 @@ public class MfiApplicantDetailsReq {
 	private String nomineeLocation;
 	private String nomineeHouseNo;
 	private String nomineeLandmark;
-	private String academicReligion;
-	private String academicCaste;
-	private Boolean isAcademicLifeInsurance;
 
-	private String houseOwnership;
-
-	private String areaType;
-
-	private String businessPremises;
-
-	private String expInSameLine;
-
-	private String academicSumInsured;
+	private Integer academicReligion;
+	private Integer academicCaste;
+	private Integer isAcademicLifeInsurance;
+	private Integer houseOwnership;
+	private Integer areaType;
+	private Integer businessPremises;
+	private Integer expInSameLine;
+	private Double academicSumInsured;
 
 	private Integer type;
 
@@ -935,70 +931,6 @@ public class MfiApplicantDetailsReq {
 		this.nomineeLandmark = nomineeLandmark;
 	}
 
-	public String getAcademicReligion() {
-		return academicReligion;
-	}
-
-	public void setAcademicReligion(String academicReligion) {
-		this.academicReligion = academicReligion;
-	}
-
-	public String getAcademicCaste() {
-		return academicCaste;
-	}
-
-	public void setAcademicCaste(String academicCaste) {
-		this.academicCaste = academicCaste;
-	}
-
-	public Boolean getIsAcademicLifeInsurance() {
-		return isAcademicLifeInsurance;
-	}
-
-	public void setIsAcademicLifeInsurance(Boolean isAcademicLifeInsurance) {
-		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
-	}
-
-	public String getHouseOwnership() {
-		return houseOwnership;
-	}
-
-	public void setHouseOwnership(String houseOwnership) {
-		this.houseOwnership = houseOwnership;
-	}
-
-	public String getAreaType() {
-		return areaType;
-	}
-
-	public void setAreaType(String areaType) {
-		this.areaType = areaType;
-	}
-
-	public String getBusinessPremises() {
-		return businessPremises;
-	}
-
-	public void setBusinessPremises(String businessPremises) {
-		this.businessPremises = businessPremises;
-	}
-
-	public String getExpInSameLine() {
-		return expInSameLine;
-	}
-
-	public void setExpInSameLine(String expInSameLine) {
-		this.expInSameLine = expInSameLine;
-	}
-
-	public String getAcademicSumInsured() {
-		return academicSumInsured;
-	}
-
-	public void setAcademicSumInsured(String academicSumInsured) {
-		this.academicSumInsured = academicSumInsured;
-	}
-
 	public Integer getType() {
 		return type;
 	}
@@ -1693,5 +1625,37 @@ public class MfiApplicantDetailsReq {
 
 	public void setCompetition(Integer competition) {
 		this.competition = competition;
+	}
+
+	public void setAcademicReligion(Integer academicReligion) {
+		this.academicReligion = academicReligion;
+	}
+
+	public void setAcademicCaste(Integer academicCaste) {
+		this.academicCaste = academicCaste;
+	}
+
+	public void setIsAcademicLifeInsurance(Integer isAcademicLifeInsurance) {
+		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
+	}
+
+	public void setHouseOwnership(Integer houseOwnership) {
+		this.houseOwnership = houseOwnership;
+	}
+
+	public void setAreaType(Integer areaType) {
+		this.areaType = areaType;
+	}
+
+	public void setBusinessPremises(Integer businessPremises) {
+		this.businessPremises = businessPremises;
+	}
+
+	public void setExpInSameLine(Integer expInSameLine) {
+		this.expInSameLine = expInSameLine;
+	}
+
+	public void setAcademicSumInsured(Double academicSumInsured) {
+		this.academicSumInsured = academicSumInsured;
 	}
 }
