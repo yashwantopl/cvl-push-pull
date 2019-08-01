@@ -38,11 +38,11 @@ public class OfflineAppConfigAudit extends AuditActivity implements Serializable
 	@Column(name = "business_type_id")
 	private Integer businessTypeId;
 	
-	@Column(name = "market_place")
-	private String marketPlace;
+	@Column(name = "field_value")
+	private String fieldValue ;
 	
-	@Column(name = "bank_specific")
-	private String bankSpecific;
+	@Column(name = "field_type")
+	private Integer fieldType ;
 	
 	@Column(name = "difference")
 	private String difference;
@@ -83,22 +83,6 @@ public class OfflineAppConfigAudit extends AuditActivity implements Serializable
 		this.businessTypeId = businessTypeId;
 	}
 
-	public String getMarketPlace() {
-		return marketPlace;
-	}
-
-	public void setMarketPlace(String marketPlace) {
-		this.marketPlace = marketPlace;
-	}
-
-	public String getBankSpecific() {
-		return bankSpecific;
-	}
-
-	public void setBankSpecific(String bankSpecific) {
-		this.bankSpecific = bankSpecific;
-	}
-
 	public String getDifference() {
 		return difference;
 	}
@@ -114,4 +98,21 @@ public class OfflineAppConfigAudit extends AuditActivity implements Serializable
 	public void setFromDate(Date fromDate) {
 		this.fromDate = fromDate;
 	}
+
+	public String getFieldValue() {
+		return fieldValue;
+	}
+
+	public void setFieldValue(String fieldValue) {
+		this.fieldValue = fieldValue;
+	}
+
+	public Integer getFieldType() {
+		return fieldType;
+	}
+
+	public void setFieldType(Integer fieldType) {
+		this.fieldType = fieldType;
+	}
+	
 }

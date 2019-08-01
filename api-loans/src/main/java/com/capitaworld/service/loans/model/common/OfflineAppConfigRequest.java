@@ -27,6 +27,10 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 	private String difference;
 	
 	private Date fromDate ;
+	
+	private String fieldValue;
+	
+	private Integer fieldType;
 
 	public Long getId() {
 		return id;
@@ -91,4 +95,21 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 	public void setFromDate(Date fromDate) {
 		this.fromDate = fromDate;
 	}
+
+	public String getFieldValue() {
+		return fieldValue;
+	}
+
+	public void setFieldValue(String fieldValue) {
+		this.fieldValue = fieldValue;
+	}
+
+	public Integer getFieldType() {
+		return fieldType;
+	}
+
+	public void setFieldType(Integer fieldType) {
+		this.fieldType = fieldType;
+	}
+	
 }
