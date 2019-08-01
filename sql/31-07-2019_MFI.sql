@@ -1,4 +1,8 @@
 
+ALTER TABLE `loan_application`.`tutorial_upload_manage`
+	ADD COLUMN `module_id` INT(11) NULL AFTER `created_date`;
+
+drop table loan_application.fs_mfi_applicant_details;
 CREATE TABLE `fs_mfi_applicant_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) DEFAULT NULL,
@@ -104,13 +108,13 @@ CREATE TABLE `fs_mfi_applicant_details` (
   `nominee_location` varchar(32) DEFAULT NULL,
   `nominee_house_no` varchar(32) DEFAULT NULL,
   `nominee_landmark` varchar(32) DEFAULT NULL,
-  `academic_religion` varchar(32) DEFAULT NULL,
-  `academic_caste` varchar(32) DEFAULT NULL,
-  `is_academic_life_insurance` bit(1) DEFAULT NULL,
-  `academic_sum_insured` varchar(32) DEFAULT NULL,
-  `house_ownership` varchar(32) DEFAULT NULL,
-  `area_type` varchar(32) DEFAULT NULL,
-  `business_premises` varchar(50) DEFAULT NULL,
+  `academic_religion` int(11) DEFAULT NULL,
+  `academic_caste` int(11) DEFAULT NULL,
+  `is_academic_life_insurance` int(11) DEFAULT NULL,
+  `academic_sum_insured` double DEFAULT NULL,
+  `house_ownership` int(11) DEFAULT NULL,
+  `area_type` int(11) DEFAULT NULL,
+  `business_premises` int(50) DEFAULT NULL,
   `exp_in_same_line` int(11) DEFAULT NULL,
   `nominee_birth_date` date DEFAULT NULL,
   `address_proof_img` blob,
@@ -158,7 +162,7 @@ CREATE TABLE `fs_mfi_applicant_details` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `fs_mfi_assets_liability_details` (
+CREATE TABLE loan_application.`fs_mfi_assets_liability_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) DEFAULT NULL,
   `assets_liability_type` int(11) DEFAULT NULL,
@@ -170,7 +174,7 @@ CREATE TABLE `fs_mfi_assets_liability_details` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `fs_mfi_bank_details` (
+CREATE TABLE loan_application.`fs_mfi_bank_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) DEFAULT NULL,
   `bank_id` bigint(20) DEFAULT NULL,
@@ -182,7 +186,7 @@ CREATE TABLE `fs_mfi_bank_details` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `fs_mfi_income_details` (
+CREATE TABLE loan_application.`fs_mfi_income_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) DEFAULT NULL,
   `occupation` int(11) DEFAULT NULL,
