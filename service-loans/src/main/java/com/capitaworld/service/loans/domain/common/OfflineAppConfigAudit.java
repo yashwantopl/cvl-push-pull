@@ -1,28 +1,47 @@
-package com.capitaworld.service.loans.model.common;
+package com.capitaworld.service.loans.domain.common;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
+
 /**
- * 
- * @author akshay
- *
+ * @author harshit
+ * Date : 09-Jun-2018
+ * About :- USER LOAN AMOUNT MAPPING STOARE MIN AND MAX AMOUNT BASED ON FP USERID AND PRODUCT ID FOR DISBURSEMENT
  */
-public class OfflineAppConfigRequest extends AuditActivityRequest implements Serializable {
+@Entity
+@Table(name = "fp_offline_app_config")
+public class OfflineAppConfigAudit extends AuditActivity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(name = "org_id")
 	private Long orgId;
 	
+	@Column(name = "loan_type")
 	private Integer loanType;
 	
+	@Column(name = "business_type_id")
 	private Integer businessTypeId;
 	
+	@Column(name = "market_place")
 	private String marketPlace;
 	
+	@Column(name = "bank_specific")
 	private String bankSpecific;
 	
+	@Column(name = "difference")
 	private String difference;
 
 	public Long getId() {
