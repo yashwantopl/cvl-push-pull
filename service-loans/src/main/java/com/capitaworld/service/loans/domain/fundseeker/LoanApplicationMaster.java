@@ -219,6 +219,9 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "is_mcq_skipped")
 	private Boolean isMcqSkipped;
 	
+	@Column(name = "loan_campaign_code")
+	private String loanCampaignCode;
+	
 
 	public Long getFpMakerId() {
 		return fpMakerId;
@@ -732,6 +735,14 @@ public class LoanApplicationMaster implements Serializable {
 	@Override
 	public String toString() {
 		return "LoanApplicationMaster [id=" + id + "]";
+	}
+
+	public String getLoanCampaignCode() {
+		return loanCampaignCode;
+	}
+
+	public void setLoanCampaignCode(String loanCampaignCode) {
+		this.loanCampaignCode = loanCampaignCode;
 	}
 
 }
