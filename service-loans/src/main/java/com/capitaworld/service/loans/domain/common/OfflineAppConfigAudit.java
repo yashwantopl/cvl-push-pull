@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.domain.common;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 
@@ -43,6 +46,10 @@ public class OfflineAppConfigAudit extends AuditActivity implements Serializable
 	
 	@Column(name = "difference")
 	private String difference;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+    @Column(name="from_date")
+    private Date fromDate ;
 
 	public Long getId() {
 		return id;
@@ -98,5 +105,13 @@ public class OfflineAppConfigAudit extends AuditActivity implements Serializable
 
 	public void setDifference(String difference) {
 		this.difference = difference;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 }
