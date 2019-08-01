@@ -17,7 +17,7 @@ import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
  * About :- USER LOAN AMOUNT MAPPING STOARE MIN AND MAX AMOUNT BASED ON FP USERID AND PRODUCT ID FOR DISBURSEMENT
  */
 @Entity
-@Table(name = "fp_offline_app_config")
+@Table(name = "fp_offline_app_config_audit")
 public class OfflineAppConfigAudit extends AuditActivity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
