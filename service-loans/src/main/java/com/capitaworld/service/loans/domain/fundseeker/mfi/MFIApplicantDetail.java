@@ -355,32 +355,32 @@ public class MFIApplicantDetail implements Serializable {
 	private byte[] consentFormImg;
 	@Column(name = "profile_img")
 	private byte[] profileImg;
-	@Column(name = "ship_shgi_installment")
-	private Double shipShgiInstallment;
-	@Column(name = "other_installment")
-	private Double otherInstallment;
-	@Column(name = "loan_installment")
-	private Double loanInstallment;
-	@Column(name = "education_expense")
-	private Double educationExpense;
-	@Column(name = "medical_expense")
-	private Double medicalExpense;
-	@Column(name = "food_expense")
-	private Double foodExpense;
-	@Column(name = "other_expense")
-	private Double otherExpense;
-	@Column(name = "house_hold_expense")
-	private Double houseHoldExpense;
-	@Column(name = "clothes_expense")
-	private Double clothesExpense;
-	@Column(name = "business_in_brief")
-	private Integer businessInBrief;
-	@Column(name = "monthly_cashflow")
-	private Double monthlyCashflow;
-	@Column(name = "monthly_expenditure")
-	private Double monthlyExpenditure;
-	@Column(name = "monthly_income")
-	private Double monthlyIncome;
+//	@Column(name = "ship_shgi_installment")
+//	private Double shipShgiInstallment;
+//	@Column(name = "other_installment")
+//	private Double otherInstallment;
+//	@Column(name = "loan_installment")
+//	private Double loanInstallment;
+//	@Column(name = "education_expense")
+//	private Double educationExpense;
+//	@Column(name = "medical_expense")
+//	private Double medicalExpense;
+//	@Column(name = "food_expense")
+//	private Double foodExpense;
+//	@Column(name = "other_expense")
+//	private Double otherExpense;
+//	@Column(name = "house_hold_expense")
+//	private Double houseHoldExpense;
+//	@Column(name = "clothes_expense")
+//	private Double clothesExpense;
+//	@Column(name = "business_in_brief")
+//	private Integer businessInBrief;
+//	@Column(name = "monthly_cashflow")
+//	private Double monthlyCashflow;
+//	@Column(name = "monthly_expenditure")
+//	private Double monthlyExpenditure;
+//	@Column(name = "monthly_income")
+//	private Double monthlyIncome;
 	@Column(name = "ppi_no_family_member")
 	private Integer ppiNoFamilyMember;
 	@Column(name = "ppi_acadamic_head_family")
@@ -428,11 +428,11 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer installmentRecomandation;
 	@Column(name = "is_loanassessment_details_filled")
 	private Boolean isLoanassessmentDetailsFilled;
-	@Column(name = "total_expense")
-	private Double totalExpense;
+//	@Column(name = "total_expense")
+//	private Double totalExpense;
 	
-	@Column(name = "total_monthly_income_for_family")
-	private Double totalMonthlyIncomeForFamily;
+//	@Column(name = "total_monthly_income_for_family")
+//	private Double totalMonthlyIncomeForFamily;
 	private Integer status;
 
 	public Long getId() {
@@ -1357,102 +1357,102 @@ public class MFIApplicantDetail implements Serializable {
 		this.profileImg = profileImg;
 	}
 
-	public Double getShipShgiInstallment() {
-		return shipShgiInstallment;
-	}
-
-	public void setShipShgiInstallment(Double shipShgiInstallment) {
-		this.shipShgiInstallment = shipShgiInstallment;
-	}
-
-	public Double getOtherInstallment() {
-		return otherInstallment;
-	}
-
-	public void setOtherInstallment(Double otherInstallment) {
-		this.otherInstallment = otherInstallment;
-	}
-
-	public Double getLoanInstallment() {
-		return loanInstallment;
-	}
-
-	public void setLoanInstallment(Double loanInstallment) {
-		this.loanInstallment = loanInstallment;
-	}
-
-	public Double getEducationExpense() {
-		return educationExpense;
-	}
-
-	public void setEducationExpense(Double educationExpense) {
-		this.educationExpense = educationExpense;
-	}
-
-	public Double getMedicalExpense() {
-		return medicalExpense;
-	}
-
-	public void setMedicalExpense(Double medicalExpense) {
-		this.medicalExpense = medicalExpense;
-	}
-
-	public Double getFoodExpense() {
-		return foodExpense;
-	}
-
-	public void setFoodExpense(Double foodExpense) {
-		this.foodExpense = foodExpense;
-	}
-
-	public Double getOtherExpense() {
-		return otherExpense;
-	}
-
-	public void setOtherExpense(Double otherExpense) {
-		this.otherExpense = otherExpense;
-	}
-
-	public byte[] getConsentFormImg() {
-		return consentFormImg;
-	}
-
-	public void setConsentFormImg(byte[] consentFormImg) {
-		this.consentFormImg = consentFormImg;
-	}
-
-
-	public Integer getBusinessInBrief() {
-		return businessInBrief;
-	}
-
-	public void setBusinessInBrief(Integer businessInBrief) {
-		this.businessInBrief = businessInBrief;
-	}
-
-	public Double getMonthlyCashflow() {
-		return monthlyCashflow;
-	}
-
-	public void setMonthlyCashflow(Double monthlyCashflow) {
-		this.monthlyCashflow = monthlyCashflow;
-	}
-
-	public Double getMonthlyExpenditure() {
-		return monthlyExpenditure;
-	}
-
-	public void setMonthlyExpenditure(Double monthlyExpenditure) {
-		this.monthlyExpenditure = monthlyExpenditure;
-	}
-
-	public Double getMonthlyIncome() {
-		return monthlyIncome;
-	}
-
-	public void setMonthlyIncome(Double monthlyIncome) {
-		this.monthlyIncome = monthlyIncome;
-	}
+//	public Double getShipShgiInstallment() {
+//		return shipShgiInstallment;
+//	}
+//
+//	public void setShipShgiInstallment(Double shipShgiInstallment) {
+//		this.shipShgiInstallment = shipShgiInstallment;
+//	}
+//
+//	public Double getOtherInstallment() {
+//		return otherInstallment;
+//	}
+//
+//	public void setOtherInstallment(Double otherInstallment) {
+//		this.otherInstallment = otherInstallment;
+//	}
+//
+//	public Double getLoanInstallment() {
+//		return loanInstallment;
+//	}
+//
+//	public void setLoanInstallment(Double loanInstallment) {
+//		this.loanInstallment = loanInstallment;
+//	}
+//
+//	public Double getEducationExpense() {
+//		return educationExpense;
+//	}
+//
+//	public void setEducationExpense(Double educationExpense) {
+//		this.educationExpense = educationExpense;
+//	}
+//
+//	public Double getMedicalExpense() {
+//		return medicalExpense;
+//	}
+//
+//	public void setMedicalExpense(Double medicalExpense) {
+//		this.medicalExpense = medicalExpense;
+//	}
+//
+//	public Double getFoodExpense() {
+//		return foodExpense;
+//	}
+//
+//	public void setFoodExpense(Double foodExpense) {
+//		this.foodExpense = foodExpense;
+//	}
+//
+//	public Double getOtherExpense() {
+//		return otherExpense;
+//	}
+//
+//	public void setOtherExpense(Double otherExpense) {
+//		this.otherExpense = otherExpense;
+//	}
+//
+//	public byte[] getConsentFormImg() {
+//		return consentFormImg;
+//	}
+//
+//	public void setConsentFormImg(byte[] consentFormImg) {
+//		this.consentFormImg = consentFormImg;
+//	}
+//
+//
+//	public Integer getBusinessInBrief() {
+//		return businessInBrief;
+//	}
+//
+//	public void setBusinessInBrief(Integer businessInBrief) {
+//		this.businessInBrief = businessInBrief;
+//	}
+//
+//	public Double getMonthlyCashflow() {
+//		return monthlyCashflow;
+//	}
+//
+//	public void setMonthlyCashflow(Double monthlyCashflow) {
+//		this.monthlyCashflow = monthlyCashflow;
+//	}
+//
+//	public Double getMonthlyExpenditure() {
+//		return monthlyExpenditure;
+//	}
+//
+//	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+//		this.monthlyExpenditure = monthlyExpenditure;
+//	}
+//
+//	public Double getMonthlyIncome() {
+//		return monthlyIncome;
+//	}
+//
+//	public void setMonthlyIncome(Double monthlyIncome) {
+//		this.monthlyIncome = monthlyIncome;
+//	}
 
 	public Integer getPpiNoFamilyMember() {
 		return ppiNoFamilyMember;
@@ -1583,21 +1583,21 @@ public class MFIApplicantDetail implements Serializable {
 		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
 	}
 
-	public Double getTotalExpense() {
-		return totalExpense;
-	}
-
-	public void setTotalExpense(Double totalExpense) {
-		this.totalExpense = totalExpense;
-	}
-
-	public Double getTotalMonthlyIncomeForFamily() {
-		return totalMonthlyIncomeForFamily;
-	}
-
-	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
-		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
-	}
+//	public Double getTotalExpense() {
+//		return totalExpense;
+//	}
+//
+//	public void setTotalExpense(Double totalExpense) {
+//		this.totalExpense = totalExpense;
+//	}
+//
+//	public Double getTotalMonthlyIncomeForFamily() {
+//		return totalMonthlyIncomeForFamily;
+//	}
+//
+//	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
+//		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
+//	}
 
 	
 	public Double getLoanAmountRecomandation() {
@@ -1664,19 +1664,19 @@ public class MFIApplicantDetail implements Serializable {
 		this.addressProofNo = addressProofNo;
 	}
 
-	public Double getHouseHoldExpense() {
-		return houseHoldExpense;
-	}
-
-	public void setHouseHoldExpense(Double houseHoldExpense) {
-		this.houseHoldExpense = houseHoldExpense;
-	}
-
-	public Double getClothesExpense() {
-		return clothesExpense;
-	}
-
-	public void setClothesExpense(Double clothesExpense) {
-		this.clothesExpense = clothesExpense;
-	}
+//	public Double getHouseHoldExpense() {
+//		return houseHoldExpense;
+//	}
+//
+//	public void setHouseHoldExpense(Double houseHoldExpense) {
+//		this.houseHoldExpense = houseHoldExpense;
+//	}
+//
+//	public Double getClothesExpense() {
+//		return clothesExpense;
+//	}
+//
+//	public void setClothesExpense(Double clothesExpense) {
+//		this.clothesExpense = clothesExpense;
+//	}
 }

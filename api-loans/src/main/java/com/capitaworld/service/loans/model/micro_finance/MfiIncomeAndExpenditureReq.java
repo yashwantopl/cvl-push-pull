@@ -48,7 +48,7 @@ public class MfiIncomeAndExpenditureReq {
 			Double monthlyIncome, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
 			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
 			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
-			Integer ppiOtherTableInFamily) {
+			Integer ppiOtherTableInFamily,Double houseHoldExpense, Double clothesExpense) {
 		this.applicationId = applicationId;
 		this.shipShgiInstallment = shipShgiInstallment;
 		this.otherInstallment = otherInstallment;
@@ -71,6 +71,8 @@ public class MfiIncomeAndExpenditureReq {
 		this.ppiVehicleInFamily = ppiVehicleInFamily;
 		this.ppiDressingTableInFamily = ppiDressingTableInFamily;
 		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+		this.clothesExpense = clothesExpense;
+		this.houseHoldExpense = houseHoldExpense;
 	}
 
 	public Long getId() {

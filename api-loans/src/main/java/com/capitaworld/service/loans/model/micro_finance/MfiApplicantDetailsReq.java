@@ -260,6 +260,7 @@ public class MfiApplicantDetailsReq {
     private byte[] passbookImg;
 
     private List<MfiIncomeDetailsReq> incomeDetailsReqList;
+    private List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList;
     private Integer purposeOfLoan;
 
     private Boolean isBusinessPremiseVisited;
@@ -1658,4 +1659,14 @@ public class MfiApplicantDetailsReq {
 	public void setAcademicSumInsured(Double academicSumInsured) {
 		this.academicSumInsured = academicSumInsured;
 	}
+
+	public List<MfiIncomeDetailsReq> getIncomeDetailsTypeTwoList() {
+		return incomeDetailsTypeTwoList;
+	}
+
+	public void setIncomeDetailsTypeTwoList(List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList) {
+		this.incomeDetailsTypeTwoList = incomeDetailsTypeTwoList;
+	}
+	
+	
 }
