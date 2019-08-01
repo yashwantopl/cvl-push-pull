@@ -275,8 +275,7 @@ public class PrimaryViewController {
 		}
 	}
 	
-	
-	///PrimaryView/MfiPrimaryDetails/"+applicationId + "/" +mfiType
+
 	@GetMapping(value = "/MfiPrimaryDetails/{applicationId}/{mfiFpType}")  
 	public @ResponseBody ResponseEntity<LoansResponse> MFiPrimayView(@PathVariable(value = "applicationId") Long applicationId,
 			@PathVariable(value = "mfiFpType") Integer mfiFpType, HttpServletRequest request) { /*,@RequestParam(value = "clientId", required = false)*/
