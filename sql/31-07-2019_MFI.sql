@@ -199,3 +199,13 @@ CREATE TABLE loan_application.`fs_mfi_income_details` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `fs_mfi_ppi_mstr` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ppi_que_id` int(11) DEFAULT NULL,
+  `ans_mstr_id` int(11) DEFAULT NULL,
+  `score_value` double DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
