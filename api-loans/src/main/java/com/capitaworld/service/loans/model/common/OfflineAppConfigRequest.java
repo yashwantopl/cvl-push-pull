@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.common;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 
@@ -24,6 +25,8 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 	private String bankSpecific;
 	
 	private String difference;
+	
+	private Date fromDate ;
 
 	public Long getId() {
 		return id;
@@ -79,5 +82,13 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 
 	public void setDifference(String difference) {
 		this.difference = difference;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 }
