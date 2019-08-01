@@ -28,6 +28,8 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 	
 	private Date fromDate ;
 	
+	private Date toDate;
+	
 	private String fieldValue;
 	
 	private Integer fieldType;
@@ -110,6 +112,14 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 
 	public void setFieldType(Integer fieldType) {
 		this.fieldType = fieldType;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 	
 }

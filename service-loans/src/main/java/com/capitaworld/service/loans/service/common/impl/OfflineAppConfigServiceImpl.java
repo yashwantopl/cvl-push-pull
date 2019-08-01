@@ -95,6 +95,7 @@ public class OfflineAppConfigServiceImpl implements OfflineAppConfigService{
 			appConfigRequest = new OfflineAppConfigRequest();			
 		}
 		BeanUtils.copyProperties(offlineAppConfig, appConfigRequest);
+		appConfigRequest.setToDate(offlineAppConfig.getCreatedDate());
 		return appConfigRequest;
 	}
 	
