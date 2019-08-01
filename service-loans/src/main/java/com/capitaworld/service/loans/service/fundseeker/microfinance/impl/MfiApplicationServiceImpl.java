@@ -450,7 +450,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		ProposalRequestResponce proposalRequestResponceNew =new ProposalRequestResponce();
 			// get Proposal Details
 
-			ProposalDetails proposalDetails=proposalDetailsRepository.getByApplicationIdAndFPProductId(proposalRequestResponceNew.getApplicationId());
+			ProposalDetails proposalDetails=proposalDetailsRepository.getByApplicationIdAndFPProductId(proposalRequestResponce.getApplicationId());
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
 			{
 				proposalRequestResponceNew.setFpProductId(proposalDetails.getFpProductId());
