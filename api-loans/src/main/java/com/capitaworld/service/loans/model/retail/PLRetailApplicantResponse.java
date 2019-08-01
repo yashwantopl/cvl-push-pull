@@ -144,6 +144,19 @@ public class PLRetailApplicantResponse implements Serializable {
 	private String permAddTaluko;
 	private Double netMonthlyIncome;
 	private Boolean isIncomeCons;
+    private String nameEditedByCoApp;
+	
+	
+	
+	
+	
+    
+	public String getNameEditedByCoApp() {
+		return nameEditedByCoApp;
+	}
+	public void setNameEditedByCoApp(String nameEditedByCoApp) {
+		this.nameEditedByCoApp = nameEditedByCoApp;
+	}
 	
 	
 

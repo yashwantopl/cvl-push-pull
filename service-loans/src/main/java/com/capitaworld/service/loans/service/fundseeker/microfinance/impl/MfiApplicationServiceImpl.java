@@ -388,8 +388,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 return "Some required fields in Family Details are Missing Personal Detail section";
             } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getRelationWithNomineeId()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeBirthDate()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineePincode()) ||
-                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeDistrict()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeCity()) ||
-                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeState()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeAddress())){
+                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeDistrict()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeCity()) ||CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeState())){
                 return "Some required fields in Nominee's details are missing Personal Detail section";
             } else if(CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getEducationQualification()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getReligion()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicCaste())){
