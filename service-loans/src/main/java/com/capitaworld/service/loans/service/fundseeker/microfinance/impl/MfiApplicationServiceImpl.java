@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.service.loans.model.micro_finance.*;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +61,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private MfiAssetsDetailsRepository MfiAssetsDetailsRepository;
+
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 
 	@Override
 	public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -436,8 +442,35 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         return null;
     }
 
-    public void getPendingApplications(){
-    }
-    public void getApprovedApplications(){
-    }
+
+
+	@Override
+	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce) {
+
+		ProposalRequestResponce proposalRequestResponceNew =new ProposalRequestResponce();
+			// get Proposal Details
+
+			ProposalDetails proposalDetails=proposalDetailsRepository.getByApplicationIdAndFPProductId(proposalRequestResponceNew.getApplicationId());
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				proposalRequestResponceNew.setFpProductId(proposalDetails.getFpProductId());
+				proposalRequestResponceNew.setProposalStatusId(proposalDetails.getProposalStatusId().getId());
+				proposalRequestResponceNew.setProposalMappingId(proposalDetails.getId());
+				proposalRequestResponceNew.setApplicationId(proposalDetails.getApplicationId());
+			}
+
+		return proposalRequestResponceNew;
+
+	}
+
+
+	@Override
+	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status){
+		if(status == 1){
+			return detailsRepository.getPendingApplications(userId,orgId);
+		} else {
+			return detailsRepository.getApprovedApplications(userId,orgId);
+		}
+	}
+
 }

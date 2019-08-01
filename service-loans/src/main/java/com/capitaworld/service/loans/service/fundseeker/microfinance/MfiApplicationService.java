@@ -1,9 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance;
 
-import java.util.List;
-
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
+import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.service.loans.model.micro_finance.*;
+
+import java.util.List;
 
 public interface MfiApplicationService {
 
@@ -42,5 +42,11 @@ public interface MfiApplicationService {
 	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
 
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
+
+
+	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce);
+
+	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status);
+
 
 }

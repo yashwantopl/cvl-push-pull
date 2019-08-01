@@ -319,7 +319,6 @@ public class MfiApplicantDetailsReq {
 		this.isBusinessPremiseVisited = isBusinessPremiseVisited;
 	}
 
-
 	public Long getApplicationId() {
 		return applicationId;
 	}
