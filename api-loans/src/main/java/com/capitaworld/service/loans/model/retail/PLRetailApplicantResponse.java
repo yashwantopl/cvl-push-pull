@@ -145,12 +145,20 @@ public class PLRetailApplicantResponse implements Serializable {
 	private Double netMonthlyIncome;
 	private Boolean isIncomeCons;
     private String nameEditedByCoApp;
-	
-	
-	
+    private String isOwnedProp;
 	
 	
     
+	
+
+	public String getIsOwnedProp() {
+		return isOwnedProp;
+	}
+
+	public void setIsOwnedProp(String isOwnedProp) {
+		this.isOwnedProp = isOwnedProp;
+	}
+
 	public String getNameEditedByCoApp() {
 		return nameEditedByCoApp;
 	}
