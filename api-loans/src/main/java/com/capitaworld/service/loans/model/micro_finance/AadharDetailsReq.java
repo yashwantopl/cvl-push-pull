@@ -77,6 +77,7 @@ public class AadharDetailsReq implements Serializable {
     private String aadharPincode;
 
     private Integer addressProfType;
+    private String addressProfNumber;
 
     private String fatherName;
 
@@ -92,8 +93,9 @@ public class AadharDetailsReq implements Serializable {
     private String message;
     private String status;
 
-    private  byte[] profilePic;
-    private  byte[] addressProofImg;
+    private byte[] profilePic;
+    private byte[] addressProofImg;
+    private byte[] consentFormImg;
 
     public AadharDetailsReq() {
     }
@@ -515,5 +517,29 @@ public class AadharDetailsReq implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public byte[] getConsentFormImg() {
+        return consentFormImg;
+    }
+
+    public void setConsentFormImg(byte[] consentFormImg) {
+        this.consentFormImg = consentFormImg;
+    }
+
+    public String getAddressProfNumber() {
+        return addressProfNumber;
+    }
+
+    public void setAddressProfNumber(String addressProfNumber) {
+        this.addressProfNumber = addressProfNumber;
     }
 }

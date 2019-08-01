@@ -6700,9 +6700,9 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.MFI.ANNUAL_INCOME_AS_APPLICABLE_MFI:
                                 try {
-                                    AreaTypeMfi areaType = AreaTypeMfi.fromValue(mfiApplicantDetail.getAreaType());
+//                                    AreaTypeMfi areaType = AreaTypeMfi.fromId(mfiApplicantDetail.getAreaType());
                                     Double annualIncome = (mfiApplicantDetail.getMonthlyIncome() * 12);
-                                    AnnualIncomeRural annualIncomeRural = AnnualIncomeRural.getRangeByValue(annualIncome, areaType.getId());
+                                    AnnualIncomeRural annualIncomeRural = AnnualIncomeRural.getRangeByValue(annualIncome, mfiApplicantDetail.getAreaType());
                                     if (!CommonUtils.isObjectNullOrEmpty(annualIncomeRural)) {
                                         scoreParameterMFIRequest.setAnnualIncome(annualIncomeRural.getId().longValue());
                                         scoreParameterMFIRequest.setAnnualIncome_p(true);
