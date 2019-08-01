@@ -107,6 +107,18 @@ public class CoApplicantRequest {
 	private Integer educationQualification;
 	private Boolean isIncomeConsider;
 	private Boolean isOwnedProp;
+	private String nameEditedByCoApp;
+	
+	
+	
+
+	public String getNameEditedByCoApp() {
+		return nameEditedByCoApp;
+	}
+
+	public void setNameEditedByCoApp(String nameEditedByCoApp) {
+		this.nameEditedByCoApp = nameEditedByCoApp;
+	}
 
 	public Boolean getIsOwnedProp() {
 		return isOwnedProp;
