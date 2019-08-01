@@ -56,6 +56,20 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 	
+	@Override
+	public String getCampaignUser(Long userId) {
+		try {
+			String code = (String) entityManager
+					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
+					.setParameter(CommonUtils.USER_ID, userId)
+					.getSingleResult();
+			return !CommonUtils.isObjectNullOrEmpty(code) ? code : "MARKETPLACE";
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return "MARKETPLACE";
+	}
+	
 	public String getMobileNumberByUserId(Long userId) {
 		try {
 			return  (String) entityManager
