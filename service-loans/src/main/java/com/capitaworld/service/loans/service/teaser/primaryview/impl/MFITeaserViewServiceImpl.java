@@ -49,8 +49,8 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 	
-/*	@Autowired
-	private  ProposalDetailsRepository proposalDetailsRepository;*/
+	@Autowired
+	private  ProposalDetailsRepository proposalDetailsRepository;
 	
 	@Override
 	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId,Integer mfiFpType) {
@@ -60,7 +60,7 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 		
 		Integer bussnessTypeId =null;
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId); // FOR BUSSNESS TYPE ID RELATED
-		Long productMappingId = 1441l;//proposalDetailsRepository.getFpProductIdByApplicationId(applicationId); // GETTING FP PRODUCT ID BY APPLICATION ID 
+		Long productMappingId = proposalDetailsRepository.getFpProductIdByApplicationId(applicationId); // GETTING FP PRODUCT ID BY APPLICATION ID 1441l 
 		
 		if(loanApplicationMaster!=null){
 			bussnessTypeId = loanApplicationMaster.getBusinessTypeId();
@@ -94,6 +94,7 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 		try {
 			EligibilityResponse eligibilityResp = eligibilityClient.getMfiLoanDetails(eligibilityReq);
 			mfiTeaserViewResponse.setEligibilityDataObject(eligibilityResp.getData()!=null?eligibilityResp.getData():null);
+			logger.info("ELIGIBILITY RESPONSE HERE ======={}=====>",eligibilityResp);
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 			}
@@ -106,8 +107,9 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 			matchRequest.setApplicationId(applicationId);
 			matchRequest.setProductId(productMappingId);
 			matchRequest.setBusinessTypeId(bussnessTypeId);
-			MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfMFI(matchRequest); 
+			MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfMFI(matchRequest);
 				mfiTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+				logger.info("mathes response here  ======={}=====>",matchResponse);
 		} catch (Exception e) {
 			logger.error("EXCEPTION IS GETTING WHILE GET MATCHES DATA====={}======={}" , e);
 		}
