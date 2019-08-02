@@ -6584,7 +6584,7 @@ public class ScoringServiceImpl implements ScoringService {
         if (!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
             applicationId = scoringRequestLoansList.get(0).getApplicationId();
             mfiApplicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(applicationId, 1);
-            expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationId(applicationId);
+            expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(applicationId,2);
         }
         for (ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList) {
             ScoreParameterMFIRequest scoreParameterMFIRequest = null;
