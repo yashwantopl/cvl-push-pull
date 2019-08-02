@@ -3,7 +3,7 @@ ALTER TABLE `loan_application`.`tutorial_upload_manage`
 	ADD COLUMN `module_id` INT(11) NULL AFTER `created_date`;
 
 drop table loan_application.fs_mfi_applicant_details;
-CREATE TABLE `fs_mfi_applicant_details` (
+CREATE TABLE loan_application.`fs_mfi_applicant_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) DEFAULT NULL,
   `proposal_mapping_id` bigint(20) DEFAULT NULL,
@@ -186,6 +186,32 @@ CREATE TABLE loan_application.`fs_mfi_bank_details` (
   PRIMARY KEY (`id`)
 );
 
+
+CREATE TABLE loan_application.`fs_mfi_expense_expected_income_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) DEFAULT NULL,
+  `ship_shgi_installment` double DEFAULT NULL,
+  `other_installment` double DEFAULT NULL,
+  `loan_installment` double DEFAULT NULL,
+  `education_expense` double DEFAULT NULL,
+  `medical_expense` double DEFAULT NULL,
+  `food_expense` double DEFAULT NULL,
+  `other_expense` double DEFAULT NULL,
+  `house_hold_expense` double DEFAULT NULL,
+  `clothes_expense` double DEFAULT NULL,
+  `business_in_brief` int(11) DEFAULT NULL,
+  `monthly_cashflow` double DEFAULT NULL,
+  `monthly_expenditure` double DEFAULT NULL,
+  `monthly_income` double DEFAULT NULL,
+  `total_expense` double DEFAULT NULL,
+  `cash_flow` double DEFAULT NULL,
+  `net_saving` double DEFAULT NULL,
+  `total_monthly_income_for_family` double DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
 CREATE TABLE loan_application.`fs_mfi_income_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) DEFAULT NULL,
@@ -195,11 +221,12 @@ CREATE TABLE loan_application.`fs_mfi_income_details` (
   `monthly_income` double DEFAULT NULL,
   `yearly_income` double DEFAULT NULL,
   `relation_id` int(11) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `fs_mfi_ppi_mstr` (
+CREATE TABLE loan_application.`fs_mfi_ppi_mstr` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `ppi_que_id` int(11) DEFAULT NULL,
   `ans_mstr_id` int(11) DEFAULT NULL,
