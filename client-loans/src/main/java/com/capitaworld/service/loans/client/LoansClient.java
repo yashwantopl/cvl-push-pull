@@ -2841,7 +2841,7 @@ public class LoansClient {
 	 * GET APPLICATION CAMPAIGN CODE FROM LOAN APPLICATION MASTER
 	 * @param applicationId
 	 * @return PLEASE FIND CAMPAIGN CODE FROM "data" key from "LoansResponse" Class
-	 * @throws ExcelException
+	 * @throws ExcelException 
 	 */
 	public LoansResponse getApplicationCampaignCode(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_APPLICATION_CAMPAIGN_CODE).concat("/" + applicationId);
