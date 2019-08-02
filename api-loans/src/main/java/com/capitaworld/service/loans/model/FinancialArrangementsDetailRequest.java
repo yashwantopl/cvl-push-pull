@@ -60,6 +60,8 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	
 	private Double bureauOutstandingAmount;
 	private Double bureauOrCalculatedEmi;
+	
+	private String entryNo;
 
 	public Long getId() {
 		return id;
@@ -235,6 +237,14 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 
 	public void setCoAppName(String coAppName) {
 		this.coAppName = coAppName;
+	}
+
+	public String getEntryNo() {
+		return entryNo;
+	}
+
+	public void setEntryNo(String entryNo) {
+		this.entryNo = entryNo;
 	}
 
 }

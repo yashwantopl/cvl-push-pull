@@ -109,6 +109,9 @@ public class FinancialArrangementsDetail implements Serializable {
 	
 	@Column(name = "bureau_or_calculated_emi")
 	private Double bureauOrCalculatedEmi;
+	
+	@Column(name = "entry_no")
+	private String entryNo;
 
 	public FinancialArrangementsDetail() {
 		// Do nothing because of X and Y.
@@ -320,6 +323,15 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setBureauOutstandingAmount(Double bureauOutstandingAmount) {
 		this.bureauOutstandingAmount = bureauOutstandingAmount;
 	}
+
+	public String getEntryNo() {
+		return entryNo;
+	}
+
+	public void setEntryNo(String entryNo) {
+		this.entryNo = entryNo;
+	}
+	
 	
 }
 
