@@ -6103,12 +6103,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //		}
 		logger.info("Successfully get result");
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
-		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
-		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_OPEN));
 		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
+		corporateLoan.setProductId(17);
+		corporateLoan.setBusinessTypeId(6);
 		corporateLoan.setFpMakerId(userId);
 		corporateLoan.setNpOrgId(userOrgId);
 		corporateLoan.setIsActive(true);

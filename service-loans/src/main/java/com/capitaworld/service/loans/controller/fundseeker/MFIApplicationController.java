@@ -514,8 +514,8 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}/{type}")
-	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
+	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}")
+	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "getCashFlowAssesmentByAppId");
@@ -524,7 +524,7 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId,type);
+		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId);
 			CommonDocumentUtils.endHook(logger, "getCashFlowAssesmentByAppId");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
 					HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);
