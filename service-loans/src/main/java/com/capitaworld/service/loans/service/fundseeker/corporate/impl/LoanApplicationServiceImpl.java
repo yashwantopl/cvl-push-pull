@@ -27,9 +27,11 @@ import javax.persistence.StoredProcedureQuery;
 
 import com.capitaworld.service.loans.domain.GstRelatedParty;
 import com.capitaworld.service.loans.domain.common.MaxInvestmentBankwise;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
 import com.capitaworld.service.loans.repository.common.*;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -234,6 +236,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+
+	@Autowired
+	private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
 
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
@@ -3595,6 +3600,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
+			}
+			else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.MFI.getId()) {
+				MFIApplicantDetail mfiApplicantDetail= mfiApplicationDetailsRepository.findByAppIdAndType(applicationId,1);
+				return mfiApplicantDetail.getFirstName() + " " + mfiApplicantDetail.getLastName();
 			}
 			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
