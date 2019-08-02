@@ -56,6 +56,20 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 	
+	@Override
+	public String getCampaignUser(Long userId) {
+		try {
+			String code = (String) entityManager
+					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
+					.setParameter(CommonUtils.USER_ID, userId)
+					.getSingleResult();
+			return !CommonUtils.isObjectNullOrEmpty(code) ? code : "MARKETPLACE";
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return "MARKETPLACE";
+	}
+	
 	public String getMobileNumberByUserId(Long userId) {
 		try {
 			return  (String) entityManager
@@ -197,7 +211,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public Long getOfflineCountByAppId(Long applicationId) {
 		BigInteger count =  (BigInteger) entityManager
-				.createNativeQuery("SELECT COUNT(*) FROM `loan_application`.`ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
+				.createNativeQuery("SELECT COUNT(*) FROM `loan_application`.`ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
 						.setParameter("applicationId", applicationId).getSingleResult();
 		return count != null ? count.longValue() : 0l;
 	}
@@ -212,7 +226,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status` \r\n" + 
 							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id` \r\n" + 
 							"LEFT JOIN users.`branch_master` brn ON brn.`id` = inl.`branch_id` \r\n" + 
-							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE;")
+							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1';")
 							.setParameter("applicationId", applicationId).getSingleResult();	
 		} catch (Exception e) {
 			logger.error("Exception while get offline details by application id ----->" ,e);
@@ -228,7 +242,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
 							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status`\r\n" + 
 							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id`\r\n" + 
-							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
+							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
 							.setParameter("applicationId", applicationId).getSingleResult();	
 		} catch (Exception e) {
 			logger.error("Exception while get offline status  ----->" ,e);

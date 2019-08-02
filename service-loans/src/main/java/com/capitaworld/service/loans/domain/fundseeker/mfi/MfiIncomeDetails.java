@@ -32,6 +32,8 @@ public class MfiIncomeDetails implements Serializable {
     @Column(name = "yearly_income")
     private Double yearlyIncome;
 
+    private Integer type;
+
     public Long getId() {
         return id;
     }
@@ -94,5 +96,13 @@ public class MfiIncomeDetails implements Serializable {
 
     public void setRelationId(Integer relationId) {
         this.relationId = relationId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

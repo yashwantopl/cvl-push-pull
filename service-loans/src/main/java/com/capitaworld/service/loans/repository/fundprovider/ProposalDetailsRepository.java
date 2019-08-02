@@ -130,5 +130,8 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.proposal_status_id In(5,11,13) AND user_org_id <>:userOrgId ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
     public ProposalDetails getSanctionProposalByApplicationIdAndUserOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);
+
+    @Query(value = "SELECT * FROM proposal_details as  pd WHERE pd.application_id =:applicationId and is_active=true",nativeQuery = true)
+    public ProposalDetails getByApplicationIdAndFPProductId(@Param("applicationId") Long applicationId);
 }
 

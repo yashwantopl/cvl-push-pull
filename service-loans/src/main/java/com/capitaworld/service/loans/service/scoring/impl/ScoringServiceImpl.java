@@ -14,8 +14,10 @@ import java.util.Map;
 import javax.transaction.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.*;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpectedIncomeDetailRepository;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.scoring.MCLRReqRes;
 import com.capitaworld.service.scoring.model.*;
@@ -218,6 +220,8 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
+    @Autowired
+    private MfiExpenseExpectedIncomeDetailRepository expectedIncomeDetailRepository;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -6575,9 +6579,12 @@ public class ScoringServiceImpl implements ScoringService {
         List<ScoringRequest> scoringRequestList = new ArrayList<>(scoringRequestLoansList.size());
 
         MFIApplicantDetail mfiApplicantDetail = null;
+        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = null;
+
         if (!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
             applicationId = scoringRequestLoansList.get(0).getApplicationId();
             mfiApplicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(applicationId, 1);
+            expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationId(applicationId);
         }
         for (ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList) {
             ScoreParameterMFIRequest scoreParameterMFIRequest = null;
@@ -6700,9 +6707,9 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.MFI.ANNUAL_INCOME_AS_APPLICABLE_MFI:
                                 try {
-                                    AreaTypeMfi areaType = AreaTypeMfi.fromValue(mfiApplicantDetail.getAreaType());
-                                    Double annualIncome = (mfiApplicantDetail.getMonthlyIncome() * 12);
-                                    AnnualIncomeRural annualIncomeRural = AnnualIncomeRural.getRangeByValue(annualIncome, areaType.getId());
+//                                    AreaTypeMfi areaType = AreaTypeMfi.fromId(mfiApplicantDetail.getAreaType());
+                                    Double annualIncome = (expectedIncomeDetails.getMonthlyIncome() * 12);
+                                    AnnualIncomeRural annualIncomeRural = AnnualIncomeRural.getRangeByValue(annualIncome, mfiApplicantDetail.getAreaType());
                                     if (!CommonUtils.isObjectNullOrEmpty(annualIncomeRural)) {
                                         scoreParameterMFIRequest.setAnnualIncome(annualIncomeRural.getId().longValue());
                                         scoreParameterMFIRequest.setAnnualIncome_p(true);

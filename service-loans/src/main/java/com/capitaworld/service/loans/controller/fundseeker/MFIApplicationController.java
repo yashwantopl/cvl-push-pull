@@ -58,7 +58,7 @@ public class MFIApplicationController {
 			if (userId == null) {
 				logger.warn("userId  can not be empty ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
 			aadharDetailsReq.setUserId(userId);
 			aadharDetailsReq.setOrgId(userOrgId);
@@ -85,7 +85,7 @@ public class MFIApplicationController {
 			AadharDetailsReq aadharDetailsByAppId = mfiApplicationService.getAadharDetailsByAppId(applicationId);
 			CommonDocumentUtils.endHook(logger, "Get Aadhar");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Aadhar details.",
-					HttpStatus.OK.value(), aadharDetailsByAppId), HttpStatus.OK);
+					HttpStatus.INTERNAL_SERVER_ERROR.value(), aadharDetailsByAppId), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while Get Adhar Details ==>", e);
@@ -116,7 +116,7 @@ public class MFIApplicationController {
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 							HttpStatus.OK);
 				} else {
-					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -175,20 +175,20 @@ public class MFIApplicationController {
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 							HttpStatus.OK);
 				} else {
-					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
-							HttpStatus.OK);
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			} else {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(projectDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
 		} catch (Exception e) {
 			logger.error("Error while saving save Project Details Details ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -234,7 +234,7 @@ public class MFIApplicationController {
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 							HttpStatus.OK);
 				} else {
-					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else{
@@ -337,7 +337,7 @@ public class MFIApplicationController {
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 							HttpStatus.OK);
 				} else {
-					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -478,7 +478,7 @@ public class MFIApplicationController {
                     return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
                             HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.OK.value()),
+                    return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
                             HttpStatus.OK);
                 }
 			} else {
@@ -534,6 +534,38 @@ public class MFIApplicationController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
+		}
+	}
+
+	@GetMapping(value = "/getApplicationsByStatus/{status}")
+	public ResponseEntity<LoansResponse> getPendingApplications(@PathVariable("status") Integer status,HttpServletRequest request) {
+		try {
+
+			CommonDocumentUtils.startHook(logger, "getApplicationsByStatus");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			if (userOrgId == null) {
+				logger.warn("user Org Id  can not be empty ==>" + userOrgId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			AadharDetailsReq pendingApplications = mfiApplicationService.getApplicationsByStatus(userOrgId, userId,status);
+			CommonDocumentUtils.endHook(logger, "getApplicationsByStatus");
+			if(pendingApplications != null){
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Application status details.",HttpStatus.OK.value(), pendingApplications), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("No data available.",HttpStatus.INTERNAL_SERVER_ERROR.value(), pendingApplications), HttpStatus.OK);
+			}
+
+
+		} catch (Exception e) {
+			logger.error("Error while get Application by status By AppId ==>", e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 

@@ -77,6 +77,7 @@ public class AadharDetailsReq implements Serializable {
     private String aadharPincode;
 
     private Integer addressProfType;
+    private String addressProfNumber;
 
     private String fatherName;
 
@@ -90,11 +91,28 @@ public class AadharDetailsReq implements Serializable {
 
     private Integer businessTypeId;
     private String message;
+    private String status;
 
-    private  byte[] profilePic;
-    private  byte[] addressProofImg;
+    private byte[] profilePic;
+    private byte[] addressProofImg;
+    private byte[] consentFormImg;
 
     public AadharDetailsReq() {
+    }
+
+    public AadharDetailsReq(Long id, Long applicationId, String firstName, String lastName) {
+        this.id = id;
+        this.applicationId = applicationId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public AadharDetailsReq(Long id, Long applicationId, String firstName, String lastName,String status) {
+        this.id = id;
+        this.applicationId = applicationId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.status = status;
     }
 
     //    fn.applicationId.id,,fn.firstName,mf.lastName,mf.middleName,mf.birthDate,mf.genderId,mf.mobile,mf.email,mf.addressSameAsAadhar,mf.currentDistrict,mf.aadharDistrict,mf.currentHouse,mf.aadharHouse,mf.currentLandmark,mf.aadharLandmark,mf.currentLocation,mf.aadharLocation,mf.currentState,mf.aadharState,mf.currentStreet,mf.aadharStreet,mf.currentVtc,mf.aadharVtc,mf.aadharSubdist,mf.currentSubdist,mf.aadharPo,mf.currentPo,mf.aadharCareOf,mf.addressPincode,mf.aadharPincode,mf.addressProofType
@@ -499,5 +517,29 @@ public class AadharDetailsReq implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public byte[] getConsentFormImg() {
+        return consentFormImg;
+    }
+
+    public void setConsentFormImg(byte[] consentFormImg) {
+        this.consentFormImg = consentFormImg;
+    }
+
+    public String getAddressProfNumber() {
+        return addressProfNumber;
+    }
+
+    public void setAddressProfNumber(String addressProfNumber) {
+        this.addressProfNumber = addressProfNumber;
     }
 }

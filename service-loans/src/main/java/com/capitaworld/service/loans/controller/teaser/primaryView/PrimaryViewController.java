@@ -275,11 +275,12 @@ public class PrimaryViewController {
 		}
 	}
 	
+
 	@GetMapping(value = "/MfiPrimaryDetails/{applicationId}/{mfiFpType}")  
 	public @ResponseBody ResponseEntity<LoansResponse> MFiPrimayView(@PathVariable(value = "applicationId") Long applicationId,
-			@PathVariable(value = "mfiFpType") Integer mfiFpType,@RequestParam(value = "clientId", required = false) HttpServletRequest request) {
+			@PathVariable(value = "mfiFpType") Integer mfiFpType, HttpServletRequest request) { /*,@RequestParam(value = "clientId", required = false)*/
 		logger.info("ENTER HERE GET MICRO FINANCE DETAILS HERE ====={}======{}" , applicationId ,mfiFpType);
-		// GET USER ID AND USER TYPE
+
 		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(mfiFpType)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + applicationId + mfiFpType);
 			return new ResponseEntity<LoansResponse>(
@@ -291,6 +292,7 @@ public class PrimaryViewController {
 			try {
 				logger.info("ENTER HERE MFI  DETAILS FOR APPPLICATION ID AND FP PRODUCT MAPPING ID ===={}===>", applicationId ,mfiFpType);
 				mfiPrimaryViewResponse = mfiTeaserViewService.getPrimaryMFiDetails(applicationId,mfiFpType);
+				logger.info("mfiPrimaryViewResponse======={}====>>>",mfiPrimaryViewResponse);
 				if (!CommonUtils.isObjectNullOrEmpty(mfiPrimaryViewResponse)) {
 					logger.info("FINAL MFI RESPONSE HERE ======{}====>{}" , mfiPrimaryViewResponse.toString());
 					loansResponse.setData(mfiPrimaryViewResponse);

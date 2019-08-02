@@ -1,38 +1,55 @@
-package com.capitaworld.service.loans.model.common;
+package com.capitaworld.service.loans.domain.common;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
+
 /**
- * 
- * @author akshay
- *
+ * @author harshit
+ * Date : 09-Jun-2018
+ * About :- USER LOAN AMOUNT MAPPING STOARE MIN AND MAX AMOUNT BASED ON FP USERID AND PRODUCT ID FOR DISBURSEMENT
  */
-public class OfflineAppConfigRequest extends AuditActivityRequest implements Serializable {
+@Entity
+@Table(name = "fp_offline_app_config_audit")
+public class OfflineAppConfigAudit extends AuditActivity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(name = "org_id")
 	private Long orgId;
 	
+	@Column(name = "loan_type")
 	private Integer loanType;
 	
+	@Column(name = "business_type_id")
 	private Integer businessTypeId;
 	
-	private String marketPlace;
+	@Column(name = "field_value")
+	private String fieldValue ;
 	
-	private String bankSpecific;
+	@Column(name = "field_type")
+	private Integer fieldType ;
 	
+	@Column(name = "difference")
 	private String difference;
 	
-	private Date fromDate ;
-	
-	private Date toDate;
-	
-	private String fieldValue;
-	
-	private Integer fieldType;
+	@Temporal(TemporalType.TIMESTAMP)
+    @Column(name="from_date")
+    private Date fromDate ;
 
 	public Long getId() {
 		return id;
@@ -66,22 +83,6 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 		this.businessTypeId = businessTypeId;
 	}
 
-	public String getMarketPlace() {
-		return marketPlace;
-	}
-
-	public void setMarketPlace(String marketPlace) {
-		this.marketPlace = marketPlace;
-	}
-
-	public String getBankSpecific() {
-		return bankSpecific;
-	}
-
-	public void setBankSpecific(String bankSpecific) {
-		this.bankSpecific = bankSpecific;
-	}
-
 	public String getDifference() {
 		return difference;
 	}
@@ -112,14 +113,6 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 
 	public void setFieldType(Integer fieldType) {
 		this.fieldType = fieldType;
-	}
-
-	public Date getToDate() {
-		return toDate;
-	}
-
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
 	}
 	
 }

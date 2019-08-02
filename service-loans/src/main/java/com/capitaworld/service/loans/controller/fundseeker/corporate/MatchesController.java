@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.model.ProposalRequestResponce;
+import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,9 @@ public class MatchesController {
 	
 	@Autowired
 	private AsyncComponent asyncComponent;
+
+	@Autowired
+	private MfiApplicationService mfiApplicationService;
 
 	@RequestMapping(value = "/${corporate}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSCorporate(@RequestBody MatchRequest matchRequest,
@@ -366,6 +371,23 @@ public class MatchesController {
 
 		} catch (Exception e) {
 			logger.error("Error while saveSuggestionList ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/${mfi}/getProposalDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProposalDetails(@RequestBody ProposalRequestResponce proposalRequestResponce,
+													 HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
+		CommonDocumentUtils.startHook(logger, "getProposalDetails==>"+proposalRequestResponce.getApplicationId());
+		try {
+				ProposalRequestResponce proposalRequestResponceNew=mfiApplicationService.getProposalDetails(proposalRequestResponce);
+				LoansResponse loansResponse=new LoansResponse(MATCHES_LIST_SUCCESSFULLY_GET, HttpStatus.OK.value());
+				loansResponse.setData(proposalRequestResponceNew);
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while Get Proposal Details for MFI ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
