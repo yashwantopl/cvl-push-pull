@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -133,5 +134,13 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     @Query(value = "SELECT * FROM proposal_details as  pd WHERE pd.application_id =:applicationId and is_active=true",nativeQuery = true)
     public ProposalDetails getByApplicationIdAndFPProductId(@Param("applicationId") Long applicationId);
+
+    @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id=:proposalStatus AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4)",nativeQuery = true)
+    public List<BigInteger> getProposalsByProposalStatusAndBusinessTypeId(@Param("proposalStatus") Long proposalStatus);
+
+    @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4)",nativeQuery = true)
+    public List<BigInteger> getProposalsByProposalStatusListAndBusinessTypeId(@Param("proposalStatus") List<Long> proposalStatus);
+
+
 }
 

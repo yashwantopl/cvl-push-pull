@@ -1,6 +1,12 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -476,8 +482,8 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}")
-	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId) {
+	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "getCashFlowAssesmentByAppId");
@@ -486,7 +492,7 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId);
+		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId,type);
 			CommonDocumentUtils.endHook(logger, "getCashFlowAssesmentByAppId");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
 					HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);
@@ -531,7 +537,7 @@ public class MFIApplicationController {
 		}
 	}
 
-	@PostMapping(value = "/saveApplicantDetails",  produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/saveApplicantDetails",  produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveApplicantDetails(
 			@RequestBody MfiApplicantDetailsReq mfiApplicantDetailsReq, HttpServletRequest request) {
 		try {
@@ -563,6 +569,27 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	
-	
+  
+  @PostMapping(value = "/getWorkflowData", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<LoansResponse> getWorkflowData(@RequestBody WorkflowRequest workflowRequest,
+                                          HttpServletRequest request) {
+     try {
+        logger.info("service call getWorkflowData----------->");
+        CommonDocumentUtils.startHook(logger, "save");
+        Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        if (userId == null) {
+           logger.warn("userId  can not be empty ==>" + userId);
+           return new ResponseEntity<LoansResponse>(
+                 new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        }
+        workflowRequest.setUserId(userId);
+        return new ResponseEntity<LoansResponse>(new LoansResponse("Job created successfully",
+              HttpStatus.OK.value(), mfiApplicationService.getActiveButtons(workflowRequest)), HttpStatus.OK);
+     } catch (Exception e) {
+        return new ResponseEntity<LoansResponse>(
+              new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+              HttpStatus.OK);
+     }
+  }
+
 }

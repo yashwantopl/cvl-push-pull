@@ -1,16 +1,23 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.*;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.*;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -60,6 +67,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Autowired
     private MfiExpenseExpectedIncomeDetailRepository expectedIncomeDetailRepository;
+
+    @Autowired
+    private LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
+    private WorkflowClient workflowClient;
 
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -203,9 +216,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 2);
             detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
 
-            // FOR PARENT(MfiIncomeAndExpenditureReq)
-            List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
-            BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
+            // FOR MFI MAKER MfiIncomeAndExpenditureReq
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIMaker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
+            detailsReq.setMfiIncomeAndExpenditureReqMFIMaker(mfiIncomeAndExpendMFIMaker);
+
+            // FOR MFI CHECKER MfiIncomeAndExpenditureReq
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIChecker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,2);
+            detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpendMFIChecker);
 
         return detailsReq;
 
@@ -288,14 +305,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId) {
-        List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
-        if (!CommonUtils.isListNullOrEmpty(detailsReq)) {
-            MfiIncomeAndExpenditureReq expenditureReq = detailsReq.get(0);
+            MfiIncomeAndExpenditureReq detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
             List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId,1);
-            expenditureReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
-            return expenditureReq;
-        }
-        return null;
+            detailsReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
+            return detailsReq;
     }
 
     /**
@@ -372,8 +385,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId) {
-        return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId);
+    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type) {
+        return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId,type);
     }
 
 
@@ -507,6 +520,37 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			logger.error("Exception : "+e.getMessage());
 		}
 		return result;
+	}
+
+
+	public Object getActiveButtons(WorkflowRequest workflowRequest) {
+
+		Long jobId = workflowRequest.getJobId();
+		if (CommonUtils.isObjectNullOrEmpty(jobId)) {
+			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+					WorkflowUtils.Workflow.MFI_PROCESS, WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE,
+					workflowRequest.getUserId());
+			if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				jobId = Long.valueOf(workflowResponse.getData().toString());
+			}
+		}
+		WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(jobId,
+				workflowRequest.getRoleIds(), workflowRequest.getUserId());
+		if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse)
+				&& !com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+			try {
+				WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(),
+								WorkflowJobsTrackerRequest.class);
+				if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !com.capitaworld.service.scoring.utils.CommonUtils
+						.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+					return workflowJobsTrackerRequest;
+				}
+			} catch (IOException e) {
+				logger.error("Error While getting data from workflow {}", e);
+			}
+		}
+		return null;
 	}
 
 }

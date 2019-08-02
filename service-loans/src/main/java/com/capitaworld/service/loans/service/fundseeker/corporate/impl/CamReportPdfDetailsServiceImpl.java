@@ -1391,8 +1391,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//		GST Comparision by Maaz
 		try{
-			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
-			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+//			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+//			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
 		}

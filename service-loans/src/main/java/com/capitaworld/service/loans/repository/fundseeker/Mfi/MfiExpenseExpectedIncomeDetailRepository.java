@@ -11,6 +11,6 @@ public interface MfiExpenseExpectedIncomeDetailRepository extends JpaRepository<
     @Query("from MfiExpenseExpectedIncomeDetails mfe where mfe.applicationId =:applicationId and mfe.type =:type and mfe.isActive = true ")
    public MfiExpenseExpectedIncomeDetails findByApplicationIdAndType(@Param("applicationId") Long applicationId,@Param("type") Integer type);
 
-    @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq(mfe.applicationId,mfe.totalMonthlyIncomeForFamily,mfe.totalExpense,mfe.netSaving,mfe.monthlyIncome,mfe.cashFlow) from MfiExpenseExpectedIncomeDetails mfe where mfe.applicationId =:applicationId and mfe.isActive = true ")
-    public MfiLoanAssessmentDetailsReq findCashFlowAssessment(@Param("applicationId") Long applicationId);
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq(mfe.applicationId,mfe.totalMonthlyIncomeForFamily,mfe.totalExpense,mfe.netSaving,mfe.monthlyIncome,mfe.cashFlow) from MfiExpenseExpectedIncomeDetails mfe where mfe.applicationId =:applicationId and mfe.isActive = true and mfe.type =:type")
+    public MfiLoanAssessmentDetailsReq findCashFlowAssessment(@Param("applicationId") Long applicationId,@Param("type") Integer type);
 }
