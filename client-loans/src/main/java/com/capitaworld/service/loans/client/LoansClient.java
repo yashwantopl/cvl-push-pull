@@ -200,7 +200,7 @@ public class LoansClient {
 	private static final String CALCULATE_SCORING_MFI_LIST = "/score/calculate_score/mfi_list";
 	private static final String CALCULATE_SCORING_MFI_CO_APPLICANT_LIST = "/score/calculate_score/mfi_list_coapplicant";
 	
-	private static final String GET_MFI_APPLICANT_DETAILS = "/mfi/getAllApplicantDetails";
+	private static final String GET_MFI_APPLICANT_DETAILS = "/mfi/getApplicantDetails";
 
 
 	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
@@ -283,6 +283,8 @@ public class LoansClient {
     
     private static final String GET_CONCESSION_DETAILS = "/score/getConcessionDetails";
     private static final String SEND_MAIL_INELIGIBLE_FOR_SIDBI = "/sendInEligibleForSidbi";
+    
+    private static final String GET_APPLICATION_CAMPAIGN_CODE = "/loan_application/getApplicationCampCode";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2616,8 +2618,8 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getMfiApplicantDetails(Long applicationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_MFI_APPLICANT_DETAILS).concat("/" + applicationId);
+	public LoansResponse getMfiApplicantDetails(Long applicationId,Integer type) throws LoansException {
+		String url = loansBaseUrl.concat(GET_MFI_APPLICANT_DETAILS).concat("/" + applicationId +"/" + type);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -2832,6 +2834,26 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in sendInEligibleForSidbi : ",e);
 			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	/**
+	 * GET APPLICATION CAMPAIGN CODE FROM LOAN APPLICATION MASTER
+	 * @param applicationId
+	 * @return PLEASE FIND CAMPAIGN CODE FROM "data" key from "LoansResponse" Class
+	 * @throws ExcelException 
+	 */
+	public LoansResponse getApplicationCampaignCode(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_APPLICATION_CAMPAIGN_CODE).concat("/" + applicationId);
+		logger.info("url for Getting APPLICATION CAMPIGN CODE=================>{} = {} = {}" , url , AND_FOR_APPLICATION_ID , applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getApplicationCampaignCode : ",e);
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	

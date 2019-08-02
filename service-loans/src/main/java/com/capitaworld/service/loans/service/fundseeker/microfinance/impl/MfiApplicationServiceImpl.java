@@ -155,21 +155,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId) {
-        logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>" + applicationId);
-        List<MFIApplicantDetail> appDetailList = detailsRepository.findByApplicationIdAndIsActive(applicationId);
-        List<MfiReqResponse> appResponseList = new ArrayList<>(appDetailList.size());
-        MfiReqResponse appIncomeReq = null;
-
-        for (MFIApplicantDetail appIncomeDetail : appDetailList) {
-            appIncomeReq = new MfiReqResponse();
-            BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
-            appResponseList.add(appIncomeReq);
-        }
-        return appResponseList;
-    }
-
-    @Override
     public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq) {
         //for server side validation
         String serverSideValidation = serverSideValidation(CommonUtils.BANK_DETAILS, bankDetailsReq);
@@ -199,14 +184,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 
     @Override
-    public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId) {
-        List<MfiApplicantDetailsReq> mfiApplicantDetailsReqs = new ArrayList<>();
-        List<MFIApplicantDetail> all = detailsRepository.findByApplicationIdAndIsActive(applicationId);
-
-        for (MFIApplicantDetail applicantDetail : all) {
+    public MfiApplicantDetailsReq getApplicantDetails(Long applicationId,Integer type) {
+            MFIApplicantDetail mfiApplicantDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(applicationId,type);
 
             MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
-            BeanUtils.copyProperties(applicantDetail, detailsReq);
+            BeanUtils.copyProperties(mfiApplicantDetail, detailsReq);
             //for bank details
             MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
             if (byApplicationId != null) {
@@ -216,18 +198,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId));
             detailsReq.setLiabilityDetails(MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId));
             //for Income
-            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
+            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 1);
             detailsReq.setIncomeDetailsReqList(incomeDetails);
 
+            List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 2);
+            detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
+
             // FOR PARENT(MfiIncomeAndExpenditureReq)
-            List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
+            List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
             BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
 
-            mfiApplicantDetailsReqs.add(detailsReq);
-
-        }
-
-        return mfiApplicantDetailsReqs;
+        return detailsReq;
 
     }
 
@@ -239,7 +220,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public Object saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq) {
-        Double totalIncome = 0.0, totalExpense = 0.0;
+        Double totalIncome = 0.0;
         //check server side validation
         String serverSideValidation = serverSideValidation(CommonUtils.INCOME_EXPENDITURE, mfiIncomeAndExpenditureReq);
 
@@ -248,45 +229,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             return serverSideValidation;
         }
         if (null != mfiIncomeAndExpenditureReq.getId()) {
-            List<MfiIncomeDetailsReq> mfiIncomeDetailsReqs = mfiIncomeAndExpenditureReq.getIncomeDetailsReqList();
-            if (!CommonUtils.isListNullOrEmpty(mfiIncomeDetailsReqs)) {
-                //for MFI Agent data from users
-                for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeDetailsReqs) {
-                    MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
-                    BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
-                    totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
-                    mfiIncomeDetails.setType(1);
-                    MfiIncomeDetailsRepository.save(mfiIncomeDetails);
-                }
-                //for MFI checker or maker
-                for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeDetailsReqs) {
-                    MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
-                    BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
-                    totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
-                    mfiIncomeDetails.setType(2);
-                    MfiIncomeDetailsRepository.save(mfiIncomeDetails);
-                }
-            }
-
-            //save data in expense and expected income details
-            MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
-            expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
-            BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
-            //below code for calculate total expense
-            totalExpense = expectedIncomeDetails.getEducationExpense() + expectedIncomeDetails.getMedicalExpense() + expectedIncomeDetails.getHouseHoldExpense()
-                    + expectedIncomeDetails.getFoodExpense() + expectedIncomeDetails.getOtherExpense() + expectedIncomeDetails.getClothesExpense() + expectedIncomeDetails.getLoanInstallment()
-                    + expectedIncomeDetails.getShipShgiInstallment() + expectedIncomeDetails.getOtherInstallment();
-            //  Existing Expenses from Business/Family
-            expectedIncomeDetails.setTotalExpense(CommonUtils.isObjectNullOrEmpty(totalExpense) ? 0.0 : totalExpense);
-            //  Income from Occupation/Business is Monthly
-            expectedIncomeDetails.setTotalMonthlyIncomeForFamily(CommonUtils.isObjectNullOrEmpty(totalIncome) ? 0.0 : totalIncome);
-            //  Net Savings
-            expectedIncomeDetails.setNetSaving(expectedIncomeDetails.getTotalMonthlyIncomeForFamily() - expectedIncomeDetails.getTotalExpense());
-            //  Expected Increase in Income out of Loan ---- Monthly Income Column use
-            //  Total Cash Flow
-            expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
-            expectedIncomeDetails.setIsActive(true);
-            expectedIncomeDetailRepository.save(expectedIncomeDetails);
+            //save data in expense and expected income details for agent type 1 for agent details
+            saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
+            //save data in expense and expected income details for agent type 1 for checker details
+            saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 2);
 
             //save PPI and is income filled true
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiIncomeAndExpenditureReq.getId());
@@ -299,12 +245,54 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     }
 
+    /**
+     * this method for copy code of maker and agent
+     * @param mfiIncomeAndExpenditureReq
+     * @param totalIncome
+     * @param type
+     * @return
+     */
+    private boolean saveIncomeAndExpenditureWithCopy(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq, Double totalIncome,Integer type){
+        Double totalExpense = 0.0;
+        if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
+            //for MFI Agent data from users
+            for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
+                MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
+                BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
+                totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
+                mfiIncomeDetails.setType(type);
+                mfiIncomeDetails.setIsActive(true);
+                MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+            }
+        }
+        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+        expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
+        BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
+        //below code for calculate total expense
+        totalExpense = expectedIncomeDetails.getEducationExpense() + expectedIncomeDetails.getMedicalExpense() + expectedIncomeDetails.getHouseHoldExpense()
+                + expectedIncomeDetails.getFoodExpense() + expectedIncomeDetails.getOtherExpense() + expectedIncomeDetails.getClothesExpense() + expectedIncomeDetails.getLoanInstallment()
+                + expectedIncomeDetails.getShipShgiInstallment() + expectedIncomeDetails.getOtherInstallment();
+        //  Existing Expenses from Business/Family
+        expectedIncomeDetails.setTotalExpense(CommonUtils.isObjectNullOrEmpty(totalExpense) ? 0.0 : totalExpense);
+        //  Income from Occupation/Business is Monthly
+        expectedIncomeDetails.setTotalMonthlyIncomeForFamily(CommonUtils.isObjectNullOrEmpty(totalIncome) ? 0.0 : totalIncome);
+        //  Net Savings
+        expectedIncomeDetails.setNetSaving(expectedIncomeDetails.getTotalMonthlyIncomeForFamily() - expectedIncomeDetails.getTotalExpense());
+        //  Expected Increase in Income out of Loan ---- Monthly Income Column use
+        //  Total Cash Flow
+        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
+        expectedIncomeDetails.setIsActive(true);
+        expectedIncomeDetails.setType(type);
+        expectedIncomeDetailRepository.save(expectedIncomeDetails);
+        return true;
+    }
+
     @Override
     public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId) {
-        List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
+        List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
         if (!CommonUtils.isListNullOrEmpty(detailsReq)) {
             MfiIncomeAndExpenditureReq expenditureReq = detailsReq.get(0);
-            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
+            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId,1);
             expenditureReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
             return expenditureReq;
         }
@@ -385,7 +373,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId, Integer type) {
+    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId) {
         return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId);
     }
 

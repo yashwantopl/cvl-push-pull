@@ -68,6 +68,7 @@ public class MfiExpenseExpectedIncomeDetails implements Serializable {
 
     @Column(name = "is_active")
     private Boolean isActive;
+    private Integer type;
 
     public Long getId() {
         return id;
@@ -227,5 +228,13 @@ public class MfiExpenseExpectedIncomeDetails implements Serializable {
 
     public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
         this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

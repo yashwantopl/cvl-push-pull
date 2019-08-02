@@ -609,6 +609,9 @@ public class CommonUtils {
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
+		public static final Long MFI_OPEN = 9l;
+		public static final Long MFI_PENDING = 10l;
+
 	}
 	
 	public static final class ParameterTypes {

@@ -277,4 +277,6 @@ public interface LoanApplicationService {
 	public String getMaxInvestmentSizeFromBank(String bankCode);
 	
 	public List<GstRelatedPartyRequest> getGstRelatedPartyDetails(Long applicationId);
+	
+	public String getApplicationCampaignCode(Long applicationId);
 }

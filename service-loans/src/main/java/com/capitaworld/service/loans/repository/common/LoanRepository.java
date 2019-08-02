@@ -63,6 +63,8 @@ public interface LoanRepository {
 	
 	public Boolean retailPrefillData(String input);
 	
+	public String getApplicationCampaignCode(Long applicationId);
+	
 	public Boolean isCampaignUser(Long userId);
 	
 	public String getCampaignUser(Long userId);

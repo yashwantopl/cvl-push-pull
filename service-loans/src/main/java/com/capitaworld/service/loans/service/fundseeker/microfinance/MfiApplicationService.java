@@ -17,13 +17,11 @@ public interface MfiApplicationService {
 
 	public Object saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
 
-	public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId);
-
 	public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq);
 
 	public MfiBankDetailsReq fetchBankDetail(Long applicationId);
 
-	public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId);
+	public MfiApplicantDetailsReq getApplicantDetails(Long applicationId,Integer type);
 
 	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId);
 
@@ -41,7 +39,7 @@ public interface MfiApplicationService {
 	
 	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
 
-	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
+	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId);
 
 
 	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce);

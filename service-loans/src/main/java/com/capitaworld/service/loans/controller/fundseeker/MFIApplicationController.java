@@ -1,36 +1,20 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.micro_finance.*;
+import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
-import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
-import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/mfi")
@@ -192,26 +176,6 @@ public class MFIApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getMfiDetails/{applicationId}")
-	public ResponseEntity<LoansResponse> getMfiApplicantIncomeDetails(@PathVariable("applicationId") Long applicationId) {
-		logger.info("ENTER HERE MFI GET APPLIANT DETAILS====={}======{}======>" + applicationId);
-		try {
-			if(applicationId == null){
-				logger.warn("applicationId  can not be empty ==>" + applicationId);
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-			List<MfiReqResponse> list = mfiApplicationService.getMfiApplicantDetails(applicationId);
-			logger.info("GET DETAIILS FOR MFI APPLICANTS DETAILS PURPOSE----->" + list.size());
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("SUCCESSFULLY RETRIVE MFI RESPONSE", HttpStatus.OK.value(), list), HttpStatus.OK);
-		} catch (Exception e) {
-			logger.error("THROW EXCEPTION WHILE GETTING MFI DETAILS ====={}======{}====>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
 	@PostMapping(value = "/saveBankDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveBankDetails(@RequestBody MfiBankDetailsReq mfiBankDetailsReq,
 			HttpServletRequest request) {
@@ -274,20 +238,18 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getAllApplicantDetails/{applicationId}")
-	public ResponseEntity<LoansResponse> getAllApplicantDetails(@PathVariable("applicationId") Long applicationId,
+	@GetMapping(value = "/getApplicantDetails/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> getApplicantDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type,
 			HttpServletRequest request) {
 		try {
 
-			CommonDocumentUtils.startHook(logger, "Get Bank Details");
-
-			List<MfiApplicantDetailsReq> allApplicantDetails = mfiApplicationService
-					.getAllApplicantDetails(applicationId);
-			CommonDocumentUtils.endHook(logger, "Get Bank Details");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch All Applicant details.",HttpStatus.OK.value(), allApplicantDetails), HttpStatus.OK);
+			CommonDocumentUtils.startHook(logger, "getApplicantDetails");
+			MfiApplicantDetailsReq applicantDetails = mfiApplicationService.getApplicantDetails(applicationId,type);
+			CommonDocumentUtils.endHook(logger, "getApplicantDetails");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Applicant or coApplicant details.",HttpStatus.OK.value(), applicantDetails), HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while Get All applicant Details ==>", e);
+			logger.error("Error while Get All applicant or coApplicant Details ==>", e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
@@ -514,8 +476,8 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}/{type}")
-	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
+	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}")
+	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "getCashFlowAssesmentByAppId");
@@ -524,7 +486,7 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId,type);
+		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId);
 			CommonDocumentUtils.endHook(logger, "getCashFlowAssesmentByAppId");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
 					HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);

@@ -63,11 +63,11 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
 					.setParameter(CommonUtils.USER_ID, userId)
 					.getSingleResult();
-			return !CommonUtils.isObjectNullOrEmpty(code) ? code : "MARKETPLACE";
+			return !CommonUtils.isObjectNullOrEmpty(code) ? code : null;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		return "MARKETPLACE";
+		return null;
 	}
 	
 	public String getMobileNumberByUserId(Long userId) {
@@ -446,5 +446,18 @@ public class LoanRepositoryImpl implements LoanRepository {
 	    	logger.error("EXCEPTION spPrefillProfile :=- ", e);
 	    }
 		return false;
+	}
+	
+	@Override
+	public String getApplicationCampaignCode(Long applicationId) {
+		try {
+			return (String) entityManager
+					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
+							.setParameter("applicationId", applicationId).getSingleResult();
+		} catch (Exception e) {
+			logger.error("Exception while getApplicationCampaignCode  ----->" ,e);
+		}
+		return null;
+		
 	}
 }
