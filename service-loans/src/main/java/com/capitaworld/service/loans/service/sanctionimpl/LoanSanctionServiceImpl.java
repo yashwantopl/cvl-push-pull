@@ -158,21 +158,32 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setModifiedDate(new Date());
 			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
 		}
-		//==================Sending Mail notification to Maker=============================
-		try{
-			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		}catch(Exception e){
-			logger.error("Exception : {}",e);
-		}
-		Integer count = proposalDetailsRepository.getCountOfProposalDetailsByApplicationId(loanSanctionDomainOld.getApplicationId());
-		if(count > 1) {
-			try {
-				sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
-			}catch (IndexOutOfBoundsException e) {
-				logger.info("Application not from multiple bank applicationid:{}",loanSanctionDomainOld.getApplicationId());
+
+		if(loanSanctionRequest.getBusinessTypeId().intValue() != CommonUtils.BusinessType.MFI.getId())
+		{
+			//==================Sending Mail notification to Maker=============================
+			try{
+				fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			}catch(Exception e){
+				logger.error("Exception : {}",e);
 			}
-		}else {
-			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);			
+			Integer count = proposalDetailsRepository.getCountOfProposalDetailsByApplicationId(loanSanctionDomainOld.getApplicationId());
+			if(count > 1) {
+				try {
+					sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
+				}catch (IndexOutOfBoundsException e) {
+					logger.info("Application not from multiple bank applicationid:{}",loanSanctionDomainOld.getApplicationId());
+				}
+			}else {
+				try
+				{
+					fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+				}
+				catch (Exception e)
+				{
+					logger.error("Exception : {}",e);
+				}
+			}
 		}
 		//=================================================================================
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;

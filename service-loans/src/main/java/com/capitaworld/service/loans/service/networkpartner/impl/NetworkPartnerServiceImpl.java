@@ -1627,7 +1627,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 				ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationId(nhbsApplicationsResponse.getApplicationId());
 				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(nhbsApplicationsResponse.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails) && request.getBusinessTypeId() != 6) { // MFI
 					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 					if (!applicationProposalMapping.getOrgId().equals(usersRequest.getUserOrgId())) {
 						nhbsApplicationsResponse.setSanction(true);
