@@ -39,7 +39,7 @@ public interface MfiApplicationService {
 	
 	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
 
-	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId);
+	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
 
 
 	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce);

@@ -373,8 +373,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId) {
-        return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId);
+    public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type) {
+        return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId,type);
     }
 
 
