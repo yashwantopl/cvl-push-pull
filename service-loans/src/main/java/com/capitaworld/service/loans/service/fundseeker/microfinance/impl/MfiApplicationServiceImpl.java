@@ -514,7 +514,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 				result =true;
 			}
-			
+
 		} catch (Exception e) {
 //			e.printStackTrace();
 			logger.error("Exception : "+e.getMessage());
@@ -552,5 +552,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 		return null;
 	}
+
+    @Override
+    public boolean updateStaus(Long applicationId, Long status) {
+        return loanApplicationRepository.updateStatus(applicationId, status) > 0;
+    }
 
 }

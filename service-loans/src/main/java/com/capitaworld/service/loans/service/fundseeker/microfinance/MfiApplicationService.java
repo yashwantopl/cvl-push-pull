@@ -56,4 +56,6 @@ public interface MfiApplicationService {
 
 	public Object getActiveButtons(WorkflowRequest workflowRequest);
 
+	public boolean updateStaus(Long applicationId,Long status);
+
 }
