@@ -8453,4 +8453,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return null;
 	}
+	
+	@Override
+	public String getApplicationCampaignCode(Long applicationId) {
+		return loanRepository.getApplicationCampaignCode(applicationId);
+	}
 }

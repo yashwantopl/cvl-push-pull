@@ -447,4 +447,17 @@ public class LoanRepositoryImpl implements LoanRepository {
 	    }
 		return false;
 	}
+	
+	@Override
+	public String getApplicationCampaignCode(Long applicationId) {
+		try {
+			return (String) entityManager
+					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
+							.setParameter("applicationId", applicationId).getSingleResult();
+		} catch (Exception e) {
+			logger.error("Exception while getApplicationCampaignCode  ----->" ,e);
+		}
+		return null;
+		
+	}
 }
