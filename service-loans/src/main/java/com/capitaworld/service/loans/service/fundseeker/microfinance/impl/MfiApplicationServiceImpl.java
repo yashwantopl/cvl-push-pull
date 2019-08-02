@@ -69,6 +69,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Autowired
     private MfiExpenseExpectedIncomeDetailRepository expectedIncomeDetailRepository;
 
+    @Autowired
+    private LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
+    private WorkflowClient workflowClient;
+
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
         MFIApplicantDetail mfiApplicationDetail;
@@ -109,46 +115,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         detailsReq.setMessage("Successfully Saved");
         return detailsReq;
     }
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
-	@Autowired
-	private WorkflowClient workflowClient;
-
-
-
-	@Override
-	public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
-		MFIApplicantDetail mfiApplicationDetail;
-		if (aadharDetailsReq.getId() == null) {
-			Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
-					aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
-			if (applicationId != null) {
-				mfiApplicationDetail = new MFIApplicantDetail();
-				BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-				mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-				mfiApplicationDetail.setStatus(CommonUtils.PENDING);
-				mfiApplicationDetail.setIsActive(true);
-				mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
-				mfiApplicationDetail.setCreatedDate(new Date());
-				detailsRepository.save(mfiApplicationDetail);
-				aadharDetailsReq.setId(mfiApplicationDetail.getId());
-				aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
-			}
-		} else {
-			mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
-			BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-			mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(aadharDetailsReq.getApplicationId()));
-			mfiApplicationDetail.setStatus(CommonUtils.PENDING);
-			mfiApplicationDetail.setModifiedBy(aadharDetailsReq.getUserId());
-			mfiApplicationDetail.setModifiedDate(new Date());
-			detailsRepository.save(mfiApplicationDetail);
-		}
-		AadharDetailsReq detailsReq = new AadharDetailsReq();
-		detailsReq.setId(aadharDetailsReq.getId());
-		detailsReq.setApplicationId(aadharDetailsReq.getApplicationId());
-		return detailsReq;
-	}
 
     @Override
     public AadharDetailsReq getAadharDetailsByAppId(Long applicationId) {
