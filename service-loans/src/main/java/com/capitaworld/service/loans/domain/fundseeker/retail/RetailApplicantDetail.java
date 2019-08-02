@@ -589,6 +589,9 @@ public class RetailApplicantDetail implements Serializable {
     
     @Column(name="is_credit_info_filled")
     private Boolean isCreditInfoFilled;
+
+    @Column(name="is_owned_prop")
+    private Boolean isOwnedProp;
     
 	@Column(name="bank_name_id")
 	private Integer bankNameId;
@@ -2163,6 +2166,11 @@ public class RetailApplicantDetail implements Serializable {
 		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
 	}
 
+	public Boolean getIsOwnedProp() {
+		return isOwnedProp;
+	}
 
-
+	public void setIsOwnedProp(Boolean isOwnedProp) {
+		this.isOwnedProp = isOwnedProp;
+	}
 }

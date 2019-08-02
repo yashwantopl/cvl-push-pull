@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryVi
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.LapPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.MFITeaserViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
@@ -40,6 +41,7 @@ import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimary
 import com.capitaworld.service.loans.service.teaser.primaryview.HlTeaserViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.MFITeaserViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.NtbTeaserViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PlTeaserViewService;
@@ -70,6 +72,10 @@ public class PrimaryViewController {
 	
 	@Autowired
 	private HlTeaserViewService hlTeaserViewService;
+	
+	@Autowired
+	private MFITeaserViewService mfiTeaserViewService;
+	
 
 	@Autowired
 	private PersonalLoansViewService personalLoansViewService;
@@ -269,7 +275,44 @@ public class PrimaryViewController {
 		}
 	}
 	
-	
+
+	@GetMapping(value = "/MfiPrimaryDetails/{applicationId}/{mfiFpType}")  
+	public @ResponseBody ResponseEntity<LoansResponse> MFiPrimayView(@PathVariable(value = "applicationId") Long applicationId,
+			@PathVariable(value = "mfiFpType") Integer mfiFpType, HttpServletRequest request) { /*,@RequestParam(value = "clientId", required = false)*/
+		logger.info("ENTER HERE GET MICRO FINANCE DETAILS HERE ====={}======{}" , applicationId ,mfiFpType);
+
+		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(mfiFpType)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + applicationId + mfiFpType);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		} else {
+			LoansResponse loansResponse = new LoansResponse();
+			MFITeaserViewResponse mfiPrimaryViewResponse = null;
+			try {
+				logger.info("ENTER HERE MFI  DETAILS FOR APPPLICATION ID AND FP PRODUCT MAPPING ID ===={}===>", applicationId ,mfiFpType);
+				mfiPrimaryViewResponse = mfiTeaserViewService.getPrimaryMFiDetails(applicationId,mfiFpType);
+				logger.info("mfiPrimaryViewResponse======={}====>>>",mfiPrimaryViewResponse);
+				if (!CommonUtils.isObjectNullOrEmpty(mfiPrimaryViewResponse)) {
+					logger.info("FINAL MFI RESPONSE HERE ======{}====>{}" , mfiPrimaryViewResponse.toString());
+					loansResponse.setData(mfiPrimaryViewResponse);
+					loansResponse.setMessage("MICRO FINANCE PRIMARY DETAILS HERE.");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				} else {
+					loansResponse.setMessage("NO DATA FOUND FOR MICRO FINANCE PRIMARY VIEW RELATED====={}====={}");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error("",e);
+				loansResponse.setData(mfiPrimaryViewResponse);
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		}
+	}
+// ENDS HERE DISPLAY  MICRO FINANCE DETAILS LOGIC HERE 	
 
 	@GetMapping(value = "/PersonalLoan/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfPersonalLoans(

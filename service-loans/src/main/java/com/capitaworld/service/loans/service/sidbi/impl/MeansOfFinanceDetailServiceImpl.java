@@ -13,26 +13,20 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.sidbi.MeansOfFinanceDetail;
+import com.capitaworld.service.loans.domain.sidbi.ProjectCostDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sidbi.MeansOfFinanceDetailRepository;
 import com.capitaworld.service.loans.service.sidbi.MeansOfFinanceDetailService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.enums.AccountingSystems;
 import com.capitaworld.service.oneform.enums.sidbi.MeansOfFinanceParticulars;
-import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 
 @Service
 @Transactional
@@ -64,7 +58,7 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 					financeMeansDetail.setCreatedBy(frameRequest.getUserId());
 					financeMeansDetail.setCreatedDate(new Date());
 				}
-
+				this.convertAbsoluteValues(financeMeansRequest, frameRequest.getApplicationId(), frameRequest.getUserId());
 				BeanUtils.copyProperties(financeMeansRequest, financeMeansDetail);
 				financeMeansDetail.setApplicationId(frameRequest.getApplicationId());
 				financeMeansDetail.setModifiedBy(frameRequest.getUserId());
@@ -112,6 +106,8 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 							+ (financeMeansDetailRequest.getToBeIncurred() != null ? financeMeansDetailRequest.getToBeIncurred() : 0); 
 					
 					financeMeansDetailRequest.setTotalCost(totalCost);
+					
+					this.convertValuesIn(financeMeansDetailRequest, applicationId, userId);
 					financeMeansRequests.add(financeMeansDetailRequest);
                 }
 			}else {
@@ -122,6 +118,7 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 					Double totalCost = (financeMeansDetailRequest.getAlreadyIncurred() != null ? financeMeansDetailRequest.getAlreadyIncurred() : 0)
 							+ (financeMeansDetailRequest.getToBeIncurred() != null ? financeMeansDetailRequest.getToBeIncurred() : 0); 
 					financeMeansDetailRequest.setTotalCost(totalCost);
+					this.convertValuesIn(financeMeansDetailRequest, applicationId, userId);
 					financeMeansRequests.add(financeMeansDetailRequest);
 				}
 			}
@@ -131,6 +128,23 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 			logger.error("Exception getting financeMeansDetail  :-",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	private void convertAbsoluteValues(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+		
+		totalCostOfProject.setAlreadyIncurred(CommonUtils.convertTwoDecimalAbsoluteValues(totalCostOfProject.getAlreadyIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setToBeIncurred(CommonUtils.convertTwoDecimalAbsoluteValues(totalCostOfProject.getToBeIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setTotalCost(CommonUtils.convertTwoDecimalAbsoluteValues(totalCostOfProject.getTotalCost(), sidbiCurrencyRateObj.getRate()));
+	}
+	
+	private void convertValuesIn(TotalCostOfProjectRequest totalCostOfProject,Long applicationId, Long userId) throws LoansException {
+		SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+		
+		totalCostOfProject.setAlreadyIncurred(CommonUtils.convertTwoDecimalValuesIn(totalCostOfProject.getAlreadyIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setToBeIncurred(CommonUtils.convertTwoDecimalValuesIn(totalCostOfProject.getToBeIncurred(), sidbiCurrencyRateObj.getRate()));
+		totalCostOfProject.setTotalCost(CommonUtils.convertTwoDecimalValuesIn(totalCostOfProject.getTotalCost(), sidbiCurrencyRateObj.getRate()));
+		
 	}
 
 }

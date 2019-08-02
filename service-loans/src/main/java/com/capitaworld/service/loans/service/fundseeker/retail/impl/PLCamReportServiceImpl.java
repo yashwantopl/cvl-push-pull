@@ -50,6 +50,7 @@ import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
@@ -188,6 +189,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	@Autowired
 	private ReportsClient reportsClient;
 	
+	@Autowired
+	private CommonRepository commonRepository;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private static final String PLINELIGIBLE_CAM_REPORT = "INELIGIBLEPLCAM";
@@ -284,6 +288,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("grossMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGrossMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getGrossMonthlyIncome()) : null);
 			map.put("netMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getMonthlyIncome()) : null);
 			map.put("nationality", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidentialStatus()) ? ResidentStatusMst.getById(plRetailApplicantRequest.getResidentialStatus()).getValue() : "-");
+			map.put("mortgageInOwnedProperty", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsOwnedProp()) ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 			if(plRetailApplicantRequest.getResidenceSinceYear() != null && plRetailApplicantRequest.getResidenceSinceMonth() != null) {
 				LocalDate since = LocalDate.of(plRetailApplicantRequest.getResidenceSinceYear(), plRetailApplicantRequest.getResidenceSinceMonth(), 1);
 				LocalDate now = LocalDate.now();
@@ -304,7 +309,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				if (resNameAsPerITR != null) {
 					itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
 					nameAsPerItr = itrBasicDetailsResponse.getName();
-					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+					map.put("nameAsPerItr" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : null);
 				} else {
 					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 				}
@@ -404,6 +409,15 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
 		}
+		
+		//Note for restrict Borrower
+		try {
+			String note = commonRepository.getNoteForHLCam(applicationId);
+			map.put("noteOfBorrower", !CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+		}
+		
 		//PROPOSAL RESPONSE
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -418,6 +432,30 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
 			map.put("proposedEmi", proposalMappingRequestString.getEmi() != null ? CommonUtils.convertValue(proposalMappingRequestString.getEmi()) : "-");
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			
+			//For ROI Calculation
+			Map<String , Object> roiData = new LinkedHashMap<String, Object>();
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
+				Double effectiveRoi = null;
+				Double finalRoi = null;
+				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
+				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
+				if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
+					effectiveRoi = proposalMappingRequestString.getMclrRoi() + proposalMappingRequestString.getSpreadRoi();
+				}else {
+					effectiveRoi = proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi() : proposalMappingRequestString.getSpreadRoi();
+				}
+				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
+				roiData.put("concessionRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? proposalMappingRequestString.getConsessionRoi() : "-");
+				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? proposalMappingRequestString.getConcessionBasedOnType() : "");
+				if(effectiveRoi != null) {
+					finalRoi = !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? effectiveRoi - proposalMappingRequestString.getConsessionRoi() : null;
+				}else {
+					finalRoi = null;
+				}
+				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? finalRoi : "-");
+			}
+			map.put("roiData", !CommonUtils.isObjectNullOrEmpty(roiData) ? roiData : null);
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);

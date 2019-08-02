@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.sidbi.MeansOfFinanceDetailService;
+import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
+import com.capitaworld.service.oneform.model.MasterResponse;
 
 @RestController
 @RequestMapping("/finance_means")
@@ -36,7 +36,9 @@ public class MeansOfFinanceDetailController {
 
 	@Autowired
 	private MeansOfFinanceDetailService meansOfFinanceDetailService;
-	
+
+	@Autowired
+	SidbiSpecificService sidbiSpecificService;	
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -92,11 +94,14 @@ public class MeansOfFinanceDetailController {
 	
 			List<TotalCostOfProjectRequest> response = meansOfFinanceDetailService.getMeansOfFinanceList(applicationId, userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-//			JSONObject result = loanApplicationService.getCurrencyAndDenomination(applicationId,userId);
-//			String data = result.get("currency").toString();
-//			data = data.concat(" In "+ result.get("denomination").toString());
+
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
+			MasterResponse mastResponse = new MasterResponse();
+            BeanUtils.copyProperties(sidbiCurrencyRateObj, mastResponse);
+			loansResponse.setData(mastResponse);
+			
 			loansResponse.setListData(response);
-//			loansResponse.setData(data);
+
 			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 

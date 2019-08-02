@@ -165,6 +165,13 @@ public class SidbiBasicDetail implements Serializable{
 	
 	@Column(name="activity_detail")
 	private String activityDetail;
+	
+	@Column(name="all_amt_values_in")
+	private Integer allAmountValuesIn;
+	
+	@Column(name="is_locked_values_in")
+	private Boolean isLockedAllAmountValuesIn;
+	
 
 	public Long getId() {
 		return id;
@@ -546,7 +553,20 @@ public class SidbiBasicDetail implements Serializable{
 		this.propFactoryPremise = propFactoryPremise;
 	}
 
-	
+	public Integer getAllAmountValuesIn() {
+		return allAmountValuesIn;
+	}
 
+	public void setAllAmountValuesIn(Integer allAmountValuesIn) {
+		this.allAmountValuesIn = allAmountValuesIn;
+	}
+
+	public Boolean getIsLockedAllAmountValuesIn() {
+		return isLockedAllAmountValuesIn;
+	}
+
+	public void setIsLockedAllAmountValuesIn(Boolean isLockedAllAmountValuesIn) {
+		this.isLockedAllAmountValuesIn = isLockedAllAmountValuesIn;
+	}
 	
 }

@@ -133,6 +133,15 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Long districtMappingId;
 	
 	private Long personalId;
+	private Double loanObligation; 
+
+	public Double getLoanObligation() {
+		return loanObligation;
+	}
+
+	public void setLoanObligation(Double loanObligation) {
+		this.loanObligation = loanObligation;
+	}
 
 	public Boolean getIsActive() {
 		return isActive;

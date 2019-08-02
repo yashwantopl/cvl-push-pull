@@ -203,6 +203,41 @@ public class LoanApplicationController {
 		}
 	}
 
+	@RequestMapping(value = "/getMFIApp/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMFIApp(@PathVariable("id") Long id, HttpServletRequest request,
+											 @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "get");
+			Long userId;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			if (id == null || userId == null) {
+				logger.warn("ID And UserId Require to get Loan Application Details. ID==>" + id + " and UserId==>"
+						+ userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			Long userOrdId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			LoanApplicationRequest response = loanApplicationService.getMFIAppDetails(id, userId,userOrdId);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_LOAN_APPLICATION_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "/getIrrByApplicationId/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getIrrByApplicationId(@PathVariable("id") Long id, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -3115,5 +3150,27 @@ public class LoanApplicationController {
 	    		  new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 	    		  HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
+	}
+
+	@RequestMapping(value = "/getBsData", method = RequestMethod.POST,consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getBsData(@RequestBody String bCode, HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonUtils.isObjectNullOrEmpty(bCode)) {
+				logger.error("User Id is null or Empty");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			String data = loanApplicationService.getMaxInvestmentSizeFromBank(bCode);
+			if(!CommonUtils.isObjectNullOrEmpty(data)) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found", HttpStatus.OK.value(),data), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("No Data Found", HttpStatus.NO_CONTENT.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error in getBsData ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

@@ -35,6 +35,7 @@ import com.capitaworld.service.loans.service.sidbi.RawMaterialDetailsService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.sidbi.SidbiCurrencyRate;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -107,10 +108,32 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		try {
 			sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 			SidbiBasicDetail sidbiBasicDetail = basicDetailRepository.getByApplicationAndUserId(userId, applicationId);
-			if(sidbiBasicDetail != null) {
+			if(sidbiBasicDetail == null) {
+				
+				sidbiBasicDetailRequest = setAutoFilledValue(applicationId,userId);
+				
+				
+				sidbiBasicDetail = new SidbiBasicDetail();
+				
+				
+				sidbiBasicDetailRequest.setId(null);								
+				BeanUtils.copyProperties(sidbiBasicDetailRequest, sidbiBasicDetail);
+				
+				sidbiBasicDetail.setCreatedBy(userId);
+				sidbiBasicDetail.setCreatedDate(new Date());
+				sidbiBasicDetail.setIsActive(true);
+				sidbiBasicDetail.setModifiedBy(userId);
+				sidbiBasicDetail.setModifiedDate(new Date());
+				sidbiBasicDetail.setAllAmountValuesIn(SidbiCurrencyRate.RUPEES_IN_LAKH.getId());
+				sidbiBasicDetail.setIsLockedAllAmountValuesIn(true);
+				sidbiBasicDetail.setApplicationId(applicationId);
+				
+				basicDetailRepository.save(sidbiBasicDetail);
+				
+				sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
 				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);
 			}else {
-				sidbiBasicDetailRequest = setAutoFilledValue(applicationId,userId);
+				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);				
 			}
 			
 			sidbiBasicDetailRequest.setLoanAmount(getLoanAmountByApplicationId(applicationId));			
@@ -226,7 +249,9 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 					pTotalAlreadyIncurred += projectCostDetail.getAlreadyIncurred() == null ? 0.00 : projectCostDetail.getAlreadyIncurred();				
 				}
 			}
-			
+			totalAmt=CommonUtils.convertTwoDecimal(totalAmt);
+			pTotalToBeIncurred=CommonUtils.convertTwoDecimal(pTotalToBeIncurred);
+			pTotalAlreadyIncurred=CommonUtils.convertTwoDecimal(pTotalAlreadyIncurred);
 			if(totalAmt == null || totalAmt == 0.00) {
 				return new LoansResponse("Please fill atleast one row in Project Cost Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
 			}
@@ -244,6 +269,9 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 				aTotalAlreadyIncurred +=  meansOfFinanceDetail.getAlreadyIncurred() == null ? 0.00 : meansOfFinanceDetail.getAlreadyIncurred();
 			}
 			
+			totalAmt=CommonUtils.convertTwoDecimal(totalAmt);
+			aTotalToBeIncurred=CommonUtils.convertTwoDecimal(aTotalToBeIncurred);
+			aTotalAlreadyIncurred=CommonUtils.convertTwoDecimal(aTotalAlreadyIncurred);
 			if(totalAmt == null || totalAmt == 0.00) {
 				return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
 			}
@@ -272,6 +300,31 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 		
 		
 		return null;
+	}
+
+	
+	@Override
+	public SidbiCurrencyRate getValuesIn(Long applicationId) throws LoansException {
+		SidbiBasicDetailRequest sidbiBasicDetailRequest = this.getSidbiBasicDetailByAppId(applicationId);
+		return SidbiCurrencyRate.getById(sidbiBasicDetailRequest.getAllAmountValuesIn());
+	}
+
+	@Override
+	public SidbiBasicDetailRequest getSidbiBasicDetailByAppId(Long applicationId) throws LoansException {
+		SidbiBasicDetailRequest sidbiBasicDetailRequest = null;
+		try {
+			sidbiBasicDetailRequest = new SidbiBasicDetailRequest();
+			SidbiBasicDetail sidbiBasicDetail = basicDetailRepository.getSidbiBasicDetailByAppId(applicationId);
+			if(sidbiBasicDetail != null) {
+				BeanUtils.copyProperties(sidbiBasicDetail, sidbiBasicDetailRequest);
+			}
+			
+		} catch (Exception e) {
+			logger.error("Exception : ", e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+		
+		return sidbiBasicDetailRequest;
 	}
 
 	

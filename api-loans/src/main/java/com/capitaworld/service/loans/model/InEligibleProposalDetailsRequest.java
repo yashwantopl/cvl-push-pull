@@ -2,9 +2,12 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Created by KushalCW on 22-09-2018.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InEligibleProposalDetailsRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -31,6 +34,8 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     private Integer businessTypeId;
 
     private Long ineligibleProposalId;
+    
+	private String addiFields;
 
     public Long getApplicationId() {
         return applicationId;
@@ -127,6 +132,15 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 
 	public void setReOpenReason(String reOpenReason) {
 		this.reOpenReason = reOpenReason;
+	}
+	
+
+	public String getAddiFields() {
+		return addiFields;
+	}
+
+	public void setAddiFields(String addiFields) {
+		this.addiFields = addiFields;
 	}
 
 	@Override

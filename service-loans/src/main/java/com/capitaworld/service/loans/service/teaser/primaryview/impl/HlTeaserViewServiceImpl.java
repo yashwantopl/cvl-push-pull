@@ -66,6 +66,7 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
@@ -93,9 +94,11 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.CastCategory;
@@ -132,6 +135,7 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author nilay.darji
@@ -327,6 +331,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
+				plRetailApplicantResponse.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp() != null ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
@@ -412,6 +417,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
 				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail());
 				plRetailApplicantResponse.setContactNo(plRetailApplicantRequest.getContactNo());
+				plRetailApplicantResponse.setNetMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
 
 				LocalDate today = LocalDate.now();
 				String operatingBusinessSince = null;
@@ -716,15 +722,62 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
+		ObjectMapper mapper = new ObjectMapper();
+		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+		proposalMappingRequest.setApplicationId(toApplicationId);
+		proposalMappingRequest.setFpProductId(productMappingId);
+		ProposalMappingResponse proposalMappingResponse = null;
+		try {
+			proposalMappingResponse = proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+			if(proposalMappingRequestString != null) {
+			    hlTeaserViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
+			    hlTeaserViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
+			    
+			    if (!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
+					hlTeaserViewResponse.setEffectiveRoi(String.valueOf(Double.valueOf(proposalMappingRequestString.getMclrRoi()) + Double.valueOf(proposalMappingRequestString.getSpreadRoi())));		    	
+				} else {
+					hlTeaserViewResponse.setEffectiveRoi(proposalMappingRequestString.getMclrRoi() == null && proposalMappingRequestString.getSpreadRoi() == null ? "-" : proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : proposalMappingRequestString.getSpreadRoi().toString());				
+				}
+			    hlTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
+			    hlTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+			    if (hlTeaserViewResponse.getEffectiveRoi() != null) {
+					hlTeaserViewResponse.setFinalRoi(proposalMappingRequestString.getConsessionRoi() != null ? String.valueOf(Double.valueOf(hlTeaserViewResponse.getEffectiveRoi()) - Double.valueOf(proposalMappingRequestString.getConsessionRoi())) : "-" );
+				} else {
+						hlTeaserViewResponse.setFinalRoi("-");
+				}
+			}
+		    
+		} catch (MatchException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
+	
+		ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+		String nameAsPerItr = null;
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
+				itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+				nameAsPerItr = itrBasicDetailsResponse.getName();
 				hlTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 			} else {
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
 		} catch (Exception e) {
 			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+		}
+		
+		
+		
+		String fullName = plRetailApplicantResponse.getFullName();
+		if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equalsIgnoreCase(nameAsPerItr)) {
+			hlTeaserViewResponse.setNameEditedByUser("-");
+		}else {
+		    hlTeaserViewResponse.setNameEditedByUser(fullName);	
 		}
 		
 		
@@ -1018,6 +1071,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setSalaryMode(coApplicantDetail.getModeOfReceipt()!= null ? SalaryModeMst.getById(coApplicantDetail.getModeOfReceipt()).getValue().toString() : "-");
 				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
 				plRetailApplicantResponse.setIsIncomeCons(coApplicantDetail.getIsIncomeConsider());
+				plRetailApplicantResponse.setNetMonthlyIncome(coApplicantDetail.getMonthlyIncome());
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
@@ -1128,13 +1182,17 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				} catch (Exception e) {
 					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 				}*/
+				
+				/* FOR COAPP */
 				ITRBasicDetailsResponse itrReq = new ITRBasicDetailsResponse();
 				itrReq.setApplicationId(applicationId);
+				String coAppnameAsPerItr = null;
 				itrReq.setCoAppId(coApplicantDetail.getId());
 				try {
 					ITRBasicDetailsResponse res = itrClient.getAppOrCoAppBasicDetails(itrReq);
 					if (res != null) {
 						plRetailApplicantResponse.setCoApplicantNameAsPerITR(res.getName());
+						coAppnameAsPerItr = plRetailApplicantResponse.getCoApplicantNameAsPerITR();
 					}else {
 						logger.info("itr name is empty for application::"+applicationId + " and coAppId::" +coApplicantDetail.getId());
 					}
@@ -1142,6 +1200,17 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				} catch (Exception e) {
 					logger.error("error while fetching itr data from itrClient",e);
 				}
+				
+				
+				String coAppFullName = plRetailApplicantResponse.getFullName();
+				if(!CommonUtils.isObjectNullOrEmpty(coAppFullName) && coAppFullName.equalsIgnoreCase(coAppnameAsPerItr)) {
+					plRetailApplicantResponse.setNameEditedByCoApp("-");
+				}else {
+					plRetailApplicantResponse.setNameEditedByCoApp(coAppFullName);	
+				}
+				
+				
+				
 
 				//permanent address
 				try {

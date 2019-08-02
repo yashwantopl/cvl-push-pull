@@ -62,4 +62,8 @@ public interface LoanRepository {
 	public String getApplicationListForPrefillProfile(Long userId);
 	
 	public Boolean retailPrefillData(String input);
+	
+	public Boolean isCampaignUser(Long userId);
+	
+	public String getCampaignUser(Long userId);
 }

@@ -1,10 +1,11 @@
 package com.capitaworld.service.loans.model.teaser.primaryview;
 
+import java.util.List;
+import java.util.Map;
+
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
-
-import java.util.List;
 
 public class CorporatePrimaryViewResponse {
 
@@ -93,6 +94,7 @@ public class CorporatePrimaryViewResponse {
     private Object promotersContribution;
     private Object promotersContributionPer;
     private Object mcaData;
+    private Boolean mcaNotApplicable;
     private Object hufReport;
     private Object cibilConsumerReport;
     private Object nameAsPerItr;
@@ -150,7 +152,7 @@ public class CorporatePrimaryViewResponse {
     
     private String productServiceDesc;
     private String msmeRankTitle;
-    
+    private Object bankComparisionData;
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
     
     private Object gstBankComp;
@@ -1283,6 +1285,18 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setMsmeRankTitle(String msmeRankTitle) {
 		this.msmeRankTitle = msmeRankTitle;
+	}
+	public Object getBankComparisionData() {
+		return bankComparisionData;
+	}
+	public void setBankComparisionData(Object bankComparisionData) {
+		this.bankComparisionData = bankComparisionData;
+	}
+	public Boolean getMcaNotApplicable() {
+		return mcaNotApplicable;
+	}
+	public void setMcaNotApplicable(Boolean mcaNotApplicable) {
+		this.mcaNotApplicable = mcaNotApplicable;
 	}
 	
 	

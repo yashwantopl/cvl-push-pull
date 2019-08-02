@@ -1,24 +1,6 @@
 
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
@@ -31,72 +13,20 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
-import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
-import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
-import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
-import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.DataRequest;
-import com.capitaworld.service.loans.model.FpProductDetails;
-import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
-import com.capitaworld.service.loans.model.ProductDetailsForSp;
-import com.capitaworld.service.loans.model.ProductDetailsResponse;
-import com.capitaworld.service.loans.model.ProductMasterRequest;
-import com.capitaworld.service.loans.model.WorkflowData;
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.corporate.AddProductRequest;
-import com.capitaworld.service.loans.model.corporate.CorporateProduct;
-import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
-import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
-import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
-import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.model.corporate.*;
+import com.capitaworld.service.loans.model.mfi.MFILoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
-import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
-import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
-import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.LapParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingRepository;
-import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
-import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
-import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.LoanPurposeAmountMappingService;
-import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
-import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
-import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
+import com.capitaworld.service.loans.service.fundprovider.*;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
@@ -112,6 +42,17 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.*;
 
 @Service
 @Transactional
@@ -124,6 +65,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private static final String IS_PRODUCT_MATCHED = "isProductMatched";
 	private static final String SAVE_CORPORATE = "saveCorporate";
 	private static final String SAVE_RETAIL = "saveRetail";
+	private static final String SAVE_MFI = "saveMfi";
 	private static final String SAVE_CORPORATE_IN_TEMP = "saveCorporateInTemp";
 	private static final String SAVE_RETAIL_IN_TEMP = "saveRetailInTemp";
 
@@ -158,6 +100,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private LapParameterRepository lapParameterRepository;
 
 	@Autowired
+	private MFILoanParameterRepository mfiLoanParameterRepository;
+
+	@Autowired
 	private FundProviderSequenceService fundProviderSequenceService;
 
 	@Autowired
@@ -176,6 +121,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private HomeLoanParameterService homeLoanParameterService;
 
 	@Autowired
+	private MFILoanParameterService mfiLoanParameterService;
+
+	@Autowired
 	private CarLoanParameterService carLoanParameterService;
 
 	@Autowired
@@ -189,6 +137,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private WcTlParameterService wcTlParameterService;
+
+	@Autowired
+	private MFILoanParameterTempService mfiLoanParameterTempService;
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -238,6 +189,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     
     @Autowired
     private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
+
    
 	
     private Integer [] productIds = { CommonUtils.LoanType.HOME_LOAN.getValue(),CommonUtils.LoanType.PERSONAL_LOAN.getValue()};
@@ -271,6 +223,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 								? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				Long jobId = null;
+				System.out.println(loanType);
 
 				switch (loanType) {
 				case WORKING_CAPITAL:
@@ -291,6 +244,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				case HOME_LOAN:
 					productMasterTemp = new HomeLoanParameterTemp();
+					break;
+				case MFI_LOAN:
+					productMasterTemp = new MFILoanParameterTemp();
 					break;
 
 				default:
@@ -439,6 +395,19 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						productMasterTemp = homeLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
+					case MFI_LOAN:
+
+						MFILoanParameterTemp mfiLoanParameterTemp = new MFILoanParameterTemp();
+						MFILoanParameterRequest mfiLoanParameterRequest=mfiLoanParameterService.getMFILoanParameterRequest(addProductRequest.getLoanId());
+
+						/*geogaphicallyCountry=mfiLoanParameterRequest.getCountryList();
+						geogaphicallyState=mfiLoanParameterRequest.getStateList();
+						geogaphicallyCity=mfiLoanParameterRequest.getCityList();*/
+
+						BeanUtils.copyProperties(mfiLoanParameterRequest, mfiLoanParameterTemp,"id");
+						productMasterTemp = mfiLoanParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
+						break;
 
 					default:
 						break;
@@ -487,57 +456,61 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						saveGstTypeTemp(productMaster2.getId(),addProductRequest.getGstType(),(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 							? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				}
-				
-				industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
-				// industry data save
-				if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
-					saveIndustryTemp(productMaster2.getId(),industrySecIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				// Sector data save
-				if(!CommonUtils.isListNullOrEmpty(secIdList))
-					saveSectorTemp(productMaster2.getId(),secIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				geographicalCountryTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
-				// country data save
-				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCountry))
-					saveCountryTemp(productMaster2.getId(),geogaphicallyCountry,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				// state data save
-				geographicalStateTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
-				if(!CommonUtils.isListNullOrEmpty(geogaphicallyState))
-					saveStateTemp(productMaster2.getId(),geogaphicallyState,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				// city data save
-				geographicalCityTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
-				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCity))
-					saveCityTemp(productMaster2.getId(),geogaphicallyCity,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				// negative industry save
-				negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(productMaster2.getId());
-				if(!CommonUtils.isListNullOrEmpty(negativeIndList))
-					saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				
-				
-				//msme value
-				tempRepository.inActiveTempByFpProductId(productMaster2.getId());
-				List<MsmeValueMapping> masterList = masterRepository.findByFpProductIdAndIsActive(addProductRequest.getLoanId(), true);
-				
-				if (!CommonUtils.isListNullOrEmpty(masterList)) {
-                    for (MsmeValueMapping master : masterList) {
-                    	MsmeValueMappingTemp temp= new MsmeValueMappingTemp();
-                        BeanUtils.copyProperties(master,temp, "id");
-                        temp.setActive(true);
-                        temp.setFpProductId(productMaster2.getId());
-                        temp.setCreatedBy(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-        						? addProductRequest.getUserId() : addProductRequest.getClientId());
-                        temp.setCreatedDate(new Date());
-                        temp.setModifiedBy(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-        						? addProductRequest.getUserId() : addProductRequest.getClientId());
-                        temp.setModifiedDate(new Date());
-                        tempRepository.save(temp);
-                    }
-                }
+
+				if(loanType==LoanType.WORKING_CAPITAL || loanType==LoanType.TERM_LOAN || loanType==LoanType.WCTL_LOAN || loanType==LoanType.PERSONAL_LOAN || loanType==LoanType.HOME_LOAN )
+				{
+					industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+					// industry data save
+					if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
+						saveIndustryTemp(productMaster2.getId(),industrySecIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+								? addProductRequest.getUserId() : addProductRequest.getClientId()));
+					// Sector data save
+					if(!CommonUtils.isListNullOrEmpty(secIdList))
+						saveSectorTemp(productMaster2.getId(),secIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+								? addProductRequest.getUserId() : addProductRequest.getClientId()));
+					geographicalCountryTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+					// country data save
+					if(!CommonUtils.isListNullOrEmpty(geogaphicallyCountry))
+						saveCountryTemp(productMaster2.getId(),geogaphicallyCountry,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+								? addProductRequest.getUserId() : addProductRequest.getClientId()));
+					// state data save
+					geographicalStateTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+					if(!CommonUtils.isListNullOrEmpty(geogaphicallyState))
+						saveStateTemp(productMaster2.getId(),geogaphicallyState,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+								? addProductRequest.getUserId() : addProductRequest.getClientId()));
+					// city data save
+					geographicalCityTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+					if(!CommonUtils.isListNullOrEmpty(geogaphicallyCity))
+						saveCityTemp(productMaster2.getId(),geogaphicallyCity,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+								? addProductRequest.getUserId() : addProductRequest.getClientId()));
+					// negative industry save
+					negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(productMaster2.getId());
+					if(!CommonUtils.isListNullOrEmpty(negativeIndList))
+						saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+								? addProductRequest.getUserId() : addProductRequest.getClientId()));
+
+
+					//msme value
+					tempRepository.inActiveTempByFpProductId(productMaster2.getId());
+					List<MsmeValueMapping> masterList = masterRepository.findByFpProductIdAndIsActive(addProductRequest.getLoanId(), true);
+
+					if (!CommonUtils.isListNullOrEmpty(masterList)) {
+						for (MsmeValueMapping master : masterList) {
+							MsmeValueMappingTemp temp= new MsmeValueMappingTemp();
+							BeanUtils.copyProperties(master,temp, "id");
+							temp.setActive(true);
+							temp.setFpProductId(productMaster2.getId());
+							temp.setCreatedBy(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+									? addProductRequest.getUserId() : addProductRequest.getClientId());
+							temp.setCreatedDate(new Date());
+							temp.setModifiedBy(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+									? addProductRequest.getUserId() : addProductRequest.getClientId());
+							temp.setModifiedDate(new Date());
+							tempRepository.save(temp);
+						}
+					}
+				}
+
 				
 				//pl specific copy parameter changes
 				if(LoanType.PERSONAL_LOAN.getId().equals(loanType.getId())) {
@@ -1028,6 +1001,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				case LOAN_AGAINST_SHARES_AND_SECUIRITIES:
 					productMaster = lasParameterRepository.findOne(productMappingId);
 					break;
+				case MFI_LOAN:
+					productMaster = mfiLoanParameterRepository.findOne(productMappingId);
+					break;
 
 				default:
 					break;
@@ -1416,6 +1392,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 */ else if (master.getProductId() == 16) {
 				return wcTlParameterService.getWcTlRequestTemp(master.getId(), role, userId);
 			}
+			else if (master.getProductId() == 17) {
+				return mfiLoanParameterTempService.getMFILoanParameterRequest(master.getId(),role, userId);
+			}
 		} else {
 			ProductMaster master = productMasterRepository.findOne(id);
 
@@ -1442,6 +1421,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
 			} else if (master.getProductId() == 16) {
 				return wcTlParameterService.getWcTlRequest(master.getId());
+			}
+			else if (master.getProductId() == 17) {
+				return mfiLoanParameterService.getMFILoanParameterRequest(master.getId());
 			}
 		}
 		return null;
@@ -1474,6 +1456,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
 					return homeLoanParameterService.saveMasterFromTemp(mappingId);
 				}
+				else if (corporateProduct.getProductId() == CommonUtils.LoanType.MFI.getValue()) {
+					CommonDocumentUtils.endHook(logger, SAVE_MFI);
+					return mfiLoanParameterService.saveMasterFromTemp(mappingId);
+				}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 		return false;
@@ -1489,7 +1475,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(corporateProduct, capitalParameterRequest);
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 					return workingCapitalParameterService.saveOrUpdateTemp(capitalParameterRequest);
-				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
+				}
+				else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 					if (corporateProduct.getBusinessTypeId() != null && corporateProduct.getBusinessTypeId() == 2) {
 						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
@@ -1507,6 +1494,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 					return wcTlParameterService.saveOrUpdateTemp(wcTlParameterRequest);
+				}
+				else if (corporateProduct.getProductId() == CommonUtils.LoanType.MFI.getValue()) {
+					MFILoanParameterRequest mfiLoanParameterRequest = new MFILoanParameterRequest();
+					BeanUtils.copyProperties(corporateProduct, mfiLoanParameterRequest);
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
+					return mfiLoanParameterTempService.saveOrUpdateTemp(mfiLoanParameterRequest);
 				}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);

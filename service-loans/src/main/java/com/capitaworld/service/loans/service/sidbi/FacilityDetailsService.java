@@ -12,5 +12,5 @@ import com.capitaworld.service.loans.model.sidbi.FacilityDetailsRequest;
 public interface FacilityDetailsService {
 
     public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
-    public List<FacilityDetailsRequest> getFacilityDetailsListAppId(Long applicationId) throws LoansException;
+    public List<FacilityDetailsRequest> getFacilityDetailsListAppId(Long applicationId,Long userId) throws LoansException;
 }
