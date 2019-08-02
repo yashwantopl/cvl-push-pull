@@ -49,7 +49,7 @@ public class MfiIncomeAndExpenditureReq {
 			Double monthlyIncome, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
 			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
 			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
-			Integer ppiOtherTableInFamily,Double houseHoldExpense, Double clothesExpense) {
+			Integer ppiOtherTableInFamily,Double houseHoldExpense, Double clothesExpense,Integer type) {
 		this.applicationId = applicationId;
 		this.shipShgiInstallment = shipShgiInstallment;
 		this.otherInstallment = otherInstallment;
