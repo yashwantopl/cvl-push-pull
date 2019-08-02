@@ -514,7 +514,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 				result =true;
 			}
-			
+
 		} catch (Exception e) {
 //			e.printStackTrace();
 			logger.error("Exception : "+e.getMessage());
