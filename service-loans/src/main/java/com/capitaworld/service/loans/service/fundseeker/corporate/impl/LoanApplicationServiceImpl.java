@@ -932,7 +932,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					LoanApplicationRequest request = new LoanApplicationRequest();
 					request.setId(master.getId());
 					BeanUtils.copyProperties(master, request, "name");
-					if (request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
+					if (request.getBusinessTypeId() != null && request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
 							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 						request.setLoanTypeMain(CommonUtils.CORPORATE);
 						request.setLoanTypeSub("DEBT");
