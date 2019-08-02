@@ -261,6 +261,11 @@ public class MfiApplicantDetailsReq {
 
     private List<MfiIncomeDetailsReq> incomeDetailsReqList;
     private List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList;
+
+	private MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIMaker;
+
+	private MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIChecker;
+
     private Integer purposeOfLoan;
 
     private Boolean isBusinessPremiseVisited;
@@ -302,6 +307,23 @@ public class MfiApplicantDetailsReq {
 	private Double loanAmountMFIChecker;
 
 	private Double loanAmountBankMaker;
+
+
+	public MfiIncomeAndExpenditureReq getMfiIncomeAndExpenditureReqMFIMaker() {
+		return mfiIncomeAndExpenditureReqMFIMaker;
+	}
+
+	public void setMfiIncomeAndExpenditureReqMFIMaker(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIMaker) {
+		this.mfiIncomeAndExpenditureReqMFIMaker = mfiIncomeAndExpenditureReqMFIMaker;
+	}
+
+	public MfiIncomeAndExpenditureReq getMfiIncomeAndExpenditureReqMFIChecker() {
+		return mfiIncomeAndExpenditureReqMFIChecker;
+	}
+
+	public void setMfiIncomeAndExpenditureReqMFIChecker(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIChecker) {
+		this.mfiIncomeAndExpenditureReqMFIChecker = mfiIncomeAndExpenditureReqMFIChecker;
+	}
 
 	public Double getLoanAmountMFIChecker() {
 		return loanAmountMFIChecker;
