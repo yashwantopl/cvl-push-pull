@@ -26,7 +26,6 @@ import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq;
-import com.capitaworld.service.loans.model.micro_finance.MfiReqResponse;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -485,5 +484,29 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             return detailsRepository.getApprovedApplications(userId, orgId);
         }
     }
+
+	@Override
+	public Boolean saveOrUpdateApplicantDetail(MfiApplicantDetailsReq mfiApplicantDetailsReq) {
+		Boolean result = false;
+		try {
+			List<MfiIncomeDetails> mfiIncomeDetails = new ArrayList<>();
+			if(mfiApplicantDetailsReq != null) {
+				for(MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq.getIncomeDetailsTypeTwoList()) {
+					MfiIncomeDetails mfiIncomeDetail =  new MfiIncomeDetails(); // MfiIncomeDetailsRepository.findOne(mfiApplicantDetailsReq.getId());
+					BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetail);
+					mfiIncomeDetail.setIsActive(true);
+					mfiIncomeDetail.setType(2);
+					mfiIncomeDetails.add(mfiIncomeDetail);
+				}
+				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+				result =true;
+			}
+			
+		} catch (Exception e) {
+//			e.printStackTrace();
+			logger.error("Exception : "+e.getMessage());
+		}
+		return result;
+	}
 
 }

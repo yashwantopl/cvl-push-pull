@@ -45,6 +45,8 @@ public interface MfiApplicationService {
 	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce);
 
 	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status);
+	
+	public Boolean saveOrUpdateApplicantDetail(MfiApplicantDetailsReq mfiApplicantDetailsReq);
 
 
 }
