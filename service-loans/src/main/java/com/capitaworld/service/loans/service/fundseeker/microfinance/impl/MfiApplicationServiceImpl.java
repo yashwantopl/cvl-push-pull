@@ -1,11 +1,18 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.micro_finance.*;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +65,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private MfiAssetsDetailsRepository MfiAssetsDetailsRepository;
+
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private WorkflowClient workflowClient;
+
+
 
 	@Override
 	public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -327,4 +342,34 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
 	}
 
+	@Override
+	public Object getActiveButtons(WorkflowRequest workflowRequest) {
+
+		Long jobId = workflowRequest.getJobId();
+		if (CommonUtils.isObjectNullOrEmpty(jobId)) {
+			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+					WorkflowUtils.Workflow.MFI_PROCESS, WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE,
+					workflowRequest.getUserId());
+			if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				jobId = Long.valueOf(workflowResponse.getData().toString());
+			}
+		}
+		WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(jobId,
+				workflowRequest.getRoleIds(), workflowRequest.getUserId());
+		if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse)
+				&& !com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+			try {
+				WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(),
+								WorkflowJobsTrackerRequest.class);
+				if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !com.capitaworld.service.scoring.utils.CommonUtils
+						.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+					return workflowJobsTrackerRequest;
+				}
+			} catch (IOException e) {
+				logger.error("Error While getting data from workflow {}", e);
+			}
+		}
+		return null;
+	}
 }

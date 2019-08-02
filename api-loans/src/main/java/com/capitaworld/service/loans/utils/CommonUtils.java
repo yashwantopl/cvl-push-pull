@@ -558,6 +558,18 @@ public class CommonUtils {
 			return "EQUITY";
 	}
 
+	public static class MFIApplicationStatus{
+
+		public static final Long MFI_OPEN = 9l;
+		public static final Long MFI_PENDING = 10l;
+		public static final Long MFI_Submitted = 11l;
+		public static final Long MFI_Submitted_Sidbi = 12l;
+		public static final Long MFI_Ineligible = 6l;
+		public static final Long MFI_Sanction = 5l;
+		public static final Long MFI_Disbursed = 11l;
+		public static final Long MFI_Rejected = 4l;
+	}
+
 	public enum ApplicationStatusMessage {
 
 		IN_PROGRESS(1,"In Progress"),

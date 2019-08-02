@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance;
 
 import java.util.List;
 
+import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.micro_finance.*;
 
 public interface MfiApplicationService {
@@ -40,5 +42,7 @@ public interface MfiApplicationService {
 	public boolean saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq);
 	
 	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
+
+	public Object getActiveButtons(WorkflowRequest workflowRequest);
 
 }
