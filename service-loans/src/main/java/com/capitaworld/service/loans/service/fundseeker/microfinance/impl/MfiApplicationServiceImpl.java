@@ -216,11 +216,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId));
             detailsReq.setLiabilityDetails(MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId));
             //for Income
-            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
+            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId,1);
             detailsReq.setIncomeDetailsReqList(incomeDetails);
 
             // FOR PARENT(MfiIncomeAndExpenditureReq)
-            List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
+            List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
             BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
 
             mfiApplicantDetailsReqs.add(detailsReq);
@@ -308,10 +308,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId) {
-        List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId);
+        List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
         if (!CommonUtils.isListNullOrEmpty(detailsReq)) {
             MfiIncomeAndExpenditureReq expenditureReq = detailsReq.get(0);
-            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId);
+            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId,1);
             expenditureReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
             return expenditureReq;
         }
