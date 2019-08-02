@@ -77,6 +77,7 @@ public class AadharDetailsReq implements Serializable {
     private String aadharPincode;
 
     private Integer addressProfType;
+    private Integer type;
     private String addressProfNumber;
 
     private String fatherName;
@@ -541,5 +542,13 @@ public class AadharDetailsReq implements Serializable {
 
     public void setAddressProfNumber(String addressProfNumber) {
         this.addressProfNumber = addressProfNumber;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }
