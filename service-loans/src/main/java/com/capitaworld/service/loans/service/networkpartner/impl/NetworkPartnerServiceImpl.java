@@ -1772,7 +1772,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_PENDING,
 					npOrgId,
 					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
+
 
 			// Sent to Sidbi maker
 			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted, npOrgId,
@@ -1781,18 +1781,40 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			//add also proposal sent to sidbi checker
 			assignToMFICheckerPropsalCount.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi, npOrgId,
 					nhbsApplicationRequest.getProductTypeId()));
+
+
+			for(BigInteger appid : sanctionDisRejIneligibleProposal){
+				if(pendingProposalApplicationIdList.contains(appid)){
+					pendingProposalApplicationIdList.remove(appid);
+				}
+				if(assignToMFICheckerPropsalCount.contains(appid)){
+					assignToMFICheckerPropsalCount.remove(appid);
+				}
+			}
 			countObj.put("assignPropsalCount", assignToMFICheckerPropsalCount.size());
+			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
 
 		} else if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == nhbsApplicationRequest.getUserRoleId()) {
 			// received proposal
 			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted,
 					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
+
 
 			// Sent to Sidbi checker
 			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 					nhbsApplicationRequest.getProductTypeId());
+
+
+			for(BigInteger appid : sanctionDisRejIneligibleProposal){
+				if(pendingProposalApplicationIdList.contains(appid)){
+					pendingProposalApplicationIdList.remove(appid);
+				}
+				if(assignToMFICheckerPropsalCount.contains(appid)){
+					assignToMFICheckerPropsalCount.remove(appid);
+				}
+			}
 			countObj.put("assignPropsalCount", assignToMFICheckerPropsalCount.size());
+			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
 
 		} else if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()) {
 
