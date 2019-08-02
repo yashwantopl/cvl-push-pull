@@ -32,6 +32,9 @@ public class MfiIncomeDetails implements Serializable {
     @Column(name = "yearly_income")
     private Double yearlyIncome;
 
+    @Column(name = "is_active")
+    private Boolean isActive;
+
     private Integer type;
 
     public Long getId() {
@@ -104,5 +107,13 @@ public class MfiIncomeDetails implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }
