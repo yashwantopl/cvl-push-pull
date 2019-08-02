@@ -249,7 +249,9 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 					pTotalAlreadyIncurred += projectCostDetail.getAlreadyIncurred() == null ? 0.00 : projectCostDetail.getAlreadyIncurred();				
 				}
 			}
-			
+			totalAmt=CommonUtils.convertTwoDecimal(totalAmt);
+			pTotalToBeIncurred=CommonUtils.convertTwoDecimal(pTotalToBeIncurred);
+			pTotalAlreadyIncurred=CommonUtils.convertTwoDecimal(pTotalAlreadyIncurred);
 			if(totalAmt == null || totalAmt == 0.00) {
 				return new LoansResponse("Please fill atleast one row in Project Cost Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
 			}
@@ -267,6 +269,9 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 				aTotalAlreadyIncurred +=  meansOfFinanceDetail.getAlreadyIncurred() == null ? 0.00 : meansOfFinanceDetail.getAlreadyIncurred();
 			}
 			
+			totalAmt=CommonUtils.convertTwoDecimal(totalAmt);
+			aTotalToBeIncurred=CommonUtils.convertTwoDecimal(aTotalToBeIncurred);
+			aTotalAlreadyIncurred=CommonUtils.convertTwoDecimal(aTotalAlreadyIncurred);
 			if(totalAmt == null || totalAmt == 0.00) {
 				return new LoansResponse("Please fill atleast one row in Means of Finance Details", HttpStatus.INTERNAL_SERVER_ERROR.value(), "accCostOfProject");
 			}

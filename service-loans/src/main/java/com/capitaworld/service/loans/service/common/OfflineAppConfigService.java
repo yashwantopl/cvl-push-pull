@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.common;
 
+import java.util.List;
+
 import com.capitaworld.service.loans.model.common.OfflineAppConfigRequest;
 
 public interface OfflineAppConfigService {
@@ -19,5 +21,12 @@ public interface OfflineAppConfigService {
 	 * @return
 	 */
 	public OfflineAppConfigRequest get(OfflineAppConfigRequest appConfigRequest);
+	
+	/**
+	 * History (Audit Trail) based on Given data 
+	 * @param appConfigRequest
+	 * @return
+	 */
+	public List<OfflineAppConfigRequest> hisotry(OfflineAppConfigRequest appConfigRequest);
 	
 }

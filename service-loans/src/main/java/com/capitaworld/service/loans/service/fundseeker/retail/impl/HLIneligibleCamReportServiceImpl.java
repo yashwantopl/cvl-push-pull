@@ -431,7 +431,7 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 				coApp.put("retailCoApplicantProfile", CommonUtils.printFields(coApplicantRequest, null));
 				listMap.add(coApp);		
 			}
-			map.put("retailCoApplicantDetails", CommonUtils.printFields(listMap, null));
+			map.put("retailCoApplicantDetails", !CommonUtils.isObjectListNull(listMap) ? CommonUtils.printFields(listMap, null) : null);
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}		

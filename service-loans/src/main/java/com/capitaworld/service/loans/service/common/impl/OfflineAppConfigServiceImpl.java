@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.common.OfflineAppConfig;
+import com.capitaworld.service.loans.domain.common.OfflineAppConfigAudit;
 import com.capitaworld.service.loans.model.common.OfflineAppConfigRequest;
+import com.capitaworld.service.loans.repository.common.OfflineAppConfigAuditRepository;
 import com.capitaworld.service.loans.repository.common.OfflineAppConfigRepository;
 import com.capitaworld.service.loans.service.common.OfflineAppConfigService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -21,7 +26,10 @@ public class OfflineAppConfigServiceImpl implements OfflineAppConfigService{
 	private static final Logger logger = LoggerFactory.getLogger(OfflineAppConfigServiceImpl.class);
 
 	@Autowired
-	private OfflineAppConfigRepository offlineAppConfigRepository; 
+	private OfflineAppConfigRepository offlineAppConfigRepository;
+	
+	@Autowired
+	private OfflineAppConfigAuditRepository offlineAppConfigAuditRepository;
 	
 	@Override
 	public OfflineAppConfigRequest save(OfflineAppConfigRequest appConfigRequest,Long userId) {
@@ -48,6 +56,20 @@ public class OfflineAppConfigServiceImpl implements OfflineAppConfigService{
 		return prepareRequestFromDomain(offlineAppConfig, null);
 	}
 	
+	
+	@Override
+	public List<OfflineAppConfigRequest> hisotry(OfflineAppConfigRequest appConfigRequest) {
+		List<OfflineAppConfigAudit> audits = offlineAppConfigAuditRepository.findByOrgIdAndBusinessTypeIdAndIsActiveOrderByIdDesc(appConfigRequest.getOrgId(), appConfigRequest.getBusinessTypeId(), true);
+		if(CommonUtils.isListNullOrEmpty(audits)) {
+			return Collections.emptyList();
+		}
+		List<OfflineAppConfigRequest> appConfigRequests = new ArrayList<OfflineAppConfigRequest>(audits.size());
+		for(OfflineAppConfigAudit audit :  audits) {
+			appConfigRequests.add(prepareRequestFromDomainAudit(audit, null));
+		}
+		return appConfigRequests;
+	}
+
 	/**
 	 * 
 	 * @param offlineAppConfig
@@ -59,6 +81,21 @@ public class OfflineAppConfigServiceImpl implements OfflineAppConfigService{
 			appConfigRequest = new OfflineAppConfigRequest();			
 		}
 		BeanUtils.copyProperties(offlineAppConfig, appConfigRequest);
+		return appConfigRequest;
+	}
+	/**
+	 * Prepare Request Form Audit Domain
+	 * @param offlineAppConfig
+	 * @param appConfigRequest
+	 * @return
+	 */
+	
+	private OfflineAppConfigRequest prepareRequestFromDomainAudit(OfflineAppConfigAudit  offlineAppConfig,OfflineAppConfigRequest appConfigRequest) {
+		if(appConfigRequest == null) {
+			appConfigRequest = new OfflineAppConfigRequest();			
+		}
+		BeanUtils.copyProperties(offlineAppConfig, appConfigRequest);
+		appConfigRequest.setToDate(offlineAppConfig.getCreatedDate());
 		return appConfigRequest;
 	}
 	

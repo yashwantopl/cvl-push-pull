@@ -3173,4 +3173,22 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	/**
+	 * GET APPLICATION CAMPAIGN CODE FROM FS LOAN APPLICATION MASTER
+	 * @param applicationId
+	 * @return
+	 */
+	@RequestMapping(value = "/getApplicationCampCode/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApplicationCampCode(@PathVariable("applicationId") Long applicationId) {
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),loanApplicationService.getApplicationCampaignCode(applicationId)), HttpStatus.OK);
+	    } catch (Exception e) {
+	    	logger.error("Error while getApplicationCampCode ==>", e);
+	    	return new ResponseEntity<LoansResponse>(
+	    		  new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	    		  HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
 }

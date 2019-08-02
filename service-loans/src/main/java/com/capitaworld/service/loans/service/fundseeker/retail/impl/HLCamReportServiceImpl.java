@@ -29,6 +29,9 @@ import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -180,6 +183,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	private PrimaryHomeLoanService primaryHomeLoanService;
 	
 	@Autowired
+	private ITRClient itrClient;
+	
+	@Autowired
 	private ProductMasterRepository productMasterRepository;
 	
 	@Autowired
@@ -278,6 +284,31 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}else {
 				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
+			
+			
+			ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+			String nameAsPerItr = null;
+			try {
+				ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
+				if (resNameAsPerITR != null) {
+					itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+					nameAsPerItr = itrBasicDetailsResponse.getName();
+					map.put("itrData" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : null);
+				} else {
+					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+				}
+			} catch (Exception e) {
+				logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+			}
+
+			// for name is edited or not:
+			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
+			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equals(nameAsPerItr)){
+				map.put("nameEdited","-");
+			}else{
+				map.put("nameEdited",fullName);
+			}
+			
 			
 			String operatingBusinessSince = null;
 			if(plRetailApplicantRequest.getBusinessStartDate() != null ) {
@@ -616,6 +647,29 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}catch (Exception e) {
 					logger.error("Error/Exception while fetching name Of Employer in CoApplicants in HL Cam Report of applicationId==>{} with EmploymentType==>{}  and EmploymentWith=={}" , applicationId, coApplicantDetail.getEmploymentType() ,coApplicantDetail.getEmploymentWith());
 				}
+				
+				ITRBasicDetailsResponse itrBasicDetailsResponse = new ITRBasicDetailsResponse();
+				itrBasicDetailsResponse.setApplicationId(applicationId);
+				itrBasicDetailsResponse.setCoAppId(coApplicantDetail.getId());
+				try {
+					ITRBasicDetailsResponse itrResponse = itrClient.getAppOrCoAppBasicDetails(itrBasicDetailsResponse);
+					if (itrResponse != null) {
+						coApp.put("coAppNameAsPerItr" ,itrResponse.getName());
+					}else {
+						logger.info("ITR name is empty for application==>{} and coAppId==>{}",applicationId ,coApplicantDetail.getId());
+					}
+					
+					// for name is edited or not:
+					String fullName = (coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") +" "+ (coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") +" "+ (coApplicantDetail.getLastName() != null ?  coApplicantDetail.getLastName() : "");
+					if(!CommonUtils.isObjectNullOrEmpty(fullName) && !CommonUtils.isObjectNullOrEmpty(itrResponse) && fullName.equalsIgnoreCase(itrResponse.getName())){
+						coApp.put("nameEditedOfCoApp","-");
+					}else{
+						coApp.put("nameEditedOfCoApp",fullName);
+					}
+				} catch (Exception e) {
+					logger.error("Error while fetching itr data from itrClient fro CoApplicant",e);
+				}
+				
 
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
 				coApp.put("setIncomeConsider", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsIncomeConsider()) ? coApplicantDetail.getIsIncomeConsider() == true ? "Yes" : "No" : "-");

@@ -932,7 +932,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					LoanApplicationRequest request = new LoanApplicationRequest();
 					request.setId(master.getId());
 					BeanUtils.copyProperties(master, request, "name");
-					if (request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
+					if (request.getBusinessTypeId() != null && request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
 							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 						request.setLoanTypeMain(CommonUtils.CORPORATE);
 						request.setLoanTypeSub("DEBT");
@@ -6103,11 +6103,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //		}
 		logger.info("Successfully get result");
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
-		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
-		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_OPEN));
+		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
+		corporateLoan.setProductId(17);
+		corporateLoan.setBusinessTypeId(6);
 		corporateLoan.setFpMakerId(userId);
 		corporateLoan.setNpOrgId(userOrgId);
 		corporateLoan.setIsActive(true);
@@ -6145,6 +6147,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
@@ -6185,6 +6188,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);
@@ -8449,5 +8453,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return dfForNoDecimal.format(maxValInCr);
 		}
 		return null;
+	}
+	
+	@Override
+	public String getApplicationCampaignCode(Long applicationId) {
+		return loanRepository.getApplicationCampaignCode(applicationId);
 	}
 }

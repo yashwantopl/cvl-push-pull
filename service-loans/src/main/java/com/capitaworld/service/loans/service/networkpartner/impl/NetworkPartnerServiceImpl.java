@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.*;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
@@ -26,6 +27,7 @@ import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingReposito
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ApplicationStatusAuditRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
@@ -134,6 +136,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+
+	@Autowired
+	private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
 
 	private static String isPaymentBypass="cw.is_payment_bypass";
 
@@ -1497,28 +1502,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) ||
 						CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
-
-					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndProposalIdAndUserId(proposalMapping.getUserId(), proposalMapping.getId(), nhbsApplicationsResponse.getProposalId());
+					MFIApplicantDetail applicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(proposalMapping.getId(), 1);
+//					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndProposalIdAndUserId(proposalMapping.getUserId(), proposalMapping.getId(), nhbsApplicationsResponse.getProposalId());
 					if (applicantDetail != null) {
-						nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
+
 						try {
-							// Setting City Value
-							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
-								nhbsApplicationsResponse.setCity(
-										CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
-							}
-
-							// Setting State Value
-							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
-								nhbsApplicationsResponse.setState(CommonDocumentUtils
-										.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
-							}
-
-							// Country State Value
-							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
-								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-										.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
-							}
+							nhbsApplicationsResponse.setClientName(applicantDetail.getFirstName()+" "+applicantDetail.getLastName());
 						} catch (Exception e) {
 							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}

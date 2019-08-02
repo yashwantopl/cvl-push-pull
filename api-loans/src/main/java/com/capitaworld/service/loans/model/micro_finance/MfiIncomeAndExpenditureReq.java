@@ -14,10 +14,13 @@ public class MfiIncomeAndExpenditureReq {
 	private Double medicalExpense;
 	private Double foodExpense;
 	private Double otherExpense;
+	private Double houseHoldExpense;
+	private Double clothesExpense;
 	private Integer businessInBrief;
 	private Double monthlyCashflow;
 	private Double monthlyExpenditure;
 	private Double monthlyIncome;
+	private Integer type;
 
 	private Integer ppiNoFamilyMember;
 	private Integer ppiAcadamicHeadFamily;
@@ -46,7 +49,7 @@ public class MfiIncomeAndExpenditureReq {
 			Double monthlyIncome, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
 			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
 			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
-			Integer ppiOtherTableInFamily) {
+			Integer ppiOtherTableInFamily,Double houseHoldExpense, Double clothesExpense,Integer type) {
 		this.applicationId = applicationId;
 		this.shipShgiInstallment = shipShgiInstallment;
 		this.otherInstallment = otherInstallment;
@@ -69,6 +72,17 @@ public class MfiIncomeAndExpenditureReq {
 		this.ppiVehicleInFamily = ppiVehicleInFamily;
 		this.ppiDressingTableInFamily = ppiDressingTableInFamily;
 		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+		this.clothesExpense = clothesExpense;
+		this.houseHoldExpense = houseHoldExpense;
+		this.type = type;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public Long getId() {
@@ -303,4 +317,19 @@ public class MfiIncomeAndExpenditureReq {
 		this.isIncomeDetailsFilled = isIncomeDetailsFilled;
 	}
 
+	public Double getHouseHoldExpense() {
+		return houseHoldExpense;
+	}
+
+	public void setHouseHoldExpense(Double houseHoldExpense) {
+		this.houseHoldExpense = houseHoldExpense;
+	}
+
+	public Double getClothesExpense() {
+		return clothesExpense;
+	}
+
+	public void setClothesExpense(Double clothesExpense) {
+		this.clothesExpense = clothesExpense;
+	}
 }
