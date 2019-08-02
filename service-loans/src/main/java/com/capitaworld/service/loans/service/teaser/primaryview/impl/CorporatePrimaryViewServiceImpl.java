@@ -1365,9 +1365,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
+		
+		/*LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 		corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
-			
+			*/
 		return corporatePrimaryViewResponse;
 	}
 
