@@ -236,3 +236,31 @@ CREATE TABLE loan_application.`fs_mfi_ppi_mstr` (
 );
 
 
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','1','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','2','4',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','3','7',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','4','11',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','5','19',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','6','26',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','7','34',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('1','8','41',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('2','1','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('2','2','3',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('2','3','5',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('3','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('3','1','11',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('4','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('4','1','2',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('5','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('5','1','4',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('6','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('6','1','5',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('7','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('7','1','3',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('8','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('8','1','4',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('9','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('9','1','6',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('10','0','0',true);
+insert into loan_application.`fs_mfi_ppi_mstr` (`ppi_que_id`, `ans_mstr_id`, `score_value`, `is_active`) values('10','1','19',true);
+
