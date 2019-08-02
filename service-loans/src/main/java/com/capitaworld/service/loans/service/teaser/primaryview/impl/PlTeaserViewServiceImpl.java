@@ -815,6 +815,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp() != null ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 				/*plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());*/
 				
 				/*name of emp*/
