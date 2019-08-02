@@ -204,9 +204,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 2);
             detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
 
-            // FOR PARENT(MfiIncomeAndExpenditureReq)
-            List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
-            BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
+            // FOR MFI MAKER MfiIncomeAndExpenditureReq
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIMaker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
+            detailsReq.setMfiIncomeAndExpenditureReqMFIMaker(mfiIncomeAndExpendMFIMaker);
+
+            // FOR MFI CHECKER MfiIncomeAndExpenditureReq
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIChecker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,2);
+            detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpendMFIChecker);
 
         return detailsReq;
 
@@ -289,14 +293,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId) {
-        List<MfiIncomeAndExpenditureReq> detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
-        if (!CommonUtils.isListNullOrEmpty(detailsReq)) {
-            MfiIncomeAndExpenditureReq expenditureReq = detailsReq.get(0);
+            MfiIncomeAndExpenditureReq detailsReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
             List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId,1);
-            expenditureReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
-            return expenditureReq;
-        }
-        return null;
+            detailsReq.setIncomeDetailsReqList(!CommonUtils.isListNullOrEmpty(incomeDetails) ? incomeDetails : Collections.emptyList());
+            return detailsReq;
     }
 
     /**
