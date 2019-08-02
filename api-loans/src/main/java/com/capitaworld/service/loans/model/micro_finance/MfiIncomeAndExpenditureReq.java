@@ -20,6 +20,7 @@ public class MfiIncomeAndExpenditureReq {
 	private Double monthlyCashflow;
 	private Double monthlyExpenditure;
 	private Double monthlyIncome;
+	private Integer type;
 
 	private Integer ppiNoFamilyMember;
 	private Integer ppiAcadamicHeadFamily;
@@ -73,6 +74,15 @@ public class MfiIncomeAndExpenditureReq {
 		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
 		this.clothesExpense = clothesExpense;
 		this.houseHoldExpense = houseHoldExpense;
+		this.type = type;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public Long getId() {
