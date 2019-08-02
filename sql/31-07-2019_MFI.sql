@@ -1,7 +1,3 @@
-
-ALTER TABLE `loan_application`.`tutorial_upload_manage`
-	ADD COLUMN `module_id` INT(11) NULL AFTER `created_date`;
-
 drop table loan_application.fs_mfi_applicant_details;
 CREATE TABLE loan_application.`fs_mfi_applicant_details` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
