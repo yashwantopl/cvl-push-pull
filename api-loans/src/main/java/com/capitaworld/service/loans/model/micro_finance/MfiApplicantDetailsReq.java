@@ -299,8 +299,27 @@ public class MfiApplicantDetailsReq {
 	private Double houseHoldExpense;
 	private Double clothesExpense;
 
+	private Double loanAmountMFIChecker;
 
-    public Integer getBusinessInBrief() {
+	private Double loanAmountBankMaker;
+
+	public Double getLoanAmountMFIChecker() {
+		return loanAmountMFIChecker;
+	}
+
+	public void setLoanAmountMFIChecker(Double loanAmountMFIChecker) {
+		this.loanAmountMFIChecker = loanAmountMFIChecker;
+	}
+
+	public Double getLoanAmountBankMaker() {
+		return loanAmountBankMaker;
+	}
+
+	public void setLoanAmountBankMaker(Double loanAmountBankMaker) {
+		this.loanAmountBankMaker = loanAmountBankMaker;
+	}
+
+	public Integer getBusinessInBrief() {
 		return businessInBrief;
 	}
 

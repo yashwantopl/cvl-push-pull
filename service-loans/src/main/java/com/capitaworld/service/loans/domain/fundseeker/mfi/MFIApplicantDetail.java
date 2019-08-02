@@ -428,7 +428,30 @@ public class MFIApplicantDetail implements Serializable {
 	private Integer installmentRecomandation;
 	@Column(name = "is_loanassessment_details_filled")
 	private Boolean isLoanassessmentDetailsFilled;
-//	@Column(name = "total_expense")
+
+	@Column(name = "loan_amount_mfi_checker")
+	private Double loanAmountMFIChecker;
+
+	@Column(name = "loan_amount_bank_checker")
+	private Double loanAmountBankMaker;
+
+	public Double getLoanAmountMFIChecker() {
+		return loanAmountMFIChecker;
+	}
+
+	public void setLoanAmountMFIChecker(Double loanAmountMFIChecker) {
+		this.loanAmountMFIChecker = loanAmountMFIChecker;
+	}
+
+	public Double getLoanAmountBankMaker() {
+		return loanAmountBankMaker;
+	}
+
+	public void setLoanAmountBankMaker(Double loanAmountBankMaker) {
+		this.loanAmountBankMaker = loanAmountBankMaker;
+	}
+
+	//	@Column(name = "total_expense")
 //	private Double totalExpense;
 	
 //	@Column(name = "total_monthly_income_for_family")

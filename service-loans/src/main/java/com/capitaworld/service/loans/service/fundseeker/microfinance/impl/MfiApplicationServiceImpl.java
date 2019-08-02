@@ -155,21 +155,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId) {
-        logger.info("ENTER HERE MFI DETAILS===== BY APPLICATION ==={}====={}===>" + applicationId);
-        List<MFIApplicantDetail> appDetailList = detailsRepository.findByApplicationIdAndIsActive(applicationId);
-        List<MfiReqResponse> appResponseList = new ArrayList<>(appDetailList.size());
-        MfiReqResponse appIncomeReq = null;
-
-        for (MFIApplicantDetail appIncomeDetail : appDetailList) {
-            appIncomeReq = new MfiReqResponse();
-            BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
-            appResponseList.add(appIncomeReq);
-        }
-        return appResponseList;
-    }
-
-    @Override
     public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq) {
         //for server side validation
         String serverSideValidation = serverSideValidation(CommonUtils.BANK_DETAILS, bankDetailsReq);
@@ -199,14 +184,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 
     @Override
-    public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId) {
-        List<MfiApplicantDetailsReq> mfiApplicantDetailsReqs = new ArrayList<>();
-        List<MFIApplicantDetail> all = detailsRepository.findByApplicationIdAndIsActive(applicationId);
-
-        for (MFIApplicantDetail applicantDetail : all) {
+    public MfiApplicantDetailsReq getApplicantDetails(Long applicationId,Integer type) {
+            MFIApplicantDetail mfiApplicantDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(applicationId,type);
 
             MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
-            BeanUtils.copyProperties(applicantDetail, detailsReq);
+            BeanUtils.copyProperties(mfiApplicantDetail, detailsReq);
             //for bank details
             MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
             if (byApplicationId != null) {
@@ -216,18 +198,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId));
             detailsReq.setLiabilityDetails(MfiAssetsDetailsRepository.findLiabilityDetailsByAppId(applicationId));
             //for Income
-            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId,1);
+            List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 1);
             detailsReq.setIncomeDetailsReqList(incomeDetails);
+
+            List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 2);
+            detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
 
             // FOR PARENT(MfiIncomeAndExpenditureReq)
             List<MfiIncomeAndExpenditureReq> MfiIncomeAndExpend = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
             BeanUtils.copyProperties(MfiIncomeAndExpend, detailsReq);
 
-            mfiApplicantDetailsReqs.add(detailsReq);
-
-        }
-
-        return mfiApplicantDetailsReqs;
+        return detailsReq;
 
     }
 
