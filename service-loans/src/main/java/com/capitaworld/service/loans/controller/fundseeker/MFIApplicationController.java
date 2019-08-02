@@ -542,7 +542,7 @@ public class MFIApplicationController {
 	public ResponseEntity<LoansResponse> getWorkflowData(@RequestBody WorkflowRequest workflowRequest,
 														 HttpServletRequest request) {
 		try {
-			logger.info("service call saveLoanAssessmentDetails----------->");
+			logger.info("service call getWorkflowData----------->");
 			CommonDocumentUtils.startHook(logger, "save");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
@@ -552,8 +552,36 @@ public class MFIApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			workflowRequest.setUserId(userId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Job created successfully",
 					HttpStatus.OK.value(), mfiApplicationService.getActiveButtons(workflowRequest)), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@GetMapping(value = "/updateStatus/{applicationId}/{status}",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateStatus(@PathVariable("applicationId") Long applicationId, @PathVariable("status") Long status,
+													  HttpServletRequest request) {
+		try {
+			logger.info("service call updateStatus----------->");
+			CommonDocumentUtils.startHook(logger, "save");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			boolean updated = mfiApplicationService.updateStaus(applicationId, status);
+			if (updated) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
+						HttpStatus.OK.value(), updated), HttpStatus.OK);
+			}
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

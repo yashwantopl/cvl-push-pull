@@ -529,4 +529,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 		return null;
 	}
+
+    @Override
+    public boolean updateStaus(Long applicationId, Long status) {
+        return loanApplicationRepository.updateStatus(applicationId, status) > 0;
+    }
 }
