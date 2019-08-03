@@ -573,7 +573,7 @@ public class CommonUtils {
 
 		public static final Long MFI_OPEN = 9l;
 		public static final Long MFI_PENDING = 10l;
-		public static final Long MFI_Submitted = 11l;
+		public static final Long MFI_Submitted = 14l;
 		public static final Long MFI_Submitted_Sidbi = 12l;
 		public static final Long MFI_Approve = 13l;
 		public static final Long MFI_Ineligible = 6l;
