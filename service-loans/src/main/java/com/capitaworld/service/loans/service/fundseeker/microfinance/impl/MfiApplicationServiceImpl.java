@@ -373,12 +373,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             roles.add(17l);
             request.setRoleIds(roles);
             Object activeButtons = getActiveButtons(request);
-            WorkflowJobsTrackerRequest objectFromMap = null;
-            try {
-                objectFromMap = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) activeButtons, WorkflowJobsTrackerRequest.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
             LoansResponse loansResponse = new LoansResponse();
             loansResponse.setData(objectFromMap.getStep().getStepActions());
             loansResponse.setId(objectFromMap.getJob().getId());
