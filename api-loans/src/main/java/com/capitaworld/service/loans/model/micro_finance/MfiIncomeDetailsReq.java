@@ -32,7 +32,7 @@ public class MfiIncomeDetailsReq implements Serializable {
 
     public MfiIncomeDetailsReq(Long id, Long applicationId, Integer occupation, Double netIncome, Integer frequencyIncome,
                                Double monthlyIncome, Double yearlyIncome, Integer relationId,Integer type) {
-    this.id = id;
+    	this.id = id;
 		this.applicationId = applicationId;
 		this.occupation = occupation;
 		this.netIncome = netIncome;
@@ -40,7 +40,7 @@ public class MfiIncomeDetailsReq implements Serializable {
 		this.monthlyIncome = monthlyIncome;
 		this.yearlyIncome = yearlyIncome;
 		this.relationId = relationId;
-    this.type = type;
+		this.type = type;
 	}
 
     public Integer getType() {

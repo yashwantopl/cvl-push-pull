@@ -220,12 +220,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
 
             // FOR MFI MAKER MfiIncomeAndExpenditureReq
-            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIMaker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
-            detailsReq.setMfiIncomeAndExpenditureReqMFIMaker(mfiIncomeAndExpendMFIMaker);
+            MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIMaker = expectedIncomeDetailRepository.findByApplicationIdAndType(applicationId,1); 
+            
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
+            BeanUtils.copyProperties(mfiIncomeAndExpendMFIMaker, mfiIncomeAndExpenditureReq);
+            
+            detailsReq.setMfiIncomeAndExpenditureReqMFIMaker(mfiIncomeAndExpenditureReq);
 
             // FOR MFI CHECKER MfiIncomeAndExpenditureReq
-            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIChecker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,2);
-            detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpendMFIChecker);
+            MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIChecker = expectedIncomeDetailRepository.findByApplicationIdAndType(applicationId,2); 
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq2 = new MfiIncomeAndExpenditureReq();
+            BeanUtils.copyProperties(mfiIncomeAndExpendMFIChecker, mfiIncomeAndExpenditureReq2);
+            detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpenditureReq2);
+            
+            
 
         return detailsReq;
 
@@ -540,8 +548,32 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					mfiIncomeDetails.add(mfiIncomeDetail);
 				}
 				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+				
+				MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIChecker = mfiApplicantDetailsReq.getMfiIncomeAndExpenditureReqMFIChecker(); 
+				if(mfiIncomeAndExpendMFIChecker != null) {
+					MfiExpenseExpectedIncomeDetails mfiExpenseExpectedIncomeDetails = expectedIncomeDetailRepository.findOne(mfiIncomeAndExpendMFIChecker.getId());
+					mfiExpenseExpectedIncomeDetails.setShipShgiInstallment(mfiIncomeAndExpendMFIChecker.getShipShgiInstallment());
+					mfiExpenseExpectedIncomeDetails.setOtherInstallment(mfiIncomeAndExpendMFIChecker.getOtherInstallment());
+					mfiExpenseExpectedIncomeDetails.setLoanInstallment(mfiIncomeAndExpendMFIChecker.getLoanInstallment());
+					mfiExpenseExpectedIncomeDetails.setEducationExpense(mfiIncomeAndExpendMFIChecker.getEducationExpense());
+					mfiExpenseExpectedIncomeDetails.setMedicalExpense(mfiIncomeAndExpendMFIChecker.getMedicalExpense());
+					mfiExpenseExpectedIncomeDetails.setFoodExpense(mfiIncomeAndExpendMFIChecker.getFoodExpense());
+					mfiExpenseExpectedIncomeDetails.setClothesExpense(mfiIncomeAndExpendMFIChecker.getClothesExpense());
+					mfiExpenseExpectedIncomeDetails.setOtherInstallment(mfiIncomeAndExpendMFIChecker.getOtherInstallment());
+					
+					expectedIncomeDetailRepository.save(mfiExpenseExpectedIncomeDetails);
+				}
+				
+				MFIApplicantDetail mfiApplicantDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(mfiApplicantDetailsReq.getApplicationId(), mfiApplicantDetailsReq.getType());
+				if(mfiApplicantDetail != null) {
+					mfiApplicantDetail.setLoanAmountBankMaker(mfiApplicantDetailsReq.getLoanAmountBankMaker());
+					mfiApplicantDetail.setLoanAmountMFIChecker(mfiApplicantDetailsReq.getLoanAmountMFIChecker());
+					detailsRepository.save(mfiApplicantDetail);
+				}
+				
 				result =true;
-			}
+				
+		}
 
 		} catch (Exception e) {
 //			e.printStackTrace();
