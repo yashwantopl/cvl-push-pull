@@ -6113,7 +6113,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Successfully get result");
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_OPEN));
-		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+//		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
@@ -6123,7 +6123,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setNpOrgId(userOrgId);
 		corporateLoan.setIsActive(true);
 		logger.info("after set is active true");
-		corporateLoan.setBusinessTypeId(businessTypeId);
+//		corporateLoan.setBusinessTypeId(businessTypeId);
 		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);

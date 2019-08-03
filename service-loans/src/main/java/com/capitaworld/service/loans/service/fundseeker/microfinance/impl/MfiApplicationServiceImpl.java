@@ -98,6 +98,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 mfiApplicationDetail.setIsActive(true);
                 mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
                 mfiApplicationDetail.setCreatedDate(new Date());
+                mfiApplicationDetail.setType(aadharDetailsReq.getType());
                 detailsRepository.save(mfiApplicationDetail);
                 aadharDetailsReq.setId(mfiApplicationDetail.getId());
                 aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
