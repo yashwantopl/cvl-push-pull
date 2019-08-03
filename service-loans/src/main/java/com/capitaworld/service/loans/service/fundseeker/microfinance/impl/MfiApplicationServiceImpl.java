@@ -357,6 +357,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
                 request.setJobId(mfiApplicationDetail.getJobId());
             }
+            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
             Object activeButtons = getActiveButtons(request);
             return activeButtons;
         }
