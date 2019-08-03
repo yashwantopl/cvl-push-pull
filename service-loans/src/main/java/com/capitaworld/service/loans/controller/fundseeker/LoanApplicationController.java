@@ -2138,7 +2138,7 @@ public class LoanApplicationController {
 			}
 			loanSanctionRequest.setActionBy(userId.toString());
 
-			if (CommonUtils.isObjectListNull(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getBranch(),
+			if (CommonUtils.isObjectListNull(loanSanctionRequest.getApplicationId(),
 					loanSanctionRequest.getOrgId(), loanSanctionRequest.getRoi(),
 					loanSanctionRequest.getSanctionAmount(), loanSanctionRequest.getTenure(),
 					loanSanctionRequest.getProcessingFee(), loanSanctionRequest.getBusinessTypeId())) {
