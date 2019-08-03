@@ -550,9 +550,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 		}
         try {
-            List<Long> longList = new ArrayList<>();
-            longList.add(17l);
-            workflowRequest.setRoleIds(longList);
             WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(jobId,
 				workflowRequest.getRoleIds(), workflowRequest.getUserId());
 		if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse)
