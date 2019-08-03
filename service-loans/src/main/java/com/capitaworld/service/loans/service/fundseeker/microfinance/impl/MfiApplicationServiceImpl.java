@@ -358,6 +358,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 request.setJobId(mfiApplicationDetail.getJobId());
             }
             request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
+            request.setUserId(mfiAssetsDetailsReq.getUserId());
             Object activeButtons = getActiveButtons(request);
             return activeButtons;
         }
@@ -562,7 +563,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 								WorkflowJobsTrackerRequest.class);
 				if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !com.capitaworld.service.scoring.utils.CommonUtils
 						.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
-					return workflowJobsTrackerRequest;
+					return workflowJobsTrackerRequest.getStep().getStepActions();
 				}
 
 		}
