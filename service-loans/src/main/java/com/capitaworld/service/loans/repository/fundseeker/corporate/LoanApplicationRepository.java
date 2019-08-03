@@ -390,4 +390,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType where application_id=:applicationId", nativeQuery = true)
 	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
+
+	@Modifying
+	@Query(value = "UPDATE fs_loan_application_master lm SET lm.status=:status WHERE lm.application_id=:applicationId",nativeQuery = true)
+	public int updateStatus(@Param("applicationId")  Long applicationId,@Param("status") Long status);
 }
