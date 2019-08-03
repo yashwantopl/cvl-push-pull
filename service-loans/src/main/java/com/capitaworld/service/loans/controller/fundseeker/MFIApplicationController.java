@@ -358,15 +358,14 @@ public class MFIApplicationController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             mfiAssetsDetailsReq.setUserId(userId);
-            Object assetsLiabilityDetails = mfiApplicationService.saveOrUpdateAssetsLiabilityDetails(mfiAssetsDetailsReq);
+			LoansResponse assetsLiabilityDetails = mfiApplicationService.saveOrUpdateAssetsLiabilityDetails(mfiAssetsDetailsReq);
             CommonDocumentUtils.endHook(logger, "save");
-            if(assetsLiabilityDetails instanceof Boolean){
+            if(assetsLiabilityDetails == null){
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                         HttpStatus.OK);
             } else {
-                return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value(),assetsLiabilityDetails),
-                        HttpStatus.OK);
+                return new ResponseEntity<LoansResponse>(assetsLiabilityDetails,HttpStatus.OK);
             }
 
 

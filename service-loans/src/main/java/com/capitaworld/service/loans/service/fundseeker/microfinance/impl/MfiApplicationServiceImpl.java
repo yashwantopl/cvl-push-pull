@@ -6,6 +6,7 @@ import java.util.*;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.*;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -332,7 +334,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public Object saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
+    public LoansResponse saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
         MfiAssetsLiabilityDetails mfiAssetsLiabilityDetails = null;
         if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails()) || !CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getLiabilityDetails())) { // to save assets details
             if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails())) { // to save assets details
@@ -371,9 +373,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             roles.add(17l);
             request.setRoleIds(roles);
             Object activeButtons = getActiveButtons(request);
-            return activeButtons;
+            WorkflowJobsTrackerRequest objectFromMap = null;
+            try {
+                objectFromMap = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) activeButtons, WorkflowJobsTrackerRequest.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            LoansResponse loansResponse = new LoansResponse();
+            loansResponse.setData(objectFromMap.getStep().getStepActions());
+            loansResponse.setId(objectFromMap.getJob().getId());
+            loansResponse.setMessage("Successfully Saved.");
+            loansResponse.setStatus(HttpStatus.OK.value());
+            return loansResponse;
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -595,7 +608,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 								WorkflowJobsTrackerRequest.class);
 				if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !com.capitaworld.service.scoring.utils.CommonUtils
 						.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
-					return workflowJobsTrackerRequest.getStep().getStepActions();
+					return workflowJobsTrackerRequest;
 				}
 
 		}
