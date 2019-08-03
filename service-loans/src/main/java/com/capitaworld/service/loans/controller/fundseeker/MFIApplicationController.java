@@ -357,14 +357,14 @@ public class MFIApplicationController {
                 logger.warn("Id / application id  can not be empty ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
-			boolean assetsLiabilityDetails = mfiApplicationService.saveOrUpdateAssetsLiabilityDetails(mfiAssetsDetailsReq);
+			Object assetsLiabilityDetails = mfiApplicationService.saveOrUpdateAssetsLiabilityDetails(mfiAssetsDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
-			if(assetsLiabilityDetails){
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-						HttpStatus.OK);
-			} else {
+			if(assetsLiabilityDetails instanceof Boolean){
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value(),assetsLiabilityDetails),
 						HttpStatus.OK);
 			}
 

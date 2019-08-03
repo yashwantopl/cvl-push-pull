@@ -34,7 +34,7 @@ public interface MfiApplicationService {
 
 	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId);
 	
-	public boolean saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq);
+	public Object saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq);
 	
 	public MfiAssetsDetailsReq getAssetsLiabilityDetailsAppId(Long applicationId);
 

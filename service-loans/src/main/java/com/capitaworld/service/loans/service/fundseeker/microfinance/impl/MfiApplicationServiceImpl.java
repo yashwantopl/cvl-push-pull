@@ -325,7 +325,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public boolean saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
+    public Object saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
         MfiAssetsLiabilityDetails mfiAssetsLiabilityDetails = null;
         if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails()) || !CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getLiabilityDetails())) { // to save assets details
             if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails())) { // to save assets details
@@ -358,8 +358,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
                 request.setJobId(mfiApplicationDetail.getJobId());
             }
-            getActiveButtons(request);
-            return true;
+            Object activeButtons = getActiveButtons(request);
+            return activeButtons;
         }
         return false;
     }
