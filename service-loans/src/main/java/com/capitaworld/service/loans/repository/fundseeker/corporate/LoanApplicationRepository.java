@@ -335,7 +335,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<BigInteger> getFPAllProposalsByStatusPagination( @Param("status") Long status, @Param("productId") Long productId,@Param("businessTypeId") Long businessTypeId);
 
 	//fp - checker - for approved or submitted - count
-	@Query(value = "SELECT lm.application_id FROM fs_loan_application_master lm WHERE np_org_id =:npOrgId AND lm.status=:id AND is_active=TRUE and product_id=:fpProductId",nativeQuery = true)
+	@Query(value = "SELECT lm.application_id FROM fs_loan_application_master lm WHERE np_org_id =:npOrgId AND lm.status=:id AND is_active=TRUE and lm.product_id=:fpProductId and lm.business_type_id =6",nativeQuery = true)
 	public List<BigInteger> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,
 																 @Param("npOrgId") Long npOrgId,
 																 @Param("fpProductId") Long fpProductId);
