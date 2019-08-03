@@ -359,6 +359,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             }
             request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
             request.setUserId(mfiAssetsDetailsReq.getUserId());
+            List<Long> roles = new ArrayList<>();
+            roles.add(17l);
+            request.setRoleIds(roles);
             Object activeButtons = getActiveButtons(request);
             return activeButtons;
         }
