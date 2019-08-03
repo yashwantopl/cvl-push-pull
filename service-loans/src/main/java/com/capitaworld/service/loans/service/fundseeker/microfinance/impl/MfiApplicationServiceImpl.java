@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.*;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
@@ -11,13 +12,12 @@ import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
-import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.*;
-import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.users.client.UsersClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -73,6 +73,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Autowired
     private WorkflowClient workflowClient;
+
 
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -323,7 +324,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public boolean saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
+    public Object saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
         MfiAssetsLiabilityDetails mfiAssetsLiabilityDetails = null;
         if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails()) || !CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getLiabilityDetails())) { // to save assets details
             if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails())) { // to save assets details
@@ -344,11 +345,21 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                     MfiAssetsDetailsRepository.save(mfiAssetsLiabilityDetails);
                 }
             }
-
+            //set flag filled assets
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiAssetsDetailsReq.getId());
             mfiApplicationDetail.setIsAssetsDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
-            return true;
+            //for status change to 10 display in Checker this code for submit application or add in consent form
+            LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(mfiAssetsDetailsReq.getApplicationId());
+            corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
+            loanApplicationRepository.save(corporateLoan);
+            WorkflowRequest  request = new WorkflowRequest();
+            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
+                request.setJobId(mfiApplicationDetail.getJobId());
+            }
+            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
+            Object activeButtons = getActiveButtons(request);
+            return activeButtons;
         }
         return false;
     }
@@ -532,13 +543,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					workflowRequest.getUserId());
 			if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
 				jobId = Long.valueOf(workflowResponse.getData().toString());
+                MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(workflowRequest.getApplicationId(),1);
+                mfiApplicationDetail.setJobId(jobId);
+                detailsRepository.save(mfiApplicationDetail);
 			}
 		}
-		WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(jobId,
+        try {
+            List<Long> longList = new ArrayList<>();
+            longList.add(17l);
+            workflowRequest.setRoleIds(longList);
+            WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(jobId,
 				workflowRequest.getRoleIds(), workflowRequest.getUserId());
 		if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse)
 				&& !com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
-			try {
+
 				WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(),
 								WorkflowJobsTrackerRequest.class);
@@ -546,10 +564,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 						.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
 					return workflowJobsTrackerRequest;
 				}
-			} catch (IOException e) {
-				logger.error("Error While getting data from workflow {}", e);
-			}
+
 		}
+        } catch (IOException e) {
+            logger.error("Error While getting data from workflow {}", e);
+        }
 		return null;
 	}
 
