@@ -2,7 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.agri;
 
 import java.util.List;
 
-import com.capitaworld.service.loans.model.api_model.agri.CorpDetailRequest;
+import com.capitaworld.service.loans.model.agri.CorpDetailRequest;
 
 public interface CorpDetailService {
 

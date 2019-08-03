@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.agri.CorpDetail;
-import com.capitaworld.service.loans.model.api_model.agri.CorpDetailRequest;
+import com.capitaworld.service.loans.model.agri.CorpDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.agri.CorpDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.agri.CorpDetailService;
 import com.capitaworld.service.loans.utils.CommonUtils;

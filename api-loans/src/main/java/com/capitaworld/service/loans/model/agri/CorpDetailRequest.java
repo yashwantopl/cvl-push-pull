@@ -1,4 +1,4 @@
-package com.capitaworld.service.loans.model.api_model.agri;
+package com.capitaworld.service.loans.model.agri;
 
 import java.io.Serializable;
 
