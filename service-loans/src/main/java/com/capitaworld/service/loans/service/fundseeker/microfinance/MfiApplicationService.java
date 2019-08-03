@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance;
 
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface MfiApplicationService {
 
 	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId);
 	
-	public Object saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq);
+	public LoansResponse saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq);
 	
 	public MfiAssetsDetailsReq getAssetsLiabilityDetailsAppId(Long applicationId);
 
