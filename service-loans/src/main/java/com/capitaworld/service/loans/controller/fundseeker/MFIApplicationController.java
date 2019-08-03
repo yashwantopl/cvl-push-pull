@@ -542,22 +542,23 @@ public class MFIApplicationController {
 	public ResponseEntity<LoansResponse> getWorkflowData(@RequestBody WorkflowRequest workflowRequest,
 														 HttpServletRequest request) {
 		try {
-			logger.info("service call saveLoanAssessmentDetails----------->");
+			logger.info("service call getWorkflowData----------->");
 			CommonDocumentUtils.startHook(logger, "save");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
 			if (userId == null) {
 				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			workflowRequest.setUserId(userId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
-					HttpStatus.OK.value(), mfiApplicationService.getActiveButtons(workflowRequest)), HttpStatus.OK);
+			Object activeButtons = mfiApplicationService.getActiveButtons(workflowRequest);
+			if(activeButtons != null) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully created workflow.",HttpStatus.OK.value(), activeButtons), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
 		} catch (Exception e) {
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 
