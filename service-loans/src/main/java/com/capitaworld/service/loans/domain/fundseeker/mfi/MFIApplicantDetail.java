@@ -434,6 +434,8 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "loan_amount_bank_checker")
 	private Double loanAmountBankMaker;
+	@Column(name = "job_id")
+	private Long jobId;
 
 	public Double getLoanAmountMFIChecker() {
 		return loanAmountMFIChecker;
@@ -1702,4 +1704,13 @@ public class MFIApplicantDetail implements Serializable {
 //	public void setClothesExpense(Double clothesExpense) {
 //		this.clothesExpense = clothesExpense;
 //	}
+
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
 }
