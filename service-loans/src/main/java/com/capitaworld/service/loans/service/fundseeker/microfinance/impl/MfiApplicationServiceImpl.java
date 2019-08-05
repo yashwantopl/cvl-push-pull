@@ -288,10 +288,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
             //for MFI Agent data from users
             List<MfiIncomeDetailsReq> incomeDetailsByAppId = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(mfiIncomeAndExpenditureReq.getApplicationId(), 1);
-            for (MfiIncomeDetailsReq mfiIncomeDetailsReq : incomeDetailsByAppId) {
-                MfiIncomeDetails mfiIncomeDetails = MfiIncomeDetailsRepository.findOne(mfiIncomeDetailsReq.getId());
-                mfiIncomeDetails.setIsActive(false);
-                MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+            if(!CommonUtils.isListNullOrEmpty(incomeDetailsByAppId)) {
+                for (MfiIncomeDetailsReq mfiIncomeDetailsReq : incomeDetailsByAppId) {
+                    MfiIncomeDetails mfiIncomeDetails = MfiIncomeDetailsRepository.findOne(mfiIncomeDetailsReq.getId());
+                    mfiIncomeDetails.setIsActive(false);
+                    MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+                }
             }
             for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
                 MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
@@ -303,6 +305,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             }
         }
         MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(mfiIncomeAndExpenditureReq.getApplicationId(),1);
+        if(CommonUtils.isObjectNullOrEmpty(expectedIncomeDetails)){
+            expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+        }
         expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
         BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
         //below code for calculate total expense
