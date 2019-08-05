@@ -366,20 +366,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(mfiAssetsDetailsReq.getApplicationId());
             corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
             loanApplicationRepository.save(corporateLoan);
-            WorkflowRequest  request = new WorkflowRequest();
-            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
-                request.setJobId(mfiApplicationDetail.getJobId());
-            }
-            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
-            request.setUserId(mfiAssetsDetailsReq.getUserId());
-            List<Long> roles = new ArrayList<>();
-            roles.add(17l);
-            request.setRoleIds(roles);
-            Object activeButtons = getActiveButtons(request);
-            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
+//            WorkflowRequest  request = new WorkflowRequest();
+//            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
+//                request.setJobId(mfiApplicationDetail.getJobId());
+//            }
+//            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
+//            request.setUserId(mfiAssetsDetailsReq.getUserId());
+//            List<Long> roles = new ArrayList<>();
+//            roles.add(17l);
+//            request.setRoleIds(roles);
+//            Object activeButtons = getActiveButtons(request);
+//            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
             LoansResponse loansResponse = new LoansResponse();
-            loansResponse.setData(objectFromMap.getStep().getStepActions());
-            loansResponse.setId(objectFromMap.getJob().getId());
             loansResponse.setMessage("Successfully Saved.");
             loansResponse.setStatus(HttpStatus.OK.value());
             return loansResponse;
@@ -398,7 +396,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
         String serverSideValidation = serverSideValidation(CommonUtils.LOAN_ASSESMENT, mfiLoanAssessmentDetailsReq);
-        if (CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
+        if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             return serverSideValidation;
         }
         if (null != mfiLoanAssessmentDetailsReq.getId()) {
@@ -407,6 +405,40 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
             return true;
+        }
+        return false;
+
+    }
+
+    @Override
+    public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq loanRecomandationReq) {
+        LoansResponse loansResponse = new LoansResponse();
+        String serverSideValidation = serverSideValidation(CommonUtils.LOAN_RECOMANDATION, loanRecomandationReq);
+        if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
+            loansResponse.setData(serverSideValidation);
+            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return loansResponse;
+        }
+        if (null != loanRecomandationReq.getId()) {
+            MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(loanRecomandationReq.getId());
+            BeanUtils.copyProperties(loanRecomandationReq, mfiApplicationDetail);
+            detailsRepository.save(mfiApplicationDetail);
+            WorkflowRequest  request = new WorkflowRequest();
+            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
+                request.setJobId(mfiApplicationDetail.getJobId());
+            }
+            request.setApplicationId(loanRecomandationReq.getApplicationId());
+            request.setUserId(loanRecomandationReq.getUserId());
+            List<Long> roles = new ArrayList<>();
+            roles.add(17l);
+            request.setRoleIds(roles);
+            Object activeButtons = getActiveButtons(request);
+            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
+            loansResponse.setData(objectFromMap.getStep().getStepActions());
+            loansResponse.setId(objectFromMap.getJob().getId());
+            loansResponse.setMessage("Successfully Saved.");
+            loansResponse.setStatus(HttpStatus.OK.value());
+            return loansResponse;
         }
         return false;
 
@@ -494,7 +526,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
                     || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanLiabilityRatio()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
                 return "Some required fields in mean of missing in Loan Assesment detail section";
-            } else if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
+            }
+        } else if (type == CommonUtils.LOAN_RECOMANDATION) {
+            MfiLoanRecomandationReq assessmentDetailsReq = (MfiLoanRecomandationReq) validationJson;
+            if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
                     CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation()) ||
                     CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInterestRateRecomandation())) {
                 return "Some required fields in mean of missing in Loan Reccommendation detail section";

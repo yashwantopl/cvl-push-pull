@@ -77,6 +77,7 @@ public class CommonUtils {
 	public static final Integer PROJECT_DETAILS = 4;
 	public static final Integer ASSETS_LIABILITY = 5;
 	public static final Integer LOAN_ASSESMENT = 6;
+	public static final Integer LOAN_RECOMANDATION = 7;
 
 
 

@@ -461,6 +461,42 @@ public class MFIApplicationController {
 		}
 	}
 
+
+	@PostMapping(value = "/saveLoanRecomandationDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanRecomandationDetails(@RequestBody MfiLoanRecomandationReq mfiLoanRecomandationReq, HttpServletRequest request) {
+		try {
+			logger.info("service call saveLoanAssessmentDetails----------->");
+			CommonDocumentUtils.startHook(logger, "save");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			if(mfiLoanRecomandationReq.getId() == null){
+				logger.warn("Id can not be empty ==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			mfiLoanRecomandationReq.setUserId(userId);
+
+			Object loanAssessmentDetails = mfiApplicationService.saveOrUpdateLoanRecommandationDetails(mfiLoanRecomandationReq);
+			CommonDocumentUtils.endHook(logger, "save");
+			if(loanAssessmentDetails instanceof Boolean) {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>((LoansResponse) loanAssessmentDetails,HttpStatus.OK);
+			}
+
+		} catch (Exception e) {
+			logger.error("Error while saving save Loan Assessment Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
 	@GetMapping(value = "/getLoanAssessmentDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getLoanAssessmentDetails(@PathVariable("applicationId") Long applicationId) {
 		try {

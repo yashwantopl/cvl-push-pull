@@ -1511,12 +1511,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setDdrStatus("-");
 				}
 
-				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) ||
-						CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
+				if (CommonUtils.BusinessType.MFI.getId().equals(proposalMapping.getBusinessTypeId())) {
 					MFIApplicantDetail applicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(proposalMapping.getId(), 1);
 //					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndProposalIdAndUserId(proposalMapping.getUserId(), proposalMapping.getId(), nhbsApplicationsResponse.getProposalId());
 					if (applicantDetail != null) {
-
 						try {
 							nhbsApplicationsResponse.setClientName(applicantDetail.getFirstName()+" "+applicantDetail.getLastName());
 						} catch (Exception e) {
@@ -1832,10 +1830,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		} else if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()) {
 
 			// received
-			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("assignPropsalCount", assignToMFICheckerPropsalCount.size());
 
+			for(BigInteger appid : sanctionDisRejIneligibleProposal){
+				if(pendingProposalApplicationIdList.contains(appid)){
+					pendingProposalApplicationIdList.remove(appid);
+				}
+			}
+			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
 		}
 		logger.info("exit from getFPMFIProposalCount()");
 		logger.info(countObj.toJSONString());
