@@ -10,24 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.agri.CorpDetail;
-import com.capitaworld.service.loans.model.agri.CorpDetailRequest;
-import com.capitaworld.service.loans.repository.fundseeker.agri.CorpDetailRepository;
-import com.capitaworld.service.loans.service.fundseeker.agri.CorpDetailService;
+import com.capitaworld.service.loans.domain.fundseeker.agri.CropDetail;
+import com.capitaworld.service.loans.model.agri.CropDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.agri.CropDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.agri.CropDetailService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
-public class CorpDetailServiceImpl implements CorpDetailService {
+public class CropDetailServiceImpl implements CropDetailService {
 
 	
 	@Autowired
-	private CorpDetailRepository corpDetailRepository; 
+	private CropDetailRepository corpDetailRepository; 
 	
 	@Override
-	public Boolean save(CorpDetailRequest corpDetailRequest,Long applicationId,Long userId) {
-		CorpDetail corpDetail = corpDetailRepository.findOne(corpDetailRequest.getId());
+	public Boolean save(CropDetailRequest corpDetailRequest,Long applicationId,Long userId) {
+		CropDetail corpDetail = corpDetailRepository.findByIdAndIsActive(corpDetailRequest.getId(),true);
 		if(corpDetail == null) {
-			corpDetail = new CorpDetail();
+			corpDetail = new CropDetail();
 			BeanUtils.copyProperties(corpDetailRequest, corpDetail,CommonUtils.IgnorableCopy.getAuditFields());
 			corpDetail.setCreatedBy(userId);
 			corpDetail.setCreatedDate(new Date());
@@ -43,8 +43,8 @@ public class CorpDetailServiceImpl implements CorpDetailService {
 
 	@Override	
 	@Transactional
-	public Boolean save(List<CorpDetailRequest> corpDetailRequest,Long applicationId,Long userId) {
-		for(CorpDetailRequest detailRequest :   corpDetailRequest) {
+	public Boolean save(List<CropDetailRequest> corpDetailRequest,Long applicationId,Long userId) {
+		for(CropDetailRequest detailRequest :   corpDetailRequest) {
 			save(detailRequest, applicationId, userId);
 		}
 		return true;
@@ -52,15 +52,15 @@ public class CorpDetailServiceImpl implements CorpDetailService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<CorpDetailRequest> getList(Long applicationId) {
-		List<CorpDetail> dbResponse = corpDetailRepository.findByApplicationIdAndIsActive(applicationId, true);
+	public List<CropDetailRequest> getList(Long applicationId) {
+		List<CropDetail> dbResponse = corpDetailRepository.findByApplicationIdAndIsActive(applicationId, true);
 		if(CommonUtils.isListNullOrEmpty(dbResponse)) {
 			return Collections.emptyList();
 		}
-		List<CorpDetailRequest> corpDetailRequests = new ArrayList<>(dbResponse.size());
-		CorpDetailRequest corpDetailRequest = null;
-		for(CorpDetail corpDetail :  dbResponse) {
-			corpDetailRequest = new CorpDetailRequest();
+		List<CropDetailRequest> corpDetailRequests = new ArrayList<>(dbResponse.size());
+		CropDetailRequest corpDetailRequest = null;
+		for(CropDetail corpDetail :  dbResponse) {
+			corpDetailRequest = new CropDetailRequest();
 			BeanUtils.copyProperties(corpDetail, corpDetailRequest);
 			corpDetailRequests.add(corpDetailRequest);
 		}
@@ -69,7 +69,7 @@ public class CorpDetailServiceImpl implements CorpDetailService {
 
 	@Override
 	@Transactional
-	public Boolean inActiveExistingAndsave(List<CorpDetailRequest> corpDetailRequest, Long applicationId,Long userId) {
+	public Boolean inActiveExistingAndsave(List<CropDetailRequest> corpDetailRequest, Long applicationId,Long userId) {
 		corpDetailRepository.inactive(applicationId);
 		return save(corpDetailRequest, applicationId, userId);
 	}

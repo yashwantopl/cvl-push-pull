@@ -7,18 +7,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
-import com.capitaworld.service.loans.domain.fundseeker.agri.CorpDetail;
+import com.capitaworld.service.loans.domain.fundseeker.agri.CropDetail;
 
 /**
  * @author Akshay
  *
  */
-public interface CorpDetailRepository extends JpaRepository<CorpDetail, Long> {
+public interface CropDetailRepository extends JpaRepository<CropDetail, Long> {
 
-	public List<CorpDetail> findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
+	public List<CropDetail> findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
+	
+	public CropDetail findByIdAndIsActive(Long id,Boolean isActive);
 	
 	@Modifying
-	@Query("update CorpDetail crp set crp.isActive = false where crp.isActive = true and crp.applicationId =:applicationId")
+	@Query("update CropDetail crp set crp.isActive = false where crp.isActive = true and crp.applicationId =:applicationId")
 	public int inactive(@Param("applicationId") Long applicationId);
 	
 }

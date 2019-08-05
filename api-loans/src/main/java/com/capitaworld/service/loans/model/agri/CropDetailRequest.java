@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CorpDetailRequest extends AuditActivityRequest implements Serializable {
+public class CropDetailRequest extends AuditActivityRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -21,6 +21,8 @@ public class CorpDetailRequest extends AuditActivityRequest implements Serializa
 	private Integer cropId;
 	
 	private String mspQuintal;
+	
+	private Double landSize;
 
 	public Long getId() {
 		return id;
@@ -68,6 +70,14 @@ public class CorpDetailRequest extends AuditActivityRequest implements Serializa
 
 	public void setMspQuintal(String mspQuintal) {
 		this.mspQuintal = mspQuintal;
+	}
+
+	public Double getLandSize() {
+		return landSize;
+	}
+
+	public void setLandSize(Double landSize) {
+		this.landSize = landSize;
 	}
 }
 

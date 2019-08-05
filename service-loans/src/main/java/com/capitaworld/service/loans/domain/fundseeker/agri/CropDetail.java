@@ -13,12 +13,12 @@ import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 
 /**
  * The persistent class for the
- * fs_agri_corp_details database table.
+ * fs_agri_crop_details database table.
  * 
  */
 @Entity
-@Table(name = "fs_agri_corp_details")
-public class CorpDetail extends AuditActivity implements Serializable {
+@Table(name = "fs_agri_crop_details")
+public class CropDetail extends AuditActivity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -39,12 +39,15 @@ public class CorpDetail extends AuditActivity implements Serializable {
 	
 	@Column(name = "msp_quintal")
 	private String mspQuintal;
+	
+	@Column(name = "land_size")
+	private Double landSize;
 
-	public CorpDetail() {
+	public CropDetail() {
 		// Do nothing because of X and Y.
 	}
 	
-	public CorpDetail(Long id) {
+	public CropDetail(Long id) {
 		this.id = id;
 	}
 
@@ -94,6 +97,14 @@ public class CorpDetail extends AuditActivity implements Serializable {
 
 	public void setMspQuintal(String mspQuintal) {
 		this.mspQuintal = mspQuintal;
+	}
+
+	public Double getLandSize() {
+		return landSize;
+	}
+
+	public void setLandSize(Double landSize) {
+		this.landSize = landSize;
 	}
 }
 

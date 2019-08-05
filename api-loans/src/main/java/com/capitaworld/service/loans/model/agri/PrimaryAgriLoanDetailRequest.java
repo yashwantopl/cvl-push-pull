@@ -38,6 +38,14 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	
 	private Boolean cropUnderInsuranceScheme;
 	
+	private Boolean isCropInsurance;
+	
+	private Integer propertyType;
+	
+	private Integer propertySubType;
+	
+	private String landUse;
+	
 	public PrimaryAgriLoanDetailRequest() {
 		// Do nothing because of X and Y.
 	}
@@ -153,5 +161,36 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	public void setCropUnderInsuranceScheme(Boolean cropUnderInsuranceScheme) {
 		this.cropUnderInsuranceScheme = cropUnderInsuranceScheme;
 	}
-	
+
+	public Integer getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(Integer propertyType) {
+		this.propertyType = propertyType;
+	}
+
+	public Integer getPropertySubType() {
+		return propertySubType;
+	}
+
+	public void setPropertySubType(Integer propertySubType) {
+		this.propertySubType = propertySubType;
+	}
+
+	public String getLandUse() {
+		return landUse;
+	}
+
+	public void setLandUse(String landUse) {
+		this.landUse = landUse;
+	}
+
+	public Boolean getIsCropInsurance() {
+		return isCropInsurance;
+	}
+
+	public void setIsCropInsurance(Boolean isCropInsurance) {
+		this.isCropInsurance = isCropInsurance;
+	}
 }

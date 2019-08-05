@@ -56,6 +56,18 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 	
 	@Column(name = "crop_under_insurance_scheme")
 	private Boolean cropUnderInsuranceScheme;
+	
+	@Column(name = "property_type")
+	private Integer propertyType;
+	
+	@Column(name = "property_sub_type")
+	private Integer propertySubType;
+	
+	@Column(name = "land_use")
+	private String landUse;
+	
+	@Column(name = "is_crop_insurance")
+	private Boolean isCropInsurance;
 
 	public PrimaryAgriLoanDetail() {
 		// Do nothing because of X and Y.
@@ -172,6 +184,36 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 	public void setCropUnderInsuranceScheme(Boolean cropUnderInsuranceScheme) {
 		this.cropUnderInsuranceScheme = cropUnderInsuranceScheme;
 	}
-	
-	
+
+	public Integer getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(Integer propertyType) {
+		this.propertyType = propertyType;
+	}
+
+	public Integer getPropertySubType() {
+		return propertySubType;
+	}
+
+	public void setPropertySubType(Integer propertySubType) {
+		this.propertySubType = propertySubType;
+	}
+
+	public String getLandUse() {
+		return landUse;
+	}
+
+	public void setLandUse(String landUse) {
+		this.landUse = landUse;
+	}
+
+	public Boolean getIsCropInsurance() {
+		return isCropInsurance;
+	}
+
+	public void setIsCropInsurance(Boolean isCropInsurance) {
+		this.isCropInsurance = isCropInsurance;
+	}
 }
