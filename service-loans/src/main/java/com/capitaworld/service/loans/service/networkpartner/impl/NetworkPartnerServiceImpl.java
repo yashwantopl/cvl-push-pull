@@ -1832,10 +1832,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		} else if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()) {
 
 			// received
-			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("assignPropsalCount", assignToMFICheckerPropsalCount.size());
 
+			for(BigInteger appid : sanctionDisRejIneligibleProposal){
+				if(pendingProposalApplicationIdList.contains(appid)){
+					pendingProposalApplicationIdList.remove(appid);
+				}
+			}
+			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
 		}
 		logger.info("exit from getFPMFIProposalCount()");
 		logger.info(countObj.toJSONString());
