@@ -413,7 +413,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq loanRecomandationReq) {
         LoansResponse loansResponse = new LoansResponse();
-        String serverSideValidation = serverSideValidation(CommonUtils.LOAN_ASSESMENT, loanRecomandationReq);
+        String serverSideValidation = serverSideValidation(CommonUtils.LOAN_RECOMANDATION, loanRecomandationReq);
         if (CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             loansResponse.setData(serverSideValidation);
             loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -526,7 +526,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
                     || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanLiabilityRatio()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
                 return "Some required fields in mean of missing in Loan Assesment detail section";
-            } else if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
+            }
+        } else if (type == CommonUtils.LOAN_RECOMANDATION) {
+            MfiLoanRecomandationReq assessmentDetailsReq = (MfiLoanRecomandationReq) validationJson;
+            if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
                     CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation()) ||
                     CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInterestRateRecomandation())) {
                 return "Some required fields in mean of missing in Loan Reccommendation detail section";
