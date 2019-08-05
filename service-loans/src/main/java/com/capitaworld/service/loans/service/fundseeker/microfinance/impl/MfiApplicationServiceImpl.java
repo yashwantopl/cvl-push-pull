@@ -396,7 +396,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
         String serverSideValidation = serverSideValidation(CommonUtils.LOAN_ASSESMENT, mfiLoanAssessmentDetailsReq);
-        if (CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
+        if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             return serverSideValidation;
         }
         if (null != mfiLoanAssessmentDetailsReq.getId()) {
@@ -414,7 +414,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq loanRecomandationReq) {
         LoansResponse loansResponse = new LoansResponse();
         String serverSideValidation = serverSideValidation(CommonUtils.LOAN_RECOMANDATION, loanRecomandationReq);
-        if (CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
+        if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             loansResponse.setData(serverSideValidation);
             loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return loansResponse;
