@@ -6,6 +6,7 @@ import java.util.*;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.*;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,6 +98,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 mfiApplicationDetail.setIsActive(true);
                 mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
                 mfiApplicationDetail.setCreatedDate(new Date());
+                mfiApplicationDetail.setType(aadharDetailsReq.getType());
                 detailsRepository.save(mfiApplicationDetail);
                 aadharDetailsReq.setId(mfiApplicationDetail.getId());
                 aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
@@ -218,12 +221,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
 
             // FOR MFI MAKER MfiIncomeAndExpenditureReq
-            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIMaker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
-            detailsReq.setMfiIncomeAndExpenditureReqMFIMaker(mfiIncomeAndExpendMFIMaker);
+            MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIMaker = expectedIncomeDetailRepository.findByApplicationIdAndType(applicationId,1); 
+            
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,1);
+            BeanUtils.copyProperties(mfiIncomeAndExpendMFIMaker, mfiIncomeAndExpenditureReq);
+            
+            detailsReq.setMfiIncomeAndExpenditureReqMFIMaker(mfiIncomeAndExpenditureReq);
 
             // FOR MFI CHECKER MfiIncomeAndExpenditureReq
-            MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIChecker = detailsRepository.findIncomeAndExpenditureDetailsByAppId(applicationId,2);
-            detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpendMFIChecker);
+            MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIChecker = expectedIncomeDetailRepository.findByApplicationIdAndType(applicationId,2); 
+            MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq2 = new MfiIncomeAndExpenditureReq();
+            BeanUtils.copyProperties(mfiIncomeAndExpendMFIChecker, mfiIncomeAndExpenditureReq2);
+            detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpenditureReq2);
+            
+            
 
         return detailsReq;
 
@@ -324,7 +335,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public Object saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
+    public LoansResponse saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
         MfiAssetsLiabilityDetails mfiAssetsLiabilityDetails = null;
         if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails()) || !CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getLiabilityDetails())) { // to save assets details
             if (!CommonUtils.isListNullOrEmpty(mfiAssetsDetailsReq.getAssetsDetails())) { // to save assets details
@@ -358,10 +369,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 request.setJobId(mfiApplicationDetail.getJobId());
             }
             request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
+            request.setUserId(mfiAssetsDetailsReq.getUserId());
+            List<Long> roles = new ArrayList<>();
+            roles.add(17l);
+            request.setRoleIds(roles);
             Object activeButtons = getActiveButtons(request);
-            return activeButtons;
+            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
+            LoansResponse loansResponse = new LoansResponse();
+            loansResponse.setData(objectFromMap.getStep().getStepActions());
+            loansResponse.setId(objectFromMap.getJob().getId());
+            loansResponse.setMessage("Successfully Saved.");
+            loansResponse.setStatus(HttpStatus.OK.value());
+            return loansResponse;
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -523,8 +544,32 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					mfiIncomeDetails.add(mfiIncomeDetail);
 				}
 				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+				
+				MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIChecker = mfiApplicantDetailsReq.getMfiIncomeAndExpenditureReqMFIChecker(); 
+				if(mfiIncomeAndExpendMFIChecker != null) {
+					MfiExpenseExpectedIncomeDetails mfiExpenseExpectedIncomeDetails = expectedIncomeDetailRepository.findOne(mfiIncomeAndExpendMFIChecker.getId());
+					mfiExpenseExpectedIncomeDetails.setShipShgiInstallment(mfiIncomeAndExpendMFIChecker.getShipShgiInstallment());
+					mfiExpenseExpectedIncomeDetails.setOtherInstallment(mfiIncomeAndExpendMFIChecker.getOtherInstallment());
+					mfiExpenseExpectedIncomeDetails.setLoanInstallment(mfiIncomeAndExpendMFIChecker.getLoanInstallment());
+					mfiExpenseExpectedIncomeDetails.setEducationExpense(mfiIncomeAndExpendMFIChecker.getEducationExpense());
+					mfiExpenseExpectedIncomeDetails.setMedicalExpense(mfiIncomeAndExpendMFIChecker.getMedicalExpense());
+					mfiExpenseExpectedIncomeDetails.setFoodExpense(mfiIncomeAndExpendMFIChecker.getFoodExpense());
+					mfiExpenseExpectedIncomeDetails.setClothesExpense(mfiIncomeAndExpendMFIChecker.getClothesExpense());
+					mfiExpenseExpectedIncomeDetails.setOtherInstallment(mfiIncomeAndExpendMFIChecker.getOtherInstallment());
+					
+					expectedIncomeDetailRepository.save(mfiExpenseExpectedIncomeDetails);
+				}
+				
+				MFIApplicantDetail mfiApplicantDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(mfiApplicantDetailsReq.getApplicationId(), mfiApplicantDetailsReq.getType());
+				if(mfiApplicantDetail != null) {
+					mfiApplicantDetail.setLoanAmountBankMaker(mfiApplicantDetailsReq.getLoanAmountBankMaker());
+					mfiApplicantDetail.setLoanAmountMFIChecker(mfiApplicantDetailsReq.getLoanAmountMFIChecker());
+					detailsRepository.save(mfiApplicantDetail);
+				}
+				
 				result =true;
-			}
+				
+		}
 
 		} catch (Exception e) {
 //			e.printStackTrace();
@@ -549,9 +594,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 		}
         try {
-            List<Long> longList = new ArrayList<>();
-            longList.add(17l);
-            workflowRequest.setRoleIds(longList);
             WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(jobId,
 				workflowRequest.getRoleIds(), workflowRequest.getUserId());
 		if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse)

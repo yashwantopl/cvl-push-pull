@@ -14,6 +14,7 @@ public class MfiAssetsDetailsReq implements Serializable {
 	private Long id;
 
 	private Long applicationId;
+	private Long userId;
 
 	private Integer assetsLiabilityType;
 
@@ -174,6 +175,12 @@ public class MfiAssetsDetailsReq implements Serializable {
 	public void setCurrntLiabilityFilled(boolean isCurrntLiabilityFilled) {
 		this.isCurrntLiabilityFilled = isCurrntLiabilityFilled;
 	}
-	
 
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 }
