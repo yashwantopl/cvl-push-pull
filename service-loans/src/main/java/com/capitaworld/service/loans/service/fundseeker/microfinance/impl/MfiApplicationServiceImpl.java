@@ -287,6 +287,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         Double totalExpense = 0.0;
         if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
             //for MFI Agent data from users
+            List<MfiIncomeDetailsReq> incomeDetailsByAppId = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(mfiIncomeAndExpenditureReq.getApplicationId(), 1);
+            for (MfiIncomeDetailsReq mfiIncomeDetailsReq : incomeDetailsByAppId) {
+                MfiIncomeDetails mfiIncomeDetails = MfiIncomeDetailsRepository.findOne(mfiIncomeDetailsReq.getId());
+                mfiIncomeDetails.setIsActive(false);
+                MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+            }
             for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
                 MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
                 BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
@@ -296,7 +302,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 MfiIncomeDetailsRepository.save(mfiIncomeDetails);
             }
         }
-        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(mfiIncomeAndExpenditureReq.getApplicationId(),1);
         expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
         BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
         //below code for calculate total expense
