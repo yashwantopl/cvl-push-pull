@@ -19,10 +19,13 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.agri.AgriRequest;
 import com.capitaworld.service.loans.service.fundseeker.agri.CropDetailService;
+import com.capitaworld.service.loans.service.fundseeker.agri.PrimaryAgriLoanDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+
+import scala.annotation.meta.setter;
 
 @RestController
 @RequestMapping("/agri")
@@ -34,6 +37,9 @@ public class AgriLoanController {
 	
 	@Autowired
 	private CropDetailService cropDetailService;
+	
+	@Autowired
+	private PrimaryAgriLoanDetailService primaryAgriLoanDetailService;
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -65,6 +71,7 @@ public class AgriLoanController {
 			agriRequest.setUserId(userId);
 			
 			retailApplicantService.save(agriRequest.getApplicantRequest(), userId);
+			primaryAgriLoanDetailService.saveOrUpdate(agriRequest.getPrimaryRequest(), userId);
 			cropDetailService.save(agriRequest.getCropDetailRequests(), agriRequest.getApplicationId(), userId);
 			financialArrangementDetailsService.saveOrUpdate(agriRequest.getArrangementsDetailRequests(), agriRequest.getApplicationId(), userId);
 			CommonDocumentUtils.endHook(logger, "save");
@@ -72,7 +79,41 @@ public class AgriLoanController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving applicationRequest Details ==>", e);
+			logger.error("Error while saving Agri Loan Data Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@RequestBody Long applicationId , HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			// request must not be null
+			if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn("ApplicationId must not be Empty ==>{}",applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			CommonDocumentUtils.startHook(logger, "save");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			AgriRequest agriRequest = new  AgriRequest();
+			agriRequest.setApplicantRequest(retailApplicantService.get(applicationId));
+			agriRequest.setPrimaryRequest(primaryAgriLoanDetailService.get(applicationId));
+			agriRequest.setCropDetailRequests(cropDetailService.getList(applicationId));
+			agriRequest.setArrangementsDetailRequests(financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Result", HttpStatus.OK.value(),agriRequest), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Agri Loan Data Details ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
