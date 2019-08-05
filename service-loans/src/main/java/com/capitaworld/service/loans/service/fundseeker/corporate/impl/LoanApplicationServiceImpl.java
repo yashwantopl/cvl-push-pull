@@ -3559,15 +3559,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationProposalMapping.getProductId());
-			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
-					&& (loanType.getId() != CommonUtils.LoanType.HOME_LOAN.getValue()
-							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
-                    && (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
-                            || !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) ) {
+			if (!CommonUtils.isObjectNullOrEmpty(loanType) && (applicationProposalMapping.getIsApplicantFinalFilled() == null || !applicationProposalMapping.getIsApplicantFinalFilled())) {
 					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
-					} else {
+					} else if(loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
+					} else if(loanType.getId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+						response.put(MESSAGE_LITERAL, "Please Fill PERSONAL-LOAN FINAL details to Move Next !");
 					}
 					response.put(RESULT_LITERAL, false);
 					return response;
