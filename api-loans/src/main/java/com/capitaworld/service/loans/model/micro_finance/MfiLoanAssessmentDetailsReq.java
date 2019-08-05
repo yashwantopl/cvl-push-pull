@@ -17,6 +17,7 @@ public class MfiLoanAssessmentDetailsReq {
 	
 	private Long id;
 	private Long applicationId;
+	private Long userId;
 	private Integer purposeOfLoan;
 	private Integer clientType;
 	private Boolean isBusinessPremiseVisited;
@@ -198,5 +199,13 @@ public class MfiLoanAssessmentDetailsReq {
 
 	public void setTotalCashFlow(Double totalCashFlow) {
 		this.totalCashFlow = totalCashFlow;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 }
