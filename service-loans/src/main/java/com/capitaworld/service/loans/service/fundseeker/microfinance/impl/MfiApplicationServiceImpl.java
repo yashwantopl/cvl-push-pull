@@ -209,6 +209,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
             if (byApplicationId != null) {
                 BeanUtils.copyProperties(byApplicationId, detailsReq);
+                detailsReq.setAcHolderName(byApplicationId.getAccountHolderName());
             }
             //for assets and liability
             detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId));
