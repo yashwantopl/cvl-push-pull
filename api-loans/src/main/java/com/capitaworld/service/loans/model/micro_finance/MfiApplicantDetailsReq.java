@@ -258,6 +258,8 @@ public class MfiApplicantDetailsReq {
 
     private String branchName;
 
+    private String acHolderName;
+
     private String accountNo;
 
     private String ifscCode;
@@ -1756,4 +1758,12 @@ public class MfiApplicantDetailsReq {
 	public void setAcademicSumInsured(Double academicSumInsured) {
 		this.academicSumInsured = academicSumInsured;
 	}
+
+    public String getAcHolderName() {
+        return acHolderName;
+    }
+
+    public void setAcHolderName(String acHolderName) {
+        this.acHolderName = acHolderName;
+    }
 }
