@@ -304,10 +304,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 MfiIncomeDetailsRepository.save(mfiIncomeDetails);
             }
         }
-        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(mfiIncomeAndExpenditureReq.getApplicationId(),1);
-        if(CommonUtils.isObjectNullOrEmpty(expectedIncomeDetails)){
-            expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
-        }
+//        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(mfiIncomeAndExpenditureReq.getApplicationId(),1);
+//        if(CommonUtils.isObjectNullOrEmpty(expectedIncomeDetails)){
+            MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+//        }
         expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
         BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
         //below code for calculate total expense
@@ -464,7 +464,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type) {
-        return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId,type);
+        List<MfiLoanAssessmentDetailsReq> cashFlowAssessment = expectedIncomeDetailRepository.findCashFlowAssessment(applicationId, type);
+        return !CommonUtils.isListNullOrEmpty(cashFlowAssessment) ? cashFlowAssessment.get(0) : null;
     }
 
 
