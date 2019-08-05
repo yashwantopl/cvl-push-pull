@@ -264,8 +264,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
             //save PPI and is income filled true
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiIncomeAndExpenditureReq.getId());
+            Integer type = mfiApplicationDetail.getType();
             BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, mfiApplicationDetail);
             mfiApplicationDetail.setIsIncomeDetailsFilled(true);
+            mfiApplicationDetail.setType(type);
             detailsRepository.save(mfiApplicationDetail);
             return true;
         }
