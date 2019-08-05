@@ -308,6 +308,8 @@ public class MfiApplicantDetailsReq {
 
 	private Double loanAmountBankMaker;
 
+	private Long jobId;
+
 
 	public MfiIncomeAndExpenditureReq getMfiIncomeAndExpenditureReqMFIMaker() {
 		return mfiIncomeAndExpenditureReqMFIMaker;
@@ -1708,6 +1710,12 @@ public class MfiApplicantDetailsReq {
 	public void setIncomeDetailsTypeTwoList(List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList) {
 		this.incomeDetailsTypeTwoList = incomeDetailsTypeTwoList;
 	}
-	
-	
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
 }
