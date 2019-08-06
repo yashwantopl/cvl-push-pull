@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1234,13 +1236,17 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// Fraud Detection Data
 
 		try {
-			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
-
-			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
-
-				corporatePrimaryViewResponse.setFraudDetectionData(hunterResp);
-
+			UserResponse campaignUser=usersClient.isExists(toUserId,null);
+			corporatePrimaryViewResponse.setIsCampaignUser(campaignUser!= null && campaignUser.getData()!= null ? (Boolean) campaignUser.getData() : null);
+			if(campaignUser!= null && campaignUser.getData().equals(false)) {
+				AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+				if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+					corporatePrimaryViewResponse.setFraudDetectionData(hunterResp);
+				}else {
+					logger.info("application is bank specific so fraud detection is skipped for===>"+applicationId);
+				}	
 			}
+			
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----" + toApplicationId + CommonUtils.EXCEPTION + e1);
 		}
@@ -1388,7 +1394,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.error("Exception in getting gst and BS data for teaserview {}",e);
 		}
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
-		SimpleDateFormat sdf1=new SimpleDateFormat("MM-yyyy");
+		SimpleDateFormat sdf1=new SimpleDateFormat("MMM yy");
 		// gst vs bank statement month wise purchase		
 		if(bsMap != null && !bsMap.isEmpty() && gstResp != null && gstResp.getData() != null) {
 			LinkedHashMap<String,Object> gstData= (LinkedHashMap<String, Object>) gstResp.getData();
@@ -1619,5 +1625,4 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
-	
 }
