@@ -199,10 +199,17 @@ public class HlTeaserViewResponse {
 	private String concessionRoi;
 	private String concessionRoiBased;
 	private String finalRoi;
-	
-	
+	private String noteOfBorrower;
 
 	
+
+	public String getNoteOfBorrower() {
+		return noteOfBorrower;
+	}
+
+	public void setNoteOfBorrower(String noteOfBorrower) {
+		this.noteOfBorrower = noteOfBorrower;
+	}
 
 	public String getMclrRoi() {
 		return mclrRoi;

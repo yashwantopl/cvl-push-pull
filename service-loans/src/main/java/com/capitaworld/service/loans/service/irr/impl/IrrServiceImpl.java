@@ -487,8 +487,8 @@ public class IrrServiceImpl implements IrrService{
 					operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
 				financialInputRequest.setDividendPayOutFy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
 				yearSalesPurchase.put("year",currentYear-1);
-				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
-				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
+				yearSalesPurchase.put("rowMaterialIndigenous",operatingStatementDetails.getRawMaterialsIndigenous());
 				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}else {
 				log.error("first year os is null ");
@@ -826,8 +826,8 @@ public class IrrServiceImpl implements IrrService{
 				financialInputRequest.setDividendPayOutSy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);		
 				yearSalesPurchase = new HashMap<>();
 				yearSalesPurchase.put("year",currentYear-2);
-				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
-				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
+				yearSalesPurchase.put("rowMaterialIndigenous",operatingStatementDetails.getRawMaterialsIndigenous());
 				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}else {
 				
@@ -1177,8 +1177,8 @@ public class IrrServiceImpl implements IrrService{
 				
 				yearSalesPurchase = new HashMap<>();
 				yearSalesPurchase.put("year",currentYear-3);
-				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
-				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
+				yearSalesPurchase.put("rowMaterialIndigenous",operatingStatementDetails.getRawMaterialsIndigenous());
 				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}else {
 				

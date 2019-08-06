@@ -209,6 +209,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
             if (byApplicationId != null) {
                 BeanUtils.copyProperties(byApplicationId, detailsReq);
+                detailsReq.setAcHolderName(byApplicationId.getAccountHolderName());
             }
             //for assets and liability
             detailsReq.setAssetsDetails(MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId));
@@ -258,14 +259,24 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         }
         if (null != mfiIncomeAndExpenditureReq.getId()) {
             //save data in expense and expected income details for agent type 1 for agent details
-            saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
+            if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
+                MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiIncomeAndExpenditureReq.getApplicationId());
+            }
+            expectedIncomeDetailRepository.inactiveExpene(mfiIncomeAndExpenditureReq.getApplicationId());
+
+            boolean withCopy = saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
             //save data in expense and expected income details for agent type 1 for checker details
-            saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 2);
+            if(withCopy) {
+                saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 2);
+            }
+
 
             //save PPI and is income filled true
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiIncomeAndExpenditureReq.getId());
+            Integer type = mfiApplicationDetail.getType();
             BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, mfiApplicationDetail);
             mfiApplicationDetail.setIsIncomeDetailsFilled(true);
+            mfiApplicationDetail.setType(type);
             detailsRepository.save(mfiApplicationDetail);
             return true;
         }
@@ -284,6 +295,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         Double totalExpense = 0.0;
         if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
             //for MFI Agent data from users
+//            List<MfiIncomeDetailsReq> incomeDetailsByAppId = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(mfiIncomeAndExpenditureReq.getApplicationId(), type);
+//            if(!CommonUtils.isListNullOrEmpty(incomeDetailsByAppId)) {
+
+//             MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiIncomeAndExpenditureReq.getApplicationId(),type);
+
+//            }
             for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
                 MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
                 BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
@@ -293,7 +310,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 MfiIncomeDetailsRepository.save(mfiIncomeDetails);
             }
         }
+//        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(mfiIncomeAndExpenditureReq.getApplicationId(),type);
+//        if(CommonUtils.isObjectNullOrEmpty(expectedIncomeDetails)){
         MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+//        }
         expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
         BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
         //below code for calculate total expense
@@ -364,20 +384,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(mfiAssetsDetailsReq.getApplicationId());
             corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
             loanApplicationRepository.save(corporateLoan);
-            WorkflowRequest  request = new WorkflowRequest();
-            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
-                request.setJobId(mfiApplicationDetail.getJobId());
-            }
-            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
-            request.setUserId(mfiAssetsDetailsReq.getUserId());
-            List<Long> roles = new ArrayList<>();
-            roles.add(17l);
-            request.setRoleIds(roles);
-            Object activeButtons = getActiveButtons(request);
-            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
+//            WorkflowRequest  request = new WorkflowRequest();
+//            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
+//                request.setJobId(mfiApplicationDetail.getJobId());
+//            }
+//            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
+//            request.setUserId(mfiAssetsDetailsReq.getUserId());
+//            List<Long> roles = new ArrayList<>();
+//            roles.add(17l);
+//            request.setRoleIds(roles);
+//            Object activeButtons = getActiveButtons(request);
+//            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
             LoansResponse loansResponse = new LoansResponse();
-            loansResponse.setData(objectFromMap.getStep().getStepActions());
-            loansResponse.setId(objectFromMap.getJob().getId());
             loansResponse.setMessage("Successfully Saved.");
             loansResponse.setStatus(HttpStatus.OK.value());
             return loansResponse;
@@ -396,15 +414,51 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq) {
         String serverSideValidation = serverSideValidation(CommonUtils.LOAN_ASSESMENT, mfiLoanAssessmentDetailsReq);
-        if (CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
+        if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             return serverSideValidation;
         }
         if (null != mfiLoanAssessmentDetailsReq.getId()) {
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiLoanAssessmentDetailsReq.getId());
+            Integer purposeOfLoan = mfiApplicationDetail.getPurposeOfLoan();
             BeanUtils.copyProperties(mfiLoanAssessmentDetailsReq, mfiApplicationDetail);
+            mfiApplicationDetail.setPurposeOfLoan(purposeOfLoan);
             mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
             return true;
+        }
+        return false;
+
+    }
+
+    @Override
+    public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq loanRecomandationReq) {
+        LoansResponse loansResponse = new LoansResponse();
+        String serverSideValidation = serverSideValidation(CommonUtils.LOAN_RECOMANDATION, loanRecomandationReq);
+        if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
+            loansResponse.setData(serverSideValidation);
+            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return loansResponse;
+        }
+        if (null != loanRecomandationReq.getId()) {
+            MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(loanRecomandationReq.getId());
+            BeanUtils.copyProperties(loanRecomandationReq, mfiApplicationDetail);
+            detailsRepository.save(mfiApplicationDetail);
+            WorkflowRequest  request = new WorkflowRequest();
+            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
+                request.setJobId(mfiApplicationDetail.getJobId());
+            }
+            request.setApplicationId(loanRecomandationReq.getApplicationId());
+            request.setUserId(loanRecomandationReq.getUserId());
+            List<Long> roles = new ArrayList<>();
+            roles.add(17l);
+            request.setRoleIds(roles);
+            Object activeButtons = getActiveButtons(request);
+            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
+            loansResponse.setData(objectFromMap.getStep().getStepActions());
+            loansResponse.setId(objectFromMap.getJob().getId());
+            loansResponse.setMessage("Successfully Saved.");
+            loansResponse.setStatus(HttpStatus.OK.value());
+            return loansResponse;
         }
         return false;
 
@@ -418,7 +472,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type) {
-        return expectedIncomeDetailRepository.findCashFlowAssessment(applicationId,type);
+        List<MfiLoanAssessmentDetailsReq> cashFlowAssessment = expectedIncomeDetailRepository.findCashFlowAssessment(applicationId, type);
+        return !CommonUtils.isListNullOrEmpty(cashFlowAssessment) ? cashFlowAssessment.get(0) : null;
     }
 
 
@@ -492,7 +547,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
                     || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanLiabilityRatio()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
                 return "Some required fields in mean of missing in Loan Assesment detail section";
-            } else if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
+            }
+        } else if (type == CommonUtils.LOAN_RECOMANDATION) {
+            MfiLoanRecomandationReq assessmentDetailsReq = (MfiLoanRecomandationReq) validationJson;
+            if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
                     CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation()) ||
                     CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInterestRateRecomandation())) {
                 return "Some required fields in mean of missing in Loan Reccommendation detail section";

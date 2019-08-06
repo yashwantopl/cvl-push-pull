@@ -42,7 +42,9 @@ public interface MfiApplicationService {
 	public FlagCheckMFI findAllFlag(Long applicationId,Integer type);
 	
 	public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq);
-	
+
+	public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq recomandationReq);
+
 	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
 
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
