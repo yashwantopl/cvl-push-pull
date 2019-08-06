@@ -419,7 +419,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         }
         if (null != mfiLoanAssessmentDetailsReq.getId()) {
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiLoanAssessmentDetailsReq.getId());
+            Integer purposeOfLoan = mfiApplicationDetail.getPurposeOfLoan();
             BeanUtils.copyProperties(mfiLoanAssessmentDetailsReq, mfiApplicationDetail);
+            mfiApplicationDetail.setPurposeOfLoan(purposeOfLoan);
             mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
             return true;
