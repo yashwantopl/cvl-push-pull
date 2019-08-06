@@ -2144,10 +2144,10 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.RESIDENCE_TYPE:
             				if(retailApplicantDetail.getResidenceType() != null) {
             					if(ResidenceStatusRetailMst.OWNED.getId().equals(retailApplicantDetail.getResidenceType())) {
-            						if(retailApplicantDetail.getIsOwnedProp() == null || retailApplicantDetail.getIsOwnedProp()) {
-            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
-            						}else {
+            						if(retailApplicantDetail.getIsOwnedProp() != null && retailApplicantDetail.getIsOwnedProp()) {
             							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
+            						}else {
+            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());            							
             						}
             					}else {
             						scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());

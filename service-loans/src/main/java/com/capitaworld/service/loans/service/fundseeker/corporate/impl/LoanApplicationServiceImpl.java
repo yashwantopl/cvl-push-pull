@@ -6135,6 +6135,36 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Exit in createMsmeLoan");
 		return corporateLoan.getId();
 	}
+	
+	@Override
+	public Long createAgriLoan(Long userId,Integer businessTypeId,Long orgId){
+		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_OPEN));
+//		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+		corporateLoan.setCreatedBy(userId);
+		corporateLoan.setCreatedDate(new Date());
+		corporateLoan.setUserId(userId);
+		corporateLoan.setProductId(17);
+		corporateLoan.setBusinessTypeId(6);
+		corporateLoan.setFpMakerId(userId);
+		corporateLoan.setNpOrgId(orgId);
+		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
+//		corporateLoan.setBusinessTypeId(businessTypeId);
+		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
+		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
+		logger.info("Going to Create new Corporate UserId===>{}", userId);
+		corporateLoan = loanApplicationRepository.save(corporateLoan);
+		logger.info("Created New Corporate Loan of User Id==>{}", userId);
+		logger.info("Setting Last Application is as Last access Id in User Table---->" + corporateLoan.getIsActive());
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
+		usersRequest.setId(userId);
+		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Successfully get result");
+		logger.info("Exit in createMsmeLoan");
+		return corporateLoan.getId();
+	}
 
 	@Override
 	public Long createMsmeLoan(Long userId, Boolean isActive, Integer businessTypeId) {
