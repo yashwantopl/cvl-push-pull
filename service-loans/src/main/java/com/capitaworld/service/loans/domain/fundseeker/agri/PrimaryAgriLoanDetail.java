@@ -70,6 +70,10 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 	private Boolean isCropInsurance;
 	
 	private Integer status;
+	
+	@Column(name = "org_id")
+	private Integer orgId;
+	
 
 	public PrimaryAgriLoanDetail() {
 		// Do nothing because of X and Y.
@@ -226,6 +230,13 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	
+
+	public Integer getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Integer orgId) {
+		this.orgId = orgId;
+	}
 	
 }

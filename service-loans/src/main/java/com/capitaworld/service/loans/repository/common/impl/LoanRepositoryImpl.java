@@ -435,6 +435,29 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
+	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spGetAgriApplicationsByOrgIdAndStatus");
+			storedProcedureQuery.registerStoredProcedureParameter("orgId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.setParameter("orgId",orgId);
+			
+			storedProcedureQuery.registerStoredProcedureParameter("status",Integer.class, ParameterMode.IN);
+			if(status == null) {
+				storedProcedureQuery.setParameter("status",-1);
+			}else {
+				storedProcedureQuery.setParameter("status",status);				
+			}
+			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
+			storedProcedureQuery.execute();
+			return (String)storedProcedureQuery.getOutputParameterValue("result");
+			
+		} catch (Exception e) {
+			logger.error("EXCEPTION spGetAgriApplicationsByOrgIdAndStatus :=- {}", e);
+		}
+		return null;
+	}
+	
+	@Override
 	public Boolean retailPrefillData(String input) {
 		try {
 			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfile");

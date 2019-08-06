@@ -48,6 +48,8 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	
 	private Integer status;
 	
+	private Integer orgId;
+	
 	public PrimaryAgriLoanDetailRequest() {
 		// Do nothing because of X and Y.
 	}
@@ -203,5 +205,12 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	
+
+	public Integer getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Integer orgId) {
+		this.orgId = orgId;
+	}
 }
