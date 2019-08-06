@@ -259,9 +259,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         }
         if (null != mfiIncomeAndExpenditureReq.getId()) {
             //save data in expense and expected income details for agent type 1 for agent details
-            saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
+            if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
+                MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiIncomeAndExpenditureReq.getApplicationId());
+            }
+            expectedIncomeDetailRepository.inactiveExpene(mfiIncomeAndExpenditureReq.getApplicationId());
+
+            boolean withCopy = saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
             //save data in expense and expected income details for agent type 1 for checker details
-            saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 2);
+            if(withCopy) {
+                saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 2);
+            }
+
 
             //save PPI and is income filled true
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiIncomeAndExpenditureReq.getId());
@@ -287,13 +295,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         Double totalExpense = 0.0;
         if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
             //for MFI Agent data from users
-//            List<MfiIncomeDetailsReq> incomeDetailsByAppId = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(mfiIncomeAndExpenditureReq.getApplicationId(), 1);
+//            List<MfiIncomeDetailsReq> incomeDetailsByAppId = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(mfiIncomeAndExpenditureReq.getApplicationId(), type);
 //            if(!CommonUtils.isListNullOrEmpty(incomeDetailsByAppId)) {
-//                for (MfiIncomeDetailsReq mfiIncomeDetailsReq : incomeDetailsByAppId) {
-//                    MfiIncomeDetails mfiIncomeDetails = MfiIncomeDetailsRepository.findOne(mfiIncomeDetailsReq.getId());
-//                    mfiIncomeDetails.setIsActive(false);
-//                    MfiIncomeDetailsRepository.save(mfiIncomeDetails);
-//                }
+
+//             MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiIncomeAndExpenditureReq.getApplicationId(),type);
+
 //            }
             for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
                 MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
@@ -304,9 +310,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 MfiIncomeDetailsRepository.save(mfiIncomeDetails);
             }
         }
-//        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(mfiIncomeAndExpenditureReq.getApplicationId(),1);
+//        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(mfiIncomeAndExpenditureReq.getApplicationId(),type);
 //        if(CommonUtils.isObjectNullOrEmpty(expectedIncomeDetails)){
-            MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
 //        }
         expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
         BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
