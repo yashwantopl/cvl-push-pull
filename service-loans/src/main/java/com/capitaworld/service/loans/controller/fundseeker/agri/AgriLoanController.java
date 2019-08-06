@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.agri.AgriRequest;
+import com.capitaworld.service.loans.service.fundseeker.agri.AgriLoanService;
 import com.capitaworld.service.loans.service.fundseeker.agri.CropDetailService;
 import com.capitaworld.service.loans.service.fundseeker.agri.PrimaryAgriLoanDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -25,13 +26,15 @@ import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantSe
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
-import scala.annotation.meta.setter;
 
 @RestController
 @RequestMapping("/agri")
 public class AgriLoanController {
 	private static final Logger logger = LoggerFactory.getLogger(AgriLoanController.class);
 
+	@Autowired
+	private AgriLoanService agriLoanService;
+	
 	@Autowired
 	private RetailApplicantService retailApplicantService;
 	
@@ -119,24 +122,18 @@ public class AgriLoanController {
 		}
 	}
 	
-	@PostMapping(value = "/applications", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getApplication(@RequestBody Long applicationId , HttpServletRequest request) {
+	@PostMapping(value = "/applications/{status}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApplication(@RequestBody Integer status , HttpServletRequest request) {
 		try {
-			// request must not be null
-			if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
-				logger.warn("ApplicationId must not be Empty ==>{}",applicationId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
 			
 			CommonDocumentUtils.startHook(logger, "save");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
+			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			if (orgId == null) {
+				logger.warn("Organization  can not be empty ==>" + orgId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Result", HttpStatus.OK.value()), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Result", HttpStatus.OK.value(),agriLoanService.getApplications(orgId.intValue(), status)), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Agri Loan Data Details ==>", e);
