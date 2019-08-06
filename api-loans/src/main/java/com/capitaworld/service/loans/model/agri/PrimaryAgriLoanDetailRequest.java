@@ -46,6 +46,8 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	
 	private String landUse;
 	
+	private Integer status;
+	
 	public PrimaryAgriLoanDetailRequest() {
 		// Do nothing because of X and Y.
 	}
@@ -193,4 +195,13 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	public void setIsCropInsurance(Boolean isCropInsurance) {
 		this.isCropInsurance = isCropInsurance;
 	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	
 }

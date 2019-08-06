@@ -222,6 +222,40 @@ public class CommonUtils {
 			public static final String OFF = "0";
 		}
 	}
+	
+	public enum AgriLoanStatus {
+		WAITING(0,"Waiting"),PENDING(1,"Pending"),SUBMITTED(2,"Submitted");
+		private Integer id;
+		private String value;
+		
+		private AgriLoanStatus(Integer id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+		public Integer getId() {
+			return id;
+		}
+		public String getValue() {
+			return value;
+		}
+		public static AgriLoanStatus fromValue(String v) {
+			for (AgriLoanStatus c : AgriLoanStatus.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+		
+		public static AgriLoanStatus fromId(Integer v) {
+			for (AgriLoanStatus c : AgriLoanStatus.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v != null ? v.toString() : null);
+		}
+	}
 
 	public static final class DenominationId {
 		private DenominationId() {

@@ -87,8 +87,7 @@ public class AgriLoanController {
 	}
 	
 	@PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@RequestBody Long applicationId , HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> get(@RequestBody Long applicationId , HttpServletRequest request) {
 		try {
 			// request must not be null
 			if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
@@ -111,6 +110,33 @@ public class AgriLoanController {
 			agriRequest.setArrangementsDetailRequests(financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId));
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Result", HttpStatus.OK.value(),agriRequest), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Agri Loan Data Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@PostMapping(value = "/applications", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApplication(@RequestBody Long applicationId , HttpServletRequest request) {
+		try {
+			// request must not be null
+			if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn("ApplicationId must not be Empty ==>{}",applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			CommonDocumentUtils.startHook(logger, "save");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Result", HttpStatus.OK.value()), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Agri Loan Data Details ==>", e);
