@@ -22,6 +22,6 @@ public interface MfiAssetsDetailsRepository extends JpaRepository<MfiAssetsLiabi
 	public List<MfiAssetsDetailsReq> findAssetsDetailsByAppId(@Param("appId") Long appId);
 	
 	
-	@Query("select new com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq(fn.applicationId,fn.assetsLiabilityType,fn.amount,fn.outstanding,fn.type) from MfiAssetsLiabilityDetails fn where fn.applicationId = :appId and fn.type=2")
+	@Query("select new com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq(fn.applicationId,fn.assetsLiabilityType,fn.amount,fn.outstanding,fn.type,fn.particulars) from MfiAssetsLiabilityDetails fn where fn.applicationId = :appId and fn.type=2")
 	public List<MfiAssetsDetailsReq> findLiabilityDetailsByAppId(@Param("appId") Long appId);
 }
