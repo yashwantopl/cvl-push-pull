@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1388,7 +1390,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.error("Exception in getting gst and BS data for teaserview {}",e);
 		}
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
-		SimpleDateFormat sdf1=new SimpleDateFormat("MM-yyyy");
+		SimpleDateFormat sdf1=new SimpleDateFormat("MMM yy");
 		// gst vs bank statement month wise purchase		
 		if(bsMap != null && !bsMap.isEmpty() && gstResp != null && gstResp.getData() != null) {
 			LinkedHashMap<String,Object> gstData= (LinkedHashMap<String, Object>) gstResp.getData();
@@ -1619,5 +1621,4 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
-	
 }
