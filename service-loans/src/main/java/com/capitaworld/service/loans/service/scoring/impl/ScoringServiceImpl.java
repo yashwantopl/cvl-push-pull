@@ -1103,10 +1103,6 @@ public class ScoringServiceImpl implements ScoringService {
                                     logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
                                 }
-                            } catch (Exception e) {
-                                logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
-                                scoreParameterRetailRequest.setCategoryInfo_p(false);
-                            }
 
                             break;
                         }
