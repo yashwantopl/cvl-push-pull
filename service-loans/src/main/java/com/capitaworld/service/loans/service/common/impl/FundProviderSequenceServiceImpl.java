@@ -83,6 +83,12 @@ public class FundProviderSequenceServiceImpl implements FundProviderSequenceServ
                 fundProviderSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
                 CommonDocumentUtils.endHook(logger, GET_FUND_PROVIDER_SEQUENCE_NUMBER);
                 return "CW-WCTL-"+sequenceNumber;
+            case 17://MFI loan
+                sequenceNumber = fundProviderSequenceRepository.getFundProviderSequenceNumber(Long.valueOf(productId));
+                sequenceNumber+=1;
+                fundProviderSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
+                CommonDocumentUtils.endHook(logger, GET_FUND_PROVIDER_SEQUENCE_NUMBER);
+                return "CW-MFI-"+sequenceNumber;
                 
             default:
             	logger.error("Product Id Found NUll while getting Unique Sequence Number. ");

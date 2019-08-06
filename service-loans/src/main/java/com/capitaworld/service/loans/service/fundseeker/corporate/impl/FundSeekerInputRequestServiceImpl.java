@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.GstRelatedParty;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -51,11 +53,13 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -256,6 +260,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}else{
 				collateralSecurityDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
 			}
+			
 			
 			return true;
 		} catch (Exception e) {
@@ -1158,5 +1163,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
 	}
+	
 
 }

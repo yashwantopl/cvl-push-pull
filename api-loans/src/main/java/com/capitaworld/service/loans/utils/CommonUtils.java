@@ -68,7 +68,20 @@ public class CommonUtils {
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
-	
+	public static final Integer PENDING = 0;
+	public static final Integer APPROVED = 1;
+	public static final Integer BASIC_DETAILS = 0;
+	public static final Integer PERSONAL_DETAILS = 1;
+	public static final Integer BANK_DETAILS = 2;
+	public static final Integer INCOME_EXPENDITURE = 3;
+	public static final Integer PROJECT_DETAILS = 4;
+	public static final Integer ASSETS_LIABILITY = 5;
+	public static final Integer LOAN_ASSESMENT = 6;
+
+
+
+
+
 	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
 	
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
@@ -188,6 +201,27 @@ public class CommonUtils {
 		public static final Long BILLIONS = 100000000l;
 		public static final Long ABSOLUTE = 1l;
 	}
+	
+	public static final class OfflineApplicationConfig {
+		private OfflineApplicationConfig(){
+			// Do nothing because of X and Y.
+		}
+		public static final class BankSpecific{
+			private BankSpecific(){
+				// Do nothing because of X and Y.
+			}
+			public static final String ON = "1";
+			public static final String OFF = "0";
+		}
+		
+		public static final class MarketPlace{
+			private MarketPlace(){
+				// Do nothing because of X and Y.
+			}
+			public static final String ON = "1";
+			public static final String OFF = "0";
+		}
+	}
 
 	public static final class DenominationId {
 		private DenominationId() {
@@ -301,6 +335,8 @@ public class CommonUtils {
 				return UNSECURED_LOAN;
 			case 16:
 				return WCTL_LOAN;
+			case 17:
+					return MFI;
 			default :
 				return null;
 			}
@@ -342,6 +378,18 @@ public class CommonUtils {
 
 		public static String[] getCORPORATE() {
 			return CORPORATE;
+		}
+		
+		private static final String[] AUDIT_FIELDS = { "createdBy", "modifiedBy", "createdDate", "modifiedDate", "isActive"};
+
+		public static String[] getAuditFields() {
+			return AUDIT_FIELDS;
+		}
+		
+		private static final String[] AUDIT_FIELDS_WITH_ID = { "createdBy", "modifiedBy", "createdDate", "modifiedDate", "isActive","id"};
+
+		public static String[] getAuditFieldsWithId() {
+			return AUDIT_FIELDS_WITH_ID;
 		}
 
 		public static final String ID = "id";
@@ -561,6 +609,9 @@ public class CommonUtils {
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
+		public static final Long MFI_OPEN = 9l;
+		public static final Long MFI_PENDING = 10l;
+
 	}
 	
 	public static final class ParameterTypes {
@@ -633,6 +684,18 @@ public class CommonUtils {
 		public static final int SERVICE_PROVIDER = 3;
 		public static final int NETWORK_PARTNER = 4;
 	}
+	
+	public static final class mfiDataDisplayType {
+		private mfiDataDisplayType () {
+			// Do nothing because of X and Y.
+		}
+		public static final int MFI_APPLICANT_DETAILS_DETAILS_TYPE = 1;
+		public static final int MFI_MATCHES_DISPLAY_TYPE = 2;
+		public static final int MFI_SCORING_DISPLAY_TYPE = 3;
+		public static final int MFI_ASSESSMENT_TYPE = 4;
+	}
+	
+	
 
 	public static final class UploadUserType {
 		private UploadUserType() {
@@ -795,6 +858,7 @@ public class CommonUtils {
 		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/error".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/mca/error".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getBsData".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -1286,7 +1350,8 @@ public class CommonUtils {
 		EXISTING_BUSINESS(1, "Existing Business"),
 		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
 		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
-		RETAIL_HOME_LOAN(5, "Retail Home Loan");
+		RETAIL_HOME_LOAN(5, "Retail Home Loan"),
+		MFI(6, "Micro FInance Institute");
 
 		private Integer id;
 		private String value;
@@ -1505,10 +1570,12 @@ public enum APIFlags {
 	
 	/***********************************************CAM UTILS*********************************************************/
 	static DecimalFormat decimal = new DecimalFormat("#,##0.00");
+	static DecimalFormat decimalForDouble = new DecimalFormat("###0.00");
 	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
 		NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
 		return !CommonUtils.isObjectNullOrEmpty(value)? formatter.format(value) : "0";
 	}
@@ -1524,10 +1591,11 @@ public enum APIFlags {
 	public static Object convertValueIndianCurrency(Object value) {
 		if(value != null) {
 			NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("en", "IN"));
-			/*formatter.setMinimumFractionDigits(0);*/
+			formatter.setMinimumFractionDigits(0);
+			formatter.setMaximumFractionDigits(0);
 			return formatter.format(value);
 		}else {
-			return null;
+			return 0;
 		}
 		
 	}
@@ -1540,7 +1608,7 @@ public enum APIFlags {
 				return num.doubleValue();
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.info("error==>"+e);
 			}
 			/*formatter.setMinimumFractionDigits(0);*/
 			
@@ -1558,6 +1626,19 @@ public enum APIFlags {
 			return "-";
 		}
 		
+	}
+	
+	public static Object convertStringFormate(Object value) {
+		
+//		Double a;
+		try {
+//			a = (Double) decimal.parse(value);
+			
+			return String.valueOf(convertValueIndianCurrency(decimal.parse(String.valueOf(value))));
+		} catch (ParseException e) {
+			logger.error(EXCEPTION, e);
+		}
+		return "0";
 	}
 	public static String formatValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
@@ -1948,6 +2029,20 @@ public enum APIFlags {
 		}
 		return "-";
 	}
+	/**
+	 * @author nilay.darji
+	 * @param index of array
+	 * 
+	 */
+	public static String getMonthsByIndex(String index) {
+		String getMonths[] =
+		    {
+		        null , "January" , "February" , "March" , "April", "May","June", "July", "August", "September", "October","November", "December"
+		    };
+		return getMonths[Integer.valueOf(index)];
+	} 
+	 
+	 	
 
 //	public static void main(String[] args) throws ParseException {
 //		String strDate = "01/09/2009";
@@ -1970,5 +2065,28 @@ public enum APIFlags {
 //		  System.out.println(((double)diff1.getYears()) + ((double)(diff1.getMonths() / 12.0d)));
 //		  
 //	}
+
+	public static Double convertTwoDecimalValuesIn(Double amount,Integer rate) {
+		if(amount!=null) {
+			amount=amount/rate;
+			amount = convertTwoDecimal(amount);
+		}
+		return amount;
+	}
+	public static Double convertTwoDecimalAbsoluteValues(Double amount,Integer rate) {
+		if(amount!=null) {
+			amount=amount*rate;
+			
+			amount = convertTwoDecimal(amount);
+		}
+		return amount;
+	}
+	public static Double convertTwoDecimal(Double amount) {
+		if(amount!=null) {
+			DecimalFormat decim = new DecimalFormat("0.00");			
+			amount = Double.parseDouble(decim.format(amount));
+		}
+		return amount;
+	}
 	
 }

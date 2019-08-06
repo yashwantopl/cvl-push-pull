@@ -41,7 +41,9 @@ public interface LoanApplicationService {
 	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws LoansException;
 
 	public LoanApplicationRequest get(Long id, Long userId,Long userOrdId) throws LoansException;
-	
+
+	public LoanApplicationRequest getMFIAppDetails(Long id, Long userId,Long userOrdId) throws LoansException;
+
 	public LoanApplicationRequest inActive(Long id, Long userId) throws LoansException;
 	
 	public int inActiveApplication(Long id, Long userId);
@@ -184,6 +186,8 @@ public interface LoanApplicationService {
 	
 	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId);
 
+	public Long createMfiLoan(Long userId,Boolean isActive,Integer businessTypeId,Long userOrgId);
+
 	public Long createRetailLoan(Long userId, Boolean isActive, Integer businessTypeId);
 
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
@@ -269,4 +273,10 @@ public interface LoanApplicationService {
 	public String getApplicationListForPrefillProfile(Long userId);
 	
 	public Boolean retailPrefillData(String input);
+
+	public String getMaxInvestmentSizeFromBank(String bankCode);
+	
+	public List<GstRelatedPartyRequest> getGstRelatedPartyDetails(Long applicationId);
+	
+	public String getApplicationCampaignCode(Long applicationId);
 }

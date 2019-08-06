@@ -14,10 +14,6 @@ import java.util.TreeMap;
 
 import javax.transaction.Transactional;
 
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
-import com.capitaworld.service.loans.repository.fundprovider.*;
-import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +53,12 @@ import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -74,6 +72,7 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -89,6 +88,12 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -118,6 +123,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorpor
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
+import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -156,6 +162,7 @@ import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.model.ProposalScoreDetailResponse;
@@ -321,6 +328,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 	@Autowired
 	IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+	
+	@Autowired
+	CorporatePrimaryViewService corporatePrimaryViewService;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -427,10 +437,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
 			if(productName != null) {
-			try {
+				try {
 					map.put("fpProductName",CommonUtils.printFields(productName, null));
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("error"+e);
 				}
 			}else {
 				logger.info("product name is null..of productId==>{}", productId);
@@ -518,9 +528,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					if(resp.getMomSales() != null) {
                         List<MomSales> momSalesResp1 = resp.getMomSales();
                         List<MomSales> responseMom= new ArrayList<>();
+                        
                         for (MomSales sales1 : momSalesResp1) {
-                        	
-                        	sales1.setMonth(sales1.getMonth());
+                        	StringBuilder str = new StringBuilder(sales1.getMonth());
+                        	sales1.setMonth(str.insert(2, '-').toString());
                         	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
                         	sales1.setIsManualEntry(sales1.getIsManualEntry());
                             responseMom.add(sales1);
@@ -556,6 +567,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
+			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? primaryCorporateDetail.getProductServiceDescription() : null);
 		}
 		
 		//ONE-FORM DATA
@@ -647,6 +659,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 				}
 				
+				Double loanObligation = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(applicationId , directorBackgroundDetailRequest.getId());
+				directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
+				
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
 				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
 				
@@ -700,7 +715,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							directorPersonalDetailResponse.setSpouseDetail(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()) ? StringEscapeUtils.escapeXml(SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString()) : "-");
 							directorPersonalDetailResponse.setAssessedForIt(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()) ? StringEscapeUtils.escapeXml(AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString()) : "-");
 							directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
-							directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : null );
+							directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
 							directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
 							
 							directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
@@ -1260,6 +1275,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
 				
 				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
+				map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
 				map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
 			}
 		}catch (Exception e) {
@@ -1273,14 +1289,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			// CURRENTLY PENDING DATA-ID NOT EXISTS IN application_proposal_mapping-->applicationProposalMapping
 			String companyId = loanApplicationMaster.getMcaCompanyId();
-			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
-			if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
-				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
-			}
-
-			McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
-			if(mcaFinancialAndDetailsRes.getData()!=null){
-				map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+			
+			if(companyId != null) {
+				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
+				if (mcaStatusResponse!= null && mcaStatusResponse.getData()!= null && mcaStatusResponse.getData().equals(true)) {
+					McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+					if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
+						map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
+					}
+					McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+					if(mcaFinancialAndDetailsRes.getData()!=null){
+						map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+					}
+				}
+				map.put("mcaCheckStatus",mcaStatusResponse.getData()!= null ?  mcaStatusResponse.getData() : null);
+				
+			}else {
+				map.put("mcaNotApplicable",true);
 			}
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -1304,6 +1329,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		}catch(Exception e) {
 			logger.error("Error while getting ITR data : ",e);
+		}
+		
+		//gstRelatedParty Data Fetch
+		try {
+			List<GstRelatedPartyRequest> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", !CommonUtils.isObjectListNull(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
 
 
@@ -1346,7 +1379,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("top5FundReceived", top5FundReceived);
 				map.put("top5FundTransfered", top5FundTransfered);
 				map.put("bouncedChequeList", bouncedChequeList);
-				map.put("customerInfo", customerInfo);
+				map.put("customerInfo", !CommonUtils.isObjectListNull(customerInfo) ? customerInfo : null);
 				map.put("summaryInfo", summaryInfo);
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 
@@ -1354,6 +1387,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		 }
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
+		}
+		
+		//		GST Comparision by Maaz
+		try{
+//			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+//			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+		}catch (Exception e) {
+			logger.error("error in getting gst comparision data : {}",e);
 		}
 
 		/**ReportRequest reportRequest = new ReportRequest();
@@ -1934,7 +1975,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		assetDetailsString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValueIndianCurrency(assetsDetails.getOtherIncomeNeedTocCheckAsset()).toString());
 		financialInputRequestDbl.setOtherIncomeNeedTocCheckAsset(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denomination);
 		financialInputRequestString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValueIndianCurrency(financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()).toString());
-		assetDetailsString.setCurrentRatio(CommonUtils.convertValueIndianCurrency(assetsDetails.getCurrentRatio()).toString());
+		assetDetailsString.setCurrentRatio(CommonUtils.convertValue(assetsDetails.getCurrentRatio()).toString());
 		
 		/************************************************** OTHER CALCULATIONS *******************************************************/ 
 		//Profit & Loss Statement
@@ -2048,7 +2089,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		curFinYearString.setRoce(CommonUtils.convertValue(((curFinYearDouble.getOperatingProfitEbitadOi()*2/(CommonUtils.addNumbers(curFinYearDouble.getShareHolderFunds(), prevFinYearDouble.getShareHolderFunds(), curFinYearDouble.getTotalNonCurruntLiablities(), prevFinYearDouble.getTotalNonCurruntLiablities())))*12/curFinYearDouble.getNoOfMonth())* 100));
 		prevFinYearString.setRoce(CommonUtils.convertValue(((prevFinYearDouble.getOperatingProfitEbitadOi()*2/(CommonUtils.addNumbers(prevFinYearDouble.getShareHolderFunds(), yrBeforePrevFinYearDouble.getShareHolderFunds(), prevFinYearDouble.getTotalNonCurruntLiablities(), yrBeforePrevFinYearDouble.getTotalNonCurruntLiablities())))*12/prevFinYearDouble.getNoOfMonth())* 100));
-		yrBeforePrevFinYearString.setRoce("-");
+		yrBeforePrevFinYearString.setRoce("NA");
 		
 		curFinYearString.setAssetTurnOver(CommonUtils.convertValue(CommonUtils.divideNumbers(curFinYearDouble.getNetSale() * 12, (CommonUtils.multiplyNumbers(curFinYearDouble.getTotalAsset(), curFinYearDouble.getNoOfMonth())))));
 		prevFinYearString.setAssetTurnOver(CommonUtils.convertValue(CommonUtils.divideNumbers(prevFinYearDouble.getNetSale() * 12, (CommonUtils.multiplyNumbers(prevFinYearDouble.getTotalAsset(), prevFinYearDouble.getNoOfMonth())))));
@@ -2072,11 +2113,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		curFinYearString.setNetSalesGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(curFinYearDouble.getNetSale(),prevFinYearDouble.getNetSale())-1)* 100));
 		prevFinYearString.setNetSalesGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(prevFinYearDouble.getNetSale(),yrBeforePrevFinYearDouble.getNetSale())-1)* 100));
-		yrBeforePrevFinYearString.setNetSalesGrowthCapital("-");
+		yrBeforePrevFinYearString.setNetSalesGrowthCapital("NA");
 		
 		curFinYearString.setPatGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(curFinYearDouble.getProfitAfterTax(),prevFinYearDouble.getProfitAfterTax())-1)* 100));
 		prevFinYearString.setPatGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(prevFinYearDouble.getProfitAfterTax(),yrBeforePrevFinYearDouble.getProfitAfterTax())-1)* 100));
-		yrBeforePrevFinYearString.setPatGrowthCapital("-");
+		yrBeforePrevFinYearString.setPatGrowthCapital("NA");
 		
 		curFinYearDouble.setAdjustedTotalDebtEquity(Double.parseDouble(decim.format(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(curFinYearDouble.getTotalNonCurruntLiablities(),curFinYearDouble.getLongTermProvision(),curFinYearDouble.getUnsecuredLoansPromoters())), (CommonUtils.addNumbers(curFinYearDouble.getShareHolderFunds(),curFinYearDouble.getUnsecuredLoansPromoters()))))));
 		prevFinYearDouble.setAdjustedTotalDebtEquity(Double.parseDouble(decim.format(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(prevFinYearDouble.getTotalNonCurruntLiablities(),prevFinYearDouble.getLongTermProvision(),prevFinYearDouble.getUnsecuredLoansPromoters())), (CommonUtils.addNumbers(prevFinYearDouble.getShareHolderFunds(),prevFinYearDouble.getUnsecuredLoansPromoters()))))));
@@ -2087,7 +2128,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		curFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractNumbers(curFinYearDouble.getAdjustedTotalDebtEquity(),prevFinYearDouble.getAdjustedTotalDebtEquity())), prevFinYearDouble.getAdjustedTotalDebtEquity())*100));
 		prevFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractNumbers(prevFinYearDouble.getAdjustedTotalDebtEquity(),yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity())), yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity())*100));
-		yrBeforePrevFinYearString.setGrowthDebtEquity("-");
+		yrBeforePrevFinYearString.setGrowthDebtEquity("NA");
 		
 		curFinYearString.setCurruntRatioX(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getInventories(),curFinYearDouble.getSundryDebtors())), curFinYearDouble.getTradePayables())));
 		prevFinYearString.setCurruntRatioX(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getInventories(),prevFinYearDouble.getSundryDebtors())), prevFinYearDouble.getTradePayables())));
@@ -2103,7 +2144,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(response.getSubSector() != null && response.getSubSector().equals("Manufacturer")) {
 					curFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getCashFromOperating(),curFinYearDouble.getInterestPaid())), curFinYearDouble.getInterestPaid())));
 					prevFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getCashFromOperating(),prevFinYearDouble.getInterestPaid())), prevFinYearDouble.getInterestPaid())));
-					yrBeforePrevFinYearString.setCashInterestCover("-");
+					yrBeforePrevFinYearString.setCashInterestCover("NA");
 				}else {
 					curFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractNumbers(curFinYearDouble.getOperatingProfitEbitadOi(),curFinYearDouble.getProvisionForTax())), curFinYearDouble.getInterest())));
 					prevFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractNumbers(prevFinYearDouble.getOperatingProfitEbitadOi(),prevFinYearDouble.getProvisionForTax())), prevFinYearDouble.getInterest())));
@@ -2125,11 +2166,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		prevFinYearDouble.setCfoMargine(CommonUtils.divideNumbers(prevFinYearDouble.getCashFromOperating(),prevFinYearDouble.getNetSale())*100);
 		curFinYearString.setCfoMargine(CommonUtils.convertValue(curFinYearDouble.getCfoMargine()));
 		prevFinYearString.setCfoMargine(CommonUtils.convertValue(prevFinYearDouble.getCfoMargine()));
-		yrBeforePrevFinYearString.setCfoMargine("-");
+		yrBeforePrevFinYearString.setCfoMargine("NA");
 		
 		curFinYearString.setGrowthCfoMargine(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractNumbers(curFinYearDouble.getCfoMargine(),prevFinYearDouble.getCfoMargine())), prevFinYearDouble.getCfoMargine()) *100));
-		prevFinYearString.setGrowthCfoMargine("-");
-		yrBeforePrevFinYearString.setGrowthCfoMargine("-");
+		prevFinYearString.setGrowthCfoMargine("NA");
+		yrBeforePrevFinYearString.setGrowthCfoMargine("NA");
 		
 		
 		curFinYear[curFinYear.length - 2] = curFinYearString;
@@ -2211,4 +2252,48 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return null;
 	}
 
+	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId) {
+		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
+		OperatingStatementDetails operatingStatementDetails;
+		HashMap<String, Object> yearSalesPurchase = new HashMap<>();
+		int currentYear = scoringService.getFinYear(aplicationId);
+		List<Map<String, Object>> financialYearAndSalesAndPurchase = new ArrayList<>();
+		try {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-1+"");
+				if(operatingStatementDetails != null) {
+					yearSalesPurchase.put("year",currentYear-1);
+					yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
+					yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+					financialYearAndSalesAndPurchase.add(yearSalesPurchase);
+				}
+		}catch (Exception e) {
+			logger.info("Exception in getting financial fist year details {}",e);
+		}
+		try {
+			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
+			if(operatingStatementDetails != null) {
+				yearSalesPurchase.put("year",currentYear-1);
+				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
+				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
+			}
+		}catch (Exception e) {
+			logger.info("Exception in getting financial fist year details {}",e);
+		}
+		
+		try {
+			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
+			if(operatingStatementDetails != null) {
+				yearSalesPurchase.put("year",currentYear-1);
+				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
+				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
+			}
+		}catch (Exception e) {
+			logger.info("Exception in getting financial fist year details {}",e);
+		}
+		financialInputRequest.setYearSalesPurchasList(financialYearAndSalesAndPurchase);
+		return financialInputRequest;
+	}
+	
 }

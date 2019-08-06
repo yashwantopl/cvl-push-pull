@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -18,16 +19,22 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	private static final String APP_ID = "appId";
 	private static final String RESULT  = "result";
 	private static final String ORG_ID = "orgId";
+	private static final String FROM_DATE = "fromDate";
+	private static final String TO_DATE = "toDate";
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getInEligibleRecordList(Long userId) {
+	public String getInEligibleRecordList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflinePendingProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
@@ -69,28 +76,40 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getSanctionedApplicationList(Long userId) {
+	public String getSanctionedApplicationList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineSanctionedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getDisbursedApplicationList(Long userId) {
+	public String getDisbursedApplicationList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineDisbursedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getRejectProposalsList(Long userId) {
+	public String getRejectProposalsList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineRejectProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
+		storedProcedureQuery.setParameter(TO_DATE,toDate);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	

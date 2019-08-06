@@ -333,6 +333,35 @@ public class NhbsController {
         }
     }
 
+	@RequestMapping(value = "/get/fp/mfi/checker/proposals", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFPMFICheckerProposals(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(CommonUtils.isObjectNullOrEmpty(userId) ||
+					(CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationStatusId()) && CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getDdrStatusId()))||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getBusinessTypeId())){
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
+				logger.warn("applicationStatusId or ddrStatusId can not be empty ==>" + nhbsApplicationRequest.getApplicationStatusId());
+				logger.warn(USER_ROLE_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getUserRoleIdString());
+				logger.warn("fpProduct  can not be empty ==>" + nhbsApplicationRequest.getFpProductId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			nhbsApplicationRequest.setUserId(userId);
+			nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
+			List<NhbsApplicationsResponse> applicationsResponseList = networkPartnerService.getListOfCheckerMFIProposalsFP(nhbsApplicationRequest);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setListData(applicationsResponseList);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting assigned proposals : ", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "/get/fpProposalCount", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFPProposalCount(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
 		try {
@@ -351,6 +380,42 @@ public class NhbsController {
 			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
 			JSONObject jsonCountObj = networkPartnerService.getFPProposalCount(nhbsApplicationRequest,orgId);
+			if(!CommonUtils.isObjectNullOrEmpty(jsonCountObj)){
+				logger.info(CommonUtils.DATA_FOUND);
+				loansResponse.setMessage(CommonUtils.DATA_FOUND);
+			}else{
+				logger.info(CommonUtils.DATA_NOT_FOUND);
+				loansResponse.setMessage(CommonUtils.DATA_NOT_FOUND);
+			}
+			loansResponse.setStatus(HttpStatus.OK.value());
+			loansResponse.setData(jsonCountObj);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting count of proposals : ", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/get/fpMFIProposalCount", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> fpMfiProposalCount(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(CommonUtils.isObjectNullOrEmpty(userId) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getBusinessTypeId())){
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
+				logger.warn(USER_ROLE_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getUserRoleIdString());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			nhbsApplicationRequest.setUserId(userId);
+			LoansResponse loansResponse = new LoansResponse();
+			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
+			JSONObject jsonCountObj = networkPartnerService.getFPMFIProposalCount(nhbsApplicationRequest,orgId);
 			if(!CommonUtils.isObjectNullOrEmpty(jsonCountObj)){
 				logger.info(CommonUtils.DATA_FOUND);
 				loansResponse.setMessage(CommonUtils.DATA_FOUND);

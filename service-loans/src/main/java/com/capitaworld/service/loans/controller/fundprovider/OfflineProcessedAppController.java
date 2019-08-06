@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.ReportRequest;
 import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -28,12 +30,13 @@ public class OfflineProcessedAppController {
 	@Autowired
 	private OfflineProcessedAppService offlineProcessedApplicationService;
 	
-	@RequestMapping(value="/applicationList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getApplicationList(HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId)  {
+	@RequestMapping(value="/applicationList", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApplicationList(@RequestBody ReportRequest reportRequest, HttpServletRequest request)  {
 		//GET USER ID AND USER TYPE
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Ineligible Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getApplicationList(userId)), HttpStatus.OK);
+			reportRequest.setId(userId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Ineligible Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getApplicationList(reportRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Exception while get pending offline proposal list : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -54,11 +57,12 @@ public class OfflineProcessedAppController {
 		
 	}
 	
-	@RequestMapping(value="/sanctionedApplicationList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getSanctionedApplicationList(HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId)  {
+	@RequestMapping(value="/sanctionedApplicationList", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getSanctionedApplicationList(@RequestBody ReportRequest reportRequest, HttpServletRequest request)  {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Sanctioned Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getSanctionedApplicationList(userId)), HttpStatus.OK);
+			reportRequest.setId(userId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Sanctioned Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getSanctionedApplicationList(reportRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Exception while get sanctioned offline proposal list : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -78,11 +82,12 @@ public class OfflineProcessedAppController {
 		
 	}
 	
-	@RequestMapping(value="/disbursedApplicationList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getDisbursedApplicationList(HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId)  {
+	@RequestMapping(value="/disbursedApplicationList", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDisbursedApplicationList(@RequestBody ReportRequest reportRequest,HttpServletRequest request)  {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Disbursed Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getDisbursedApplicationList(userId)), HttpStatus.OK);
+			reportRequest.setId(userId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Disbursed Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getDisbursedApplicationList(reportRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Exception while get disbursed offline proposal list : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -102,11 +107,12 @@ public class OfflineProcessedAppController {
 
 	}
 
-	@RequestMapping(value="/rejectApplicationList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getRejectApplicationList(HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId)  {
+	@RequestMapping(value="/rejectApplicationList", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getRejectApplicationList(@RequestBody ReportRequest reportRequest,HttpServletRequest request)  {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Rejected Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getRejectProposalList(userId)), HttpStatus.OK);
+			reportRequest.setId(userId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Rejected Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getRejectProposalList(reportRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Exception while get reject offline proposal list : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
