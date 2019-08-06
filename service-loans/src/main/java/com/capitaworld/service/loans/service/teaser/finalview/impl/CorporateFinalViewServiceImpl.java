@@ -1816,13 +1816,17 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Fraud Detection Data
 
 		try {
-			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
-
-			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
-
-				corporateFinalViewResponse.setFraudDetectionData(hunterResp);
-
+			UserResponse campaignUser=usersClient.isExists(userId,null);
+			corporateFinalViewResponse.setIsCampaignUser(campaignUser!= null && campaignUser.getData()!= null ? (Boolean) campaignUser.getData() : null);
+			if(campaignUser!= null && campaignUser.getData().equals(false)) {
+				AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+				if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+					corporateFinalViewResponse.setFraudDetectionData(hunterResp);
+				}else {
+					logger.info("application is bank specific so fraud detection is skipped for===>"+toapplicationId);
+				}	
 			}
+			
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----", toApplicationId + CommonUtils.EXCEPTION + e1);
 		}

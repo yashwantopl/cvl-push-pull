@@ -49,6 +49,7 @@ public class CorporatePrimaryViewResponse {
     private List<Object> profilePic;
     private Double enhancementAmount;
     private String castCategory;
+    private Boolean isCampaignUser;
 
     /*private String  isBusinessAssetChecked;
     private String  isWorkingCapitalChecked;
@@ -1297,6 +1298,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setMcaNotApplicable(Boolean mcaNotApplicable) {
 		this.mcaNotApplicable = mcaNotApplicable;
+	}
+	public Boolean getIsCampaignUser() {
+		return isCampaignUser;
+	}
+	public void setIsCampaignUser(Boolean isCampaignUser) {
+		this.isCampaignUser = isCampaignUser;
 	}
 	
 	
