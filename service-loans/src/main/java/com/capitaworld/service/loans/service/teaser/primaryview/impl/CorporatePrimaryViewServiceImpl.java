@@ -55,6 +55,7 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
@@ -73,6 +74,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecu
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -210,6 +212,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1375,6 +1380,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 		corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 			
+		Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+		corporatePrimaryViewResponse.setGstRelatedParty(gstRelatedPartyDetails);
 		return corporatePrimaryViewResponse;
 	}
 
