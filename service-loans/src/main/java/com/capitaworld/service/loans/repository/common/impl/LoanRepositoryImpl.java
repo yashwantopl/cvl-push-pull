@@ -8,6 +8,7 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -460,4 +461,15 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 		
 	}
+
+	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest){
+		int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:loanType,:tutorialId,NOW())")
+				.setParameter("userId", longLatrequest.getUserId())
+				.setParameter("roleId", longLatrequest.getRoleId())
+				.setParameter("loanType", longLatrequest.getLoanType())
+				.setParameter("tutorialId", longLatrequest.getTutorialId())
+				.executeUpdate();
+		return saveTutorials > 0;
+	}
+
 }
