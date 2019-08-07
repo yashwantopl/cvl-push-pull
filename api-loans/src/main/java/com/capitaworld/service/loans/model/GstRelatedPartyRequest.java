@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model;
 
 import java.util.Date;
+import java.util.Map;
 
 
 /**
@@ -39,6 +40,12 @@ public class GstRelatedPartyRequest {
 	private Boolean isNoneRelativePartyOfSelected;
 
 	private Long userId;
+	private Double grandTotal;
+	private String grandTotalPurchase;
+	private String grandTotalSales;
+	private String totalOfSales;
+	private String totalOfPurchase;
+	private String relationShip;
 	
 	public Boolean getIsNoneRelativePartyOfSelected() {
 		return isNoneRelativePartyOfSelected;
@@ -168,6 +175,54 @@ public class GstRelatedPartyRequest {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+	public Double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(Double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
+
+
+	public String getGrandTotalPurchase() {
+		return grandTotalPurchase;
+	}
+
+	public void setGrandTotalPurchase(String grandTotalPurchase) {
+		this.grandTotalPurchase = grandTotalPurchase;
+	}
+
+	public String getGrandTotalSales() {
+		return grandTotalSales;
+	}
+
+	public void setGrandTotalSales(String grandTotalSales) {
+		this.grandTotalSales = grandTotalSales;
+	}
+	public String getTotalOfSales() {
+		return totalOfSales;
+	}
+
+	public void setTotalOfSales(String totalOfSales) {
+		this.totalOfSales = totalOfSales;
+	}
+
+	public String getTotalOfPurchase() {
+		return totalOfPurchase;
+	}
+
+	public void setTotalOfPurchase(String totalOfPurchase) {
+		this.totalOfPurchase = totalOfPurchase;
+	}
+
+
+	public String getRelationShip() {
+		return relationShip;
+	}
+
+	public void setRelationShip(String relationShip) {
+		this.relationShip = relationShip;
+	}
 
 	@Override
 	public String toString() {
@@ -180,8 +235,13 @@ public class GstRelatedPartyRequest {
 				+ ", modifiedBy=" + modifiedBy + ", createdDate=" + createdDate
 				+ ", modifiedDate=" + modifiedDate
 				+ ", isNoneRelativePartyOfSelected="
-				+ isNoneRelativePartyOfSelected + ", userId=" + userId + "]";
+				+ isNoneRelativePartyOfSelected + ", userId=" + userId
+				+ ", grandTotal=" + grandTotal + ", grandTotalPurchase="
+				+ grandTotalPurchase + ", grandTotalSales=" + grandTotalSales
+				+ ", totalOfSales=" + totalOfSales + ", totalOfPurchase="
+				+ totalOfPurchase + ", relationShip=" + relationShip + "]";
 	}
+	
 	
 	
 	
