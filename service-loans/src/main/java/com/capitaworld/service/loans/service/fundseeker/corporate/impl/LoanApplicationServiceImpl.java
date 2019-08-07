@@ -389,6 +389,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
+	
+	public static final DecimalFormat decim = new DecimalFormat("#,###.00");
+	
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	private static final String INVALID_LOAN_APPLICATION_ID =  "Invalid Loan Application ID==>";
@@ -8374,19 +8377,54 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	@Override
-	public List<GstRelatedPartyRequest> getGstRelatedPartyDetails(Long applicationId){
+	public  Map<String, Object> getGstRelatedPartyDetails(Long applicationId){
 		if(!CommonUtils.isObjectNullOrEmpty(applicationId)){
+			 Map<String, Object> relatedParty=new HashMap<>();
 			List<GstRelatedPartyRequest> gstRelatedPartyRequests = new ArrayList<GstRelatedPartyRequest>();
 			try {
+				Double totalOfSales=0d;
+				Double totalOfPurchase=0d;
+				Double grandTotalOfSales=0d;
+				Double grandTotalOfPurchase=0d;
+				Double percOfSales=0d;
+				Double percOfPurchase=0d;
+				
 				List<GstRelatedParty> gstRelatedPartyDetails = gstRelatedpartyRepository.findAllByApplicationIdAndIsActiveIsTrue(applicationId);
-				for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
-					GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
-					BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
-					gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getTransactionType() != null ? "Sales".equals(gstRelatedPartyRequest.getTransactionType()) ? gstRelatedPartyRequest.getInvoiceValue() != null ? gstRelatedPartyRequest.getInvoiceValue().toString() : "-" : "-" : "-"); 
-					gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getTransactionType() != null ? "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) ? gstRelatedPartyRequest.getInvoiceValue() != null ? gstRelatedPartyRequest.getInvoiceValue().toString() : "-" : "-" : "-");
-					gstRelatedPartyRequests.add(gstRelatedPartyRequest);
+				if(!gstRelatedPartyDetails.isEmpty()) {
+					for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
+						GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
+						BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
+						gstRelatedPartyRequest.setRelationShip("Self-Declared - GST");
+						gstRelatedPartyRequest.setSales(" - ");
+						gstRelatedPartyRequest.setPurchase(" - ");
+						
+						if(gstRelatedPartyRequest.getTransactionType() != null && "Sales".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null ) {
+							gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getInvoiceValue().toString());
+							grandTotalOfSales=gstRelatedPartyRequest.getGrandTotal();
+							if(gstRelatedPartyRequest.getInvoiceValue() != null)
+								totalOfSales+=gstRelatedPartyRequest.getInvoiceValue();
+						}else if(gstRelatedPartyRequest.getTransactionType() != null && "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null) {
+							gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getInvoiceValue().toString());
+							grandTotalOfPurchase=gstRelatedPartyRequest.getGrandTotal();
+							if(gstRelatedPartyRequest.getInvoiceValue() != null)
+								totalOfPurchase+=gstRelatedPartyRequest.getInvoiceValue();
+						}
+						
+						gstRelatedPartyRequests.add(gstRelatedPartyRequest);
+					}
+					
+					percOfSales=totalOfSales !=0 && grandTotalOfSales != 0? totalOfSales/grandTotalOfSales*100:0;
+					percOfPurchase=totalOfPurchase!= 0 && grandTotalOfPurchase!= 0? totalOfPurchase/grandTotalOfPurchase*100:0;
+					
+					relatedParty.put("relatedParty", gstRelatedPartyRequests);
+					relatedParty.put("totalOfSales", totalOfSales != null && totalOfSales != 0?CommonUtils.convertStringFormate(totalOfSales):" - ");
+					relatedParty.put("totalOfPurchase", totalOfPurchase != null && totalOfPurchase!= 0?CommonUtils.convertStringFormate(totalOfPurchase):" - ");
+					relatedParty.put("grandTotalOfSales", grandTotalOfSales != null && grandTotalOfSales!= 0?CommonUtils.convertStringFormate(grandTotalOfSales):" - ");
+					relatedParty.put("grandTotalOfPurchase", grandTotalOfPurchase != null && grandTotalOfPurchase != 0?CommonUtils.convertStringFormate(grandTotalOfPurchase):" - ");
+					relatedParty.put("percOfSales", percOfSales != null && percOfSales != 0?convertValue(percOfSales).toString().concat(" %"):" - ");
+					relatedParty.put("percOfPurchase", percOfPurchase != null && percOfPurchase != 0?convertValue(percOfPurchase).toString().concat(" %"):" - ");
 				}
-				return  gstRelatedPartyRequests;
+				return  relatedParty;
 			}
 			catch (Exception e)
 			{
@@ -8467,5 +8505,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public String getApplicationCampaignCode(Long applicationId) {
 		return loanRepository.getApplicationCampaignCode(applicationId);
+	}
+	
+	public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
 }
