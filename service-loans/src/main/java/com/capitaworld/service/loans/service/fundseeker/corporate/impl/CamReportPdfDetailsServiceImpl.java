@@ -1342,8 +1342,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//gstRelatedParty Data Fetch
 		try {
-			List<GstRelatedPartyRequest> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", !CommonUtils.isObjectListNull(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", !CommonUtils.isObjectNullOrEmpty(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
@@ -1398,7 +1398,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error("Error while getting perfios data : ",e);
 		}
 		
-		//		GST Comparision by Maaz
+		//GST Comparision by Maaz
 		try{
 			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
