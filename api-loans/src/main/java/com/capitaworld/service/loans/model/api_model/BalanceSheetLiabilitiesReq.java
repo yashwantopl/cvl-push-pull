@@ -22,7 +22,7 @@ public class BalanceSheetLiabilitiesReq  implements Serializable{
 
 	    private String currency;
 
-	    private Double ordinarySharesCapital;
+	    private Double sharesCapital;
 
 	    private Double shareWarrentsOutstanding;
 
@@ -34,9 +34,9 @@ public class BalanceSheetLiabilitiesReq  implements Serializable{
 
 	    private Double minorityInterest;
 
-	    private Double termLiabilitiesSecured;
+	    private Double securedLoans;
 
-	    private Double otherNclUnsecuredLoansFromPromoters;
+	    private Double unsecuredLoansPromoters;
 
 	    private Double unsecuredLoansOthers;
 
@@ -46,15 +46,15 @@ public class BalanceSheetLiabilitiesReq  implements Serializable{
 
 	    private Double otherBorrowings;
 
-	    private Double otherNclLongTermProvisions;
+	    private Double longTermProvisions;
 
 	    private Double totalNonCurrentLiabilities;
 
-	    private Double sundryCreditors;
+	    private Double tradePayables;
 
 	    private Double otherCurrentLiabilities;
 
-	    private Double provisionalForTaxation;
+	    private Double shortTermProvisions;
 
 	    private Double totalCurrentLiabilities;
 
@@ -65,328 +65,387 @@ public class BalanceSheetLiabilitiesReq  implements Serializable{
 	    private Boolean isActive;
 	    
 	    private Double otherLiabilities;
+	    private Double ordinarySharesCapital;
+	    private Double otherIncomeNeedTocCheckLia;
 
 		public BalanceSheetLiabilitiesReq() {
 			super();
-			this.ordinarySharesCapital = 0.0;
+			this.sharesCapital = 0.0;
 			this.shareWarrentsOutstanding = 0.0;
 			this.revaluationReservse = 0.0;
 			this.otherReservesAndSurplus = 0.0;
 			this.shareholderFunds = 0.0;
 			this.minorityInterest = 0.0;
-			this.termLiabilitiesSecured = 0.0;
-			this.otherNclUnsecuredLoansFromPromoters = 0.0;
+			this.securedLoans = 0.0;
+			this.unsecuredLoansPromoters = 0.0;
 			this.unsecuredLoansOthers = 0.0;
 			this.deferredTaxLiability = 0.0;
 			this.otherLongTermLiabilities = 0.0;
 			this.otherBorrowings = 0.0;
-			this.otherNclLongTermProvisions = 0.0;
+			this.longTermProvisions = 0.0;
 			this.totalNonCurrentLiabilities = 0.0;
-			this.sundryCreditors = 0.0;
+			this.tradePayables = 0.0;
 			this.otherCurrentLiabilities = 0.0;
-			this.provisionalForTaxation = 0.0;
+			this.shortTermProvisions = 0.0;
 			this.totalCurrentLiabilities = 0.0;
 			this.totalLiabilities = 0.0;
 			this.otherLiabilities = 0.0;
+			this.ordinarySharesCapital = 0.0;
+			this.otherIncomeNeedTocCheckLia = 0.0;
 		}
+
+		
 
 		public Long getId() {
 			return id;
 		}
 
-		/**
-		 * @param id the id to set
-		 */
+
+
 		public void setId(Long id) {
 			this.id = id;
 		}
+
+
 
 		public String getYear() {
 			return year;
 		}
 
-		/**
-		 * @param year the year to set
-		 */
+
+
 		public void setYear(String year) {
 			this.year = year;
 		}
+
+
 
 		public Long getApplicationId() {
 			return applicationId;
 		}
 
-		/**
-		 * @param applicationId the applicationId to set
-		 */
+
+
 		public void setApplicationId(Long applicationId) {
 			this.applicationId = applicationId;
 		}
+
+
 
 		public String getCurrency() {
 			return currency;
 		}
 
-		/**
-		 * @param currency the currency to set
-		 */
+
+
 		public void setCurrency(String currency) {
 			this.currency = currency;
 		}
 
-		public Double getOrdinarySharesCapital() {
-			return ordinarySharesCapital;
+
+
+		public Double getSharesCapital() {
+			return sharesCapital;
 		}
 
-		/**
-		 * @param ordinarySharesCapital the ordinarySharesCapital to set
-		 */
-		public void setOrdinarySharesCapital(Double ordinarySharesCapital) {
-			this.ordinarySharesCapital = ordinarySharesCapital;
+
+
+		public void setSharesCapital(Double sharesCapital) {
+			this.sharesCapital = sharesCapital;
 		}
+
+
 
 		public Double getShareWarrentsOutstanding() {
 			return shareWarrentsOutstanding;
 		}
 
-		/**
-		 * @param shareWarrentsOutstanding the shareWarrentsOutstanding to set
-		 */
+
+
 		public void setShareWarrentsOutstanding(Double shareWarrentsOutstanding) {
 			this.shareWarrentsOutstanding = shareWarrentsOutstanding;
 		}
+
+
 
 		public Double getRevaluationReservse() {
 			return revaluationReservse;
 		}
 
-		/**
-		 * @param revaluationReservse the revaluationReservse to set
-		 */
+
+
 		public void setRevaluationReservse(Double revaluationReservse) {
 			this.revaluationReservse = revaluationReservse;
 		}
+
+
 
 		public Double getOtherReservesAndSurplus() {
 			return otherReservesAndSurplus;
 		}
 
-		/**
-		 * @param otherReservesAndSurplus the otherReservesAndSurplus to set
-		 */
+
+
 		public void setOtherReservesAndSurplus(Double otherReservesAndSurplus) {
 			this.otherReservesAndSurplus = otherReservesAndSurplus;
 		}
+
+
 
 		public Double getShareholderFunds() {
 			return shareholderFunds;
 		}
 
-		/**
-		 * @param shareholderFunds the shareholderFunds to set
-		 */
+
+
 		public void setShareholderFunds(Double shareholderFunds) {
 			this.shareholderFunds = shareholderFunds;
 		}
+
+
 
 		public Double getMinorityInterest() {
 			return minorityInterest;
 		}
 
-		/**
-		 * @param minorityInterest the minorityInterest to set
-		 */
+
+
 		public void setMinorityInterest(Double minorityInterest) {
 			this.minorityInterest = minorityInterest;
 		}
 
-		public Double getTermLiabilitiesSecured() {
-			return termLiabilitiesSecured;
+
+
+		public Double getSecuredLoans() {
+			return securedLoans;
 		}
 
-		/**
-		 * @param termLiabilitiesSecured the termLiabilitiesSecured to set
-		 */
-		public void setTermLiabilitiesSecured(Double termLiabilitiesSecured) {
-			this.termLiabilitiesSecured = termLiabilitiesSecured;
+
+
+		public void setSecuredLoans(Double securedLoans) {
+			this.securedLoans = securedLoans;
 		}
 
-		public Double getOtherNclUnsecuredLoansFromPromoters() {
-			return otherNclUnsecuredLoansFromPromoters;
+
+
+		public Double getUnsecuredLoansPromoters() {
+			return unsecuredLoansPromoters;
 		}
 
-		/**
-		 * @param otherNclUnsecuredLoansFromPromoters the otherNclUnsecuredLoansFromPromoters to set
-		 */
-		public void setOtherNclUnsecuredLoansFromPromoters(Double otherNclUnsecuredLoansFromPromoters) {
-			this.otherNclUnsecuredLoansFromPromoters = otherNclUnsecuredLoansFromPromoters;
+
+
+		public void setUnsecuredLoansPromoters(Double unsecuredLoansPromoters) {
+			this.unsecuredLoansPromoters = unsecuredLoansPromoters;
 		}
+
+
 
 		public Double getUnsecuredLoansOthers() {
 			return unsecuredLoansOthers;
 		}
 
-		/**
-		 * @param unsecuredLoansOthers the unsecuredLoansOthers to set
-		 */
+
+
 		public void setUnsecuredLoansOthers(Double unsecuredLoansOthers) {
 			this.unsecuredLoansOthers = unsecuredLoansOthers;
 		}
+
+
 
 		public Double getDeferredTaxLiability() {
 			return deferredTaxLiability;
 		}
 
-		/**
-		 * @param deferredTaxLiability the deferredTaxLiability to set
-		 */
+
+
 		public void setDeferredTaxLiability(Double deferredTaxLiability) {
 			this.deferredTaxLiability = deferredTaxLiability;
 		}
+
+
 
 		public Double getOtherLongTermLiabilities() {
 			return otherLongTermLiabilities;
 		}
 
-		/**
-		 * @param otherLongTermLiabilities the otherLongTermLiabilities to set
-		 */
+
+
 		public void setOtherLongTermLiabilities(Double otherLongTermLiabilities) {
 			this.otherLongTermLiabilities = otherLongTermLiabilities;
 		}
+
+
 
 		public Double getOtherBorrowings() {
 			return otherBorrowings;
 		}
 
-		/**
-		 * @param otherBorrowings the otherBorrowings to set
-		 */
+
+
 		public void setOtherBorrowings(Double otherBorrowings) {
 			this.otherBorrowings = otherBorrowings;
 		}
 
-		public Double getOtherNclLongTermProvisions() {
-			return otherNclLongTermProvisions;
+
+
+		public Double getLongTermProvisions() {
+			return longTermProvisions;
 		}
 
-		/**
-		 * @param otherNclLongTermProvisions the otherNclLongTermProvisions to set
-		 */
-		public void setOtherNclLongTermProvisions(Double otherNclLongTermProvisions) {
-			this.otherNclLongTermProvisions = otherNclLongTermProvisions;
+
+
+		public void setLongTermProvisions(Double longTermProvisions) {
+			this.longTermProvisions = longTermProvisions;
 		}
+
+
 
 		public Double getTotalNonCurrentLiabilities() {
 			return totalNonCurrentLiabilities;
 		}
 
-		/**
-		 * @param totalNonCurrentLiabilities the totalNonCurrentLiabilities to set
-		 */
+
+
 		public void setTotalNonCurrentLiabilities(Double totalNonCurrentLiabilities) {
 			this.totalNonCurrentLiabilities = totalNonCurrentLiabilities;
 		}
 
-		public Double getSundryCreditors() {
-			return sundryCreditors;
+
+
+		public Double getTradePayables() {
+			return tradePayables;
 		}
 
-		/**
-		 * @param sundryCreditors the sundryCreditors to set
-		 */
-		public void setSundryCreditors(Double sundryCreditors) {
-			this.sundryCreditors = sundryCreditors;
+
+
+		public void setTradePayables(Double tradePayables) {
+			this.tradePayables = tradePayables;
 		}
+
+
 
 		public Double getOtherCurrentLiabilities() {
 			return otherCurrentLiabilities;
 		}
 
-		/**
-		 * @param otherCurrentLiabilities the otherCurrentLiabilities to set
-		 */
+
+
 		public void setOtherCurrentLiabilities(Double otherCurrentLiabilities) {
 			this.otherCurrentLiabilities = otherCurrentLiabilities;
 		}
 
-		public Double getProvisionalForTaxation() {
-			return provisionalForTaxation;
+
+
+		public Double getShortTermProvisions() {
+			return shortTermProvisions;
 		}
 
-		/**
-		 * @param provisionalForTaxation the provisionalForTaxation to set
-		 */
-		public void setProvisionalForTaxation(Double provisionalForTaxation) {
-			this.provisionalForTaxation = provisionalForTaxation;
+
+
+		public void setShortTermProvisions(Double shortTermProvisions) {
+			this.shortTermProvisions = shortTermProvisions;
 		}
+
+
 
 		public Double getTotalCurrentLiabilities() {
 			return totalCurrentLiabilities;
 		}
 
-		/**
-		 * @param totalCurrentLiabilities the totalCurrentLiabilities to set
-		 */
+
+
 		public void setTotalCurrentLiabilities(Double totalCurrentLiabilities) {
 			this.totalCurrentLiabilities = totalCurrentLiabilities;
 		}
+
+
 
 		public Double getTotalLiabilities() {
 			return totalLiabilities;
 		}
 
-		/**
-		 * @param totalLiabilities the totalLiabilities to set
-		 */
+
+
 		public void setTotalLiabilities(Double totalLiabilities) {
 			this.totalLiabilities = totalLiabilities;
 		}
+
+
 
 		public Date getCreatedDate() {
 			return createdDate;
 		}
 
-		/**
-		 * @param createdDate the createdDate to set
-		 */
+
+
 		public void setCreatedDate(Date createdDate) {
 			this.createdDate = createdDate;
 		}
+
+
 
 		public Boolean getIsActive() {
 			return isActive;
 		}
 
-		/**
-		 * @param isActive the isActive to set
-		 */
+
+
 		public void setIsActive(Boolean isActive) {
 			this.isActive = isActive;
 		}
+
+
 
 		public Double getOtherLiabilities() {
 			return otherLiabilities;
 		}
 
+
+
 		public void setOtherLiabilities(Double otherLiabilities) {
 			this.otherLiabilities = otherLiabilities;
 		}
 
+
+
+		public Double getOrdinarySharesCapital() {
+			return ordinarySharesCapital;
+		}
+
+
+
+		public void setOrdinarySharesCapital(Double ordinarySharesCapital) {
+			this.ordinarySharesCapital = ordinarySharesCapital;
+		}
+
+
+
+		public Double getOtherIncomeNeedTocCheckLia() {
+			return otherIncomeNeedTocCheckLia;
+		}
+
+
+
+		public void setOtherIncomeNeedTocCheckLia(Double otherIncomeNeedTocCheckLia) {
+			this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
+		}
+
+
+
 		@Override
 		public String toString() {
 			return "BalanceSheetLiabilitiesReq [id=" + id + ", year=" + year + ", applicationId=" + applicationId
-					+ ", currency=" + currency + ", ordinarySharesCapital=" + ordinarySharesCapital
+					+ ", currency=" + currency + ", ordinarySharesCapital=" + sharesCapital
 					+ ", shareWarrentsOutstanding=" + shareWarrentsOutstanding + ", revaluationReservse="
 					+ revaluationReservse + ", otherReservesAndSurplus=" + otherReservesAndSurplus
 					+ ", shareholderFunds=" + shareholderFunds + ", minorityInterest=" + minorityInterest
-					+ ", termLiabilitiesSecured=" + termLiabilitiesSecured + ", otherNclUnsecuredLoansFromPromoters="
-					+ otherNclUnsecuredLoansFromPromoters + ", unsecuredLoansOthers=" + unsecuredLoansOthers
+					+ ", termLiabilitiesSecured=" + securedLoans + ", otherNclUnsecuredLoansFromPromoters="
+					+ unsecuredLoansPromoters + ", unsecuredLoansOthers=" + unsecuredLoansOthers
 					+ ", deferredTaxLiability=" + deferredTaxLiability + ", otherLongTermLiabilities="
 					+ otherLongTermLiabilities + ", otherBorrowings=" + otherBorrowings
-					+ ", otherNclLongTermProvisions=" + otherNclLongTermProvisions + ", totalNonCurrentLiabilities="
-					+ totalNonCurrentLiabilities + ", sundryCreditors=" + sundryCreditors + ", otherCurrentLiabilities="
-					+ otherCurrentLiabilities + ", provisionalForTaxation=" + provisionalForTaxation
+					+ ", otherNclLongTermProvisions=" + longTermProvisions + ", totalNonCurrentLiabilities="
+					+ totalNonCurrentLiabilities + ", sundryCreditors=" + tradePayables + ", otherCurrentLiabilities="
+					+ otherCurrentLiabilities + ", provisionalForTaxation=" + shortTermProvisions
 					+ ", totalCurrentLiabilities=" + totalCurrentLiabilities + ", totalLiabilities=" + totalLiabilities
 					+ ", createdDate=" + createdDate + ", isActive=" + isActive + ", otherLiabilities="
 					+ otherLiabilities + "]";

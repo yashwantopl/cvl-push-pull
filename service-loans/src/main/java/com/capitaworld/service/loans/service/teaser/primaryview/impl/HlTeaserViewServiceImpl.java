@@ -291,10 +291,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		hlTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		hlTeaserViewResponse.setAppId(toApplicationId);
 		
-
-		
-
-
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
 			// TEASER VIEW FROM FP SIDE
@@ -335,7 +331,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
-				plRetailApplicantResponse.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp() != null ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 				
 				//Emp Salaried Type of Applicant
 				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
@@ -349,8 +344,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 						logger.error("Error/Exception while fetching data of Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , toApplicationId ,proposalId ,e);
 					}
 				}
-				
-				
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
@@ -437,6 +430,11 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail());
 				plRetailApplicantResponse.setContactNo(plRetailApplicantRequest.getContactNo());
 				plRetailApplicantResponse.setNetMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+				if(ResidenceStatusRetailMst.OWNED.getId() == plRetailApplicantRequest.getResidenceType()) {
+					plRetailApplicantResponse.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp() != null ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+				}else {
+					plRetailApplicantResponse.setIsOwnedProp("-");
+				}
 
 				LocalDate today = LocalDate.now();
 				String operatingBusinessSince = null;
@@ -1096,8 +1094,12 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
 				plRetailApplicantResponse.setIsIncomeCons(coApplicantDetail.getIsIncomeConsider());
 				plRetailApplicantResponse.setNetMonthlyIncome(coApplicantDetail.getMonthlyIncome());
-				plRetailApplicantResponse.setIsOwnedProp(coApplicantDetail.getIsOwnedProp() != null ? coApplicantDetail.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 				
+				if(ResidenceStatusRetailMst.OWNED.getId() == coApplicantDetail.getResidenceType()) {
+					plRetailApplicantResponse.setIsOwnedProp(coApplicantDetail.getIsOwnedProp() != null ? coApplicantDetail.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+				}else {
+					plRetailApplicantResponse.setIsOwnedProp("-");
+				}
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");

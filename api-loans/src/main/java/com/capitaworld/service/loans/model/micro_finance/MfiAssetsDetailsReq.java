@@ -59,10 +59,11 @@ public class MfiAssetsDetailsReq implements Serializable {
 	
 	//for liability
 	public MfiAssetsDetailsReq(Long applicationId, Integer assetsLiabilityType, Double amount, Double outstanding,
-			Integer type) {
+			Integer type,Integer particulars) {
 		this.applicationId = applicationId;
 		this.assetsLiabilityType = assetsLiabilityType;
 		this.amount = amount;
+		this.particulars = particulars;
 		this.outstanding = outstanding;
 		this.type = type;
 	}
