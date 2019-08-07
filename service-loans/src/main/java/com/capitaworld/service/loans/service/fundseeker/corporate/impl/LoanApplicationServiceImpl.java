@@ -8413,8 +8413,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						gstRelatedPartyRequests.add(gstRelatedPartyRequest);
 					}
 					
-					percOfSales=totalOfSales !=0 && grandTotalOfSales != 0? totalOfSales/grandTotalOfSales*100:0;
-					percOfPurchase=totalOfPurchase!= 0 && grandTotalOfPurchase!= 0? totalOfPurchase/grandTotalOfPurchase*100:0;
+					percOfSales=totalOfSales !=0 && grandTotalOfSales != null && grandTotalOfSales != 0? totalOfSales/grandTotalOfSales*100:0;
+					percOfPurchase=totalOfPurchase!= 0 && grandTotalOfPurchase != null && grandTotalOfPurchase!= 0? totalOfPurchase/grandTotalOfPurchase*100:0;
 					
 					relatedParty.put("relatedParty", gstRelatedPartyRequests);
 					relatedParty.put("totalOfSales", totalOfSales != null && totalOfSales != 0?CommonUtils.convertStringFormate(totalOfSales):" - ");
