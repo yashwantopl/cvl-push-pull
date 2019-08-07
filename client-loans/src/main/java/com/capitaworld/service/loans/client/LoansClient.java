@@ -285,6 +285,7 @@ public class LoansClient {
     private static final String SEND_MAIL_INELIGIBLE_FOR_SIDBI = "/sendInEligibleForSidbi";
     
     private static final String GET_APPLICATION_CAMPAIGN_CODE = "/loan_application/getApplicationCampCode";
+    private static final String GET_FINANCIAL_DATA = "/cma/getFinancialDetailsForBankIntegration";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2853,6 +2854,32 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getApplicationCampaignCode : ",e);
+			throw new ExcelException(e.getCause().getMessage());
+		}
+	}
+	
+	/**
+	 * GET FINANCIAL DATA FOR PUSH API, IRR, CAMS and TEASOR VIEW
+	 * @param applicationId
+	 * @param proposalId
+	 * @return PLEASE FIND FinancialRequest FROM "data" key from "LoansResponse" Class
+	 * @throws ExcelException
+	 * @Controller :- CMAController.java
+	 * UTL :- http://localhost:8484/loans/cma/getFinancialDetailsForBankIntegration/10001179?proposalId=3366
+	 */
+	public LoansResponse getFinancialData(Long applicationId,Long proposalId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FINANCIAL_DATA).concat("/" + applicationId);
+		if(proposalId != null) {
+			url.concat("?proposalId=" + proposalId);
+		}
+		logger.info("url for Getting FINANCIAL DETAILS=================>{} = {} = {}" , url , AND_FOR_APPLICATION_ID , applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getFinancialData : ",e);
 			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
