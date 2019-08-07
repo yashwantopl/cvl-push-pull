@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -463,13 +464,29 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest){
-		int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:loanType,:tutorialId,NOW())")
+		Long singleResult = (Long) entityManager.createNativeQuery("SELECT COUNT(id) FROM `tutorial_view_audit` WHERE tutorial_id =:tutorialId AND user_id=:userId AND loan_type=:loanType")
 				.setParameter("userId", longLatrequest.getUserId())
-				.setParameter("roleId", longLatrequest.getRoleId())
 				.setParameter("loanType", longLatrequest.getLoanType())
 				.setParameter("tutorialId", longLatrequest.getTutorialId())
-				.executeUpdate();
-		return saveTutorials > 0;
+				.getSingleResult();
+		if(singleResult  < 1l) {
+			int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:loanType,:tutorialId,NOW())")
+					.setParameter("userId", longLatrequest.getUserId())
+					.setParameter("roleId", longLatrequest.getRoleId())
+					.setParameter("loanType", longLatrequest.getLoanType())
+					.setParameter("tutorialId", longLatrequest.getTutorialId())
+					.executeUpdate();
+			return saveTutorials > 0;
+		} else {
+			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type:loan_type and tutorial_id=:tutorialId")
+					.setParameter("date", new Date())
+					.setParameter("userId", longLatrequest.getUserId())
+					.setParameter("loanType", longLatrequest.getLoanType())
+					.setParameter("tutorialId", longLatrequest.getTutorialId())
+					.executeUpdate();
+			return update > 0;
+
+		}
 	}
 
 }
