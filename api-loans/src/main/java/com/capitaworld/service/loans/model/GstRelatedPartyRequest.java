@@ -14,9 +14,9 @@ public class GstRelatedPartyRequest {
 	
 	private String gstPartyName;
 	
-	private Double sales;
+	private String sales;
 	
-	private Double purchase;
+	private String purchase;
 	
 	private String gstin;
 
@@ -57,6 +57,22 @@ public class GstRelatedPartyRequest {
 		this.id = id;
 	}
 
+	public String getSales() {
+		return sales;
+	}
+
+	public void setSales(String sales) {
+		this.sales = sales;
+	}
+
+	public String getPurchase() {
+		return purchase;
+	}
+
+	public void setPurchase(String purchase) {
+		this.purchase = purchase;
+	}
+
 	public Long getApplicationId() {
 		return applicationId;
 	}
@@ -71,22 +87,6 @@ public class GstRelatedPartyRequest {
 
 	public void setGstPartyName(String gstPartyName) {
 		this.gstPartyName = gstPartyName;
-	}
-
-	public Double getSales() {
-		return sales;
-	}
-
-	public void setSales(Double sales) {
-		this.sales = sales;
-	}
-
-	public Double getPurchase() {
-		return purchase;
-	}
-
-	public void setPurchase(Double purchase) {
-		this.purchase = purchase;
 	}
 
 	public String getGstin() {

@@ -8412,6 +8412,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
 					GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
 					BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
+					gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getTransactionType() != null ? "Sales".equals(gstRelatedPartyRequest.getTransactionType()) ? gstRelatedPartyRequest.getInvoiceValue() != null ? gstRelatedPartyRequest.getInvoiceValue().toString() : "-" : "-" : "-"); 
+					gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getTransactionType() != null ? "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) ? gstRelatedPartyRequest.getInvoiceValue() != null ? gstRelatedPartyRequest.getInvoiceValue().toString() : "-" : "-" : "-");
 					gstRelatedPartyRequests.add(gstRelatedPartyRequest);
 				}
 				return  gstRelatedPartyRequests;
