@@ -267,7 +267,9 @@ public interface LoanApplicationService {
 	public LoanPanCheckRequest checkAlreadyPANExitsOrNot(LoanPanCheckRequest loanPanCheckRequest);
 
 	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId,Integer loanType);
-	
+
+	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest);
+
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId);
 	
 	public String getApplicationListForPrefillProfile(Long userId);
