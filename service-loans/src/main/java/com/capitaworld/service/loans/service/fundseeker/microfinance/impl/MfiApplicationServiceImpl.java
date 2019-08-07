@@ -206,6 +206,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
             MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
             BeanUtils.copyProperties(mfiApplicantDetail, detailsReq);
+            detailsReq.setRepaymentTrack(mfiApplicantDetail.getRepaymentTrack());
             //for bank details
             MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
             if (byApplicationId != null) {
@@ -522,9 +523,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             }
         } else if (type == CommonUtils.INCOME_EXPENDITURE) {
             MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = (MfiIncomeAndExpenditureReq) validationJson;
-            if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMedicalExpense())
-                    || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getEducationExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getFoodExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getLoanInstallment())
-                    || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getShipShgiInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getHouseHoldExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getClothesExpense())) {
+            if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMedicalExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getEducationExpense()) ||
+                    CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getFoodExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getHouseHoldExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getClothesExpense())) {
                 return "Some required fields in family monthly Expenses are missing in Income and Expenditure section";
             } else if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getBusinessInBrief()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyCashflow()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyExpenditure())
                     || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyIncome())) {
