@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.agri.PrimaryAgriLoanDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.agri.PrimaryAgriLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.agri.PrimaryAgriLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.agri.PrimaryAgriLoanDetailService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 public class PrimaryAgriLoanDetailServiceImpl implements PrimaryAgriLoanDetailService {
@@ -48,6 +50,9 @@ public class PrimaryAgriLoanDetailServiceImpl implements PrimaryAgriLoanDetailSe
 		primaryAgriLoanDetail.setCropUnderInsuranceScheme(agriLoanDetailRequest.getCropUnderInsuranceScheme());
 		primaryAgriLoanDetail.setModifiedBy(userId);
 		primaryAgriLoanDetail.setModifiedDate(new Date());
+		if(primaryAgriLoanDetail.getApplicationStatusMaster() == null) {
+			primaryAgriLoanDetail.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.AgriLoanStatus.PENDING.getId()));
+		}
 		primaryAgriLoanDetailRepository.save(primaryAgriLoanDetail);
 		return true;
 	}

@@ -225,15 +225,15 @@ public class CommonUtils {
 	}
 	
 	public enum AgriLoanStatus {
-		WAITING(0,"Waiting"),PENDING(1,"Pending"),SUBMITTED(2,"Submitted");
-		private Integer id;
+		WAITING(12l,"Waiting"),PENDING(11l,"Pending"),SUBMITTED(3l,"Submitted"); //Available in fs_application_status_master
+		private Long id;
 		private String value;
 		
-		private AgriLoanStatus(Integer id, String value) {
+		private AgriLoanStatus(Long id, String value) {
 			this.id = id;
 			this.value = value;
 		}
-		public Integer getId() {
+		public Long getId() {
 			return id;
 		}
 		public String getValue() {
@@ -248,7 +248,7 @@ public class CommonUtils {
 			throw new IllegalArgumentException(v);
 		}
 		
-		public static AgriLoanStatus fromId(Integer v) {
+		public static AgriLoanStatus fromId(Long v) {
 			for (AgriLoanStatus c : AgriLoanStatus.values()) {
 				if (c.id.equals(v)) {
 					return c;
@@ -1399,7 +1399,8 @@ public class CommonUtils {
 		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
 		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
 		RETAIL_HOME_LOAN(5, "Retail Home Loan"),
-		MFI(6, "Micro FInance Institute");
+		MFI(6, "Micro FInance Institute"),
+		AGRICULTURE(7, "Agriculture");
 
 		private Integer id;
 		private String value;

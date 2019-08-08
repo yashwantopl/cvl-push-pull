@@ -441,11 +441,11 @@ public class LoanRepositoryImpl implements LoanRepository {
 			storedProcedureQuery.registerStoredProcedureParameter("orgId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.setParameter("orgId",orgId);
 			
-			storedProcedureQuery.registerStoredProcedureParameter("status",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("stus",Integer.class, ParameterMode.IN);
 			if(status == null) {
-				storedProcedureQuery.setParameter("status",-1);
+				storedProcedureQuery.setParameter("stus",-1);
 			}else {
-				storedProcedureQuery.setParameter("status",status);				
+				storedProcedureQuery.setParameter("stus",status);				
 			}
 			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
 			storedProcedureQuery.execute();

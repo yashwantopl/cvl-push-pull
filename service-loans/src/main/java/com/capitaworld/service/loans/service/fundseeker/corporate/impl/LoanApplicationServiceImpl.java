@@ -6139,7 +6139,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Long createAgriLoan(Long userId,Integer businessTypeId,Long orgId){
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
-		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_OPEN));
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.AgriLoanStatus.PENDING.getId()));
 //		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());

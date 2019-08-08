@@ -20,7 +20,7 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	
 	private Integer cropId;
 	
-	private Integer acres;
+	private Double acres;
 	
 	private String guarantorName;
 	
@@ -45,10 +45,6 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 	private Integer propertySubType;
 	
 	private String landUse;
-	
-	private Integer status;
-	
-	private Integer orgId;
 	
 	public PrimaryAgriLoanDetailRequest() {
 		// Do nothing because of X and Y.
@@ -94,11 +90,11 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 		this.cropId = cropId;
 	}
 
-	public Integer getAcres() {
+	public Double getAcres() {
 		return acres;
 	}
 
-	public void setAcres(Integer acres) {
+	public void setAcres(Double acres) {
 		this.acres = acres;
 	}
 
@@ -196,21 +192,5 @@ public class PrimaryAgriLoanDetailRequest extends LoanApplicationRequest impleme
 
 	public void setIsCropInsurance(Boolean isCropInsurance) {
 		this.isCropInsurance = isCropInsurance;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
-	public Integer getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(Integer orgId) {
-		this.orgId = orgId;
 	}
 }

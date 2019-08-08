@@ -31,7 +31,7 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 	@Column(name = "crop_id")
 	private Integer cropId;
 	
-	private Integer acres;
+	private Double acres;
 	
 	@Column(name = "guarantor_name")
 	private String guarantorName;
@@ -68,11 +68,6 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 	
 	@Column(name = "is_crop_insurance")
 	private Boolean isCropInsurance;
-	
-	private Integer status;
-	
-	@Column(name = "org_id")
-	private Integer orgId;
 	
 
 	public PrimaryAgriLoanDetail() {
@@ -119,11 +114,11 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 		this.cropId = cropId;
 	}
 
-	public Integer getAcres() {
+	public Double getAcres() {
 		return acres;
 	}
 
-	public void setAcres(Integer acres) {
+	public void setAcres(Double acres) {
 		this.acres = acres;
 	}
 
@@ -222,21 +217,4 @@ public class PrimaryAgriLoanDetail extends LoanApplicationMaster implements Seri
 	public void setIsCropInsurance(Boolean isCropInsurance) {
 		this.isCropInsurance = isCropInsurance;
 	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
-	public Integer getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(Integer orgId) {
-		this.orgId = orgId;
-	}
-	
 }
