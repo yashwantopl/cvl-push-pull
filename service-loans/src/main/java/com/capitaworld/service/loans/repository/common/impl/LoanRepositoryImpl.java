@@ -478,7 +478,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.executeUpdate();
 			return saveTutorials > 0;
 		} else {
-			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type:loan_type and tutorial_id=:tutorialId")
+			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type:loanType and tutorial_id=:tutorialId")
 					.setParameter("date", new Date())
 					.setParameter("userId", longLatrequest.getUserId())
 					.setParameter("loanType", longLatrequest.getLoanType())
