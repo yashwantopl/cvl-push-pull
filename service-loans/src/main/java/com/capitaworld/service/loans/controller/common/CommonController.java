@@ -462,6 +462,18 @@ public class CommonController {
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@GetMapping(value = "/getTutorialsAudit/{tutorialId}")
+	public ResponseEntity<LoansResponse> getTutorialsAudit(@PathVariable("tutorialId") Long tutorialId) {
+		logger.info("Enter in getTutorialsAudit");
+		try {
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAudit(tutorialId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while getTutorialsAudit",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@PostMapping(value = "/saveTutorialsAudit")
 	public ResponseEntity<LoansResponse> saveTutorialsAudit(@RequestBody TutorialsViewAudits longLatrequest, HttpServletRequest request) {
 		logger.info("Enter in getTutorialsByRoleId");
