@@ -2185,6 +2185,34 @@ public class LoanApplicationController {
 		}
 	}
 
+
+
+	@RequestMapping(value = "/checkSanctionAmountMFI", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkSanctionAmountMFI(@RequestBody LoanSanctionRequest loanSanctionRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start checkSanctionAmountMFI()");
+
+			if (CommonUtils.isObjectListNull(loanSanctionRequest.getProposalId())) {
+				logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
+			loanSanctionRequest = loanSanctionService.checkSanctionAmountMFI(loanSanctionRequest);
+			response.setData(loanSanctionRequest);
+
+			logger.info("end checkSanctionAmountMFI()---------------->" + loanSanctionRequest);
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while checkSanctionAmountMFI", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+
 	@RequestMapping(value = "/updateProductDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateProductDetails(@RequestBody LoanApplicationRequest loanRequest) {
 		try {
