@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 import java.io.IOException;
 import java.util.*;
 
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.*;
@@ -18,7 +19,6 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.users.client.UsersClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -85,6 +85,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             AadharDetailsReq detailsReq = new AadharDetailsReq();
             detailsReq.setMessage(serverSideValidation);
             return detailsReq;
+        }
+
+        if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofImg())){
+
         }
 
         if (aadharDetailsReq.getId() == null) {
@@ -632,9 +636,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 		Long jobId = workflowRequest.getJobId();
 		if (CommonUtils.isObjectNullOrEmpty(jobId)) {
-			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
-					WorkflowUtils.Workflow.MFI_PROCESS, WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE,
-					workflowRequest.getUserId());
+            workflowRequest.setUserId(workflowRequest.getUserId());
+            workflowRequest.setApplicationId(workflowRequest.getApplicationId());
+            workflowRequest.setWorkflowId(WorkflowUtils.Workflow.MFI_PROCESS);
+            workflowRequest.setActionId(WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE);
+            workflowRequest.setUserId(workflowRequest.getUserId());
+            WorkflowResponse workflowResponse = workflowClient.createJob(workflowRequest);
 			if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
 				jobId = Long.valueOf(workflowResponse.getData().toString());
                 MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(workflowRequest.getApplicationId(),1);
