@@ -270,6 +270,8 @@ public interface LoanApplicationService {
 
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest);
 
+	public String getTutorialsAudit(Long tutorialId);
+
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId);
 	
 	public String getApplicationListForPrefillProfile(Long userId);

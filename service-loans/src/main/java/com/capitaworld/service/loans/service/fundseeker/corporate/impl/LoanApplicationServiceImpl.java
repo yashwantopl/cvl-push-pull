@@ -8469,8 +8469,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	@Override
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest) {
-		loanRepository.saveTutorialsAudits(longLatrequest);
-		return true;
+		return loanRepository.saveTutorialsAudits(longLatrequest);
+	}
+
+	@Override
+	public String getTutorialsAudit(Long tutorialId) {
+		return loanRepository.getTutorialsAudit(tutorialId);
 	}
 	
 	@Override

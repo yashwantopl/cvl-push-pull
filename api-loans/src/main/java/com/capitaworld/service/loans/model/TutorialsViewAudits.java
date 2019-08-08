@@ -6,6 +6,7 @@ public class TutorialsViewAudits {
 
     private Long id;
     private Long userId;
+    private String userName;
     private Long roleId;
     private Long tutorialId;
     private Integer loanType;
@@ -57,5 +58,25 @@ public class TutorialsViewAudits {
 
     public void setViewDate(Date viewDate) {
         this.viewDate = viewDate;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    @Override
+    public String toString() {
+        return "TutorialsViewAudits{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", roleId=" + roleId +
+                ", tutorialId=" + tutorialId +
+                ", loanType=" + loanType +
+                ", viewDate=" + viewDate +
+                '}';
     }
 }

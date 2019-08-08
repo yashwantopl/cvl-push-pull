@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -106,6 +109,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	@Autowired
 	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
+	@Autowired
+	private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
+
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		try {
@@ -192,6 +198,26 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			throw new LoansException(e);
 		}
 
+	}
+
+
+
+	@Override
+	public LoanSanctionRequest checkSanctionAmountMFI(LoanSanctionRequest loanSanctionRequest) throws LoansException {
+
+		ProposalDetails proposalDetails=proposalDetailsRepository.findOne(loanSanctionRequest.getProposalId());
+		MFIApplicantDetail mfiApplicantDetail=mfiApplicationDetailsRepository.findByAppIdAndType(proposalDetails.getApplicationId(),1);
+		if(loanSanctionRequest.getSanctionAmount() > mfiApplicantDetail.getLoanAmountBankMaker())
+		{
+			loanSanctionRequest.setFlag(false);
+			loanSanctionRequest.setMessage("Sanction Amount should be less than recommended by SIDBI Maker!!");
+		}
+		else
+		{
+			loanSanctionRequest.setFlag(true);
+		}
+
+		return loanSanctionRequest;
 	}
 
 

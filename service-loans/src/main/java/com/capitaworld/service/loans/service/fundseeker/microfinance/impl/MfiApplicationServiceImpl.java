@@ -386,17 +386,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(mfiAssetsDetailsReq.getApplicationId());
             corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
             loanApplicationRepository.save(corporateLoan);
-//            WorkflowRequest  request = new WorkflowRequest();
-//            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
-//                request.setJobId(mfiApplicationDetail.getJobId());
-//            }
-//            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
-//            request.setUserId(mfiAssetsDetailsReq.getUserId());
-//            List<Long> roles = new ArrayList<>();
-//            roles.add(17l);
-//            request.setRoleIds(roles);
-//            Object activeButtons = getActiveButtons(request);
-//            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
+            //send reponse
             LoansResponse loansResponse = new LoansResponse();
             loansResponse.setMessage("Successfully Saved.");
             loansResponse.setStatus(HttpStatus.OK.value());
@@ -546,7 +536,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         } else if (type == CommonUtils.LOAN_ASSESMENT) {
             MfiLoanAssessmentDetailsReq assessmentDetailsReq = (MfiLoanAssessmentDetailsReq) validationJson;
             if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
-                    || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanLiabilityRatio()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
+                    || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
                 return "Some required fields in mean of missing in Loan Assesment detail section";
             }
         } else if (type == CommonUtils.LOAN_RECOMANDATION) {
