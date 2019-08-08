@@ -467,6 +467,7 @@ public class CommonController {
 		logger.info("Enter in getTutorialsByRoleId");
 		try {
 			String userId = String.valueOf(request.getAttribute(CommonUtils.USER_ID));
+			longLatrequest.setUserId(Long.parseLong(userId));
 			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(), applicationService.saveTutorialsAudit(longLatrequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsByRoleId",e);

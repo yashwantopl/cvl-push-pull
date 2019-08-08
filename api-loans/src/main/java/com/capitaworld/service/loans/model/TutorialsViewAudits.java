@@ -58,4 +58,16 @@ public class TutorialsViewAudits {
     public void setViewDate(Date viewDate) {
         this.viewDate = viewDate;
     }
+
+    @Override
+    public String toString() {
+        return "TutorialsViewAudits{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", roleId=" + roleId +
+                ", tutorialId=" + tutorialId +
+                ", loanType=" + loanType +
+                ", viewDate=" + viewDate +
+                '}';
+    }
 }
