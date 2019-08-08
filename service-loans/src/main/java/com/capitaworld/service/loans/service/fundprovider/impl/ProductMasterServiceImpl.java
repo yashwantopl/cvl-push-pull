@@ -425,7 +425,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMasterTemp.setProductId(addProductRequest.getProductId());
 				productMasterTemp.setIsMatched(false);
 				productMasterTemp.setName(addProductRequest.getName());
-				productMasterTemp.setFpName(addProductRequest.getFpName());
+				//productMasterTemp.setFpName(addProductRequest.getFpName());
+				//get organisation name
+				String orgName=proposalDetailsRepository.getOrgNameById(userOrgId);
+				productMasterTemp.setFpName(CommonUtils.isObjectNullOrEmpty(orgName)?addProductRequest.getFpName():orgName);
 				productMasterTemp.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				productMasterTemp.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
