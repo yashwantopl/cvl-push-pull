@@ -61,6 +61,8 @@ public interface LoanRepository {
 
 	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest);
 
+	public String getTutorialsAudit(Long tutorialId);
+
 	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId);
 	
 	public String getApplicationListForPrefillProfile(Long userId);

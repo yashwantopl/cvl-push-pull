@@ -7010,9 +7010,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Map<String, Object> proposalresp = MultipleJSONObjectHelper
 					.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
 			if (proposalresp != null) {
-				sanctioningDetailResponse.setSanctionAmount(
-						proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString())
-								: 0.0);
+
+				MFIApplicantDetail mfiApplicantDetail=mfiApplicationDetailsRepository.findByAppIdAndType(disbursementRequest.getApplicationId(),1);
+				if(!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail))
+				{
+					sanctioningDetailResponse.setSanctionAmount(mfiApplicantDetail.getLoanAmountBankMaker());
+				}
+				else
+				{
+					sanctioningDetailResponse.setSanctionAmount(
+							proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString())
+									: 0.0);
+				}
 				sanctioningDetailResponse.setTenure(
 						proposalresp.get("elTenure") != null ? Double.valueOf(proposalresp.get("elTenure").toString())
 								: 0.0);
@@ -8469,8 +8478,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	@Override
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest) {
-		loanRepository.saveTutorialsAudits(longLatrequest);
-		return true;
+		return loanRepository.saveTutorialsAudits(longLatrequest);
+	}
+
+	@Override
+	public String getTutorialsAudit(Long tutorialId) {
+		return loanRepository.getTutorialsAudit(tutorialId);
 	}
 	
 	@Override
