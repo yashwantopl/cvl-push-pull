@@ -6613,6 +6613,9 @@ public class ScoringServiceImpl implements ScoringService {
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterMFIRequest)) {
                 scoreParameterMFIRequest = new ScoreParameterMFIRequest();
+                scoreParameterMFIRequest.setMfiMakerRecommendedTenure(mfiApplicantDetail.getTenureRecomandation());
+                scoreParameterMFIRequest.setLoanAmountRecommanded(mfiApplicantDetail.getLoanAmountRecomandation());
+                scoreParameterMFIRequest.setCibilScore(0.0);
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
 
                 logger.info("----------------------------START MFI  ------------------------------");
