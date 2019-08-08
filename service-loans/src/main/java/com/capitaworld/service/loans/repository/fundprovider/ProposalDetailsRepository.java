@@ -141,6 +141,8 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4)",nativeQuery = true)
     public List<BigInteger> getProposalsByProposalStatusListAndBusinessTypeId(@Param("proposalStatus") List<Long> proposalStatus);
 
+    @Query(value="SELECT display_org_name FROM `users`.`user_organisation_master` WHERE user_org_id =:id",nativeQuery= true)
+    public String getOrgNameById(@Param("id") Long id);
 
 }
 
