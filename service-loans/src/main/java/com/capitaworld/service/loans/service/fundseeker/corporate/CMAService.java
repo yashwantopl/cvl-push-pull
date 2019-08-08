@@ -9,6 +9,6 @@ public interface CMAService {
 	
 	public CMARequest getCMA(Long applicationId);
 	
-	public FinancialRequest getFinancialDetailsForBankIntegration(Long applicationId);
+	public FinancialRequest getFinancialDetailsForBankIntegration(Long applicationId, Long proposalId);
 	
 }

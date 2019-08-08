@@ -60,8 +60,7 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	
 	private Double bureauOutstandingAmount;
 	private Double bureauOrCalculatedEmi;
-	
-	private String entryNo;
+	private Boolean isBureauEmi;
 
 	public Long getId() {
 		return id;
@@ -239,12 +238,12 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 		this.coAppName = coAppName;
 	}
 
-	public String getEntryNo() {
-		return entryNo;
+	public Boolean getIsBureauEmi() {
+		return isBureauEmi;
 	}
 
-	public void setEntryNo(String entryNo) {
-		this.entryNo = entryNo;
+	public void setIsBureauEmi(Boolean isBureauEmi) {
+		this.isBureauEmi = isBureauEmi;
 	}
 
 }

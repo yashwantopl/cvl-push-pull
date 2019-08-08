@@ -7,7 +7,9 @@ import com.capitaworld.service.loans.model.LoanSanctionRequest;
 public interface LoanSanctionService {
 	
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws LoansException;
-	
+
+	public LoanSanctionRequest checkSanctionAmountMFI(LoanSanctionRequest loanSanctionRequest) throws LoansException;
+
 	public String sanctionRequestValidation( Long applicationId,Long orgId)  throws LoansException ;
 	
 

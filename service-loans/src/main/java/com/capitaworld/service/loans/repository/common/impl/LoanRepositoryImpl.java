@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,6 +9,7 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -483,4 +485,39 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 		
 	}
+
+	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest){
+		BigInteger singleResult = (BigInteger) entityManager.createNativeQuery("SELECT COUNT(id) FROM `tutorial_view_audit` WHERE tutorial_id =:tutorialId AND user_id=:userId AND loan_type=:loanType")
+				.setParameter("userId", longLatrequest.getUserId())
+				.setParameter("loanType", longLatrequest.getLoanType())
+				.setParameter("tutorialId", longLatrequest.getTutorialId())
+				.getSingleResult();
+		if(singleResult.longValue()  < 1l) {
+			int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:tutorialId,:loanType,NOW())")
+					.setParameter("userId", longLatrequest.getUserId())
+					.setParameter("roleId", longLatrequest.getRoleId())
+					.setParameter("loanType", longLatrequest.getLoanType())
+					.setParameter("tutorialId", longLatrequest.getTutorialId())
+					.executeUpdate();
+			return saveTutorials > 0;
+		} else {
+			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type:loan_type and tutorial_id=:tutorialId")
+					.setParameter("date", new Date())
+					.setParameter("userId", longLatrequest.getUserId())
+					.setParameter("loanType", longLatrequest.getLoanType())
+					.setParameter("tutorialId", longLatrequest.getTutorialId())
+					.executeUpdate();
+			return update > 0;
+
+		}
+	}
+
+	public String getTutorialsAudit(Long tutorialId){
+		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('userName',u.email,'viewDate',a.view_date,'roleName',r.role_name)) AS CHAR) FROM `loan_application`.tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id WHERE a.tutorial_id =:tutorialId")
+				.setParameter("tutorialId", tutorialId)
+				.getResultList();
+			return CommonUtils.isListNullOrEmpty(tutorialViewAudit) ? null : CommonUtils.isObjectNullOrEmpty(tutorialViewAudit.get(0)) ? null : tutorialViewAudit.get(0);
+	}
+
+
 }

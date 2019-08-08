@@ -1,9 +1,7 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +72,11 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecu
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.DateWiseComparator;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
@@ -210,6 +211,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1375,6 +1379,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 		corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 			
+		Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+		corporatePrimaryViewResponse.setGstRelatedParty(gstRelatedPartyDetails);
 		return corporatePrimaryViewResponse;
 	}
 
@@ -1383,7 +1389,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest) {
 		LinkedHashMap<String,Object>comparisionData=new LinkedHashMap<>();
 		GstResponse gstResp = null;
-		Map<String,Object> bsMap=new HashMap<>();
+		Map<String,Object> bsMap=new TreeMap(new DateWiseComparator());
 		try {
 			GSTR1Request request=new GSTR1Request();
 			request.setApplicationId(applicationId);
@@ -1395,21 +1401,23 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
 		SimpleDateFormat sdf1=new SimpleDateFormat("MMM yy");
+		SimpleDateFormat displayFormate=new SimpleDateFormat("MM-yyyy");
 		// gst vs bank statement month wise purchase		
 		if(bsMap != null && !bsMap.isEmpty() && gstResp != null && gstResp.getData() != null) {
 			LinkedHashMap<String,Object> gstData= (LinkedHashMap<String, Object>) gstResp.getData();
 			
 			try {
-					List<LinkedHashMap<String,Object>>bsData = new ArrayList<>();
+					List<Map<String,Object>>bsData = new ArrayList<>();
 					Double totalBsResipts = 0d;
 					Double totalGstValue = 0d;
 					Double bsValue= 0d;
-					(bsMap).entrySet().stream().sorted(new DateComparator2());
+//					Collections.sort(Arrays.asList(bsMap), new DateComparator2());
+					 bsMap.entrySet().stream().sorted(new DateWiseComparator());
 					for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
 						Date parse = sdf1.parse(String.valueOf(entry.getKey()));
-						LinkedHashMap<String,Object>gstSalesVsBankStatementMonthly = new LinkedHashMap<>();
+						Map<String,Object>gstSalesVsBankStatementMonthly = new TreeMap<>(new DateWiseComparator());
 
-						gstSalesVsBankStatementMonthly.put("month", sdf1.format(parse));
+						gstSalesVsBankStatementMonthly.put("month", displayFormate.format(parse));
 						gstSalesVsBankStatementMonthly.put("gstValue", " - ");
 						gstSalesVsBankStatementMonthly.put("bsDivededBygst", " - ");
 						gstSalesVsBankStatementMonthly.put("bsValue", " - ");
@@ -1461,7 +1469,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						
 						LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
 						
-						gstPurchaseVsBankStatementMonthly.put("month", sdf1.format(parse));
+						gstPurchaseVsBankStatementMonthly.put("month", displayFormate.format(parse));
 						gstPurchaseVsBankStatementMonthly.put("bsValue", " - ");
 						for (Map.Entry<String, Object> debitEntry : ((Map<String, Object>) bsMapEntry.getValue()).entrySet()) {
 							 if(debitEntry != null && debitEntry.getKey() != null  && debitEntry.getValue() != null && debitEntry.getKey().equals("debit")) {

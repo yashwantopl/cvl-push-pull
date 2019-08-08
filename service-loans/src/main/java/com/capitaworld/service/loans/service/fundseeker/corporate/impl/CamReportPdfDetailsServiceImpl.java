@@ -173,7 +173,6 @@ import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.exception.UserException;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1343,8 +1342,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//gstRelatedParty Data Fetch
 		try {
-			List<GstRelatedPartyRequest> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", !CommonUtils.isObjectListNull(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", !CommonUtils.isObjectNullOrEmpty(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
@@ -1399,10 +1398,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error("Error while getting perfios data : ",e);
 		}
 		
-		//		GST Comparision by Maaz
+		//GST Comparision by Maaz
 		try{
-//			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
-//			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
 		}
