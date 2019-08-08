@@ -109,6 +109,9 @@ public class FinancialArrangementsDetail implements Serializable {
 	
 	@Column(name = "bureau_or_calculated_emi")
 	private Double bureauOrCalculatedEmi;
+	
+	@Column(name = "is_bureau_emi")
+	private Boolean isBureauEmi;
 
 	public FinancialArrangementsDetail() {
 		// Do nothing because of X and Y.
@@ -319,6 +322,14 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	public void setBureauOutstandingAmount(Double bureauOutstandingAmount) {
 		this.bureauOutstandingAmount = bureauOutstandingAmount;
+	}
+
+	public Boolean getIsBureauEmi() {
+		return isBureauEmi;
+	}
+
+	public void setIsBureauEmi(Boolean isBureauEmi) {
+		this.isBureauEmi = isBureauEmi;
 	}
 	
 }
