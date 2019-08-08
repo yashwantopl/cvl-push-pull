@@ -636,9 +636,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 		Long jobId = workflowRequest.getJobId();
 		if (CommonUtils.isObjectNullOrEmpty(jobId)) {
-			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
-					WorkflowUtils.Workflow.MFI_PROCESS, WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE,
-					workflowRequest.getUserId());
+            workflowRequest.setUserId(workflowRequest.getUserId());
+            workflowRequest.setApplicationId(workflowRequest.getApplicationId());
+            workflowRequest.setWorkflowId(WorkflowUtils.Workflow.MFI_PROCESS);
+            workflowRequest.setActionId(WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE);
+            workflowRequest.setUserId(workflowRequest.getUserId());
+            WorkflowResponse workflowResponse = workflowClient.createJob(workflowRequest);
 			if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
 				jobId = Long.valueOf(workflowResponse.getData().toString());
                 MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(workflowRequest.getApplicationId(),1);
