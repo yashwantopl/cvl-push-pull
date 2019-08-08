@@ -296,7 +296,7 @@ public class CMAServiceImpl implements CMAService {
 			prlossStmntReq.setCurrency(getCurrency(applicationId));
 			prlossStmntReq.setSubTotalOfIncome(CommonUtils.checkDoubleNull(operatingStatement.getSubTotalOfIncome()));
 			//B19
-			double totalGrossSales = CommonUtils.checkDoubleNull(operatingStatement.getTotalGrossSales()) + CommonUtils.checkDoubleNull(operatingStatement.getExportSales());
+			double totalGrossSales = CommonUtils.checkDoubleNull(operatingStatement.getDomesticSales()) + CommonUtils.checkDoubleNull(operatingStatement.getExportSales());
 			prlossStmntReq.setTotalGrossSales(totalGrossSales);
 			//B20
 			double lessExciseDuty = CommonUtils.checkDoubleNull(operatingStatement.getLessExciseDuty()) + CommonUtils.checkDoubleNull(operatingStatement.getDeductOtherItems());
@@ -642,7 +642,7 @@ public class CMAServiceImpl implements CMAService {
 		List<RatioDetailsReq> ratioDetailsReqList = new ArrayList<>();
 		RatioDetailsReq ratioDetailsReq = null;
 		List<String> sortedList = new ArrayList<String>(yearList);
-		Collections.sort(sortedList);
+		Collections.sort(sortedList,Collections.reverseOrder());
 		for(String year : sortedList) {
 			
 			String previousYear = String.valueOf(Integer.parseInt(year) - 1);
@@ -723,10 +723,10 @@ public class CMAServiceImpl implements CMAService {
 			}
 			
 			//B117 -----> =B21/C21-1
-			ratioDetailsReq.setNetSalesGrowth(profitAndLossForPreviousToPreYear.getNetSales() != 0 ? CommonUtils.checkDouble((profitAndLossStmntReq.getNetSales() / profitAndLossForPreviousToPreYear.getNetSales() -1) * 100) : 0.0);
+			ratioDetailsReq.setNetSalesGrowth(profitAndLossForPreviousYear.getNetSales() != 0 ? CommonUtils.checkDouble((profitAndLossStmntReq.getNetSales() / profitAndLossForPreviousYear.getNetSales() -1) * 100) : 0.0);
 			
 			//B118 -----> =B43/C43-1
-			ratioDetailsReq.setPatGrowth(profitAndLossForPreviousToPreYear.getProfitAfterTax() != 0 ? CommonUtils.checkDouble((profitAndLossStmntReq.getProfitAfterTax() / profitAndLossForPreviousToPreYear.getProfitAfterTax() - 1) * 100) : 0.0);
+			ratioDetailsReq.setPatGrowth(profitAndLossForPreviousYear.getProfitAfterTax() != 0 ? CommonUtils.checkDouble((profitAndLossStmntReq.getProfitAfterTax() / profitAndLossForPreviousYear.getProfitAfterTax() - 1) * 100) : 0.0);
 			
 			//B119 ----->=(B65-B64-B59)/(B56+B59)
 			double adjTotalDbt = liabilitiesDetails.getShareholderFunds() + liabilitiesDetails.getUnsecuredLoansPromoters(); 
