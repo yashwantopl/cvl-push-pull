@@ -8467,6 +8467,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return Collections.emptyList();
 	}
+	@Override
+	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest) {
+		return loanRepository.saveTutorialsAudits(longLatrequest);
+	}
+
+	@Override
+	public String getTutorialsAudit(Long tutorialId) {
+		return loanRepository.getTutorialsAudit(tutorialId);
+	}
 	
 	@Override
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId) {

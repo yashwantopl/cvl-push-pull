@@ -206,6 +206,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
             MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
             BeanUtils.copyProperties(mfiApplicantDetail, detailsReq);
+            detailsReq.setRepaymentTrack(mfiApplicantDetail.getRepaymentTrack());
             //for bank details
             MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
             if (byApplicationId != null) {
@@ -385,17 +386,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(mfiAssetsDetailsReq.getApplicationId());
             corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
             loanApplicationRepository.save(corporateLoan);
-//            WorkflowRequest  request = new WorkflowRequest();
-//            if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
-//                request.setJobId(mfiApplicationDetail.getJobId());
-//            }
-//            request.setApplicationId(mfiAssetsDetailsReq.getApplicationId());
-//            request.setUserId(mfiAssetsDetailsReq.getUserId());
-//            List<Long> roles = new ArrayList<>();
-//            roles.add(17l);
-//            request.setRoleIds(roles);
-//            Object activeButtons = getActiveButtons(request);
-//            WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
+            //send reponse
             LoansResponse loansResponse = new LoansResponse();
             loansResponse.setMessage("Successfully Saved.");
             loansResponse.setStatus(HttpStatus.OK.value());
@@ -522,9 +513,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             }
         } else if (type == CommonUtils.INCOME_EXPENDITURE) {
             MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = (MfiIncomeAndExpenditureReq) validationJson;
-            if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMedicalExpense())
-                    || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getEducationExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getFoodExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getLoanInstallment())
-                    || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getShipShgiInstallment()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getHouseHoldExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getClothesExpense())) {
+            if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMedicalExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getEducationExpense()) ||
+                    CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getFoodExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getHouseHoldExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getClothesExpense())) {
                 return "Some required fields in family monthly Expenses are missing in Income and Expenditure section";
             } else if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getBusinessInBrief()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyCashflow()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyExpenditure())
                     || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyIncome())) {
@@ -546,7 +536,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         } else if (type == CommonUtils.LOAN_ASSESMENT) {
             MfiLoanAssessmentDetailsReq assessmentDetailsReq = (MfiLoanAssessmentDetailsReq) validationJson;
             if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
-                    || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanLiabilityRatio()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
+                    || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
                 return "Some required fields in mean of missing in Loan Assesment detail section";
             }
         } else if (type == CommonUtils.LOAN_RECOMANDATION) {
