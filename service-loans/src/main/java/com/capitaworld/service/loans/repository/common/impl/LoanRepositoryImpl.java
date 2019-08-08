@@ -464,13 +464,13 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest){
-		Long singleResult = (Long) entityManager.createNativeQuery("SELECT COUNT(id) FROM `tutorial_view_audit` WHERE tutorial_id =:tutorialId AND user_id=:userId AND loan_type=:loanType")
+		BigInteger singleResult = (BigInteger) entityManager.createNativeQuery("SELECT COUNT(id) FROM `tutorial_view_audit` WHERE tutorial_id =:tutorialId AND user_id=:userId AND loan_type=:loanType")
 				.setParameter("userId", longLatrequest.getUserId())
 				.setParameter("loanType", longLatrequest.getLoanType())
 				.setParameter("tutorialId", longLatrequest.getTutorialId())
 				.getSingleResult();
-		if(singleResult  < 1l) {
-			int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:loanType,:tutorialId,NOW())")
+		if(singleResult.longValue()  < 1l) {
+			int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:tutorialId,:loanType,NOW())")
 					.setParameter("userId", longLatrequest.getUserId())
 					.setParameter("roleId", longLatrequest.getRoleId())
 					.setParameter("loanType", longLatrequest.getLoanType())
