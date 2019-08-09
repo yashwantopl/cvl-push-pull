@@ -79,4 +79,18 @@ public class MfiLoanRecomandationReq {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    @Override
+    public String toString() {
+        return "MfiLoanRecomandationReq{" +
+                "id=" + id +
+                ", applicationId=" + applicationId +
+                ", userId=" + userId +
+                ", loanAmountRecomandation=" + loanAmountRecomandation +
+                ", tenureRecomandation=" + tenureRecomandation +
+                ", moratoriumRecomandation=" + moratoriumRecomandation +
+                ", interestRateRecomandation=" + interestRateRecomandation +
+                ", installmentRecomandation=" + installmentRecomandation +
+                '}';
+    }
 }
