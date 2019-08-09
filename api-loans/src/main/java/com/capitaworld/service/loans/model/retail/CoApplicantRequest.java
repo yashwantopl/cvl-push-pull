@@ -27,6 +27,7 @@ public class CoApplicantRequest {
 	private String contactNo;
 	private String companyName;
 	private Integer employedWithId;
+	private Integer employmentType;
 	private String employedWithOther;
 	private String nameOfEntity;
 	private Integer industryTypeId;
@@ -896,5 +897,13 @@ public class CoApplicantRequest {
 
 	public void setIsIncomeConsider(Boolean isIncomeConsider) {
 		this.isIncomeConsider = isIncomeConsider;
+	}
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
 	}
 }
