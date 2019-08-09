@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 
 public class CorporatePrimaryViewResponse {
@@ -49,6 +50,7 @@ public class CorporatePrimaryViewResponse {
     private List<Object> profilePic;
     private Double enhancementAmount;
     private String castCategory;
+    private Boolean isCampaignUser;
 
     /*private String  isBusinessAssetChecked;
     private String  isWorkingCapitalChecked;
@@ -154,6 +156,7 @@ public class CorporatePrimaryViewResponse {
     private String msmeRankTitle;
     private Object bankComparisionData;
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
+    Map<String, Object> gstRelatedParty;
     
     private Object gstBankComp;
    
@@ -1298,7 +1301,17 @@ public class CorporatePrimaryViewResponse {
 	public void setMcaNotApplicable(Boolean mcaNotApplicable) {
 		this.mcaNotApplicable = mcaNotApplicable;
 	}
-	
-	
+	public Boolean getIsCampaignUser() {
+		return isCampaignUser;
+	}
+	public void setIsCampaignUser(Boolean isCampaignUser) {
+		this.isCampaignUser = isCampaignUser;
+	}
+	public Map<String, Object> getGstRelatedParty() {
+		return gstRelatedParty;
+	}
+	public void setGstRelatedParty(Map<String, Object> gstRelatedParty) {
+		this.gstRelatedParty = gstRelatedParty;
+	}
     
 }

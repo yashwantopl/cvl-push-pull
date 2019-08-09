@@ -17,6 +17,8 @@ public class MfiBankDetailsReq implements Serializable {
 
 	private String branchName;
 
+	private String accountHolderName;
+
 	private String accountNo;
 
 	private String ifscCode;
@@ -99,4 +101,11 @@ public class MfiBankDetailsReq implements Serializable {
 		this.isBankDetailsFilled = isBankDetailsFilled;
 	}
 
+	public String getAccountHolderName() {
+		return accountHolderName;
+	}
+
+	public void setAccountHolderName(String accountHolderName) {
+		this.accountHolderName = accountHolderName;
+	}
 }

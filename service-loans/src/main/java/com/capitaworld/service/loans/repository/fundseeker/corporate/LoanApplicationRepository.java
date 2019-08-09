@@ -327,13 +327,22 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<BigInteger> getFPAssignedToCheckerProposalsByNPUserIdPagination(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
 
 	//fp - MFI - checker - for approved or submitted - pagination
-	@Query(value = "select lm.application_id from fs_loan_application_master lm where lm.np_org_id=:npOrgId and lm.product_id=:productId and lm.ddr_status_id =:id and lm.np_org_id=:npOrgId and lm.business_type_id=:businessTypeId and lm.is_active = true order by lm.modified_date desc",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm where lm.np_org_id=:npOrgId and lm.product_id=:productId and lm.status =:id and lm.np_org_id=:npOrgId and lm.business_type_id=:businessTypeId and lm.is_active = true order by lm.modified_date desc",nativeQuery = true)
 	public List<BigInteger> getFPAssignedToCheckerProposalsByNPUserOrgIdPagination( @Param("id") Long ddrStatusId,@Param("npOrgId") Long npOrgId, @Param("productId") Long productId,@Param("businessTypeId") Long businessTypeId);
 
+	//fp - MFI - sidbi - for approved or submitted - pagination
+	@Query(value = "select lm.application_id from fs_loan_application_master lm where lm.product_id=:productId and lm.status =:status and lm.business_type_id=:businessTypeId and lm.is_active = true order by lm.modified_date desc",nativeQuery = true)
+	public List<BigInteger> getFPAllProposalsByStatusPagination( @Param("status") Long status, @Param("productId") Long productId,@Param("businessTypeId") Long businessTypeId);
+
 	//fp - checker - for approved or submitted - count
-	@Query(value = "SELECT lm.application_id FROM fs_loan_application_master lm WHERE np_org_id =:npOrgId AND lm.status=:id AND is_active=TRUE and product_id=:fpProductId",nativeQuery = true)
+	@Query(value = "SELECT lm.application_id FROM fs_loan_application_master lm WHERE np_org_id =:npOrgId AND lm.status=:id AND is_active=TRUE and lm.product_id=:fpProductId and lm.business_type_id =6",nativeQuery = true)
 	public List<BigInteger> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,
 																 @Param("npOrgId") Long npOrgId,
+																 @Param("fpProductId") Long fpProductId);
+
+	//fp - checker - for approved or submitted - count
+	@Query(value = "SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.status=:id AND is_active=TRUE and product_id=:fpProductId",nativeQuery = true)
+	public List<BigInteger> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,
 																 @Param("fpProductId") Long fpProductId);
 
 	//fp - checker - for approved or submitted - count MFI
@@ -381,4 +390,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType where application_id=:applicationId", nativeQuery = true)
 	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
+
+	@Modifying
+	@Query(value = "UPDATE fs_loan_application_master lm SET lm.status=:status WHERE lm.application_id=:applicationId",nativeQuery = true)
+	public int updateStatus(@Param("applicationId")  Long applicationId,@Param("status") Long status);
 }

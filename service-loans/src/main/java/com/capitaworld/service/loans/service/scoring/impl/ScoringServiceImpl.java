@@ -1482,10 +1482,10 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.RESIDENCE_TYPE_PL:
                             	if(retailApplicantDetail.getResidenceType() != null) {
                 					if(ResidenceStatusRetailMst.OWNED.getId().equals(retailApplicantDetail.getResidenceType())) {
-                						if(retailApplicantDetail.getIsOwnedProp() == null || retailApplicantDetail.getIsOwnedProp()) {
-                							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
-                						}else {
+                						if(retailApplicantDetail.getIsOwnedProp() != null && retailApplicantDetail.getIsOwnedProp()) {
                 							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
+                						}else {
+                							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
                 						}
                 					}else {
                 						scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
@@ -2148,13 +2148,13 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.RESIDENCE_TYPE:
             				if(retailApplicantDetail.getResidenceType() != null) {
             					if(ResidenceStatusRetailMst.OWNED.getId().equals(retailApplicantDetail.getResidenceType())) {
-            						if(retailApplicantDetail.getIsOwnedProp() == null || retailApplicantDetail.getIsOwnedProp()) {
-            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
+            						if(retailApplicantDetail.getIsOwnedProp() != null && retailApplicantDetail.getIsOwnedProp()) {
+            							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring             						
             						}else {
-            							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
-            						}
-            					}else {
-            						scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
+            								scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
+            						}             					
+            					}else{             						
+            							scoreParameterRetailRequest.setResidenceType(retailApplicantDetail.getResidenceType());
             					}
             					scoreParameterRetailRequest.setIsResidenceType_p(true);
             				}
@@ -2783,13 +2783,13 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.RESIDENCE_TYPE:
             				if(coApplicantDetail.getResidenceType() != null) {
             					if(ResidenceStatusRetailMst.OWNED.getId().equals(coApplicantDetail.getResidenceType())) {
-            						if(coApplicantDetail.getIsOwnedProp() == null || coApplicantDetail.getIsOwnedProp()) {
-            							scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
+            						if(coApplicantDetail.getIsOwnedProp() != null && coApplicantDetail.getIsOwnedProp()) {
+            							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring             						
             						}else {
-            							scoreParameterRetailRequest.setResidenceType(8); //Owned (Encumbered) : No Need to Add in ENUM. This is Only For Scoring
-            						}
-            					}else {
-            						scoreParameterRetailRequest.setResidenceType(coApplicantDetail.getResidenceType());
+            								scoreParameterRetailRequest.setResidenceType(ResidenceStatusRetailMst.OWNED.getId());
+            						}             					
+            					}else{             						
+            							scoreParameterRetailRequest.setResidenceType(coApplicantDetail.getResidenceType());
             					}
             					scoreParameterRetailRequest.setIsResidenceType_p(true);
             				}
@@ -6617,6 +6617,9 @@ public class ScoringServiceImpl implements ScoringService {
 
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterMFIRequest)) {
                 scoreParameterMFIRequest = new ScoreParameterMFIRequest();
+                scoreParameterMFIRequest.setMfiMakerRecommendedTenure(mfiApplicantDetail.getTenureRecomandation());
+                scoreParameterMFIRequest.setLoanAmountRecommanded(mfiApplicantDetail.getLoanAmountRecomandation());
+                scoreParameterMFIRequest.setCibilScore(0.0);
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
 
                 logger.info("----------------------------START MFI  ------------------------------");

@@ -146,10 +146,19 @@ public class PLRetailApplicantResponse implements Serializable {
 	private Boolean isIncomeCons;
     private String nameEditedByCoApp;
     private String isOwnedProp;
-	
+    private List<EmpSalariedTypeRequest> empSalariedDetails;
+    
 	
     
 	
+
+	public List<EmpSalariedTypeRequest> getEmpSalariedDetails() {
+		return empSalariedDetails;
+	}
+
+	public void setEmpSalariedDetails(List<EmpSalariedTypeRequest> empSalariedDetails) {
+		this.empSalariedDetails = empSalariedDetails;
+	}
 
 	public String getIsOwnedProp() {
 		return isOwnedProp;
