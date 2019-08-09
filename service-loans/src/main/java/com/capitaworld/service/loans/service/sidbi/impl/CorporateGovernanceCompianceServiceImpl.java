@@ -68,7 +68,7 @@ public class CorporateGovernanceCompianceServiceImpl implements CorporateGoverna
 				corpoDomain.setUpdatedValue(corpoReq.getUpdatedValue());
 				corpoDomain.setModifiedBy(corpoReq.getUserId());
 				corpoDomain.setModifiedDate(currentDate);
-				if(corpoDomain.getSelectedOption() == 1) {
+				if(corpoDomain.getSelectedOption() == 0) {
 					corpoDomain.setUpdatedValue(null);
 				}
 			}
