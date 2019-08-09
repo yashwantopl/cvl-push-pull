@@ -53,6 +53,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     private MfiApplicationDetailsRepository detailsRepository;
 
     @Autowired
+    private LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
     private LoanApplicationService applicationService;
 
     @Autowired
@@ -69,9 +72,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Autowired
     private MfiExpenseExpectedIncomeDetailRepository expectedIncomeDetailRepository;
-
-    @Autowired
-    private LoanApplicationRepository loanApplicationRepository;
 
     @Autowired
     private WorkflowClient workflowClient;
@@ -206,10 +206,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Override
     public MfiApplicantDetailsReq getApplicantDetails(Long applicationId,Integer type) {
+
             MFIApplicantDetail mfiApplicantDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(applicationId,type);
+
+            LoanApplicationMaster loanApplicationMaster=loanApplicationRepository.findOne(applicationId);
 
             MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
             BeanUtils.copyProperties(mfiApplicantDetail, detailsReq);
+            detailsReq.setStatus(loanApplicationMaster.getApplicationStatusMaster().getId().intValue()); // for current status value
             detailsReq.setRepaymentTrack(mfiApplicantDetail.getRepaymentTrack());
             //for bank details
             MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
