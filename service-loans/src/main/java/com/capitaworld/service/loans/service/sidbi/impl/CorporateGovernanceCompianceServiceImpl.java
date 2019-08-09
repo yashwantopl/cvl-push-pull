@@ -52,14 +52,23 @@ public class CorporateGovernanceCompianceServiceImpl implements CorporateGoverna
 				throw new LoansException("Validation error : Select Option field");
 			}
 			
-			CorporateGovernanceCompliance corpoDomain =new CorporateGovernanceCompliance();
-			BeanUtils.copyProperties(corpoReq, corpoDomain);
+			CorporateGovernanceCompliance corpoDomain = corpoRepository.findByApplicationIdAndCorporateGovernanceId(corpoReq.getApplicationId(), corpoReq.getCorporateGovernanceId());					CorporateGovernanceCompliance corpoDomain =new CorporateGovernanceCompliance();
+			if(corpoDomain==null) {					
+				corpoDomain=new CorporateGovernanceCompliance();		
+				BeanUtils.copyProperties(corpoReq, corpoDomain);		
+			}
 			if(corpoDomain.getId() == null) {
 				corpoDomain.setCreatedBy(corpoReq.getUserId());
 				corpoDomain.setCreatedDate(currentDate);
 			}else {
+				corpoDomain.setCorporateGovernanceId(corpoReq.getCorporateGovernanceId());		
+				corpoDomain.setSelectedOption(corpoReq.getSelectedOption());		
+				corpoDomain.setUpdatedValue(corpoReq.getUpdatedValue());		
 				corpoDomain.setModifiedBy(corpoReq.getUserId());
-				corpoDomain.setModifiedDate(currentDate);
+				corpoDomain.setModifiedDate(currentDate);		
+				if(corpoDomain.getSelectedOption() == 2) {		
+					corpoDomain.setUpdatedValue(null);		
+				}
 			}
 			try {
 				corpoRepository.save(corpoDomain);
