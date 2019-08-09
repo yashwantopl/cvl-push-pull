@@ -592,16 +592,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	public Boolean saveOrUpdateApplicantDetail(MfiApplicantDetailsReq mfiApplicantDetailsReq) {
 		Boolean result = false;
 		try {
-			List<MfiIncomeDetails> mfiIncomeDetails = new ArrayList<>();
+			
 			if(mfiApplicantDetailsReq != null) {
-				for(MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq.getIncomeDetailsTypeTwoList()) {
-					MfiIncomeDetails mfiIncomeDetail =  new MfiIncomeDetails(); // MfiIncomeDetailsRepository.findOne(mfiApplicantDetailsReq.getId());
-					BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetail);
-					mfiIncomeDetail.setIsActive(true);
-					mfiIncomeDetail.setType(2);
-					mfiIncomeDetails.add(mfiIncomeDetail);
+				
+				if(mfiApplicantDetailsReq.getIncomeDetailsTypeTwoList() != null) {
+					List<MfiIncomeDetails> mfiIncomeDetails = new ArrayList<>();
+					for(MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq.getIncomeDetailsTypeTwoList()) {
+						MfiIncomeDetails mfiIncomeDetail =  new MfiIncomeDetails(); // MfiIncomeDetailsRepository.findOne(mfiApplicantDetailsReq.getId());
+						BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetail);
+						mfiIncomeDetail.setIsActive(true);
+						mfiIncomeDetail.setType(2);
+						mfiIncomeDetails.add(mfiIncomeDetail);
+					}
+					MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 				}
-				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 				
 				MfiIncomeAndExpenditureReq mfiIncomeAndExpendMFIChecker = mfiApplicantDetailsReq.getMfiIncomeAndExpenditureReqMFIChecker(); 
 				if(mfiIncomeAndExpendMFIChecker != null) {
