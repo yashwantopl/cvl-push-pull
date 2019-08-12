@@ -196,6 +196,7 @@ public class MFIApplicationController {
                 logger.warn("applicationId  can not be empty ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
+            mfiBankDetailsReq.setUserId(userId);
 			Object bankDetails = mfiApplicationService.saveOrUpdateBankDetails(mfiBankDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save bank details");
 			if(bankDetails instanceof Boolean){

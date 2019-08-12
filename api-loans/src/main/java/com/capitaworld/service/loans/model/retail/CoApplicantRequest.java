@@ -898,8 +898,7 @@ public class CoApplicantRequest {
 	public void setIsIncomeConsider(Boolean isIncomeConsider) {
 		this.isIncomeConsider = isIncomeConsider;
 	}
-
-	public Integer getEmploymentType() {
+		public Integer getEmploymentType() {
 		return employmentType;
 	}
 
