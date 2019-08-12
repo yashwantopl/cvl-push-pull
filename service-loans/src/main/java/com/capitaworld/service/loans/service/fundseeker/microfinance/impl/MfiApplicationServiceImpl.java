@@ -383,7 +383,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
      */
     private boolean saveIncomeAndExpenditureWithCopy(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq, Double totalIncome,Integer type){
         Double totalExpense = 0.0;
-        if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
+        if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) { //save income details
             //for MFI Agent data from users
             for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
                 MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();

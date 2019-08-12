@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.domain.fundseeker.mfi;
 
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
@@ -22,13 +21,6 @@ public class MFIApplicantDetail implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
-
-	@OneToOne
-	@JoinColumn(name = "proposal_mapping_id")
-	private ApplicationProposalMapping applicationProposalMapping;
-
-	@Column(name = "aadhar_number")
-	private String aadharNumber;
 
 	@Column(name = "name_as_per_aadharCard")
 	private String nameAsPerAadharCard;
@@ -175,9 +167,6 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "house_type")
 	private Integer houseType;
 
-	@Column(name = "loan_purpose")
-	private String loanPurpose;
-
 	@Column(name = "loan_amount_required")
 	private Double loanAmountRequired;
 
@@ -290,12 +279,6 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "is_bank_details_filled")
 	private Boolean isBankDetailsFilled;
 
-	@Column(name = "is_account_details_filled")
-	private Boolean isAccountDetailsFilled;
-
-	@Column(name = "is_existing_loan_details_filled")
-	private Boolean isExistingLoanDetailsFilled;
-
 	@Column(name = "is_income_details_filled")
 	private Boolean isIncomeDetailsFilled;
 
@@ -355,6 +338,8 @@ public class MFIApplicantDetail implements Serializable {
 	private String consentFormImg;
 	@Column(name = "profile_img")
 	private String profileImg;
+	@Column(name = "aadhar_img")
+	private String aadharImg;
 	@Column(name = "ppi_no_family_member")
 	private Integer ppiNoFamilyMember;
 	@Column(name = "ppi_acadamic_head_family")
@@ -450,22 +435,6 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
-	}
-
-	public ApplicationProposalMapping getApplicationProposalMapping() {
-		return applicationProposalMapping;
-	}
-
-	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
-		this.applicationProposalMapping = applicationProposalMapping;
-	}
-
-	public String getAadharNumber() {
-		return aadharNumber;
-	}
-
-	public void setAadharNumber(String aadharNumber) {
-		this.aadharNumber = aadharNumber;
 	}
 
 	public String getNameAsPerAadharCard() {
@@ -676,15 +645,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.houseType = houseType;
 	}
 
-
-	public String getLoanPurpose() {
-		return loanPurpose;
-	}
-
-	public void setLoanPurpose(String loanPurpose) {
-		this.loanPurpose = loanPurpose;
-	}
-
 	public Double getLoanAmountRequired() {
 		return loanAmountRequired;
 	}
@@ -891,22 +851,6 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setIsBankDetailsFilled(Boolean isBankDetailsFilled) {
 		this.isBankDetailsFilled = isBankDetailsFilled;
-	}
-
-	public Boolean getIsAccountDetailsFilled() {
-		return isAccountDetailsFilled;
-	}
-
-	public void setIsAccountDetailsFilled(Boolean isAccountDetailsFilled) {
-		this.isAccountDetailsFilled = isAccountDetailsFilled;
-	}
-
-	public Boolean getIsExistingLoanDetailsFilled() {
-		return isExistingLoanDetailsFilled;
-	}
-
-	public void setIsExistingLoanDetailsFilled(Boolean isExistingLoanDetailsFilled) {
-		this.isExistingLoanDetailsFilled = isExistingLoanDetailsFilled;
 	}
 
 	public Boolean getIsIncomeDetailsFilled() {
@@ -1590,5 +1534,13 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
+	}
+
+	public String getAadharImg() {
+		return aadharImg;
+	}
+
+	public void setAadharImg(String aadharImg) {
+		this.aadharImg = aadharImg;
 	}
 }
