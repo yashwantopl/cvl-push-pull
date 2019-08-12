@@ -678,4 +678,47 @@ public class MFIApplicationController {
 		}
 	}
 
+	@PostMapping(value = "/getMfiConversation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMfiConversation(@RequestBody MFIConversationReq mfiConversationReq,
+															HttpServletRequest request) {
+		try {
+			logger.info("service call getMfiConversation()");
+			CommonDocumentUtils.startHook(logger, "save");
+
+			if (CommonUtils.isObjectNullOrEmpty(mfiConversationReq) || CommonUtils.isObjectNullOrEmpty(mfiConversationReq.getFromId()) || CommonUtils.isObjectNullOrEmpty(mfiConversationReq.getToId()) || CommonUtils.isObjectNullOrEmpty(mfiConversationReq.getApplicationId())) {
+				logger.warn("toId, fromId, applicationId can not be empty ==>" + mfiConversationReq.toString());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Conversation fetch successfully",
+					HttpStatus.OK.value(), mfiApplicationService.getMfiConversation(mfiConversationReq)), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@PostMapping(value = "/saveMfiConversation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveMfiConversation(@RequestBody MFIConversationReq mfiConversationReq,
+															 HttpServletRequest request) {
+		try {
+			logger.info("service call saveMfiConversation()");
+			CommonDocumentUtils.startHook(logger, "save");
+
+			if (CommonUtils.isObjectNullOrEmpty(mfiConversationReq) || CommonUtils.isObjectNullOrEmpty(mfiConversationReq.getFromId()) || CommonUtils.isObjectNullOrEmpty(mfiConversationReq.getToId()) || CommonUtils.isObjectNullOrEmpty(mfiConversationReq.getApplicationId())) {
+				logger.warn("toId, fromId, applicationId can not be empty ==>" + mfiConversationReq.toString());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Conversation saved successfully",
+					HttpStatus.OK.value(), mfiApplicationService.saveOrUpdateMfiConversation(mfiConversationReq)), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+
 }

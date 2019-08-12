@@ -99,6 +99,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Autowired
     private FinancialArrangementDetailsService financialArrangementDetailsService;
 
+    @Autowired
+    private MFIConversationRepository mfiConversationRepository;
 
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -746,6 +748,21 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 
+    public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId,Long userId) {
+        try {
+            CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+            if (cibilReportMfi.getStatus() == 200) {
+                return financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+            }
+
+        } catch (LoansException e) {
+            e.printStackTrace();
+        } catch (CibilException e) {
+            e.printStackTrace();
+        }
+        return Collections.EMPTY_LIST;
+    }
+
 	public Object getActiveButtons(WorkflowRequest workflowRequest) {
 
 		Long jobId = workflowRequest.getJobId();
@@ -790,19 +807,42 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId,Long userId){
-        try {
-            CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
-            if (cibilReportMfi.getStatus() == 200) {
-                return financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-            }
+    public Object getMfiConversation(MFIConversationReq mfiConversationReq) {
 
-        } catch (LoansException e) {
-            e.printStackTrace();
-        } catch (CibilException e) {
-            e.printStackTrace();
+        List<MFIConversation> selfToSubMessageDetailsList = mfiConversationRepository.findAllMessageByFromIdAndToId(mfiConversationReq.getFromId(),mfiConversationReq.getToId(), mfiConversationReq.getApplicationId());
+        List<MFIConversation> selfToSuperMessageDetailsList = mfiConversationRepository.findAllMessageByFromIdAndToId(mfiConversationReq.getFromId(),mfiConversationReq.getSuperToId(), mfiConversationReq.getApplicationId());
+
+        List<MFIConversationReq> selfToSubMessageList = new ArrayList<>();
+        List<MFIConversationReq> selfToSuperMessageList = new ArrayList<>();
+
+        for (MFIConversation mfiConversation : selfToSubMessageDetailsList) {
+            MFIConversationReq mfiConversationReq1 = new MFIConversationReq();
+            BeanUtils.copyProperties(mfiConversation, mfiConversationReq1);
+            selfToSubMessageList.add(mfiConversationReq1);
         }
-        return Collections.EMPTY_LIST;
+
+
+        for (MFIConversation mfiConversation : selfToSuperMessageDetailsList) {
+            MFIConversationReq mfiConversationReq1 = new MFIConversationReq();
+            BeanUtils.copyProperties(mfiConversation, mfiConversationReq1);
+            selfToSuperMessageList.add(mfiConversationReq1);
+        }
+
+        MFIConversationRes mfiConversationRes = new MFIConversationRes();
+        mfiConversationRes.setSelfToSubConversation(selfToSubMessageList);
+        mfiConversationRes.setSelfToSuperConversation(selfToSuperMessageList);
+
+        return mfiConversationRes;
+    }
+
+    @Override
+    public Object saveOrUpdateMfiConversation(MFIConversationReq mfiConversationReq) {
+
+        MFIConversation mfiConversation = new MFIConversation();
+        mfiConversationReq.setMessageDate(new Date());
+        BeanUtils.copyProperties(mfiConversationReq, mfiConversation);
+        mfiConversation = mfiConversationRepository.save(mfiConversation);
+        return CommonUtils.isObjectNullOrEmpty(mfiConversation);
     }
 
 }

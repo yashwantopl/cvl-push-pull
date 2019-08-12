@@ -62,6 +62,10 @@ public interface MfiApplicationService {
 
 	public boolean updateStaus(Long applicationId,Long status);
 
+	public Object getMfiConversation(MFIConversationReq mfiConversationReq);
+
+	public Object saveOrUpdateMfiConversation(MFIConversationReq mfiConversationReq);
+
 	public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId, Long userId);
 
 }

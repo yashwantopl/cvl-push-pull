@@ -451,7 +451,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				}
 				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
 				roiData.put("concessionRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? proposalMappingRequestString.getConsessionRoi() : "-");
-				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				if(effectiveRoi != null) {
 					finalRoi = !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? effectiveRoi - proposalMappingRequestString.getConsessionRoi() : null;
 				}else {
