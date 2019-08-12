@@ -657,12 +657,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				itrBasicDetailsResponse.setCoAppId(coApplicantDetail.getId());
 				try {
 					ITRBasicDetailsResponse itrResponse = itrClient.getAppOrCoAppBasicDetails(itrBasicDetailsResponse);
-					if (itrResponse != null) {
-						coApp.put("coAppNameAsPerItr" ,itrResponse.getName());
-					}else {
-						logger.info("ITR name is empty for application==>{} and coAppId==>{}",applicationId ,coApplicantDetail.getId());
-					}
-					
+					coApp.put("coAppNameAsPerItr" ,itrResponse != null && itrResponse.getName() != null ? itrResponse.getName() : "-");
+				
 					// for name is edited or not:
 					String fullName = (coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") +" "+ (coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") +" "+ (coApplicantDetail.getLastName() != null ?  coApplicantDetail.getLastName() : "");
 					if(!CommonUtils.isObjectNullOrEmpty(fullName) && !CommonUtils.isObjectNullOrEmpty(itrResponse) && fullName.equalsIgnoreCase(itrResponse.getName())){
@@ -674,7 +670,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					logger.error("Error while fetching itr data from itrClient fro CoApplicant",e);
 				}
 				
-
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
 				coApp.put("setIncomeConsider", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsIncomeConsider()) ? coApplicantDetail.getIsIncomeConsider() == true ? "Yes" : "No" : "-");
 				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
@@ -890,7 +885,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
 				roiData.put("concessionRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? proposalMappingRequestString.getConsessionRoi() : "-");
-				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				if(effectiveRoi != null) {
 					finalRoi = !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? effectiveRoi - proposalMappingRequestString.getConsessionRoi() : null;
 				}else {
