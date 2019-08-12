@@ -88,6 +88,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Autowired
     private  DMSClient dmsClient;
 
+    @Autowired
+    private MFIConversationRepository mfiConversationRepository;
 
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -760,6 +762,45 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public boolean updateStaus(Long applicationId, Long status) {
         return loanApplicationRepository.updateStatus(applicationId, status) > 0;
+    }
+
+    @Override
+    public Object getMfiConversation(MFIConversationReq mfiConversationReq) {
+
+        List<MFIConversation> selfToSubMessageDetailsList = mfiConversationRepository.findAllMessageByFromIdAndToId(mfiConversationReq.getFromId(),mfiConversationReq.getToId(), mfiConversationReq.getApplicationId());
+        List<MFIConversation> selfToSuperMessageDetailsList = mfiConversationRepository.findAllMessageByFromIdAndToId(mfiConversationReq.getFromId(),mfiConversationReq.getSuperToId(), mfiConversationReq.getApplicationId());
+
+        List<MFIConversationReq> selfToSubMessageList = new ArrayList<>();
+        List<MFIConversationReq> selfToSuperMessageList = new ArrayList<>();
+
+        for (MFIConversation mfiConversation : selfToSubMessageDetailsList) {
+            MFIConversationReq mfiConversationReq1 = new MFIConversationReq();
+            BeanUtils.copyProperties(mfiConversation, mfiConversationReq1);
+            selfToSubMessageList.add(mfiConversationReq1);
+        }
+
+
+        for (MFIConversation mfiConversation : selfToSuperMessageDetailsList) {
+            MFIConversationReq mfiConversationReq1 = new MFIConversationReq();
+            BeanUtils.copyProperties(mfiConversation, mfiConversationReq1);
+            selfToSuperMessageList.add(mfiConversationReq1);
+        }
+
+        MFIConversationRes mfiConversationRes = new MFIConversationRes();
+        mfiConversationRes.setSelfToSubConversation(selfToSubMessageList);
+        mfiConversationRes.setSelfToSuperConversation(selfToSuperMessageList);
+
+        return mfiConversationRes;
+    }
+
+    @Override
+    public Object saveOrUpdateMfiConversation(MFIConversationReq mfiConversationReq) {
+
+        MFIConversation mfiConversation = new MFIConversation();
+        mfiConversationReq.setMessageDate(new Date());
+        BeanUtils.copyProperties(mfiConversationReq, mfiConversation);
+        mfiConversation = mfiConversationRepository.save(mfiConversation);
+        return CommonUtils.isObjectNullOrEmpty(mfiConversation);
     }
 
 }
