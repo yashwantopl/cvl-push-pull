@@ -94,9 +94,9 @@ public class AadharDetailsReq implements Serializable {
     private String message;
     private String status;
 
-    private byte[] profilePic;
-    private byte[] addressProofImg;
-    private byte[] consentFormImg;
+    private String profilePic;
+    private String addressProofImg;
+    private String consentFormImg;
 
     public AadharDetailsReq() {
     }
@@ -480,22 +480,6 @@ public class AadharDetailsReq implements Serializable {
         this.email = email;
     }
 
-    public byte[] getProfilePic() {
-        return profilePic;
-    }
-
-    public void setProfilePic(byte[] profilePic) {
-        this.profilePic = profilePic;
-    }
-
-    public byte[] getAddressProofImg() {
-        return addressProofImg;
-    }
-
-    public void setAddressProofImg(byte[] addressProofImg) {
-        this.addressProofImg = addressProofImg;
-    }
-
     public Long getOrgId() {
         return orgId;
     }
@@ -528,14 +512,6 @@ public class AadharDetailsReq implements Serializable {
         this.status = status;
     }
 
-    public byte[] getConsentFormImg() {
-        return consentFormImg;
-    }
-
-    public void setConsentFormImg(byte[] consentFormImg) {
-        this.consentFormImg = consentFormImg;
-    }
-
     public String getAddressProfNumber() {
         return addressProfNumber;
     }
@@ -550,5 +526,29 @@ public class AadharDetailsReq implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public String getAddressProofImg() {
+        return addressProofImg;
+    }
+
+    public void setAddressProofImg(String addressProofImg) {
+        this.addressProofImg = addressProofImg;
+    }
+
+    public String getConsentFormImg() {
+        return consentFormImg;
+    }
+
+    public void setConsentFormImg(String consentFormImg) {
+        this.consentFormImg = consentFormImg;
     }
 }

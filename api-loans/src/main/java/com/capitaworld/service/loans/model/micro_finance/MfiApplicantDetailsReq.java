@@ -107,8 +107,6 @@ public class MfiApplicantDetailsReq {
 
 	private Integer houseType;
 
-	private String loanPurpose;
-
 	private Double loanAmountRequired;
 
 	private Double costOfProject;
@@ -224,12 +222,10 @@ public class MfiApplicantDetailsReq {
 
 	private Integer addressProofType;
 
-	private byte[] addressProofImg;
-	private byte[] consentFormImg;
-	private byte[] profileImg;
-	private Double shipShgiInstallment;
-	private Double otherInstallment;
-	private Double loanInstallment;
+	private String addressProofImg;
+	private String consentFormImg;
+	private String profileImg;
+	private String aadharImg;
 	private Double educationExpense;
 	private Double medicalExpense;
 	private Double foodExpense;
@@ -785,14 +781,6 @@ public class MfiApplicantDetailsReq {
 		this.houseType = houseType;
 	}
 
-	public String getLoanPurpose() {
-		return loanPurpose;
-	}
-
-	public void setLoanPurpose(String loanPurpose) {
-		this.loanPurpose = loanPurpose;
-	}
-
 	public Double getLoanAmountRequired() {
 		return loanAmountRequired;
 	}
@@ -1199,54 +1187,6 @@ public class MfiApplicantDetailsReq {
 
 	public void setAddressProofType(Integer addressProofType) {
 		this.addressProofType = addressProofType;
-	}
-
-	public byte[] getAddressProofImg() {
-		return addressProofImg;
-	}
-
-	public void setAddressProofImg(byte[] addressProofImg) {
-		this.addressProofImg = addressProofImg;
-	}
-
-	public byte[] getConsentFormImg() {
-		return consentFormImg;
-	}
-
-	public void setConsentFormImg(byte[] consentFormImg) {
-		this.consentFormImg = consentFormImg;
-	}
-
-	public byte[] getProfileImg() {
-		return profileImg;
-	}
-
-	public void setProfileImg(byte[] profileImg) {
-		this.profileImg = profileImg;
-	}
-
-	public Double getShipShgiInstallment() {
-		return shipShgiInstallment;
-	}
-
-	public void setShipShgiInstallment(Double shipShgiInstallment) {
-		this.shipShgiInstallment = shipShgiInstallment;
-	}
-
-	public Double getOtherInstallment() {
-		return otherInstallment;
-	}
-
-	public void setOtherInstallment(Double otherInstallment) {
-		this.otherInstallment = otherInstallment;
-	}
-
-	public Double getLoanInstallment() {
-		return loanInstallment;
-	}
-
-	public void setLoanInstallment(Double loanInstallment) {
-		this.loanInstallment = loanInstallment;
 	}
 
 	public Double getEducationExpense() {
@@ -1775,4 +1715,36 @@ public class MfiApplicantDetailsReq {
     public void setAcHolderName(String acHolderName) {
         this.acHolderName = acHolderName;
     }
+
+	public String getAddressProofImg() {
+		return addressProofImg;
+	}
+
+	public void setAddressProofImg(String addressProofImg) {
+		this.addressProofImg = addressProofImg;
+	}
+
+	public String getConsentFormImg() {
+		return consentFormImg;
+	}
+
+	public void setConsentFormImg(String consentFormImg) {
+		this.consentFormImg = consentFormImg;
+	}
+
+	public String getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(String profileImg) {
+		this.profileImg = profileImg;
+	}
+
+	public String getAadharImg() {
+		return aadharImg;
+	}
+
+	public void setAadharImg(String aadharImg) {
+		this.aadharImg = aadharImg;
+	}
 }
