@@ -13,7 +13,7 @@ public class MfiLoanRecomandationReq {
     private Double loanAmountRecomandation;
     private Integer tenureRecomandation;
     private Integer moratoriumRecomandation;
-    private Double interestRateRecomandation;
+//    private Double interestRateRecomandation;
     private Integer installmentRecomandation;
 
     public Long getId() {
@@ -56,13 +56,13 @@ public class MfiLoanRecomandationReq {
         this.moratoriumRecomandation = moratoriumRecomandation;
     }
 
-    public Double getInterestRateRecomandation() {
-        return interestRateRecomandation;
-    }
-
-    public void setInterestRateRecomandation(Double interestRateRecomandation) {
-        this.interestRateRecomandation = interestRateRecomandation;
-    }
+//    public Double getInterestRateRecomandation() {
+//        return interestRateRecomandation;
+//    }
+//
+//    public void setInterestRateRecomandation(Double interestRateRecomandation) {
+//        this.interestRateRecomandation = interestRateRecomandation;
+//    }
 
     public Integer getInstallmentRecomandation() {
         return installmentRecomandation;
@@ -89,7 +89,7 @@ public class MfiLoanRecomandationReq {
                 ", loanAmountRecomandation=" + loanAmountRecomandation +
                 ", tenureRecomandation=" + tenureRecomandation +
                 ", moratoriumRecomandation=" + moratoriumRecomandation +
-                ", interestRateRecomandation=" + interestRateRecomandation +
+//                ", interestRateRecomandation=" + interestRateRecomandation +
                 ", installmentRecomandation=" + installmentRecomandation +
                 '}';
     }

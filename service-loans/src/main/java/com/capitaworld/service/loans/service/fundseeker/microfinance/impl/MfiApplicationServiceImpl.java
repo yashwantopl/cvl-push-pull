@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+import com.capitaworld.cibil.api.exception.CibilException;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentResponse;
@@ -13,6 +16,8 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.*;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
@@ -24,6 +29,7 @@ import com.capitaworld.service.loans.model.micro_finance.*;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.oneform.enums.ParticularsMfi;
 import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
 import org.json.simple.JSONObject;
@@ -87,6 +93,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Autowired
     private  DMSClient dmsClient;
+    @Autowired
+    private  CIBILClient cibilClient;
+
+    @Autowired
+    private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 
     @Override
@@ -254,6 +265,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             BeanUtils.copyProperties(projectDetailsReq, mfiApplicationDetail);
             mfiApplicationDetail.setIsProjectDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
+
+            saveExpenditureWithCopyFromProjectDetails(projectDetailsReq,1);
+            saveExpenditureWithCopyFromProjectDetails(projectDetailsReq,2);
             return true;
         }
         return false;
@@ -422,6 +436,19 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
         expectedIncomeDetails.setIsActive(true);
         expectedIncomeDetails.setType(type);
+        expectedIncomeDetailRepository.save(expectedIncomeDetails);
+        return true;
+    }
+
+    /**
+     *
+     * @param projectDetailsReq
+     * @return
+     */
+    private boolean saveExpenditureWithCopyFromProjectDetails(ProjectDetailsReq projectDetailsReq, Integer type){
+        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(projectDetailsReq.getApplicationId(),type) ;
+        expectedIncomeDetails.setApplicationId(projectDetailsReq.getApplicationId());
+        BeanUtils.copyProperties(projectDetailsReq, expectedIncomeDetails);
         expectedIncomeDetailRepository.save(expectedIncomeDetails);
         return true;
     }
@@ -607,9 +634,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getOtherExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMedicalExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getEducationExpense()) ||
                     CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getFoodExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getHouseHoldExpense()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getClothesExpense())) {
                 return "Some required fields in family monthly Expenses are missing in Income and Expenditure section";
-            } else if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getBusinessInBrief()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyCashflow()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyExpenditure())
-                    || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getMonthlyIncome())) {
-                return "Some required fields in expected increase income are missing in Income and Expenditure section";
+
             } else if (CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getPpiNoFamilyMember()) || CommonUtils.isObjectNullOrEmpty(mfiIncomeAndExpenditureReq.getPpiAcadamicHeadFamily())) {
                 return "Some required fields in Progress out of poverty index are missing in Income and Expenditure section";
             }
@@ -623,6 +648,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 return "Some required fields in cost of finance are missing In project detail section";
             } else if (CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getPromoterContribution()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getLoanRequiredFromSidbi())) {
                 return "Some required fields in mean of finance are missing In project detail section";
+            } else if (CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getBusinessInBrief()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getMonthlyCashflow()) || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getMonthlyExpenditure())
+                    || CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getMonthlyIncome())) {
+                return "Some required fields in expected increase income are missing in Income and Expenditure section";
             }
         } else if (type == CommonUtils.LOAN_ASSESMENT) {
             MfiLoanAssessmentDetailsReq assessmentDetailsReq = (MfiLoanAssessmentDetailsReq) validationJson;
@@ -633,8 +661,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         } else if (type == CommonUtils.LOAN_RECOMANDATION) {
             MfiLoanRecomandationReq assessmentDetailsReq = (MfiLoanRecomandationReq) validationJson;
             if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation()) ||
-                    CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation()) ||
-                    CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInterestRateRecomandation())) {
+                    CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation()) || CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation())) {
                 return "Some required fields in mean of missing in Loan Reccommendation detail section";
             }
         }
@@ -760,6 +787,22 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public boolean updateStaus(Long applicationId, Long status) {
         return loanApplicationRepository.updateStatus(applicationId, status) > 0;
+    }
+
+    @Override
+    public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId,Long userId){
+        try {
+            CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+            if (cibilReportMfi.getStatus() == 200) {
+                return financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+            }
+
+        } catch (LoansException e) {
+            e.printStackTrace();
+        } catch (CibilException e) {
+            e.printStackTrace();
+        }
+        return Collections.EMPTY_LIST;
     }
 
 }
