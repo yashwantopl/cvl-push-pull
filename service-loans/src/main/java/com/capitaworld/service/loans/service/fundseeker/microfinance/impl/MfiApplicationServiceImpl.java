@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import com.capitaworld.service.dms.client.DMSClient;
@@ -91,70 +92,80 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
         MFIApplicantDetail mfiApplicationDetail;
+
         String serverSideValidation = serverSideValidation(CommonUtils.BASIC_DETAILS, aadharDetailsReq);
         if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             AadharDetailsReq detailsReq = new AadharDetailsReq();
             detailsReq.setMessage(serverSideValidation);
             return detailsReq;
         }
+        try {
+            String addressProofToDms = "",profileImgToDms = "";
+            if (aadharDetailsReq.getId() == null) {
 
-        String addressProofToDms = "",profileImgToDms = "";
-        if (aadharDetailsReq.getId() == null) {
+                Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
+                        aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
+                if (applicationId != null) {
+                    mfiApplicationDetail = new MFIApplicantDetail();
+                    BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
+                    mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
+                    mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+                    mfiApplicationDetail.setStatus(CommonUtils.PENDING);
+                    mfiApplicationDetail.setIsActive(true);
+                    mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
+                    mfiApplicationDetail.setCreatedDate(new Date());
+                    mfiApplicationDetail.setType(aadharDetailsReq.getType());
+                    if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofImg())){
+                        byte[] addressProof = Base64.getDecoder().decode(new String(aadharDetailsReq.getAddressProofImg()).getBytes("UTF-8"));
+                        MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", addressProof);
+                        addressProofToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
+                        mfiApplicationDetail.setAddressProofImg(addressProofToDms);
+                    }
+                    if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getProfilePic())){
+                        byte[] profilePic = Base64.getDecoder().decode(new String(aadharDetailsReq.getProfilePic()).getBytes("UTF-8"));
+                        MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", profilePic);
+                        profileImgToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
+                        mfiApplicationDetail.setProfileImg(profileImgToDms);
+                    }
+                    detailsRepository.save(mfiApplicationDetail);
+                    aadharDetailsReq.setId(mfiApplicationDetail.getId());
+                    aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
+                }
+            } else {
 
-            Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
-                    aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
-            if (applicationId != null) {
-                mfiApplicationDetail = new MFIApplicantDetail();
+                mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
                 BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-                mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
-                mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-                mfiApplicationDetail.setStatus(CommonUtils.PENDING);
-                mfiApplicationDetail.setIsActive(true);
-                mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setCreatedDate(new Date());
-                mfiApplicationDetail.setType(aadharDetailsReq.getType());
+                mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(aadharDetailsReq.getApplicationId()));
+
                 if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofImg())){
-                    MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", aadharDetailsReq.getAddressProofImg());
+                    byte[] addressProof = Base64.getDecoder().decode(new String(aadharDetailsReq.getAddressProofImg()).getBytes("UTF-8"));
+                    MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", addressProof);
                     addressProofToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
                     mfiApplicationDetail.setAddressProofImg(addressProofToDms);
                 }
                 if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getProfilePic())){
-                    MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", aadharDetailsReq.getProfilePic());
+                    byte[] profilePic = Base64.getDecoder().decode(new String(aadharDetailsReq.getProfilePic()).getBytes("UTF-8"));
+                    MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", profilePic);
                     profileImgToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
                     mfiApplicationDetail.setProfileImg(profileImgToDms);
                 }
+
+
+                mfiApplicationDetail.setStatus(CommonUtils.PENDING);
+                mfiApplicationDetail.setModifiedBy(aadharDetailsReq.getUserId());
+                mfiApplicationDetail.setModifiedDate(new Date());
                 detailsRepository.save(mfiApplicationDetail);
-                aadharDetailsReq.setId(mfiApplicationDetail.getId());
-                aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
             }
-        } else {
-
-            mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
-            BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-            mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(aadharDetailsReq.getApplicationId()));
-
-            if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofImg())){
-                MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", aadharDetailsReq.getAddressProofImg());
-                addressProofToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setAddressProofImg(addressProofToDms);
-            }
-            if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getProfilePic())){
-                MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", aadharDetailsReq.getProfilePic());
-                profileImgToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setProfileImg(profileImgToDms);
-            }
-
-
-            mfiApplicationDetail.setStatus(CommonUtils.PENDING);
-            mfiApplicationDetail.setModifiedBy(aadharDetailsReq.getUserId());
-            mfiApplicationDetail.setModifiedDate(new Date());
-            detailsRepository.save(mfiApplicationDetail);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            logger.info("UnsupportedEncodingException while upload Image-- > {} ",aadharDetailsReq.getApplicationId());
         }
         AadharDetailsReq detailsReq = new AadharDetailsReq();
         detailsReq.setId(aadharDetailsReq.getId());
         detailsReq.setApplicationId(aadharDetailsReq.getApplicationId());
         detailsReq.setMessage("Successfully Saved");
         return detailsReq;
+
     }
 
     /**
