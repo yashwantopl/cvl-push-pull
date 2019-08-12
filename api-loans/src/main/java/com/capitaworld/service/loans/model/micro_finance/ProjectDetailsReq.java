@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -7,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ProjectDetailsReq {
 
 	private Long id;

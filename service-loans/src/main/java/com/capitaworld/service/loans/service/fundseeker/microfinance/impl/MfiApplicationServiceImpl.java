@@ -267,9 +267,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             BeanUtils.copyProperties(projectDetailsReq, mfiApplicationDetail);
             mfiApplicationDetail.setIsProjectDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
-
-            saveExpenditureWithCopyFromProjectDetails(projectDetailsReq,1);
-            saveExpenditureWithCopyFromProjectDetails(projectDetailsReq,2);
+            expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),1) ;
+            expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),2) ;
             return true;
         }
         return false;
@@ -438,19 +437,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
         expectedIncomeDetails.setIsActive(true);
         expectedIncomeDetails.setType(type);
-        expectedIncomeDetailRepository.save(expectedIncomeDetails);
-        return true;
-    }
-
-    /**
-     *
-     * @param projectDetailsReq
-     * @return
-     */
-    private boolean saveExpenditureWithCopyFromProjectDetails(ProjectDetailsReq projectDetailsReq, Integer type){
-        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(projectDetailsReq.getApplicationId(),type) ;
-        expectedIncomeDetails.setApplicationId(projectDetailsReq.getApplicationId());
-        BeanUtils.copyProperties(projectDetailsReq, expectedIncomeDetails);
         expectedIncomeDetailRepository.save(expectedIncomeDetails);
         return true;
     }

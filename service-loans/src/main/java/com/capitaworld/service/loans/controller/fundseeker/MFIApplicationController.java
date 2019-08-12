@@ -144,16 +144,9 @@ public class MFIApplicationController {
 	}
 
 	@PostMapping(value = "/saveProjectDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveProjectDetails(@RequestBody ProjectDetailsReq projectDetailsReq,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveProjectDetails(@RequestBody ProjectDetailsReq projectDetailsReq) {
 		try {
 			CommonDocumentUtils.startHook(logger, "save project details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
             if(projectDetailsReq.getId() == null){
                 logger.warn("Id  can not be empty ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
