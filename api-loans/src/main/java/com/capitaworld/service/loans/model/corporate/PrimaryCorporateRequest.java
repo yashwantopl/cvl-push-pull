@@ -34,6 +34,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Date commercialOperationDate;
     private Integer factoryPremise;
     private Integer knowHow;
+    private Double borrowerProjectedSales;
     private Integer competition;
 
     /*
@@ -279,6 +280,14 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
 	public void setEnhancementAmount(Double enhancementAmount) {
 		this.enhancementAmount = enhancementAmount;
+	}
+
+	public Double getBorrowerProjectedSales() {
+		return borrowerProjectedSales;
+	}
+
+	public void setBorrowerProjectedSales(Double borrowerProjectedSales) {
+		this.borrowerProjectedSales = borrowerProjectedSales;
 	}
 
 
