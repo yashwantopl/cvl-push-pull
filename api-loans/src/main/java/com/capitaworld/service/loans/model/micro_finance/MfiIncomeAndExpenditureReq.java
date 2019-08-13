@@ -23,10 +23,10 @@ public class MfiIncomeAndExpenditureReq {
 	private Double clothesExpense;
 
 	//3. Expected Increase in Income
-//	private Integer businessInBrief;
-//	private Double monthlyCashflow;
-//	private Double monthlyExpenditure;
-//	private Double monthlyIncome;
+	private Integer businessInBrief;
+	private Double monthlyCashflow;
+	private Double monthlyExpenditure;
+	private Double monthlyIncome;
 
 	private Integer type;
 	//4. Progress out of Poverty Index (PPI)
@@ -145,37 +145,37 @@ public class MfiIncomeAndExpenditureReq {
 		this.otherExpense = otherExpense;
 	}
 
-//	public Integer getBusinessInBrief() {
-//		return businessInBrief;
-//	}
-//
-//	public void setBusinessInBrief(Integer businessInBrief) {
-//		this.businessInBrief = businessInBrief;
-//	}
-//
-//	public Double getMonthlyCashflow() {
-//		return monthlyCashflow;
-//	}
-//
-//	public void setMonthlyCashflow(Double monthlyCashflow) {
-//		this.monthlyCashflow = monthlyCashflow;
-//	}
-//
-//	public Double getMonthlyExpenditure() {
-//		return monthlyExpenditure;
-//	}
-//
-//	public void setMonthlyExpenditure(Double monthlyExpenditure) {
-//		this.monthlyExpenditure = monthlyExpenditure;
-//	}
-//
-//	public Double getMonthlyIncome() {
-//		return monthlyIncome;
-//	}
-//
-//	public void setMonthlyIncome(Double monthlyIncome) {
-//		this.monthlyIncome = monthlyIncome;
-//	}
+	public Integer getBusinessInBrief() {
+		return businessInBrief;
+	}
+
+	public void setBusinessInBrief(Integer businessInBrief) {
+		this.businessInBrief = businessInBrief;
+	}
+
+	public Double getMonthlyCashflow() {
+		return monthlyCashflow;
+	}
+
+	public void setMonthlyCashflow(Double monthlyCashflow) {
+		this.monthlyCashflow = monthlyCashflow;
+	}
+
+	public Double getMonthlyExpenditure() {
+		return monthlyExpenditure;
+	}
+
+	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+		this.monthlyExpenditure = monthlyExpenditure;
+	}
+
+	public Double getMonthlyIncome() {
+		return monthlyIncome;
+	}
+
+	public void setMonthlyIncome(Double monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
 
 	public Integer getPpiNoFamilyMember() {
 		return ppiNoFamilyMember;

@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -121,6 +123,7 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.google.gson.internal.LinkedHashTreeMap;
 
 @Service
 @Transactional
@@ -1411,11 +1414,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					Double totalBsResipts = 0d;
 					Double totalGstValue = 0d;
 					Double bsValue= 0d;
-//					Collections.sort(Arrays.asList(bsMap), new DateComparator2());
-					 bsMap.entrySet().stream().sorted(new DateWiseComparator());
 					for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
 						Date parse = sdf1.parse(String.valueOf(entry.getKey()));
-						Map<String,Object>gstSalesVsBankStatementMonthly = new TreeMap<>(new DateWiseComparator());
+						HashMap<String,Object>gstSalesVsBankStatementMonthly = new HashMap();
 
 						gstSalesVsBankStatementMonthly.put("month", displayFormate.format(parse));
 						gstSalesVsBankStatementMonthly.put("gstValue", " - ");
@@ -1443,7 +1444,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						}
 						bsData.add(gstSalesVsBankStatementMonthly);
 					}
-					
 					comparisionData.put("gstVsBsSalesMonthly", !bsData.isEmpty()?bsData:null);
 					comparisionData.put("totalGstValueForGstVsBsSalesMonthly", CommonUtils.convertStringFormate(totalGstValue.toString()));
 					comparisionData.put("totalBsResiptsForGstVsBsSalesMonthly", CommonUtils.convertStringFormate(totalBsResipts.toString()));
@@ -1462,7 +1462,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				Double totalGstValue = 0d;
 				List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
 				
-				((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet().stream().sorted(new DateComparator2());
+//				((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet().stream().sorted(new DateComparator2());
 				for (Map.Entry<String, Object> bsMapEntry : bsMap.entrySet()) {
 					if(bsMapEntry != null) {
 						Date parse = sdf1.parse(String.valueOf(bsMapEntry.getKey()));
