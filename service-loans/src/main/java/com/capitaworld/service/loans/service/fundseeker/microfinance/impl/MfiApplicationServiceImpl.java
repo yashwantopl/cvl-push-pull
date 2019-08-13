@@ -267,11 +267,29 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             BeanUtils.copyProperties(projectDetailsReq, mfiApplicationDetail);
             mfiApplicationDetail.setIsProjectDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
-            expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),1) ;
-            expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),2) ;
+            MfiExpenseExpectedIncomeDetails byApplicationIdAndType = expectedIncomeDetailRepository.findByApplicationIdAndType(projectDetailsReq.getApplicationId(), 1);
+            if(!CommonUtils.isObjectNullOrEmpty(byApplicationIdAndType)){
+                expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),1) ;
+                expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),2) ;
+            } else {
+                saveprojectWithCopy(projectDetailsReq,1);
+                saveprojectWithCopy(projectDetailsReq,2);
+            }
+
             return true;
         }
         return false;
+    }
+
+    private boolean saveprojectWithCopy(ProjectDetailsReq projectDetailsReq,Integer type){
+        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+        expectedIncomeDetails.setApplicationId(projectDetailsReq.getApplicationId());
+        BeanUtils.copyProperties(projectDetailsReq, expectedIncomeDetails);
+        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
+        expectedIncomeDetails.setType(type);
+        expectedIncomeDetails.setIsActive(true);
+        expectedIncomeDetailRepository.save(expectedIncomeDetails);
+        return true;
     }
 
     @Override
@@ -434,7 +452,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         expectedIncomeDetails.setNetSaving(expectedIncomeDetails.getTotalMonthlyIncomeForFamily() - expectedIncomeDetails.getTotalExpense());
         //  Expected Increase in Income out of Loan ---- Monthly Income Column use
         //  Total Cash Flow
-        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
+//        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
         expectedIncomeDetails.setIsActive(true);
         expectedIncomeDetails.setType(type);
         expectedIncomeDetailRepository.save(expectedIncomeDetails);
