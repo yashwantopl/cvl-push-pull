@@ -1402,7 +1402,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}catch (Exception e) {
 			logger.error("Exception in getting gst and BS data for teaserview {}",e);
 		}
-		System.out.println("===>"+bsMap);
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
 		SimpleDateFormat sdf1=new SimpleDateFormat("MMM yy");
 		SimpleDateFormat displayFormate=new SimpleDateFormat("MM-yyyy");
@@ -1415,8 +1414,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					Double totalBsResipts = 0d;
 					Double totalGstValue = 0d;
 					Double bsValue= 0d;
-//					Collections.sort(Arrays.asList(bsMap), new DateComparator2());
-//					bsMap = bsMap.entrySet().stream().sorted(new DateWiseComparator());
 					for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
 						Date parse = sdf1.parse(String.valueOf(entry.getKey()));
 						HashMap<String,Object>gstSalesVsBankStatementMonthly = new HashMap();
