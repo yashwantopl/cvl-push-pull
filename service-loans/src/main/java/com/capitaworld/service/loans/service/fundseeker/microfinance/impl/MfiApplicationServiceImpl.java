@@ -2,36 +2,14 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.capitaworld.cibil.api.exception.CibilException;
-import com.capitaworld.cibil.api.model.CibilResponse;
-import com.capitaworld.cibil.client.CIBILClient;
-import com.capitaworld.service.dms.client.DMSClient;
-import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.dms.model.StorageDetailsResponse;
-import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.*;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ProposalRequestResponce;
-import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
-import com.capitaworld.api.workflow.model.WorkflowRequest;
-import com.capitaworld.api.workflow.model.WorkflowResponse;
-import com.capitaworld.api.workflow.utility.WorkflowUtils;
-import com.capitaworld.client.workflow.WorkflowClient;
-import com.capitaworld.service.loans.model.micro_finance.*;
-import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.*;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.oneform.enums.ParticularsMfi;
-import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,21 +18,65 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.cibil.api.exception.CibilException;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.CommonUtil;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIConversation;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiAssetsLiabilityDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiFinancialArrangementsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalRequestResponce;
+import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.FlagCheckMFI;
+import com.capitaworld.service.loans.model.micro_finance.MFIConversationReq;
+import com.capitaworld.service.loans.model.micro_finance.MFIConversationRes;
 import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiLoanRecomandationReq;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MFIConversationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiAssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiBankDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpectedIncomeDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiFinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import org.springframework.web.multipart.MultipartFile;
+import com.capitaworld.service.oneform.enums.ParticularsMfi;
+import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
 
 @Service
 @Transactional
@@ -101,6 +123,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     @Autowired
     private MFIConversationRepository mfiConversationRepository;
+    
+    @Autowired
+    private MfiFinancialArrangementDetailsRepository mfiFinancialRepository;
 
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
@@ -847,6 +872,22 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         BeanUtils.copyProperties(mfiConversationReq, mfiConversation);
         mfiConversation = mfiConversationRepository.save(mfiConversation);
         return CommonUtils.isObjectNullOrEmpty(mfiConversation);
+    }
+    
+    @Override
+    public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId) {
+    	mfiFinancialRepository.inActive(createdBy, applicationId, applicantId);
+    	for (MFIFinancialArrangementRequest req : financialDataList) {
+    		MfiFinancialArrangementsDetail arrangementsDetail = new MfiFinancialArrangementsDetail();
+    		BeanUtils.copyProperties(req, arrangementsDetail);
+    		arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+    		arrangementsDetail.setCreatedBy(createdBy);
+    		arrangementsDetail.setCreatedDate(new Date());
+    		arrangementsDetail.setIsActive(true);
+    		arrangementsDetail.setApplicantId(applicantId);
+    		mfiFinancialRepository.save(arrangementsDetail);
+    	}
+    	return true;
     }
 
 }

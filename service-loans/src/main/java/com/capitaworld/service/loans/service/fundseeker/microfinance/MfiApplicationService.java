@@ -1,16 +1,23 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance;
 
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import java.util.List;
 
 import com.capitaworld.api.workflow.model.WorkflowRequest;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.model.WorkflowData;
-import com.capitaworld.service.loans.model.micro_finance.*;
-
-import java.util.List;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalRequestResponce;
+import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
+import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.FlagCheckMFI;
+import com.capitaworld.service.loans.model.micro_finance.MFIConversationReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiLoanRecomandationReq;
+import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 
 public interface MfiApplicationService {
 
@@ -67,5 +74,7 @@ public interface MfiApplicationService {
 	public Object saveOrUpdateMfiConversation(MFIConversationReq mfiConversationReq);
 
 	public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId, Long userId);
+	
+	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId);
 
 }
