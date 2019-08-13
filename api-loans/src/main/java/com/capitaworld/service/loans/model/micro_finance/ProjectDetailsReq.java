@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -7,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ProjectDetailsReq {
 
 	private Long id;
@@ -36,6 +38,12 @@ public class ProjectDetailsReq {
 	private Integer repaymentTrack;
 	private Integer competition;
 
+	//4. Expected Increase in Income
+	private Integer businessInBrief;
+	private Double monthlyCashflow;
+	private Double monthlyExpenditure;
+	private Double monthlyIncome;
+
 	private Boolean isProjectDetailsFilled;
 	private Boolean isRepaymentDetailsFilled;
 
@@ -46,7 +54,7 @@ public class ProjectDetailsReq {
 			Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
 			Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
 			Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
-			Boolean isProjectDetailsFilled) {
+			Boolean isProjectDetailsFilled,Integer businessInBrief, Double monthlyCashflow, Double monthlyExpenditure,Double monthlyIncome) {
 		super();
 		this.applicationId = applicationId;
 		this.loanType = loanType;
@@ -64,6 +72,10 @@ public class ProjectDetailsReq {
 		this.insurenceCompanyName = insurenceCompanyName;
 		this.insurencePremium = insurencePremium;
 		this.isProjectDetailsFilled = isProjectDetailsFilled;
+		this.businessInBrief = businessInBrief;
+		this.monthlyCashflow = monthlyCashflow;
+		this.monthlyExpenditure = monthlyExpenditure;
+		this.monthlyIncome = monthlyIncome;
 	}
 
 	public Integer getLoanType() {
@@ -243,6 +255,38 @@ public class ProjectDetailsReq {
 		this.competition = competition;
 	}
 
+	public Integer getBusinessInBrief() {
+		return businessInBrief;
+	}
+
+	public void setBusinessInBrief(Integer businessInBrief) {
+		this.businessInBrief = businessInBrief;
+	}
+
+	public Double getMonthlyCashflow() {
+		return monthlyCashflow;
+	}
+
+	public void setMonthlyCashflow(Double monthlyCashflow) {
+		this.monthlyCashflow = monthlyCashflow;
+	}
+
+	public Double getMonthlyExpenditure() {
+		return monthlyExpenditure;
+	}
+
+	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+		this.monthlyExpenditure = monthlyExpenditure;
+	}
+
+	public Double getMonthlyIncome() {
+		return monthlyIncome;
+	}
+
+	public void setMonthlyIncome(Double monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
+
 	@Override
 	public String toString() {
 		return "ProjectDetailsReq{" +
@@ -263,6 +307,13 @@ public class ProjectDetailsReq {
 				", insurenceRequired=" + insurenceRequired +
 				", insurenceCompanyName='" + insurenceCompanyName + '\'' +
 				", insurencePremium=" + insurencePremium +
+				", clientType=" + clientType +
+				", repaymentTrack=" + repaymentTrack +
+				", competition=" + competition +
+				", businessInBrief=" + businessInBrief +
+				", monthlyCashflow=" + monthlyCashflow +
+				", monthlyExpenditure=" + monthlyExpenditure +
+				", monthlyIncome=" + monthlyIncome +
 				", isProjectDetailsFilled=" + isProjectDetailsFilled +
 				", isRepaymentDetailsFilled=" + isRepaymentDetailsFilled +
 				'}';
