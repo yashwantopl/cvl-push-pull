@@ -1538,7 +1538,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 									
 									Double totalOfGst=Double.valueOf(String.valueOf(yearWiseDomestic.getValue())) + Double.valueOf(String.valueOf(exp.getValue()));
 									gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",totalOfGst != 0?CommonUtils.convertStringFormate(totalOfGst):" 0 ");
-									gstPurchaseVsBankStatementMonthly.put("itrSales", !itrSales.get("itrSales").equals(" - ")?CommonUtils.convertStringFormate(itrSales.get("itrSales").toString()):" - ");
+									gstPurchaseVsBankStatementMonthly.put("itrSales", itrSales.get("itrSales") != null && !itrSales.get("itrSales").equals(" - ")?CommonUtils.convertStringFormate(itrSales.get("itrSales").toString()):" - ");
 									Double gstToItr = 0d;
 									if(itrSales.get("itrSales") != null && Double.valueOf(itrSales.get("itrSales").toString()) != 0) {
 										gstToItr = totalOfGst/Double.valueOf(itrSales.get("itrSales").toString()) * 100;
@@ -1549,7 +1549,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 									totalOfGstSalesTotal += totalOfGst; 
 									totalGstExp +=Double.valueOf(exp.getValue().toString());
 									totalGstDomestic +=!yearWiseDomestic.getValue().toString().equals("0")?Double.valueOf(yearWiseDomestic.getValue().toString()):0;
-									totalOfITRSalesTotal += !itrSales.get("itrSales").toString().equals("0") && !itrSales.get("itrSales").toString().equals("-")?Double.valueOf(itrSales.get("itrSales").toString()):0;
+									totalOfITRSalesTotal += itrSales.get("itrSales") != null && !itrSales.get("itrSales").toString().equals("0") && !itrSales.get("itrSales").toString().equals("-")?Double.valueOf(itrSales.get("itrSales").toString()):0;
 
 									if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
 										itrSalesData.add(gstPurchaseVsBankStatementMonthly);
@@ -1594,9 +1594,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 								gstPurchaseVsBankStatementMonthly.put("gstPurchase", y.getValue()!= null && y.getValue().toString() != "0" ?CommonUtils.convertStringFormate(y.getValue().toString()) : " - ");
 								totalOfGstPurchase += Double.valueOf(y.getValue().toString());
 								
-								gstPurchaseVsBankStatementMonthly.put("itrPurchase", Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0?CommonUtils.convertStringFormate(fi.get("rowMaterialIndigenous").toString()):" - ");
+								gstPurchaseVsBankStatementMonthly.put("itrPurchase", fi.get("rowMaterialIndigenous") != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0?CommonUtils.convertStringFormate(fi.get("rowMaterialIndigenous").toString()):" - ");
 								
-								totalOfITRPurchase += Double.valueOf(fi.get("rowMaterialIndigenous").toString());
+								totalOfITRPurchase += fi.get("rowMaterialIndigenous") != null ?Double.valueOf(fi.get("rowMaterialIndigenous").toString()):0;
 								Double gstToItr = 0d;
 								if(fi.get("rowMaterialIndigenous") != null && y.getValue() != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0) {
 									gstToItr = (Double.valueOf(fi.get("rowMaterialIndigenous").toString())/Double.valueOf(y.getValue().toString()) * 100);
