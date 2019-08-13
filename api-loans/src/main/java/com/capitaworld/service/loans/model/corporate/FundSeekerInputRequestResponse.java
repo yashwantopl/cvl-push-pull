@@ -154,7 +154,8 @@ public class FundSeekerInputRequestResponse {
     
     private Double additionalLoanAmount;
     
-    private Double borrowerDcldProjectedSales;
+    //do not open it ask nilay for that
+  /*  private Double borrowerDcldProjectedSales;*/
     
 	public Long getUserId() {
         return userId;
@@ -672,16 +673,6 @@ public class FundSeekerInputRequestResponse {
     public void setProductServiceDescription(String productServiceDescription) {
         this.productServiceDescription = productServiceDescription;
     }
-    
-    
-
-    public Double getBorrowerDcldProjectedSales() {
-		return borrowerDcldProjectedSales;
-	}
-
-	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
-		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
-	}
 
 	@Override
 	public String toString() {
@@ -715,9 +706,20 @@ public class FundSeekerInputRequestResponse {
 				+ projectedTurnOverCurrFinYear + ", profitCurrFinYear=" + profitCurrFinYear
 				+ ", projectedProfitCurrFinYear=" + projectedProfitCurrFinYear + ", enhancementAmount="
 				+ enhancementAmount + ", isAdditionalAmount=" + isAdditionalAmount + ", isAllowSwitchExistingLender="
-				+ isAllowSwitchExistingLender + ", additionalLoanAmount=" + additionalLoanAmount
-				+ ", borrowerDcldProjectedSales=" + borrowerDcldProjectedSales + "]";
+				+ isAllowSwitchExistingLender + ", additionalLoanAmount=" + additionalLoanAmount + "]";
 	}
+    
+    
+/*
+    public Double getBorrowerDcldProjectedSales() {
+		return borrowerDcldProjectedSales;
+	}
+
+	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
+		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
+	}*/
+
+	
 
 
 }
