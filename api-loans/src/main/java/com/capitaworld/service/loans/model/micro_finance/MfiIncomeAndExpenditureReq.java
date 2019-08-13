@@ -23,10 +23,10 @@ public class MfiIncomeAndExpenditureReq {
 	private Double clothesExpense;
 
 	//3. Expected Increase in Income
-	private Integer businessInBrief;
-	private Double monthlyCashflow;
-	private Double monthlyExpenditure;
-	private Double monthlyIncome;
+//	private Integer businessInBrief;
+//	private Double monthlyCashflow;
+//	private Double monthlyExpenditure;
+//	private Double monthlyIncome;
 
 	private Integer type;
 	//4. Progress out of Poverty Index (PPI)
@@ -53,8 +53,7 @@ public class MfiIncomeAndExpenditureReq {
 	}
 
 	public MfiIncomeAndExpenditureReq(Long applicationId, Double educationExpense, Double medicalExpense, Double foodExpense,
-			Double otherExpense, Integer businessInBrief, Double monthlyCashflow, Double monthlyExpenditure,
-			Double monthlyIncome, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
+			Double otherExpense, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
 			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
 			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
 			Integer ppiOtherTableInFamily,Double houseHoldExpense, Double clothesExpense,Integer type) {
@@ -63,10 +62,10 @@ public class MfiIncomeAndExpenditureReq {
 		this.medicalExpense = medicalExpense;
 		this.foodExpense = foodExpense;
 		this.otherExpense = otherExpense;
-		this.businessInBrief = businessInBrief;
-		this.monthlyCashflow = monthlyCashflow;
-		this.monthlyExpenditure = monthlyExpenditure;
-		this.monthlyIncome = monthlyIncome;
+//		this.businessInBrief = businessInBrief;
+//		this.monthlyCashflow = monthlyCashflow;
+//		this.monthlyExpenditure = monthlyExpenditure;
+//		this.monthlyIncome = monthlyIncome;
 		this.ppiNoFamilyMember = ppiNoFamilyMember;
 		this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
 		this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
@@ -146,37 +145,37 @@ public class MfiIncomeAndExpenditureReq {
 		this.otherExpense = otherExpense;
 	}
 
-	public Integer getBusinessInBrief() {
-		return businessInBrief;
-	}
-
-	public void setBusinessInBrief(Integer businessInBrief) {
-		this.businessInBrief = businessInBrief;
-	}
-
-	public Double getMonthlyCashflow() {
-		return monthlyCashflow;
-	}
-
-	public void setMonthlyCashflow(Double monthlyCashflow) {
-		this.monthlyCashflow = monthlyCashflow;
-	}
-
-	public Double getMonthlyExpenditure() {
-		return monthlyExpenditure;
-	}
-
-	public void setMonthlyExpenditure(Double monthlyExpenditure) {
-		this.monthlyExpenditure = monthlyExpenditure;
-	}
-
-	public Double getMonthlyIncome() {
-		return monthlyIncome;
-	}
-
-	public void setMonthlyIncome(Double monthlyIncome) {
-		this.monthlyIncome = monthlyIncome;
-	}
+//	public Integer getBusinessInBrief() {
+//		return businessInBrief;
+//	}
+//
+//	public void setBusinessInBrief(Integer businessInBrief) {
+//		this.businessInBrief = businessInBrief;
+//	}
+//
+//	public Double getMonthlyCashflow() {
+//		return monthlyCashflow;
+//	}
+//
+//	public void setMonthlyCashflow(Double monthlyCashflow) {
+//		this.monthlyCashflow = monthlyCashflow;
+//	}
+//
+//	public Double getMonthlyExpenditure() {
+//		return monthlyExpenditure;
+//	}
+//
+//	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+//		this.monthlyExpenditure = monthlyExpenditure;
+//	}
+//
+//	public Double getMonthlyIncome() {
+//		return monthlyIncome;
+//	}
+//
+//	public void setMonthlyIncome(Double monthlyIncome) {
+//		this.monthlyIncome = monthlyIncome;
+//	}
 
 	public Integer getPpiNoFamilyMember() {
 		return ppiNoFamilyMember;
