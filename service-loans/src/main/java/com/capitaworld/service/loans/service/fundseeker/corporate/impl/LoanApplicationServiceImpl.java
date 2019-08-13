@@ -8403,6 +8403,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
 						GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
 						BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
+						gstRelatedPartyRequest.setPan(gstRelatedParty.getPan().toUpperCase());
 						gstRelatedPartyRequest.setRelationShip("Self-Declared - GST");
 						gstRelatedPartyRequest.setSales(" - ");
 						gstRelatedPartyRequest.setPurchase(" - ");
