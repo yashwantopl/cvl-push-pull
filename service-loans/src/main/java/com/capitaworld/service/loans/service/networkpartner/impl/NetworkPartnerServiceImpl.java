@@ -1409,7 +1409,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						request.getDdrStatusId(),
 						request.getUserOrgId(),
 						request.getProductTypeId(),
-						request.getBusinessTypeId());
+						request.getBusinessTypeId(),
+						new PageRequest(request.getPageIndex(),request.getSize()));
 
 				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
 					//add also proposal sent to sidbi checker
@@ -1417,7 +1418,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 							request.getUserOrgId(),
 							request.getProductTypeId(),
-							request.getBusinessTypeId()));
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(),request.getSize())));
 				}
 				for(BigInteger appid : sanctionDisRejIneligibleProposal){
 					if(applicationIdList.contains(appid)){
@@ -1443,13 +1445,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							CommonUtils.MFIApplicationStatus.MFI_Submitted,
 							request.getUserOrgId(),
 							request.getProductTypeId(),
-							request.getBusinessTypeId());
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(),request.getSize()));
 				}else if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
 					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
 							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 							request.getUserOrgId(),
 							request.getProductTypeId(),
-							request.getBusinessTypeId());
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(),request.getSize()));
 				}
 
 				for(BigInteger appid : sanctionDisRejIneligibleProposal){
@@ -1472,7 +1476,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 						request.getUserOrgId(),
 						request.getProductTypeId(),
-						request.getBusinessTypeId());
+						request.getBusinessTypeId(),
+						new PageRequest(request.getPageIndex(),request.getSize()));
 				for(BigInteger appid : sanctionDisRejIneligibleProposal){
 					if(applicationIdList.contains(appid)){
 						applicationIdList.remove(appid);
