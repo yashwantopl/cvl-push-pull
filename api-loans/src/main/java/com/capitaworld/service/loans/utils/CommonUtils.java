@@ -534,7 +534,7 @@ public class CommonUtils {
 		private static final String[] RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","createdBy","createdDate","isActive","applicationId","modifiedBy","modifiedDate"};
 
 		public static String[] getRetailPrimary() {
-			return PL_RETAIL_PRIMARY;
+			return RETAIL_PRIMARY;
 		}
 
 		private static final String[] PL_RETAIL_FINAL = {"addressSameAs","religion","qualifyingYear","noChildren","fatherName","motherName","spouseName","noDependent",
@@ -1768,6 +1768,7 @@ public enum APIFlags {
 		}
 
 	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
@@ -1848,7 +1849,7 @@ public enum APIFlags {
 		}
 
 	}
-	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Object printFieldsForValue(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
@@ -2137,5 +2138,4 @@ public enum APIFlags {
 		}
 		return amount;
 	}
-	
 }

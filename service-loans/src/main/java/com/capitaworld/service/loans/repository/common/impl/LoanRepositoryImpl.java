@@ -451,6 +451,18 @@ public class LoanRepositoryImpl implements LoanRepository {
 			}else {
 				storedProcedureQuery.setParameter("stus",status);				
 			}
+			
+			if(fromLimit == null) {
+				storedProcedureQuery.setParameter("fromLimit",-1);
+			}else {
+				storedProcedureQuery.setParameter("fromLimit",fromLimit);				
+			}
+			
+			if(toLimit == null) {
+				storedProcedureQuery.setParameter("toLimit",-1);
+			}else {
+				storedProcedureQuery.setParameter("toLimit",toLimit);				
+			}
 			storedProcedureQuery.setParameter("orgId",orgId);
 			storedProcedureQuery.execute();
 			return (String)storedProcedureQuery.getOutputParameterValue("result");
