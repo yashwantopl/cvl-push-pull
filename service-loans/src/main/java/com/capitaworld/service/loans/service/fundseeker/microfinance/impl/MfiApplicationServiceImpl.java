@@ -294,8 +294,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             detailsRepository.save(mfiApplicationDetail);
             MfiExpenseExpectedIncomeDetails byApplicationIdAndType = expectedIncomeDetailRepository.findByApplicationIdAndType(projectDetailsReq.getApplicationId(), 1);
             if(!CommonUtils.isObjectNullOrEmpty(byApplicationIdAndType)){
-                expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),1) ;
-                expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),projectDetailsReq.getApplicationId(),2) ;
+                Double cashFlow = byApplicationIdAndType.getMonthlyIncome() + byApplicationIdAndType.getNetSaving();
+                expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),cashFlow,projectDetailsReq.getApplicationId(),1) ;
+                expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),cashFlow,projectDetailsReq.getApplicationId(),2) ;
             } else {
                 saveprojectWithCopy(projectDetailsReq,1);
                 saveprojectWithCopy(projectDetailsReq,2);
