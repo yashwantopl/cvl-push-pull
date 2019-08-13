@@ -49,6 +49,7 @@ import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestRespo
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
@@ -157,6 +158,7 @@ public class LoansClient {
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
+	private static final String MFI_FINANCIAL_ARRANGEMENT_DETAILS = "/saveFinancialDetails";
 	private static final String CREDIT_RATING_DETAILS_CIBIL = "/credit_rating_organization_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
@@ -1492,6 +1494,20 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveFinancialArrangementDetailFromCibil : ",e);
+			throw new ExcelException(url + " " + e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse saveMfiFinancialArrangementDetail(List<MFIFinancialArrangementRequest> detailRequests, Long applicationId, Long userId, Long applicantId) throws ExcelException {
+		String url = loansBaseUrl.concat(MFI_FINANCIAL_ARRANGEMENT_DETAILS).concat("/" + applicationId + "/" + userId + "/" + applicantId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<MFIFinancialArrangementRequest>> entity = new HttpEntity<>(detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in saveMfiFinancialArrangementDetail : ",e);
 			throw new ExcelException(url + " " + e.getCause().getMessage());
 		}
 	}
