@@ -53,8 +53,7 @@ public class MfiIncomeAndExpenditureReq {
 	}
 
 	public MfiIncomeAndExpenditureReq(Long applicationId, Double educationExpense, Double medicalExpense, Double foodExpense,
-			Double otherExpense, Integer businessInBrief, Double monthlyCashflow, Double monthlyExpenditure,
-			Double monthlyIncome, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
+			Double otherExpense, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
 			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
 			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
 			Integer ppiOtherTableInFamily,Double houseHoldExpense, Double clothesExpense,Integer type) {
@@ -63,10 +62,10 @@ public class MfiIncomeAndExpenditureReq {
 		this.medicalExpense = medicalExpense;
 		this.foodExpense = foodExpense;
 		this.otherExpense = otherExpense;
-		this.businessInBrief = businessInBrief;
-		this.monthlyCashflow = monthlyCashflow;
-		this.monthlyExpenditure = monthlyExpenditure;
-		this.monthlyIncome = monthlyIncome;
+//		this.businessInBrief = businessInBrief;
+//		this.monthlyCashflow = monthlyCashflow;
+//		this.monthlyExpenditure = monthlyExpenditure;
+//		this.monthlyIncome = monthlyIncome;
 		this.ppiNoFamilyMember = ppiNoFamilyMember;
 		this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
 		this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;

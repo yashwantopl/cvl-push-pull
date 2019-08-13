@@ -68,6 +68,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeDetail.setSalaryIncome(appIncomeReq.getSalaryIncome());
 			appIncomeDetail.setCapitalGain(appIncomeReq.getCapitalGain());
 			appIncomeDetail.setIncomeRatio(appIncomeReq.getIncomeRatio());
+			appIncomeDetail.setOtherSource(appIncomeReq.getOtherSource());
 			appIncomeDetail.setPgbp(appIncomeReq.getPgbp());
 			appIncomeDetail.setHouseProperty(appIncomeReq.getHouseProperty());
 			appIncomeRepository.save(appIncomeDetail);

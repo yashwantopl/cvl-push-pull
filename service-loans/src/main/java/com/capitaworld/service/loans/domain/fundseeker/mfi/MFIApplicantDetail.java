@@ -143,9 +143,6 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "relation_with_nominee_id")
 	private Integer relationWithNomineeId;
 
-	@Column(name = "nominee_address")
-	private String nomineeAddress;
-
 	@Column(name = "nominee_pincode")
 	private String nomineePincode;
 
@@ -579,14 +576,6 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setRelationWithNomineeId(Integer relationWithNomineeId) {
 		this.relationWithNomineeId = relationWithNomineeId;
-	}
-
-	public String getNomineeAddress() {
-		return nomineeAddress;
-	}
-
-	public void setNomineeAddress(String nomineeAddress) {
-		this.nomineeAddress = nomineeAddress;
 	}
 
 	public String getNomineePincode() {
