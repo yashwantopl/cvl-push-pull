@@ -294,7 +294,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             detailsRepository.save(mfiApplicationDetail);
             MfiExpenseExpectedIncomeDetails byApplicationIdAndType = expectedIncomeDetailRepository.findByApplicationIdAndType(projectDetailsReq.getApplicationId(), 1);
             if(!CommonUtils.isObjectNullOrEmpty(byApplicationIdAndType)){
-                Double cashFlow = byApplicationIdAndType.getMonthlyIncome() + byApplicationIdAndType.getNetSaving();
+                Double cashFlow = projectDetailsReq.getMonthlyIncome() + byApplicationIdAndType.getNetSaving();
                 expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),cashFlow,projectDetailsReq.getApplicationId(),1) ;
                 expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),cashFlow,projectDetailsReq.getApplicationId(),2) ;
             } else {
