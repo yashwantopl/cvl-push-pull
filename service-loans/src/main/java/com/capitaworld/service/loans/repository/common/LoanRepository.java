@@ -75,5 +75,5 @@ public interface LoanRepository {
 	
 	public String getCampaignUser(Long userId);
 	
-	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status);
+	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit);
 }

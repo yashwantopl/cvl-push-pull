@@ -437,19 +437,21 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
-	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status) {
+	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit) {
 		try {
 			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spGetAgriApplicationsByOrgIdAndStatus");
 			storedProcedureQuery.registerStoredProcedureParameter("orgId",Integer.class, ParameterMode.IN);
-			storedProcedureQuery.setParameter("orgId",orgId);
-			
 			storedProcedureQuery.registerStoredProcedureParameter("stus",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("fromLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("toLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
+			
 			if(status == null) {
 				storedProcedureQuery.setParameter("stus",-1);
 			}else {
 				storedProcedureQuery.setParameter("stus",status);				
 			}
-			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
+			storedProcedureQuery.setParameter("orgId",orgId);
 			storedProcedureQuery.execute();
 			return (String)storedProcedureQuery.getOutputParameterValue("result");
 			

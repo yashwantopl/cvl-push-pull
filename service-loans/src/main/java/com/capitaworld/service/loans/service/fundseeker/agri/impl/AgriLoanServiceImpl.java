@@ -16,8 +16,8 @@ public class AgriLoanServiceImpl implements AgriLoanService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public String getApplications(Integer orgId, Integer status) {
-		return loanRepository.getAgriLoanApplicationsByOrgIdAndStatus(orgId, status);
+	public String getApplications(Integer orgId, Integer status,Integer fromLimit,Integer toLimit) {
+		return loanRepository.getAgriLoanApplicationsByOrgIdAndStatus(orgId, status,fromLimit,toLimit);
 	}
 
 }

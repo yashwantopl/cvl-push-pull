@@ -122,8 +122,8 @@ public class AgriLoanController {
 		}
 	}
 	
-	@GetMapping(value = "/applications/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getApplication(@PathVariable Integer status , HttpServletRequest request) {
+	@GetMapping(value = "/applications/{status}/{fromLimit}/{toLimit}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApplication(@PathVariable("status") Integer status ,@PathVariable("fromLimit") Integer fromLimit,@PathVariable("toLimit") Integer toLimit, HttpServletRequest request) {
 		try {
 			
 			CommonDocumentUtils.startHook(logger, "save");
@@ -133,7 +133,7 @@ public class AgriLoanController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Result", HttpStatus.OK.value(),agriLoanService.getApplications(orgId.intValue(), status)), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Result", HttpStatus.OK.value(),agriLoanService.getApplications(orgId.intValue(), status,fromLimit,toLimit)), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Agri Loan Data Details ==>", e);
