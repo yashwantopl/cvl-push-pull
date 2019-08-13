@@ -639,8 +639,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             }
         } else if (type == CommonUtils.PERSONAL_DETAILS) {
             PersonalDetailsReq personalDetailsReq = (PersonalDetailsReq) validationJson;
-            if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getFatherName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getSpouseName()) ||
-                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNoDependent()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getSpouseBirthDate())) {
+            if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getFatherName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNoDependent())) {
                 return "Some required fields in Family Details are Missing Personal Detail section";
             } else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getRelationWithNomineeId()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeBirthDate()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineePincode()) ||
