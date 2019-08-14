@@ -22,13 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface MfiApplicationService {
 
-    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq);
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile addressProofFile, AadharDetailsReq aadharDetailsReq);
 
-	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId);
+	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId,Integer type);
 
 	public Object saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq);
 
-	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId);
+	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId,Integer type);
 
 	public Object saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
 
@@ -38,7 +38,7 @@ public interface MfiApplicationService {
 
 	public MfiApplicantDetailsReq getApplicantDetails(Long applicationId,Integer type);
 
-	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId);
+	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId,Integer type);
 
 	public Object saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
 
@@ -54,7 +54,7 @@ public interface MfiApplicationService {
 
 	public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq recomandationReq);
 
-	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
+	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId,Integer type);
 
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
 
@@ -77,6 +77,8 @@ public interface MfiApplicationService {
 	public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId, Long userId);
 	
 	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId);
+	
+	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId,Long applicantId);
 
 	public boolean saveConsentFormImage(MultipartFile uploadingFile,AadharDetailsReq aadharDetailsReq);
 
