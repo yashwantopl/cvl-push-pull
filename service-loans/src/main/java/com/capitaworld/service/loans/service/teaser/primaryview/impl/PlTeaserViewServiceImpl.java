@@ -57,6 +57,7 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -78,9 +79,11 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.CastCategory;
@@ -111,6 +114,7 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author nilay.darji
@@ -136,6 +140,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private CommonRepository commonRepository;
 
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -145,7 +152,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 	@Autowired
 	private MatchEngineClient matchEngineClient;
-
+	
+	@Autowired
+	private CommonRepository commonRepo;
 
 	@Autowired
 	private ScoringClient scoringClient;
@@ -756,7 +765,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).intValue()) + " Years");
 		plTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		plTeaserViewResponse.setAppId(toApplicationId);
-		
+		 
 
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
@@ -815,6 +824,11 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				if(ResidenceStatusRetailMst.OWNED.getId() == plRetailApplicantRequest.getResidenceType()) {
+					plRetailApplicantResponse.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp() != null ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+				}else {
+					plRetailApplicantResponse.setIsOwnedProp("-");
+				}
 				/*plRetailApplicantResponse.setNameOfEmployer(plRetailApplicantRequest.getNameOfEmployer());*/
 				
 				/*name of emp*/
@@ -1051,19 +1065,45 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		
 		//PROPOSAL RESPONSE
 		try {
+			ObjectMapper mapper = new ObjectMapper();
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 			proposalMappingRequest.setApplicationId(toApplicationId);
 			proposalMappingRequest.setFpProductId(productMappingId);
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+			if(proposalMappingRequestString != null) {
+				plTeaserViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
+				plTeaserViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
+				 if (!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
+					 plTeaserViewResponse.setEffectiveRoi(String.valueOf(Double.valueOf(proposalMappingRequestString.getMclrRoi()) + Double.valueOf(proposalMappingRequestString.getSpreadRoi())));		    	
+					} else {
+						plTeaserViewResponse.setEffectiveRoi(proposalMappingRequestString.getMclrRoi() == null && proposalMappingRequestString.getSpreadRoi() == null ? "-" : proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : proposalMappingRequestString.getSpreadRoi().toString());				
+					}
+				 plTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
+				 plTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+				    if (plTeaserViewResponse.getEffectiveRoi() != null) {
+				    	plTeaserViewResponse.setFinalRoi(proposalMappingRequestString.getConsessionRoi() != null ? String.valueOf(Double.valueOf(plTeaserViewResponse.getEffectiveRoi()) - Double.valueOf(proposalMappingRequestString.getConsessionRoi())) : "-" );
+					} else {
+						plTeaserViewResponse.setFinalRoi("-");
+					}			
 			if(proposalMappingResponse.getData() != null) {	
 				plTeaserViewResponse.setProposalData(proposalMappingResponse.getData());
 			}else {
 				logger.info("proposal data is null");
 			}
+		} 
 		}catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-				
+			
+		//Note for restrict Borrower
+		try {
+			String note = commonRepository.getNoteForHLCam(toApplicationId);
+			plTeaserViewResponse.setNoteOfBorrower(!CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+		}
+		
 		//cibil score
 		try {
 			CibilRequest cibilReq=new CibilRequest();
@@ -1142,13 +1182,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
+		ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+		String nameAsPerItr = null;
 		try {
 			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
-				
-				
-				ITRBasicDetailsResponse itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
-				plTeaserViewResponse.setNameAsPerItr(itrBasicDetailsResponse.getName() != null ? itrBasicDetailsResponse.getName(): "NA");
+				itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+				nameAsPerItr = itrBasicDetailsResponse.getName();
+				plTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
 			} else {
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
@@ -1167,11 +1208,19 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			 plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
 		 }*/
 		String fullName = plRetailApplicantResponse.getFullName();
-		if(!CommonUtils.isObjectNullOrEmpty(fullName.trim()) && fullName.equalsIgnoreCase(String.valueOf(plTeaserViewResponse.getNameAsPerItr()))){
-			plTeaserViewResponse.setIsNameEdited(Boolean.FALSE);
-		}else{
-			plTeaserViewResponse.setIsNameEdited(Boolean.TRUE);
+		if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equalsIgnoreCase(nameAsPerItr)) {
+			plTeaserViewResponse.setNameEditedByUser("-");
+		}else {
+			plTeaserViewResponse.setNameEditedByUser(fullName);	
 		}
+		
+		//Note for restrict Borrower
+				try {
+					String note = commonRepo.getNoteForHLCam(toApplicationId);
+					plTeaserViewResponse.setNoteOfBorrower(!CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+				}catch (Exception e) {
+					logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+				}
 
 
 		// GET DOCUMENTS

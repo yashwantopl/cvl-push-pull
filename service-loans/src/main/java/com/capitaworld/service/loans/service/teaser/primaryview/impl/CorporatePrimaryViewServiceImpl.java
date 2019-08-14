@@ -5,11 +5,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +74,11 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecu
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.DateWiseComparator;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
@@ -118,6 +123,7 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.google.gson.internal.LinkedHashTreeMap;
 
 @Service
 @Transactional
@@ -208,6 +214,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1234,13 +1243,17 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// Fraud Detection Data
 
 		try {
-			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
-
-			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
-
-				corporatePrimaryViewResponse.setFraudDetectionData(hunterResp);
-
+			UserResponse campaignUser=usersClient.isExists(toUserId,null);
+			corporatePrimaryViewResponse.setIsCampaignUser(campaignUser!= null && campaignUser.getData()!= null ? (Boolean) campaignUser.getData() : null);
+			if(campaignUser!= null && campaignUser.getData().equals(false)) {
+				AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+				if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+					corporatePrimaryViewResponse.setFraudDetectionData(hunterResp);
+				}else {
+					logger.info("application is bank specific so fraud detection is skipped for===>"+applicationId);
+				}	
 			}
+			
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----" + toApplicationId + CommonUtils.EXCEPTION + e1);
 		}
@@ -1365,9 +1378,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		
 		LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 		corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 			
+		Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+		corporatePrimaryViewResponse.setGstRelatedParty(gstRelatedPartyDetails);
 		return corporatePrimaryViewResponse;
 	}
 
@@ -1376,7 +1392,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest) {
 		LinkedHashMap<String,Object>comparisionData=new LinkedHashMap<>();
 		GstResponse gstResp = null;
-		Map<String,Object> bsMap=new HashMap<>();
+		Map<String,Object> bsMap=new TreeMap(new DateWiseComparator());
 		try {
 			GSTR1Request request=new GSTR1Request();
 			request.setApplicationId(applicationId);
@@ -1387,126 +1403,112 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.error("Exception in getting gst and BS data for teaserview {}",e);
 		}
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
-		SimpleDateFormat sdf1=new SimpleDateFormat("MM-yyyy");
-		if(gstResp != null && gstResp.getData() !=null) {
+		SimpleDateFormat sdf1=new SimpleDateFormat("MMM yy");
+		SimpleDateFormat displayFormate=new SimpleDateFormat("MM-yyyy");
+		// gst vs bank statement month wise purchase		
+		if(bsMap != null && !bsMap.isEmpty() && gstResp != null && gstResp.getData() != null) {
 			LinkedHashMap<String,Object> gstData= (LinkedHashMap<String, Object>) gstResp.getData();
-
 			
 			try {
-			if(gstData != null && gstData.get("monthWiseExpAndDomestic") != null) {
-				((Map<String, Object>) gstData.get("monthWiseExpAndDomestic")).entrySet().stream().sorted(new DateComparator2());
-				List<LinkedHashMap<String,Object>>bsData = new ArrayList<>();
-				Double totalBsResipts = 0d;
-				Double totalGstValue = 0d;
-				for(Map.Entry<String, Object> monthWiseExpAndDomestic: ((Map<String, Object>) gstData.get("monthWiseExpAndDomestic")).entrySet()) {
-						if(monthWiseExpAndDomestic !=null ) {
-							LinkedHashMap<String,Object>gstSalesVsBankStatementMonthly = new LinkedHashMap<>();
-							 gstSalesVsBankStatementMonthly.put("month", monthWiseExpAndDomestic.getKey());
-							 Double gstValue =Double.valueOf(String.valueOf(monthWiseExpAndDomestic.getValue()));
-							 gstSalesVsBankStatementMonthly.put("gstValue", monthWiseExpAndDomestic.getValue() != null && gstValue  != 0 ? convertValue(gstValue):"0");
-							 gstSalesVsBankStatementMonthly.put("bsValue"," - ");
-							 gstSalesVsBankStatementMonthly.put("bsDivededBygst"," - ");
-							 totalGstValue += gstValue;
-							 if(bsMap != null && !bsMap.isEmpty()) {
-							 for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
-								 Date parse = sdf1.parse(String.valueOf(entry.getKey()));	
-								 if(monthWiseExpAndDomestic.getKey().equals(sdf .format(parse))) {
-										 Double bsValue= 0d;
-										 for (Map.Entry<String, Object> creditEntry : ((Map<String, Object>) entry.getValue()).entrySet()) {
-											 if(creditEntry != null && creditEntry.getKey() != null && creditEntry.getKey().equals("credit")) {
-												 if(creditEntry.getValue()!=null) {
-												 bsValue =Double.valueOf(String.valueOf(creditEntry.getValue()));
-												 }
-												 
-												 gstSalesVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertStringFormate(bsValue.toString()):"0");
-												 totalBsResipts +=bsValue;
-											 }
-										 }
-										
-										Double bsDividedByGst = 0d;
-										if(gstValue != 0) {
-											bsDividedByGst = (bsValue/gstValue)*100;
+					List<Map<String,Object>>bsData = new ArrayList<>();
+					Double totalBsResipts = 0d;
+					Double totalGstValue = 0d;
+					Double bsValue= 0d;
+					for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
+						Date parse = sdf1.parse(String.valueOf(entry.getKey()));
+						HashMap<String,Object>gstSalesVsBankStatementMonthly = new HashMap();
+
+						gstSalesVsBankStatementMonthly.put("month", displayFormate.format(parse));
+						gstSalesVsBankStatementMonthly.put("gstValue", " - ");
+						gstSalesVsBankStatementMonthly.put("bsDivededBygst", " - ");
+						gstSalesVsBankStatementMonthly.put("bsValue", " - ");
+						
+						for (Map.Entry<String, Object> creditEntry : ((Map<String, Object>) entry.getValue()).entrySet()) {
+							
+							if(creditEntry != null && creditEntry.getValue() != null && creditEntry.getKey().equals("credit")) {
+								 bsValue = Double.valueOf(String.valueOf(creditEntry.getValue()));
+								 gstSalesVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertStringFormate(bsValue.toString()):"0");
+								 totalBsResipts += bsValue;
+								if(gstData != null && gstData.get("monthWiseExpAndDomestic") != null) {
+									for(Map.Entry<String, Object> monthWiseExpAndDomestic: ((Map<String, Object>) gstData.get("monthWiseExpAndDomestic")).entrySet()) {
+										if(monthWiseExpAndDomestic.getKey().equals(sdf.format(parse))) {
+											 Double gstValue =Double.valueOf(String.valueOf(monthWiseExpAndDomestic.getValue()));
+											 gstSalesVsBankStatementMonthly.put("gstValue", monthWiseExpAndDomestic.getValue() != null && gstValue  != 0 ? convertValue(gstValue):" - ");
+											 totalGstValue += gstValue;
+											 Double bsDividedByGst = gstValue != null && gstValue != 0 ?((bsValue/gstValue)*100):0;
+											 gstSalesVsBankStatementMonthly.put("bsDivededBygst",bsDividedByGst != null && bsDividedByGst != 0 ?convertValue(bsDividedByGst).toString().concat(" %") : " - ");
 										}
-										gstSalesVsBankStatementMonthly.put("bsValue",gstSalesVsBankStatementMonthly.get("bsValue") != null ?CommonUtils.convertStringFormate(gstSalesVsBankStatementMonthly.get("bsValue").toString()): "-");
-										gstSalesVsBankStatementMonthly.put("bsDivededBygst",bsDividedByGst != 0 ?convertValue(bsDividedByGst).toString().concat(" %") : "0");
-									 }
-								 }
-							 }
-							 bsData.add(gstSalesVsBankStatementMonthly);
+									}
+								}
+							}
 						}
-				}
-				
-				comparisionData.put("gstVsBsSalesMonthly", !bsData.isEmpty()?bsData:null);
-				comparisionData.put("totalGstValueForGstVsBsSalesMonthly", CommonUtils.convertStringFormate(totalGstValue.toString()));
-				comparisionData.put("totalBsResiptsForGstVsBsSalesMonthly", CommonUtils.convertStringFormate(totalBsResipts.toString()));
-				if(totalBsResipts != null && totalGstValue != 0 ) {
-					Double totalGstVsBsTotalValues= totalBsResipts/totalGstValue*100;
-					comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", totalGstVsBsTotalValues != null ?convertValue(totalGstVsBsTotalValues).concat(" %") : " - ");
-				}else {
-					comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", " - ");
-				}
-			}
+						bsData.add(gstSalesVsBankStatementMonthly);
+					}
+					comparisionData.put("gstVsBsSalesMonthly", !bsData.isEmpty()?bsData:null);
+					comparisionData.put("totalGstValueForGstVsBsSalesMonthly", CommonUtils.convertStringFormate(totalGstValue.toString()));
+					comparisionData.put("totalBsResiptsForGstVsBsSalesMonthly", CommonUtils.convertStringFormate(totalBsResipts.toString()));
+					if(totalBsResipts != null && totalGstValue != 0 ) {
+						Double totalGstVsBsTotalValues= totalBsResipts/totalGstValue*100;
+						comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", totalGstVsBsTotalValues != null ?convertValue(totalGstVsBsTotalValues).concat(" %") : " - ");
+					}else {
+						comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", " - ");
+					}
 			}catch (Exception e) {
 				logger.error("exception in getting the details of gstSalesVsBankStatementMonthly {}",e);
 			}
-		//	for monthly purchase
-			if(gstData != null && gstData.get("monthWiseExpAndDomestic") != null) {
-				try {
-					Double totalBsResipts = 0d;
-					Double totalGstValue = 0d;
-					List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
-					((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet().stream().sorted(new DateComparator2());
-					for (Map.Entry<String ,Object> entry: ((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet()) {
-						if(entry != null) {
-							LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
-							gstPurchaseVsBankStatementMonthly.put("month", entry.getKey());
-							gstPurchaseVsBankStatementMonthly.put("gstValue", entry.getValue() != null ? CommonUtils.convertStringFormate(entry.getValue().toString()):" - " );
-							gstPurchaseVsBankStatementMonthly.put("bsValue", " - ");
-							gstPurchaseVsBankStatementMonthly.put("bsDivededBygst", " - ");
-							Double gstValue =Double.valueOf(String.valueOf(entry.getValue()));
-							totalGstValue += gstValue;
-							if(bsMap != null && !bsMap.isEmpty()) {
-							 for (Map.Entry<String, Object> bsMapEntry : bsMap.entrySet()) {
-								 Date parse = sdf1.parse(String.valueOf(bsMapEntry.getKey()));
-								 if(bsMapEntry != null && entry.getKey().equals(sdf.format(parse))) {
-										
-										 Double bsValue= 0d;
-										 for (Map.Entry<String, Object> debitEntry : ((Map<String, Object>) bsMapEntry.getValue()).entrySet()) {
-											 if(debitEntry != null && debitEntry.getKey() != null && debitEntry.getKey().equals("debit") && debitEntry.getValue() != null) {
-												 bsValue =Double.valueOf(debitEntry.getValue().toString());
-												 gstPurchaseVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertStringFormate(bsValue.toString()):"0");
-												 totalBsResipts +=bsValue;
-											 }
-										 }
-										
-										Double bsDividedByGst = 0d;
-										if(gstValue != 0 && bsValue != 0) {
-											bsDividedByGst = bsValue/gstValue*100;
-										}
-										gstPurchaseVsBankStatementMonthly.put("bsValue",gstPurchaseVsBankStatementMonthly.get("bsValue") != null ?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("bsValue").toString()): "-");
+		//	for monthly wise purchase gst vs bankstatement
+			try {
+				Double totalBsResipts = 0d;
+				Double totalGstValue = 0d;
+				List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
+				
+//				((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet().stream().sorted(new DateComparator2());
+				for (Map.Entry<String, Object> bsMapEntry : bsMap.entrySet()) {
+					if(bsMapEntry != null) {
+						Date parse = sdf1.parse(String.valueOf(bsMapEntry.getKey()));
+						
+						LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
+						
+						gstPurchaseVsBankStatementMonthly.put("month", displayFormate.format(parse));
+						gstPurchaseVsBankStatementMonthly.put("bsValue", " - ");
+						for (Map.Entry<String, Object> debitEntry : ((Map<String, Object>) bsMapEntry.getValue()).entrySet()) {
+							 if(debitEntry != null && debitEntry.getKey() != null  && debitEntry.getValue() != null && debitEntry.getKey().equals("debit")) {
+								gstPurchaseVsBankStatementMonthly.put("bsDivededBygst", " - ");
+								gstPurchaseVsBankStatementMonthly.put("gstValue", " - ");
+		
+								 Double bsValue = Double.valueOf(debitEntry.getValue().toString());
+								 gstPurchaseVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertStringFormate(bsValue.toString()):"0");
+								 totalBsResipts +=bsValue;
+								 
+								for (Map.Entry<String ,Object> entry: ((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet()) {
+									 if(bsMapEntry != null && entry.getKey().equals(sdf.format(parse))) {
+										 Double gstValue =Double.valueOf(String.valueOf(entry.getValue()));
+										gstPurchaseVsBankStatementMonthly.put("gstValue", gstValue != null && gstValue != 0 ? CommonUtils.convertStringFormate(gstValue.toString()):" - " );
+										totalGstValue += gstValue;
+								
+										Double bsDividedByGst = gstValue != null && gstValue != 0 ?((bsValue/gstValue)*100):0;
 										gstPurchaseVsBankStatementMonthly.put("bsDivededBygst",bsDividedByGst != 0 ?convertValue(bsDividedByGst).concat(" %") : " - ");
-								 }
+									 }
+								}
 							 }
-							}
-							 bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
-						}
+						 }
+						bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
 					}
-					
-					comparisionData.put("gstVsBsPurchaseMonthly", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
-					comparisionData.put("gstVsBsPurchaseTotalGstValueMonthly", totalGstValue != null && totalGstValue !=0 ?CommonUtils.convertStringFormate(totalGstValue.toString()):" - ");
-					comparisionData.put("gstVsBsPurchaseTotalBsResiptsMonthly", totalBsResipts != null && totalBsResipts != 0? CommonUtils.convertStringFormate(totalBsResipts.toString()) :" - ");
-					if(totalGstValue != null && totalGstValue != 0) {
-						Double total = totalBsResipts/totalGstValue*100;
-						comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", total != null && total != 0?CommonUtils.convertStringFormate(total.toString()):" - ");
-					}else {
-						comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", " - ");
-					}
-				}catch (Exception e) {
-				 logger.error("Excption in getting the values of gstVsBsPurchaseMonthly : {}",e);
 				}
+				comparisionData.put("gstVsBsPurchaseMonthly", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
+				comparisionData.put("gstVsBsPurchaseTotalGstValueMonthly", totalGstValue != null && totalGstValue !=0 ?CommonUtils.convertStringFormate(totalGstValue.toString()):" - ");
+				comparisionData.put("gstVsBsPurchaseTotalBsResiptsMonthly", totalBsResipts != null && totalBsResipts != 0? CommonUtils.convertStringFormate(totalBsResipts.toString()) :" - ");
+				if(totalGstValue != null && totalGstValue != 0) {
+					Double total = totalBsResipts/totalGstValue*100;
+					comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", total != null && total != 0?CommonUtils.convertStringFormate(total.toString().concat(" %")):" - ");
+				}else {
+					comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", " - ");
+				}
+			}catch (Exception e) {
+				logger.error("Exception in getting gst vs bankstatement purchase : {}",e);
 			}
 			
-//			FinancialInputRequest financialInputRequest = (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest();
+			
 		// GSTVsITR Yearly Sales 				
 			if(gstData != null && gstData.get("yearWiseDomestic") != null && gstData.get("yearWiseExp") != null) {
 				try {
@@ -1515,57 +1517,54 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					Double totalOfGstSalesTotal = 0d;
 					Double totalOfITRSalesTotal = 0d;
 					Double totalOfGstToItr = 0d;
-				List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
+					List<LinkedHashMap<String,Object>>itrSalesData = new ArrayList<>();
+				
 				((Map<String, Object>) gstData.get("yearWiseDomestic")).entrySet().stream().sorted(new DateComparator2());
-				for (Map.Entry<String, Object> y: ((Map<String, Object>) gstData.get("yearWiseDomestic")).entrySet()) {
-					LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
-					gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ? y.getKey() : " - ");
-					gstPurchaseVsBankStatementMonthly.put("gstDomestic", y.getValue() != null ? CommonUtils.convertStringFormate(y.getValue().toString()) : " - ");
-					gstPurchaseVsBankStatementMonthly.put("gstExp", "0");
-					gstPurchaseVsBankStatementMonthly.put("gstSalesTotal", "0");
-					gstPurchaseVsBankStatementMonthly.put("itrSales", "0");
-					gstPurchaseVsBankStatementMonthly.put("gstToItr"," - ");
+				for (Map.Entry<String, Object> yearWiseDomestic: ((Map<String, Object>) gstData.get("yearWiseDomestic")).entrySet()) {
+					
+					
 					for (Map.Entry<String, Object> exp: ((Map<String, Object>) gstData.get("yearWiseExp")).entrySet()) {
 						if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
 							
-							gstPurchaseVsBankStatementMonthly.put("gstExp", exp.getValue().toString());
-							Double totalOfGst=Double.valueOf(String.valueOf(y.getValue())) + Double.valueOf(String.valueOf(exp.getValue()));
-							gstPurchaseVsBankStatementMonthly.put("gstSalesTotal", totalOfGst);
-							
-							for (Map<String, Object> fi:  financialInputRequest.getYearSalesPurchasList()) {
-								if(fi != null  && y.getKey().contains(String.valueOf(fi.get("year"))) && y.getKey().equals(exp.getKey())) {
+							for (Map<String, Object> itrSales:  financialInputRequest.getYearSalesPurchasList()) {
+								if(itrSales != null  /*&& !String.valueOf(itrSales.get("year")).equals("2017")*/ && yearWiseDomestic.getKey().contains(String.valueOf(itrSales.get("year"))) && yearWiseDomestic.getKey().equals(exp.getKey())) {
 								
-									gstPurchaseVsBankStatementMonthly.put("itrSales", fi.get("grossSale").equals(" - ")?fi.get("grossSale"):0);
+									LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
+									gstPurchaseVsBankStatementMonthly.put("year", yearWiseDomestic.getKey() != null ? yearWiseDomestic.getKey() : " - ");
+									gstPurchaseVsBankStatementMonthly.put("gstDomestic", yearWiseDomestic.getValue() != null && yearWiseDomestic.getValue().toString() != "0"? CommonUtils.convertStringFormate(yearWiseDomestic.getValue().toString()) : " - ");
+									gstPurchaseVsBankStatementMonthly.put("gstSalesTotal", "0");
+									gstPurchaseVsBankStatementMonthly.put("gstToItr"," - ");
+									gstPurchaseVsBankStatementMonthly.put("gstExp", exp.getValue() != null && Double.valueOf(exp.getValue().toString()) != 0?convertValue(Double.valueOf(exp.getValue().toString())):" - ");
+									
+									Double totalOfGst=Double.valueOf(String.valueOf(yearWiseDomestic.getValue())) + Double.valueOf(String.valueOf(exp.getValue()));
+									gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",totalOfGst != 0?CommonUtils.convertStringFormate(totalOfGst):" 0 ");
+									gstPurchaseVsBankStatementMonthly.put("itrSales", itrSales.get("itrSales") != null && !itrSales.get("itrSales").equals(" - ")?CommonUtils.convertStringFormate(itrSales.get("itrSales").toString()):" - ");
 									Double gstToItr = 0d;
-									if(fi.get("grossSale") != null && Double.valueOf(fi.get("grossSale").toString()) != 0) {
-										gstToItr = totalOfGst/Double.valueOf(fi.get("grossSale").toString()) * 100;
+									if(itrSales.get("itrSales") != null && Double.valueOf(itrSales.get("itrSales").toString()) != 0) {
+										gstToItr = totalOfGst/Double.valueOf(itrSales.get("itrSales").toString()) * 100;
 									}
 									gstPurchaseVsBankStatementMonthly.put("gstToItr",gstToItr != 0?convertValue(gstToItr) + " %":" - ");
 									
+									// calculating total
+									totalOfGstSalesTotal += totalOfGst; 
+									totalGstExp +=Double.valueOf(exp.getValue().toString());
+									totalGstDomestic +=!yearWiseDomestic.getValue().toString().equals("0")?Double.valueOf(yearWiseDomestic.getValue().toString()):0;
+									totalOfITRSalesTotal += itrSales.get("itrSales") != null && !itrSales.get("itrSales").toString().equals("0") && !itrSales.get("itrSales").toString().equals("-")?Double.valueOf(itrSales.get("itrSales").toString()):0;
+
+									if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
+										itrSalesData.add(gstPurchaseVsBankStatementMonthly);
+									}
 								}
 							}
 						
 						}
 						
 					}
-					// calculating total
-					totalGstExp +=Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstExp").toString());
-					gstPurchaseVsBankStatementMonthly.put("gstExp", gstPurchaseVsBankStatementMonthly.get("gstExp").toString().equals("0")?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("gstExp").toString()):" - ");
-					totalGstDomestic +=!y.getValue().toString().equals("0")?Double.valueOf(y.getValue().toString()):0;
-					totalOfGstSalesTotal += gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString().equals("0")?Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString()):0;
-					gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString().equals("0")?CommonUtils.convertStringFormate(Double.valueOf(gstPurchaseVsBankStatementMonthly.get("gstSalesTotal").toString())):" - ");
-					totalOfITRSalesTotal += gstPurchaseVsBankStatementMonthly.get("itrSales").toString().equals("0") && !gstPurchaseVsBankStatementMonthly.get("itrSales").toString().equals("-")?Double.valueOf(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()):0;
-					gstPurchaseVsBankStatementMonthly.put("itrSales", gstPurchaseVsBankStatementMonthly.get("itrSales").toString().equals("0")?CommonUtils.convertStringFormate(gstPurchaseVsBankStatementMonthly.get("itrSales").toString()):" - ");
-					
-					if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
-						bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
-					}
-					
 				}
 				if(totalOfITRSalesTotal != 0) {
 					totalOfGstToItr = totalOfGstSalesTotal/totalOfITRSalesTotal*100;
 				}
-				comparisionData.put("gstVsItrYearlySales", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
+				comparisionData.put("gstVsItrYearlySales", !itrSalesData.isEmpty()?itrSalesData:null);
 				comparisionData.put("gstVsItrYearlySalesTotalGstDomestic", totalGstDomestic!= 0?CommonUtils.convertStringFormate(totalGstDomestic.toString()): " - ");
 				comparisionData.put("gstVsItrYearlySalesTotalGstExp", totalGstExp != 0 ?CommonUtils.convertStringFormate(totalGstExp.toString()): " - ");
 				comparisionData.put("gstVsItrYearlySalesTotalOfGstSalesTotal", totalOfGstSalesTotal !=0 ?CommonUtils.convertStringFormate(totalOfGstSalesTotal.toString()): " - ");
@@ -1585,46 +1584,47 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
 				((Map<String, Object>) gstData.get("yearWisePurchase")).entrySet().stream().sorted(new DateComparator2());
 				for(Map.Entry<String, Object> y:((Map<String, Object>) gstData.get("yearWisePurchase")).entrySet()) {
-					LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
-					gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ?y.getKey().toString() : " - ");
-					gstPurchaseVsBankStatementMonthly.put("gstPurchase", y.getValue()!= null ?CommonUtils.convertStringFormate(y.getValue().toString()) : " - ");
-					gstPurchaseVsBankStatementMonthly.put("itrPurchase", " - ");
-					gstPurchaseVsBankStatementMonthly.put("gstToItr", " - ");
-					totalOfGstPurchase += Double.valueOf(y.getValue().toString());
 					
 					if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
 						financialInputRequest.getYearSalesPurchasList().stream().sorted(new DateComparator2());		
 						for(Map<String, Object> fi: financialInputRequest.getYearSalesPurchasList()) {
-							if(fi != null && y.getKey().contains(String.valueOf(fi.get("year")))) {
-								gstPurchaseVsBankStatementMonthly.put("itrPurchase", CommonUtils.convertStringFormate(fi.get("totalCostSales").toString()));
+							if(fi != null /*&& !String.valueOf(fi.get("year")).equals("2017") */&& y.getKey().contains(String.valueOf(fi.get("year")))) {
+								LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
+								gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ?y.getKey().toString() : " - ");
+								gstPurchaseVsBankStatementMonthly.put("gstPurchase", y.getValue()!= null && y.getValue().toString() != "0" ?CommonUtils.convertStringFormate(y.getValue().toString()) : " - ");
+								totalOfGstPurchase += Double.valueOf(y.getValue().toString());
 								
-								totalOfITRPurchase += Double.valueOf(fi.get("totalCostSales").toString());
+								gstPurchaseVsBankStatementMonthly.put("itrPurchase", fi.get("rowMaterialIndigenous") != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0?CommonUtils.convertStringFormate(fi.get("rowMaterialIndigenous").toString()):" - ");
+								
+								totalOfITRPurchase += fi.get("rowMaterialIndigenous") != null ?Double.valueOf(fi.get("rowMaterialIndigenous").toString()):0;
 								Double gstToItr = 0d;
-								if(fi.get("totalCostSales") != null && y.getValue() != null && Double.valueOf(fi.get("totalCostSales").toString()) != 0) {
-									gstToItr = (Double.valueOf(fi.get("totalCostSales").toString())/Double.valueOf(y.getValue().toString()) * 100);
+								if(fi.get("rowMaterialIndigenous") != null && y.getValue() != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0) {
+									gstToItr = (Double.valueOf(fi.get("rowMaterialIndigenous").toString())/Double.valueOf(y.getValue().toString()) * 100);
 								}
 								gstPurchaseVsBankStatementMonthly.put("gstToItr",gstToItr != 0? convertValue(gstToItr) + " %":" - ");
+								
+								if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
+									bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
+								}
 							}
 						}
 						
 					}
-					if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
-						bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
-					}
+					
 				}
 				if(totalOfITRPurchase != 0) {
 					totalOfGstToItr = totalOfGstPurchase/totalOfITRPurchase*100;
 				}
 				comparisionData.put("gstVsItrYearlyPurchase", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
 				comparisionData.put("gstVsItrYearlyPurchaseTotalOfGstPurchase", totalOfGstPurchase!= 0?CommonUtils.convertStringFormate(totalOfGstPurchase.toString()): " - ");
-				comparisionData.put("gstVsItrYearlyPurchaseTotalOfITRPurchase", totalOfITRPurchase !=0 ?totalOfITRPurchase: " - ");
+				comparisionData.put("gstVsItrYearlyPurchaseTotalOfITRPurchase", totalOfITRPurchase !=0 ?CommonUtils.convertStringFormate(totalOfITRPurchase.toString()): " - ");
 				comparisionData.put("gstVsItrYearlyPurchaseTotalOfGstToItr", totalOfGstToItr!=0?convertValue(Double.valueOf(CommonUtils.convertValueIndianCurrency(totalOfGstToItr).toString())).concat(" %"): " - ");
 				}catch (Exception e) {
 					logger.error("Exception in getting value of gstVsItrYearlyPurchase {}",e);
 				}
 			}
 		}else {
-			logger.error("Responce not found in gst for bank comparision dispalay for :{}",applicationId);
+			logger.error("Response not found in bankstatement  for bank comparision dispalay for :{}",applicationId);
 		}
 		
 		return comparisionData;
@@ -1633,5 +1633,4 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
-	
 }

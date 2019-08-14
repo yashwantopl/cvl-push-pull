@@ -18,15 +18,16 @@ import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.*;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ApplicationStatusAuditRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
@@ -135,6 +136,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+
+	@Autowired
+	private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
 
 	private static String isPaymentBypass="cw.is_payment_bypass";
 
@@ -1387,23 +1391,107 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
 		}
-		List<BigInteger> applicationIdList ;
+		List<BigInteger> applicationIdList = new ArrayList<>();
+
+		List<Long> proposalStatusList = new ArrayList<>();
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Rejected);
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Disbursed);
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Sanction);
+		proposalStatusList.add(13L);
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Ineligible);
+		List <BigInteger> sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeId(proposalStatusList);
+
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MFI_CHECKER== request.getUserRoleId()){
-			//List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchIdAndFpProductId(branchId,request.getFpProductId());
-			if(request.getDdrStatusId()==CommonUtils.DdrStatus.OPEN){
+
+			if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_PENDING
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
 				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
 						request.getDdrStatusId(),
 						request.getUserOrgId(),
 						request.getProductTypeId(),
-						request.getBusinessTypeId());
-			}/*else if(request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
-				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.APPROVED,request.getBusinessTypeId());
-			}else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
-				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerReverted(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId(),branchId,request.getFpProductId(), ApplicationStatus.REVERTED,request.getBusinessTypeId());
-			}*/else{
-				applicationIdList = applicationProposalMappingRepository.getFPCheckerProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.OPEN,request.getUserId(),branchId,request.getFpProductId(),request.getBusinessTypeId());
+						request.getBusinessTypeId(),
+						new PageRequest(request.getPageIndex(),request.getSize()));
+
+				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
+					//add also proposal sent to sidbi checker
+					applicationIdList.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+							request.getUserOrgId(),
+							request.getProductTypeId(),
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(),request.getSize())));
+				}
+				for(BigInteger appid : sanctionDisRejIneligibleProposal){
+					if(applicationIdList.contains(appid)){
+						applicationIdList.remove(appid);
+					}
+				}
+			}else if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Rejected
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Disbursed
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Ineligible){
+				applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId());
+				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction){
+					applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
+				}
+
 			}
-			//applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
+			if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_PENDING
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
+
+				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_PENDING){
+					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+							CommonUtils.MFIApplicationStatus.MFI_Submitted,
+							request.getUserOrgId(),
+							request.getProductTypeId(),
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(),request.getSize()));
+				}else if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
+					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+							request.getUserOrgId(),
+							request.getProductTypeId(),
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(),request.getSize()));
+				}
+
+				for(BigInteger appid : sanctionDisRejIneligibleProposal){
+					if(applicationIdList.contains(appid)){
+						applicationIdList.remove(appid);
+					}
+				}
+			}else if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Rejected
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Disbursed
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Ineligible){
+				applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId());
+				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction){
+					applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
+				}
+			}
+		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER== request.getUserRoleId()){
+			if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_PENDING){
+				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+						CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+						request.getUserOrgId(),
+						request.getProductTypeId(),
+						request.getBusinessTypeId(),
+						new PageRequest(request.getPageIndex(),request.getSize()));
+				for(BigInteger appid : sanctionDisRejIneligibleProposal){
+					if(applicationIdList.contains(appid)){
+						applicationIdList.remove(appid);
+					}
+				}
+			}else if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Rejected
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Disbursed
+					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Ineligible){
+				applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId());
+				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction){
+					applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
+				}
+			}
 		}else{
 			applicationIdList = null;
 		}
@@ -1428,30 +1516,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setDdrStatus("-");
 				}
 
-				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId()) ||
-						CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
-
-					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndProposalIdAndUserId(proposalMapping.getUserId(), proposalMapping.getId(), nhbsApplicationsResponse.getProposalId());
+				if (CommonUtils.BusinessType.MFI.getId().equals(proposalMapping.getBusinessTypeId())) {
+					MFIApplicantDetail applicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(proposalMapping.getId(), 1);
+//					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndProposalIdAndUserId(proposalMapping.getUserId(), proposalMapping.getId(), nhbsApplicationsResponse.getProposalId());
 					if (applicantDetail != null) {
-						nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
 						try {
-							// Setting City Value
-							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
-								nhbsApplicationsResponse.setCity(
-										CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
-							}
-
-							// Setting State Value
-							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
-								nhbsApplicationsResponse.setState(CommonDocumentUtils
-										.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
-							}
-
-							// Country State Value
-							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
-								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-										.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
-							}
+							nhbsApplicationsResponse.setClientName(applicantDetail.getFirstName()+" "+applicantDetail.getLastName());
 						} catch (Exception e) {
 							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}
@@ -1571,7 +1641,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 				ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationId(nhbsApplicationsResponse.getApplicationId());
 				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(nhbsApplicationsResponse.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails) && request.getBusinessTypeId() != 6) { // MFI
 					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
 					if (!applicationProposalMapping.getOrgId().equals(usersRequest.getUserOrgId())) {
 						nhbsApplicationsResponse.setSanction(true);
@@ -1675,44 +1745,105 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		usersRequestForBranch.setId(nhbsApplicationRequest.getUserId());
 		try {
 			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequestForBranch);
-			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
 					BranchBasicDetailsRequest.class);
 			branchId = branchBasicDetailsRequest.getId();
 		} catch (Exception e) {
-			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS, e);
 		}
 
 		JSONObject countObj = new JSONObject();
 		nhbsApplicationRequest.setProductTypeId(17L);
-		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MFI_CHECKER == nhbsApplicationRequest.getUserRoleId()){
 
+		List<BigInteger> bigIntegers = new ArrayList<>();
+
+		List<Long> proposalStatusList = new ArrayList<>();
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Rejected);
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Disbursed);
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Sanction);
+		proposalStatusList.add(13L);
+		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Ineligible);
+
+		List <BigInteger> sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeId(proposalStatusList);
+
+		// Sanction proposal Count
+		List<BigInteger> sanctionPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Sanction) ;
+		sanctionPropsalCount.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
+		countObj.put("sanctionPropsalCount", sanctionPropsalCount.size());
+
+		// Disbursed proposal Count
+		List<BigInteger> dibusedPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Disbursed) ;
+		countObj.put("dibusedPropsalCount", dibusedPropsalCount.size());
+
+		// Rejected proposal Count
+		List<BigInteger> rejectedProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Rejected);
+		countObj.put("rejectedProposalCount", rejectedProposalCount.size());
+
+		// Ineligible proposal Count
+		List<BigInteger> ineligibleProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Ineligible);
+		countObj.put("ineligibleProposalCount", rejectedProposalCount.size());
+
+		if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.MFI_CHECKER == nhbsApplicationRequest.getUserRoleId()) {
 			// Pending proposal
-			List<BigInteger> allOtherCheckerApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.ApplicationStatus.OPEN,
+			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_PENDING,
 					npOrgId,
 					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("allOtherProposalCount", allOtherCheckerApplicationIdList.size());
+
+
+			// Sent to Sidbi maker
+			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted, npOrgId,
+					nhbsApplicationRequest.getProductTypeId());
+
+			//add also proposal sent to sidbi checker
+			assignToMFICheckerPropsalCount.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi, npOrgId,
+					nhbsApplicationRequest.getProductTypeId()));
+
+
+			for(BigInteger appid : sanctionDisRejIneligibleProposal){
+				if(pendingProposalApplicationIdList.contains(appid)){
+					pendingProposalApplicationIdList.remove(appid);
+				}
+				if(assignToMFICheckerPropsalCount.contains(appid)){
+					assignToMFICheckerPropsalCount.remove(appid);
+				}
+			}
+			countObj.put("assignPropsalCount", assignToMFICheckerPropsalCount.size());
+			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
+
+		} else if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == nhbsApplicationRequest.getUserRoleId()) {
+			// received proposal
+			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted,
+					nhbsApplicationRequest.getProductTypeId());
+
 
 			// Sent to Sidbi checker
-			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(ApplicationStatus.ASSIGNED,npOrgId,
+			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("assignToMFICheckerPropsalCount", assignToMFICheckerPropsalCount.size());
 
 
-			// Sanction proposal Count
-			List<BigInteger> sanctionPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount((long) CommonUtils.ApplicationStatusMessage.SANCTIONED.getId(),npOrgId,
+			for(BigInteger appid : sanctionDisRejIneligibleProposal){
+				if(pendingProposalApplicationIdList.contains(appid)){
+					pendingProposalApplicationIdList.remove(appid);
+				}
+				if(assignToMFICheckerPropsalCount.contains(appid)){
+					assignToMFICheckerPropsalCount.remove(appid);
+				}
+			}
+			countObj.put("assignPropsalCount", assignToMFICheckerPropsalCount.size());
+			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
+
+		} else if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()) {
+
+			// received
+			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
 					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("sanctionPropsalCount", sanctionPropsalCount.size());
 
-			// Disbursed proposal Count
-			List<BigInteger> dibusedPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount((long) CommonUtils.ApplicationStatusMessage.DISBURSED.getId(),npOrgId,
-					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("dibusedPropsalCount", dibusedPropsalCount.size());
-
-			// Disbursed proposal Count
-			List<BigInteger> rejectedProposalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount((long) CommonUtils.ApplicationStatusMessage.REJECT.getId(),npOrgId,
-					nhbsApplicationRequest.getProductTypeId());
-			countObj.put("rejectedProposalCount", rejectedProposalCount.size());
-
+			for(BigInteger appid : sanctionDisRejIneligibleProposal){
+				if(pendingProposalApplicationIdList.contains(appid)){
+					pendingProposalApplicationIdList.remove(appid);
+				}
+			}
+			countObj.put("pendingProposalCount", pendingProposalApplicationIdList.size());
 		}
 		logger.info("exit from getFPMFIProposalCount()");
 		logger.info(countObj.toJSONString());

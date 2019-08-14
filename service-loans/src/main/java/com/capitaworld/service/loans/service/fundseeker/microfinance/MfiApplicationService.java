@@ -2,45 +2,84 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance;
 
 import java.util.List;
 
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.model.micro_finance.*;
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalRequestResponce;
+import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
+import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.FlagCheckMFI;
+import com.capitaworld.service.loans.model.micro_finance.MFIConversationReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiApplicantDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiAssetsDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiBankDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.MfiLoanRecomandationReq;
+import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
+import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MfiApplicationService {
 
-    public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq);
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq);
 
-	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId);
+	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId,Integer type);
 
-	public boolean saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq);
+	public Object saveOrUpdatePersonalDetails(PersonalDetailsReq personalDetailsReq);
 
-	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId);
+	public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId,Integer type);
 
-	public boolean saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
+	public Object saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
 
-	public List<MfiReqResponse> getMfiApplicantDetails(Long applicationId);
-
-	public boolean saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq);
+	public Object saveOrUpdateBankDetails(MultipartFile uploadingFile, MfiBankDetailsReq bankDetailsReq);
 
 	public MfiBankDetailsReq fetchBankDetail(Long applicationId);
 
-	public List<MfiApplicantDetailsReq> getAllApplicantDetails(Long applicationId);
+	public MfiApplicantDetailsReq getApplicantDetails(Long applicationId,Integer type);
 
-	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId);
+	public ProjectDetailsReq getProjectDetailsAppId(Long applicationId,Integer type);
 
-	public boolean saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
+	public Object saveOrUpdateIncomeExpenditureDetails(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq);
 
 	public MfiIncomeAndExpenditureReq getIncomeExpenditureDetailsAppId(Long applicationId);
 	
-	public boolean saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq);
+	public LoansResponse saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq);
 	
 	public MfiAssetsDetailsReq getAssetsLiabilityDetailsAppId(Long applicationId);
 
 	public FlagCheckMFI findAllFlag(Long applicationId,Integer type);
 	
-	public boolean saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq);
-	
-	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId);
+	public Object saveOrUpdateLoanAssessmentDetails(MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq);
+
+	public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq recomandationReq);
+
+	public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId,Integer type);
 
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId,Integer type);
+
+
+	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce);
+
+	public AadharDetailsReq getApplicationsByStatus(Long orgId, Long userId, Integer status);
+	
+	public Boolean saveOrUpdateApplicantDetail(MfiApplicantDetailsReq mfiApplicantDetailsReq);
+
+
+	public Object getActiveButtons(WorkflowRequest workflowRequest);
+
+	public boolean updateStaus(Long applicationId,Long status);
+
+	public Object getMfiConversation(MFIConversationReq mfiConversationReq);
+
+	public Object saveOrUpdateMfiConversation(MFIConversationReq mfiConversationReq);
+
+	public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId, Long userId);
+	
+	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId);
+	
+	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId,Long applicantId);
+
+	public boolean saveConsentFormImage(MultipartFile uploadingFile,AadharDetailsReq aadharDetailsReq);
 
 }

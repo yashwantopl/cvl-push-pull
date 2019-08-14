@@ -10,21 +10,17 @@ import java.io.Serializable;
 public class MfiBankDetailsReq implements Serializable {
 
 	private Long id;
-
 	private Long applicationId;
 
 	private Long bankId;
-
+	private Long userId;
 	private String branchName;
-
+	private String accountHolderName;
 	private String accountNo;
-
 	private String ifscCode;
-
 	private Integer accountType;
 
 	private byte[] passbookImg;
-
 	private Boolean isBankDetailsFilled;
 
 	public Long getId() {
@@ -99,4 +95,19 @@ public class MfiBankDetailsReq implements Serializable {
 		this.isBankDetailsFilled = isBankDetailsFilled;
 	}
 
+	public String getAccountHolderName() {
+		return accountHolderName;
+	}
+
+	public void setAccountHolderName(String accountHolderName) {
+		this.accountHolderName = accountHolderName;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 }

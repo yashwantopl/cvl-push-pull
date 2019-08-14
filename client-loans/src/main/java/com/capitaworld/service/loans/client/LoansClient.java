@@ -49,6 +49,7 @@ import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestRespo
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
@@ -157,6 +158,7 @@ public class LoansClient {
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
+	private static final String MFI_FINANCIAL_ARRANGEMENT_DETAILS = "/mfi/saveFinancialDetails";
 	private static final String CREDIT_RATING_DETAILS_CIBIL = "/credit_rating_organization_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
@@ -199,6 +201,8 @@ public class LoansClient {
 	private static final String CALCULATE_SCORING_EXISTING_LIST = "/score/calculate_score/corporate_existing_list";
 	private static final String CALCULATE_SCORING_MFI_LIST = "/score/calculate_score/mfi_list";
 	private static final String CALCULATE_SCORING_MFI_CO_APPLICANT_LIST = "/score/calculate_score/mfi_list_coapplicant";
+	
+	private static final String GET_MFI_APPLICANT_DETAILS = "/mfi/getApplicantDetails";
 
 
 	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
@@ -281,6 +285,9 @@ public class LoansClient {
     
     private static final String GET_CONCESSION_DETAILS = "/score/getConcessionDetails";
     private static final String SEND_MAIL_INELIGIBLE_FOR_SIDBI = "/sendInEligibleForSidbi";
+    
+    private static final String GET_APPLICATION_CAMPAIGN_CODE = "/loan_application/getApplicationCampCode";
+    private static final String GET_FINANCIAL_DATA = "/cma/getFinancialDetailsForBankIntegration";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1491,6 +1498,20 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse saveMfiFinancialArrangementDetail(List<MFIFinancialArrangementRequest> detailRequests, Long applicationId, Long userId, Long applicantId) throws ExcelException {
+		String url = loansBaseUrl.concat(MFI_FINANCIAL_ARRANGEMENT_DETAILS).concat("/" + applicationId + "/" + userId + "/" + applicantId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<MFIFinancialArrangementRequest>> entity = new HttpEntity<>(detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in saveMfiFinancialArrangementDetail : ",e);
+			throw new ExcelException(url + " " + e.getCause().getMessage());
+		}
+	}
+	
 	public LoansResponse saveCreditRatingDetailFromCibil(List<CreditRatingOrganizationDetailRequest> detailRequests, Long userId,
 			Long clientId, Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(CREDIT_RATING_DETAILS_CIBIL)
@@ -2613,6 +2634,20 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
+	
+	public LoansResponse getMfiApplicantDetails(Long applicationId,Integer type) throws LoansException {
+		String url = loansBaseUrl.concat(GET_MFI_APPLICANT_DETAILS).concat("/" + applicationId +"/" + type);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {			
+			logger.error("{}",e);
+			throw new LoansException("Loans service is not available While executing getMfiApplicantDetails()...");
+		}
+	}
 
 	public LoansResponse getLoanApplicationByProposalId(Long proposalId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_APPLICATION_BY_PROPOSAL_ID).concat("/" + proposalId);
@@ -2816,6 +2851,52 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in sendInEligibleForSidbi : ",e);
 			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	/**
+	 * GET APPLICATION CAMPAIGN CODE FROM LOAN APPLICATION MASTER
+	 * @param applicationId
+	 * @return PLEASE FIND CAMPAIGN CODE FROM "data" key from "LoansResponse" Class
+	 * @throws ExcelException 
+	 */
+	public LoansResponse getApplicationCampaignCode(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_APPLICATION_CAMPAIGN_CODE).concat("/" + applicationId);
+		logger.info("url for Getting APPLICATION CAMPIGN CODE=================>{} = {} = {}" , url , AND_FOR_APPLICATION_ID , applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getApplicationCampaignCode : ",e);
+			throw new ExcelException(e.getCause().getMessage());
+		}
+	}
+	
+	/**
+	 * GET FINANCIAL DATA FOR PUSH API, IRR, CAMS and TEASOR VIEW
+	 * @param applicationId
+	 * @param proposalId
+	 * @return PLEASE FIND FinancialRequest FROM "data" key from "LoansResponse" Class
+	 * @throws ExcelException
+	 * @Controller :- CMAController.java
+	 * UTL :- http://localhost:8484/loans/cma/getFinancialDetailsForBankIntegration/10001179?proposalId=3366
+	 */
+	public LoansResponse getFinancialData(Long applicationId,Long proposalId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FINANCIAL_DATA).concat("/" + applicationId);
+		if(proposalId != null) {
+			url.concat("?proposalId=" + proposalId);
+		}
+		logger.info("url for Getting FINANCIAL DETAILS=================>{} = {} = {}" , url , AND_FOR_APPLICATION_ID , applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getFinancialData : ",e);
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	

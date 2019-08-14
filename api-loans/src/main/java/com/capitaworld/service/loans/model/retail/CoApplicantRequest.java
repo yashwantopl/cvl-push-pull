@@ -27,6 +27,7 @@ public class CoApplicantRequest {
 	private String contactNo;
 	private String companyName;
 	private Integer employedWithId;
+	private Integer employmentType;
 	private String employedWithOther;
 	private String nameOfEntity;
 	private Integer industryTypeId;
@@ -107,6 +108,18 @@ public class CoApplicantRequest {
 	private Integer educationQualification;
 	private Boolean isIncomeConsider;
 	private Boolean isOwnedProp;
+	private String nameEditedByCoApp;
+	
+	
+	
+
+	public String getNameEditedByCoApp() {
+		return nameEditedByCoApp;
+	}
+
+	public void setNameEditedByCoApp(String nameEditedByCoApp) {
+		this.nameEditedByCoApp = nameEditedByCoApp;
+	}
 
 	public Boolean getIsOwnedProp() {
 		return isOwnedProp;
@@ -884,5 +897,12 @@ public class CoApplicantRequest {
 
 	public void setIsIncomeConsider(Boolean isIncomeConsider) {
 		this.isIncomeConsider = isIncomeConsider;
+	}
+		public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
 	}
 }

@@ -231,7 +231,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private String fpProductName;
     
     private Object mcaFinancialAndDetailsResponse;
-
+    private Boolean isCampaignUser;
     private Boolean isMcqSkipped;
     private String companyId;
     private String scoringModelName;
@@ -2260,6 +2260,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setMcaNotApplicable(Boolean mcaNotApplicable) {
 		this.mcaNotApplicable = mcaNotApplicable;
+	}
+
+	public Boolean getIsCampaignUser() {
+		return isCampaignUser;
+	}
+
+	public void setIsCampaignUser(Boolean isCampaignUser) {
+		this.isCampaignUser = isCampaignUser;
 	}
 
 

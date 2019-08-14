@@ -1,9 +1,14 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 import java.util.List;
 
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class MfiAssetsDetailsReq implements Serializable {
 
 	/**
@@ -12,8 +17,8 @@ public class MfiAssetsDetailsReq implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-
 	private Long applicationId;
+	private Long userId;
 
 	private Integer assetsLiabilityType;
 
@@ -53,10 +58,11 @@ public class MfiAssetsDetailsReq implements Serializable {
 	
 	//for liability
 	public MfiAssetsDetailsReq(Long applicationId, Integer assetsLiabilityType, Double amount, Double outstanding,
-			Integer type) {
+			Integer type,Integer particulars) {
 		this.applicationId = applicationId;
 		this.assetsLiabilityType = assetsLiabilityType;
 		this.amount = amount;
+		this.particulars = particulars;
 		this.outstanding = outstanding;
 		this.type = type;
 	}
@@ -174,6 +180,12 @@ public class MfiAssetsDetailsReq implements Serializable {
 	public void setCurrntLiabilityFilled(boolean isCurrntLiabilityFilled) {
 		this.isCurrntLiabilityFilled = isCurrntLiabilityFilled;
 	}
-	
 
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 }

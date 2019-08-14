@@ -70,6 +70,18 @@ public class CommonUtils {
 	public static final Long TL_LESS_TWO = 20000000L;
 	public static final Integer PENDING = 0;
 	public static final Integer APPROVED = 1;
+	public static final Integer BASIC_DETAILS = 0;
+	public static final Integer PERSONAL_DETAILS = 1;
+	public static final Integer BANK_DETAILS = 2;
+	public static final Integer INCOME_EXPENDITURE = 3;
+	public static final Integer PROJECT_DETAILS = 4;
+	public static final Integer ASSETS_LIABILITY = 5;
+	public static final Integer LOAN_ASSESMENT = 6;
+	public static final Integer LOAN_RECOMANDATION = 7;
+
+
+
+
 
 	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
 	
@@ -195,7 +207,7 @@ public class CommonUtils {
 		private OfflineApplicationConfig(){
 			// Do nothing because of X and Y.
 		}
-		static final class BankSpecific{
+		public static final class BankSpecific{
 			private BankSpecific(){
 				// Do nothing because of X and Y.
 			}
@@ -203,7 +215,7 @@ public class CommonUtils {
 			public static final String OFF = "0";
 		}
 		
-		static final class MarketPlace{
+		public static final class MarketPlace{
 			private MarketPlace(){
 				// Do nothing because of X and Y.
 			}
@@ -558,6 +570,19 @@ public class CommonUtils {
 			return "EQUITY";
 	}
 
+	public static class MFIApplicationStatus{
+
+		public static final Long MFI_OPEN = 9l;
+		public static final Long MFI_PENDING = 10l;
+		public static final Long MFI_Submitted = 14l;
+		public static final Long MFI_Submitted_Sidbi = 12l;
+		public static final Long MFI_Approve = 13l;
+		public static final Long MFI_Ineligible = 6l;
+		public static final Long MFI_Sanction = 5l;
+		public static final Long MFI_Disbursed = 11l;
+		public static final Long MFI_Rejected = 4l;
+	}
+
 	public enum ApplicationStatusMessage {
 
 		IN_PROGRESS(1,"In Progress"),
@@ -598,6 +623,9 @@ public class CommonUtils {
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
+		public static final Long MFI_OPEN = 9l;
+		public static final Long MFI_PENDING = 10l;
+
 	}
 	
 	public static final class ParameterTypes {
@@ -2054,18 +2082,27 @@ public enum APIFlags {
 
 	public static Double convertTwoDecimalValuesIn(Double amount,Integer rate) {
 		if(amount!=null) {
-			DecimalFormat decim = new DecimalFormat("0.00");
+//			Comment for not convert to AbsoluteValues
 			amount=amount/rate;
-			amount = Double.parseDouble(decim.format(amount));
+			amount = convertTwoDecimal(amount);
 		}
 		return amount;
 	}
 	public static Double convertTwoDecimalAbsoluteValues(Double amount,Integer rate) {
 		if(amount!=null) {
-			DecimalFormat decim = new DecimalFormat("0.00");
-			amount=amount*rate;
+//			Comment for not convert to AbsoluteValues
+//			amount=amount*rate;
+			
+			amount = convertTwoDecimal(amount);
+		}
+		return amount;
+	}
+	public static Double convertTwoDecimal(Double amount) {
+		if(amount!=null) {
+			DecimalFormat decim = new DecimalFormat("0.00");			
 			amount = Double.parseDouble(decim.format(amount));
 		}
 		return amount;
 	}
+	
 }

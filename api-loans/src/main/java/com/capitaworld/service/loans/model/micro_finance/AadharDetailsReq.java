@@ -77,6 +77,8 @@ public class AadharDetailsReq implements Serializable {
     private String aadharPincode;
 
     private Integer addressProfType;
+    private Integer type;
+    private String addressProfNumber;
 
     private String fatherName;
 
@@ -86,13 +88,32 @@ public class AadharDetailsReq implements Serializable {
     private Long orgId;
 
     private Integer addressProofType;
+    private String addressProofNo;
 
     private Integer businessTypeId;
+    private String message;
+    private String status;
 
-    private  byte[] profilePic;
-    private  byte[] addressProofImg;
+    private String profilePic;
+    private String addressProofImg;
+    private String consentFormImg;
 
     public AadharDetailsReq() {
+    }
+
+    public AadharDetailsReq(Long id, Long applicationId, String firstName, String lastName) {
+        this.id = id;
+        this.applicationId = applicationId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public AadharDetailsReq(Long id, Long applicationId, String firstName, String lastName,String status) {
+        this.id = id;
+        this.applicationId = applicationId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.status = status;
     }
 
     //    fn.applicationId.id,,fn.firstName,mf.lastName,mf.middleName,mf.birthDate,mf.genderId,mf.mobile,mf.email,mf.addressSameAsAadhar,mf.currentDistrict,mf.aadharDistrict,mf.currentHouse,mf.aadharHouse,mf.currentLandmark,mf.aadharLandmark,mf.currentLocation,mf.aadharLocation,mf.currentState,mf.aadharState,mf.currentStreet,mf.aadharStreet,mf.currentVtc,mf.aadharVtc,mf.aadharSubdist,mf.currentSubdist,mf.aadharPo,mf.currentPo,mf.aadharCareOf,mf.addressPincode,mf.aadharPincode,mf.addressProofType
@@ -459,27 +480,75 @@ public class AadharDetailsReq implements Serializable {
         this.email = email;
     }
 
-    public byte[] getProfilePic() {
-        return profilePic;
-    }
-
-    public void setProfilePic(byte[] profilePic) {
-        this.profilePic = profilePic;
-    }
-
-    public byte[] getAddressProofImg() {
-        return addressProofImg;
-    }
-
-    public void setAddressProofImg(byte[] addressProofImg) {
-        this.addressProofImg = addressProofImg;
-    }
-
     public Long getOrgId() {
         return orgId;
     }
 
     public void setOrgId(Long orgId) {
         this.orgId = orgId;
+    }
+
+    public String getAddressProofNo() {
+        return addressProofNo;
+    }
+
+    public void setAddressProofNo(String addressProofNo) {
+        this.addressProofNo = addressProofNo;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getAddressProfNumber() {
+        return addressProfNumber;
+    }
+
+    public void setAddressProfNumber(String addressProfNumber) {
+        this.addressProfNumber = addressProfNumber;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public String getAddressProofImg() {
+        return addressProofImg;
+    }
+
+    public void setAddressProofImg(String addressProofImg) {
+        this.addressProofImg = addressProofImg;
+    }
+
+    public String getConsentFormImg() {
+        return consentFormImg;
+    }
+
+    public void setConsentFormImg(String consentFormImg) {
+        this.consentFormImg = consentFormImg;
     }
 }

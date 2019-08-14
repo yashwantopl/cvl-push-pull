@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
@@ -71,6 +72,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
 	@Autowired
 	private EmpAgriculturistTypeRepository empAgriculturistTypeRepository;
+	
+	@Autowired
+	private ApplicationProposalMappingRepository appProposalMappingRepo;
 
 	@Autowired
 	private BankAccountHeldDetailRepository bankAccountHeldDetailRepository;
@@ -167,6 +171,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
 			//Update Bowl Count Flag
 			loanApplicationRepository.setFinalFilledCount(finalHomeLoanDetailRequest.getApplicationId(), finalUserId, finalHomeLoanDetailRequest.getFinalFilledCount());
+			/* Update Applicant Finally Filled */
+			appProposalMappingRepo.setIsApplicantFinalFilled(finalHomeLoanDetailRequest.getProposalId(), userId);
+			
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Home Loan Details:-",e);

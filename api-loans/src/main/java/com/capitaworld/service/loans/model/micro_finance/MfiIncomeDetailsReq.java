@@ -10,36 +10,42 @@ import java.io.Serializable;
 public class MfiIncomeDetailsReq implements Serializable {
 
     private Long id;
-
     private Long applicationId;
 
     private Integer occupation;
-
-    private Double netIncome;
-
+//    private Double netIncome;
+    private Integer incomeDays;
     private Integer frequencyIncome;
-
     private Double monthlyIncome;
-
     private Double yearlyIncome;
-
     private Integer relationId;
+    private Integer type;
 
     public MfiIncomeDetailsReq() {
     }
 
-    public MfiIncomeDetailsReq(Long applicationId, Integer occupation, Double netIncome, Integer frequencyIncome,
-                               Double monthlyIncome, Double yearlyIncome, Integer relationId) {
+    public MfiIncomeDetailsReq(Long id, Long applicationId, Integer occupation, Integer frequencyIncome,
+                               Double monthlyIncome, Double yearlyIncome, Integer relationId,Integer type,Integer incomeDays) {
+    	this.id = id;
 		this.applicationId = applicationId;
 		this.occupation = occupation;
-		this.netIncome = netIncome;
 		this.frequencyIncome = frequencyIncome;
 		this.monthlyIncome = monthlyIncome;
 		this.yearlyIncome = yearlyIncome;
 		this.relationId = relationId;
+		this.type = type;
+		this.incomeDays = incomeDays;
 	}
 
-	public Long getId() {
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -61,14 +67,6 @@ public class MfiIncomeDetailsReq implements Serializable {
 
     public void setOccupation(Integer occupation) {
         this.occupation = occupation;
-    }
-
-    public Double getNetIncome() {
-        return netIncome;
-    }
-
-    public void setNetIncome(Double netIncome) {
-        this.netIncome = netIncome;
     }
 
     public Integer getFrequencyIncome() {
@@ -101,5 +99,28 @@ public class MfiIncomeDetailsReq implements Serializable {
 
     public void setRelationId(Integer relationId) {
         this.relationId = relationId;
+    }
+
+    public Integer getIncomeDays() {
+        return incomeDays;
+    }
+
+    public void setIncomeDays(Integer incomeDays) {
+        this.incomeDays = incomeDays;
+    }
+
+    @Override
+    public String toString() {
+        return "MfiIncomeDetailsReq{" +
+                "id=" + id +
+                ", applicationId=" + applicationId +
+                ", occupation=" + occupation +
+                ", incomeDays=" + incomeDays +
+                ", frequencyIncome=" + frequencyIncome +
+                ", monthlyIncome=" + monthlyIncome +
+                ", yearlyIncome=" + yearlyIncome +
+                ", relationId=" + relationId +
+                ", type=" + type +
+                '}';
     }
 }

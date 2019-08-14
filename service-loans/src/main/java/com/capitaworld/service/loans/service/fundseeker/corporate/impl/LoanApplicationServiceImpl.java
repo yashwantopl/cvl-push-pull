@@ -27,9 +27,11 @@ import javax.persistence.StoredProcedureQuery;
 
 import com.capitaworld.service.loans.domain.GstRelatedParty;
 import com.capitaworld.service.loans.domain.common.MaxInvestmentBankwise;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
 import com.capitaworld.service.loans.repository.common.*;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,6 +238,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Autowired
+	private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
+
+	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
 
 	@Autowired
@@ -384,6 +389,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
+	
+	public static final DecimalFormat decim = new DecimalFormat("#,###.00");
+	
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	private static final String INVALID_LOAN_APPLICATION_ID =  "Invalid Loan Application ID==>";
@@ -932,7 +940,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					LoanApplicationRequest request = new LoanApplicationRequest();
 					request.setId(master.getId());
 					BeanUtils.copyProperties(master, request, "name");
-					if (request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
+					if (request.getBusinessTypeId() != null && request.getBusinessTypeId().equals(CommonUtils.BusinessType.EXISTING_BUSINESS.getId())
 							&& CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 						request.setLoanTypeMain(CommonUtils.CORPORATE);
 						request.setLoanTypeSub("DEBT");
@@ -3554,15 +3562,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationProposalMapping.getProductId());
-			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
-					&& (loanType.getId() != CommonUtils.LoanType.HOME_LOAN.getValue()
-							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
-                    && (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
-                            || !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) ) {
+			if (!CommonUtils.isObjectNullOrEmpty(loanType) && (applicationProposalMapping.getIsApplicantFinalFilled() == null || !applicationProposalMapping.getIsApplicantFinalFilled())) {
 					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
-					} else {
+					} else if(loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
+					} else if(loanType.getId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+						response.put(MESSAGE_LITERAL, "Please Fill PERSONAL-LOAN FINAL details to Move Next !");
 					}
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -3595,6 +3601,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findByApplicationId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
+			}
+			else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.MFI.getId()) {
+				MFIApplicantDetail mfiApplicantDetail= mfiApplicationDetailsRepository.findByAppIdAndType(applicationId,1);
+				return mfiApplicantDetail.getFirstName() + " " + mfiApplicantDetail.getLastName();
 			}
 			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
@@ -6103,16 +6113,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //		}
 		logger.info("Successfully get result");
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
-		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
-		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_OPEN));
+//		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
+		corporateLoan.setProductId(17);
+		corporateLoan.setBusinessTypeId(6);
 		corporateLoan.setFpMakerId(userId);
 		corporateLoan.setNpOrgId(userOrgId);
 		corporateLoan.setIsActive(true);
 		logger.info("after set is active true");
-		corporateLoan.setBusinessTypeId(businessTypeId);
+//		corporateLoan.setBusinessTypeId(businessTypeId);
 		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
@@ -6145,6 +6157,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
@@ -6185,6 +6198,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);
@@ -6996,9 +7010,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Map<String, Object> proposalresp = MultipleJSONObjectHelper
 					.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
 			if (proposalresp != null) {
-				sanctioningDetailResponse.setSanctionAmount(
-						proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString())
-								: 0.0);
+
+				MFIApplicantDetail mfiApplicantDetail=mfiApplicationDetailsRepository.findByAppIdAndType(disbursementRequest.getApplicationId(),1);
+				if(!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail))
+				{
+					sanctioningDetailResponse.setSanctionAmount(mfiApplicantDetail.getLoanAmountBankMaker());
+				}
+				else
+				{
+					sanctioningDetailResponse.setSanctionAmount(
+							proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString())
+									: 0.0);
+				}
 				sanctioningDetailResponse.setTenure(
 						proposalresp.get("elTenure") != null ? Double.valueOf(proposalresp.get("elTenure").toString())
 								: 0.0);
@@ -8363,17 +8386,55 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	@Override
-	public List<GstRelatedPartyRequest> getGstRelatedPartyDetails(Long applicationId){
+	public  Map<String, Object> getGstRelatedPartyDetails(Long applicationId){
 		if(!CommonUtils.isObjectNullOrEmpty(applicationId)){
+			 Map<String, Object> relatedParty=new HashMap<>();
 			List<GstRelatedPartyRequest> gstRelatedPartyRequests = new ArrayList<GstRelatedPartyRequest>();
 			try {
+				Double totalOfSales=0d;
+				Double totalOfPurchase=0d;
+				Double grandTotalOfSales=0d;
+				Double grandTotalOfPurchase=0d;
+				Double percOfSales=0d;
+				Double percOfPurchase=0d;
+				
 				List<GstRelatedParty> gstRelatedPartyDetails = gstRelatedpartyRepository.findAllByApplicationIdAndIsActiveIsTrue(applicationId);
-				for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
-					GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
-					BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
-					gstRelatedPartyRequests.add(gstRelatedPartyRequest);
+				if(!gstRelatedPartyDetails.isEmpty()) {
+					for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
+						GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
+						BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
+						gstRelatedPartyRequest.setPan(gstRelatedParty.getPan().toUpperCase());
+						gstRelatedPartyRequest.setRelationShip("Self-Declared - GST");
+						gstRelatedPartyRequest.setSales(" - ");
+						gstRelatedPartyRequest.setPurchase(" - ");
+						
+						if(gstRelatedPartyRequest.getTransactionType() != null && "Sales".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null ) {
+							gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getInvoiceValue().toString());
+							grandTotalOfSales=gstRelatedPartyRequest.getGrandTotal();
+							if(gstRelatedPartyRequest.getInvoiceValue() != null)
+								totalOfSales+=gstRelatedPartyRequest.getInvoiceValue();
+						}else if(gstRelatedPartyRequest.getTransactionType() != null && "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null) {
+							gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getInvoiceValue().toString());
+							grandTotalOfPurchase=gstRelatedPartyRequest.getGrandTotal();
+							if(gstRelatedPartyRequest.getInvoiceValue() != null)
+								totalOfPurchase+=gstRelatedPartyRequest.getInvoiceValue();
+						}
+						
+						gstRelatedPartyRequests.add(gstRelatedPartyRequest);
+					}
+					
+					percOfSales=totalOfSales !=0 && grandTotalOfSales != null && grandTotalOfSales != 0? totalOfSales/grandTotalOfSales*100:0;
+					percOfPurchase=totalOfPurchase!= 0 && grandTotalOfPurchase != null && grandTotalOfPurchase!= 0? totalOfPurchase/grandTotalOfPurchase*100:0;
+					
+					relatedParty.put("relatedParty", gstRelatedPartyRequests);
+					relatedParty.put("totalOfSales", totalOfSales != null && totalOfSales != 0?CommonUtils.convertStringFormate(totalOfSales):" - ");
+					relatedParty.put("totalOfPurchase", totalOfPurchase != null && totalOfPurchase!= 0?CommonUtils.convertStringFormate(totalOfPurchase):" - ");
+					relatedParty.put("grandTotalOfSales", grandTotalOfSales != null && grandTotalOfSales!= 0?CommonUtils.convertStringFormate(grandTotalOfSales):" - ");
+					relatedParty.put("grandTotalOfPurchase", grandTotalOfPurchase != null && grandTotalOfPurchase != 0?CommonUtils.convertStringFormate(grandTotalOfPurchase):" - ");
+					relatedParty.put("percOfSales", percOfSales != null && percOfSales != 0?convertValue(percOfSales).toString().concat(" %"):" - ");
+					relatedParty.put("percOfPurchase", percOfPurchase != null && percOfPurchase != 0?convertValue(percOfPurchase).toString().concat(" %"):" - ");
 				}
-				return  gstRelatedPartyRequests;
+				return  relatedParty;
 			}
 			catch (Exception e)
 			{
@@ -8416,6 +8477,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return Collections.emptyList();
 	}
+	@Override
+	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest) {
+		return loanRepository.saveTutorialsAudits(longLatrequest);
+	}
+
+	@Override
+	public String getTutorialsAudit(Long tutorialId) {
+		return loanRepository.getTutorialsAudit(tutorialId);
+	}
 	
 	@Override
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId) {
@@ -8449,5 +8519,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return dfForNoDecimal.format(maxValInCr);
 		}
 		return null;
+	}
+	
+	@Override
+	public String getApplicationCampaignCode(Long applicationId) {
+		return loanRepository.getApplicationCampaignCode(applicationId);
+	}
+	
+	public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
 }

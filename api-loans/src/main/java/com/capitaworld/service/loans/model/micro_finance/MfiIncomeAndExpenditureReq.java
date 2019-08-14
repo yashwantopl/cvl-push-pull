@@ -1,24 +1,35 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class MfiIncomeAndExpenditureReq {
 
 	private Long id;
 	private Long applicationId;
+	//1. Family Income
 	private List<MfiIncomeDetailsReq> incomeDetailsReqList;
-	private Double shipShgiInstallment;
-	private Double otherInstallment;
-	private Double loanInstallment;
+
+	//2. Family Monthly Expenses
 	private Double educationExpense;
 	private Double medicalExpense;
 	private Double foodExpense;
 	private Double otherExpense;
+	private Double houseHoldExpense;
+	private Double clothesExpense;
+
+	//3. Expected Increase in Income
 	private Integer businessInBrief;
 	private Double monthlyCashflow;
 	private Double monthlyExpenditure;
 	private Double monthlyIncome;
 
+	private Integer type;
+	//4. Progress out of Poverty Index (PPI)
 	private Integer ppiNoFamilyMember;
 	private Integer ppiAcadamicHeadFamily;
 	private Integer ppiRafrigeratorInFamily;
@@ -30,6 +41,7 @@ public class MfiIncomeAndExpenditureReq {
 	private Integer ppiDressingTableInFamily;
 	private Integer ppiOtherTableInFamily;
 
+	//for flag filled
 	private Boolean isIncomeDetailsFilled;
 	private Boolean isFamilyIncomeFilled;
 	private Boolean isFamilyExpenseFilled;
@@ -40,25 +52,20 @@ public class MfiIncomeAndExpenditureReq {
 	public MfiIncomeAndExpenditureReq() {
 	}
 
-	public MfiIncomeAndExpenditureReq(Long applicationId, Double shipShgiInstallment, Double otherInstallment,
-			Double loanInstallment, Double educationExpense, Double medicalExpense, Double foodExpense,
-			Double otherExpense, Integer businessInBrief, Double monthlyCashflow, Double monthlyExpenditure,
-			Double monthlyIncome, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
+	public MfiIncomeAndExpenditureReq(Long applicationId, Double educationExpense, Double medicalExpense, Double foodExpense,
+			Double otherExpense, Integer ppiNoFamilyMember, Integer ppiAcadamicHeadFamily,
 			Integer ppiRafrigeratorInFamily, Integer ppiStoveInFamily, Integer ppiPressureCookerInFamily,
 			Integer ppiTvInFamily, Integer ppiFanInFamily, Integer ppiVehicleInFamily, Integer ppiDressingTableInFamily,
-			Integer ppiOtherTableInFamily) {
+			Integer ppiOtherTableInFamily,Double houseHoldExpense, Double clothesExpense,Integer type) {
 		this.applicationId = applicationId;
-		this.shipShgiInstallment = shipShgiInstallment;
-		this.otherInstallment = otherInstallment;
-		this.loanInstallment = loanInstallment;
 		this.educationExpense = educationExpense;
 		this.medicalExpense = medicalExpense;
 		this.foodExpense = foodExpense;
 		this.otherExpense = otherExpense;
-		this.businessInBrief = businessInBrief;
-		this.monthlyCashflow = monthlyCashflow;
-		this.monthlyExpenditure = monthlyExpenditure;
-		this.monthlyIncome = monthlyIncome;
+//		this.businessInBrief = businessInBrief;
+//		this.monthlyCashflow = monthlyCashflow;
+//		this.monthlyExpenditure = monthlyExpenditure;
+//		this.monthlyIncome = monthlyIncome;
 		this.ppiNoFamilyMember = ppiNoFamilyMember;
 		this.ppiAcadamicHeadFamily = ppiAcadamicHeadFamily;
 		this.ppiRafrigeratorInFamily = ppiRafrigeratorInFamily;
@@ -69,6 +76,17 @@ public class MfiIncomeAndExpenditureReq {
 		this.ppiVehicleInFamily = ppiVehicleInFamily;
 		this.ppiDressingTableInFamily = ppiDressingTableInFamily;
 		this.ppiOtherTableInFamily = ppiOtherTableInFamily;
+		this.clothesExpense = clothesExpense;
+		this.houseHoldExpense = houseHoldExpense;
+		this.type = type;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 	public Long getId() {
@@ -93,30 +111,6 @@ public class MfiIncomeAndExpenditureReq {
 
 	public void setIncomeDetailsReqList(List<MfiIncomeDetailsReq> incomeDetailsReqList) {
 		this.incomeDetailsReqList = incomeDetailsReqList;
-	}
-
-	public Double getShipShgiInstallment() {
-		return shipShgiInstallment;
-	}
-
-	public void setShipShgiInstallment(Double shipShgiInstallment) {
-		this.shipShgiInstallment = shipShgiInstallment;
-	}
-
-	public Double getOtherInstallment() {
-		return otherInstallment;
-	}
-
-	public void setOtherInstallment(Double otherInstallment) {
-		this.otherInstallment = otherInstallment;
-	}
-
-	public Double getLoanInstallment() {
-		return loanInstallment;
-	}
-
-	public void setLoanInstallment(Double loanInstallment) {
-		this.loanInstallment = loanInstallment;
 	}
 
 	public Double getEducationExpense() {
@@ -303,4 +297,19 @@ public class MfiIncomeAndExpenditureReq {
 		this.isIncomeDetailsFilled = isIncomeDetailsFilled;
 	}
 
+	public Double getHouseHoldExpense() {
+		return houseHoldExpense;
+	}
+
+	public void setHouseHoldExpense(Double houseHoldExpense) {
+		this.houseHoldExpense = houseHoldExpense;
+	}
+
+	public Double getClothesExpense() {
+		return clothesExpense;
+	}
+
+	public void setClothesExpense(Double clothesExpense) {
+		this.clothesExpense = clothesExpense;
+	}
 }

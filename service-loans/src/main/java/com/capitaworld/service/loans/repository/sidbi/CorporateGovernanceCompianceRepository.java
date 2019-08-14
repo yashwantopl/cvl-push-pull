@@ -20,4 +20,6 @@ public interface CorporateGovernanceCompianceRepository extends JpaRepository<Co
 
 	@Query(value="SELECT * FROM `loan_application`.`fs_sidbi_corporate_governance_compliance` WHERE application_id =:applicationId ORDER BY created_date AND id DESC LIMIT 5",nativeQuery=true)
 	List<CorporateGovernanceCompliance>findFirst5ByApplicationIdAndOrderByCreatedDateDesc(@Param("applicationId") Long applicationId);
+	
+	CorporateGovernanceCompliance findByApplicationIdAndCorporateGovernanceId(Long applicationId,Integer corporateGovernanceId);
 }

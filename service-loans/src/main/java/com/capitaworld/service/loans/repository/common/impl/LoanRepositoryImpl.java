@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,6 +9,7 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -35,6 +37,35 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.createNativeQuery("SELECT user_role_id,branch_id FROM users.`users` WHERE user_id =:userId")
 					.setParameter(CommonUtils.USER_ID, userId)
 					.getSingleResult();
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean isCampaignUser(Long userId) {
+		try {
+			List<String> list =  (List<String>) entityManager
+					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1",String.class)
+					.setParameter(CommonUtils.USER_ID, userId)
+					.getResultList();
+			return !CommonUtils.isListNullOrEmpty(list);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return null;
+	}
+	
+	@Override
+	public String getCampaignUser(Long userId) {
+		try {
+			String code = (String) entityManager
+					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
+					.setParameter(CommonUtils.USER_ID, userId)
+					.getSingleResult();
+			return !CommonUtils.isObjectNullOrEmpty(code) ? code : null;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -182,7 +213,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public Long getOfflineCountByAppId(Long applicationId) {
 		BigInteger count =  (BigInteger) entityManager
-				.createNativeQuery("SELECT COUNT(*) FROM `loan_application`.`ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
+				.createNativeQuery("SELECT COUNT(*) FROM `loan_application`.`ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
 						.setParameter("applicationId", applicationId).getSingleResult();
 		return count != null ? count.longValue() : 0l;
 	}
@@ -197,7 +228,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status` \r\n" + 
 							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id` \r\n" + 
 							"LEFT JOIN users.`branch_master` brn ON brn.`id` = inl.`branch_id` \r\n" + 
-							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE;")
+							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1';")
 							.setParameter("applicationId", applicationId).getSingleResult();	
 		} catch (Exception e) {
 			logger.error("Exception while get offline details by application id ----->" ,e);
@@ -213,7 +244,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
 							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status`\r\n" + 
 							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id`\r\n" + 
-							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE")
+							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
 							.setParameter("applicationId", applicationId).getSingleResult();	
 		} catch (Exception e) {
 			logger.error("Exception while get offline status  ----->" ,e);
@@ -418,4 +449,52 @@ public class LoanRepositoryImpl implements LoanRepository {
 	    }
 		return false;
 	}
+	
+	@Override
+	public String getApplicationCampaignCode(Long applicationId) {
+		try {
+			return (String) entityManager
+					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
+							.setParameter("applicationId", applicationId).getSingleResult();
+		} catch (Exception e) {
+			logger.error("Exception while getApplicationCampaignCode  ----->" ,e);
+		}
+		return null;
+		
+	}
+
+	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest){
+		BigInteger singleResult = (BigInteger) entityManager.createNativeQuery("SELECT COUNT(id) FROM `tutorial_view_audit` WHERE tutorial_id =:tutorialId AND user_id=:userId AND loan_type=:loanType")
+				.setParameter("userId", longLatrequest.getUserId())
+				.setParameter("loanType", longLatrequest.getLoanType())
+				.setParameter("tutorialId", longLatrequest.getTutorialId())
+				.getSingleResult();
+		if(singleResult.longValue()  < 1l) {
+			int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:tutorialId,:loanType,NOW())")
+					.setParameter("userId", longLatrequest.getUserId())
+					.setParameter("roleId", longLatrequest.getRoleId())
+					.setParameter("loanType", longLatrequest.getLoanType())
+					.setParameter("tutorialId", longLatrequest.getTutorialId())
+					.executeUpdate();
+			return saveTutorials > 0;
+		} else {
+			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type=:loanType and tutorial_id=:tutorialId")
+					.setParameter("date", new Date())
+					.setParameter("userId", longLatrequest.getUserId())
+					.setParameter("loanType", longLatrequest.getLoanType())
+					.setParameter("tutorialId", longLatrequest.getTutorialId())
+					.executeUpdate();
+			return update > 0;
+
+		}
+	}
+
+	public String getTutorialsAudit(Long tutorialId){
+		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('id',a.id,'userName',u.email,'viewDate',a.view_date,'roleName',r.role_name)) AS CHAR) FROM `loan_application`.tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id WHERE a.tutorial_id =:tutorialId")
+				.setParameter("tutorialId", tutorialId)
+				.getResultList();
+			return CommonUtils.isListNullOrEmpty(tutorialViewAudit) ? null : CommonUtils.isObjectNullOrEmpty(tutorialViewAudit.get(0)) ? null : tutorialViewAudit.get(0);
+	}
+
+
 }

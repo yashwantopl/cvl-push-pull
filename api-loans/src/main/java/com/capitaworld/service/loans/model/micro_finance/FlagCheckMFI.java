@@ -17,10 +17,6 @@ public class FlagCheckMFI {
 
     private Boolean isBankDetailsFilled;
 
-    private Boolean isAccountDetailsFilled;
-
-    private Boolean isExistingLoanDetailsFilled;
-
     private Boolean isIncomeDetailsFilled;
 
     private Boolean isFamilyIncomeFilled;
@@ -56,15 +52,13 @@ public class FlagCheckMFI {
     public FlagCheckMFI() {
     }
 
-    public FlagCheckMFI(Long applicationId, Boolean isPersonalDetailsFilled, Boolean isFamilyDetailsFilled, Boolean isNomineeDetailsFilled, Boolean isAcadamicDetailsFilled, Boolean isBankDetailsFilled, Boolean isAccountDetailsFilled, Boolean isExistingLoanDetailsFilled, Boolean isIncomeDetailsFilled, Boolean isFamilyIncomeFilled, Boolean isFamilyExpenseFilled, Boolean isExpectedIncomeFilled, Boolean isPPIFilled, Boolean isProjectDetailsFilled, Boolean isApplyLoanFilled, Boolean isCostProjectFilled, Boolean isMeanFinanceFilled, Boolean isCashFlowDetailsFilled, Boolean isAssetsDetailsFilled, Boolean isCurrentAssetsFilled, Boolean isFixedAssetsFilled, Boolean isCurrntLiabilityFilled, Boolean isRepaymentDetailsFilled, Boolean isConsentFormFilled) {
+    public FlagCheckMFI(Long applicationId, Boolean isPersonalDetailsFilled, Boolean isFamilyDetailsFilled, Boolean isNomineeDetailsFilled, Boolean isAcadamicDetailsFilled, Boolean isBankDetailsFilled, Boolean isIncomeDetailsFilled, Boolean isFamilyIncomeFilled, Boolean isFamilyExpenseFilled, Boolean isExpectedIncomeFilled, Boolean isPPIFilled, Boolean isProjectDetailsFilled, Boolean isApplyLoanFilled, Boolean isCostProjectFilled, Boolean isMeanFinanceFilled, Boolean isCashFlowDetailsFilled, Boolean isAssetsDetailsFilled, Boolean isCurrentAssetsFilled, Boolean isFixedAssetsFilled, Boolean isCurrntLiabilityFilled, Boolean isRepaymentDetailsFilled, Boolean isConsentFormFilled) {
         this.applicationId = applicationId;
         this.isPersonalDetailsFilled = isPersonalDetailsFilled;
         this.isFamilyDetailsFilled = isFamilyDetailsFilled;
         this.isNomineeDetailsFilled = isNomineeDetailsFilled;
         this.isAcadamicDetailsFilled = isAcadamicDetailsFilled;
         this.isBankDetailsFilled = isBankDetailsFilled;
-        this.isAccountDetailsFilled = isAccountDetailsFilled;
-        this.isExistingLoanDetailsFilled = isExistingLoanDetailsFilled;
         this.isIncomeDetailsFilled = isIncomeDetailsFilled;
         this.isFamilyIncomeFilled = isFamilyIncomeFilled;
         this.isFamilyExpenseFilled = isFamilyExpenseFilled;
@@ -122,22 +116,6 @@ public class FlagCheckMFI {
 
     public void setIsBankDetailsFilled(Boolean isBankDetailsFilled) {
         this.isBankDetailsFilled = isBankDetailsFilled;
-    }
-
-    public Boolean getIsAccountDetailsFilled() {
-        return isAccountDetailsFilled;
-    }
-
-    public void setIsAccountDetailsFilled(Boolean isAccountDetailsFilled) {
-        this.isAccountDetailsFilled = isAccountDetailsFilled;
-    }
-
-    public Boolean getIsExistingLoanDetailsFilled() {
-        return isExistingLoanDetailsFilled;
-    }
-
-    public void setIsExistingLoanDetailsFilled(Boolean isExistingLoanDetailsFilled) {
-        this.isExistingLoanDetailsFilled = isExistingLoanDetailsFilled;
     }
 
     public Boolean getIsIncomeDetailsFilled() {

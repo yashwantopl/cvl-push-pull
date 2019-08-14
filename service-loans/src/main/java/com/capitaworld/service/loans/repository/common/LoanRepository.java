@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.repository.common;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
+
 import java.util.List;
 
 public interface LoanRepository {
@@ -56,10 +58,20 @@ public interface LoanRepository {
 	public String checkPanForAlreayInPrinciplOrNotEligible(Integer typeId,Integer selectedLoanTypeId,Long applicationId,String panNumber);
 
 	public String getTutorialsByRoleId(Long userRoleId, Integer loanType);
-	
+
+	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest);
+
+	public String getTutorialsAudit(Long tutorialId);
+
 	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId);
 	
 	public String getApplicationListForPrefillProfile(Long userId);
 	
 	public Boolean retailPrefillData(String input);
+	
+	public String getApplicationCampaignCode(Long applicationId);
+	
+	public Boolean isCampaignUser(Long userId);
+	
+	public String getCampaignUser(Long userId);
 }

@@ -144,6 +144,36 @@ public class PLRetailApplicantResponse implements Serializable {
 	private String permAddTaluko;
 	private Double netMonthlyIncome;
 	private Boolean isIncomeCons;
+    private String nameEditedByCoApp;
+    private String isOwnedProp;
+    private List<EmpSalariedTypeRequest> empSalariedDetails;
+    
+	
+    
+	
+
+	public List<EmpSalariedTypeRequest> getEmpSalariedDetails() {
+		return empSalariedDetails;
+	}
+
+	public void setEmpSalariedDetails(List<EmpSalariedTypeRequest> empSalariedDetails) {
+		this.empSalariedDetails = empSalariedDetails;
+	}
+
+	public String getIsOwnedProp() {
+		return isOwnedProp;
+	}
+
+	public void setIsOwnedProp(String isOwnedProp) {
+		this.isOwnedProp = isOwnedProp;
+	}
+
+	public String getNameEditedByCoApp() {
+		return nameEditedByCoApp;
+	}
+	public void setNameEditedByCoApp(String nameEditedByCoApp) {
+		this.nameEditedByCoApp = nameEditedByCoApp;
+	}
 	
 	
 

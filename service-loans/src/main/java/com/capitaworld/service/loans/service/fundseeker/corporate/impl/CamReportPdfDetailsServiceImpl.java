@@ -567,6 +567,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
+			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
 		}
 		
 		//ONE-FORM DATA
@@ -1311,11 +1312,20 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//HUNTER API ANALYSIS
+		
+		
 		try {
-			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
-			if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
-				map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
+			UserResponse campaignUser=usersClient.isExists(userId,null);
+			map.put("isCapaignUser", campaignUser != null && campaignUser.getData() != null ? campaignUser.getData() : "");
+			if(campaignUser!= null && campaignUser.getData().equals(false)) {
+				AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
+				if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
+					map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
+				}	
+			}else {
+				logger.info("user is campaign so hunter is skipped");
 			}
+			
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -1332,8 +1342,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//gstRelatedParty Data Fetch
 		try {
-			List<GstRelatedPartyRequest> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(10000731l);
-			map.put("gstPartyRelatedData", !CommonUtils.isObjectListNull(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", !CommonUtils.isObjectNullOrEmpty(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
@@ -1378,7 +1388,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("top5FundReceived", top5FundReceived);
 				map.put("top5FundTransfered", top5FundTransfered);
 				map.put("bouncedChequeList", bouncedChequeList);
-				map.put("customerInfo", customerInfo);
+				map.put("customerInfo", !CommonUtils.isObjectListNull(customerInfo) ? customerInfo : null);
 				map.put("summaryInfo", summaryInfo);
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 
@@ -1388,7 +1398,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error("Error while getting perfios data : ",e);
 		}
 		
-		//		GST Comparision by Maaz
+		//GST Comparision by Maaz
 		try{
 			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));

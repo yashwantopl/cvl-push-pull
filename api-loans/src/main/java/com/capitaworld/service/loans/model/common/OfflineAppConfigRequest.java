@@ -1,17 +1,13 @@
 package com.capitaworld.service.loans.model.common;
 
 import java.io.Serializable;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * 
  * @author akshay
  *
  */
-@Entity
-@Table(name = "fp_offline_app_config")
 public class OfflineAppConfigRequest extends AuditActivityRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -27,6 +23,16 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 	private String marketPlace;
 	
 	private String bankSpecific;
+	
+	private String difference;
+	
+	private Date fromDate ;
+	
+	private Date toDate;
+	
+	private String fieldValue;
+	
+	private Integer fieldType;
 
 	public Long getId() {
 		return id;
@@ -75,5 +81,45 @@ public class OfflineAppConfigRequest extends AuditActivityRequest implements Ser
 	public void setBankSpecific(String bankSpecific) {
 		this.bankSpecific = bankSpecific;
 	}
-		
+
+	public String getDifference() {
+		return difference;
+	}
+
+	public void setDifference(String difference) {
+		this.difference = difference;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public String getFieldValue() {
+		return fieldValue;
+	}
+
+	public void setFieldValue(String fieldValue) {
+		this.fieldValue = fieldValue;
+	}
+
+	public Integer getFieldType() {
+		return fieldType;
+	}
+
+	public void setFieldType(Integer fieldType) {
+		this.fieldType = fieldType;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+	
 }

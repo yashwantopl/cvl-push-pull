@@ -107,8 +107,6 @@ public class MfiApplicantDetailsReq {
 
 	private Integer houseType;
 
-	private String loanPurpose;
-
 	private Double loanAmountRequired;
 
 	private Double costOfProject;
@@ -153,19 +151,22 @@ public class MfiApplicantDetailsReq {
 	private String nomineeLocation;
 	private String nomineeHouseNo;
 	private String nomineeLandmark;
-	private String academicReligion;
-	private String academicCaste;
-	private Boolean isAcademicLifeInsurance;
 
-	private String houseOwnership;
+	private Integer academicReligion;
 
-	private String areaType;
+	private Integer academicCaste;
 
-	private String businessPremises;
+	private Integer isAcademicLifeInsurance;
 
-	private String expInSameLine;
+	private Integer houseOwnership;
 
-	private String academicSumInsured;
+	private Integer areaType;
+
+	private Integer businessPremises;
+
+	private Integer expInSameLine;
+
+	private Double academicSumInsured;
 
 	private Integer type;
 
@@ -221,12 +222,10 @@ public class MfiApplicantDetailsReq {
 
 	private Integer addressProofType;
 
-	private byte[] addressProofImg;
-	private byte[] consentFormImg;
-	private byte[] profileImg;
-	private Double shipShgiInstallment;
-	private Double otherInstallment;
-	private Double loanInstallment;
+	private String addressProofImg;
+	private String consentFormImg;
+	private String profileImg;
+	private String aadharImg;
 	private Double educationExpense;
 	private Double medicalExpense;
 	private Double foodExpense;
@@ -249,10 +248,13 @@ public class MfiApplicantDetailsReq {
 	private Double totalMonthlyIncomeForFamily;
     private List<MfiAssetsDetailsReq> assetsDetails;
     private List<MfiAssetsDetailsReq> liabilityDetails;
+	private Double totalExpense;
 
     private Long bankId;
 
     private String branchName;
+
+    private String acHolderName;
 
     private String accountNo;
 
@@ -263,6 +265,12 @@ public class MfiApplicantDetailsReq {
     private byte[] passbookImg;
 
     private List<MfiIncomeDetailsReq> incomeDetailsReqList;
+    private List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList;
+
+	private MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIMaker;
+
+	private MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIChecker;
+
     private Integer purposeOfLoan;
 
     private Boolean isBusinessPremiseVisited;
@@ -277,8 +285,79 @@ public class MfiApplicantDetailsReq {
     private Integer clientType;
 
 	private Integer businessInBrief;
-	
-    public Integer getBusinessInBrief() {
+
+	//For Cash Flow Assessment
+	private Double incomeFromOccupation;
+	private Double existingExpensesOfFamily;
+	private Double netSaving;
+	private Double expectedIncome;
+	private Integer competition;
+	private Long id;
+
+	private Integer addressProfType;
+
+	private String addressProofNo;
+
+	private Integer businessTypeId;
+
+	private Double amount;
+
+	private Double outstanding;
+
+	private Integer particulars;
+
+	private Double houseHoldExpense;
+	private Double clothesExpense;
+
+	private Double loanAmountMFIChecker;
+
+	private Double loanAmountBankMaker;
+
+	private Long jobId;
+
+	private Integer status;
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public MfiIncomeAndExpenditureReq getMfiIncomeAndExpenditureReqMFIMaker() {
+		return mfiIncomeAndExpenditureReqMFIMaker;
+	}
+
+	public void setMfiIncomeAndExpenditureReqMFIMaker(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIMaker) {
+		this.mfiIncomeAndExpenditureReqMFIMaker = mfiIncomeAndExpenditureReqMFIMaker;
+	}
+
+	public MfiIncomeAndExpenditureReq getMfiIncomeAndExpenditureReqMFIChecker() {
+		return mfiIncomeAndExpenditureReqMFIChecker;
+	}
+
+	public void setMfiIncomeAndExpenditureReqMFIChecker(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIChecker) {
+		this.mfiIncomeAndExpenditureReqMFIChecker = mfiIncomeAndExpenditureReqMFIChecker;
+	}
+
+	public Double getLoanAmountMFIChecker() {
+		return loanAmountMFIChecker;
+	}
+
+	public void setLoanAmountMFIChecker(Double loanAmountMFIChecker) {
+		this.loanAmountMFIChecker = loanAmountMFIChecker;
+	}
+
+	public Double getLoanAmountBankMaker() {
+		return loanAmountBankMaker;
+	}
+
+	public void setLoanAmountBankMaker(Double loanAmountBankMaker) {
+		this.loanAmountBankMaker = loanAmountBankMaker;
+	}
+
+	public Integer getBusinessInBrief() {
 		return businessInBrief;
 	}
 
@@ -293,7 +372,6 @@ public class MfiApplicantDetailsReq {
 	public void setIsBusinessPremiseVisited(Boolean isBusinessPremiseVisited) {
 		this.isBusinessPremiseVisited = isBusinessPremiseVisited;
 	}
-
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -703,14 +781,6 @@ public class MfiApplicantDetailsReq {
 		this.houseType = houseType;
 	}
 
-	public String getLoanPurpose() {
-		return loanPurpose;
-	}
-
-	public void setLoanPurpose(String loanPurpose) {
-		this.loanPurpose = loanPurpose;
-	}
-
 	public Double getLoanAmountRequired() {
 		return loanAmountRequired;
 	}
@@ -909,70 +979,6 @@ public class MfiApplicantDetailsReq {
 
 	public void setNomineeLandmark(String nomineeLandmark) {
 		this.nomineeLandmark = nomineeLandmark;
-	}
-
-	public String getAcademicReligion() {
-		return academicReligion;
-	}
-
-	public void setAcademicReligion(String academicReligion) {
-		this.academicReligion = academicReligion;
-	}
-
-	public String getAcademicCaste() {
-		return academicCaste;
-	}
-
-	public void setAcademicCaste(String academicCaste) {
-		this.academicCaste = academicCaste;
-	}
-
-	public Boolean getIsAcademicLifeInsurance() {
-		return isAcademicLifeInsurance;
-	}
-
-	public void setIsAcademicLifeInsurance(Boolean isAcademicLifeInsurance) {
-		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
-	}
-
-	public String getHouseOwnership() {
-		return houseOwnership;
-	}
-
-	public void setHouseOwnership(String houseOwnership) {
-		this.houseOwnership = houseOwnership;
-	}
-
-	public String getAreaType() {
-		return areaType;
-	}
-
-	public void setAreaType(String areaType) {
-		this.areaType = areaType;
-	}
-
-	public String getBusinessPremises() {
-		return businessPremises;
-	}
-
-	public void setBusinessPremises(String businessPremises) {
-		this.businessPremises = businessPremises;
-	}
-
-	public String getExpInSameLine() {
-		return expInSameLine;
-	}
-
-	public void setExpInSameLine(String expInSameLine) {
-		this.expInSameLine = expInSameLine;
-	}
-
-	public String getAcademicSumInsured() {
-		return academicSumInsured;
-	}
-
-	public void setAcademicSumInsured(String academicSumInsured) {
-		this.academicSumInsured = academicSumInsured;
 	}
 
 	public Integer getType() {
@@ -1181,54 +1187,6 @@ public class MfiApplicantDetailsReq {
 
 	public void setAddressProofType(Integer addressProofType) {
 		this.addressProofType = addressProofType;
-	}
-
-	public byte[] getAddressProofImg() {
-		return addressProofImg;
-	}
-
-	public void setAddressProofImg(byte[] addressProofImg) {
-		this.addressProofImg = addressProofImg;
-	}
-
-	public byte[] getConsentFormImg() {
-		return consentFormImg;
-	}
-
-	public void setConsentFormImg(byte[] consentFormImg) {
-		this.consentFormImg = consentFormImg;
-	}
-
-	public byte[] getProfileImg() {
-		return profileImg;
-	}
-
-	public void setProfileImg(byte[] profileImg) {
-		this.profileImg = profileImg;
-	}
-
-	public Double getShipShgiInstallment() {
-		return shipShgiInstallment;
-	}
-
-	public void setShipShgiInstallment(Double shipShgiInstallment) {
-		this.shipShgiInstallment = shipShgiInstallment;
-	}
-
-	public Double getOtherInstallment() {
-		return otherInstallment;
-	}
-
-	public void setOtherInstallment(Double otherInstallment) {
-		this.otherInstallment = otherInstallment;
-	}
-
-	public Double getLoanInstallment() {
-		return loanInstallment;
-	}
-
-	public void setLoanInstallment(Double loanInstallment) {
-		this.loanInstallment = loanInstallment;
 	}
 
 	public Double getEducationExpense() {
@@ -1551,5 +1509,242 @@ public class MfiApplicantDetailsReq {
         this.clientType = clientType;
     }
 
-    
+	public Double getIncomeFromOccupation() {
+		return incomeFromOccupation;
+	}
+
+	public void setIncomeFromOccupation(Double incomeFromOccupation) {
+		this.incomeFromOccupation = incomeFromOccupation;
+	}
+
+	public Double getExistingExpensesOfFamily() {
+		return existingExpensesOfFamily;
+	}
+
+	public void setExistingExpensesOfFamily(Double existingExpensesOfFamily) {
+		this.existingExpensesOfFamily = existingExpensesOfFamily;
+	}
+
+	public Double getNetSaving() {
+		return netSaving;
+	}
+
+	public void setNetSaving(Double netSaving) {
+		this.netSaving = netSaving;
+	}
+
+	public Double getExpectedIncome() {
+		return expectedIncome;
+	}
+
+	public void setExpectedIncome(Double expectedIncome) {
+		this.expectedIncome = expectedIncome;
+	}
+
+	public Double getTotalExpense() {
+		return totalExpense;
+	}
+
+	public void setTotalExpense(Double totalExpense) {
+		this.totalExpense = totalExpense;
+	}
+
+	public Integer getAddressProfType() {
+		return addressProfType;
+	}
+
+	public void setAddressProfType(Integer addressProfType) {
+		this.addressProfType = addressProfType;
+	}
+
+	public String getAddressProofNo() {
+		return addressProofNo;
+	}
+
+	public void setAddressProofNo(String addressProofNo) {
+		this.addressProofNo = addressProofNo;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(Double outstanding) {
+		this.outstanding = outstanding;
+	}
+
+	public Integer getParticulars() {
+		return particulars;
+	}
+
+	public void setParticulars(Integer particulars) {
+		this.particulars = particulars;
+	}
+
+	public Double getHouseHoldExpense() {
+		return houseHoldExpense;
+	}
+
+	public void setHouseHoldExpense(Double houseHoldExpense) {
+		this.houseHoldExpense = houseHoldExpense;
+	}
+
+	public Double getClothesExpense() {
+		return clothesExpense;
+	}
+
+	public void setClothesExpense(Double clothesExpense) {
+		this.clothesExpense = clothesExpense;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Integer competition) {
+		this.competition = competition;
+	}
+	public List<MfiIncomeDetailsReq> getIncomeDetailsTypeTwoList() {
+		return incomeDetailsTypeTwoList;
+	}
+
+	public void setIncomeDetailsTypeTwoList(List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList) {
+		this.incomeDetailsTypeTwoList = incomeDetailsTypeTwoList;
+	}
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
+
+	public Integer getAcademicReligion() {
+		return academicReligion;
+	}
+
+	public void setAcademicReligion(Integer academicReligion) {
+		this.academicReligion = academicReligion;
+	}
+
+	public Integer getIsAcademicLifeInsurance() {
+		return isAcademicLifeInsurance;
+	}
+
+	public void setIsAcademicLifeInsurance(Integer isAcademicLifeInsurance) {
+		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
+	}
+
+	public Integer getAcademicCaste() {
+		return academicCaste;
+	}
+
+	public void setAcademicCaste(Integer academicCaste) {
+		this.academicCaste = academicCaste;
+	}
+
+	public Integer getHouseOwnership() {
+		return houseOwnership;
+	}
+
+	public void setHouseOwnership(Integer houseOwnership) {
+		this.houseOwnership = houseOwnership;
+	}
+
+	public Integer getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(Integer areaType) {
+		this.areaType = areaType;
+	}
+
+	public Integer getBusinessPremises() {
+		return businessPremises;
+	}
+
+	public void setBusinessPremises(Integer businessPremises) {
+		this.businessPremises = businessPremises;
+	}
+
+	public Integer getExpInSameLine() {
+		return expInSameLine;
+	}
+
+	public void setExpInSameLine(Integer expInSameLine) {
+		this.expInSameLine = expInSameLine;
+	}
+
+	public Double getAcademicSumInsured() {
+		return academicSumInsured;
+	}
+
+	public void setAcademicSumInsured(Double academicSumInsured) {
+		this.academicSumInsured = academicSumInsured;
+	}
+
+    public String getAcHolderName() {
+        return acHolderName;
+    }
+
+    public void setAcHolderName(String acHolderName) {
+        this.acHolderName = acHolderName;
+    }
+
+	public String getAddressProofImg() {
+		return addressProofImg;
+	}
+
+	public void setAddressProofImg(String addressProofImg) {
+		this.addressProofImg = addressProofImg;
+	}
+
+	public String getConsentFormImg() {
+		return consentFormImg;
+	}
+
+	public void setConsentFormImg(String consentFormImg) {
+		this.consentFormImg = consentFormImg;
+	}
+
+	public String getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(String profileImg) {
+		this.profileImg = profileImg;
+	}
+
+	public String getAadharImg() {
+		return aadharImg;
+	}
+
+	public void setAadharImg(String aadharImg) {
+		this.aadharImg = aadharImg;
+	}
 }

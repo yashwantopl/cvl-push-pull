@@ -55,4 +55,17 @@ public class OfflineAppConfigController {
 		}
 		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),offlineAppConfigService.get(appConfigRequest)), HttpStatus.OK);
 	}
+	
+	@PostMapping(value = "/hisotry", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> history(@RequestBody OfflineAppConfigRequest  appConfigRequest,HttpServletRequest request) {
+
+		CommonDocumentUtils.startHook(logger, "history");
+
+		if (CommonUtils.isObjectListNull(appConfigRequest.getOrgId(),appConfigRequest.getBusinessTypeId())) {
+			String errorMsg = "OrganizationId And BusinessType is Mandatory to get the configuration";
+			logger.warn(errorMsg);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(errorMsg, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),offlineAppConfigService.hisotry(appConfigRequest)), HttpStatus.OK);
+	}
 }

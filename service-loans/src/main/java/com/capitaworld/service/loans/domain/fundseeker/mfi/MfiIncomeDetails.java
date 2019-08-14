@@ -25,12 +25,22 @@ public class MfiIncomeDetails implements Serializable {
 
     @Column(name = "frequency_income")
     private Integer frequencyIncome;
+    @Column(name = "income_days")
+    private Integer incomeDays;
 
     @Column(name = "monthly_income")
     private Double monthlyIncome;
 
+    @Column(name = "monthly_income_checker")
+    private Double monthlyIncomeChecker;
+
     @Column(name = "yearly_income")
     private Double yearlyIncome;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    private Integer type;
 
     public Long getId() {
         return id;
@@ -94,5 +104,37 @@ public class MfiIncomeDetails implements Serializable {
 
     public void setRelationId(Integer relationId) {
         this.relationId = relationId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Integer getIncomeDays() {
+        return incomeDays;
+    }
+
+    public void setIncomeDays(Integer incomeDays) {
+        this.incomeDays = incomeDays;
+    }
+
+    public Double getMonthlyIncomeChecker() {
+        return monthlyIncomeChecker;
+    }
+
+    public void setMonthlyIncomeChecker(Double monthlyIncomeChecker) {
+        this.monthlyIncomeChecker = monthlyIncomeChecker;
     }
 }
