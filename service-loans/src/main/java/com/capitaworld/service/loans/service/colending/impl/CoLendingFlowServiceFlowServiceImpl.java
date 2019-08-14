@@ -1,48 +1,30 @@
 package com.capitaworld.service.loans.service.colending.impl;
 
 import com.capitaworld.service.dms.client.DMSClient;
-import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.dms.model.StorageDetailsResponse;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.common.NotificationPageRequest;
-import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
+import com.capitaworld.service.loans.model.ClientListingCoLending;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
-import com.capitaworld.service.loans.service.common.DashboardService;
-import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.client.NotificationClient;
-import com.capitaworld.service.notification.model.NotificationRequest;
-import com.capitaworld.service.notification.model.NotificationResponse;
-import com.capitaworld.service.notification.model.SysNotifyResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.Denomination;
-import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.SpClientResponse;
+import com.capitaworld.service.users.model.NbfcClientResponse;
 import com.capitaworld.service.users.model.UserResponse;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -56,22 +38,16 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 	
 	@Autowired
 	LoanApplicationService loanApplicationService;
-	
-	@Autowired
-	private ProductMasterService productMasterService;
-	
+
 	@Autowired
 	private NotificationClient notificationClient;
-	
+
 	@Autowired
 	private DMSClient dmsClient;
-	
+
 	@Autowired
 	private OneFormClient oneFormClient;
-	
-	@Autowired
-	private DashboardService dashboardService;
-	
+
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
@@ -79,7 +55,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 	private UsersClient usersClient;
 
 	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
-	private static final String ERROR_WHILE_GETTING_SP_CLIENT_COUNT = "Error while getting SP client count.";
+
 
 	@Override
 	public List<ClientListingCoLending> clientListCoLending(int pageIndex,int size,Long npUserId) throws LoansException {
@@ -88,15 +64,15 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			List<Map<String, Object>> nbfcClientResponseList = (List<Map<String, Object>>) userResponse.getData();
 			List<ClientListingCoLending> clientListings = new ArrayList<ClientListingCoLending>();
 			for (int i = 0; i < nbfcClientResponseList.size(); i++) {
-				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(nbfcClientResponseList.get(i),
-						SpClientResponse.class);
+				NbfcClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(nbfcClientResponseList.get(i), NbfcClientResponse.class);
 				ClientListingCoLending clientDetailCoLending = new ClientListingCoLending();
 				clientDetailCoLending.setClientId(clientResponse.getClientId());
 				clientDetailCoLending.setClientName(clientResponse.getClientName());
 				clientDetailCoLending.setClientEmail(clientResponse.getClientEmail());
+				clientDetailCoLending.setClientMobile(clientResponse.getClientMobile());
 				clientDetailCoLending.setLastAccessId(clientResponse.getLastAccessId());
-				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity())
-						&& clientResponse.getClientCity() != 0) {
+				//get city name
+				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity()) && clientResponse.getClientCity() != 0) {
 					List<Long> cityList = new ArrayList<>();
 					cityList.add((long) clientResponse.getClientCity());
 					OneFormResponse cityResponse = oneFormClient.getCityByCityListId(cityList);
@@ -110,6 +86,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				} else {
 					clientDetailCoLending.setClientCity("NA");
 				}
+				//get state name
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientState())
 						&& clientResponse.getClientState() != 0) {
 					List<Long> stateList = new ArrayList<>();
@@ -125,23 +102,8 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				} else {
 					clientDetailCoLending.setClientState("NA");
 				}
-				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCountry())
-						&& clientResponse.getClientCountry() != 0) {
-					List<Long> countryList = new ArrayList<>();
-					countryList.add((long) clientResponse.getClientCountry());
-					OneFormResponse countryResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> countryResponseDatalist = (List<Map<String, Object>>) countryResponse.getListData();
-					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(countryResponseDatalist.get(0), MasterResponse.class);
-					if (!CommonUtils.isObjectNullOrEmpty(masterResponse)) {
-						clientDetailCoLending.setClientCountry(masterResponse.getValue());
-					} else {
-						clientDetailCoLending.setClientCountry("NA");
-					}
-				} else {
-					clientDetailCoLending.setClientCountry("NA");
-				}
 
-				List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
+				/*List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
 				List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 				for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 					if (!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())) {
@@ -162,10 +124,10 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 						NotificationResponse responseSpFsCount = notificationClient.getAllUnreadNotificationByAppId(notificationRequestSpFS);
 						List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
 
-						applicationDetailsForSp.setNotificationCount(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs) ? sysNotificationSpFs.size() : 0);
+						applicationDetailsForSp.setNotificationCount(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs) ? sysNotificationSpFs.size() : 0);*/
 
 						//code for getting recent viewer
-						NotificationRequest notificationRequest = new NotificationRequest();
+						/*NotificationRequest notificationRequest = new NotificationRequest();
 						notificationRequest.setApplicationId(applicationDetailsForSp.getId());
 						notificationRequest.setClientRefId(clientResponse.getClientId().toString());
 						NotificationResponse response = notificationClient.getAllLatestRecentViewNotificationByAppId(notificationRequest);
@@ -210,15 +172,15 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 								profileViewResponsesList.add(profileViewResponse);
 							}
 						}
-						applicationDetailsForSp.setRecentProfileViewList(profileViewResponsesList);
+						//applicationDetailsForSp.setRecentProfileViewList(profileViewResponsesList);
 
 					} else {
 						applicationDetailsForSp.setProductName("NA");
 					}
 					applicationDetailsForSp.setDenominationValue(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getDenominationId()) ? Denomination.getById(applicationDetailsForSp.getDenominationId()).getValue() : "NA");
 					fsApplicationDetails.add(applicationDetailsForSp);
-				}
-				clientDetailCoLending.setListData(fsApplicationDetails);
+				}*/
+				//clientDetailCoLending.setListData(fsApplicationDetails);
 				clientListings.add(clientDetailCoLending);
 
 			}
