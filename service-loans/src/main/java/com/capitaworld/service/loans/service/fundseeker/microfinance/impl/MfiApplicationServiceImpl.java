@@ -782,17 +782,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 
-    public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId,Long userId) {
-        try {
-            CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
-            if (cibilReportMfi.getStatus() == 200) {
-                return financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-            }
+	@Override
+    public List<MFIFinancialArrangementRequest> callBureauGetFinancialDetails(Long applicationId,Long applicantId, Long userId) {
 
-        } catch (LoansException e) {
-            e.printStackTrace();
+        CibilResponse cibilReportMfi = null;
+        try {
+            cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+            if (cibilReportMfi.getStatus() == 200) {
+                return getFinancialDetailsAppId(applicationId, userId);
+            }
         } catch (CibilException e) {
             e.printStackTrace();
+            logger.info("CibilException error while getReport");
         }
         return Collections.EMPTY_LIST;
     }
