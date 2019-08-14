@@ -199,14 +199,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
      */
     @Override
     public boolean saveConsentFormImage(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
-            if (!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getConsentFormImg())) {
-                MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
-                String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setConsentFormImg(consentImgToDms);
-                detailsRepository.save(mfiApplicationDetail);
-                return true;
-            }
-        return false;
+        MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+        String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+        mfiApplicationDetail.setConsentFormImg(consentImgToDms);
+        detailsRepository.save(mfiApplicationDetail);
+        return true;
     }
 
     /**
