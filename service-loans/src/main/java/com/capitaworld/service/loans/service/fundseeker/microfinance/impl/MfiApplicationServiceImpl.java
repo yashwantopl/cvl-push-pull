@@ -162,7 +162,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
                 // image upload to DMS S3 server Address proof Image
                 String addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setProfileImg(addressProofImgToDms); //save path for Addressproof Image
+                mfiApplicationDetail.setAddressProofImg(addressProofImgToDms); //save path for Addressproof Image
 
                 detailsRepository.save(mfiApplicationDetail);
                 aadharDetailsReq.setId(mfiApplicationDetail.getId());
