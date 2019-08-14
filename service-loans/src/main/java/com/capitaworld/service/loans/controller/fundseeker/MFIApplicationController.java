@@ -690,15 +690,15 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@GetMapping(value = "/callBureauGetFinancialDetails/{applicationId}/{userId}",  produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId) {
+	@GetMapping(value = "/callBureauGetFinancialDetails/{applicationId}/{applicantId}/{userId}",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("applicantId") Long applicantId, @PathVariable("userId") Long userId) {
 		try {
 			logger.info("service call callBueroGetFinancialDetails----------->");
 			CommonDocumentUtils.startHook(logger, "fetch");
-			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequests = mfiApplicationService.callBureauGetFinancialDetails(applicationId, userId);
-			if (!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequests)) {
+			List<MFIFinancialArrangementRequest> mfiFinancialArrangementRequests = mfiApplicationService.callBureauGetFinancialDetails(applicationId, applicantId, userId);
+			if (!CommonUtils.isListNullOrEmpty(mfiFinancialArrangementRequests)) {
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Existing Loan details.",
-						HttpStatus.OK.value(), financialArrangementsDetailRequests), HttpStatus.OK);
+						HttpStatus.OK.value(), mfiFinancialArrangementRequests), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
