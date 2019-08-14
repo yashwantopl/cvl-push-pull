@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.colending.impl;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ClientListingCoLending;
+import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,6 +38,10 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 	@Autowired
 	private UsersClient usersClient;
+
+	@Autowired
+	private CoLendingFlowRepository coLendingFlowRepository;
+
 
 	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
 	private static final String ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT = "Error while getting NBFC client count.";
@@ -84,6 +91,19 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				} else {
 					clientDetailCoLending.setClientState("NA");
 				}
+				Object[] objects = coLendingFlowRepository.getStageAndStatus(clientResponse.getClientId());
+				if (objects!=null){
+					if ((objects[0].equals("7") || objects[0].equals("9")) && objects[1].equals("3")){
+						clientDetailCoLending.setClientStatus("In-Principle");
+					}else if(objects[0].equals("4") && objects[1].equals("3")){
+						clientDetailCoLending.setClientStatus("In-Eligible");
+					}else{
+						clientDetailCoLending.setClientStatus("In-Progress");
+					}
+				}else{
+					clientDetailCoLending.setClientStatus("NA");
+				}
+
 				clientListings.add(clientDetailCoLending);
 
 			}
@@ -109,266 +129,5 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		return null;
 	}
 
-	/*@Override
-	public List<SpSysNotifyResponse> spClientNotifications(Long spId) throws LoansException {
-		String[] userTypeIds = {"fs","fp"};
-		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
-		try {
-			for(String userTpyeId : userTypeIds){
-			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(0,Integer.MAX_VALUE,spId, userTpyeId);
-			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
-			for (int i = 0; i < spClientResponseList.size(); i++) {
-				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(spClientResponseList.get(i),
-						SpClientResponse.class);
-				
-				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
-					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
-						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
-//							boolean applied = loanApplicationService.hasAlreadyApplied(clientResponse.getClientId(), applicationDetailsForSp.getId(),applicationDetailsForSp.getProductId());
-//							applicationDetailsForSp.setHasAlreadyApplied(applied);
-//							applicationDetailsForSp.setApplicationType(CommonUtils.getUserMainType(applicationDetailsForSp.getProductId()));
-//							applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());
-							//code for sp fs notification
-							NotificationRequest notificationRequestSpFS = new NotificationRequest();
-							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
-							notificationRequestSpFS.setClientRefId(clientResponse.getClientId().toString());
-							NotificationResponse responseSpFsCount = notificationClient.getAllUnreadNotificationByAppId(notificationRequestSpFS);
-							List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
-							
-							
-							if(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs)){
-							for(SysNotifyResponse source : sysNotificationSpFs){
-								SpSysNotifyResponse target = new SpSysNotifyResponse();
-							BeanUtils.copyProperties(source, target);
-							spSysNotifResponse.add(target);
-							
-							}
-							}
-							
-							
-						}else{
-							applicationDetailsForSp.setProductName("NA");
-						}
-					}
-					
 
-				} 
-				
-				
-				else if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
-
-					
-					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
-					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
-						if(CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getName())){
-							productDetailsForSp.setName(!CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getProductId()) ? LoanType.getById(productDetailsForSp.getProductId()).getValue() : "NA");
-						}
-						//code for sp fp notification
-						NotificationRequest notificationRequestSpFp = new NotificationRequest();
-						notificationRequestSpFp.setProductId(productDetailsForSp.getId());
-						notificationRequestSpFp.setClientRefId(clientResponse.getClientId().toString());
-						NotificationResponse responseSpFsCount = notificationClient.getAllUnreadNotificationByProdId(notificationRequestSpFp);
-						List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
-
-						productDetailsForSp.setSysNotifyResponse(new ArrayList<SpSysNotifyResponse>());
-						if(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs)){
-							for(SysNotifyResponse source : sysNotificationSpFs){
-								SpSysNotifyResponse target = new SpSysNotifyResponse();
-							BeanUtils.copyProperties(source, target);
-							spSysNotifResponse.add(target);
-							
-							}
-						}
-						
-						
-					}
-				}
-			}
-			}
-			return spSysNotifResponse;
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
-			throw new LoansException(ERROR_WHILE_GETTING_CLIENT_LIST);
-		}
-		
-	
-	}
-
-	@Override
-	public List<SpSysNotifyResponse> spClientAllNotifications(Long spId, NotificationPageRequest notificationPageRequest) throws LoansException {
-		String[] userTypeIds = {"fs","fp"};
-		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
-		try {
-			for(String userTpyeId : userTypeIds){
-			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(0,Integer.MAX_VALUE,spId, userTpyeId);
-			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
-			for (int i = 0; i < spClientResponseList.size(); i++) {
-				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(spClientResponseList.get(i),
-						SpClientResponse.class);
-				
-				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
-					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
-						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
-							//code for sp fs notification
-							NotificationRequest notificationRequestSpFS = new NotificationRequest();
-							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
-							notificationRequestSpFS.setClientRefId(clientResponse.getClientId().toString());
-							notificationRequestSpFS.setClientId(clientResponse.getClientId());
-			                notificationRequestSpFS.setPageIndex(notificationPageRequest.getPageIndex());
-			                notificationRequestSpFS.setSize(notificationPageRequest.getSize());
-							NotificationResponse responseSpFsCount = notificationClient.getAllSPNotificationByAppId(notificationRequestSpFS);
-							List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
-							
-							
-							if(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs)){
-							for(SysNotifyResponse source : sysNotificationSpFs){
-								SpSysNotifyResponse target = new SpSysNotifyResponse();
-							BeanUtils.copyProperties(source, target);
-							spSysNotifResponse.add(target);
-							
-							}
-							}
-							
-							
-						}else{
-							applicationDetailsForSp.setProductName("NA");
-						}
-					}
-					
-
-				} 
-				
-				
-				else if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
-
-					
-					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
-					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
-						if(CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getName())){
-							productDetailsForSp.setName(!CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getProductId()) ? LoanType.getById(productDetailsForSp.getProductId()).getValue() : "NA");
-						}
-						//code for sp fp notification
-						NotificationRequest notificationRequestSpFp = new NotificationRequest();
-						notificationRequestSpFp.setProductId(productDetailsForSp.getId());
-						notificationRequestSpFp.setClientRefId(clientResponse.getClientId().toString());
-						notificationRequestSpFp.setClientId(clientResponse.getClientId());
-						notificationRequestSpFp.setPageIndex(notificationPageRequest.getPageIndex());
-						notificationRequestSpFp.setSize(notificationPageRequest.getSize());
-						NotificationResponse responseSpFsCount = notificationClient.getAllSPNotificationByProdId(notificationRequestSpFp);
-						List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
-
-						productDetailsForSp.setSysNotifyResponse(new ArrayList<SpSysNotifyResponse>());
-						if(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs)){
-							for(SysNotifyResponse source : sysNotificationSpFs){
-								SpSysNotifyResponse target = new SpSysNotifyResponse();
-							BeanUtils.copyProperties(source, target);
-							spSysNotifResponse.add(target);
-							
-							}
-						}
-						
-						
-					}
-				}
-			}
-			}
-			List<SpSysNotifyResponse> spSysNotifResponses;
-			spSysNotifResponses = getPages(spSysNotifResponse,notificationPageRequest.getPageIndex(), notificationPageRequest.getSize());
-			return spSysNotifResponses;
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
-			throw new LoansException(ERROR_WHILE_GETTING_CLIENT_LIST);
-		}
-		
-	
-	}
-
-	@Override
-	public Long spClientAllNotificationsCount(Long spId, NotificationPageRequest notificationPageRequest) throws LoansException{
-		String[] userTypeIds = {"fs","fp"};
-		Long totalCount = 0L;
-		try {
-			for(String userTpyeId : userTypeIds){
-			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(0,Integer.MAX_VALUE,spId, userTpyeId);
-			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
-			for (int i = 0; i < spClientResponseList.size(); i++) {
-				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(spClientResponseList.get(i),
-						SpClientResponse.class);
-				
-				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
-					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
-						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
-							//code for sp fs notification
-							NotificationRequest notificationRequestSpFS = new NotificationRequest();
-							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
-							notificationRequestSpFS.setClientRefId(clientResponse.getClientId().toString());
-							notificationRequestSpFS.setClientId(clientResponse.getClientId());
-							notificationRequestSpFS.setUserType("fs2");
-			                notificationRequestSpFS.setPageIndex(notificationPageRequest.getPageIndex());
-			                notificationRequestSpFS.setSize(notificationPageRequest.getSize());
-							NotificationResponse responseSpFsCount = notificationClient.getNotificationCount(notificationRequestSpFS);
-							Long sysNotificationSpFs = responseSpFsCount.getCount();
-							totalCount = totalCount+sysNotificationSpFs;
-							
-						}else{
-							applicationDetailsForSp.setProductName("NA");
-						}
-					}
-					
-
-				} 
-				
-				
-				else if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
-
-					
-					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
-					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
-						if(CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getName())){
-							productDetailsForSp.setName(!CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getProductId()) ? LoanType.getById(productDetailsForSp.getProductId()).getValue() : "NA");
-						}
-						//code for sp fp notification
-						NotificationRequest notificationRequestSpFp = new NotificationRequest();
-						notificationRequestSpFp.setProductId(productDetailsForSp.getId());
-						notificationRequestSpFp.setClientRefId(clientResponse.getClientId().toString());
-						notificationRequestSpFp.setClientId(clientResponse.getClientId());
-						notificationRequestSpFp.setUserType("fp2");
-						notificationRequestSpFp.setPageIndex(notificationPageRequest.getPageIndex());
-						notificationRequestSpFp.setSize(notificationPageRequest.getSize());
-						NotificationResponse responseSpFsCount = notificationClient.getNotificationCount(notificationRequestSpFp);
-						Long sysNotificationSpFs = responseSpFsCount.getCount();
-						totalCount=totalCount+sysNotificationSpFs;
-					}
-				}
-			}
-			}
-			return totalCount;
-			
-		} catch (Exception e) {
-			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
-			throw new LoansException(ERROR_WHILE_GETTING_CLIENT_LIST);
-		}
-		
-	
-	}	
-	
-	public static <T> List<T> getPages(Collection<T> c, Integer index, Integer pageSize) {
-	    if (c == null)
-	        return Collections.emptyList();
-	    List<T> list = new ArrayList<T>(c);
-	    if (pageSize == null || pageSize <= 0 || pageSize > list.size())
-	        pageSize = list.size();
-	    int numPages = (int) Math.ceil((double)list.size() / (double)pageSize);
-	    List<List<T>> pages = new ArrayList<List<T>>(numPages);
-	    for (int pageNum = 0; pageNum < numPages;){
-	        pages.add(list.subList(pageNum * pageSize, Math.min(++pageNum * pageSize, list.size())));
-	    	}
-	    return pages.get(index);
-	}*/
-	
 }
