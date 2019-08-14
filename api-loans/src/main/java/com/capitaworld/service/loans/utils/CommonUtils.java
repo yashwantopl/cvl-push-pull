@@ -2118,6 +2118,7 @@ public enum APIFlags {
 
 	public static Double convertTwoDecimalValuesIn(Double amount,Integer rate) {
 		if(amount!=null) {
+//			Comment for not convert to AbsoluteValues
 			amount=amount/rate;
 			amount = convertTwoDecimal(amount);
 		}
@@ -2125,7 +2126,8 @@ public enum APIFlags {
 	}
 	public static Double convertTwoDecimalAbsoluteValues(Double amount,Integer rate) {
 		if(amount!=null) {
-			amount=amount*rate;
+//			Comment for not convert to AbsoluteValues
+//			amount=amount*rate;
 			
 			amount = convertTwoDecimal(amount);
 		}

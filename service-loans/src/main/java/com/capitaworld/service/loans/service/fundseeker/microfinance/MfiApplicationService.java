@@ -18,10 +18,11 @@ import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetail
 import com.capitaworld.service.loans.model.micro_finance.MfiLoanRecomandationReq;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MfiApplicationService {
 
-    public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq);
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq);
 
 	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId);
 
@@ -31,7 +32,7 @@ public interface MfiApplicationService {
 
 	public Object saveOrUpdateProjectDetails(ProjectDetailsReq projectDetailsReq);
 
-	public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq);
+	public Object saveOrUpdateBankDetails(MultipartFile uploadingFile, MfiBankDetailsReq bankDetailsReq);
 
 	public MfiBankDetailsReq fetchBankDetail(Long applicationId);
 
@@ -76,5 +77,7 @@ public interface MfiApplicationService {
 	public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId, Long userId);
 	
 	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId);
+
+	public boolean saveConsentFormImage(MultipartFile uploadingFile,AadharDetailsReq aadharDetailsReq);
 
 }

@@ -82,7 +82,7 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 	@Override
 	public List<FsPastPerformanceDetailsRequest> getPastPerformanceList(Long applicationId) throws Exception {
 		try {
-
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 			Integer year = scoringService.getFinYear(applicationId);
 			int pastYear1 = year - 1;
 			int pastYear2 = year - 2;
@@ -93,8 +93,8 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 				FsPastPerformanceDetails fsPastPerformanceDetails1 = new FsPastPerformanceDetails();
 				OperatingStatementDetails operatingStatementPast1YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(applicationId, pastYear1+"");
 				if (!CommonUtils.isObjectNullOrEmpty(operatingStatementPast1YearDetails)) {
-					fsPastPerformanceDetails1.setNetSalesPastYear1(operatingStatementPast1YearDetails.getNetSales().doubleValue());
-					fsPastPerformanceDetails1.setNetProfitPastYear1(operatingStatementPast1YearDetails.getNetProfitOrLoss().doubleValue());
+					fsPastPerformanceDetails1.setNetSalesPastYear1(CommonUtils.convertTwoDecimalValuesIn(operatingStatementPast1YearDetails.getNetSales().doubleValue(), sidbiCurrencyRateObj.getRate()));				
+					fsPastPerformanceDetails1.setNetProfitPastYear1(CommonUtils.convertTwoDecimalValuesIn(operatingStatementPast1YearDetails.getNetProfitOrLoss().doubleValue(), sidbiCurrencyRateObj.getRate()));					
 				}else{
 					logger.error("Error while getting net sales/net profit loss past 1 year details from operating statement");
 				}
@@ -102,22 +102,22 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 
 				OperatingStatementDetails operatingStatementPast2YearDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(applicationId, pastYear2+"");
 				if (!CommonUtils.isObjectNullOrEmpty(operatingStatementPast2YearDetails)) {
-					fsPastPerformanceDetails1.setNetSalesPastYear2(operatingStatementPast2YearDetails.getNetSales().doubleValue());
-					fsPastPerformanceDetails1.setNetProfitPastYear2(operatingStatementPast2YearDetails.getNetProfitOrLoss().doubleValue());
+					fsPastPerformanceDetails1.setNetSalesPastYear2(CommonUtils.convertTwoDecimalValuesIn(operatingStatementPast2YearDetails.getNetSales().doubleValue(), sidbiCurrencyRateObj.getRate()));
+					fsPastPerformanceDetails1.setNetProfitPastYear2(CommonUtils.convertTwoDecimalValuesIn(operatingStatementPast2YearDetails.getNetProfitOrLoss().doubleValue(), sidbiCurrencyRateObj.getRate()));					
 				}else{
 					logger.error("Error while getting net sales/net profit loss past 2 year details from operating statement");
 				}
 
 				LiabilitiesDetails liabilitiesPast1YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetailsByAppIdAndFinYear(applicationId,pastYear1+"");
 				if (!CommonUtils.isObjectNullOrEmpty(liabilitiesPast1YearDetails)) {
-					fsPastPerformanceDetails1.setCompNetWorthPastYear1(liabilitiesPast1YearDetails.getNetWorth().doubleValue());
+					fsPastPerformanceDetails1.setCompNetWorthPastYear1(CommonUtils.convertTwoDecimalValuesIn(liabilitiesPast1YearDetails.getNetWorth().doubleValue(), sidbiCurrencyRateObj.getRate()));
 				}else{
 					logger.error("Error while getting company net worth past 1 year details from liabilities statement");
 				}
 
 				LiabilitiesDetails liabilitiesPast2YearDetails =  liabilitiesDetailsRepository.getLiabilitiesDetailsByAppIdAndFinYear(applicationId,pastYear2+"");
 				if (!CommonUtils.isObjectNullOrEmpty(liabilitiesPast2YearDetails)) {
-					fsPastPerformanceDetails1.setCompNetWorthPastYear2(liabilitiesPast2YearDetails.getNetWorth().doubleValue());
+					fsPastPerformanceDetails1.setCompNetWorthPastYear2(CommonUtils.convertTwoDecimalValuesIn(liabilitiesPast2YearDetails.getNetWorth().doubleValue(), sidbiCurrencyRateObj.getRate()));
 				}else{
 					logger.error("Error while getting company net worth past 2 year details from liabilities statement");
 				}
@@ -128,7 +128,7 @@ public class FsPastPerformanceDetailServiceImpl implements FsPastPerformanceDeta
 			for (FsPastPerformanceDetails detail : fsPastPerformanceDetails) {
 				FsPastPerformanceDetailsRequest pastPerformanceDetailsRequest = new FsPastPerformanceDetailsRequest();
 				BeanUtils.copyProperties(detail, pastPerformanceDetailsRequest);
-				this.convertValuesIn(pastPerformanceDetailsRequest, applicationId);
+//				this.convertValuesIn(pastPerformanceDetailsRequest, applicationId);
 				fsPastPerformanceDetailsRequests.add(pastPerformanceDetailsRequest);
 			}
 			return fsPastPerformanceDetailsRequests;
