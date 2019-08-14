@@ -101,7 +101,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 						clientDetailCoLending.setClientStatus("In-Progress");
 					}
 				}else{
-					clientDetailCoLending.setClientStatus("NA");
+					clientDetailCoLending.setClientStatus("Journey Pending");
 				}
 
 				clientListings.add(clientDetailCoLending);
