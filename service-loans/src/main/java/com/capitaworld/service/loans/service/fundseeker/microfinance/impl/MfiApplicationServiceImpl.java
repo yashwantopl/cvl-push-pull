@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
@@ -125,6 +124,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Autowired
     private ApplicationSequenceService applicationSequenceService;
 
+    /**
+     * Save basic profile details with images
+     *
+     * @param uploadingFile
+     * @param aadharDetailsReq
+     * @return
+     */
     @Override
     public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
         MFIApplicantDetail mfiApplicationDetail;
@@ -180,6 +186,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     }
 
+    /**
+     * Consent form image save
+     * @param uploadingFile
+     * @param aadharDetailsReq
+     * @return
+     */
     @Override
     public boolean saveConsentFormImage(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
             if (!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getConsentFormImg())) {
@@ -293,17 +305,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         return false;
     }
 
-    private boolean saveProjectWithCopy(ProjectDetailsReq projectDetailsReq,Integer type){
-        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
-        expectedIncomeDetails.setApplicationId(projectDetailsReq.getApplicationId());
-        BeanUtils.copyProperties(projectDetailsReq, expectedIncomeDetails);
-        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + 0.0);
-        expectedIncomeDetails.setType(type);
-        expectedIncomeDetails.setIsActive(true);
-        expectedIncomeDetailRepository.save(expectedIncomeDetails);
-        return true;
-    }
-
     @Override
     public Object saveOrUpdateBankDetails(MultipartFile uploadingFile, MfiBankDetailsReq bankDetailsReq) {
         //for server side validation
@@ -399,14 +400,24 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             return serverSideValidation;
         }
         if (null != mfiIncomeAndExpenditureReq.getId()) {
-            //save data in expense and expected income details for agent type 1 for agent details
-            if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
-                MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiIncomeAndExpenditureReq.getApplicationId());
-            }
+                //save data in expense and expected income details for agent type 1 for agent details
+                if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) { //save income details
+                    MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiIncomeAndExpenditureReq.getApplicationId());
+                    //for MFI Agent data from users
+                    for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
+                        MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
+                        BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
+                        totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
+                        mfiIncomeDetails.setType(1);
+                        mfiIncomeDetails.setIsActive(true);
+                        MfiIncomeDetailsRepository.save(mfiIncomeDetails);
+                    }
+                }
+
             //inactive all previous data
             expectedIncomeDetailRepository.inactiveExpene(mfiIncomeAndExpenditureReq.getApplicationId());
 
-            //save data in expense and expected income details for agent type 1 for checker details
+            //save data in expense and expected income details for agent type 1 for agent and 2 for checker details
             boolean withCopy = saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
             if(withCopy) {
                 saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 2);
@@ -434,17 +445,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
      */
     private boolean saveIncomeAndExpenditureWithCopy(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq, Double totalIncome,Integer type){
         Double totalExpense = 0.0;
-        if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) { //save income details
-            //for MFI Agent data from users
-            for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiIncomeAndExpenditureReq.getIncomeDetailsReqList()) {
-                MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
-                BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
-                totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
-                mfiIncomeDetails.setType(type);
-                mfiIncomeDetails.setIsActive(true);
-                MfiIncomeDetailsRepository.save(mfiIncomeDetails);
-            }
-        }
         MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
         expectedIncomeDetails.setApplicationId(mfiIncomeAndExpenditureReq.getApplicationId());
         BeanUtils.copyProperties(mfiIncomeAndExpenditureReq, expectedIncomeDetails);
@@ -462,6 +462,23 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         expectedIncomeDetails.setCashFlow(0.0 + expectedIncomeDetails.getNetSaving());
         expectedIncomeDetails.setIsActive(true);
         expectedIncomeDetails.setType(type);
+        expectedIncomeDetailRepository.save(expectedIncomeDetails);
+        return true;
+    }
+
+    /**
+     * For project Business Details Copy
+     * @param projectDetailsReq
+     * @param type
+     * @return
+     */
+    private boolean saveProjectWithCopy(ProjectDetailsReq projectDetailsReq,Integer type){
+        MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
+        expectedIncomeDetails.setApplicationId(projectDetailsReq.getApplicationId());
+        BeanUtils.copyProperties(projectDetailsReq, expectedIncomeDetails);
+        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + 0.0);
+        expectedIncomeDetails.setType(type);
+        expectedIncomeDetails.setIsActive(true);
         expectedIncomeDetailRepository.save(expectedIncomeDetails);
         return true;
     }
@@ -485,6 +502,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
     }
 
+    /**
+     * Assets and Liability details save
+     * @param mfiAssetsDetailsReq
+     * @return
+     */
     @Override
     public LoansResponse saveOrUpdateAssetsLiabilityDetails(MfiAssetsDetailsReq mfiAssetsDetailsReq) {
         MfiAssetsLiabilityDetails mfiAssetsLiabilityDetails = null;
