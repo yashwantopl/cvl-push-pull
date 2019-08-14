@@ -15,7 +15,7 @@ public class MFIFinancialArrangementRequest implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7879231352352788315L;
-	
+
 	private Long id;
 	private Long applicationId;
 	private String financialInstitutionName;
@@ -39,6 +39,34 @@ public class MFIFinancialArrangementRequest implements Serializable {
 	private Integer provider;
 	private Integer isLoanConsidered;
 	private Long applicantId;
+
+	public MFIFinancialArrangementRequest(Long applicationId, String financialInstitutionName,
+			String otherInstitutionName, Double amount, Date loanDate, Date reportedDate, String loanType, Double emi,
+			Long createdBy, Date createdDate, Long modifiedBy, Date modifiedDate, Double outstandingAmount,
+			Boolean isManuallyAdded, Double bureauOutstandingAmount, Double bankerOutstandingAmount,
+			Double bureauOrCalculatedEmi, Boolean isBureauEmi, Boolean isActive, Integer provider,Long applicantId) {
+		this.applicationId = applicationId;
+		this.financialInstitutionName = financialInstitutionName;
+		this.otherInstitutionName = otherInstitutionName;
+		this.amount = amount;
+		this.loanDate = loanDate;
+		this.reportedDate = reportedDate;
+		this.loanType = loanType;
+		this.emi = emi;
+		this.createdBy = createdBy;
+		this.createdDate = createdDate;
+		this.modifiedBy = modifiedBy;
+		this.modifiedDate = modifiedDate;
+		this.outstandingAmount = outstandingAmount;
+		this.isManuallyAdded = isManuallyAdded;
+		this.bureauOutstandingAmount = bureauOutstandingAmount;
+		this.bankerOutstandingAmount = bankerOutstandingAmount;
+		this.bureauOrCalculatedEmi = bureauOrCalculatedEmi;
+		this.isBureauEmi = isBureauEmi;
+		this.isActive = isActive;
+		this.provider = provider;
+		this.applicantId = applicantId;
+	}
 
 	public Long getId() {
 		return id;

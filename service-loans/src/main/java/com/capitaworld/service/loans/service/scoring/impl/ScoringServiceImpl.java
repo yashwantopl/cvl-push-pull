@@ -3076,9 +3076,9 @@ public class ScoringServiceImpl implements ScoringService {
         				break;
         			case ScoreParameter.Retail.HomeLoan.AVG_EOD_BALANCE:
         				if(coApplicantBankStatementData != null && coApplicantBankStatementData.getSummaryInfo() != null) {
-        					if(!CommonUtil.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
+        					if(!CommonUtil.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit())) {
         						Double totalEODBalAvg = Double.parseDouble(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
-        						Double totalCredit = Double.parseDouble(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
+        						Double totalCredit = Double.parseDouble(coApplicantBankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit());
         						scoreParameterRetailRequest.setAvgEodBalToToalDep(totalEODBalAvg / totalCredit);
         						scoreParameterRetailRequest.setIsAvgEodBalToToalDep_p(true);
         					}

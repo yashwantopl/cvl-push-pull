@@ -132,7 +132,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
      * @return
      */
     @Override
-    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile,MultipartFile addressProofFile, AadharDetailsReq aadharDetailsReq) {
         MFIApplicantDetail mfiApplicationDetail;
         //server side validation added
         String serverSideValidation = serverSideValidation(CommonUtils.BASIC_DETAILS, aadharDetailsReq);
@@ -155,9 +155,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
                 mfiApplicationDetail.setCreatedDate(new Date());
                 mfiApplicationDetail.setType(aadharDetailsReq.getType());
+
                 //image upload to DMS S3 server recent Image
                 String profileImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
                 mfiApplicationDetail.setProfileImg(profileImgToDms); //save path for recent Image
+
+                // image upload to DMS S3 server Address proof Image
+                String addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+                mfiApplicationDetail.setAddressProofImg(addressProofImgToDms); //save path for Addressproof Image
 
                 detailsRepository.save(mfiApplicationDetail);
                 aadharDetailsReq.setId(mfiApplicationDetail.getId());
@@ -194,14 +199,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
      */
     @Override
     public boolean saveConsentFormImage(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
-            if (!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getConsentFormImg())) {
-                MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
-                String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setConsentFormImg(consentImgToDms);
-                detailsRepository.save(mfiApplicationDetail);
-                return true;
-            }
-        return false;
+        MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+        String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+        mfiApplicationDetail.setConsentFormImg(consentImgToDms);
+        detailsRepository.save(mfiApplicationDetail);
+        return true;
     }
 
     /**
@@ -245,8 +247,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public AadharDetailsReq getAadharDetailsByAppId(Long applicationId) {
-        List<AadharDetailsReq> detailsReq = detailsRepository.findAadharDetailsByAppId(applicationId);
+    public AadharDetailsReq getAadharDetailsByAppId(Long applicationId,Integer type) {
+        List<AadharDetailsReq> detailsReq = detailsRepository.findAadharDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -270,8 +272,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId) {
-        List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId);
+    public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId,Integer type) {
+        List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -384,8 +386,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public ProjectDetailsReq getProjectDetailsAppId(Long applicationId) {
-        List<ProjectDetailsReq> detailsReq = detailsRepository.findProjectDetailsByAppId(applicationId);
+    public ProjectDetailsReq getProjectDetailsAppId(Long applicationId,Integer type) {
+        List<ProjectDetailsReq> detailsReq = detailsRepository.findProjectDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -614,8 +616,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId) {
-        List<MfiLoanAssessmentDetailsReq> detailsReq = detailsRepository.findLoanAssessmentDetailsByAppId(applicationId);
+    public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId,Integer type) {
+        List<MfiLoanAssessmentDetailsReq> detailsReq = detailsRepository.findLoanAssessmentDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -892,5 +894,16 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     	}
     	return true;
     }
+    
+    @Override
+	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId, Long applicantId) {
+		try {
+			return mfiFinancialRepository.getFinancialDetailsByAppId(applicationId, applicantId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Collections.EMPTY_LIST;
+	}
+    
 
 }
