@@ -91,7 +91,7 @@ public class ProjectCostDetailServiceImpl implements ProjectCostDetailService{
 			for (ProjectCostDetail detail : totalCostOfProjectRequest) {
 				TotalCostOfProjectRequest totalCostofProjectRequest = new TotalCostOfProjectRequest();				
 				BeanUtils.copyProperties(detail, totalCostofProjectRequest);
-				this.convertValuesIn(totalCostofProjectRequest, applicationId, userId);
+//				this.convertValuesIn(totalCostofProjectRequest, applicationId, userId);
 				totalCostOfProjectRequests.add(totalCostofProjectRequest);
 			}
 			return totalCostOfProjectRequests;

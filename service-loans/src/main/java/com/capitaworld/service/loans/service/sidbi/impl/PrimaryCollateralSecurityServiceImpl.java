@@ -83,7 +83,7 @@ public class PrimaryCollateralSecurityServiceImpl implements PrimaryCollateralSe
 			for (PrimaryCollateralSecurity detail : primaryCollateralSecurity) {
 				PrimaryCollateralSecurityRequest primaryCollateralSecurityRequest = new PrimaryCollateralSecurityRequest();				
 				BeanUtils.copyProperties(detail, primaryCollateralSecurityRequest);
-				this.convertValuesIn(primaryCollateralSecurityRequest, applicationId);
+//				this.convertValuesIn(primaryCollateralSecurityRequest, applicationId);
 				primaryCollateralSecurityList.add(primaryCollateralSecurityRequest);
 			}
 			return primaryCollateralSecurityList;
