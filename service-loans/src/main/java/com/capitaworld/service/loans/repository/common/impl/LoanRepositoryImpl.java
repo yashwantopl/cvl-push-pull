@@ -9,11 +9,11 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -445,24 +445,19 @@ public class LoanRepositoryImpl implements LoanRepository {
 			storedProcedureQuery.registerStoredProcedureParameter("fromLimit",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("toLimit",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
-			
 			if(status == null) {
-				storedProcedureQuery.setParameter("stus",-1);
-			}else {
-				storedProcedureQuery.setParameter("stus",status);				
+				status = -1;
 			}
-			
 			if(fromLimit == null) {
-				storedProcedureQuery.setParameter("fromLimit",-1);
-			}else {
-				storedProcedureQuery.setParameter("fromLimit",fromLimit);				
+				fromLimit = -1;
+			}
+			if(toLimit == null) {
+				toLimit = -1;
 			}
 			
-			if(toLimit == null) {
-				storedProcedureQuery.setParameter("toLimit",-1);
-			}else {
-				storedProcedureQuery.setParameter("toLimit",toLimit);				
-			}
+			storedProcedureQuery.setParameter("toLimit",toLimit);				
+			storedProcedureQuery.setParameter("fromLimit",fromLimit);
+			storedProcedureQuery.setParameter("stus",status);
 			storedProcedureQuery.setParameter("orgId",orgId);
 			storedProcedureQuery.execute();
 			return (String)storedProcedureQuery.getOutputParameterValue("result");
