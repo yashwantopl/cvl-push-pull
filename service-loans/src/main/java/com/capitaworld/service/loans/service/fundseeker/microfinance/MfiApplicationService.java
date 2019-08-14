@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface MfiApplicationService {
 
-    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq);
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile addressProofFile, AadharDetailsReq aadharDetailsReq);
 
 	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId,Integer type);
 

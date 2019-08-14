@@ -132,7 +132,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
      * @return
      */
     @Override
-    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile,MultipartFile addressProofFile, AadharDetailsReq aadharDetailsReq) {
         MFIApplicantDetail mfiApplicationDetail;
         //server side validation added
         String serverSideValidation = serverSideValidation(CommonUtils.BASIC_DETAILS, aadharDetailsReq);
@@ -155,9 +155,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
                 mfiApplicationDetail.setCreatedDate(new Date());
                 mfiApplicationDetail.setType(aadharDetailsReq.getType());
+
                 //image upload to DMS S3 server recent Image
                 String profileImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
                 mfiApplicationDetail.setProfileImg(profileImgToDms); //save path for recent Image
+
+                // image upload to DMS S3 server Address proof Image
+                String addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+                mfiApplicationDetail.setProfileImg(addressProofImgToDms); //save path for Addressproof Image
 
                 detailsRepository.save(mfiApplicationDetail);
                 aadharDetailsReq.setId(mfiApplicationDetail.getId());

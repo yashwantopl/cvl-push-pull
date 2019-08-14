@@ -262,7 +262,7 @@ public class MfiApplicantDetailsReq {
 
     private Integer accountType;
 
-    private byte[] passbookImg;
+    private String passbookImg;
 
     private List<MfiIncomeDetailsReq> incomeDetailsReqList;
     private List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList;
@@ -1405,15 +1405,15 @@ public class MfiApplicantDetailsReq {
         this.accountType = accountType;
     }
 
-    public byte[] getPassbookImg() {
-        return passbookImg;
-    }
+	public String getPassbookImg() {
+		return passbookImg;
+	}
 
-    public void setPassbookImg(byte[] passbookImg) {
-        this.passbookImg = passbookImg;
-    }
+	public void setPassbookImg(String passbookImg) {
+		this.passbookImg = passbookImg;
+	}
 
-    public List<MfiIncomeDetailsReq> getIncomeDetailsReqList() {
+	public List<MfiIncomeDetailsReq> getIncomeDetailsReqList() {
         return incomeDetailsReqList;
     }
 

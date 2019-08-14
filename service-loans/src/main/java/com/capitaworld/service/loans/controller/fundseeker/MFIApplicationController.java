@@ -46,7 +46,7 @@ public class MFIApplicationController {
 	 *
 	 */
 	@PostMapping(value = "/saveAdharDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile addressProofFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save aadhar details");
@@ -64,7 +64,7 @@ public class MFIApplicationController {
 			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
 			aadharDetailsReq.setUserId(userId);
 			aadharDetailsReq.setOrgId(userOrgId);
-			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(uploadingFile, aadharDetailsReq);
+			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(uploadingFile, addressProofFile,aadharDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse(aadharDetails.getMessage(), HttpStatus.OK.value(), aadharDetails), HttpStatus.OK);
 
