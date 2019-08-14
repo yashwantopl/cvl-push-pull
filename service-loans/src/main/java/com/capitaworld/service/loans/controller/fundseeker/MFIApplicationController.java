@@ -45,7 +45,7 @@ public class MFIApplicationController {
 	 * save Aadhar detail For create new Application in MFI Application
 	 *
 	 */
-	@PostMapping(value = "/saveAdharDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/saveAdharDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
 		try {
 			// request must not be null
@@ -75,7 +75,7 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@PostMapping(value = "/saveConsentFormImage", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/saveConsentFormImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData) {
 		try {
 			// request must not be null
@@ -208,7 +208,7 @@ public class MFIApplicationController {
 		}
 	}
 
-	@PostMapping(value = "/saveBankDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/saveBankDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveBankDetails(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData,HttpServletRequest request) {
 		try {
 			CommonDocumentUtils.startHook(logger, "save bank details");
