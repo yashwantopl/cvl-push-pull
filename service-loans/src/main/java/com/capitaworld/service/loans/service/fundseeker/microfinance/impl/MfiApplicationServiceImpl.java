@@ -2,14 +2,9 @@ package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,76 +122,55 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Autowired
     private MfiFinancialArrangementDetailsRepository mfiFinancialRepository;
 
-    @Override
-    public AadharDetailsReq saveOrUpdateAadharDetails(AadharDetailsReq aadharDetailsReq) {
-        MFIApplicantDetail mfiApplicationDetail;
+    @Autowired
+    private ApplicationSequenceService applicationSequenceService;
 
+    @Override
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
+        MFIApplicantDetail mfiApplicationDetail;
+        //server side validation added
         String serverSideValidation = serverSideValidation(CommonUtils.BASIC_DETAILS, aadharDetailsReq);
         if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             AadharDetailsReq detailsReq = new AadharDetailsReq();
             detailsReq.setMessage(serverSideValidation);
             return detailsReq;
         }
-        try {
-            String addressProofToDms = "",profileImgToDms = "";
-            if (aadharDetailsReq.getId() == null) {
-
-                Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
-                        aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
-                if (applicationId != null) {
-                    mfiApplicationDetail = new MFIApplicantDetail();
-                    BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-                    mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
-                    mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-                    mfiApplicationDetail.setStatus(CommonUtils.PENDING);
-                    mfiApplicationDetail.setIsActive(true);
-                    mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
-                    mfiApplicationDetail.setCreatedDate(new Date());
-                    mfiApplicationDetail.setType(aadharDetailsReq.getType());
-                    if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofImg())){
-                        byte[] addressProof = Base64.getDecoder().decode(new String(aadharDetailsReq.getAddressProofImg()).getBytes("UTF-8"));
-                        MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", addressProof);
-                        addressProofToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
-                        mfiApplicationDetail.setAddressProofImg(addressProofToDms);
-                    }
-                    if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getProfilePic())){
-                        byte[] profilePic = Base64.getDecoder().decode(new String(aadharDetailsReq.getProfilePic()).getBytes("UTF-8"));
-                        MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", profilePic);
-                        profileImgToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
-                        mfiApplicationDetail.setProfileImg(profileImgToDms);
-                    }
-                    detailsRepository.save(mfiApplicationDetail);
-                    aadharDetailsReq.setId(mfiApplicationDetail.getId());
-                    aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
-                }
-            } else {
-
-                mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+        if (aadharDetailsReq.getId() == null) {
+            //create Application And generate ApplicationId
+            Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
+                    aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
+            if (applicationId != null) {
+                mfiApplicationDetail = new MFIApplicantDetail();
                 BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-                mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(aadharDetailsReq.getApplicationId()));
-
-                if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getAddressProofImg())){
-                    byte[] addressProof = Base64.getDecoder().decode(new String(aadharDetailsReq.getAddressProofImg()).getBytes("UTF-8"));
-                    MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", addressProof);
-                    addressProofToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
-                    mfiApplicationDetail.setAddressProofImg(addressProofToDms);
-                }
-                if(!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getProfilePic())){
-                    byte[] profilePic = Base64.getDecoder().decode(new String(aadharDetailsReq.getProfilePic()).getBytes("UTF-8"));
-                    MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",aadharDetailsReq.getFirstName()+".jpeg", "image/jpeg", profilePic);
-                    profileImgToDms = uploadImageForMfi(multipartFile, aadharDetailsReq.getUserId());
-                    mfiApplicationDetail.setProfileImg(profileImgToDms);
-                }
-
-
+                mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
+                mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
                 mfiApplicationDetail.setStatus(CommonUtils.PENDING);
-                mfiApplicationDetail.setModifiedBy(aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setModifiedDate(new Date());
+                mfiApplicationDetail.setIsActive(true);
+                mfiApplicationDetail.setCreatedBy(aadharDetailsReq.getUserId());
+                mfiApplicationDetail.setCreatedDate(new Date());
+                mfiApplicationDetail.setType(aadharDetailsReq.getType());
+                //image upload to DMS S3 server recent Image
+                String profileImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+                mfiApplicationDetail.setProfileImg(profileImgToDms); //save path for recent Image
+
                 detailsRepository.save(mfiApplicationDetail);
+                aadharDetailsReq.setId(mfiApplicationDetail.getId());
+                aadharDetailsReq.setApplicationId(mfiApplicationDetail.getApplicationId().getId());
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            logger.info("UnsupportedEncodingException while upload Image-- > {} ",aadharDetailsReq.getApplicationId());
+        } else {
+
+            mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+            BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
+            mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(aadharDetailsReq.getApplicationId()));
+            if(uploadingFile != null ) {
+                //image upload to DMS S3 server recent Image
+                String profileImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+                mfiApplicationDetail.setProfileImg(profileImgToDms); //save path for recent Image
+            }
+            mfiApplicationDetail.setStatus(CommonUtils.PENDING);
+            mfiApplicationDetail.setModifiedBy(aadharDetailsReq.getUserId());
+            mfiApplicationDetail.setModifiedDate(new Date());
+            detailsRepository.save(mfiApplicationDetail);
         }
         AadharDetailsReq detailsReq = new AadharDetailsReq();
         detailsReq.setId(aadharDetailsReq.getId());
@@ -204,6 +178,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         detailsReq.setMessage("Successfully Saved");
         return detailsReq;
 
+    }
+
+    @Override
+    public boolean saveConsentFormImage(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
+            if (!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getConsentFormImg())) {
+                MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+                String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+                mfiApplicationDetail.setConsentFormImg(consentImgToDms);
+                detailsRepository.save(mfiApplicationDetail);
+                return true;
+            }
+        return false;
     }
 
     /**
@@ -298,8 +284,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
                 expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),cashFlow,projectDetailsReq.getApplicationId(),1) ;
                 expectedIncomeDetailRepository.updateBusinessBrief(projectDetailsReq.getBusinessInBrief(),projectDetailsReq.getMonthlyCashflow(),projectDetailsReq.getMonthlyExpenditure(),projectDetailsReq.getMonthlyIncome(),cashFlow,projectDetailsReq.getApplicationId(),2) ;
             } else {
-                saveprojectWithCopy(projectDetailsReq,1);
-                saveprojectWithCopy(projectDetailsReq,2);
+                saveProjectWithCopy(projectDetailsReq,1);
+                saveProjectWithCopy(projectDetailsReq,2);
             }
 
             return true;
@@ -307,11 +293,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         return false;
     }
 
-    private boolean saveprojectWithCopy(ProjectDetailsReq projectDetailsReq,Integer type){
+    private boolean saveProjectWithCopy(ProjectDetailsReq projectDetailsReq,Integer type){
         MfiExpenseExpectedIncomeDetails expectedIncomeDetails = new MfiExpenseExpectedIncomeDetails();
         expectedIncomeDetails.setApplicationId(projectDetailsReq.getApplicationId());
         BeanUtils.copyProperties(projectDetailsReq, expectedIncomeDetails);
-        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
+        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + 0.0);
         expectedIncomeDetails.setType(type);
         expectedIncomeDetails.setIsActive(true);
         expectedIncomeDetailRepository.save(expectedIncomeDetails);
@@ -319,24 +305,19 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public Object saveOrUpdateBankDetails(MfiBankDetailsReq bankDetailsReq) {
+    public Object saveOrUpdateBankDetails(MultipartFile uploadingFile, MfiBankDetailsReq bankDetailsReq) {
         //for server side validation
         String serverSideValidation = serverSideValidation(CommonUtils.BANK_DETAILS, bankDetailsReq);
-
         if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             //return if required fields empty
             return serverSideValidation;
         }
-        String bankPassbookToDms = "";
-        if(!CommonUtil.isObjectNullOrEmpty(bankDetailsReq.getPassbookImg())){
-            MultipartFile multipartFile = new org.springframework.mock.web.MockMultipartFile("file",
-                    bankDetailsReq.getAccountHolderName()+".jpeg", "image/jpeg", bankDetailsReq.getPassbookImg());
-            bankPassbookToDms = uploadImageForMfi(multipartFile, bankDetailsReq.getUserId());
-        }
+
         if (bankDetailsReq.getApplicationId() != null) {
             //save bank details in bank details table
             MfiBankDetails mfiBankDetails = new MfiBankDetails();
             BeanUtils.copyProperties(bankDetailsReq, mfiBankDetails);
+            String bankPassbookToDms = uploadImageForMfi(uploadingFile, bankDetailsReq.getUserId());
             mfiBankDetails.setPassbookImg(bankPassbookToDms);
             bankDetailsRepository.save(mfiBankDetails);
             detailsRepository.updateBankFilledFlag(bankDetailsReq.getApplicationId());
@@ -422,14 +403,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             if (!CommonUtils.isListNullOrEmpty(mfiIncomeAndExpenditureReq.getIncomeDetailsReqList())) {
                 MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiIncomeAndExpenditureReq.getApplicationId());
             }
+            //inactive all previous data
             expectedIncomeDetailRepository.inactiveExpene(mfiIncomeAndExpenditureReq.getApplicationId());
 
-            boolean withCopy = saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
             //save data in expense and expected income details for agent type 1 for checker details
+            boolean withCopy = saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 1);
             if(withCopy) {
                 saveIncomeAndExpenditureWithCopy(mfiIncomeAndExpenditureReq, totalIncome, 2);
             }
-
 
             //save PPI and is income filled true
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiIncomeAndExpenditureReq.getId());
@@ -478,7 +459,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         expectedIncomeDetails.setNetSaving(expectedIncomeDetails.getTotalMonthlyIncomeForFamily() - expectedIncomeDetails.getTotalExpense());
         //  Expected Increase in Income out of Loan ---- Monthly Income Column use
         //  Total Cash Flow
-//        expectedIncomeDetails.setCashFlow(expectedIncomeDetails.getMonthlyIncome() + expectedIncomeDetails.getNetSaving());
+        expectedIncomeDetails.setCashFlow(0.0 + expectedIncomeDetails.getNetSaving());
         expectedIncomeDetails.setIsActive(true);
         expectedIncomeDetails.setType(type);
         expectedIncomeDetailRepository.save(expectedIncomeDetails);
@@ -532,10 +513,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiAssetsDetailsReq.getId());
             mfiApplicationDetail.setIsAssetsDetailsFilled(true);
             detailsRepository.save(mfiApplicationDetail);
-            //for status change to 10 display in Checker this code for submit application or add in consent form
-            LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(mfiAssetsDetailsReq.getApplicationId());
-            corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
-            loanApplicationRepository.save(corporateLoan);
             //send response
             LoansResponse loansResponse = new LoansResponse();
             loansResponse.setMessage("Successfully Saved.");
@@ -575,6 +552,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     @Override
     public Object saveOrUpdateLoanRecommandationDetails(MfiLoanRecomandationReq loanRecomandationReq) {
         LoansResponse loansResponse = new LoansResponse();
+        //server side validations
         String serverSideValidation = serverSideValidation(CommonUtils.LOAN_RECOMANDATION, loanRecomandationReq);
         if (!CommonUtils.isObjectNullOrEmpty(serverSideValidation)) {
             loansResponse.setData(serverSideValidation);
@@ -585,19 +563,26 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(loanRecomandationReq.getId());
             BeanUtils.copyProperties(loanRecomandationReq, mfiApplicationDetail);
             detailsRepository.save(mfiApplicationDetail);
+
+            //for status change to 10 display in Checker this code for submit application or add in consent form
+            LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(loanRecomandationReq.getApplicationId());
+            corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
+            CommonUtils.LoanType type = CommonUtils.LoanType.getType(17);
+            corporateLoan.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())+"-"+loanRecomandationReq.getApplicationId());
+            loanApplicationRepository.save(corporateLoan);
+
+            //create Workflow JobId and step actions
             WorkflowRequest  request = new WorkflowRequest();
             if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail.getJobId())){
                 request.setJobId(mfiApplicationDetail.getJobId());
             }
             request.setApplicationId(loanRecomandationReq.getApplicationId());
-            request.setUserId(loanRecomandationReq.getUserId());
-            List<Long> roles = new ArrayList<>();
-            roles.add(17l);
-            request.setRoleIds(roles);
-            Object activeButtons = getActiveButtons(request);
+            request.setUserId(loanRecomandationReq.getUserId());// user id as per agent logged in id
+            request.setRoleIds(Arrays.asList(17l)); //role statically 17 added for mfi checker
+            Object activeButtons = getActiveButtons(request); //job created or get workflow steps
             WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
-            loansResponse.setData(objectFromMap.getStep().getStepActions());
-            loansResponse.setId(objectFromMap.getJob().getId());
+            loansResponse.setData(objectFromMap.getStep().getStepActions()); //step actions return
+            loansResponse.setId(objectFromMap.getJob().getId()); //jobId for submit current step and action
             loansResponse.setMessage("Successfully Saved.");
             loansResponse.setStatus(HttpStatus.OK.value());
             return loansResponse;
@@ -642,10 +627,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             PersonalDetailsReq personalDetailsReq = (PersonalDetailsReq) validationJson;
             if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getFatherName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNoDependent())) {
                 return "Some required fields in Family Details are Missing Personal Detail section";
-            } else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeName()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getRelationWithNomineeId()) ||
-                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeBirthDate()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineePincode()) ||
-                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeDistrict()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeCity()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNomineeState())) {
-                return "Some required fields in Nominee's details are missing Personal Detail section";
             } else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getEducationQualification()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicReligion()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicCaste())) {
                 return "Some required fields in Acadamic and other details are missing Personal Detail section";
