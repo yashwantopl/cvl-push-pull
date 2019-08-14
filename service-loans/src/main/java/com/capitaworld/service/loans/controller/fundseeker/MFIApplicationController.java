@@ -97,15 +97,16 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getAadharDetails/{applicationId}")
-	public ResponseEntity<LoansResponse> getAadharDetails(@PathVariable("applicationId") Long applicationId) {
+	@GetMapping(value = "/getAadharDetails/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> getAadharDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
 		try {
 			CommonDocumentUtils.startHook(logger, "get aadhar details");
-			if(applicationId == null){
+			if(applicationId == null || type==null){
 				logger.warn("applicationId  can not be empty ==>" + applicationId);
+				logger.warn("type  can not be empty ==>" + type);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			AadharDetailsReq aadharDetailsByAppId = mfiApplicationService.getAadharDetailsByAppId(applicationId);
+			AadharDetailsReq aadharDetailsByAppId = mfiApplicationService.getAadharDetailsByAppId(applicationId,type);
 			CommonDocumentUtils.endHook(logger, "Get Aadhar");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Aadhar details.",
 					HttpStatus.INTERNAL_SERVER_ERROR.value(), aadharDetailsByAppId), HttpStatus.OK);
@@ -154,15 +155,16 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getPersonalDetails/{applicationId}")
-	public ResponseEntity<LoansResponse> getPersonalDetails(@PathVariable("applicationId") Long applicationId) {
+	@GetMapping(value = "/getPersonalDetails/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> getPersonalDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
 		try {
 			CommonDocumentUtils.startHook(logger, "get personal details");
-			if(applicationId == null){
+			if(applicationId == null || type==null){
 				logger.warn("applicationId  can not be empty ==>" + applicationId);
+				logger.warn("type  can not be empty ==>" + type);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			PersonalDetailsReq personalrDetailsByAppId = mfiApplicationService.getPersonalDetailsAppId(applicationId);
+			PersonalDetailsReq personalrDetailsByAppId = mfiApplicationService.getPersonalDetailsAppId(applicationId,type);
 			CommonDocumentUtils.endHook(logger, "Get Personal Details");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Personal details.",
 					HttpStatus.OK.value(), personalrDetailsByAppId), HttpStatus.OK);
@@ -291,16 +293,16 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getProjectDetails/{applicationId}")
-	public ResponseEntity<LoansResponse> getProjectDetails(@PathVariable("applicationId") Long applicationId) {
+	@GetMapping(value = "/getProjectDetails/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> getProjectDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Project Details");
-			if(applicationId == null){
-				logger.warn("applicationId  can not be empty ==>" + applicationId);
+			if(applicationId == null | type==null){
+				logger.warn("applicationId or type can not be empty ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			ProjectDetailsReq projectDetailsByAppId = mfiApplicationService.getProjectDetailsAppId(applicationId);
+			ProjectDetailsReq projectDetailsByAppId = mfiApplicationService.getProjectDetailsAppId(applicationId,type);
 			CommonDocumentUtils.endHook(logger, "Get Project Details");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Project details.",
 					HttpStatus.OK.value(), projectDetailsByAppId), HttpStatus.OK);
@@ -528,16 +530,16 @@ public class MFIApplicationController {
 		}
 	}
 
-	@GetMapping(value = "/getLoanAssessmentDetails/{applicationId}")
-	public ResponseEntity<LoansResponse> getLoanAssessmentDetails(@PathVariable("applicationId") Long applicationId) {
+	@GetMapping(value = "/getLoanAssessmentDetails/{applicationId}/{type}")
+	public ResponseEntity<LoansResponse> getLoanAssessmentDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "Get Loan Assessment Details");
-			if(applicationId == null){
-				logger.warn("applicationId  can not be empty ==>" + applicationId);
+			if(applicationId == null || type==null){
+				logger.warn("applicationId or type can not be empty ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getLoanAssessmentDetailsAppId(applicationId);
+			MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getLoanAssessmentDetailsAppId(applicationId,type);
 			CommonDocumentUtils.endHook(logger, "Get Loan Assessment Details");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
 					HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);
@@ -763,5 +765,28 @@ public class MFIApplicationController {
 			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
+	
+	@GetMapping(value = "/getFinancialDetails/{applicationId}/{applicantId}")
+	public ResponseEntity<LoansResponse> getFinancialDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("applicantId") Long applicantId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "get Financial details");
+			if(applicationId == null || applicantId==null){
+				logger.warn("applicationId or applicantiId can not be empty ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			List<MFIFinancialArrangementRequest> mfiFinancialArrangementRequest = mfiApplicationService.getFinancialDetailsAppId(applicationId,applicantId);
+			
+			CommonDocumentUtils.endHook(logger, "Get Financial Details");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Financial details.",
+					HttpStatus.OK.value(), mfiFinancialArrangementRequest), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Get Financial Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
 
 }

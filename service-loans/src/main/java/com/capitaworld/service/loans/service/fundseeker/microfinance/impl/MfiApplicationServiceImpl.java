@@ -245,8 +245,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public AadharDetailsReq getAadharDetailsByAppId(Long applicationId) {
-        List<AadharDetailsReq> detailsReq = detailsRepository.findAadharDetailsByAppId(applicationId);
+    public AadharDetailsReq getAadharDetailsByAppId(Long applicationId,Integer type) {
+        List<AadharDetailsReq> detailsReq = detailsRepository.findAadharDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -270,8 +270,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId) {
-        List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId);
+    public PersonalDetailsReq getPersonalDetailsAppId(Long applicationId,Integer type) {
+        List<PersonalDetailsReq> detailsReq = detailsRepository.findPersonalDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -384,8 +384,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public ProjectDetailsReq getProjectDetailsAppId(Long applicationId) {
-        List<ProjectDetailsReq> detailsReq = detailsRepository.findProjectDetailsByAppId(applicationId);
+    public ProjectDetailsReq getProjectDetailsAppId(Long applicationId,Integer type) {
+        List<ProjectDetailsReq> detailsReq = detailsRepository.findProjectDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -614,8 +614,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     }
 
     @Override
-    public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId) {
-        List<MfiLoanAssessmentDetailsReq> detailsReq = detailsRepository.findLoanAssessmentDetailsByAppId(applicationId);
+    public MfiLoanAssessmentDetailsReq getLoanAssessmentDetailsAppId(Long applicationId,Integer type) {
+        List<MfiLoanAssessmentDetailsReq> detailsReq = detailsRepository.findLoanAssessmentDetailsByAppId(applicationId,type);
         return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
     }
 
@@ -892,5 +892,16 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
     	}
     	return true;
     }
+    
+    @Override
+	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId, Long applicantId) {
+		try {
+			return mfiFinancialRepository.getFinancialDetailsByAppId(applicationId, applicantId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Collections.EMPTY_LIST;
+	}
+    
 
 }
