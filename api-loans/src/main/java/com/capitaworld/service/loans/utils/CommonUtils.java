@@ -673,6 +673,9 @@ public class CommonUtils {
 		public static final Integer BORROWER_SALARY_ACCOUNT = 5;
 		public static final Integer EMPLOYMENT_WITH = 6;
 		public static final Integer SLEF_EMPLOYMENT_WITH = 7;
+		public static final Integer DISTRICT = 8;
+		public static final Integer CROP = 9;
+		public static final Integer IRRIGATED_UNIRRIGATED = 10;
 	}
 	
 
