@@ -113,6 +113,7 @@ public class AgriLoanParameterServiceImpl implements AgriLoanParameterService {
 		return agriLoanParameterRequest;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public AgriLoanParameterRequest getTemp(Long id, Long role, Long userId) {
 		logger.info("Start getTemp==>");

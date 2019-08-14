@@ -322,7 +322,7 @@ public class CommonUtils {
 
 	public enum LoanType {
 		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
-				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl"), MFI(17,"Micro Finance Loan","mfi");
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl"), MFI(17,"Micro Finance Loan","mfi"), AGRI(18,"Agriculture","agri");
 		private int value;
 		private String name;
 		private String code;
@@ -372,9 +372,20 @@ public class CommonUtils {
 				return WCTL_LOAN;
 			case 17:
 					return MFI;
+			case 18:
+				return AGRI;
 			default :
 				return null;
 			}
+		}
+		
+		public static LoanType fromValue(int v) {
+			for (LoanType c : LoanType.values()) {
+				if (c.value == v) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(Integer.toString(v));
 		}
 //		public static String getLoanTypeName(Integer x) {
 //			switch (x) {

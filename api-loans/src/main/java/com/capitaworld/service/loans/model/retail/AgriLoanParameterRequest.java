@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.retail;
 import java.io.Serializable;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -14,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AgriLoanParameterRequest extends RetailProduct implements Serializable {
+public class AgriLoanParameterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Double farmMaintenancePer;
