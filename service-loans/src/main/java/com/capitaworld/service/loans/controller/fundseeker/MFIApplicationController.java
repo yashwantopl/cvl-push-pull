@@ -76,10 +76,16 @@ public class MFIApplicationController {
 		}
 	}
 	@PostMapping(value = "/saveConsentFormImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData) {
+	public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save aadhar details");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+            }
 			if(requestData == null){
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
