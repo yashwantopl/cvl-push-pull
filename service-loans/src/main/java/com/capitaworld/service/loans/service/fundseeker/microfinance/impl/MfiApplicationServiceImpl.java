@@ -692,8 +692,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					|| CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicReligion())
 					|| CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicCaste())) {
 				return "Some required fields in Acadamic and other details are missing Personal Detail section";
-			} else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getLandHolding())
-					|| CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAreaType())
+			} else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAreaType())
 					|| CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessType())
 					|| CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getHouseOwnership())
 					|| CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNameOfFirm())
