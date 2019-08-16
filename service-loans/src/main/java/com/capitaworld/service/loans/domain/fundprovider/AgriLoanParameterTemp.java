@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.domain.fundprovider;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -17,10 +18,26 @@ public class AgriLoanParameterTemp extends ProductMasterTemp implements Serializ
 	private static final long serialVersionUID = 1L;
 
 	private Integer currency;
+	@Column(name = "farm_maintenance_per")
 	private Double farmMaintenancePer;
+	@Column(name = "farm_maintenance_max")
 	private Double farmMaintenanceMax;
+	@Column(name = "family_maintenance_per")
 	private Double familyMaintenancePer;
+	@Column(name = "family_maintenance_max")
 	private Double familyMaintenanceMax;
+	@Column(name = "is_district_display")
+	private Boolean isDistrictDisplay = false;
+	@Column(name = "is_district_mandatory")
+	private Boolean isDistrictMandatory = false;
+	@Column(name = "is_crop_display")
+	private Boolean isCropDisplay = false;
+	@Column(name = "is_crop_mandatory")
+	private Boolean isCropMandatory = false;
+	@Column(name = "is_irri_unirri_display")
+	private Boolean isIrriUnirriDisplay = false;
+	@Column(name = "is_irri_unirri_mandatory")
+	private Boolean isIrriUnirriMandatory = false;
 	public Integer getCurrency() {
 		return currency;
 	}
