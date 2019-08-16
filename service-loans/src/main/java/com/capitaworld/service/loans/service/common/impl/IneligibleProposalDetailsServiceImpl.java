@@ -381,7 +381,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					notificationParams.put("bank_name", organisationName);
  
 
-					 String subject = "Manual Application";
+					 String subject = "MSME Offline Application";
 	                    if (organisationName != null && applicationId!=null) {
 	                        notificationParams.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 
@@ -394,7 +394,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
 					mailParameters.put("app_id", applicationId !=null ?applicationId : "NA");
-					subject = "Manual Application";
+					subject = "MSME Offline Application";
 					mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 							notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) != null ? notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) : "NA");
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
@@ -403,9 +403,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) {
 						//get loan amount and  loan type from loan applicationMaster
 //						get loan_amount from retail applicant details
+						subject = "Personal Loan Offline Application";
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Personal Loan");
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
 					}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
+						subject = "Home Loan Offline Application";
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Home Loan");
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
 					} else {
@@ -1024,7 +1026,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
 							String[] cc = {String.valueOf(param.get("branch_contact_email"))};
 							List<ContentAttachment> documentList=new ArrayList<ContentAttachment>();
-							if(user[0].equals("sidbi") && isSIDBIFlowForIneligible && Integer.valueOf(user[1].toString()).equals(1)) {
+							if(user[0].equals("sbi") || (user[0].equals("sidbi") && isSIDBIFlowForIneligible && Integer.valueOf(user[1].toString()).equals(1))) {
 								try {
 									DecimalFormat decim = new DecimalFormat("####");
 									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);

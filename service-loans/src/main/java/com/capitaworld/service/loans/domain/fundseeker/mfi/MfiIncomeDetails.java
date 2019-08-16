@@ -25,6 +25,8 @@ public class MfiIncomeDetails implements Serializable {
 
     @Column(name = "frequency_income")
     private Integer frequencyIncome;
+    @Column(name = "income_days")
+    private Integer incomeDays;
 
     @Column(name = "monthly_income")
     private Double monthlyIncome;
@@ -115,5 +117,13 @@ public class MfiIncomeDetails implements Serializable {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public Integer getIncomeDays() {
+        return incomeDays;
+    }
+
+    public void setIncomeDays(Integer incomeDays) {
+        this.incomeDays = incomeDays;
     }
 }

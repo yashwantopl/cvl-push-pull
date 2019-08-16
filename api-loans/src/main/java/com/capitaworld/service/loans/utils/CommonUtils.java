@@ -77,6 +77,7 @@ public class CommonUtils {
 	public static final Integer PROJECT_DETAILS = 4;
 	public static final Integer ASSETS_LIABILITY = 5;
 	public static final Integer LOAN_ASSESMENT = 6;
+	public static final Integer LOAN_RECOMANDATION = 7;
 
 
 
@@ -567,6 +568,19 @@ public class CommonUtils {
 			return "DEBT";
 		else
 			return "EQUITY";
+	}
+
+	public static class MFIApplicationStatus{
+
+		public static final Long MFI_OPEN = 9l;
+		public static final Long MFI_PENDING = 10l;
+		public static final Long MFI_Submitted = 14l;
+		public static final Long MFI_Submitted_Sidbi = 12l;
+		public static final Long MFI_Approve = 13l;
+		public static final Long MFI_Ineligible = 6l;
+		public static final Long MFI_Sanction = 5l;
+		public static final Long MFI_Disbursed = 11l;
+		public static final Long MFI_Rejected = 4l;
 	}
 
 	public enum ApplicationStatusMessage {

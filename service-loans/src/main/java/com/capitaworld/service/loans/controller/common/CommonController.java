@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import com.capitaworld.service.loans.model.common.*;
 import org.json.simple.JSONObject;
@@ -15,13 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -462,6 +457,30 @@ public class CommonController {
 		logger.info("Enter in getTutorialsByRoleId");
 		try {
 			return new ResponseEntity<>(new LoansResponse(HttpStatus.OK.value(),"Successfully get data !!",applicationService.getTutorialsByRoleId(roleId, loanType)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while getTutorialsByRoleId",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/getTutorialsAudit/{tutorialId}")
+	public ResponseEntity<LoansResponse> getTutorialsAudit(@PathVariable("tutorialId") Long tutorialId) {
+		logger.info("Enter in getTutorialsAudit");
+		try {
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAudit(tutorialId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while getTutorialsAudit",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping(value = "/saveTutorialsAudit")
+	public ResponseEntity<LoansResponse> saveTutorialsAudit(@RequestBody TutorialsViewAudits longLatrequest, HttpServletRequest request) {
+		logger.info("Enter in getTutorialsByRoleId");
+		try {
+			String userId = String.valueOf(request.getAttribute(CommonUtils.USER_ID));
+			longLatrequest.setUserId(Long.parseLong(userId));
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(), applicationService.saveTutorialsAudit(longLatrequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsByRoleId",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);

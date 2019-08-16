@@ -39,6 +39,9 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationProposalMapping.proposalId = null")
 	public CorporateApplicantDetail findOneByApplicationIdId(@Param("applicationId") Long applicationId);
 	
+	@Query("select cr.sharePriceFace from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationProposalMapping.proposalId = null")
+	public Double getSharePriceByApplicationIdId(@Param("applicationId") Long applicationId);
+	
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true and cr.applicationProposalMapping.proposalId =NULL")
 	public CorporateApplicantDetail getByApplicationIdAndIsAtive(@Param("applicationId") Long applicationId);
 

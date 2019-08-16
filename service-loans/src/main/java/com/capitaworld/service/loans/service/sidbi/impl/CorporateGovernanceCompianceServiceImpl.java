@@ -53,21 +53,23 @@ public class CorporateGovernanceCompianceServiceImpl implements CorporateGoverna
 			}
 			
 			CorporateGovernanceCompliance corpoDomain = corpoRepository.findByApplicationIdAndCorporateGovernanceId(corpoReq.getApplicationId(), corpoReq.getCorporateGovernanceId());
-			if(corpoDomain==null) {					
-				corpoDomain=new CorporateGovernanceCompliance();		
-				BeanUtils.copyProperties(corpoReq, corpoDomain);		
+			if(corpoDomain==null) {
+				corpoDomain=new CorporateGovernanceCompliance();
+				BeanUtils.copyProperties(corpoReq, corpoDomain);
 			}
+			
 			if(corpoDomain.getId() == null) {
 				corpoDomain.setCreatedBy(corpoReq.getUserId());
 				corpoDomain.setCreatedDate(currentDate);
 			}else {
-				corpoDomain.setCorporateGovernanceId(corpoReq.getCorporateGovernanceId());		
-				corpoDomain.setSelectedOption(corpoReq.getSelectedOption());		
-				corpoDomain.setUpdatedValue(corpoReq.getUpdatedValue());		
+				
+				corpoDomain.setCorporateGovernanceId(corpoReq.getCorporateGovernanceId());
+				corpoDomain.setSelectedOption(corpoReq.getSelectedOption());
+				corpoDomain.setUpdatedValue(corpoReq.getUpdatedValue());
 				corpoDomain.setModifiedBy(corpoReq.getUserId());
-				corpoDomain.setModifiedDate(currentDate);		
-				if(corpoDomain.getSelectedOption() == 2) {		
-					corpoDomain.setUpdatedValue(null);		
+				corpoDomain.setModifiedDate(currentDate);
+				if(corpoDomain.getSelectedOption() == 1) {
+					corpoDomain.setUpdatedValue(null);
 				}
 			}
 			try {

@@ -155,12 +155,19 @@ public class MfiApplicantDetailsReq {
 	private String nomineeLandmark;
 
 	private Integer academicReligion;
+
 	private Integer academicCaste;
+
 	private Integer isAcademicLifeInsurance;
+
 	private Integer houseOwnership;
+
 	private Integer areaType;
+
 	private Integer businessPremises;
+
 	private Integer expInSameLine;
+
 	private Double academicSumInsured;
 
 	private Integer type;
@@ -251,6 +258,8 @@ public class MfiApplicantDetailsReq {
 
     private String branchName;
 
+    private String acHolderName;
+
     private String accountNo;
 
     private String ifscCode;
@@ -308,6 +317,17 @@ public class MfiApplicantDetailsReq {
 
 	private Double loanAmountBankMaker;
 
+	private Long jobId;
+
+	private Integer status;
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
 	public MfiIncomeAndExpenditureReq getMfiIncomeAndExpenditureReqMFIMaker() {
 		return mfiIncomeAndExpenditureReqMFIMaker;
@@ -1668,39 +1688,6 @@ public class MfiApplicantDetailsReq {
 	public void setCompetition(Integer competition) {
 		this.competition = competition;
 	}
-
-	public void setAcademicReligion(Integer academicReligion) {
-		this.academicReligion = academicReligion;
-	}
-
-	public void setAcademicCaste(Integer academicCaste) {
-		this.academicCaste = academicCaste;
-	}
-
-	public void setIsAcademicLifeInsurance(Integer isAcademicLifeInsurance) {
-		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
-	}
-
-	public void setHouseOwnership(Integer houseOwnership) {
-		this.houseOwnership = houseOwnership;
-	}
-
-	public void setAreaType(Integer areaType) {
-		this.areaType = areaType;
-	}
-
-	public void setBusinessPremises(Integer businessPremises) {
-		this.businessPremises = businessPremises;
-	}
-
-	public void setExpInSameLine(Integer expInSameLine) {
-		this.expInSameLine = expInSameLine;
-	}
-
-	public void setAcademicSumInsured(Double academicSumInsured) {
-		this.academicSumInsured = academicSumInsured;
-	}
-
 	public List<MfiIncomeDetailsReq> getIncomeDetailsTypeTwoList() {
 		return incomeDetailsTypeTwoList;
 	}
@@ -1708,6 +1695,84 @@ public class MfiApplicantDetailsReq {
 	public void setIncomeDetailsTypeTwoList(List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList) {
 		this.incomeDetailsTypeTwoList = incomeDetailsTypeTwoList;
 	}
-	
-	
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
+
+	public Integer getAcademicReligion() {
+		return academicReligion;
+	}
+
+	public void setAcademicReligion(Integer academicReligion) {
+		this.academicReligion = academicReligion;
+	}
+
+	public Integer getIsAcademicLifeInsurance() {
+		return isAcademicLifeInsurance;
+	}
+
+	public void setIsAcademicLifeInsurance(Integer isAcademicLifeInsurance) {
+		this.isAcademicLifeInsurance = isAcademicLifeInsurance;
+	}
+
+	public Integer getAcademicCaste() {
+		return academicCaste;
+	}
+
+	public void setAcademicCaste(Integer academicCaste) {
+		this.academicCaste = academicCaste;
+	}
+
+	public Integer getHouseOwnership() {
+		return houseOwnership;
+	}
+
+	public void setHouseOwnership(Integer houseOwnership) {
+		this.houseOwnership = houseOwnership;
+	}
+
+	public Integer getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(Integer areaType) {
+		this.areaType = areaType;
+	}
+
+	public Integer getBusinessPremises() {
+		return businessPremises;
+	}
+
+	public void setBusinessPremises(Integer businessPremises) {
+		this.businessPremises = businessPremises;
+	}
+
+	public Integer getExpInSameLine() {
+		return expInSameLine;
+	}
+
+	public void setExpInSameLine(Integer expInSameLine) {
+		this.expInSameLine = expInSameLine;
+	}
+
+	public Double getAcademicSumInsured() {
+		return academicSumInsured;
+	}
+
+	public void setAcademicSumInsured(Double academicSumInsured) {
+		this.academicSumInsured = academicSumInsured;
+	}
+
+    public String getAcHolderName() {
+        return acHolderName;
+    }
+
+    public void setAcHolderName(String acHolderName) {
+        this.acHolderName = acHolderName;
+    }
 }

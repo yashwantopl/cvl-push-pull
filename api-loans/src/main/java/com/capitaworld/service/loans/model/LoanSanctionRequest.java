@@ -44,6 +44,24 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Long isSanctionedFrom;
 	private Boolean isPartiallyDisbursedOffline;
 	private Long businessTypeId;
+	private Boolean flag;
+	private String message;
+
+	public Boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 	public Long getBusinessTypeId() {
 		return businessTypeId;

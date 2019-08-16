@@ -27,11 +27,8 @@ public class GstRelatedParty {
 	@Column(name="gst_party_name")
 	private String gstPartyName;
 	
-	@Column(name="sales")
-	private Double sales;
-	
-	@Column(name="purchase")
-	private Double purchase;
+	@Column(name="grand_total")
+	private Double grandTotal;
 	
 	@Column(name="gstin")
 	private String gstin;
@@ -85,22 +82,6 @@ public class GstRelatedParty {
 
 	public void setGstPartyName(String gstPartyName) {
 		this.gstPartyName = gstPartyName;
-	}
-
-	public Double getSales() {
-		return sales;
-	}
-
-	public void setSales(Double sales) {
-		this.sales = sales;
-	}
-
-	public Double getPurchase() {
-		return purchase;
-	}
-
-	public void setPurchase(Double purchase) {
-		this.purchase = purchase;
 	}
 
 	public String getGstin() {
@@ -184,17 +165,14 @@ public class GstRelatedParty {
 		this.perOfInvoiceValue = perOfInvoiceValue;
 	}
 
-	@Override
-	public String toString() {
-		return "GstRelatedParty [id=" + id + ", applicationId=" + applicationId
-				+ ", gstPartyName=" + gstPartyName + ", sales=" + sales
-				+ ", purchase=" + purchase + ", gstin=" + gstin
-				+ ", transactionType=" + transactionType + ", pan=" + pan
-				+ ", invoiceValue=" + invoiceValue + ", createdBy=" + createdBy
-				+ ", modifiedBy=" + modifiedBy + ", createdDate=" + createdDate
-				+ ", modifiedDate=" + modifiedDate + ", isActive=" + isActive
-				+ ", perOfInvoiceValue=" + perOfInvoiceValue + "]";
+	public Double getGrandTotal() {
+		return grandTotal;
 	}
 
+	public void setGrandTotal(Double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
+
+	
 	
 }

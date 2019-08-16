@@ -208,6 +208,72 @@ public class PlTeaserViewResponse {
 	private String nameEditedByUser;
 	
 	
+	private String mclrRoi;
+	private String spreadRoi;
+	private String effectiveRoi;
+	private String concessionRoi;
+	private String concessionRoiBased;
+	private String finalRoi;
+	private String noteOfBorrower;
+	
+
+	
+
+	public String getNoteOfBorrower() {
+		return noteOfBorrower;
+	}
+	public void setNoteOfBorrower(String noteOfBorrower) {
+		this.noteOfBorrower = noteOfBorrower;
+	}
+	public String getMclrRoi() {
+		return mclrRoi;
+	}
+
+	public void setMclrRoi(String mclrRoi) {
+		this.mclrRoi = mclrRoi;
+	}
+
+	public String getSpreadRoi() {
+		return spreadRoi;
+	}
+
+	public void setSpreadRoi(String spreadRoi) {
+		this.spreadRoi = spreadRoi;
+	}
+
+	public String getEffectiveRoi() {
+		return effectiveRoi;
+	}
+
+	public void setEffectiveRoi(String effectiveRoi) {
+		this.effectiveRoi = effectiveRoi;
+	}
+
+	public String getConcessionRoi() {
+		return concessionRoi;
+	}
+
+	public void setConcessionRoi(String concessionRoi) {
+		this.concessionRoi = concessionRoi;
+	}
+
+	public String getConcessionRoiBased() {
+		return concessionRoiBased;
+	}
+
+	public void setConcessionRoiBased(String concessionRoiBased) {
+		this.concessionRoiBased = concessionRoiBased;
+	}
+
+	public String getFinalRoi() {
+		return finalRoi;
+	}
+
+	public void setFinalRoi(String finalRoi) {
+		this.finalRoi = finalRoi;
+	}
+	
+	
     
 	public String getNameEditedByUser() {
 		return nameEditedByUser;

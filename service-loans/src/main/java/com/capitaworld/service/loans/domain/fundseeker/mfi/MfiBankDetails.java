@@ -22,6 +22,9 @@ public class MfiBankDetails implements Serializable {
     @Column(name = "branch_name")
     private String branchName;
 
+    @Column(name = "account_holder_name")
+    private String accountHolderName;
+
     @Column(name = "account_no")
     private String accountNo;
 
@@ -96,5 +99,13 @@ public class MfiBankDetails implements Serializable {
 
     public void setPassbookImg(byte[] passbookImg) {
         this.passbookImg = passbookImg;
+    }
+
+    public String getAccountHolderName() {
+        return accountHolderName;
+    }
+
+    public void setAccountHolderName(String accountHolderName) {
+        this.accountHolderName = accountHolderName;
     }
 }

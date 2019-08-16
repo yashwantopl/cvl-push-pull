@@ -56,6 +56,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
+import com.capitaworld.service.loans.model.retail.EmpSalariedTypeRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
@@ -66,7 +67,6 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.PlTeaserViewResponse;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
@@ -81,6 +81,7 @@ import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ObligationDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
@@ -210,6 +211,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	private ITRClient itrClient;
 	
 	@Autowired
+	private EmpFinancialDetailsService empFinancialDetailsService;
+	
+	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
 	
 	@Autowired
@@ -287,10 +291,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		hlTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		hlTeaserViewResponse.setAppId(toApplicationId);
 		
-
-		
-
-
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
 			// TEASER VIEW FROM FP SIDE
@@ -331,7 +331,19 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
-				plRetailApplicantResponse.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp() != null ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+				
+				//Emp Salaried Type of Applicant
+				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
+					try {
+						List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
+						
+						if(!CommonUtils.isObjectNullOrEmpty(empSalariedDetail)) {
+							plRetailApplicantResponse.setEmpSalariedDetails(!CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
+						}
+					}catch (Exception e) {
+						logger.error("Error/Exception while fetching data of Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , toApplicationId ,proposalId ,e);
+					}
+				}
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
@@ -418,6 +430,11 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setEmail(plRetailApplicantRequest.getEmail());
 				plRetailApplicantResponse.setContactNo(plRetailApplicantRequest.getContactNo());
 				plRetailApplicantResponse.setNetMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
+				if(ResidenceStatusRetailMst.OWNED.getId() == plRetailApplicantRequest.getResidenceType()) {
+					plRetailApplicantResponse.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp() != null ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+				}else {
+					plRetailApplicantResponse.setIsOwnedProp("-");
+				}
 
 				LocalDate today = LocalDate.now();
 				String operatingBusinessSince = null;
@@ -754,8 +771,14 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		}
 		
 		
+		//Note for restrict Borrower
+		try {
+			String note = commonRepo.getNoteForHLCam(toApplicationId);
+			hlTeaserViewResponse.setNoteOfBorrower(!CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+		}
 		
-	
 		ITRBasicDetailsResponse itrBasicDetailsResponse = null;
 		String nameAsPerItr = null;
 		try {
@@ -1060,7 +1083,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
 				plRetailApplicantResponse.setCurrentEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
-				plRetailApplicantResponse.setMonthlyIncome(coApplicantDetail.getMonthlyIncome());
 				plRetailApplicantResponse.setDesignation(coApplicantDetail.getDesignation()!= null ? DesignationList.getById(coApplicantDetail.getDesignation()).getValue().toString() : "-");
 				plRetailApplicantResponse.setAnnualIncomeOfSpouse(coApplicantDetail.getAnnualIncomeOfSpouse());
 				plRetailApplicantResponse.setSpouseEmployment(coApplicantDetail.getSpouseEmployment() != null ? SpouseEmploymentList.getById(coApplicantDetail.getSpouseEmployment()).getValue().toString() : "-");
@@ -1072,6 +1094,12 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setRelationWithApp(coApplicantDetail.getRelationshipWithApplicant() !=null ? RelationshipTypeHL.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue().toString(): "-");
 				plRetailApplicantResponse.setIsIncomeCons(coApplicantDetail.getIsIncomeConsider());
 				plRetailApplicantResponse.setNetMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+				
+				if(ResidenceStatusRetailMst.OWNED.getId() == coApplicantDetail.getResidenceType()) {
+					plRetailApplicantResponse.setIsOwnedProp(coApplicantDetail.getIsOwnedProp() != null ? coApplicantDetail.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+				}else {
+					plRetailApplicantResponse.setIsOwnedProp("-");
+				}
 				
 				/*employment type*/
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
