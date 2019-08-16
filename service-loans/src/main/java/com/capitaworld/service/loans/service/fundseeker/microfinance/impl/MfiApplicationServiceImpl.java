@@ -375,9 +375,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 1);
 		detailsReq.setIncomeDetailsReqList(incomeDetails);
 
-		List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository
-				.findIncomeDetailsByAppId(applicationId, 2);
-		detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
+//            List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 2);
+//            detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
 
 		// FOR MFI MAKER MfiIncomeAndExpenditureReq
 		MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIMaker = expectedIncomeDetailRepository
@@ -657,13 +656,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		return !CommonUtils.isListNullOrEmpty(detailsReq) ? detailsReq.get(0) : null;
 	}
 
+
 	@Override
 	public MfiLoanAssessmentDetailsReq getCashFlowAssesmentByAppId(Long applicationId, Integer type) {
 		List<MfiLoanAssessmentDetailsReq> cashFlowAssessment = expectedIncomeDetailRepository
 				.findCashFlowAssessment(applicationId, type);
 		return !CommonUtils.isListNullOrEmpty(cashFlowAssessment) ? cashFlowAssessment.get(0) : null;
 	}
-
 	private String serverSideValidation(Integer type, Object validationJson) {
 
 		if (type == CommonUtils.BASIC_DETAILS) {
