@@ -8,6 +8,6 @@ import com.capitaworld.service.loans.model.teaser.primaryview.MFITeaserViewRespo
  */
 public interface MFITeaserViewService {
 	
-	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId,Integer mfiFpType);
+	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId);
 
 }
