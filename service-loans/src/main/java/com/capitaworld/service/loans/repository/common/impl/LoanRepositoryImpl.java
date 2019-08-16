@@ -9,11 +9,11 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -434,6 +434,38 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return null;
 		
+	}
+	
+	@Override
+	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spGetAgriApplicationsByOrgIdAndStatus");
+			storedProcedureQuery.registerStoredProcedureParameter("orgId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("stus",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("fromLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("toLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
+			if(status == null) {
+				status = -1;
+			}
+			if(fromLimit == null) {
+				fromLimit = -1;
+			}
+			if(toLimit == null) {
+				toLimit = -1;
+			}
+			
+			storedProcedureQuery.setParameter("toLimit",toLimit);				
+			storedProcedureQuery.setParameter("fromLimit",fromLimit);
+			storedProcedureQuery.setParameter("stus",status);
+			storedProcedureQuery.setParameter("orgId",orgId);
+			storedProcedureQuery.execute();
+			return (String)storedProcedureQuery.getOutputParameterValue("result");
+			
+		} catch (Exception e) {
+			logger.error("EXCEPTION spGetAgriApplicationsByOrgIdAndStatus :=- {}", e);
+		}
+		return null;
 	}
 	
 	@Override
