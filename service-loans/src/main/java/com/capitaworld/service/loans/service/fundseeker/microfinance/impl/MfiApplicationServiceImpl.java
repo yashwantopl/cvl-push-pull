@@ -26,7 +26,6 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
-import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
@@ -38,8 +37,6 @@ import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiFinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
@@ -143,8 +140,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         }
         if (aadharDetailsReq.getId() == null) {
             //create Application And generate ApplicationId
-            Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
-                    aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
+            Long applicationId;
+            if(aadharDetailsReq.getApplicationId() == null) {
+                applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
+                        aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
+            } else {
+                applicationId = aadharDetailsReq.getApplicationId();
+            }
             if (applicationId != null) {
                 mfiApplicationDetail = new MFIApplicantDetail();
                 BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
@@ -199,14 +201,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
      */
     @Override
     public boolean saveConsentFormImage(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
-            if (!CommonUtil.isObjectNullOrEmpty(aadharDetailsReq.getConsentFormImg())) {
-                MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
-                String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
-                mfiApplicationDetail.setConsentFormImg(consentImgToDms);
-                detailsRepository.save(mfiApplicationDetail);
-                return true;
-            }
-        return false;
+        MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+        String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+        mfiApplicationDetail.setConsentFormImg(consentImgToDms);
+        detailsRepository.save(mfiApplicationDetail);
+        return true;
     }
 
     /**
@@ -785,17 +784,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 
-    public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId,Long userId) {
-        try {
-            CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
-            if (cibilReportMfi.getStatus() == 200) {
-                return financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-            }
+	@Override
+    public List<MFIFinancialArrangementRequest> callBureauGetFinancialDetails(Long applicationId,Long applicantId, Long userId) {
 
-        } catch (LoansException e) {
-            e.printStackTrace();
+        CibilResponse cibilReportMfi = null;
+        try {
+            cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+            if (cibilReportMfi.getStatus() == 200) {
+                return getFinancialDetailsAppId(applicationId, userId);
+            }
         } catch (CibilException e) {
             e.printStackTrace();
+            logger.info("CibilException error while getReport");
         }
         return Collections.EMPTY_LIST;
     }
