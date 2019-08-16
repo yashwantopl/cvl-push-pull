@@ -276,13 +276,12 @@ public class PrimaryViewController {
 	}
 	
 
-	@GetMapping(value = "/MfiPrimaryDetails/{applicationId}/{mfiFpType}")  
-	public @ResponseBody ResponseEntity<LoansResponse> MFiPrimayView(@PathVariable(value = "applicationId") Long applicationId,
-			@PathVariable(value = "mfiFpType") Integer mfiFpType, HttpServletRequest request) { /*,@RequestParam(value = "clientId", required = false)*/
-		logger.info("ENTER HERE GET MICRO FINANCE DETAILS HERE ====={}======{}" , applicationId ,mfiFpType);
+	@GetMapping(value = "/MfiPrimaryDetails/{applicationId}")  
+	public @ResponseBody ResponseEntity<LoansResponse> MFiPrimayView(@PathVariable(value = "applicationId") Long applicationId,HttpServletRequest request) { /*,@RequestParam(value = "clientId", required = false)*/
+		logger.info("ENTER HERE GET MICRO FINANCE DETAILS HERE ====={}======{}" , applicationId);
 
-		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(mfiFpType)) {
-			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + applicationId + mfiFpType);
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + applicationId);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
@@ -290,8 +289,8 @@ public class PrimaryViewController {
 			LoansResponse loansResponse = new LoansResponse();
 			MFITeaserViewResponse mfiPrimaryViewResponse = null;
 			try {
-				logger.info("ENTER HERE MFI  DETAILS FOR APPPLICATION ID AND FP PRODUCT MAPPING ID ===={}===>", applicationId ,mfiFpType);
-				mfiPrimaryViewResponse = mfiTeaserViewService.getPrimaryMFiDetails(applicationId,mfiFpType);
+				logger.info("ENTER HERE MFI  DETAILS FOR APPPLICATION ID AND FP PRODUCT MAPPING ID ===={}===>", applicationId);
+				mfiPrimaryViewResponse = mfiTeaserViewService.getPrimaryMFiDetails(applicationId);
 				logger.info("mfiPrimaryViewResponse======={}====>>>",mfiPrimaryViewResponse);
 				if (!CommonUtils.isObjectNullOrEmpty(mfiPrimaryViewResponse)) {
 					logger.info("FINAL MFI RESPONSE HERE ======{}====>{}" , mfiPrimaryViewResponse.toString());
