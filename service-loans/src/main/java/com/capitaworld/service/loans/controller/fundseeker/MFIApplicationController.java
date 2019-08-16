@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.api.workflow.model.WorkflowRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
@@ -57,7 +56,7 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
-			if(requestData == null){
+			if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile) || CommonUtils.isObjectNullOrEmpty(addressProofFile)){
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
@@ -86,7 +85,7 @@ public class MFIApplicationController {
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
             }
-			if(requestData == null){
+			if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile)){
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
@@ -226,8 +225,8 @@ public class MFIApplicationController {
 				logger.warn("userId  can not be empty ==>" + userId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			if(CommonUtils.isObjectNullOrEmpty(requestData)){
-				logger.warn("Request data  can not be empty ==>");
+			if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile)){
+				logger.warn("Data  can not be empty ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			MfiBankDetailsReq mfiBankDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, MfiBankDetailsReq.class);
