@@ -1,6 +1,24 @@
 
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
@@ -13,20 +31,80 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.*;
+import com.capitaworld.service.loans.domain.fundprovider.AgriLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.MFILoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
+import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.DataRequest;
+import com.capitaworld.service.loans.model.FpProductDetails;
+import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
+import com.capitaworld.service.loans.model.ProductDetailsForSp;
+import com.capitaworld.service.loans.model.ProductDetailsResponse;
+import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.corporate.*;
+import com.capitaworld.service.loans.model.corporate.AddProductRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateProduct;
+import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
+import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.model.mfi.MFILoanParameterRequest;
+import com.capitaworld.service.loans.model.retail.AgriLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
-import com.capitaworld.service.loans.repository.fundprovider.*;
+import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LapParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MFILoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
-import com.capitaworld.service.loans.service.fundprovider.*;
+import com.capitaworld.service.loans.service.fundprovider.AgriLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
+import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.LoanPurposeAmountMappingService;
+import com.capitaworld.service.loans.service.fundprovider.MFILoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.MFILoanParameterTempService;
+import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
+import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
@@ -42,17 +120,6 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.*;
 
 @Service
 @Transactional
@@ -137,6 +204,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private WcTlParameterService wcTlParameterService;
+	
+	@Autowired
+	private AgriLoanParameterService agriLoanParameterService;
 
 	@Autowired
 	private MFILoanParameterTempService mfiLoanParameterTempService;
@@ -198,6 +268,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		HomeLoanParameterRequest homeLoanParameterRequest = null;
+		AgriLoanParameterRequest agriLoanParameterRequest = null;
 		try {
 
 			if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
@@ -247,6 +318,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				case MFI_LOAN:
 					productMasterTemp = new MFILoanParameterTemp();
+					break;
+				case AGRI_LOAN:
+					productMasterTemp = new AgriLoanParameterTemp();
 					break;
 
 				default:
@@ -408,7 +482,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						productMasterTemp = mfiLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
-
+						
+					case AGRI_LOAN:
+						AgriLoanParameterTemp agriLoanParameterTemp = new AgriLoanParameterTemp();
+						agriLoanParameterRequest = agriLoanParameterService.get(addProductRequest.getLoanId());
+						BeanUtils.copyProperties(agriLoanParameterRequest, agriLoanParameterTemp,"id");
+						productMasterTemp = agriLoanParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
+						break;
 					default:
 						break;
 					}
@@ -571,6 +652,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						
 						//Saving Loan Purpose Amount Mapping
 						loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), productMaster2.getId());						
+					}
+				}
+				
+				if(LoanType.AGRI_LOAN.getId().equals(loanType.getId())) {
+					// Saving Mapping Current CURRENT_EMPLOYMENT
+					
+					if(!CommonUtils.isObjectNullOrEmpty(agriLoanParameterRequest)) {
+						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.DISTRICT, agriLoanParameterRequest.getDistrictIds());
+						
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.CROP, agriLoanParameterRequest.getCropIds());
+						
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.IRRIGATED_UNIRRIGATED, agriLoanParameterRequest.getIrriUnirriIds());
 					}
 				}
 				return true;

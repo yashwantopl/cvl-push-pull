@@ -187,6 +187,8 @@ public interface LoanApplicationService {
 	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId);
 
 	public Long createMfiLoan(Long userId,Boolean isActive,Integer businessTypeId,Long userOrgId);
+	
+	public Long createAgriLoan(Long userId,Integer businessTypeId,Long orgId);
 
 	public Long createRetailLoan(Long userId, Boolean isActive, Integer businessTypeId);
 

@@ -593,6 +593,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				} catch (DocumentException e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_SOFTPING_CONSUMER);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setCibilReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				
 		
 
 		// pl final view details filled from here
@@ -1252,6 +1260,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			plTeaserViewResponse.setIrtXMLReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_SOFTPING_CONSUMER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			plTeaserViewResponse.setCibilConsumerReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}

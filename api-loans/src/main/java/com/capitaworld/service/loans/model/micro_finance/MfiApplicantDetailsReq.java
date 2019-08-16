@@ -246,47 +246,47 @@ public class MfiApplicantDetailsReq {
 	private Integer ppiOtherTableInFamily;
 
 	private Double totalMonthlyIncomeForFamily;
-    private List<MfiAssetsDetailsReq> assetsDetails;
-    private List<MfiAssetsDetailsReq> liabilityDetails;
+	private List<MfiAssetsDetailsReq> assetsDetails;
+	private List<MfiAssetsDetailsReq> liabilityDetails;
 	private Double totalExpense;
 
-    private Long bankId;
+	private Long bankId;
 
-    private String branchName;
+	private String branchName;
 
-    private String acHolderName;
+	private String acHolderName;
 
-    private String accountNo;
+	private String accountNo;
 
-    private String ifscCode;
+	private String ifscCode;
 
-    private Integer accountType;
+	private Integer accountType;
 
-    private String passbookImg;
+	private String passbookImg;
 
-    private List<MfiIncomeDetailsReq> incomeDetailsReqList;
-    private List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList;
+	private List<MfiIncomeDetailsReq> incomeDetailsReqList;
+	private List<MfiIncomeDetailsReq> incomeDetailsTypeTwoList;
 
 	private MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIMaker;
 
 	private MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIChecker;
 
-    private Integer purposeOfLoan;
+	private Integer purposeOfLoan;
 
-    private Boolean isBusinessPremiseVisited;
-    private Integer repaymentTrack;
-    private Integer creaditWorthiness;
-    private Integer loanLiabilityRatio;
-    private Double loanAmountRecomandation;
-    private Integer tenureRecomandation;
-    private Integer moratoriumRecomandation;
-    private Integer interestRateRecomandation;
-    private Integer installmentRecomandation;
-    private Integer clientType;
+	private Boolean isBusinessPremiseVisited;
+	private Integer repaymentTrack;
+	private Integer creaditWorthiness;
+	private Integer loanLiabilityRatio;
+	private Double loanAmountRecomandation;
+	private Integer tenureRecomandation;
+	private Integer moratoriumRecomandation;
+	private Integer interestRateRecomandation;
+	private Integer installmentRecomandation;
+	private Integer clientType;
 
 	private Integer businessInBrief;
 
-	//For Cash Flow Assessment
+	// For Cash Flow Assessment
 	private Double incomeFromOccupation;
 	private Double existingExpensesOfFamily;
 	private Double netSaving;
@@ -317,6 +317,8 @@ public class MfiApplicantDetailsReq {
 
 	private Integer status;
 
+	private Integer loanTenure;
+
 	public Integer getStatus() {
 		return status;
 	}
@@ -337,7 +339,8 @@ public class MfiApplicantDetailsReq {
 		return mfiIncomeAndExpenditureReqMFIChecker;
 	}
 
-	public void setMfiIncomeAndExpenditureReqMFIChecker(MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIChecker) {
+	public void setMfiIncomeAndExpenditureReqMFIChecker(
+			MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReqMFIChecker) {
 		this.mfiIncomeAndExpenditureReqMFIChecker = mfiIncomeAndExpenditureReqMFIChecker;
 	}
 
@@ -1349,61 +1352,61 @@ public class MfiApplicantDetailsReq {
 		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
 	}
 
-    public List<MfiAssetsDetailsReq> getAssetsDetails() {
-        return assetsDetails;
-    }
+	public List<MfiAssetsDetailsReq> getAssetsDetails() {
+		return assetsDetails;
+	}
 
-    public void setAssetsDetails(List<MfiAssetsDetailsReq> assetsDetails) {
-        this.assetsDetails = assetsDetails;
-    }
+	public void setAssetsDetails(List<MfiAssetsDetailsReq> assetsDetails) {
+		this.assetsDetails = assetsDetails;
+	}
 
-    public List<MfiAssetsDetailsReq> getLiabilityDetails() {
-        return liabilityDetails;
-    }
+	public List<MfiAssetsDetailsReq> getLiabilityDetails() {
+		return liabilityDetails;
+	}
 
-    public void setLiabilityDetails(List<MfiAssetsDetailsReq> liabilityDetails) {
-        this.liabilityDetails = liabilityDetails;
-    }
+	public void setLiabilityDetails(List<MfiAssetsDetailsReq> liabilityDetails) {
+		this.liabilityDetails = liabilityDetails;
+	}
 
-    public Long getBankId() {
-        return bankId;
-    }
+	public Long getBankId() {
+		return bankId;
+	}
 
-    public void setBankId(Long bankId) {
-        this.bankId = bankId;
-    }
+	public void setBankId(Long bankId) {
+		this.bankId = bankId;
+	}
 
-    public String getBranchName() {
-        return branchName;
-    }
+	public String getBranchName() {
+		return branchName;
+	}
 
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
 
-    public String getAccountNo() {
-        return accountNo;
-    }
+	public String getAccountNo() {
+		return accountNo;
+	}
 
-    public void setAccountNo(String accountNo) {
-        this.accountNo = accountNo;
-    }
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
 
-    public String getIfscCode() {
-        return ifscCode;
-    }
+	public String getIfscCode() {
+		return ifscCode;
+	}
 
-    public void setIfscCode(String ifscCode) {
-        this.ifscCode = ifscCode;
-    }
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
+	}
 
-    public Integer getAccountType() {
-        return accountType;
-    }
+	public Integer getAccountType() {
+		return accountType;
+	}
 
-    public void setAccountType(Integer accountType) {
-        this.accountType = accountType;
-    }
+	public void setAccountType(Integer accountType) {
+		this.accountType = accountType;
+	}
 
 	public String getPassbookImg() {
 		return passbookImg;
@@ -1414,100 +1417,100 @@ public class MfiApplicantDetailsReq {
 	}
 
 	public List<MfiIncomeDetailsReq> getIncomeDetailsReqList() {
-        return incomeDetailsReqList;
-    }
+		return incomeDetailsReqList;
+	}
 
-    public void setIncomeDetailsReqList(List<MfiIncomeDetailsReq> incomeDetailsReqList) {
-        this.incomeDetailsReqList = incomeDetailsReqList;
-    }
+	public void setIncomeDetailsReqList(List<MfiIncomeDetailsReq> incomeDetailsReqList) {
+		this.incomeDetailsReqList = incomeDetailsReqList;
+	}
 
-    public Integer getPurposeOfLoan() {
-        return purposeOfLoan;
-    }
+	public Integer getPurposeOfLoan() {
+		return purposeOfLoan;
+	}
 
-    public void setPurposeOfLoan(Integer purposeOfLoan) {
-        this.purposeOfLoan = purposeOfLoan;
-    }
+	public void setPurposeOfLoan(Integer purposeOfLoan) {
+		this.purposeOfLoan = purposeOfLoan;
+	}
 
-    public Boolean getBusinessPremiseVisited() {
-        return isBusinessPremiseVisited;
-    }
+	public Boolean getBusinessPremiseVisited() {
+		return isBusinessPremiseVisited;
+	}
 
-    public void setBusinessPremiseVisited(Boolean businessPremiseVisited) {
-        isBusinessPremiseVisited = businessPremiseVisited;
-    }
+	public void setBusinessPremiseVisited(Boolean businessPremiseVisited) {
+		isBusinessPremiseVisited = businessPremiseVisited;
+	}
 
-    public Integer getRepaymentTrack() {
-        return repaymentTrack;
-    }
+	public Integer getRepaymentTrack() {
+		return repaymentTrack;
+	}
 
-    public void setRepaymentTrack(Integer repaymentTrack) {
-        this.repaymentTrack = repaymentTrack;
-    }
+	public void setRepaymentTrack(Integer repaymentTrack) {
+		this.repaymentTrack = repaymentTrack;
+	}
 
-    public Integer getCreaditWorthiness() {
-        return creaditWorthiness;
-    }
+	public Integer getCreaditWorthiness() {
+		return creaditWorthiness;
+	}
 
-    public void setCreaditWorthiness(Integer creaditWorthiness) {
-        this.creaditWorthiness = creaditWorthiness;
-    }
+	public void setCreaditWorthiness(Integer creaditWorthiness) {
+		this.creaditWorthiness = creaditWorthiness;
+	}
 
-    public Integer getLoanLiabilityRatio() {
-        return loanLiabilityRatio;
-    }
+	public Integer getLoanLiabilityRatio() {
+		return loanLiabilityRatio;
+	}
 
-    public void setLoanLiabilityRatio(Integer loanLiabilityRatio) {
-        this.loanLiabilityRatio = loanLiabilityRatio;
-    }
+	public void setLoanLiabilityRatio(Integer loanLiabilityRatio) {
+		this.loanLiabilityRatio = loanLiabilityRatio;
+	}
 
-    public Double getLoanAmountRecomandation() {
-        return loanAmountRecomandation;
-    }
+	public Double getLoanAmountRecomandation() {
+		return loanAmountRecomandation;
+	}
 
-    public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
-        this.loanAmountRecomandation = loanAmountRecomandation;
-    }
+	public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
+		this.loanAmountRecomandation = loanAmountRecomandation;
+	}
 
-    public Integer getTenureRecomandation() {
-        return tenureRecomandation;
-    }
+	public Integer getTenureRecomandation() {
+		return tenureRecomandation;
+	}
 
-    public void setTenureRecomandation(Integer tenureRecomandation) {
-        this.tenureRecomandation = tenureRecomandation;
-    }
+	public void setTenureRecomandation(Integer tenureRecomandation) {
+		this.tenureRecomandation = tenureRecomandation;
+	}
 
-    public Integer getMoratoriumRecomandation() {
-        return moratoriumRecomandation;
-    }
+	public Integer getMoratoriumRecomandation() {
+		return moratoriumRecomandation;
+	}
 
-    public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
-        this.moratoriumRecomandation = moratoriumRecomandation;
-    }
+	public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
+		this.moratoriumRecomandation = moratoriumRecomandation;
+	}
 
-    public Integer getInterestRateRecomandation() {
-        return interestRateRecomandation;
-    }
+	public Integer getInterestRateRecomandation() {
+		return interestRateRecomandation;
+	}
 
-    public void setInterestRateRecomandation(Integer interestRateRecomandation) {
-        this.interestRateRecomandation = interestRateRecomandation;
-    }
+	public void setInterestRateRecomandation(Integer interestRateRecomandation) {
+		this.interestRateRecomandation = interestRateRecomandation;
+	}
 
-    public Integer getInstallmentRecomandation() {
-        return installmentRecomandation;
-    }
+	public Integer getInstallmentRecomandation() {
+		return installmentRecomandation;
+	}
 
-    public void setInstallmentRecomandation(Integer installmentRecomandation) {
-        this.installmentRecomandation = installmentRecomandation;
-    }
+	public void setInstallmentRecomandation(Integer installmentRecomandation) {
+		this.installmentRecomandation = installmentRecomandation;
+	}
 
-    public Integer getClientType() {
-        return clientType;
-    }
+	public Integer getClientType() {
+		return clientType;
+	}
 
-    public void setClientType(Integer clientType) {
-        this.clientType = clientType;
-    }
+	public void setClientType(Integer clientType) {
+		this.clientType = clientType;
+	}
 
 	public Double getIncomeFromOccupation() {
 		return incomeFromOccupation;
@@ -1628,6 +1631,7 @@ public class MfiApplicantDetailsReq {
 	public void setCompetition(Integer competition) {
 		this.competition = competition;
 	}
+
 	public List<MfiIncomeDetailsReq> getIncomeDetailsTypeTwoList() {
 		return incomeDetailsTypeTwoList;
 	}
@@ -1708,13 +1712,13 @@ public class MfiApplicantDetailsReq {
 		this.academicSumInsured = academicSumInsured;
 	}
 
-    public String getAcHolderName() {
-        return acHolderName;
-    }
+	public String getAcHolderName() {
+		return acHolderName;
+	}
 
-    public void setAcHolderName(String acHolderName) {
-        this.acHolderName = acHolderName;
-    }
+	public void setAcHolderName(String acHolderName) {
+		this.acHolderName = acHolderName;
+	}
 
 	public String getAddressProofImg() {
 		return addressProofImg;
@@ -1747,4 +1751,13 @@ public class MfiApplicantDetailsReq {
 	public void setAadharImg(String aadharImg) {
 		this.aadharImg = aadharImg;
 	}
+
+	public Integer getLoanTenure() {
+		return loanTenure;
+	}
+
+	public void setLoanTenure(Integer loanTenure) {
+		this.loanTenure = loanTenure;
+	}
+
 }

@@ -147,10 +147,19 @@ public class PLRetailApplicantResponse implements Serializable {
     private String nameEditedByCoApp;
     private String isOwnedProp;
     private List<EmpSalariedTypeRequest> empSalariedDetails;
-    
+    private List<Object> coAppcibilConsumerReport;
 	
     
 	
+    
+
+	public List<Object> getCoAppcibilConsumerReport() {
+		return coAppcibilConsumerReport;
+	}
+
+	public void setCoAppcibilConsumerReport(List<Object> coAppcibilConsumerReport) {
+		this.coAppcibilConsumerReport = coAppcibilConsumerReport;
+	}
 
 	public List<EmpSalariedTypeRequest> getEmpSalariedDetails() {
 		return empSalariedDetails;

@@ -39,6 +39,11 @@ public class MFIFinancialArrangementRequest implements Serializable {
 	private Integer provider;
 	private Integer isLoanConsidered;
 	private Long applicantId;
+	
+
+	public MFIFinancialArrangementRequest() {
+		super();
+	}
 
 	public MFIFinancialArrangementRequest(Long applicationId, String financialInstitutionName,
 			String otherInstitutionName, Double amount, Date loanDate, Date reportedDate, String loanType, Double emi,

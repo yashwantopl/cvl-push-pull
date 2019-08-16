@@ -78,6 +78,7 @@ public class PlTeaserViewResponse {
     private List<Object> cibilReport;
     private List<Object> irtPdfReport;
     private List<Object> irtXMLReport;
+    private List<Object> cibilConsumerReport;
     private List<Map<String,Object>> directorBackGroundDetails;
     private List<CorporateDirectorIncomeRequest> directorIncomeDetails;
     private Object monthlyDetailList;
@@ -115,6 +116,7 @@ public class PlTeaserViewResponse {
     private Object fraudDetectionData;
     private Object proposedDetailOfUnitFact;
     private Object proposedConstitutionOfUnit;
+
     
     private Object nameOfEntity;
     private Object pan;
@@ -216,9 +218,16 @@ public class PlTeaserViewResponse {
 	private String finalRoi;
 	private String noteOfBorrower;
 	
-
+	
 	
 
+	
+	public List<Object> getCibilConsumerReport() {
+		return cibilConsumerReport;
+	}
+	public void setCibilConsumerReport(List<Object> cibilConsumerReport) {
+		this.cibilConsumerReport = cibilConsumerReport;
+	}
 	public String getNoteOfBorrower() {
 		return noteOfBorrower;
 	}

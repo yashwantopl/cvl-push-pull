@@ -836,6 +836,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_SOFTPING_CONSUMER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			hlTeaserViewResponse.setCibilConsumerReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION);
+		}
 
 		// pl final view details filled from here
 		if (isFinal) {	
@@ -1303,6 +1310,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					plRetailApplicantResponse.setCoAppItrPdf(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				coAppDocReq.setProductDocumentMappingId(DocumentAlias.CIBIL_SOFTPING_CONSUMER);
+				try {
+					DocumentResponse documentReponse = dmsClient.listProductDocument(coAppDocReq);
+					plRetailApplicantResponse.setCoAppcibilConsumerReport(documentReponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION);
 				}
 				request.add(plRetailApplicantResponse);
 			}
