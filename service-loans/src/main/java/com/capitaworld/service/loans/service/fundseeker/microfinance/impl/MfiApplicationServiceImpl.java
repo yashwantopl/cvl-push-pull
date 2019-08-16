@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.*;
 
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
+import com.capitaworld.service.oneform.enums.BankList;
+import com.capitaworld.service.oneform.enums.BankListMfi;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -332,6 +334,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			// save bank details in bank details table
 			MfiBankDetails mfiBankDetails = new MfiBankDetails();
 			BeanUtils.copyProperties(bankDetailsReq, mfiBankDetails);
+			BankListMfi bankListMfi = BankListMfi.fromValue(bankDetailsReq.getBankName());
+			mfiBankDetails.setBankId(Long.valueOf(bankListMfi.getId()));
 			String bankPassbookToDms = uploadImageForMfi(uploadingFile, bankDetailsReq.getUserId());
 			mfiBankDetails.setPassbookImg(bankPassbookToDms);
 			bankDetailsRepository.save(mfiBankDetails);

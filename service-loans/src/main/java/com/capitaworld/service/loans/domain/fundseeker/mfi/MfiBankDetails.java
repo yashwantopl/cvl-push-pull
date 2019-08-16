@@ -22,6 +22,9 @@ public class MfiBankDetails implements Serializable {
     @Column(name = "branch_name")
     private String branchName;
 
+    @Column(name = "bank_name")
+    private String bankName;
+
     @Column(name = "account_holder_name")
     private String accountHolderName;
 
@@ -107,5 +110,13 @@ public class MfiBankDetails implements Serializable {
 
     public void setAccountHolderName(String accountHolderName) {
         this.accountHolderName = accountHolderName;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 }
