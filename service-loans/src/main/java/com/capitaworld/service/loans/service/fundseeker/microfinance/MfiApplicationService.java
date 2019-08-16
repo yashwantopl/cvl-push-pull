@@ -81,5 +81,8 @@ public interface MfiApplicationService {
 	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId,Long applicantId);
 
 	public boolean saveConsentFormImage(MultipartFile uploadingFile,AadharDetailsReq aadharDetailsReq);
+	
+	public Object saveOrUpdateAllApplicantsDetails(MultipartFile uploadingFile,MultipartFile addressProof,MultipartFile consentformImg,MultipartFile aadharImg,MfiApplicantDetailsReq mfiApplicantDetailsReq,Long userId,Long orgId);
+
 
 }
