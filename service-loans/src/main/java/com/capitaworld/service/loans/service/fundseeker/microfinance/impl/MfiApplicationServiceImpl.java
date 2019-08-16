@@ -364,8 +364,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             List<MfiIncomeDetailsReq> incomeDetails = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 1);
             detailsReq.setIncomeDetailsReqList(incomeDetails);
 
-            List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 2);
-            detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
+//            List<MfiIncomeDetailsReq> incomeDetailsEditable = MfiIncomeDetailsRepository.findIncomeDetailsByAppId(applicationId, 2);
+//            detailsReq.setIncomeDetailsTypeTwoList(incomeDetailsEditable);
 
             // FOR MFI MAKER MfiIncomeAndExpenditureReq
             MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIMaker = expectedIncomeDetailRepository.findByApplicationIdAndType(applicationId,1); 
@@ -656,9 +656,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
             } else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getEducationQualification()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicReligion()) ||
                     CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAcademicCaste())) {
                 return "Some required fields in Acadamic and other details are missing Personal Detail section";
-            } else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getLandHolding()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAreaType()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessType()) ||
-                    CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getHouseOwnership()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNameOfFirm()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessPremises())
-                    || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getExpInSameLine())) {
+            } else if (CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getAreaType()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessType()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getHouseOwnership()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getNameOfFirm())
+                    || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getBusinessPremises()) || CommonUtils.isObjectNullOrEmpty(personalDetailsReq.getExpInSameLine())) {
                 return "Some required fields in Business and Other details are missing Personal Detail section";
             }
         } else if (type == CommonUtils.BANK_DETAILS) {
