@@ -74,7 +74,7 @@ public interface MfiApplicationService {
 
 	public Object saveOrUpdateMfiConversation(MFIConversationReq mfiConversationReq);
 
-	public List<FinancialArrangementsDetailRequest> callBureauGetFinancialDetails(Long applicationId, Long userId);
+	public List<MFIFinancialArrangementRequest> callBureauGetFinancialDetails(Long applicationId,Long applicantId, Long userId);
 	
 	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId);
 	

@@ -53,8 +53,8 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 	private  ProposalDetailsRepository proposalDetailsRepository;
 	
 	@Override
-	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId,Integer mfiFpType) {
-		logger.info("ENTER HERE getPrimaryMFiDetails======{}====={}>>{}" , applicationId,mfiFpType);
+	public MFITeaserViewResponse getPrimaryMFiDetails(Long applicationId) {
+		logger.info("ENTER HERE getPrimaryMFiDetails======{}====={}>>{}" , applicationId);
 		
 		MFITeaserViewResponse mfiTeaserViewResponse = new MFITeaserViewResponse();
 		
@@ -66,8 +66,6 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 			bussnessTypeId = loanApplicationMaster.getBusinessTypeId();
 		}
 		
-		if(mfiFpType!= null && mfiFpType == CommonUtils.mfiDataDisplayType.MFI_SCORING_DISPLAY_TYPE){ //1. FOR SCORING RELATED
-			
 		ScoringRequest scoringRequest = new ScoringRequest();  
 		scoringRequest.setApplicationId(applicationId);
 		scoringRequest.setFpProductId(productMappingId);
@@ -81,12 +79,11 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 				mfiTeaserViewResponse.setDataObject(scoringResponse.getDataObject()!=null?scoringResponse.getDataObject():" - ");
 				mfiTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList()!=null?scoringResponse.getScoringResponseList():" - ");
 			}
+			
 		} catch (Exception e) {
 			logger.error("EXCEPTION IS GETTING WHILE SCORING RESPONSE HERE ======={}======{}=====>",e);
 		}
-	}
-		
-		if(mfiFpType!= null && mfiFpType == CommonUtils.mfiDataDisplayType.MFI_ASSESSMENT_TYPE){ //1. FOR SCORING RELATED
+	
 		MFIRequest eligibilityReq = new MFIRequest(); 		//2.  FOR ASSESSMENT LOAN DETAILS RELATED
 		eligibilityReq.setApplicationId(applicationId);
 		eligibilityReq.setFpProductMappingId(productMappingId);
@@ -99,9 +96,8 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 			logger.error(CommonUtils.EXCEPTION,e1);
 			}
 		//ENDS HERE ASSESSMENT AND SCORING RELATED CODDE HERE ====================================================================================== 
-		}
+		//}
 		
-		if(mfiFpType!= null && mfiFpType == CommonUtils.mfiDataDisplayType.MFI_MATCHES_DISPLAY_TYPE){ //FOR MFI MATCHE ENGINE DATA
 		try {
 			MatchRequest matchRequest = new MatchRequest();
 			matchRequest.setApplicationId(applicationId);
@@ -113,7 +109,6 @@ public class MFITeaserViewServiceImpl implements MFITeaserViewService {
 		} catch (Exception e) {
 			logger.error("EXCEPTION IS GETTING WHILE GET MATCHES DATA====={}======={}" , e);
 		}
-	}	
 		return mfiTeaserViewResponse;
 	}
 

@@ -76,15 +76,22 @@ public class MFIApplicationController {
 		}
 	}
 	@PostMapping(value = "/saveConsentFormImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData) {
+	public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save aadhar details");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+            }
 			if(requestData == null){
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
 			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+			aadharDetailsReq.setUserId(userId);
             boolean consentFormImage = mfiApplicationService.saveConsentFormImage(uploadingFile, aadharDetailsReq);
             CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), consentFormImage), HttpStatus.OK);
@@ -690,15 +697,15 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@GetMapping(value = "/callBureauGetFinancialDetails/{applicationId}/{userId}",  produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId) {
+	@GetMapping(value = "/callBureauGetFinancialDetails/{applicationId}/{applicantId}/{userId}",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("applicantId") Long applicantId, @PathVariable("userId") Long userId) {
 		try {
 			logger.info("service call callBueroGetFinancialDetails----------->");
 			CommonDocumentUtils.startHook(logger, "fetch");
-			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequests = mfiApplicationService.callBureauGetFinancialDetails(applicationId, userId);
-			if (!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequests)) {
+			List<MFIFinancialArrangementRequest> mfiFinancialArrangementRequests = mfiApplicationService.callBureauGetFinancialDetails(applicationId, applicantId, userId);
+			if (!CommonUtils.isListNullOrEmpty(mfiFinancialArrangementRequests)) {
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Existing Loan details.",
-						HttpStatus.OK.value(), financialArrangementsDetailRequests), HttpStatus.OK);
+						HttpStatus.OK.value(), mfiFinancialArrangementRequests), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
