@@ -26,7 +26,6 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
-import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
@@ -38,8 +37,6 @@ import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiFinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
@@ -143,8 +140,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         }
         if (aadharDetailsReq.getId() == null) {
             //create Application And generate ApplicationId
-            Long applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
-                    aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
+            Long applicationId;
+            if(aadharDetailsReq.getApplicationId() == null) {
+                applicationId = applicationService.createMfiLoan(aadharDetailsReq.getUserId(), true,
+                        aadharDetailsReq.getBusinessTypeId(), aadharDetailsReq.getOrgId());
+            } else {
+                applicationId = aadharDetailsReq.getApplicationId();
+            }
             if (applicationId != null) {
                 mfiApplicationDetail = new MFIApplicantDetail();
                 BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
