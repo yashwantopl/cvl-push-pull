@@ -78,7 +78,7 @@ public interface MfiApplicationService {
 	
 	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId);
 
-	public Boolean saveFinancialData(MFIFinancialArrangementRequest financialData, Long applicationId, Long createdBy);
+	public Boolean saveFinancialData(MFIFinancialArrangementRequest financialData, Long createdBy);
 
 	public Boolean proceedFinancialFinalData(Long applicationId, Long createdBy);
 
