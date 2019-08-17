@@ -696,11 +696,18 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@GetMapping(value = "/callBureauGetFinancialDetails/{applicationId}/{applicantId}/{userId}",  produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("applicantId") Long applicantId, @PathVariable("userId") Long userId) {
+	@GetMapping(value = "/callBureauGetFinancialDetails/{applicationId}/{applicantId}",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("applicantId") Long applicantId, HttpServletRequest request) {
 		try {
 			logger.info("service call callBueroGetFinancialDetails----------->");
 			CommonDocumentUtils.startHook(logger, "fetch");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 			List<MFIFinancialArrangementRequest> mfiFinancialArrangementRequests = mfiApplicationService.callBureauGetFinancialDetails(applicationId, applicantId, userId);
 			if (!CommonUtils.isListNullOrEmpty(mfiFinancialArrangementRequests)) {
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Existing Loan details.",
