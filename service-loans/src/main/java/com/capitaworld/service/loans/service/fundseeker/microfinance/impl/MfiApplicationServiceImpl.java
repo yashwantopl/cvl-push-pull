@@ -430,6 +430,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
 					BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
 					totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
+					mfiIncomeDetails.setMonthlyIncomeChecker(mfiIncomeDetails.getMonthlyIncome());
 					mfiIncomeDetails.setType(1);
 					mfiIncomeDetails.setIsActive(true);
 					MfiIncomeDetailsRepository.save(mfiIncomeDetails);
@@ -747,19 +748,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					|| CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getMonthlyIncome())) {
 				return "Some required fields in expected increase income are missing in Income and Expenditure section";
 			}
-		} else if (type == CommonUtils.LOAN_ASSESMENT) {
-			MfiLoanAssessmentDetailsReq assessmentDetailsReq = (MfiLoanAssessmentDetailsReq) validationJson;
-			if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
-				return "Some required fields in mean of missing in Loan Assesment detail section";
-			}
 		} else if (type == CommonUtils.LOAN_RECOMANDATION) {
 			MfiLoanRecomandationReq assessmentDetailsReq = (MfiLoanRecomandationReq) validationJson;
 			if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation())
 					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation())
 					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation())) {
 				return "Some required fields in mean of missing in Loan Reccommendation detail section";
 			}
