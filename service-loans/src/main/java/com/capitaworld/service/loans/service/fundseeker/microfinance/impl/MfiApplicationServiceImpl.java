@@ -977,6 +977,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		arrangementsDetail.setCreatedDate(new Date());
 		arrangementsDetail.setIsActive(true);
 		arrangementsDetail.setIsManuallyAdded(true);
+		arrangementsDetail.setApplicantId(createdBy);
 		mfiFinancialRepository.save(arrangementsDetail);
 		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(financialData.getApplicationId(),1);
 		mfiApplicationDetail.setCreaditWorthiness(financialData.getCreaditWorthiness());
