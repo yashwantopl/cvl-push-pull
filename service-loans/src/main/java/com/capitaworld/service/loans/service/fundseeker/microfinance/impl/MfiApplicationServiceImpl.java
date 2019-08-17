@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.*;
 
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
+import com.capitaworld.service.oneform.enums.BankList;
+import com.capitaworld.service.oneform.enums.BankListMfi;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -332,6 +334,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			// save bank details in bank details table
 			MfiBankDetails mfiBankDetails = new MfiBankDetails();
 			BeanUtils.copyProperties(bankDetailsReq, mfiBankDetails);
+			BankListMfi bankListMfi = BankListMfi.fromValue(bankDetailsReq.getBankName());
+			mfiBankDetails.setBankId(Long.valueOf(bankListMfi.getId()));
 			String bankPassbookToDms = uploadImageForMfi(uploadingFile, bankDetailsReq.getUserId());
 			mfiBankDetails.setPassbookImg(bankPassbookToDms);
 			bankDetailsRepository.save(mfiBankDetails);
@@ -426,6 +430,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
 					BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
 					totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
+					mfiIncomeDetails.setMonthlyIncomeChecker(mfiIncomeDetails.getMonthlyIncome());
 					mfiIncomeDetails.setType(1);
 					mfiIncomeDetails.setIsActive(true);
 					MfiIncomeDetailsRepository.save(mfiIncomeDetails);
@@ -743,19 +748,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					|| CommonUtils.isObjectNullOrEmpty(projectDetailsReq.getMonthlyIncome())) {
 				return "Some required fields in expected increase income are missing in Income and Expenditure section";
 			}
-		} else if (type == CommonUtils.LOAN_ASSESMENT) {
-			MfiLoanAssessmentDetailsReq assessmentDetailsReq = (MfiLoanAssessmentDetailsReq) validationJson;
-			if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getClientType())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getRepaymentTrack())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCreaditWorthiness())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getCompetition())) {
-				return "Some required fields in mean of missing in Loan Assesment detail section";
-			}
 		} else if (type == CommonUtils.LOAN_RECOMANDATION) {
 			MfiLoanRecomandationReq assessmentDetailsReq = (MfiLoanRecomandationReq) validationJson;
 			if (CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getLoanAmountRecomandation())
 					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getTenureRecomandation())
-					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getMoratoriumRecomandation())
 					|| CommonUtils.isObjectNullOrEmpty(assessmentDetailsReq.getInstallmentRecomandation())) {
 				return "Some required fields in mean of missing in Loan Reccommendation detail section";
 			}
@@ -798,15 +794,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			if (mfiApplicantDetailsReq != null) {
 
-				if (mfiApplicantDetailsReq.getIncomeDetailsTypeTwoList() != null) {
+				if (mfiApplicantDetailsReq.getIncomeDetailsReqList() != null) {
 					List<MfiIncomeDetails> mfiIncomeDetails = new ArrayList<>();
-					for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq
-							.getIncomeDetailsTypeTwoList()) {
-						MfiIncomeDetails mfiIncomeDetail = new MfiIncomeDetails(); // MfiIncomeDetailsRepository.findOne(mfiApplicantDetailsReq.getId());
-						BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetail);
-						mfiIncomeDetail.setIsActive(true);
-						mfiIncomeDetail.setType(2);
-						mfiIncomeDetails.add(mfiIncomeDetail);
+					for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq.getIncomeDetailsReqList()) {
+						MfiIncomeDetails mfiIncomeDetail = MfiIncomeDetailsRepository.findOne(mfiIncomeDetailsReq.getId());
+//						BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetail);
+//						mfiIncomeDetail.setIsActive(true);
+//						mfiIncomeDetail.setType(2);
+						if(mfiIncomeDetail != null) {
+							mfiIncomeDetail.setMonthlyIncomeChecker(mfiIncomeDetailsReq.getMonthlyIncomeChecker());
+							mfiIncomeDetails.add(mfiIncomeDetail);
+						}
 					}
 					MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 				}
@@ -816,12 +814,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				if (mfiIncomeAndExpendMFIChecker != null) {
 					MfiExpenseExpectedIncomeDetails mfiExpenseExpectedIncomeDetails = expectedIncomeDetailRepository
 							.findOne(mfiIncomeAndExpendMFIChecker.getId());
-					mfiExpenseExpectedIncomeDetails
-							.setEducationExpense(mfiIncomeAndExpendMFIChecker.getEducationExpense());
+					mfiExpenseExpectedIncomeDetails.setHouseHoldExpense(mfiIncomeAndExpendMFIChecker.getHouseHoldExpense());
+					mfiExpenseExpectedIncomeDetails.setEducationExpense(mfiIncomeAndExpendMFIChecker.getEducationExpense());
 					mfiExpenseExpectedIncomeDetails.setMedicalExpense(mfiIncomeAndExpendMFIChecker.getMedicalExpense());
 					mfiExpenseExpectedIncomeDetails.setFoodExpense(mfiIncomeAndExpendMFIChecker.getFoodExpense());
 					mfiExpenseExpectedIncomeDetails.setClothesExpense(mfiIncomeAndExpendMFIChecker.getClothesExpense());
-
+					mfiExpenseExpectedIncomeDetails.setOtherExpense(mfiIncomeAndExpendMFIChecker.getOtherExpense());
+					
 					expectedIncomeDetailRepository.save(mfiExpenseExpectedIncomeDetails);
 				}
 
