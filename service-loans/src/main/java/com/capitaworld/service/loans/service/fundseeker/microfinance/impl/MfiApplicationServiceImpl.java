@@ -850,7 +850,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		try {
 			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
-				return getFinancialDetailsAppId(applicationId, applicantId);
+				return getFinancialDetailsAppId(applicationId, userId);
 			}
 		} catch (CibilException e) {
 			e.printStackTrace();
