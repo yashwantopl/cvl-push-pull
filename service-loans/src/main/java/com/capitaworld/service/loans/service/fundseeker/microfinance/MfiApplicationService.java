@@ -77,7 +77,11 @@ public interface MfiApplicationService {
 	public List<MFIFinancialArrangementRequest> callBureauGetFinancialDetails(Long applicationId,Long applicantId, Long userId);
 	
 	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId, Long createdBy, Long applicantId);
-	
+
+	public Boolean saveFinancialData(MFIFinancialArrangementRequest financialData, Long applicationId, Long createdBy);
+
+	public Boolean proceedFinancialFinalData(Long applicationId, Long createdBy);
+
 	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId,Long applicantId);
 
 	public boolean saveConsentFormImage(MultipartFile uploadingFile,AadharDetailsReq aadharDetailsReq);

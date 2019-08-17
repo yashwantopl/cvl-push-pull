@@ -964,6 +964,42 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
+	public Boolean saveFinancialData(MFIFinancialArrangementRequest financialData, Long applicationId, Long createdBy) {
+		MfiFinancialArrangementsDetail arrangementsDetail = new MfiFinancialArrangementsDetail();
+		BeanUtils.copyProperties(financialData, arrangementsDetail);
+		arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+		arrangementsDetail.setCreatedBy(createdBy);
+		arrangementsDetail.setCreatedDate(new Date());
+		arrangementsDetail.setIsActive(true);
+		arrangementsDetail.setIsManuallyAdded(true);
+		mfiFinancialRepository.save(arrangementsDetail);
+		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(applicationId,1);
+		mfiApplicationDetail.setCreaditWorthiness(financialData.getCreaditWorthiness());
+		detailsRepository.save(mfiApplicationDetail);
+
+		return true;
+	}
+
+	@Override
+	public Boolean proceedFinancialFinalData(Long applicationId, Long createdBy) {
+		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(applicationId,1);
+		List<MFIFinancialArrangementRequest> financialDetailsAppId = getFinancialDetailsAppId(applicationId, createdBy);
+		Double totalLoanAmount = 0.0,totalAssets = 0.0;
+		for (MFIFinancialArrangementRequest arrangementRequest:financialDetailsAppId){
+			totalLoanAmount = totalLoanAmount +  arrangementRequest.getAmount();
+		}
+		List<MfiAssetsDetailsReq> assetsDetailsByAppId = MfiAssetsDetailsRepository.findAssetsDetailsByAppId(applicationId);
+		for (MfiAssetsDetailsReq assetsDetailsReq: assetsDetailsByAppId){
+			totalAssets = totalAssets + assetsDetailsReq.getAmount();
+		}
+		Double ratio = (totalAssets - totalLoanAmount) / totalLoanAmount;
+		mfiApplicationDetail.setLoanLiabilityRatio(ratio);
+		detailsRepository.save(mfiApplicationDetail);
+
+		return true;
+	}
+
+	@Override
 	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId, Long applicantId) {
 		try {
 			return mfiFinancialRepository.getFinancialDetailsByAppId(applicationId, applicantId);
