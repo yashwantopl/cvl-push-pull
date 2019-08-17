@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.*;
 
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
-import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.BankListMfi;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -850,7 +849,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		try {
 			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
-				return getFinancialDetailsAppId(applicationId, userId);
+				return getFinancialDetailsAppId(applicationId, applicantId);
 			}
 		} catch (CibilException e) {
 			e.printStackTrace();
