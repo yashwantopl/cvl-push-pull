@@ -39,10 +39,11 @@ public class MFIFinancialArrangementRequest implements Serializable {
 	private Integer provider;
 	private Integer isLoanConsidered;
 	private Long applicantId;
-	
+    private Integer creaditWorthiness;
+    private Double loanLiabilityRatio;
+
 
 	public MFIFinancialArrangementRequest() {
-		super();
 	}
 
 	public MFIFinancialArrangementRequest(Long id,Long applicationId, String financialInstitutionName,
@@ -258,4 +259,19 @@ public class MFIFinancialArrangementRequest implements Serializable {
 		this.applicantId = applicantId;
 	}
 
+    public Integer getCreaditWorthiness() {
+        return creaditWorthiness;
+    }
+
+    public void setCreaditWorthiness(Integer creaditWorthiness) {
+        this.creaditWorthiness = creaditWorthiness;
+    }
+
+    public Double getLoanLiabilityRatio() {
+        return loanLiabilityRatio;
+    }
+
+    public void setLoanLiabilityRatio(Double loanLiabilityRatio) {
+        this.loanLiabilityRatio = loanLiabilityRatio;
+    }
 }
