@@ -819,6 +819,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					mfiExpenseExpectedIncomeDetails.setFoodExpense(mfiIncomeAndExpendMFIChecker.getFoodExpense());
 					mfiExpenseExpectedIncomeDetails.setClothesExpense(mfiIncomeAndExpendMFIChecker.getClothesExpense());
 					mfiExpenseExpectedIncomeDetails.setOtherExpense(mfiIncomeAndExpendMFIChecker.getOtherExpense());
+					mfiExpenseExpectedIncomeDetails.setMonthlyCashflow(mfiIncomeAndExpendMFIChecker.getMonthlyCashflow());
+					mfiExpenseExpectedIncomeDetails.setMonthlyExpenditure(mfiIncomeAndExpendMFIChecker.getMonthlyExpenditure());
+					mfiExpenseExpectedIncomeDetails.setMonthlyIncome(mfiIncomeAndExpendMFIChecker.getMonthlyIncome());
 					
 					expectedIncomeDetailRepository.save(mfiExpenseExpectedIncomeDetails);
 				}
