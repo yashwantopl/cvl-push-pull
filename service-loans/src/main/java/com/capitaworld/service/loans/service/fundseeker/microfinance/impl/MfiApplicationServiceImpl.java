@@ -706,8 +706,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 		} else if (type == CommonUtils.BANK_DETAILS) {
 			MfiBankDetailsReq mfiBankDetailsReq = (MfiBankDetailsReq) validationJson;
-			if (CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getBankId())
-					|| CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getAccountNo())
+			if (CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getAccountNo())
 					|| CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getAccountType())
 					|| CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getBranchName())
 					|| CommonUtils.isObjectNullOrEmpty(mfiBankDetailsReq.getIfscCode())) {
