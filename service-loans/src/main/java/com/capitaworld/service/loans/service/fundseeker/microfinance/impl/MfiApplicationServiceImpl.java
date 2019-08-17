@@ -822,12 +822,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				if (mfiIncomeAndExpendMFIChecker != null) {
 					MfiExpenseExpectedIncomeDetails mfiExpenseExpectedIncomeDetails = expectedIncomeDetailRepository
 							.findOne(mfiIncomeAndExpendMFIChecker.getId());
-					mfiExpenseExpectedIncomeDetails
-							.setEducationExpense(mfiIncomeAndExpendMFIChecker.getEducationExpense());
+					mfiExpenseExpectedIncomeDetails.setHouseHoldExpense(mfiIncomeAndExpendMFIChecker.getHouseHoldExpense());
+					mfiExpenseExpectedIncomeDetails.setEducationExpense(mfiIncomeAndExpendMFIChecker.getEducationExpense());
 					mfiExpenseExpectedIncomeDetails.setMedicalExpense(mfiIncomeAndExpendMFIChecker.getMedicalExpense());
 					mfiExpenseExpectedIncomeDetails.setFoodExpense(mfiIncomeAndExpendMFIChecker.getFoodExpense());
 					mfiExpenseExpectedIncomeDetails.setClothesExpense(mfiIncomeAndExpendMFIChecker.getClothesExpense());
-
+					mfiExpenseExpectedIncomeDetails.setOtherExpense(mfiIncomeAndExpendMFIChecker.getOtherExpense());
+					
 					expectedIncomeDetailRepository.save(mfiExpenseExpectedIncomeDetails);
 				}
 
