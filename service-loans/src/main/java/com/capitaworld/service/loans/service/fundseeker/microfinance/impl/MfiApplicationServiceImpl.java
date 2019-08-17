@@ -794,15 +794,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			if (mfiApplicantDetailsReq != null) {
 
-				if (mfiApplicantDetailsReq.getIncomeDetailsTypeTwoList() != null) {
+				if (mfiApplicantDetailsReq.getIncomeDetailsReqList() != null) {
 					List<MfiIncomeDetails> mfiIncomeDetails = new ArrayList<>();
-					for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq
-							.getIncomeDetailsTypeTwoList()) {
-						MfiIncomeDetails mfiIncomeDetail = new MfiIncomeDetails(); // MfiIncomeDetailsRepository.findOne(mfiApplicantDetailsReq.getId());
-						BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetail);
-						mfiIncomeDetail.setIsActive(true);
-						mfiIncomeDetail.setType(2);
-						mfiIncomeDetails.add(mfiIncomeDetail);
+					for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq.getIncomeDetailsReqList()) {
+						MfiIncomeDetails mfiIncomeDetail = MfiIncomeDetailsRepository.findOne(mfiIncomeDetailsReq.getId());
+//						BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetail);
+//						mfiIncomeDetail.setIsActive(true);
+//						mfiIncomeDetail.setType(2);
+						if(mfiIncomeDetail != null) {
+							mfiIncomeDetail.setMonthlyIncomeChecker(mfiIncomeDetailsReq.getMonthlyIncomeChecker());
+							mfiIncomeDetails.add(mfiIncomeDetail);
+						}
 					}
 					MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 				}
