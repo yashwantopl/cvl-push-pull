@@ -847,8 +847,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public List<MFIFinancialArrangementRequest> callBureauGetFinancialDetails(Long applicationId, Long applicantId,
-			Long userId) {
+			Long userId,Integer type) {
 
+		if(type == 1){
+			return getFinancialDetailsAppId(applicationId, userId);
+		}
 		CibilResponse cibilReportMfi = null;
 		try {
 			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
