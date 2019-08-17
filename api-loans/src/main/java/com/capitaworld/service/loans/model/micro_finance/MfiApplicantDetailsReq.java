@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.model.micro_finance;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
+
 public class MfiApplicantDetailsReq {
 
 	private Long applicationId;
@@ -318,6 +320,9 @@ public class MfiApplicantDetailsReq {
 	private Integer status;
 
 	private Integer loanTenure;
+	
+	private List<MFIFinancialArrangementRequest> financialArrangementDetails;
+	
 
 	public Integer getStatus() {
 		return status;
@@ -1759,5 +1764,15 @@ public class MfiApplicantDetailsReq {
 	public void setLoanTenure(Integer loanTenure) {
 		this.loanTenure = loanTenure;
 	}
+
+	public List<MFIFinancialArrangementRequest> getFinancialArrangementDetails() {
+		return financialArrangementDetails;
+	}
+
+	public void setFinancialArrangementDetails(List<MFIFinancialArrangementRequest> financialArrangementDetails) {
+		this.financialArrangementDetails = financialArrangementDetails;
+	}
+	
+	
 
 }

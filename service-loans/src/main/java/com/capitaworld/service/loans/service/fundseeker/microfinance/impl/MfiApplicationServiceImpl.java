@@ -112,9 +112,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	private CIBILClient cibilClient;
 
 	@Autowired
-	private FinancialArrangementDetailsService financialArrangementDetailsService;
-
-	@Autowired
 	private MFIConversationRepository mfiConversationRepository;
 
 	@Autowired
@@ -398,7 +395,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq2 = new MfiIncomeAndExpenditureReq();
 		BeanUtils.copyProperties(mfiIncomeAndExpendMFIChecker, mfiIncomeAndExpenditureReq2);
 		detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpenditureReq2);
-
+		
+		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository.getFinancialDetailsByApplicationId(applicationId);
+		detailsReq.setFinancialArrangementDetails(financialArrangementRequests);
+		
 		return detailsReq;
 
 	}
