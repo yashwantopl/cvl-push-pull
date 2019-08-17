@@ -967,13 +967,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	public Boolean saveFinancialData(MFIFinancialArrangementRequest financialData, Long createdBy) {
 		MfiFinancialArrangementsDetail arrangementsDetail = new MfiFinancialArrangementsDetail();
 		BeanUtils.copyProperties(financialData, arrangementsDetail);
-		arrangementsDetail.setApplicationId(new LoanApplicationMaster(financialData.getApplicantId()));
+		arrangementsDetail.setApplicationId(new LoanApplicationMaster(financialData.getApplicationId()));
 		arrangementsDetail.setCreatedBy(createdBy);
 		arrangementsDetail.setCreatedDate(new Date());
 		arrangementsDetail.setIsActive(true);
 		arrangementsDetail.setIsManuallyAdded(true);
 		mfiFinancialRepository.save(arrangementsDetail);
-		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(financialData.getApplicantId(),1);
+		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(financialData.getApplicationId(),1);
 		mfiApplicationDetail.setCreaditWorthiness(financialData.getCreaditWorthiness());
 		detailsRepository.save(mfiApplicationDetail);
 
