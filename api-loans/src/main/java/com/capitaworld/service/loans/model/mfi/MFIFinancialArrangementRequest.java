@@ -45,11 +45,12 @@ public class MFIFinancialArrangementRequest implements Serializable {
 		super();
 	}
 
-	public MFIFinancialArrangementRequest(Long applicationId, String financialInstitutionName,
+	public MFIFinancialArrangementRequest(Long id,Long applicationId, String financialInstitutionName,
 			String otherInstitutionName, Double amount, Date loanDate, Date reportedDate, String loanType, Double emi,
 			Long createdBy, Date createdDate, Long modifiedBy, Date modifiedDate, Double outstandingAmount,
 			Boolean isManuallyAdded, Double bureauOutstandingAmount, Double bankerOutstandingAmount,
 			Double bureauOrCalculatedEmi, Boolean isBureauEmi, Boolean isActive, Integer provider,Long applicantId) {
+		this.id = id;
 		this.applicationId = applicationId;
 		this.financialInstitutionName = financialInstitutionName;
 		this.otherInstitutionName = otherInstitutionName;
