@@ -624,13 +624,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			// for status change to 10 display in Checker this code for submit application
 			// or add in consent form
-			LoanApplicationMaster corporateLoan = loanApplicationRepository
-					.getById(loanRecomandationReq.getApplicationId());
-			corporateLoan
-					.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
+			LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(loanRecomandationReq.getApplicationId());
+			corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
 			CommonUtils.LoanType type = CommonUtils.LoanType.getType(17);
-			corporateLoan.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())
-					+ "-" + loanRecomandationReq.getApplicationId());
+			corporateLoan.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 			loanApplicationRepository.save(corporateLoan);
 
 			// create Workflow JobId and step actions
