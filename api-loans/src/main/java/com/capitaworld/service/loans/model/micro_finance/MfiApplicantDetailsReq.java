@@ -255,6 +255,7 @@ public class MfiApplicantDetailsReq {
 	private Long bankId;
 
 	private String branchName;
+	private String bankName;
 
 	private String acHolderName;
 
@@ -1772,7 +1773,12 @@ public class MfiApplicantDetailsReq {
 	public void setFinancialArrangementDetails(List<MFIFinancialArrangementRequest> financialArrangementDetails) {
 		this.financialArrangementDetails = financialArrangementDetails;
 	}
-	
-	
 
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
 }
