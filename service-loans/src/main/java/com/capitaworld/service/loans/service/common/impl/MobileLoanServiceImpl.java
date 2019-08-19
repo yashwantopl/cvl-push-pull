@@ -104,7 +104,7 @@ public class MobileLoanServiceImpl implements MobileService {
 					logger.info("Get Applicant Personal Loan Primary Details");
 					response.setData(primaryPersonalLoanService.get(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
 				
-				} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
+				} else if(loantype.getValue() == LoanType.AUTO_LOAN.getValue()) {
 					logger.info("Get Applicant Car Loan Primary Details");
 					response.setData(primaryCarLoanService.get(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
 				
@@ -151,7 +151,7 @@ public class MobileLoanServiceImpl implements MobileService {
 						primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mRetailApplicantResponse.getUserId());
 					}
 
-				} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
+				} else if(loantype.getValue() == LoanType.AUTO_LOAN.getValue()) {
 					logger.info("Start Save Applicant Car Loan Primary Details...");
 					PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryCarLoanDetailRequest.class);
 					if(!CommonUtils.isObjectNullOrEmpty(carLoanRequest)){
@@ -280,7 +280,7 @@ public class MobileLoanServiceImpl implements MobileService {
 				case HOME_LOAN:
 					applicationMaster = new PrimaryHomeLoanDetail();
 					break;
-				case CAR_LOAN:
+				case AUTO_LOAN:
 					applicationMaster = new PrimaryCarLoanDetail();
 					break;
 
@@ -377,7 +377,7 @@ public class MobileLoanServiceImpl implements MobileService {
 					// create record in fs retail applicant
 					/*saveRetailApplicantDetailForMobileApplication(applicationMaster, loanApplicationRequest);*/
 					break;
-				case CAR_LOAN:
+				case AUTO_LOAN:
 					break;
 
 				default:
