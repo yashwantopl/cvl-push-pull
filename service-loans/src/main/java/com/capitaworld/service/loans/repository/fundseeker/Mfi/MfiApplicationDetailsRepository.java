@@ -26,6 +26,9 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
  
     @Query("select mf from MFIApplicantDetail mf where mf.applicationId.id =:applicationId and  mf.type =:type and mf.isActive = true ")
     public MFIApplicantDetail findByApplicationIdAndAndTypeIsActive(@Param("applicationId") Long applicationId,@Param("type") Integer type);
+
+    @Query("select mf from MFIApplicantDetail mf where mf.applicationId.id =:applicationId and  mf.type =:type and mf.isActive = true ")
+    public List<MFIApplicantDetail> findByCoApplicationIdAndAndTypeIsActive(@Param("applicationId") Long applicationId,@Param("type") Integer type);
      
 
     @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" +
