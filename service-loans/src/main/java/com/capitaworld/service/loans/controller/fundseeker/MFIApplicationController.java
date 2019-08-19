@@ -44,8 +44,8 @@ public class MFIApplicationController {
 	 * save Aadhar detail For create new Application in MFI Application
 	 *
 	 */
-	@PostMapping(value = "/saveAdharDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile addressProofFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+	@PostMapping(value = "/saveAdharDetailsWithMultiImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveAdharDetailsWithMultiImage(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile[] addressProofFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save aadhar details");
@@ -74,11 +74,45 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	@PostMapping(value = "/saveConsentFormImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+
+	@PostMapping(value = "/saveAdharDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile addressProofFile,@RequestPart("addressFile1") MultipartFile addressProofFile1, @RequestPart("requestData") String requestData, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save aadhar details");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+			}
+			if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile) || CommonUtils.isObjectNullOrEmpty(addressProofFile)){
+				logger.warn("Data Should not be null ==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+			}
+			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+			aadharDetailsReq.setUserId(userId);
+			aadharDetailsReq.setOrgId(userOrgId);
+            MultipartFile[]  addressProofFiles = new MultipartFile[2];
+            addressProofFiles[0] = addressProofFile;
+            addressProofFiles[1] = addressProofFile1;
+			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(uploadingFile, addressProofFiles,aadharDetailsReq);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(new LoansResponse(aadharDetails.getMessage(), HttpStatus.OK.value(), aadharDetails), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving save Adhar Details Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	@PostMapping(value = "/saveConsentFormImages", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveConsentFormImages(@RequestPart("file") MultipartFile[] uploadingFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+		try {
+			// request must not be null
+			CommonDocumentUtils.startHook(logger, "save Consent Form Images Multiple details");
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if (userId == null) {
                 logger.warn("userId  can not be empty ==>" + userId);
@@ -102,6 +136,38 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
+
+    @PostMapping(value = "/saveConsentFormImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("file1") MultipartFile uploadingFile1, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+        try {
+            // request must not be null
+            CommonDocumentUtils.startHook(logger, "save Consent Form Images diff parameters details");
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if (userId == null) {
+                logger.warn("userId  can not be empty ==>" + userId);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+            }
+            if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile)|| CommonUtils.isObjectNullOrEmpty(uploadingFile1)){
+                logger.warn("Data Should not be null ==>");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+            }
+            AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+            aadharDetailsReq.setUserId(userId);
+            MultipartFile[] multipartFiles = new MultipartFile[2];
+            multipartFiles[0] = uploadingFile;
+            multipartFiles[1] = uploadingFile1;
+            boolean consentFormImage = mfiApplicationService.saveConsentFormImage(multipartFiles, aadharDetailsReq);
+            CommonDocumentUtils.endHook(logger, "save");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), consentFormImage), HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while saving save Adhar Details Details ==>", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
 
 	@GetMapping(value = "/getAadharDetails/{applicationId}/{type}")
 	public ResponseEntity<LoansResponse> getAadharDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
