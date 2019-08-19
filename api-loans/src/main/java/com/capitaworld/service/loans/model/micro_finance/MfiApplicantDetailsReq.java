@@ -250,11 +250,13 @@ public class MfiApplicantDetailsReq {
 	private Double totalMonthlyIncomeForFamily;
 	private List<MfiAssetsDetailsReq> assetsDetails;
 	private List<MfiAssetsDetailsReq> liabilityDetails;
+	private List<AadharDetailsReq> coApplicantDetails;
 	private Double totalExpense;
 
 	private Long bankId;
 
 	private String branchName;
+	private String bankName;
 
 	private String acHolderName;
 
@@ -1772,7 +1774,20 @@ public class MfiApplicantDetailsReq {
 	public void setFinancialArrangementDetails(List<MFIFinancialArrangementRequest> financialArrangementDetails) {
 		this.financialArrangementDetails = financialArrangementDetails;
 	}
-	
-	
 
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public List<AadharDetailsReq> getCoApplicantDetails() {
+		return coApplicantDetails;
+	}
+
+	public void setCoApplicantDetails(List<AadharDetailsReq> coApplicantDetails) {
+		this.coApplicantDetails = coApplicantDetails;
+	}
 }

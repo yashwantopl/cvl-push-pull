@@ -134,11 +134,27 @@ public class CamReportPdfDetailsController {
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
-			reportRequest.setType("CAMREPORTPRIMARYSIDBI");
+			reportRequest.setType("INPRINCIPLECAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			
 			if(byteArr != null){
+				try {
+					MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+					JSONObject jsonObj = new JSONObject();
+					jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
+					jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 594L);
+					jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+					jsonObj.put(ORIGINAL_FILE_NAME, "INPRINCIPLECAM"+proposalId+".pdf");
+					DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+					logger.info("InPrinciple CAM Uploaded for ==>"+applicationId);
+				} catch (Exception e) {
+					logger.info("Error while Generated InPrinciple-Latter upload to dms for==>"+applicationId);
+					logger.info("Error: "+e);
+				}
+				
 				return new ResponseEntity<LoansResponse>(new LoansResponse(SUCCESS_LITERAL,HttpStatus.OK.value(), byteArr),HttpStatus.OK);
 			}else{
+				 logger.info("Byte array not generated at inPrinciple time for ==>"+applicationId);
 				 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
 		} catch (Exception e) {

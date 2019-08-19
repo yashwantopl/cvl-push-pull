@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -394,7 +395,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq2 = new MfiIncomeAndExpenditureReq();
 		BeanUtils.copyProperties(mfiIncomeAndExpendMFIChecker, mfiIncomeAndExpenditureReq2);
 		detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpenditureReq2);
-		
+        List<MFIApplicantDetail> byCoApplicationIdAndAndTypeIsActive = detailsRepository.findByCoApplicationIdAndAndTypeIsActive(applicationId, 2);
+        List<AadharDetailsReq> aadharDetailsReqs = new ArrayList<>();
+        if(!CommonUtils.isListNullOrEmpty(byCoApplicationIdAndAndTypeIsActive)) {
+            for (MFIApplicantDetail coApplicantDetail : byCoApplicationIdAndAndTypeIsActive) {
+                AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();
+                BeanUtils.copyProperties(coApplicantDetail, aadharDetailsReq);
+                aadharDetailsReqs.add(aadharDetailsReq);
+            }
+            detailsReq.setCoApplicantDetails(aadharDetailsReqs);
+        } else {
+            detailsReq.setCoApplicantDetails(Collections.EMPTY_LIST);
+        }
 		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository.getFinancialDetailsByApplicationId(applicationId);
 		detailsReq.setFinancialArrangementDetails(financialArrangementRequests);
 		
@@ -624,13 +636,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			// for status change to 10 display in Checker this code for submit application
 			// or add in consent form
-			LoanApplicationMaster corporateLoan = loanApplicationRepository
-					.getById(loanRecomandationReq.getApplicationId());
-			corporateLoan
-					.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
+			LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(loanRecomandationReq.getApplicationId());
+			corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
 			CommonUtils.LoanType type = CommonUtils.LoanType.getType(17);
-			corporateLoan.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())
-					+ "-" + loanRecomandationReq.getApplicationId());
+			corporateLoan.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 			loanApplicationRepository.save(corporateLoan);
 
 			// create Workflow JobId and step actions
