@@ -154,8 +154,7 @@ public class FundSeekerInputRequestResponse {
     
     private Double additionalLoanAmount;
     
-    //do not open it ask nilay for that
-  /*  private Double borrowerDcldProjectedSales;*/
+    private Double borrowerDcldProjectedSales;
     
 	public Long getUserId() {
         return userId;
@@ -674,7 +673,11 @@ public class FundSeekerInputRequestResponse {
         this.productServiceDescription = productServiceDescription;
     }
 
-	@Override
+	
+    
+    
+
+    @Override
 	public String toString() {
 		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
 				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding
@@ -706,18 +709,17 @@ public class FundSeekerInputRequestResponse {
 				+ projectedTurnOverCurrFinYear + ", profitCurrFinYear=" + profitCurrFinYear
 				+ ", projectedProfitCurrFinYear=" + projectedProfitCurrFinYear + ", enhancementAmount="
 				+ enhancementAmount + ", isAdditionalAmount=" + isAdditionalAmount + ", isAllowSwitchExistingLender="
-				+ isAllowSwitchExistingLender + ", additionalLoanAmount=" + additionalLoanAmount + "]";
+				+ isAllowSwitchExistingLender + ", additionalLoanAmount=" + additionalLoanAmount
+				+ ", borrowerDcldProjectedSales=" + borrowerDcldProjectedSales + "]";
 	}
-    
-    
-/*
-    public Double getBorrowerDcldProjectedSales() {
+
+	public Double getBorrowerDcldProjectedSales() {
 		return borrowerDcldProjectedSales;
 	}
 
 	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
 		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
-	}*/
+	}
 
 	
 

@@ -635,7 +635,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					// create record in fs retail applicant
 					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
-				case CAR_LOAN:
+				case AUTO_LOAN:
 					break;
 
 				default:
@@ -1900,7 +1900,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}
 
-				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue() || loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())
+				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue() || loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue())
 					&& (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled()) || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
 						return false;
 				}
@@ -3450,10 +3450,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					.getById(applicationMaster.getProductId());
 			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
 					&& (loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
-							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
+							|| loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()))
                     && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
                             || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
-					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+					if (loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
@@ -3563,7 +3563,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationProposalMapping.getProductId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanType) && (applicationProposalMapping.getIsApplicantFinalFilled() == null || !applicationProposalMapping.getIsApplicantFinalFilled())) {
-					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+					if (loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else if(loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
@@ -4892,7 +4892,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case HOME_LOAN:
 			applicationMaster = new PrimaryHomeLoanDetail();
 			break;
-		case CAR_LOAN:
+		case AUTO_LOAN:
 			applicationMaster = new PrimaryCarLoanDetail();
 			break;
 		case UNSECURED_LOAN:
