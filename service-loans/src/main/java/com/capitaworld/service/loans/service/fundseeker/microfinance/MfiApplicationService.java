@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface MfiApplicationService {
 
-    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile addressProofFile, AadharDetailsReq aadharDetailsReq);
+    public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile[] addressProofFile, AadharDetailsReq aadharDetailsReq);
 
 	public AadharDetailsReq getAadharDetailsByAppId(Long applicationId,Integer type);
 
@@ -84,7 +84,7 @@ public interface MfiApplicationService {
 
 	public List<MFIFinancialArrangementRequest> getFinancialDetailsAppId(Long applicationId,Long applicantId);
 
-	public boolean saveConsentFormImage(MultipartFile uploadingFile,AadharDetailsReq aadharDetailsReq);
+	public boolean saveConsentFormImage(MultipartFile[] uploadingFile,AadharDetailsReq aadharDetailsReq);
 	
 	public Object saveOrUpdateAllApplicantsDetails(MultipartFile uploadingFile,MultipartFile addressProof,MultipartFile consentformImg,MultipartFile aadharImg,MfiApplicantDetailsReq mfiApplicantDetailsReq,Long userId,Long orgId);
 

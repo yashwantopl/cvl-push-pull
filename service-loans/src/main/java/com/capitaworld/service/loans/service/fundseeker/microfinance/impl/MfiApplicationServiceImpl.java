@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,6 @@ import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpecte
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiFinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -128,7 +126,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	 * @return
 	 */
 	@Override
-	public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile addressProofFile,
+	public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile[] addressProofFiles,
 			AadharDetailsReq aadharDetailsReq) {
 		MFIApplicantDetail mfiApplicationDetail;
 		// server side validation added
@@ -163,7 +161,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
 
 				// image upload to DMS S3 server Address proof Image
-				String addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+				String addressProofImgToDms = "";
+				int count = 0;
+				for (MultipartFile addressProofFile : addressProofFiles){ //multiple files for address proof
+					addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+					String imageForMfi = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+					if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
+						addressProofImgToDms = (count == 0 ? "" : (addressProofImgToDms + ",")) + imageForMfi;
+					}
+					count++;
+				}
+
 				mfiApplicationDetail.setAddressProofImg(addressProofImgToDms); // save path for Addressproof Image
 
 				detailsRepository.save(mfiApplicationDetail);
@@ -194,18 +202,28 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	/**
-	 * Consent form image save
-	 * 
-	 * @param uploadingFile
+	 *
+	 * @param multipartFiles
 	 * @param aadharDetailsReq
 	 * @return
 	 */
 	@Override
-	public boolean saveConsentFormImage(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
-		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
-		String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
-		mfiApplicationDetail.setConsentFormImg(consentImgToDms);
-		detailsRepository.save(mfiApplicationDetail);
+	public boolean saveConsentFormImage(MultipartFile[] multipartFiles, AadharDetailsReq aadharDetailsReq) {
+
+        MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+        String consentImgToDms = "";
+        int count = 0;
+        for (MultipartFile uploadingFile : multipartFiles){
+            String imageForMfi = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+            if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
+                consentImgToDms = (count == 0 ? "" : (consentImgToDms + ",")) + imageForMfi;
+            }
+			count++;
+        }
+
+        mfiApplicationDetail.setConsentFormImg(consentImgToDms);
+        detailsRepository.save(mfiApplicationDetail);
+
 		return true;
 	}
 
@@ -238,7 +256,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			if (response != null) {
 				logger.debug("uploadImageForMfi() :: response is not null");
-				return response.getFilePath();
+				if(!CommonUtils.isObjectNullOrEmpty(response.getFilePath())) {
+					return response.getFilePath();
+				} else {
+					logger.debug("uploadImageForMfi() :: error while upload Files response not 200");
+					return null;
+				}
 			} else {
 				logger.debug("uploadImageForMfi() :: response is null");
 				return null;
