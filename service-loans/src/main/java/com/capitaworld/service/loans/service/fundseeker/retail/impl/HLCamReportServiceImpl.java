@@ -76,6 +76,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
@@ -166,6 +167,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
 	
 	@Autowired
 	private ScoringClient scoringClient;
@@ -650,6 +654,15 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					}
 				}catch (Exception e) {
 					logger.error("Error/Exception while fetching name Of Employer in CoApplicants in HL Cam Report of applicationId==>{} with EmploymentType==>{}  and EmploymentWith=={}" , applicationId, coApplicantDetail.getEmploymentType() ,coApplicantDetail.getEmploymentWith());
+				}
+				
+				//INCOME DETAILS - NET INCOME Of Co-Applicant
+				try {
+					List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = coApplicantIncomeService.getAllByCoAppId(coApplicantDetail.getId());
+					
+					coApp.put("incomeDetailsOfCoApp", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null );
+				} catch (Exception e) {
+					logger.error("Error while getting income details : ",e);
 				}
 				
 				ITRBasicDetailsResponse itrBasicDetailsResponse = new ITRBasicDetailsResponse();
