@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.utils.EncryptionUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class MFIApplicationController {
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
-			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
 			aadharDetailsReq.setUserId(userId);
 			aadharDetailsReq.setOrgId(userOrgId);
 			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(uploadingFile, addressProofFile,aadharDetailsReq);
@@ -152,7 +153,7 @@ public class MFIApplicationController {
                 logger.warn("Data Should not be null ==>");
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
             }
-            AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+            AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
             aadharDetailsReq.setUserId(userId);
             MultipartFile[] multipartFiles = new MultipartFile[2];
             multipartFiles[0] = uploadingFile;
@@ -636,7 +637,7 @@ public class MFIApplicationController {
 		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId,type);
 			CommonDocumentUtils.endHook(logger, "getCashFlowAssesmentByAppId");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
-					HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);
+					HttpStatus.OK.value(),  new EncryptionUtils().encryptionWithKey(mfiLoanAssessmentDetailsReq.toString())), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while get CashFlow Assesment By AppId ==>", e);
