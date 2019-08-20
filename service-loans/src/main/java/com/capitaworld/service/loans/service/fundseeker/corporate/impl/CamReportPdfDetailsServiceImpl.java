@@ -1343,7 +1343,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//gstRelatedParty Data Fetch
 		try {
 			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", !CommonUtils.isObjectNullOrEmpty(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
