@@ -474,8 +474,7 @@ public class AutoLoanParameterServiceImpl implements AutoLoanParameterService {
 
 	@Override
 	public Boolean saveMasterFromTemp(Long mappingId) throws LoansException {
-		// TODO Auto-generated method stub
-		return null;
+		return saveOrUpdate(getTemp(mappingId, null, null));
 	}
 	
 	private void saveCountry(AutoLoanParameterRequest autoLoanParameterRequest) {
