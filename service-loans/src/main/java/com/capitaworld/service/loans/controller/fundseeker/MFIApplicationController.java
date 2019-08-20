@@ -892,7 +892,7 @@ public class MFIApplicationController {
                 logger.warn("userId  can not be empty ==>" + userId);
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
-            Long applicationId = Long.valueOf(new EncryptionUtils().encryptionWithKey(applicationIdEnc));
+            Long applicationId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicationIdEnc));
 			return new ResponseEntity<>(new LoansResponse("Saved successfully", HttpStatus.OK.value(), mfiApplicationService.proceedFinancialFinalData(applicationId, userId)), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
