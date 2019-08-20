@@ -8,101 +8,108 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.retail.CarLoanParameterRequest;
-import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
+import com.capitaworld.service.loans.model.retail.AutoLoanParameterRequest;
+import com.capitaworld.service.loans.service.fundprovider.AutoLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
-@RequestMapping("/car_parameter")
-public class CarLoanParameterController {
+@RequestMapping("/auto_parameter")
+public class AutoLoanParameterController {
 
-	private static final Logger logger = LoggerFactory.getLogger(CarLoanParameterController.class.getName());
-	
+	private static final Logger logger = LoggerFactory.getLogger(AutoLoanParameterController.class.getName());
 	@Autowired
-	private CarLoanParameterService carLoanParameterService;
+	private AutoLoanParameterService autoLoanParameterService;
 
-	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody CarLoanParameterRequest  carLoanParameterRequest,HttpServletRequest request) {
-		// request must not be null
+	@PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> save(@RequestBody AutoLoanParameterRequest  autoLoanParameterRequest,HttpServletRequest request) {
 		CommonDocumentUtils.startHook(logger, "save");
-		if (carLoanParameterRequest == null) {
-			logger.warn("carLoanParameterRequest Object can not be empty ==>", carLoanParameterRequest);
+		// request must not be null
+		if (autoLoanParameterRequest == null) {
+			logger.warn("autoLoanParameterRequest Object can not be empty ==>{}", autoLoanParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 
-		if(carLoanParameterRequest.getId()==null)
+		if(autoLoanParameterRequest.getId()==null)
 		{
-			logger.warn("carLoanParameterRequest id can not be empty ==>", carLoanParameterRequest);
+			logger.warn("autoLoanParameterRequest id can not be empty ==>{}", autoLoanParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		
-		
+		if(autoLoanParameterRequest.getId()==null)
+		{
+			logger.warn("user id can not be empty  ==>{}", autoLoanParameterRequest);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		}
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		if(userId==null)
 		{
-			logger.warn("userId  id can not be empty ==>", userId);
+			logger.warn("userId  id can not be empty ==>{}", userId);
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
-		carLoanParameterRequest.setUserId(userId);
-		boolean response = carLoanParameterService.saveOrUpdate(carLoanParameterRequest);
+		autoLoanParameterRequest.setUserId(userId);
+		
+		boolean response = autoLoanParameterService.saveOrUpdate(autoLoanParameterRequest);
 		if (response) {
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} else {
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 	
-	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "get");
 		try {
 			if (id == null) {
-				logger.warn("ID Require to get car loan parameter ==>" + id);
-				CommonDocumentUtils.endHook(logger, "get");
-				return new ResponseEntity<LoansResponse>(
+				logger.warn("ID Require to get Auto loan parameter ==>{}" , id);
+				CommonDocumentUtils.endHook(logger, "end");
+				return new ResponseEntity<>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			CarLoanParameterRequest parameterRequest= carLoanParameterService.getCarLoanParameterRequest(id);
+			AutoLoanParameterRequest parameterRequest= autoLoanParameterService.getAutoLoanParameterRequest(id);
 			if (parameterRequest != null) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(parameterRequest);
-				CommonDocumentUtils.endHook(logger, "get");
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				CommonDocumentUtils.endHook(logger, "end");
+				return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 			} else {
-				CommonDocumentUtils.endHook(logger, "get");
-				return new ResponseEntity<LoansResponse>(
+				CommonDocumentUtils.endHook(logger, "end");
+				return new ResponseEntity<>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting car Loan Details==>", e);
-			CommonDocumentUtils.endHook(logger, "get");
-			return new ResponseEntity<LoansResponse>(
+			logger.error("Error while getting Auto Loan Details==>", e);
+			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
