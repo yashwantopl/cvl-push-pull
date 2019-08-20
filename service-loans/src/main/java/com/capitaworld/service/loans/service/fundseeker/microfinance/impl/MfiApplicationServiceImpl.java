@@ -39,6 +39,9 @@ import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiFinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
@@ -64,8 +67,11 @@ import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpecte
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiFinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
+import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
+import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.enums.ParticularsMfi;
 import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
@@ -119,6 +125,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private ApplicationSequenceService applicationSequenceService;
+	
+	@Autowired
+	private LoanSanctionService loanSanctionService;
+	
+	@Autowired
+	private LoanDisbursementService loanDisbursementService;
 
 	/**
 	 * Save basic profile details with images
@@ -437,6 +449,16 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
         }
 		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository.getFinancialDetailsByApplicationId(applicationId);
 		detailsReq.setFinancialArrangementDetails(financialArrangementRequests);
+		
+		try {
+			LoanSanctionRequest loanSanctionRequest = loanSanctionService.getSanctionDetail(applicationId);
+			List<LoanDisbursementRequest> disbursementList= loanDisbursementService.getDisbursedList(applicationId);
+			detailsReq.setSanctionDetail(loanSanctionRequest);
+			detailsReq.setDisbursementDetails(disbursementList);
+			
+		} catch (LoansException e) {
+			logger.error("Exception : "+e.getMessage());
+		}
 		
 		return detailsReq;
 
