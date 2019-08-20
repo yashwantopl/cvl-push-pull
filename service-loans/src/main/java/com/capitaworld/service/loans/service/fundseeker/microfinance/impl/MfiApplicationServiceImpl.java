@@ -149,8 +149,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 			if (applicationId != null) {
 				mfiApplicationDetail = new MFIApplicantDetail();
-				BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-				mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
+                String addressProofNo = aadharDetailsReq.getAddressProofNo();
+                BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
+                String encryptionWithKey = new EncryptionUtils().encryptionWithKey(addressProofNo);
+                mfiApplicationDetail.setAddressProofNo(encryptionWithKey);
+                mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
 				mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 				mfiApplicationDetail.setStatus(CommonUtils.PENDING);
 				mfiApplicationDetail.setIsActive(true);
