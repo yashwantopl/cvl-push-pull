@@ -1428,23 +1428,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
 	}
 
-//	public Double getTotalExpense() {
-//		return totalExpense;
-//	}
-//
-//	public void setTotalExpense(Double totalExpense) {
-//		this.totalExpense = totalExpense;
-//	}
-//
-//	public Double getTotalMonthlyIncomeForFamily() {
-//		return totalMonthlyIncomeForFamily;
-//	}
-//
-//	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
-//		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
-//	}
-
-	
 	public Double getLoanAmountRecomandation() {
 		return loanAmountRecomandation;
 	}
@@ -1531,5 +1514,151 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setAadharImg(String aadharImg) {
 		this.aadharImg = aadharImg;
+	}
+
+
+	@Override
+	public String toString() {
+		return "MFIApplicantDetail{" +
+				"id=" + id +
+				", applicationId=" + applicationId +
+				", nameAsPerAadharCard='" + nameAsPerAadharCard + '\'' +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", middleName='" + middleName + '\'' +
+				", birthDate=" + birthDate +
+				", genderId=" + genderId +
+				", mobile='" + mobile + '\'' +
+				", email='" + email + '\'' +
+				", maritalStatusId=" + maritalStatusId +
+				", addressSameAsAadhar=" + addressSameAsAadhar +
+				", currentDistrict='" + currentDistrict + '\'' +
+				", aadharDistrict='" + aadharDistrict + '\'' +
+				", currentHouse='" + currentHouse + '\'' +
+				", aadharHouse='" + aadharHouse + '\'' +
+				", currentLandmark='" + currentLandmark + '\'' +
+				", aadharLandmark='" + aadharLandmark + '\'' +
+				", currentLocation='" + currentLocation + '\'' +
+				", aadharLocation='" + aadharLocation + '\'' +
+				", currentState='" + currentState + '\'' +
+				", aadharState='" + aadharState + '\'' +
+				", currentStreet='" + currentStreet + '\'' +
+				", aadharStreet='" + aadharStreet + '\'' +
+				", currentVtc='" + currentVtc + '\'' +
+				", aadharVtc='" + aadharVtc + '\'' +
+				", aadharSubdist='" + aadharSubdist + '\'' +
+				", currentSubdist='" + currentSubdist + '\'' +
+				", aadharPo='" + aadharPo + '\'' +
+				", currentPo='" + currentPo + '\'' +
+				", aadharCareOf='" + aadharCareOf + '\'' +
+				", addressPincode='" + addressPincode + '\'' +
+				", aadharPincode='" + aadharPincode + '\'' +
+				", fatherName='" + fatherName + '\'' +
+				", motherName='" + motherName + '\'' +
+				", spouseName='" + spouseName + '\'' +
+				", spouseBirthDate=" + spouseBirthDate +
+				", spouseMobile='" + spouseMobile + '\'' +
+				", noDependent=" + noDependent +
+				", nomineeName='" + nomineeName + '\'' +
+				", nomineeBirthDate=" + nomineeBirthDate +
+				", relationWithNomineeId=" + relationWithNomineeId +
+				", nomineePincode='" + nomineePincode + '\'' +
+				", religion=" + religion +
+				", educationQualification=" + educationQualification +
+				", landHolding=" + landHolding +
+				", nameOfFirm='" + nameOfFirm + '\'' +
+				", businessType=" + businessType +
+				", houseType=" + houseType +
+				", loanAmountRequired=" + loanAmountRequired +
+				", costOfProject=" + costOfProject +
+				", costOfEquipment=" + costOfEquipment +
+				", workingCapOfEquipment=" + workingCapOfEquipment +
+				", totalCostEquipment=" + totalCostEquipment +
+				", promoterContribution=" + promoterContribution +
+				", loanRequiredFromSidbi=" + loanRequiredFromSidbi +
+				", totalMeanFinance=" + totalMeanFinance +
+				", totalCashFlow=" + totalCashFlow +
+				", repaymentFrequency=" + repaymentFrequency +
+				", insurenceRequired=" + insurenceRequired +
+				", insurenceCompanyName='" + insurenceCompanyName + '\'' +
+				", insurencePremium=" + insurencePremium +
+				", createdBy=" + createdBy +
+				", createdDate=" + createdDate +
+				", isActive=" + isActive +
+				", modifiedBy=" + modifiedBy +
+				", modifiedDate=" + modifiedDate +
+				", loanType=" + loanType +
+				", nomineeState='" + nomineeState + '\'' +
+				", nomineeCity='" + nomineeCity + '\'' +
+				", nomineeDistrict='" + nomineeDistrict + '\'' +
+				", nomineeLocation='" + nomineeLocation + '\'' +
+				", nomineeHouseNo='" + nomineeHouseNo + '\'' +
+				", nomineeLandmark='" + nomineeLandmark + '\'' +
+				", academicReligion=" + academicReligion +
+				", academicCaste=" + academicCaste +
+				", isAcademicLifeInsurance=" + isAcademicLifeInsurance +
+				", houseOwnership=" + houseOwnership +
+				", areaType=" + areaType +
+				", businessPremises=" + businessPremises +
+				", expInSameLine=" + expInSameLine +
+				", academicSumInsured=" + academicSumInsured +
+				", type=" + type +
+				", remarks='" + remarks + '\'' +
+				", isPersonalDetailsFilled=" + isPersonalDetailsFilled +
+				", isFamilyDetailsFilled=" + isFamilyDetailsFilled +
+				", isNomineeDetailsFilled=" + isNomineeDetailsFilled +
+				", isAcadamicDetailsFilled=" + isAcadamicDetailsFilled +
+				", isBankDetailsFilled=" + isBankDetailsFilled +
+				", isIncomeDetailsFilled=" + isIncomeDetailsFilled +
+				", isFamilyIncomeFilled=" + isFamilyIncomeFilled +
+				", isFamilyExpenseFilled=" + isFamilyExpenseFilled +
+				", isExpectedIncomeFilled=" + isExpectedIncomeFilled +
+				", isPPIFilled=" + isPPIFilled +
+				", isProjectDetailsFilled=" + isProjectDetailsFilled +
+				", isApplyLoanFilled=" + isApplyLoanFilled +
+				", isCostProjectFilled=" + isCostProjectFilled +
+				", isMeanFinanceFilled=" + isMeanFinanceFilled +
+				", isCashFlowDetailsFilled=" + isCashFlowDetailsFilled +
+				", isAssetsDetailsFilled=" + isAssetsDetailsFilled +
+				", isCurrentAssetsFilled=" + isCurrentAssetsFilled +
+				", isFixedAssetsFilled=" + isFixedAssetsFilled +
+				", isCurrntLiabilityFilled=" + isCurrntLiabilityFilled +
+				", isRepaymentDetailsFilled=" + isRepaymentDetailsFilled +
+				", isConsentFormFilled=" + isConsentFormFilled +
+				", addressProofType=" + addressProofType +
+				", addressProofNo='" + addressProofNo + '\'' +
+				", addressProofImg='" + addressProofImg + '\'' +
+				", consentFormImg='" + consentFormImg + '\'' +
+				", profileImg='" + profileImg + '\'' +
+				", aadharImg='" + aadharImg + '\'' +
+				", ppiNoFamilyMember=" + ppiNoFamilyMember +
+				", ppiAcadamicHeadFamily=" + ppiAcadamicHeadFamily +
+				", ppiRafrigeratorInFamily=" + ppiRafrigeratorInFamily +
+				", ppiStoveInFamily=" + ppiStoveInFamily +
+				", ppiPressureCookerInFamily=" + ppiPressureCookerInFamily +
+				", ppiTvInFamily=" + ppiTvInFamily +
+				", ppiFanInFamily=" + ppiFanInFamily +
+				", ppiVehicleInFamily=" + ppiVehicleInFamily +
+				", ppiDressingTableInFamily=" + ppiDressingTableInFamily +
+				", ppiOtherTableInFamily=" + ppiOtherTableInFamily +
+				", purposeOfLoan=" + purposeOfLoan +
+				", clientType=" + clientType +
+				", isBusinessPremiseVisited=" + isBusinessPremiseVisited +
+				", repaymentTrack=" + repaymentTrack +
+				", creaditWorthiness=" + creaditWorthiness +
+				", loanLiabilityRatio=" + loanLiabilityRatio +
+				", competition=" + competition +
+				", loanAmountRecomandation=" + loanAmountRecomandation +
+				", tenureRecomandation=" + tenureRecomandation +
+				", moratoriumRecomandation=" + moratoriumRecomandation +
+				", interestRateRecomandation=" + interestRateRecomandation +
+				", installmentRecomandation=" + installmentRecomandation +
+				", isLoanassessmentDetailsFilled=" + isLoanassessmentDetailsFilled +
+				", loanAmountMFIChecker=" + loanAmountMFIChecker +
+				", loanTenure=" + loanTenure +
+				", loanAmountBankMaker=" + loanAmountBankMaker +
+				", jobId=" + jobId +
+				", status=" + status +
+				'}';
 	}
 }
