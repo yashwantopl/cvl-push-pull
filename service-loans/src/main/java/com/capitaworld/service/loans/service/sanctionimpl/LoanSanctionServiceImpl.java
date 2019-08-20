@@ -502,4 +502,23 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		}
 	}
 
+
+
+	@Override
+	public LoanSanctionRequest getSanctionDetail(Long applicationId) throws LoansException {
+		LoanSanctionRequest loanSanctionRequest = null;
+		
+		LoanSanctionDomain loanSanctionDomain = loanSanctionRepository.findByAppliationId(applicationId);
+		if(loanSanctionDomain != null) {
+			loanSanctionRequest = new LoanSanctionRequest();
+			loanSanctionRequest.setSanctionDate(loanSanctionDomain.getSanctionDate());
+			loanSanctionRequest.setSanctionAmount(loanSanctionDomain.getSanctionAmount());
+			loanSanctionRequest.setRoi(loanSanctionDomain.getRoi());
+			loanSanctionRequest.setTenure(loanSanctionDomain.getTenure());
+			loanSanctionRequest.setRemark(loanSanctionDomain.getRemark());
+		}
+		
+		return loanSanctionRequest;
+	}
+
 }
