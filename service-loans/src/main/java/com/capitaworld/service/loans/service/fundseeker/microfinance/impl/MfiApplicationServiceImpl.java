@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
 import com.capitaworld.service.oneform.enums.BankListMfi;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -106,6 +107,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private DMSClient dmsClient;
+
 	@Autowired
 	private CIBILClient cibilClient;
 
@@ -653,9 +655,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			return loansResponse;
 		}
 		if (null != loanRecomandationReq.getId()) {
-			MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(loanRecomandationReq.getId());
-			BeanUtils.copyProperties(loanRecomandationReq, mfiApplicationDetail);
-			detailsRepository.save(mfiApplicationDetail);
+			//for save Loan recomandation
+			MFIApplicantDetail mfiApplicationDetail =  detailsRepository.findByAppIdAndType(loanRecomandationReq.getApplicationId(), 1);
 
 			// for status change to 10 display in Checker this code for submit application
 			// or add in consent form
@@ -675,7 +676,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			request.setRoleIds(Arrays.asList(17l)); // role statically 17 added for mfi checker
 			Object activeButtons = getActiveButtons(request); // job created or get workflow steps
 			WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
-			loansResponse.setData(objectFromMap.getStep().getStepActions()); // step actions return
+			BeanUtils.copyProperties(loanRecomandationReq, mfiApplicationDetail);
+			mfiApplicationDetail.setJobId(objectFromMap.getJob().getId());
+			detailsRepository.save(mfiApplicationDetail);
+
+			//response back to User JobId and Steps return
+			// step actions return with encryption
+			loansResponse.setData(new EncryptionUtils().convertToDatabaseColumn(objectFromMap.getStep().getStepActions().toString()));
 			loansResponse.setId(objectFromMap.getJob().getId()); // jobId for submit current step and action
 			loansResponse.setMessage("Successfully Saved.");
 			loansResponse.setStatus(HttpStatus.OK.value());
@@ -908,10 +915,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			WorkflowResponse workflowResponse = workflowClient.createJob(workflowRequest);
 			if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
 				jobId = Long.valueOf(workflowResponse.getData().toString());
-				MFIApplicantDetail mfiApplicationDetail = detailsRepository
-						.findByAppIdAndType(workflowRequest.getApplicationId(), 1);
-				mfiApplicationDetail.setJobId(jobId);
-				detailsRepository.save(mfiApplicationDetail);
 			}
 		}
 		try {
