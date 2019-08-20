@@ -684,7 +684,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			//response back to User JobId and Steps return
 			// step actions return with encryption
-			loansResponse.setData(new EncryptionUtils().encryptionWithKey(objectFromMap.getStep().getStepActions().toString()));
+			String stringfromObject = null,encryption = null;
+			try {
+				stringfromObject = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getStringfromObject(objectFromMap.getStep().getStepActions());
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.info("Error while convert into string");
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(stringfromObject)){
+				encryption = new EncryptionUtils().encryptionWithKey(stringfromObject);
+			}
+			loansResponse.setData(encryption);
 			loansResponse.setId(objectFromMap.getJob().getId()); // jobId for submit current step and action
 			loansResponse.setMessage("Successfully Saved.");
 			loansResponse.setStatus(HttpStatus.OK.value());
