@@ -321,7 +321,7 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), AUTO_LOAN(12,"Auto Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
+		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), AUTO_LOAN(12,"Auto Loan","AL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
 				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl"), MFI(17,"Micro Finance Loan","mfi"), AGRI(18,"Agriculture","agri");
 		private int value;
 		private String name;
@@ -687,7 +687,6 @@ public class CommonUtils {
 		public static final Integer DISTRICT = 8;
 		public static final Integer CROP = 9;
 		public static final Integer IRRIGATED_UNIRRIGATED = 10;
-		public static final Integer REPAYMENT_MODE = 11;
 	}
 	
 
@@ -1040,7 +1039,7 @@ public class CommonUtils {
 			return LoanType.TERM_LOAN;
 		} else if ("HL".equalsIgnoreCase(code)) {
 			return LoanType.HOME_LOAN;
-		} else if ("CL".equalsIgnoreCase(code)) {
+		} else if ("AL".equalsIgnoreCase(code)) {
 			return LoanType.AUTO_LOAN;
 		} else if ("PL".equalsIgnoreCase(code)) {
 			return LoanType.PERSONAL_LOAN;

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
 import com.capitaworld.service.oneform.enums.BankListMfi;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -63,7 +64,6 @@ import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpecte
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiFinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -107,6 +107,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Autowired
 	private DMSClient dmsClient;
+
 	@Autowired
 	private CIBILClient cibilClient;
 
@@ -127,7 +128,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	 * @return
 	 */
 	@Override
-	public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile addressProofFile,
+	public AadharDetailsReq saveOrUpdateAadharDetails(MultipartFile uploadingFile, MultipartFile[] addressProofFiles,
 			AadharDetailsReq aadharDetailsReq) {
 		MFIApplicantDetail mfiApplicationDetail;
 		// server side validation added
@@ -148,8 +149,11 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 			if (applicationId != null) {
 				mfiApplicationDetail = new MFIApplicantDetail();
-				BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
-				mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
+                String addressProofNo = aadharDetailsReq.getAddressProofNo();
+                BeanUtils.copyProperties(aadharDetailsReq, mfiApplicationDetail);
+                String encryptionWithKey = new EncryptionUtils().encryptionWithKey(addressProofNo);
+                mfiApplicationDetail.setAddressProofNo(encryptionWithKey);
+                mfiApplicationDetail.setAddressProofType(aadharDetailsReq.getAddressProfType());
 				mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 				mfiApplicationDetail.setStatus(CommonUtils.PENDING);
 				mfiApplicationDetail.setIsActive(true);
@@ -162,7 +166,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
 
 				// image upload to DMS S3 server Address proof Image
-				String addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+				String addressProofImgToDms = "";
+				int count = 0;
+				for (MultipartFile addressProofFile : addressProofFiles){ //multiple files for address proof
+					addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+					String imageForMfi = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
+					if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
+						addressProofImgToDms = (count == 0 ? "" : (addressProofImgToDms + ",")) + imageForMfi;
+					}
+					count++;
+				}
+
 				mfiApplicationDetail.setAddressProofImg(addressProofImgToDms); // save path for Addressproof Image
 
 				detailsRepository.save(mfiApplicationDetail);
@@ -193,18 +207,28 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	/**
-	 * Consent form image save
-	 * 
-	 * @param uploadingFile
+	 *
+	 * @param multipartFiles
 	 * @param aadharDetailsReq
 	 * @return
 	 */
 	@Override
-	public boolean saveConsentFormImage(MultipartFile uploadingFile, AadharDetailsReq aadharDetailsReq) {
-		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
-		String consentImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
-		mfiApplicationDetail.setConsentFormImg(consentImgToDms);
-		detailsRepository.save(mfiApplicationDetail);
+	public boolean saveConsentFormImage(MultipartFile[] multipartFiles, AadharDetailsReq aadharDetailsReq) {
+
+        MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(aadharDetailsReq.getId());
+        String consentImgToDms = "";
+        int count = 0;
+        for (MultipartFile uploadingFile : multipartFiles){
+            String imageForMfi = uploadImageForMfi(uploadingFile, aadharDetailsReq.getUserId());
+            if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
+                consentImgToDms = (count == 0 ? "" : (consentImgToDms + ",")) + imageForMfi;
+            }
+			count++;
+        }
+
+        mfiApplicationDetail.setConsentFormImg(consentImgToDms);
+        detailsRepository.save(mfiApplicationDetail);
+
 		return true;
 	}
 
@@ -237,7 +261,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			if (response != null) {
 				logger.debug("uploadImageForMfi() :: response is not null");
-				return response.getFilePath();
+				if(!CommonUtils.isObjectNullOrEmpty(response.getFilePath())) {
+					return response.getFilePath();
+				} else {
+					logger.debug("uploadImageForMfi() :: error while upload Files response not 200");
+					return null;
+				}
 			} else {
 				logger.debug("uploadImageForMfi() :: response is null");
 				return null;
@@ -394,7 +423,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq2 = new MfiIncomeAndExpenditureReq();
 		BeanUtils.copyProperties(mfiIncomeAndExpendMFIChecker, mfiIncomeAndExpenditureReq2);
 		detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpenditureReq2);
-		
+        List<MFIApplicantDetail> byCoApplicationIdAndAndTypeIsActive = detailsRepository.findByCoApplicationIdAndAndTypeIsActive(applicationId, 2);
+        List<AadharDetailsReq> aadharDetailsReqs = new ArrayList<>();
+        if(!CommonUtils.isListNullOrEmpty(byCoApplicationIdAndAndTypeIsActive)) {
+            for (MFIApplicantDetail coApplicantDetail : byCoApplicationIdAndAndTypeIsActive) {
+                AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();
+                BeanUtils.copyProperties(coApplicantDetail, aadharDetailsReq);
+                aadharDetailsReqs.add(aadharDetailsReq);
+            }
+            detailsReq.setCoApplicantDetails(aadharDetailsReqs);
+        } else {
+            detailsReq.setCoApplicantDetails(Collections.EMPTY_LIST);
+        }
 		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository.getFinancialDetailsByApplicationId(applicationId);
 		detailsReq.setFinancialArrangementDetails(financialArrangementRequests);
 		
@@ -618,19 +658,15 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			return loansResponse;
 		}
 		if (null != loanRecomandationReq.getId()) {
-			MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(loanRecomandationReq.getId());
-			BeanUtils.copyProperties(loanRecomandationReq, mfiApplicationDetail);
-			detailsRepository.save(mfiApplicationDetail);
+
+			MFIApplicantDetail mfiApplicationDetail =  detailsRepository.findByAppIdAndType(loanRecomandationReq.getApplicationId(), 1);
 
 			// for status change to 10 display in Checker this code for submit application
 			// or add in consent form
-			LoanApplicationMaster corporateLoan = loanApplicationRepository
-					.getById(loanRecomandationReq.getApplicationId());
-			corporateLoan
-					.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
+			LoanApplicationMaster corporateLoan = loanApplicationRepository.getById(loanRecomandationReq.getApplicationId());
+			corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.MFI_PENDING));
 			CommonUtils.LoanType type = CommonUtils.LoanType.getType(17);
-			corporateLoan.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())
-					+ "-" + loanRecomandationReq.getApplicationId());
+			corporateLoan.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 			loanApplicationRepository.save(corporateLoan);
 
 			// create Workflow JobId and step actions
@@ -643,7 +679,25 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			request.setRoleIds(Arrays.asList(17l)); // role statically 17 added for mfi checker
 			Object activeButtons = getActiveButtons(request); // job created or get workflow steps
 			WorkflowJobsTrackerRequest objectFromMap = (WorkflowJobsTrackerRequest) activeButtons;
-			loansResponse.setData(objectFromMap.getStep().getStepActions()); // step actions return
+
+			//for save Loan recomandation
+			BeanUtils.copyProperties(loanRecomandationReq, mfiApplicationDetail);
+			mfiApplicationDetail.setJobId(objectFromMap.getJob().getId());
+			detailsRepository.save(mfiApplicationDetail);
+
+			//response back to User JobId and Steps return
+			// step actions return with encryption
+			String stringfromObject = null,encryption = null;
+			try {
+				stringfromObject = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getStringfromObject(objectFromMap.getStep().getStepActions());
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.info("Error while convert into string");
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(stringfromObject)){
+				encryption = new EncryptionUtils().encryptionWithKey(stringfromObject);
+			}
+			loansResponse.setData(encryption);
 			loansResponse.setId(objectFromMap.getJob().getId()); // jobId for submit current step and action
 			loansResponse.setMessage("Successfully Saved.");
 			loansResponse.setStatus(HttpStatus.OK.value());
@@ -876,10 +930,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			WorkflowResponse workflowResponse = workflowClient.createJob(workflowRequest);
 			if (!com.capitaworld.service.scoring.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
 				jobId = Long.valueOf(workflowResponse.getData().toString());
-				MFIApplicantDetail mfiApplicationDetail = detailsRepository
-						.findByAppIdAndType(workflowRequest.getApplicationId(), 1);
-				mfiApplicationDetail.setJobId(jobId);
-				detailsRepository.save(mfiApplicationDetail);
 			}
 		}
 		try {
