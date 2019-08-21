@@ -181,7 +181,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				String addressProofImgToDms = "";
 				int count = 0;
 				for (MultipartFile addressProofFile : addressProofFiles){ //multiple files for address proof
-					addressProofImgToDms = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
 					String imageForMfi = uploadImageForMfi(addressProofFile, aadharDetailsReq.getUserId());
 					if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
 						addressProofImgToDms = (count == 0 ? "" : (addressProofImgToDms + ",")) + imageForMfi;
@@ -921,23 +920,66 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public List<MFIFinancialArrangementRequest> callBureauGetFinancialDetails(Long applicationId, Long applicantId,
+	public LoansResponse callBureauGetFinancialDetails(Long applicationId, Long applicantId,
 			Long userId,Integer type) {
-
+		LoansResponse loansResponse = new LoansResponse();
+		String bureauCall = null,encryption=null;
 		if(type == 1){
-			return getFinancialDetailsAppId(applicationId, userId);
+			List<MFIFinancialArrangementRequest> arrangementRequests = getFinancialDetailsAppId(applicationId, userId);
+			try {
+				bureauCall = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getStringfromObject(arrangementRequests);
+				if(!CommonUtils.isObjectNullOrEmpty(bureauCall)){
+					encryption = new EncryptionUtils().encryptionWithKey(bureauCall);
+					loansResponse.setMessage("Successfully Fetch Existing Loan details.");
+					loansResponse.setData(encryption);
+					loansResponse.setStatus(HttpStatus.OK.value());
+					return loansResponse;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.info("Error while convert into string Call Bureau");
+			}
+			loansResponse.setMessage("Something went wrong");
+			loansResponse.setData(null);
+			loansResponse.setStatus(HttpStatus.OK.value());
+			return loansResponse;
+
 		}
 		CibilResponse cibilReportMfi = null;
+
 		try {
 			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
-				return getFinancialDetailsAppId(applicationId, userId);
+				CibilResponse data = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) cibilReportMfi.getData(), CibilResponse.class);
+				if(data.getStatus() !=  200){
+					loansResponse.setMessage(data.getMessage());
+					loansResponse.setStatus(data.getStatus());
+					loansResponse.setData(cibilReportMfi.getData());
+					return loansResponse;
+				}
+
+				List<MFIFinancialArrangementRequest> financialDetailsAppId = getFinancialDetailsAppId(applicationId, userId);
+				bureauCall = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getStringfromObject(financialDetailsAppId);
+				if(!CommonUtils.isObjectNullOrEmpty(bureauCall)) {
+					encryption = new EncryptionUtils().encryptionWithKey(bureauCall);
+					loansResponse.setMessage("Successfully Fetch Existing Loan details and bureau report.");
+					loansResponse.setStatus(HttpStatus.OK.value());
+					loansResponse.setData(encryption);
+					return loansResponse;
+				}
 			}
 		} catch (CibilException e) {
 			e.printStackTrace();
 			logger.info("CibilException error while getReport");
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.info("IOException for generate report");
 		}
-		return Collections.EMPTY_LIST;
+		loansResponse.setMessage("Something went wrong while call cibil report");
+		loansResponse.setData(null);
+		loansResponse.setStatus(HttpStatus.OK.value());
+		return loansResponse;
 	}
 
 	public Object getActiveButtons(WorkflowRequest workflowRequest) {

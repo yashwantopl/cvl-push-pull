@@ -786,20 +786,9 @@ public class MFIApplicationController {
 			}
 			Long applicationId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicationEncId));
 			Long applicantId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicantEncId));
-			List<MFIFinancialArrangementRequest> mfiFinancialArrangementRequests = mfiApplicationService.callBureauGetFinancialDetails(applicationId, applicantId, userId, type);
-			String bureauCall = null,encryption=null;
-			try {
-				bureauCall = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getStringfromObject(mfiFinancialArrangementRequests);
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.info("Error while convert into string Call Bureau");
-			}
-			if(!CommonUtils.isObjectNullOrEmpty(bureauCall)){
-				encryption = new EncryptionUtils().encryptionWithKey(bureauCall);
-			}
-			if (!CommonUtils.isListNullOrEmpty(mfiFinancialArrangementRequests)) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Existing Loan details.",
-						HttpStatus.OK.value(), encryption), HttpStatus.OK);
+			LoansResponse loansResponse = mfiApplicationService.callBureauGetFinancialDetails(applicationId, applicantId, userId, type);
+			if (!CommonUtils.isObjectNullOrEmpty(loansResponse)) {
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
