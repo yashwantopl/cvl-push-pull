@@ -3491,8 +3491,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 if (CommonUtils.isObjectNullOrEmpty(debt))
                                     equity = 0.0;
 
-                                scoringParameterRequest.setDebt(debt);
-                                scoringParameterRequest.setEquity(equity);
+                                scoringParameterRequest.setDebtTY(debt);
+                                scoringParameterRequest.setEquityTY(equity);
                                 scoringParameterRequest.setDebtEquityRatio_p(true);
 
                             } catch (Exception e) {
@@ -3513,8 +3513,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 if (CommonUtils.isObjectNullOrEmpty(tnw))
                                     tnw = 0.0;
 
-                                scoringParameterRequest.setTol(tol);
-                                scoringParameterRequest.setTnw(tnw);
+                                scoringParameterRequest.setTolTY(tol);
+                                scoringParameterRequest.setTnwTY(tnw);
                                 scoringParameterRequest.setTolTnw_p(true);
                                 scoringParameterRequest.setLoanAmount(loanAmount);
 
@@ -3532,7 +3532,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 if (CommonUtils.isObjectNullOrEmpty(currentRatio))
                                     currentRatio = 0.0;
 
-                                scoringParameterRequest.setAvgCurrentRatio(currentRatio);
+                                scoringParameterRequest.setAvgCurrentRatioTY(currentRatio);
                                 scoringParameterRequest.setAvgCurrentRatio_p(true);
 
                             } catch (Exception e) {
@@ -3574,10 +3574,10 @@ public class ScoringServiceImpl implements ScoringService {
                                     creditorsDays = 0.0;
 
 
-                                scoringParameterRequest.setDebtorsDays(debtorsDays);
-                                scoringParameterRequest.setAvgInventory(averageInventory);
-                                scoringParameterRequest.setCogs(cogs);
-                                scoringParameterRequest.setCreditorsDays(creditorsDays);
+                                scoringParameterRequest.setDebtorsDaysTY(debtorsDays);
+                                scoringParameterRequest.setAvgInventoryTY(averageInventory);
+                                scoringParameterRequest.setCogsTY(cogs);
+                                scoringParameterRequest.setCreditorsDaysTY(creditorsDays);
                                 scoringParameterRequest.setWorkingCapitalCycle_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting WORKING_CAPITAL_CYCLE parameter : ",e);
@@ -3791,7 +3791,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setInterestTy(interestTy);
                                 scoringParameterRequest.setDepriciationSy(depreciationSy);
                                 scoringParameterRequest.setDepriciationTy(depreciationTy);
-                                scoringParameterRequest.setTotalAsset(totalAsset);
+                                scoringParameterRequest.setTotalAssetTy(totalAsset);
 
                                 scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
 
@@ -4569,7 +4569,8 @@ public class ScoringServiceImpl implements ScoringService {
                                     // 27-9-2018 9:19 PM Rahul Khudai Removed iabilitiesDetailsTY.getSubTotalA()
                                     // + liabilitiesDetailsTY.getShortTermBorrowingFromOthers()  from Debt calculation
 
-                                    Double debt = liabilitiesDetailsTY.getTotalTermLiabilities() -
+                                    // Before central bank changes
+                                    /*Double debt = liabilitiesDetailsTY.getTotalTermLiabilities() -
                                             liabilitiesDetailsTY.getPreferencesShares() +
                                             liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
                                             liabilitiesDetailsTY.getOtherNclOthers() +
@@ -4586,10 +4587,21 @@ public class ScoringServiceImpl implements ScoringService {
                                             liabilitiesDetailsTY.getMinorityInterest() -
                                             liabilitiesDetailsTY.getDeferredTaxLiability();
                                     if (CommonUtils.isObjectNullOrEmpty(debt))
-                                        equity = 0.0;
+                                        equity = 0.0;*/
 
-                                    scoringParameterRequest.setDebt(debt);
-                                    scoringParameterRequest.setEquity(equity);
+                                    // After central bank changes
+                                    Double[] fyDebtAndEquityValues = getDebtAndEquityValue(liabilitiesDetailsFY);
+                                    Double[] syDebtAndEquityValues = getDebtAndEquityValue(liabilitiesDetailsSY);
+                                    Double[] tyDebtAndEquityValues = getDebtAndEquityValue(liabilitiesDetailsTY);
+
+                                    scoringParameterRequest.setDebtFY(fyDebtAndEquityValues[0]);
+                                    scoringParameterRequest.setDebtSY(syDebtAndEquityValues[0]);
+                                    scoringParameterRequest.setDebtTY(tyDebtAndEquityValues[0]);
+
+                                    scoringParameterRequest.setEquityFY(fyDebtAndEquityValues[1]);
+                                    scoringParameterRequest.setEquitySY(syDebtAndEquityValues[1]);
+                                    scoringParameterRequest.setEquityTY(tyDebtAndEquityValues[1]);
+
                                     scoringParameterRequest.setDebtEquityRatio_p(true);
 
                                 } catch (Exception e) {
@@ -4602,16 +4614,29 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.TOL_TNW: {
 
                                 try {
-                                    Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
+
+                                    //Before central bank changes
+                                    /*Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
                                     if (CommonUtils.isObjectNullOrEmpty(tol))
                                         tol = 0.0;
 
                                     Double tnw = assetsDetailsTY.getTangibleNetWorth();
                                     if (CommonUtils.isObjectNullOrEmpty(tnw))
-                                        tnw = 0.0;
+                                        tnw = 0.0;*/
 
-                                    scoringParameterRequest.setTol(tol);
-                                    scoringParameterRequest.setTnw(tnw);
+                                    //After central bank changes
+                                    Double[] fyTolTnwValues =getTolTnwValues(liabilitiesDetailsFY,assetsDetailsFY);
+                                    Double[] syTolTnwValues =getTolTnwValues(liabilitiesDetailsSY,assetsDetailsSY);
+                                    Double[] tyTolTnwValues =getTolTnwValues(liabilitiesDetailsTY,assetsDetailsTY);
+
+                                    scoringParameterRequest.setTolFY(fyTolTnwValues[0]);
+                                    scoringParameterRequest.setTolSY(syTolTnwValues[0]);
+                                    scoringParameterRequest.setTolTY(tyTolTnwValues[0]);
+
+                                    scoringParameterRequest.setTnwFY(fyTolTnwValues[1]);
+                                    scoringParameterRequest.setTnwSY(syTolTnwValues[1]);
+                                    scoringParameterRequest.setTnwTY(tyTolTnwValues[1]);
+
                                     scoringParameterRequest.setTolTnw_p(true);
                                     scoringParameterRequest.setLoanAmount(loanAmount);
 
@@ -4625,11 +4650,26 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.AVERAGE_CURRENT_RATIO: {
                                 try {
 
-                                    Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio()) / 2;
+                                    // Before central bank changes
+                                    /*Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio()) / 2;
                                     if (CommonUtils.isObjectNullOrEmpty(currentRatio))
-                                        currentRatio = 0.0;
+                                        currentRatio = 0.0;*/
 
-                                    scoringParameterRequest.setAvgCurrentRatio(currentRatio);
+                                    // After central bank changes/
+                                    Double currentRatioFY = (assetsDetailsFY.getCurrentRatio()) ;
+                                    Double currentRatioSY = (assetsDetailsSY.getCurrentRatio()) ;
+                                    Double currentRatioTY = (assetsDetailsTY.getCurrentRatio()) ;
+
+                                    if (CommonUtils.isObjectNullOrEmpty(currentRatioFY))
+                                        currentRatioFY = 0.0;
+                                    if (CommonUtils.isObjectNullOrEmpty(currentRatioSY))
+                                        currentRatioSY = 0.0;
+                                    if (CommonUtils.isObjectNullOrEmpty(currentRatioTY))
+                                        currentRatioTY = 0.0;
+
+                                    scoringParameterRequest.setAvgCurrentRatioFY(currentRatioFY);
+                                    scoringParameterRequest.setAvgCurrentRatioSY(currentRatioSY);
+                                    scoringParameterRequest.setAvgCurrentRatioTY(currentRatioTY);
                                     scoringParameterRequest.setAvgCurrentRatio_p(true);
 
                                 } catch (Exception e) {
@@ -4642,7 +4682,9 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.WORKING_CAPITAL_CYCLE: {
 
                                 try {
-                                    Double debtorsDays = null;
+
+                                    /*
+                                    *  Double debtorsDays = null;
                                     if ((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome()) != 0.0) {
                                         debtorsDays = ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
                                     }
@@ -4675,6 +4717,27 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAvgInventory(averageInventory);
                                     scoringParameterRequest.setCogs(cogs);
                                     scoringParameterRequest.setCreditorsDays(creditorsDays);
+                                    * */
+
+                                    Double[]  fyDebtorsCreditorsCogsAvgInvValues = getDebtorsCreditorsCogsAvgInvValues(operatingStatementDetailsFY,assetsDetailsFY,liabilitiesDetailsFY);
+                                    Double[]  syDebtorsCreditorsCogsAvgInvValues = getDebtorsCreditorsCogsAvgInvValues(operatingStatementDetailsSY,assetsDetailsSY,liabilitiesDetailsSY);
+                                    Double[]  tyDebtorsCreditorsCogsAvgInvValues = getDebtorsCreditorsCogsAvgInvValues(operatingStatementDetailsTY,assetsDetailsTY,liabilitiesDetailsTY);
+
+                                    scoringParameterRequest.setDebtorsDaysFY(fyDebtorsCreditorsCogsAvgInvValues[0]);
+                                    scoringParameterRequest.setAvgInventoryFY(fyDebtorsCreditorsCogsAvgInvValues[1]);
+                                    scoringParameterRequest.setCogsFY(fyDebtorsCreditorsCogsAvgInvValues[2]);
+                                    scoringParameterRequest.setCreditorsDaysFY(fyDebtorsCreditorsCogsAvgInvValues[3]);
+
+                                    scoringParameterRequest.setDebtorsDaysSY(syDebtorsCreditorsCogsAvgInvValues[0]);
+                                    scoringParameterRequest.setAvgInventorySY(syDebtorsCreditorsCogsAvgInvValues[1]);
+                                    scoringParameterRequest.setCogsSY(syDebtorsCreditorsCogsAvgInvValues[2]);
+                                    scoringParameterRequest.setCreditorsDaysSY(syDebtorsCreditorsCogsAvgInvValues[3]);
+
+                                    scoringParameterRequest.setDebtorsDaysTY(tyDebtorsCreditorsCogsAvgInvValues[0]);
+                                    scoringParameterRequest.setAvgInventoryTY(tyDebtorsCreditorsCogsAvgInvValues[1]);
+                                    scoringParameterRequest.setCogsTY(tyDebtorsCreditorsCogsAvgInvValues[2]);
+                                    scoringParameterRequest.setCreditorsDaysTY(tyDebtorsCreditorsCogsAvgInvValues[3]);
+
                                     scoringParameterRequest.setWorkingCapitalCycle_p(true);
                                 } catch (Exception e) {
                                     logger.error("error while getting WORKING_CAPITAL_CYCLE parameter : ",e);
@@ -4797,7 +4860,9 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.AVERAGE_EBIDTA: {
 
                                 try {
-                                    Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
+
+                                    // Before central bank
+                                    /*Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
                                     if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
                                         profitBeforeTaxOrLossTy = 0.0;
 
@@ -4829,16 +4894,29 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
                                     if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
-                                        termLoansTy = 0.0;
+                                        termLoansTy = 0.0;*/
 
+                                    // After central bank
+                                    Double[] fyAvgEBIDTAValue = getAvgEBIDTAValue(operatingStatementDetailsFY,liabilitiesDetailsFY);
+                                    Double[] syAvgEBIDTAValue = getAvgEBIDTAValue(operatingStatementDetailsSY,liabilitiesDetailsSY);
+                                    Double[] tyAvgEBIDTAValue = getAvgEBIDTAValue(operatingStatementDetailsTY,liabilitiesDetailsTY);
 
-                                    scoringParameterRequest.setProfitBeforeTaxOrLossTy(profitBeforeTaxOrLossTy);
-                                    scoringParameterRequest.setProfitBeforeTaxOrLossSy(profitBeforeTaxOrLossSy);
-                                    scoringParameterRequest.setInterestTy(interestTy);
-                                    scoringParameterRequest.setInterestSy(interestSy);
-                                    scoringParameterRequest.setDepriciationTy(depreciationTy);
-                                    scoringParameterRequest.setDepriciationSy(depreciationSy);
-                                    scoringParameterRequest.setTermLoanTy(termLoansTy);
+                                    scoringParameterRequest.setProfitBeforeTaxOrLossFy(fyAvgEBIDTAValue[0]);
+                                    scoringParameterRequest.setProfitBeforeTaxOrLossSy(syAvgEBIDTAValue[0]);
+                                    scoringParameterRequest.setProfitBeforeTaxOrLossTy(tyAvgEBIDTAValue[0]);
+
+                                    scoringParameterRequest.setInterestFy(fyAvgEBIDTAValue[1]);
+                                    scoringParameterRequest.setInterestSy(syAvgEBIDTAValue[1]);
+                                    scoringParameterRequest.setInterestTy(tyAvgEBIDTAValue[1]);
+
+                                    scoringParameterRequest.setDepriciationFy(fyAvgEBIDTAValue[2]);
+                                    scoringParameterRequest.setDepriciationTy(syAvgEBIDTAValue[2]);
+                                    scoringParameterRequest.setDepriciationSy(tyAvgEBIDTAValue[2]);
+
+                                    scoringParameterRequest.setTermLoanFy(fyAvgEBIDTAValue[3]);
+                                    scoringParameterRequest.setTermLoanSy(syAvgEBIDTAValue[3]);
+                                    scoringParameterRequest.setTermLoanTy(tyAvgEBIDTAValue[3]);
+
                                     scoringParameterRequest.setLoanAmount(loanAmount);
 
                                     scoringParameterRequest.setAvgEBIDTA_p(true);
@@ -4854,7 +4932,8 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
 
-                                    Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
+                                    // Before central bank changes
+                                    /*Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
                                     if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
                                         netProfitOrLossTY = 0.0;
 
@@ -4880,15 +4959,28 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Double totalAsset = assetsDetailsTY.getTotalAssets();
                                     if (CommonUtils.isObjectNullOrEmpty(totalAsset))
-                                        totalAsset = 0.0;
+                                        totalAsset = 0.0;*/
 
-                                    scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
-                                    scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
-                                    scoringParameterRequest.setInterestSy(interestSy);
-                                    scoringParameterRequest.setInterestTy(interestTy);
-                                    scoringParameterRequest.setDepriciationSy(depreciationSy);
-                                    scoringParameterRequest.setDepriciationTy(depreciationTy);
-                                    scoringParameterRequest.setTotalAsset(totalAsset);
+                                    // After central bank changes
+                                    Double[] avgAnnualGrossCaseAccrualsValueFY = getAvgAnnualGrossCaseAccrualsValue(operatingStatementDetailsFY,assetsDetailsFY);
+                                    Double[] avgAnnualGrossCaseAccrualsValueSY = getAvgAnnualGrossCaseAccrualsValue(operatingStatementDetailsSY,assetsDetailsSY);
+                                    Double[] avgAnnualGrossCaseAccrualsValueTY = getAvgAnnualGrossCaseAccrualsValue(operatingStatementDetailsTY,assetsDetailsTY);
+
+                                    scoringParameterRequest.setNetProfitOrLossFY(avgAnnualGrossCaseAccrualsValueFY[0]);
+                                    scoringParameterRequest.setNetProfitOrLossSY(avgAnnualGrossCaseAccrualsValueSY[0]);
+                                    scoringParameterRequest.setNetProfitOrLossTY(avgAnnualGrossCaseAccrualsValueTY[0]);
+
+                                    scoringParameterRequest.setInterestFy(avgAnnualGrossCaseAccrualsValueFY[1]);
+                                    scoringParameterRequest.setInterestSy(avgAnnualGrossCaseAccrualsValueSY[1]);
+                                    scoringParameterRequest.setInterestTy(avgAnnualGrossCaseAccrualsValueTY[1]);
+
+                                    scoringParameterRequest.setDepriciationFy(avgAnnualGrossCaseAccrualsValueFY[2]);
+                                    scoringParameterRequest.setDepriciationSy(avgAnnualGrossCaseAccrualsValueSY[2]);
+                                    scoringParameterRequest.setDepriciationTy(avgAnnualGrossCaseAccrualsValueTY[2]);
+
+                                    scoringParameterRequest.setTotalAssetFy(avgAnnualGrossCaseAccrualsValueFY[3]);
+                                    scoringParameterRequest.setTotalAssetSy(avgAnnualGrossCaseAccrualsValueSY[3]);
+                                    scoringParameterRequest.setTotalAssetTy(avgAnnualGrossCaseAccrualsValueTY[3]);
 
                                     scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
 
@@ -4910,6 +5002,11 @@ public class ScoringServiceImpl implements ScoringService {
                                     if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestSy))
                                         opProfitBeforeIntrestSy = 0.0;
 
+                                    Double opProfitBeforeIntrestFy = operatingStatementDetailsFY.getOpProfitBeforeIntrest();
+                                    if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestFy))
+                                        opProfitBeforeIntrestFy = 0.0;
+
+
                                     Double interestTy = operatingStatementDetailsTY.getInterest();
                                     if (CommonUtils.isObjectNullOrEmpty(interestTy))
                                         interestTy = 0.0;
@@ -4918,8 +5015,14 @@ public class ScoringServiceImpl implements ScoringService {
                                     if (CommonUtils.isObjectNullOrEmpty(interestSy))
                                         interestSy = 0.0;
 
+                                    Double interestFy = operatingStatementDetailsFY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestFy))
+                                        interestFy = 0.0;
+
+                                    scoringParameterRequest.setOpProfitBeforeInterestFy(opProfitBeforeIntrestFy);
                                     scoringParameterRequest.setOpProfitBeforeInterestTy(opProfitBeforeIntrestTy);
                                     scoringParameterRequest.setOpProfitBeforeInterestSy(opProfitBeforeIntrestSy);
+                                    scoringParameterRequest.setInterestFy(interestFy);
                                     scoringParameterRequest.setInterestTy(interestTy);
                                     scoringParameterRequest.setInterestSy(interestSy);
 
@@ -5405,7 +5508,9 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 try {
 
-                                    scoringParameterRequest.setEbitda(operatingStatementDetailsTY.getOpProfitBeforeIntrest() + operatingStatementDetailsTY.getDepreciation());
+                                    scoringParameterRequest.setEbitdaFY(operatingStatementDetailsFY.getOpProfitBeforeIntrest() + operatingStatementDetailsFY.getDepreciation());
+                                    scoringParameterRequest.setEbitdaSY(operatingStatementDetailsSY.getOpProfitBeforeIntrest() + operatingStatementDetailsSY.getDepreciation());
+                                    scoringParameterRequest.setEbitdaTY(operatingStatementDetailsTY.getOpProfitBeforeIntrest() + operatingStatementDetailsTY.getDepreciation());
 
                                     Double totalExistingLoanObligation=0.0;
 
@@ -5438,8 +5543,8 @@ public class ScoringServiceImpl implements ScoringService {
                                     Double domesticSales = operatingStatementDetailsTY.getDomesticSales();
                                     Double exportSales = operatingStatementDetailsTY.getExportSales();
                                     scoringParameterRequest.setPastYearTurnover_p(true);
-                                    scoringParameterRequest.setExportSales(exportSales);
-                                    scoringParameterRequest.setDomesticSales(domesticSales);
+                                    scoringParameterRequest.setExportSalesTY(exportSales);
+                                    scoringParameterRequest.setDomesticSalesTY(domesticSales);
                                     scoringParameterRequest.setPastYearTurnover(domesticSales + exportSales);
                                 } catch (Exception e) {
                                     logger.error("error while getting PAST_YEAR_TURNOVER parameter : ",e);
@@ -5450,7 +5555,9 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.DEBT_EBITDA: {
                                 try {
 
-                                        //debt
+                                    //Before Central Bank changes
+                                    /*
+                                    *   //debt
                                         scoringParameterRequest.setTotalTermLiabilities(liabilitiesDetailsTY.getTotalTermLiabilities());
                                         scoringParameterRequest.setPreferenceShares(liabilitiesDetailsTY.getPreferencesShares());
                                         scoringParameterRequest.setUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
@@ -5463,6 +5570,54 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setProfitBeforeInterest(operatingStatementDetailsTY.getOpProfitBeforeIntrest());
                                         scoringParameterRequest.setDepreciation(operatingStatementDetailsTY.getDepreciation());
                                         scoringParameterRequest.setDebtEBITDA_p(true);
+
+                                    * */
+
+                                    //After Central Bank changes
+                                    //debt FY
+                                    Double[] fyDebtEbitdaValues = getDebtEbitdaValues(liabilitiesDetailsFY,assetsDetailsFY,operatingStatementDetailsFY);
+                                    Double[] syDebtEbitdaValues = getDebtEbitdaValues(liabilitiesDetailsSY,assetsDetailsSY,operatingStatementDetailsSY);
+                                    Double[] tyDebtEbitdaValues = getDebtEbitdaValues(liabilitiesDetailsTY,assetsDetailsTY,operatingStatementDetailsTY);
+
+                                    scoringParameterRequest.setTotalTermLiabilitiesFY(fyDebtEbitdaValues[0]);
+                                    scoringParameterRequest.setPreferenceSharesFY(fyDebtEbitdaValues[1]);
+                                    scoringParameterRequest.setOthersFY(fyDebtEbitdaValues[2]);
+                                    scoringParameterRequest.setMinorityInterestFY(fyDebtEbitdaValues[3]);
+                                    scoringParameterRequest.setDeferredTaxLiabilityFY(fyDebtEbitdaValues[4]);
+                                    scoringParameterRequest.setDeferredTaxAssetsFY(fyDebtEbitdaValues[5]);
+                                    scoringParameterRequest.setUnsecuredLoansFromOthersFY(fyDebtEbitdaValues[6]);
+
+                                    //EBITA FY
+                                    scoringParameterRequest.setProfitBeforeInterestFY(fyDebtEbitdaValues[7]);
+                                    scoringParameterRequest.setDepreciationFY(fyDebtEbitdaValues[8]);
+
+                                    //debt SY
+                                    scoringParameterRequest.setTotalTermLiabilitiesSY(syDebtEbitdaValues[0]);
+                                    scoringParameterRequest.setPreferenceSharesSY(syDebtEbitdaValues[1]);
+                                    scoringParameterRequest.setOthersSY(syDebtEbitdaValues[2]);
+                                    scoringParameterRequest.setMinorityInterestSY(syDebtEbitdaValues[3]);
+                                    scoringParameterRequest.setDeferredTaxLiabilitySY(syDebtEbitdaValues[4]);
+                                    scoringParameterRequest.setDeferredTaxAssetsSY(syDebtEbitdaValues[5]);
+                                    scoringParameterRequest.setUnsecuredLoansFromOthersSY(syDebtEbitdaValues[6]);
+
+                                    //EBITA SY
+                                    scoringParameterRequest.setProfitBeforeInterestSY(syDebtEbitdaValues[7]);
+                                    scoringParameterRequest.setDepreciationSY(syDebtEbitdaValues[8]);
+
+                                    //debt TY
+                                    scoringParameterRequest.setTotalTermLiabilitiesTY(tyDebtEbitdaValues[0]);
+                                    scoringParameterRequest.setPreferenceSharesTY(tyDebtEbitdaValues[1]);
+                                    scoringParameterRequest.setOthersTY(tyDebtEbitdaValues[2]);
+                                    scoringParameterRequest.setMinorityInterestTY(tyDebtEbitdaValues[3]);
+                                    scoringParameterRequest.setDeferredTaxLiabilityTY(tyDebtEbitdaValues[4]);
+                                    scoringParameterRequest.setDeferredTaxAssetsTY(tyDebtEbitdaValues[5]);
+                                    scoringParameterRequest.setUnsecuredLoansFromOthersTY(tyDebtEbitdaValues[6]);
+
+                                    //EBITA TY
+                                    scoringParameterRequest.setProfitBeforeInterestTY(tyDebtEbitdaValues[7]);
+                                    scoringParameterRequest.setDepreciationTY(tyDebtEbitdaValues[8]);
+
+                                    scoringParameterRequest.setDebtEBITDA_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting DEBT_EBITDA parameter : ",e);
                                     scoringParameterRequest.setDebtEBITDA_p(false);
@@ -5472,15 +5627,52 @@ public class ScoringServiceImpl implements ScoringService {
 
                             case ScoreParameter.TURNOVER_ATNW: {
                                 try {
-                                        scoringParameterRequest.setLiabilitiesOrdinaryShareCapital(liabilitiesDetailsTY.getOrdinarySharesCapital());
+
+                                    /*    scoringParameterRequest.setLiabilitiesOrdinaryShareCapital(liabilitiesDetailsTY.getOrdinarySharesCapital());
                                         scoringParameterRequest.setLiabilitiesGeneralReserve(liabilitiesDetailsTY.getGeneralReserve());
                                         scoringParameterRequest.setDeficitInProfitANDLossAccount(liabilitiesDetailsTY.getSurplusOrDeficit());
                                         scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromoters(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromPromoters());
                                         scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
                                         scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliates(assetsDetailsTY.getInvestmentsInSubsidiary());
                                         scoringParameterRequest.setDomesticSales(operatingStatementDetailsTY.getDomesticSales());
-                                        scoringParameterRequest.setExportSales(operatingStatementDetailsTY.getExportSales());
-                                        scoringParameterRequest.setTurnoverATNW_p(true);
+                                        scoringParameterRequest.setExportSales(operatingStatementDetailsTY.getExportSales());*/
+
+                                    Double[] fyTurnOverATNWValue = getTurnOverATNWValue(operatingStatementDetailsFY, liabilitiesDetailsFY, assetsDetailsFY);
+                                    Double[] syTurnOverATNWValue = getTurnOverATNWValue(operatingStatementDetailsSY, liabilitiesDetailsSY, assetsDetailsSY);
+                                    Double[] tyTurnOverATNWValue = getTurnOverATNWValue(operatingStatementDetailsTY, liabilitiesDetailsTY, assetsDetailsTY);
+
+
+                                    //FY
+                                    scoringParameterRequest.setLiabilitiesOrdinaryShareCapitalFY(fyTurnOverATNWValue[0]);
+                                    scoringParameterRequest.setLiabilitiesGeneralReserveFY(fyTurnOverATNWValue[1]);
+                                    scoringParameterRequest.setDeficitInProfitANDLossAccountFY(fyTurnOverATNWValue[2]);
+                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromotersFY(fyTurnOverATNWValue[3]);
+                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthersFY(fyTurnOverATNWValue[4]);
+                                    scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliatesFY(fyTurnOverATNWValue[5]);
+                                    scoringParameterRequest.setDomesticSalesFY(fyTurnOverATNWValue[6]);
+                                    scoringParameterRequest.setExportSalesFY(fyTurnOverATNWValue[7]);
+
+                                    //SY
+                                    scoringParameterRequest.setLiabilitiesOrdinaryShareCapitalSY(syTurnOverATNWValue[0]);
+                                    scoringParameterRequest.setLiabilitiesGeneralReserveSY(syTurnOverATNWValue[1]);
+                                    scoringParameterRequest.setDeficitInProfitANDLossAccountSY(syTurnOverATNWValue[2]);
+                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromotersSY(syTurnOverATNWValue[3]);
+                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthersSY(syTurnOverATNWValue[4]);
+                                    scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliatesSY(syTurnOverATNWValue[5]);
+                                    scoringParameterRequest.setDomesticSalesSY(syTurnOverATNWValue[6]);
+                                    scoringParameterRequest.setExportSalesSY(syTurnOverATNWValue[7]);
+
+                                    //TY
+                                    scoringParameterRequest.setLiabilitiesOrdinaryShareCapitalTY(tyTurnOverATNWValue[0]);
+                                    scoringParameterRequest.setLiabilitiesGeneralReserveTY(tyTurnOverATNWValue[1]);
+                                    scoringParameterRequest.setDeficitInProfitANDLossAccountTY(tyTurnOverATNWValue[2]);
+                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromotersTY(tyTurnOverATNWValue[3]);
+                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthersTY(tyTurnOverATNWValue[4]);
+                                    scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliatesTY(tyTurnOverATNWValue[5]);
+                                    scoringParameterRequest.setDomesticSalesTY(tyTurnOverATNWValue[6]);
+                                    scoringParameterRequest.setExportSalesTY(tyTurnOverATNWValue[7]);
+
+                                    scoringParameterRequest.setTurnoverATNW_p(true);
 
                                 }catch (Exception e){
                                     logger.error("error while getting TURNOVER_ATNW parameter : ",e);
@@ -5600,6 +5792,148 @@ public class ScoringServiceImpl implements ScoringService {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
     }
+
+    private Double[] getDebtAndEquityValue(LiabilitiesDetails liabilitiesDetails){
+
+        Double debt = liabilitiesDetails.getTotalTermLiabilities() -
+                liabilitiesDetails.getPreferencesShares() +
+                liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() +
+                liabilitiesDetails.getOtherNclOthers() +
+                liabilitiesDetails.getMinorityInterest() +
+                liabilitiesDetails.getDeferredTaxLiability();
+
+        Double equity = liabilitiesDetails.getPreferencesShares() +
+                liabilitiesDetails.getNetWorth() -
+                liabilitiesDetails.getMinorityInterest() -
+                liabilitiesDetails.getDeferredTaxLiability();
+
+
+        if (CommonUtils.isObjectNullOrEmpty(debt))
+            debt = 0.0;
+
+        if (CommonUtils.isObjectNullOrEmpty(equity))
+            equity = 0.0;
+
+        return new Double[]{debt,equity};
+
+    }
+
+    private Double[] getTolTnwValues(LiabilitiesDetails liabilitiesDetails,AssetsDetails assetsDetails){
+        Double tol = liabilitiesDetails.getTotalOutsideLiabilities();
+        if (CommonUtils.isObjectNullOrEmpty(tol))
+            tol = 0.0;
+
+        Double tnw = assetsDetails.getTangibleNetWorth();
+        if (CommonUtils.isObjectNullOrEmpty(tnw))
+            tnw = 0.0;
+
+        return new Double[]{tol,tnw};
+    }
+
+    private Double[] getDebtorsCreditorsCogsAvgInvValues(OperatingStatementDetails operatingStatementDetails,AssetsDetails assetsDetails,LiabilitiesDetails liabilitiesDetails){
+
+        Double debtorsDays = null;
+        if ((operatingStatementDetails.getTotalGrossSales() - operatingStatementDetails.getAddOtherRevenueIncome()) != 0.0) {
+            debtorsDays = ((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) / (operatingStatementDetails.getTotalGrossSales() - operatingStatementDetails.getAddOtherRevenueIncome())) * 365;
+        }
+        if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
+            debtorsDays = 0.0;
+
+
+        Double averageInventory = (operatingStatementDetails.getAddOperatingStockFg() + operatingStatementDetails.getDeductClStockFg()) / 2;
+        if (CommonUtils.isObjectNullOrEmpty(averageInventory))
+            averageInventory = 0.0;
+
+        Double cogs = operatingStatementDetails.getRawMaterials() + operatingStatementDetails.getAddOperatingStockFg() - operatingStatementDetails.getDeductClStockFg();
+        if (CommonUtils.isObjectNullOrEmpty(cogs))
+            cogs = 0.0;
+
+        Double creditorsDays = null;
+        if ((operatingStatementDetails.getTotalGrossSales() - operatingStatementDetails.getAddOtherRevenueIncome()) != 0) {
+            creditorsDays = (liabilitiesDetails.getSundryCreditors() / (operatingStatementDetails.getTotalGrossSales() - operatingStatementDetails.getAddOtherRevenueIncome())) * 365;
+        }
+        if (CommonUtils.isObjectNullOrEmpty(creditorsDays))
+            creditorsDays = 0.0;
+
+
+        return new Double[]{debtorsDays,averageInventory,cogs,creditorsDays};
+    }
+
+    private Double[] getDebtEbitdaValues(LiabilitiesDetails liabilitiesDetails,AssetsDetails assetsDetails,OperatingStatementDetails operatingStatementDetails){
+
+        Double totalTermLiabilities = liabilitiesDetails.getTotalTermLiabilities();
+        Double preferenceShares = liabilitiesDetails.getPreferencesShares();
+        Double others = liabilitiesDetails.getOthers();
+        Double minorityInterest = liabilitiesDetails.getMinorityInterest();
+        Double deferredTaxLiability = liabilitiesDetails.getDeferredTaxLiability();
+        Double deferredTaxAsserts = assetsDetails.getDeferredTaxAssets();
+        Double otherNclUnsecuredLoansFromOther = liabilitiesDetails.getOtherNclUnsecuredLoansFromOther();
+        Double opProfitBeforeIntrest = operatingStatementDetails.getOpProfitBeforeIntrest();
+        Double depreciation = operatingStatementDetails.getDepreciation();
+
+        return  new Double[]{totalTermLiabilities,preferenceShares,others,minorityInterest,deferredTaxLiability,deferredTaxAsserts,otherNclUnsecuredLoansFromOther,opProfitBeforeIntrest,depreciation};
+    }
+
+    private Double[] getAvgAnnualGrossCaseAccrualsValue(OperatingStatementDetails operatingStatementDetails,AssetsDetails assetsDetails){
+
+        Double netProfitOrLoss = operatingStatementDetails.getNetProfitOrLoss();
+        if (CommonUtils.isObjectNullOrEmpty(netProfitOrLoss))
+            netProfitOrLoss = 0.0;
+
+        Double interest = operatingStatementDetails.getInterest();
+        if (CommonUtils.isObjectNullOrEmpty(interest))
+            interest = 0.0;
+
+        Double depreciation = operatingStatementDetails.getDepreciation();
+        if (CommonUtils.isObjectNullOrEmpty(depreciation))
+            depreciation = 0.0;
+
+        Double totalAsset = assetsDetails.getTotalAssets();
+        if (CommonUtils.isObjectNullOrEmpty(totalAsset))
+            totalAsset = 0.0;
+
+        return  new Double[]{netProfitOrLoss,interest,depreciation,totalAsset};
+    }
+
+    private Double[] getAvgEBIDTAValue(OperatingStatementDetails operatingStatementDetails,LiabilitiesDetails liabilitiesDetails){
+        Double profitBeforeTaxOrLoss = operatingStatementDetails.getProfitBeforeTaxOrLoss();
+        if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLoss))
+            profitBeforeTaxOrLoss = 0.0;
+
+
+        Double interest = operatingStatementDetails.getInterest();
+        if (CommonUtils.isObjectNullOrEmpty(interest))
+            interest = 0.0;
+
+        Double depreciation = operatingStatementDetails.getDepreciation();
+        if (CommonUtils.isObjectNullOrEmpty(depreciation))
+            depreciation = 0.0;
+
+        Double termLoans = liabilitiesDetails.getTermLoans();
+        if (CommonUtils.isObjectNullOrEmpty(termLoans))
+            termLoans = 0.0;
+
+        return new Double[]{profitBeforeTaxOrLoss,interest,depreciation,termLoans};
+    }
+
+    private Double[] getTurnOverATNWValue(OperatingStatementDetails operatingStatementDetails,LiabilitiesDetails liabilitiesDetails,AssetsDetails assetsDetails){
+
+        Double ordinarySharesCapital = getOrDefauls(liabilitiesDetails.getOrdinarySharesCapital());
+        Double generalReserve = getOrDefauls(liabilitiesDetails.getGeneralReserve());
+        Double surplusOrDeficit = getOrDefauls(liabilitiesDetails.getSurplusOrDeficit());
+        Double nclUnsercuredLoansFromPromotors = getOrDefauls(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters());
+        Double nlcUnsercuredLoansFromOthers =  getOrDefauls(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther());
+        Double investmentsInSubSidiary = getOrDefauls(assetsDetails.getInvestmentsInSubsidiary());
+        Double domestivSales = getOrDefauls(operatingStatementDetails.getDomesticSales());
+        Double exportSales = getOrDefauls(operatingStatementDetails.getExportSales());
+
+        return new Double[]{ordinarySharesCapital,generalReserve,surplusOrDeficit,nclUnsercuredLoansFromPromotors,nlcUnsercuredLoansFromOthers,investmentsInSubSidiary,domestivSales,exportSales};
+    }
+
+    private Double getOrDefauls(Double obj){
+        return  CommonUtils.isObjectNullOrEmpty(obj)==true?0.0:obj;
+    }
+
 
     @Override
     public ResponseEntity<LoansResponse> calculateNTBScoring(ScoringRequestLoans scoringRequestLoans, PrimaryCorporateDetail primaryCorporateDetail) {
