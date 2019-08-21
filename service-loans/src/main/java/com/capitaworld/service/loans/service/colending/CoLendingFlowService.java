@@ -13,9 +13,9 @@ public interface CoLendingFlowService {
 
 	public List<ClientListingCoLending> clientListCoLending(int pageIndex, int size, Long npUserId) throws LoansException;
 
-    /*public JSONObject spClientCount(Long spId) throws LoansException;
+    public JSONObject nbfcClientCount(Long nbfcUserId) throws LoansException;
 
-    public List<SpSysNotifyResponse> spClientNotifications(Long valueOf) throws LoansException;
+    /*public List<SpSysNotifyResponse> spClientNotifications(Long valueOf) throws LoansException;
 
     public List<SpSysNotifyResponse> spClientAllNotifications(Long valueOf, NotificationPageRequest notificationPageRequest) throws LoansException;
 

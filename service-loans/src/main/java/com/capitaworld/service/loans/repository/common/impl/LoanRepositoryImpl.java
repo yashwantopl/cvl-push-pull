@@ -9,11 +9,11 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -437,6 +437,38 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
+	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spGetAgriApplicationsByOrgIdAndStatus");
+			storedProcedureQuery.registerStoredProcedureParameter("orgId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("stus",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("fromLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("toLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
+			if(status == null) {
+				status = -1;
+			}
+			if(fromLimit == null) {
+				fromLimit = -1;
+			}
+			if(toLimit == null) {
+				toLimit = -1;
+			}
+			
+			storedProcedureQuery.setParameter("toLimit",toLimit);				
+			storedProcedureQuery.setParameter("fromLimit",fromLimit);
+			storedProcedureQuery.setParameter("stus",status);
+			storedProcedureQuery.setParameter("orgId",orgId);
+			storedProcedureQuery.execute();
+			return (String)storedProcedureQuery.getOutputParameterValue("result");
+			
+		} catch (Exception e) {
+			logger.error("EXCEPTION spGetAgriApplicationsByOrgIdAndStatus :=- {}", e);
+		}
+		return null;
+	}
+	
+	@Override
 	public Boolean retailPrefillData(String input) {
 		try {
 			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfile");
@@ -478,7 +510,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.executeUpdate();
 			return saveTutorials > 0;
 		} else {
-			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type:loan_type and tutorial_id=:tutorialId")
+			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type=:loanType and tutorial_id=:tutorialId")
 					.setParameter("date", new Date())
 					.setParameter("userId", longLatrequest.getUserId())
 					.setParameter("loanType", longLatrequest.getLoanType())
@@ -489,8 +521,10 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public String getTutorialsAudit(Long tutorialId){
-		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('userName',u.email,'viewDate',a.view_date,'roleName',r.role_name)) AS CHAR) FROM `loan_application`.tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id WHERE a.tutorial_id =:tutorialId")
+		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('id',a.id,'userName',u.email,'viewDate',a.view_date,'roleName',r.role_name,'branchName',b.name)) AS CHAR) FROM `loan_application`.tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id LEFT JOIN users.`branch_master` b ON u.branch_id=b.id\r\n" + 
+				" WHERE a.tutorial_id =:tutorialId")
 				.setParameter("tutorialId", tutorialId)
 				.getResultList();
 			return CommonUtils.isListNullOrEmpty(tutorialViewAudit) ? null : CommonUtils.isObjectNullOrEmpty(tutorialViewAudit.get(0)) ? null : tutorialViewAudit.get(0);

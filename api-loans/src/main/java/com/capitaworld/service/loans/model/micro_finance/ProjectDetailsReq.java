@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -7,47 +8,58 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ProjectDetailsReq {
 
 	private Long id;
 	private Long applicationId;
+	//1. Loan Applied/ Cost of Project/ Means of Finance
 	private Integer loanType;
-	private String loanPurpose;
 	private Integer purposeOfLoan;
 	private Double loanAmountRequired;
-	private Double costOfProject;
 	private Double costOfEquipment;
 	private Double workingCapOfEquipment;
-	private Double totalCostEquipment;
 	private Double promoterContribution;
 	private Double loanRequiredFromSidbi;
+	private Integer loanTenure;
+
+	private Double totalCostEquipment;
 	private Double totalMeanFinance;
 	private Double totalCashFlow;
+
+	//2. Repayment and Insurance Details
 	private Integer repaymentFrequency;
 	private Boolean insurenceRequired;
 	private String insurenceCompanyName;
 	private Double insurencePremium;
-	
+
+	//3. Operational & Business Assessment
+	private Integer clientType;
+	private Integer repaymentTrack;
+	private Integer competition;
+
+	//4. Expected Increase in Income
+	private Integer businessInBrief;
+	private Double monthlyCashflow;
+	private Double monthlyExpenditure;
+	private Double monthlyIncome;
+
 	private Boolean isProjectDetailsFilled;
-	private Boolean isApplyLoanFilled;
-	private Boolean isCostProjectFilled;
-	private Boolean isMeanFinanceFilled;
 	private Boolean isRepaymentDetailsFilled;
 
 	public ProjectDetailsReq() {
 	}
 
 	public ProjectDetailsReq(Long applicationId, Integer loanType, Integer purposeOfLoan, Double loanAmountRequired,
-			Double costOfProject, Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
+			Double costOfEquipment, Double workingCapOfEquipment, Double totalCostEquipment,
 			Double promoterContribution, Double loanRequiredFromSidbi, Double totalMeanFinance, Double totalCashFlow,
 			Integer repaymentFrequency, Boolean insurenceRequired, String insurenceCompanyName, Double insurencePremium,
-			Boolean isProjectDetailsFilled) {
+			Boolean isProjectDetailsFilled,Integer businessInBrief, Double monthlyCashflow, Double monthlyExpenditure,Double monthlyIncome) {
 		super();
 		this.applicationId = applicationId;
 		this.loanType = loanType;
 		this.purposeOfLoan = purposeOfLoan;
 		this.loanAmountRequired = loanAmountRequired;
-		this.costOfProject = costOfProject;
 		this.costOfEquipment = costOfEquipment;
 		this.workingCapOfEquipment = workingCapOfEquipment;
 		this.totalCostEquipment = totalCostEquipment;
@@ -60,6 +72,10 @@ public class ProjectDetailsReq {
 		this.insurenceCompanyName = insurenceCompanyName;
 		this.insurencePremium = insurencePremium;
 		this.isProjectDetailsFilled = isProjectDetailsFilled;
+		this.businessInBrief = businessInBrief;
+		this.monthlyCashflow = monthlyCashflow;
+		this.monthlyExpenditure = monthlyExpenditure;
+		this.monthlyIncome = monthlyIncome;
 	}
 
 	public Integer getLoanType() {
@@ -76,22 +92,6 @@ public class ProjectDetailsReq {
 
 	public void setLoanAmountRequired(Double loanAmountRequired) {
 		this.loanAmountRequired = loanAmountRequired;
-	}
-
-	public String getLoanPurpose() {
-		return loanPurpose;
-	}
-
-	public void setLoanPurpose(String loanPurpose) {
-		this.loanPurpose = loanPurpose;
-	}
-
-	public Double getCostOfProject() {
-		return costOfProject;
-	}
-
-	public void setCostOfProject(Double costOfProject) {
-		this.costOfProject = costOfProject;
 	}
 
 	public Double getCostOfEquipment() {
@@ -213,30 +213,6 @@ public class ProjectDetailsReq {
 	public void setPurposeOfLoan(Integer purposeOfLoan) {
 		this.purposeOfLoan = purposeOfLoan;
 	}
-
-	public Boolean getIsApplyLoanFilled() {
-		return isApplyLoanFilled;
-	}
-
-	public void setIsApplyLoanFilled(Boolean isApplyLoanFilled) {
-		this.isApplyLoanFilled = isApplyLoanFilled;
-	}
-
-	public Boolean getIsCostProjectFilled() {
-		return isCostProjectFilled;
-	}
-
-	public void setIsCostProjectFilled(Boolean isCostProjectFilled) {
-		this.isCostProjectFilled = isCostProjectFilled;
-	}
-
-	public Boolean getIsMeanFinanceFilled() {
-		return isMeanFinanceFilled;
-	}
-
-	public void setIsMeanFinanceFilled(Boolean isMeanFinanceFilled) {
-		this.isMeanFinanceFilled = isMeanFinanceFilled;
-	}
 	
 
 	public Boolean getIsRepaymentDetailsFilled() {
@@ -247,16 +223,99 @@ public class ProjectDetailsReq {
 		this.isRepaymentDetailsFilled = isRepaymentDetailsFilled;
 	}
 
+	public Integer getLoanTenure() {
+		return loanTenure;
+	}
+
+	public void setLoanTenure(Integer loanTenure) {
+		this.loanTenure = loanTenure;
+	}
+
+	public Integer getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(Integer clientType) {
+		this.clientType = clientType;
+	}
+
+	public Integer getRepaymentTrack() {
+		return repaymentTrack;
+	}
+
+	public void setRepaymentTrack(Integer repaymentTrack) {
+		this.repaymentTrack = repaymentTrack;
+	}
+
+	public Integer getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Integer competition) {
+		this.competition = competition;
+	}
+
+	public Integer getBusinessInBrief() {
+		return businessInBrief;
+	}
+
+	public void setBusinessInBrief(Integer businessInBrief) {
+		this.businessInBrief = businessInBrief;
+	}
+
+	public Double getMonthlyCashflow() {
+		return monthlyCashflow;
+	}
+
+	public void setMonthlyCashflow(Double monthlyCashflow) {
+		this.monthlyCashflow = monthlyCashflow;
+	}
+
+	public Double getMonthlyExpenditure() {
+		return monthlyExpenditure;
+	}
+
+	public void setMonthlyExpenditure(Double monthlyExpenditure) {
+		this.monthlyExpenditure = monthlyExpenditure;
+	}
+
+	public Double getMonthlyIncome() {
+		return monthlyIncome;
+	}
+
+	public void setMonthlyIncome(Double monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
+
 	@Override
 	public String toString() {
-		return "ProjectDetailsReq{" + "id=" + id + ", applicationId=" + applicationId + ", loanType=" + loanType
-				+ ", loanPurpose='" + loanPurpose + '\'' + ", purposeOfLoan='" + purposeOfLoan + '\''
-				+ ", loanAmountRequired=" + loanAmountRequired + ", costOfProject=" + costOfProject
-				+ ", costOfEquipment=" + costOfEquipment + ", workingCapOfEquipment=" + workingCapOfEquipment
-				+ ", totalCostEquipment=" + totalCostEquipment + ", promoterContribution=" + promoterContribution
-				+ ", loanRequiredFromSidbi=" + loanRequiredFromSidbi + ", totalMeanFinance=" + totalMeanFinance
-				+ ", totalCashFlow=" + totalCashFlow + ", repaymentFrequency=" + repaymentFrequency
-				+ ", insurenceRequired=" + insurenceRequired + ", insurenceCompanyName='" + insurenceCompanyName + '\''
-				+ ", insurencePremium=" + insurencePremium + ", isProjectDetailsFilled=" + isProjectDetailsFilled + '}';
+		return "ProjectDetailsReq{" +
+				"id=" + id +
+				", applicationId=" + applicationId +
+				", loanType=" + loanType +
+				", purposeOfLoan=" + purposeOfLoan +
+				", loanAmountRequired=" + loanAmountRequired +
+				", costOfEquipment=" + costOfEquipment +
+				", workingCapOfEquipment=" + workingCapOfEquipment +
+				", promoterContribution=" + promoterContribution +
+				", loanRequiredFromSidbi=" + loanRequiredFromSidbi +
+				", loanTenure=" + loanTenure +
+				", totalCostEquipment=" + totalCostEquipment +
+				", totalMeanFinance=" + totalMeanFinance +
+				", totalCashFlow=" + totalCashFlow +
+				", repaymentFrequency=" + repaymentFrequency +
+				", insurenceRequired=" + insurenceRequired +
+				", insurenceCompanyName='" + insurenceCompanyName + '\'' +
+				", insurencePremium=" + insurencePremium +
+				", clientType=" + clientType +
+				", repaymentTrack=" + repaymentTrack +
+				", competition=" + competition +
+				", businessInBrief=" + businessInBrief +
+				", monthlyCashflow=" + monthlyCashflow +
+				", monthlyExpenditure=" + monthlyExpenditure +
+				", monthlyIncome=" + monthlyIncome +
+				", isProjectDetailsFilled=" + isProjectDetailsFilled +
+				", isRepaymentDetailsFilled=" + isRepaymentDetailsFilled +
+				'}';
 	}
 }

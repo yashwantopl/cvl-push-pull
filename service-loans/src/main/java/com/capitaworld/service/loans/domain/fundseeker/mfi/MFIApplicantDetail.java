@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.mfi;
 
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.cibil.api.utility.EncryptionUtils;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
@@ -22,13 +22,6 @@ public class MFIApplicantDetail implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
-
-	@OneToOne
-	@JoinColumn(name = "proposal_mapping_id")
-	private ApplicationProposalMapping applicationProposalMapping;
-
-	@Column(name = "aadhar_number")
-	private String aadharNumber;
 
 	@Column(name = "name_as_per_aadharCard")
 	private String nameAsPerAadharCard;
@@ -151,9 +144,6 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "relation_with_nominee_id")
 	private Integer relationWithNomineeId;
 
-	@Column(name = "nominee_address")
-	private String nomineeAddress;
-
 	@Column(name = "nominee_pincode")
 	private String nomineePincode;
 
@@ -174,9 +164,6 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "house_type")
 	private Integer houseType;
-
-	@Column(name = "loan_purpose")
-	private String loanPurpose;
 
 	@Column(name = "loan_amount_required")
 	private Double loanAmountRequired;
@@ -290,12 +277,6 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "is_bank_details_filled")
 	private Boolean isBankDetailsFilled;
 
-	@Column(name = "is_account_details_filled")
-	private Boolean isAccountDetailsFilled;
-
-	@Column(name = "is_existing_loan_details_filled")
-	private Boolean isExistingLoanDetailsFilled;
-
 	@Column(name = "is_income_details_filled")
 	private Boolean isIncomeDetailsFilled;
 
@@ -346,41 +327,19 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "address_proof_type")
 	private Integer addressProofType;
+
+	@Convert(converter = EncryptionUtils.class)
 	@Column(name = "address_proof_no")
 	private String addressProofNo;
 
 	@Column(name = "address_proof_img")
-	private byte[] addressProofImg;
+	private String addressProofImg;
 	@Column(name = "consent_form_img")
-	private byte[] consentFormImg;
+	private String consentFormImg;
 	@Column(name = "profile_img")
-	private byte[] profileImg;
-//	@Column(name = "ship_shgi_installment")
-//	private Double shipShgiInstallment;
-//	@Column(name = "other_installment")
-//	private Double otherInstallment;
-//	@Column(name = "loan_installment")
-//	private Double loanInstallment;
-//	@Column(name = "education_expense")
-//	private Double educationExpense;
-//	@Column(name = "medical_expense")
-//	private Double medicalExpense;
-//	@Column(name = "food_expense")
-//	private Double foodExpense;
-//	@Column(name = "other_expense")
-//	private Double otherExpense;
-//	@Column(name = "house_hold_expense")
-//	private Double houseHoldExpense;
-//	@Column(name = "clothes_expense")
-//	private Double clothesExpense;
-//	@Column(name = "business_in_brief")
-//	private Integer businessInBrief;
-//	@Column(name = "monthly_cashflow")
-//	private Double monthlyCashflow;
-//	@Column(name = "monthly_expenditure")
-//	private Double monthlyExpenditure;
-//	@Column(name = "monthly_income")
-//	private Double monthlyIncome;
+	private String profileImg;
+	@Column(name = "aadhar_img")
+	private String aadharImg;
 	@Column(name = "ppi_no_family_member")
 	private Integer ppiNoFamilyMember;
 	@Column(name = "ppi_acadamic_head_family")
@@ -413,7 +372,7 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "creadit_worthiness")
 	private Integer creaditWorthiness;
 	@Column(name = "loan_liability_ratio")
-	private String loanLiabilityRatio;
+	private Double loanLiabilityRatio;
 	@Column(name = "competition")
 	private Integer competition;
 	@Column(name = "loan_amount_recomandation")
@@ -431,6 +390,8 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "loan_amount_mfi_checker")
 	private Double loanAmountMFIChecker;
+	@Column(name = "loan_tenure")
+	private Integer loanTenure;
 
 	@Column(name = "loan_amount_bank_checker")
 	private Double loanAmountBankMaker;
@@ -474,22 +435,6 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
-	}
-
-	public ApplicationProposalMapping getApplicationProposalMapping() {
-		return applicationProposalMapping;
-	}
-
-	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
-		this.applicationProposalMapping = applicationProposalMapping;
-	}
-
-	public String getAadharNumber() {
-		return aadharNumber;
-	}
-
-	public void setAadharNumber(String aadharNumber) {
-		this.aadharNumber = aadharNumber;
 	}
 
 	public String getNameAsPerAadharCard() {
@@ -636,14 +581,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.relationWithNomineeId = relationWithNomineeId;
 	}
 
-	public String getNomineeAddress() {
-		return nomineeAddress;
-	}
-
-	public void setNomineeAddress(String nomineeAddress) {
-		this.nomineeAddress = nomineeAddress;
-	}
-
 	public String getNomineePincode() {
 		return nomineePincode;
 	}
@@ -698,15 +635,6 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setHouseType(Integer houseType) {
 		this.houseType = houseType;
-	}
-
-
-	public String getLoanPurpose() {
-		return loanPurpose;
-	}
-
-	public void setLoanPurpose(String loanPurpose) {
-		this.loanPurpose = loanPurpose;
 	}
 
 	public Double getLoanAmountRequired() {
@@ -915,22 +843,6 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setIsBankDetailsFilled(Boolean isBankDetailsFilled) {
 		this.isBankDetailsFilled = isBankDetailsFilled;
-	}
-
-	public Boolean getIsAccountDetailsFilled() {
-		return isAccountDetailsFilled;
-	}
-
-	public void setIsAccountDetailsFilled(Boolean isAccountDetailsFilled) {
-		this.isAccountDetailsFilled = isAccountDetailsFilled;
-	}
-
-	public Boolean getIsExistingLoanDetailsFilled() {
-		return isExistingLoanDetailsFilled;
-	}
-
-	public void setIsExistingLoanDetailsFilled(Boolean isExistingLoanDetailsFilled) {
-		this.isExistingLoanDetailsFilled = isExistingLoanDetailsFilled;
 	}
 
 	public Boolean getIsIncomeDetailsFilled() {
@@ -1366,118 +1278,29 @@ public class MFIApplicantDetail implements Serializable {
 		this.nomineeBirthDate = nomineeBirthDate;
 	}
 
-	public byte[] getAddressProofImg() {
+	public String getAddressProofImg() {
 		return addressProofImg;
 	}
 
-	public void setAddressProofImg(byte[] addressProofImg) {
+	public void setAddressProofImg(String addressProofImg) {
 		this.addressProofImg = addressProofImg;
 	}
 
-	public byte[] getProfileImg() {
+	public String getConsentFormImg() {
+		return consentFormImg;
+	}
+
+	public void setConsentFormImg(String consentFormImg) {
+		this.consentFormImg = consentFormImg;
+	}
+
+	public String getProfileImg() {
 		return profileImg;
 	}
 
-	public void setProfileImg(byte[] profileImg) {
+	public void setProfileImg(String profileImg) {
 		this.profileImg = profileImg;
 	}
-
-//	public Double getShipShgiInstallment() {
-//		return shipShgiInstallment;
-//	}
-//
-//	public void setShipShgiInstallment(Double shipShgiInstallment) {
-//		this.shipShgiInstallment = shipShgiInstallment;
-//	}
-//
-//	public Double getOtherInstallment() {
-//		return otherInstallment;
-//	}
-//
-//	public void setOtherInstallment(Double otherInstallment) {
-//		this.otherInstallment = otherInstallment;
-//	}
-//
-//	public Double getLoanInstallment() {
-//		return loanInstallment;
-//	}
-//
-//	public void setLoanInstallment(Double loanInstallment) {
-//		this.loanInstallment = loanInstallment;
-//	}
-//
-//	public Double getEducationExpense() {
-//		return educationExpense;
-//	}
-//
-//	public void setEducationExpense(Double educationExpense) {
-//		this.educationExpense = educationExpense;
-//	}
-//
-//	public Double getMedicalExpense() {
-//		return medicalExpense;
-//	}
-//
-//	public void setMedicalExpense(Double medicalExpense) {
-//		this.medicalExpense = medicalExpense;
-//	}
-//
-//	public Double getFoodExpense() {
-//		return foodExpense;
-//	}
-//
-//	public void setFoodExpense(Double foodExpense) {
-//		this.foodExpense = foodExpense;
-//	}
-//
-//	public Double getOtherExpense() {
-//		return otherExpense;
-//	}
-//
-//	public void setOtherExpense(Double otherExpense) {
-//		this.otherExpense = otherExpense;
-//	}
-//
-//	public byte[] getConsentFormImg() {
-//		return consentFormImg;
-//	}
-//
-//	public void setConsentFormImg(byte[] consentFormImg) {
-//		this.consentFormImg = consentFormImg;
-//	}
-//
-//
-//	public Integer getBusinessInBrief() {
-//		return businessInBrief;
-//	}
-//
-//	public void setBusinessInBrief(Integer businessInBrief) {
-//		this.businessInBrief = businessInBrief;
-//	}
-//
-//	public Double getMonthlyCashflow() {
-//		return monthlyCashflow;
-//	}
-//
-//	public void setMonthlyCashflow(Double monthlyCashflow) {
-//		this.monthlyCashflow = monthlyCashflow;
-//	}
-//
-//	public Double getMonthlyExpenditure() {
-//		return monthlyExpenditure;
-//	}
-//
-//	public void setMonthlyExpenditure(Double monthlyExpenditure) {
-//		this.monthlyExpenditure = monthlyExpenditure;
-//	}
-//
-//	public Double getMonthlyIncome() {
-//		return monthlyIncome;
-//	}
-//
-//	public void setMonthlyIncome(Double monthlyIncome) {
-//		this.monthlyIncome = monthlyIncome;
-//	}
 
 	public Integer getPpiNoFamilyMember() {
 		return ppiNoFamilyMember;
@@ -1608,23 +1431,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
 	}
 
-//	public Double getTotalExpense() {
-//		return totalExpense;
-//	}
-//
-//	public void setTotalExpense(Double totalExpense) {
-//		this.totalExpense = totalExpense;
-//	}
-//
-//	public Double getTotalMonthlyIncomeForFamily() {
-//		return totalMonthlyIncomeForFamily;
-//	}
-//
-//	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
-//		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
-//	}
-
-	
 	public Double getLoanAmountRecomandation() {
 		return loanAmountRecomandation;
 	}
@@ -1649,11 +1455,11 @@ public class MFIApplicantDetail implements Serializable {
 		this.moratoriumRecomandation = moratoriumRecomandation;
 	}
 
-	public String getLoanLiabilityRatio() {
+	public Double getLoanLiabilityRatio() {
 		return loanLiabilityRatio;
 	}
 
-	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
+	public void setLoanLiabilityRatio(Double loanLiabilityRatio) {
 		this.loanLiabilityRatio = loanLiabilityRatio;
 	}
 
@@ -1689,22 +1495,13 @@ public class MFIApplicantDetail implements Serializable {
 		this.addressProofNo = addressProofNo;
 	}
 
-//	public Double getHouseHoldExpense() {
-//		return houseHoldExpense;
-//	}
-//
-//	public void setHouseHoldExpense(Double houseHoldExpense) {
-//		this.houseHoldExpense = houseHoldExpense;
-//	}
-//
-//	public Double getClothesExpense() {
-//		return clothesExpense;
-//	}
-//
-//	public void setClothesExpense(Double clothesExpense) {
-//		this.clothesExpense = clothesExpense;
-//	}
+	public Integer getLoanTenure() {
+		return loanTenure;
+	}
 
+	public void setLoanTenure(Integer loanTenure) {
+		this.loanTenure = loanTenure;
+	}
 
 	public Long getJobId() {
 		return jobId;
@@ -1712,5 +1509,159 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
+	}
+
+	public String getAadharImg() {
+		return aadharImg;
+	}
+
+	public void setAadharImg(String aadharImg) {
+		this.aadharImg = aadharImg;
+	}
+
+
+	@Override
+	public String toString() {
+		return "MFIApplicantDetail{" +
+				"id=" + id +
+				", applicationId=" + applicationId +
+				", nameAsPerAadharCard='" + nameAsPerAadharCard + '\'' +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", middleName='" + middleName + '\'' +
+				", birthDate=" + birthDate +
+				", genderId=" + genderId +
+				", mobile='" + mobile + '\'' +
+				", email='" + email + '\'' +
+				", maritalStatusId=" + maritalStatusId +
+				", addressSameAsAadhar=" + addressSameAsAadhar +
+				", currentDistrict='" + currentDistrict + '\'' +
+				", aadharDistrict='" + aadharDistrict + '\'' +
+				", currentHouse='" + currentHouse + '\'' +
+				", aadharHouse='" + aadharHouse + '\'' +
+				", currentLandmark='" + currentLandmark + '\'' +
+				", aadharLandmark='" + aadharLandmark + '\'' +
+				", currentLocation='" + currentLocation + '\'' +
+				", aadharLocation='" + aadharLocation + '\'' +
+				", currentState='" + currentState + '\'' +
+				", aadharState='" + aadharState + '\'' +
+				", currentStreet='" + currentStreet + '\'' +
+				", aadharStreet='" + aadharStreet + '\'' +
+				", currentVtc='" + currentVtc + '\'' +
+				", aadharVtc='" + aadharVtc + '\'' +
+				", aadharSubdist='" + aadharSubdist + '\'' +
+				", currentSubdist='" + currentSubdist + '\'' +
+				", aadharPo='" + aadharPo + '\'' +
+				", currentPo='" + currentPo + '\'' +
+				", aadharCareOf='" + aadharCareOf + '\'' +
+				", addressPincode='" + addressPincode + '\'' +
+				", aadharPincode='" + aadharPincode + '\'' +
+				", fatherName='" + fatherName + '\'' +
+				", motherName='" + motherName + '\'' +
+				", spouseName='" + spouseName + '\'' +
+				", spouseBirthDate=" + spouseBirthDate +
+				", spouseMobile='" + spouseMobile + '\'' +
+				", noDependent=" + noDependent +
+				", nomineeName='" + nomineeName + '\'' +
+				", nomineeBirthDate=" + nomineeBirthDate +
+				", relationWithNomineeId=" + relationWithNomineeId +
+				", nomineePincode='" + nomineePincode + '\'' +
+				", religion=" + religion +
+				", educationQualification=" + educationQualification +
+				", landHolding=" + landHolding +
+				", nameOfFirm='" + nameOfFirm + '\'' +
+				", businessType=" + businessType +
+				", houseType=" + houseType +
+				", loanAmountRequired=" + loanAmountRequired +
+				", costOfProject=" + costOfProject +
+				", costOfEquipment=" + costOfEquipment +
+				", workingCapOfEquipment=" + workingCapOfEquipment +
+				", totalCostEquipment=" + totalCostEquipment +
+				", promoterContribution=" + promoterContribution +
+				", loanRequiredFromSidbi=" + loanRequiredFromSidbi +
+				", totalMeanFinance=" + totalMeanFinance +
+				", totalCashFlow=" + totalCashFlow +
+				", repaymentFrequency=" + repaymentFrequency +
+				", insurenceRequired=" + insurenceRequired +
+				", insurenceCompanyName='" + insurenceCompanyName + '\'' +
+				", insurencePremium=" + insurencePremium +
+				", createdBy=" + createdBy +
+				", createdDate=" + createdDate +
+				", isActive=" + isActive +
+				", modifiedBy=" + modifiedBy +
+				", modifiedDate=" + modifiedDate +
+				", loanType=" + loanType +
+				", nomineeState='" + nomineeState + '\'' +
+				", nomineeCity='" + nomineeCity + '\'' +
+				", nomineeDistrict='" + nomineeDistrict + '\'' +
+				", nomineeLocation='" + nomineeLocation + '\'' +
+				", nomineeHouseNo='" + nomineeHouseNo + '\'' +
+				", nomineeLandmark='" + nomineeLandmark + '\'' +
+				", academicReligion=" + academicReligion +
+				", academicCaste=" + academicCaste +
+				", isAcademicLifeInsurance=" + isAcademicLifeInsurance +
+				", houseOwnership=" + houseOwnership +
+				", areaType=" + areaType +
+				", businessPremises=" + businessPremises +
+				", expInSameLine=" + expInSameLine +
+				", academicSumInsured=" + academicSumInsured +
+				", type=" + type +
+				", remarks='" + remarks + '\'' +
+				", isPersonalDetailsFilled=" + isPersonalDetailsFilled +
+				", isFamilyDetailsFilled=" + isFamilyDetailsFilled +
+				", isNomineeDetailsFilled=" + isNomineeDetailsFilled +
+				", isAcadamicDetailsFilled=" + isAcadamicDetailsFilled +
+				", isBankDetailsFilled=" + isBankDetailsFilled +
+				", isIncomeDetailsFilled=" + isIncomeDetailsFilled +
+				", isFamilyIncomeFilled=" + isFamilyIncomeFilled +
+				", isFamilyExpenseFilled=" + isFamilyExpenseFilled +
+				", isExpectedIncomeFilled=" + isExpectedIncomeFilled +
+				", isPPIFilled=" + isPPIFilled +
+				", isProjectDetailsFilled=" + isProjectDetailsFilled +
+				", isApplyLoanFilled=" + isApplyLoanFilled +
+				", isCostProjectFilled=" + isCostProjectFilled +
+				", isMeanFinanceFilled=" + isMeanFinanceFilled +
+				", isCashFlowDetailsFilled=" + isCashFlowDetailsFilled +
+				", isAssetsDetailsFilled=" + isAssetsDetailsFilled +
+				", isCurrentAssetsFilled=" + isCurrentAssetsFilled +
+				", isFixedAssetsFilled=" + isFixedAssetsFilled +
+				", isCurrntLiabilityFilled=" + isCurrntLiabilityFilled +
+				", isRepaymentDetailsFilled=" + isRepaymentDetailsFilled +
+				", isConsentFormFilled=" + isConsentFormFilled +
+				", addressProofType=" + addressProofType +
+				", addressProofNo='" + addressProofNo + '\'' +
+				", addressProofImg='" + addressProofImg + '\'' +
+				", consentFormImg='" + consentFormImg + '\'' +
+				", profileImg='" + profileImg + '\'' +
+				", aadharImg='" + aadharImg + '\'' +
+				", ppiNoFamilyMember=" + ppiNoFamilyMember +
+				", ppiAcadamicHeadFamily=" + ppiAcadamicHeadFamily +
+				", ppiRafrigeratorInFamily=" + ppiRafrigeratorInFamily +
+				", ppiStoveInFamily=" + ppiStoveInFamily +
+				", ppiPressureCookerInFamily=" + ppiPressureCookerInFamily +
+				", ppiTvInFamily=" + ppiTvInFamily +
+				", ppiFanInFamily=" + ppiFanInFamily +
+				", ppiVehicleInFamily=" + ppiVehicleInFamily +
+				", ppiDressingTableInFamily=" + ppiDressingTableInFamily +
+				", ppiOtherTableInFamily=" + ppiOtherTableInFamily +
+				", purposeOfLoan=" + purposeOfLoan +
+				", clientType=" + clientType +
+				", isBusinessPremiseVisited=" + isBusinessPremiseVisited +
+				", repaymentTrack=" + repaymentTrack +
+				", creaditWorthiness=" + creaditWorthiness +
+				", loanLiabilityRatio=" + loanLiabilityRatio +
+				", competition=" + competition +
+				", loanAmountRecomandation=" + loanAmountRecomandation +
+				", tenureRecomandation=" + tenureRecomandation +
+				", moratoriumRecomandation=" + moratoriumRecomandation +
+				", interestRateRecomandation=" + interestRateRecomandation +
+				", installmentRecomandation=" + installmentRecomandation +
+				", isLoanassessmentDetailsFilled=" + isLoanassessmentDetailsFilled +
+				", loanAmountMFIChecker=" + loanAmountMFIChecker +
+				", loanTenure=" + loanTenure +
+				", loanAmountBankMaker=" + loanAmountBankMaker +
+				", jobId=" + jobId +
+				", status=" + status +
+				'}';
 	}
 }

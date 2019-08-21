@@ -22,6 +22,9 @@ public class MfiBankDetails implements Serializable {
     @Column(name = "branch_name")
     private String branchName;
 
+    @Column(name = "bank_name")
+    private String bankName;
+
     @Column(name = "account_holder_name")
     private String accountHolderName;
 
@@ -35,7 +38,7 @@ public class MfiBankDetails implements Serializable {
     private Integer accountType;
 
     @Column(name = "passbook_img")
-    private byte[] passbookImg;
+    private String passbookImg;
 
     public Long getId() {
         return id;
@@ -93,11 +96,11 @@ public class MfiBankDetails implements Serializable {
         this.accountType = accountType;
     }
 
-    public byte[] getPassbookImg() {
+    public String getPassbookImg() {
         return passbookImg;
     }
 
-    public void setPassbookImg(byte[] passbookImg) {
+    public void setPassbookImg(String passbookImg) {
         this.passbookImg = passbookImg;
     }
 
@@ -107,5 +110,13 @@ public class MfiBankDetails implements Serializable {
 
     public void setAccountHolderName(String accountHolderName) {
         this.accountHolderName = accountHolderName;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 }

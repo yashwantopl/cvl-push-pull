@@ -9,6 +9,8 @@ public interface LoanSanctionService {
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws LoansException;
 
 	public LoanSanctionRequest checkSanctionAmountMFI(LoanSanctionRequest loanSanctionRequest) throws LoansException;
+	
+	public LoanSanctionRequest getSanctionDetail(Long applicationId) throws LoansException;
 
 	public String sanctionRequestValidation( Long applicationId,Long orgId)  throws LoansException ;
 	

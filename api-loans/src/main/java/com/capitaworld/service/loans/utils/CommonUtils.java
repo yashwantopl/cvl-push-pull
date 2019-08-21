@@ -223,6 +223,40 @@ public class CommonUtils {
 			public static final String OFF = "0";
 		}
 	}
+	
+	public enum AgriLoanStatus {
+		WAITING(12l,"Waiting"),PENDING(11l,"Pending"),SUBMITTED(3l,"Submitted"); //Available in fs_application_status_master
+		private Long id;
+		private String value;
+		
+		private AgriLoanStatus(Long id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+		public Long getId() {
+			return id;
+		}
+		public String getValue() {
+			return value;
+		}
+		public static AgriLoanStatus fromValue(String v) {
+			for (AgriLoanStatus c : AgriLoanStatus.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+		
+		public static AgriLoanStatus fromId(Long v) {
+			for (AgriLoanStatus c : AgriLoanStatus.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v != null ? v.toString() : null);
+		}
+	}
 
 	public static final class DenominationId {
 		private DenominationId() {
@@ -287,8 +321,8 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
-				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl"), MFI(17,"Micro Finance Loan","mfi");
+		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), AUTO_LOAN(12,"Auto Loan","AL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl"), MFI(17,"Micro Finance Loan","mfi"), AGRI(18,"Agriculture","agri");
 		private int value;
 		private String name;
 		private String code;
@@ -325,7 +359,7 @@ public class CommonUtils {
 			case 3:
 				return HOME_LOAN;
 			case 12:
-				return CAR_LOAN;
+				return AUTO_LOAN;
 			case 7:
 				return PERSONAL_LOAN;
 			case 13:
@@ -338,9 +372,20 @@ public class CommonUtils {
 				return WCTL_LOAN;
 			case 17:
 					return MFI;
+			case 18:
+				return AGRI;
 			default :
 				return null;
 			}
+		}
+		
+		public static LoanType fromValue(int v) {
+			for (LoanType c : LoanType.values()) {
+				if (c.value == v) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(Integer.toString(v));
 		}
 //		public static String getLoanTypeName(Integer x) {
 //			switch (x) {
@@ -500,7 +545,7 @@ public class CommonUtils {
 		private static final String[] RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","createdBy","createdDate","isActive","applicationId","modifiedBy","modifiedDate"};
 
 		public static String[] getRetailPrimary() {
-			return PL_RETAIL_PRIMARY;
+			return RETAIL_PRIMARY;
 		}
 
 		private static final String[] PL_RETAIL_FINAL = {"addressSameAs","religion","qualifyingYear","noChildren","fatherName","motherName","spouseName","noDependent",
@@ -639,6 +684,10 @@ public class CommonUtils {
 		public static final Integer BORROWER_SALARY_ACCOUNT = 5;
 		public static final Integer EMPLOYMENT_WITH = 6;
 		public static final Integer SLEF_EMPLOYMENT_WITH = 7;
+		public static final Integer DISTRICT = 8;
+		public static final Integer CROP = 9;
+		public static final Integer IRRIGATED_UNIRRIGATED = 10;
+		public static final Integer REPAYMENT_MODE = 11;
 	}
 	
 
@@ -991,8 +1040,8 @@ public class CommonUtils {
 			return LoanType.TERM_LOAN;
 		} else if ("HL".equalsIgnoreCase(code)) {
 			return LoanType.HOME_LOAN;
-		} else if ("CL".equalsIgnoreCase(code)) {
-			return LoanType.CAR_LOAN;
+		} else if ("AL".equalsIgnoreCase(code)) {
+			return LoanType.AUTO_LOAN;
 		} else if ("PL".equalsIgnoreCase(code)) {
 			return LoanType.PERSONAL_LOAN;
 		} else if ("LAP".equalsIgnoreCase(code)) {
@@ -1365,7 +1414,8 @@ public class CommonUtils {
 		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
 		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
 		RETAIL_HOME_LOAN(5, "Retail Home Loan"),
-		MFI(6, "Micro FInance Institute");
+		MFI(6, "Micro FInance Institute"),
+		AGRICULTURE(7, "Agriculture");
 
 		private Integer id;
 		private String value;
@@ -1733,6 +1783,7 @@ public enum APIFlags {
 		}
 
 	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
@@ -1813,7 +1864,7 @@ public enum APIFlags {
 		}
 
 	}
-	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Object printFieldsForValue(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
@@ -2082,6 +2133,7 @@ public enum APIFlags {
 
 	public static Double convertTwoDecimalValuesIn(Double amount,Integer rate) {
 		if(amount!=null) {
+//			Comment for not convert to AbsoluteValues
 			amount=amount/rate;
 			amount = convertTwoDecimal(amount);
 		}
@@ -2089,7 +2141,8 @@ public enum APIFlags {
 	}
 	public static Double convertTwoDecimalAbsoluteValues(Double amount,Integer rate) {
 		if(amount!=null) {
-			amount=amount*rate;
+//			Comment for not convert to AbsoluteValues
+//			amount=amount*rate;
 			
 			amount = convertTwoDecimal(amount);
 		}
@@ -2102,5 +2155,4 @@ public enum APIFlags {
 		}
 		return amount;
 	}
-	
 }

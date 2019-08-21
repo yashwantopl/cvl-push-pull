@@ -76,6 +76,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
@@ -166,6 +167,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
 	
 	@Autowired
 	private ScoringClient scoringClient;
@@ -652,17 +656,22 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					logger.error("Error/Exception while fetching name Of Employer in CoApplicants in HL Cam Report of applicationId==>{} with EmploymentType==>{}  and EmploymentWith=={}" , applicationId, coApplicantDetail.getEmploymentType() ,coApplicantDetail.getEmploymentWith());
 				}
 				
+				//INCOME DETAILS - NET INCOME Of Co-Applicant
+				try {
+					List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = coApplicantIncomeService.getAllByCoAppId(coApplicantDetail.getId());
+					
+					coApp.put("incomeDetailsOfCoApp", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null );
+				} catch (Exception e) {
+					logger.error("Error while getting income details : ",e);
+				}
+				
 				ITRBasicDetailsResponse itrBasicDetailsResponse = new ITRBasicDetailsResponse();
 				itrBasicDetailsResponse.setApplicationId(applicationId);
 				itrBasicDetailsResponse.setCoAppId(coApplicantDetail.getId());
 				try {
 					ITRBasicDetailsResponse itrResponse = itrClient.getAppOrCoAppBasicDetails(itrBasicDetailsResponse);
-					if (itrResponse != null) {
-						coApp.put("coAppNameAsPerItr" ,itrResponse.getName());
-					}else {
-						logger.info("ITR name is empty for application==>{} and coAppId==>{}",applicationId ,coApplicantDetail.getId());
-					}
-					
+					coApp.put("coAppNameAsPerItr" ,itrResponse != null && itrResponse.getName() != null ? itrResponse.getName() : "-");
+				
 					// for name is edited or not:
 					String fullName = (coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") +" "+ (coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") +" "+ (coApplicantDetail.getLastName() != null ?  coApplicantDetail.getLastName() : "");
 					if(!CommonUtils.isObjectNullOrEmpty(fullName) && !CommonUtils.isObjectNullOrEmpty(itrResponse) && fullName.equalsIgnoreCase(itrResponse.getName())){
@@ -674,7 +683,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					logger.error("Error while fetching itr data from itrClient fro CoApplicant",e);
 				}
 				
-
 				String experienceInPresentJob = (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : "");
 				coApp.put("setIncomeConsider", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsIncomeConsider()) ? coApplicantDetail.getIsIncomeConsider() == true ? "Yes" : "No" : "-");
 				coApp.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
@@ -890,7 +898,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
 				roiData.put("concessionRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? proposalMappingRequestString.getConsessionRoi() : "-");
-				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				if(effectiveRoi != null) {
 					finalRoi = !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? effectiveRoi - proposalMappingRequestString.getConsessionRoi() : null;
 				}else {
@@ -944,10 +952,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		//INCOME DETAILS - NET INCOME
 		try {
 			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
-			
-			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
-				map.put("incomeDetails", retailApplicantIncomeDetail);
-			}
+
+			map.put("incomeDetails", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
 		} catch (Exception e) {
 			logger.error("Error while getting income details : ",e);
 		}
@@ -965,6 +971,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
                 financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
                 financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                 financialArrangementsDetailResponse.setEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getEmi()));
+                financialArrangementsDetailResponse.setBureauOrCalculatedEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getBureauOrCalculatedEmi()));
                 //financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
                 financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
             }
@@ -992,7 +999,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());	
 					financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());	
 					financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());	
-					financialArrangementsDetailResponse.setEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getEmi()));	
+					financialArrangementsDetailResponse.setEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getEmi()));
+					financialArrangementsDetailResponse.setBureauOrCalculatedEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getBureauOrCalculatedEmi()));
 					//financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");	
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);	
 				}

@@ -15,15 +15,6 @@ public class MfiExpenseExpectedIncomeDetails implements Serializable {
     @Column(name = "application_id")
     private Long applicationId;
 
-    @Column(name = "ship_shgi_installment")
-    private Double shipShgiInstallment;
-
-    @Column(name = "other_installment")
-    private Double otherInstallment;
-
-    @Column(name = "loan_installment")
-    private Double loanInstallment;
-
     @Column(name = "education_expense")
     private Double educationExpense;
 
@@ -86,31 +77,7 @@ public class MfiExpenseExpectedIncomeDetails implements Serializable {
         this.applicationId = applicationId;
     }
 
-    public Double getShipShgiInstallment() {
-        return shipShgiInstallment;
-    }
-
-    public void setShipShgiInstallment(Double shipShgiInstallment) {
-        this.shipShgiInstallment = shipShgiInstallment;
-    }
-
-    public Double getOtherInstallment() {
-        return otherInstallment;
-    }
-
-    public void setOtherInstallment(Double otherInstallment) {
-        this.otherInstallment = otherInstallment;
-    }
-
-    public Double getLoanInstallment() {
-        return loanInstallment;
-    }
-
-    public void setLoanInstallment(Double loanInstallment) {
-        this.loanInstallment = loanInstallment;
-    }
-
-    public Double getEducationExpense() {
+   public Double getEducationExpense() {
         return educationExpense;
     }
 

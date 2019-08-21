@@ -567,7 +567,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
-			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? primaryCorporateDetail.getProductServiceDescription() : null);
+			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
 		}
 		
 		//ONE-FORM DATA
@@ -1343,7 +1343,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//gstRelatedParty Data Fetch
 		try {
 			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", !CommonUtils.isObjectNullOrEmpty(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
