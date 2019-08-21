@@ -29,7 +29,7 @@ public interface ProductMasterService {
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId,Long userOrgId,Long businessTypeId);
 //	public List<ProductMasterRequest> getActiveInActiveList(Long userId,Long userOrgId);
 
-	public List<ProductMasterRequest> getListByUserType(Long userId,Integer userType,Integer stage,Long userOrgId);
+	public List<ProductMasterRequest> getListByUserType(Long userId,Integer userType,Integer stage,Long userOrgId,Integer productId);
 
 	public String getUserNameByApplicationId(Long productId, Long userId);
 

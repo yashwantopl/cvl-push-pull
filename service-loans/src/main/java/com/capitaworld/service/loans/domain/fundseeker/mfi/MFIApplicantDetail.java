@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.mfi;
 
+import com.capitaworld.cibil.api.utility.EncryptionUtils;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
@@ -326,6 +327,8 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "address_proof_type")
 	private Integer addressProofType;
+
+	@Convert(converter = EncryptionUtils.class)
 	@Column(name = "address_proof_no")
 	private String addressProofNo;
 
