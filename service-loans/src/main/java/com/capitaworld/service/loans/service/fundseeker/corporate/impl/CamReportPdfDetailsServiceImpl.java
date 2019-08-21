@@ -2279,9 +2279,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.info("Exception in getting financial fist year details {}",e);
 		}
 		try {
+			yearSalesPurchase = new HashMap<>();
 			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
 			if(operatingStatementDetails != null) {
-				yearSalesPurchase.put("year",currentYear-1);
+				yearSalesPurchase.put("year",currentYear-2);
 				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
 				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
 				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
@@ -2291,9 +2292,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		try {
+			yearSalesPurchase = new HashMap<>();
 			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
 			if(operatingStatementDetails != null) {
-				yearSalesPurchase.put("year",currentYear-1);
+				yearSalesPurchase.put("year",currentYear-3);
 				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
 				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
 				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
