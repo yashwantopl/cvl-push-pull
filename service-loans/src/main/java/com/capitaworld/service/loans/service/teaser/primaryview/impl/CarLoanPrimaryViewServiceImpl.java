@@ -1,11 +1,8 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,10 +29,20 @@ import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
+import com.capitaworld.service.oneform.enums.CarPurchaseType;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.ModeOfRecipt;
+import com.capitaworld.service.oneform.enums.Occupation;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.Title;
 
 @Service
 @Transactional
@@ -405,7 +412,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
         //setting Personal Loan Specific Data
         try {
-            PrimaryCarLoanDetailRequest primaryCarLoanDetailRequest = primaryCarLoanService.get(toApplicationId, userId);
+            PrimaryCarLoanDetailRequest primaryCarLoanDetailRequest = null ; //primaryCarLoanService.get(toApplicationId, userId);
             BeanUtils.copyProperties(primaryCarLoanDetailRequest, carLoanResponse);
             if(!CommonUtils.isObjectNullOrEmpty(primaryCarLoanDetailRequest.getCertifiedDealer()) && primaryCarLoanDetailRequest.getCertifiedDealer().booleanValue()){
                 carLoanResponse.setCertifiedDealer(primaryCarLoanDetailRequest.getCertifiedDealer().booleanValue() ? "Yes" : "No");
@@ -415,7 +422,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
             carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
             carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
             carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
-            carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
+//            carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
             carLoanResponse.setNewCarPurchaseType(primaryCarLoanDetailRequest.getNewCarPurchaseType()!=null? CarPurchaseType.getById(primaryCarLoanDetailRequest.getNewCarPurchaseType()).getValue():null);
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
