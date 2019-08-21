@@ -423,6 +423,7 @@ public class SidbiSpecificController {
 	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
 	    }
+
 		@GetMapping(value = "/get/applicationCode/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	    public ResponseEntity<LoansResponse> applicationCode(@PathVariable("applicationId") Long applicationId,HttpServletRequest request) throws LoansException {
 	        try {
@@ -454,4 +455,29 @@ public class SidbiSpecificController {
 	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
 	    }
+
+		
+		@GetMapping(value = "/get/loan_amount_for_ineligible/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> loanAmountForInEligibileCase(@PathVariable("applicationId") Long applicationId,HttpServletRequest request) throws LoansException {
+		    try {
+		        CommonDocumentUtils.startHook(logger, "loanAmountAsPerEligibility");
+		        
+		        if (applicationId == null) {
+		            logger.warn("ID and User Id Require to get Primary Working Details applicationId==> User ID ==>{}" , applicationId);
+		            return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		        }
+		        
+		        LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		        Double loanAmount = sidbiSpecificService.getLoanAmountByApplicationId(applicationId);
+		        
+				loansResponse.setData(loanAmount);
+		        
+		        CommonDocumentUtils.endHook(logger, "loanAmountAsPerEligibility");
+		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		
+		    } catch (Exception e) {
+		        logger.error("Error while loanAmountAsPerEligibility==>", e);
+		        return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		    }
+		}
 }
