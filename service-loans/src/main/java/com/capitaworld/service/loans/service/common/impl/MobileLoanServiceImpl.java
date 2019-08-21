@@ -17,7 +17,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoan
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
@@ -106,7 +106,7 @@ public class MobileLoanServiceImpl implements MobileService {
 				
 				} else if(loantype.getValue() == LoanType.AUTO_LOAN.getValue()) {
 					logger.info("Get Applicant Car Loan Primary Details");
-					response.setData(primaryCarLoanService.get(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
+					response.setData(primaryCarLoanService.getOneformPrimaryDetails(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
 				
 				} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
 					logger.info("Get Applicant LAP Loan Primary Details");
@@ -155,7 +155,7 @@ public class MobileLoanServiceImpl implements MobileService {
 					logger.info("Start Save Applicant Car Loan Primary Details...");
 					PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryCarLoanDetailRequest.class);
 					if(!CommonUtils.isObjectNullOrEmpty(carLoanRequest)){
-						primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
+//						primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
 					}
 
 				} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
@@ -281,7 +281,7 @@ public class MobileLoanServiceImpl implements MobileService {
 					applicationMaster = new PrimaryHomeLoanDetail();
 					break;
 				case AUTO_LOAN:
-					applicationMaster = new PrimaryCarLoanDetail();
+					applicationMaster = new PrimaryAutoLoanDetail();
 					break;
 
 				default:

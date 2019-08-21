@@ -9,5 +9,6 @@ public interface PrimaryAutoLoanService {
 	public boolean saveOrUpdate(ALOneformPrimaryRes alOneformPrimaryRes, Long userId) throws LoansException;
 
 	public ALOneformPrimaryRes getOneformPrimaryDetails(Long id, Long userId) throws LoansException;
+	
 
 }
