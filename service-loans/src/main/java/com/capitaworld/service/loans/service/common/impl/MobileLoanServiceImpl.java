@@ -39,7 +39,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.MobileService;
-import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryLapLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryPersonalLoanService;
@@ -60,7 +60,7 @@ public class MobileLoanServiceImpl implements MobileService {
 	private PrimaryHomeLoanService primaryHomeLoanService;
 	
 	@Autowired
-	private PrimaryCarLoanService primaryCarLoanService;
+	private PrimaryAutoLoanService primaryCarLoanService;
 	
 	@Autowired
 	private PrimaryPersonalLoanService primaryPersonalLoanService;

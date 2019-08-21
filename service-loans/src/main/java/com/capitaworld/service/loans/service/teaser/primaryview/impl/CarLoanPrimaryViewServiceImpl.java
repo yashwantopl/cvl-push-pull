@@ -29,7 +29,7 @@ import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
-import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -56,7 +56,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
     private GuarantorService guarantorService;
 
     @Autowired
-    private PrimaryCarLoanService primaryCarLoanService;
+    private PrimaryAutoLoanService primaryCarLoanService;
 
     @Autowired
     private OneFormClient oneFormClient;
