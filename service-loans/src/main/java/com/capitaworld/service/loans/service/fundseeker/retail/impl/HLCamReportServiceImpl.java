@@ -952,10 +952,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		//INCOME DETAILS - NET INCOME
 		try {
 			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
-			
-			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
-				map.put("incomeDetails", retailApplicantIncomeDetail);
-			}
+
+			map.put("incomeDetails", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
 		} catch (Exception e) {
 			logger.error("Error while getting income details : ",e);
 		}
