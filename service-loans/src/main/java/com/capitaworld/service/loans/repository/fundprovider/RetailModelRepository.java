@@ -11,4 +11,6 @@ public interface RetailModelRepository extends JpaRepository<RetailModel, Long>{
 	public RetailModel findById(Long id);
 	
 	public List<RetailModel> findByOrgId(Long id);
+	
+	public List<RetailModel> findByOrgIdAndBusinessTypeId(Long id, Integer businessTypeId);
 }

@@ -44,7 +44,15 @@ public class FinancialArrangementDetailResponseString implements Serializable{
     
     private String buerauOutStandingStr;
     private String collateralAmtStr;
+    private String bureauOrCalculatedEmi;
     
+    public String getBureauOrCalculatedEmi() {
+ 		return bureauOrCalculatedEmi;
+ 	}
+
+ 	public void setBureauOrCalculatedEmi(String bureauOrCalculatedEmi) {
+ 		this.bureauOrCalculatedEmi = bureauOrCalculatedEmi;
+ 	}
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;

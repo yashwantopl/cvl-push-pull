@@ -23,7 +23,7 @@ public class MfiLoanAssessmentDetailsReq {
 	private Boolean isBusinessPremiseVisited;
 	private Integer repaymentTrack;
 	private Integer creaditWorthiness;
-	private String loanLiabilityRatio;
+	private Double loanLiabilityRatio;
 	private Integer competition;
 
 	private Boolean isLoanassessmentDetailsFilled;
@@ -48,7 +48,7 @@ public class MfiLoanAssessmentDetailsReq {
 	}
 
 	public MfiLoanAssessmentDetailsReq(Long applicationId, Integer purposeOfLoan, Integer clientType, Boolean isBusinessPremiseVisited, Integer repaymentTrack, Integer creaditWorthiness,
-									   String loanLiabilityRatio, Integer competition) {
+									   Double loanLiabilityRatio, Integer competition) {
 		super();
 		this.applicationId = applicationId;
 		this.purposeOfLoan = purposeOfLoan;
@@ -101,12 +101,15 @@ public class MfiLoanAssessmentDetailsReq {
 	public void setCreaditWorthiness(Integer creaditWorthiness) {
 		this.creaditWorthiness = creaditWorthiness;
 	}
-	public String getLoanLiabilityRatio() {
+
+	public Double getLoanLiabilityRatio() {
 		return loanLiabilityRatio;
 	}
-	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
+
+	public void setLoanLiabilityRatio(Double loanLiabilityRatio) {
 		this.loanLiabilityRatio = loanLiabilityRatio;
 	}
+
 	public Integer getCompetition() {
 		return competition;
 	}

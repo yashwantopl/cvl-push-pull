@@ -85,7 +85,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorpora
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
@@ -635,7 +635,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					// create record in fs retail applicant
 					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
-				case CAR_LOAN:
+				case AUTO_LOAN:
 					break;
 
 				default:
@@ -1900,7 +1900,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}
 
-				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue() || loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())
+				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue() || loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue())
 					&& (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled()) || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
 						return false;
 				}
@@ -3450,10 +3450,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					.getById(applicationMaster.getProductId());
 			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
 					&& (loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
-							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
+							|| loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()))
                     && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
                             || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
-					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+					if (loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
@@ -3563,7 +3563,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationProposalMapping.getProductId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanType) && (applicationProposalMapping.getIsApplicantFinalFilled() == null || !applicationProposalMapping.getIsApplicantFinalFilled())) {
-					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+					if (loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else if(loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
@@ -4892,8 +4892,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case HOME_LOAN:
 			applicationMaster = new PrimaryHomeLoanDetail();
 			break;
-		case CAR_LOAN:
-			applicationMaster = new PrimaryCarLoanDetail();
+		case AUTO_LOAN:
+			applicationMaster = new PrimaryAutoLoanDetail();
 			break;
 		case UNSECURED_LOAN:
 			applicationMaster = new PrimaryUnsecuredLoanDetail();
@@ -6135,6 +6135,36 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
 		usersRequest.setId(userId);
 		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Exit in createMsmeLoan");
+		return corporateLoan.getId();
+	}
+	
+	@Override
+	public Long createAgriLoan(Long userId,Integer businessTypeId,Long orgId){
+		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.AgriLoanStatus.PENDING.getId()));
+//		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+		corporateLoan.setCreatedBy(userId);
+		corporateLoan.setCreatedDate(new Date());
+		corporateLoan.setUserId(userId);
+		corporateLoan.setProductId(17);
+		corporateLoan.setBusinessTypeId(6);
+		corporateLoan.setFpMakerId(userId);
+		corporateLoan.setNpOrgId(orgId);
+		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
+//		corporateLoan.setBusinessTypeId(businessTypeId);
+		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
+		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
+		logger.info("Going to Create new Corporate UserId===>{}", userId);
+		corporateLoan = loanApplicationRepository.save(corporateLoan);
+		logger.info("Created New Corporate Loan of User Id==>{}", userId);
+		logger.info("Setting Last Application is as Last access Id in User Table---->" + corporateLoan.getIsActive());
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
+		usersRequest.setId(userId);
+		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Successfully get result");
 		logger.info("Exit in createMsmeLoan");
 		return corporateLoan.getId();
 	}

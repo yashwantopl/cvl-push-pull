@@ -17,7 +17,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoan
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
@@ -39,7 +39,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.MobileService;
-import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryLapLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryPersonalLoanService;
@@ -60,7 +60,7 @@ public class MobileLoanServiceImpl implements MobileService {
 	private PrimaryHomeLoanService primaryHomeLoanService;
 	
 	@Autowired
-	private PrimaryCarLoanService primaryCarLoanService;
+	private PrimaryAutoLoanService primaryCarLoanService;
 	
 	@Autowired
 	private PrimaryPersonalLoanService primaryPersonalLoanService;
@@ -104,9 +104,9 @@ public class MobileLoanServiceImpl implements MobileService {
 					logger.info("Get Applicant Personal Loan Primary Details");
 					response.setData(primaryPersonalLoanService.get(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
 				
-				} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
+				} else if(loantype.getValue() == LoanType.AUTO_LOAN.getValue()) {
 					logger.info("Get Applicant Car Loan Primary Details");
-					response.setData(primaryCarLoanService.get(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
+					response.setData(primaryCarLoanService.getOneformPrimaryDetails(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
 				
 				} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
 					logger.info("Get Applicant LAP Loan Primary Details");
@@ -151,11 +151,11 @@ public class MobileLoanServiceImpl implements MobileService {
 						primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mRetailApplicantResponse.getUserId());
 					}
 
-				} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
+				} else if(loantype.getValue() == LoanType.AUTO_LOAN.getValue()) {
 					logger.info("Start Save Applicant Car Loan Primary Details...");
 					PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryCarLoanDetailRequest.class);
 					if(!CommonUtils.isObjectNullOrEmpty(carLoanRequest)){
-						primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
+//						primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
 					}
 
 				} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
@@ -280,8 +280,8 @@ public class MobileLoanServiceImpl implements MobileService {
 				case HOME_LOAN:
 					applicationMaster = new PrimaryHomeLoanDetail();
 					break;
-				case CAR_LOAN:
-					applicationMaster = new PrimaryCarLoanDetail();
+				case AUTO_LOAN:
+					applicationMaster = new PrimaryAutoLoanDetail();
 					break;
 
 				default:
@@ -377,7 +377,7 @@ public class MobileLoanServiceImpl implements MobileService {
 					// create record in fs retail applicant
 					/*saveRetailApplicantDetailForMobileApplication(applicationMaster, loanApplicationRequest);*/
 					break;
-				case CAR_LOAN:
+				case AUTO_LOAN:
 					break;
 
 				default:

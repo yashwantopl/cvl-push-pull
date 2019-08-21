@@ -15,6 +15,7 @@ public class MfiBankDetailsReq implements Serializable {
 	private Long bankId;
 	private Long userId;
 	private String branchName;
+	private String bankName;
 	private String accountHolderName;
 	private String accountNo;
 	private String ifscCode;
@@ -109,5 +110,13 @@ public class MfiBankDetailsReq implements Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
 }

@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.colending.impl;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ClientListingCoLending;
+import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -11,13 +12,17 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.NbfcClientResponse;
 import com.capitaworld.service.users.model.UserResponse;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,8 +39,12 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 	@Autowired
 	private UsersClient usersClient;
 
-	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
+	@Autowired
+	private CoLendingFlowRepository coLendingFlowRepository;
 
+
+	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
+	private static final String ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT = "Error while getting NBFC client count.";
 
 	@Override
 	public List<ClientListingCoLending> clientListCoLending(int pageIndex,int size,Long npUserId) throws LoansException {
@@ -82,6 +91,19 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				} else {
 					clientDetailCoLending.setClientState("NA");
 				}
+				Object[] objects = coLendingFlowRepository.getStageAndStatus(clientResponse.getClientId());
+				if (objects!=null){
+					if ((objects[0].equals("7") || objects[0].equals("9")) && objects[1].equals("3")){
+						clientDetailCoLending.setClientStatus("In-Principle");
+					}else if(objects[0].equals("4") && objects[1].equals("3")){
+						clientDetailCoLending.setClientStatus("In-Eligible");
+					}else{
+						clientDetailCoLending.setClientStatus("In-Progress");
+					}
+				}else{
+					clientDetailCoLending.setClientStatus("Journey Pending");
+				}
+
 				clientListings.add(clientDetailCoLending);
 
 			}
@@ -92,4 +114,20 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		}
 
 	}
+	
+	@Override
+	public JSONObject nbfcClientCount(Long nbfcUserId) throws LoansException {
+		try {
+			UserResponse response = usersClient.getNbfcClientCount(nbfcUserId);
+			if(!CommonUtils.isObjectNullOrEmpty(response.getData())){
+				return MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getData(), JSONObject.class);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT,e);
+			throw new LoansException(ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT);
+		}
+		return null;
+	}
+
+
 }

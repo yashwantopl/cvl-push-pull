@@ -60,6 +60,7 @@ public class HlTeaserViewResponse {
     private List<Object> cibilReport;
     private List<Object> irtPdfReport;
     private List<Object> irtXMLReport;
+    private List<Object> cibilConsumerReport;
     private List<Map<String,Object>> directorBackGroundDetails;
     private List<CorporateDirectorIncomeRequest> directorIncomeDetails;
     private Object eligibilityDataObject;
@@ -202,6 +203,14 @@ public class HlTeaserViewResponse {
 	private String noteOfBorrower;
 
 	
+
+	public List<Object> getCibilConsumerReport() {
+		return cibilConsumerReport;
+	}
+
+	public void setCibilConsumerReport(List<Object> cibilConsumerReport) {
+		this.cibilConsumerReport = cibilConsumerReport;
+	}
 
 	public String getNoteOfBorrower() {
 		return noteOfBorrower;

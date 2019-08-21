@@ -1,6 +1,24 @@
 
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
@@ -13,20 +31,82 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.*;
+import com.capitaworld.service.loans.domain.fundprovider.AgriLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.AutoLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.MFILoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
+import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.DataRequest;
+import com.capitaworld.service.loans.model.FpProductDetails;
+import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
+import com.capitaworld.service.loans.model.ProductDetailsForSp;
+import com.capitaworld.service.loans.model.ProductDetailsResponse;
+import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.corporate.*;
+import com.capitaworld.service.loans.model.corporate.AddProductRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateProduct;
+import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
+import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.model.mfi.MFILoanParameterRequest;
+import com.capitaworld.service.loans.model.retail.AgriLoanParameterRequest;
+import com.capitaworld.service.loans.model.retail.AutoLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
-import com.capitaworld.service.loans.repository.fundprovider.*;
+import com.capitaworld.service.loans.repository.fundprovider.AutoLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LapParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MFILoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
-import com.capitaworld.service.loans.service.fundprovider.*;
+import com.capitaworld.service.loans.service.fundprovider.AgriLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.AutoLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
+import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.LoanPurposeAmountMappingService;
+import com.capitaworld.service.loans.service.fundprovider.MFILoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.MFILoanParameterTempService;
+import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
+import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
@@ -42,17 +122,6 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.*;
 
 @Service
 @Transactional
@@ -88,7 +157,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private HomeLoanParameterRepository homeLoanParameterRepository;
 
 	@Autowired
-	private CarLoanParameterRepository carLoanParameterRepository;
+	private AutoLoanParameterRepository carLoanParameterRepository;
 
 	@Autowired
 	private PersonalLoanParameterRepository personalLoanParameterRepository;
@@ -124,7 +193,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private MFILoanParameterService mfiLoanParameterService;
 
 	@Autowired
-	private CarLoanParameterService carLoanParameterService;
+	private AutoLoanParameterService autoLoanParameterService;
 
 	@Autowired
 	private PersonalLoanParameterService personalLoanParameterService;
@@ -137,7 +206,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private WcTlParameterService wcTlParameterService;
-
+	
+	@Autowired
+	private AgriLoanParameterService agriLoanParameterService;
+	
 	@Autowired
 	private MFILoanParameterTempService mfiLoanParameterTempService;
 
@@ -192,12 +264,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
    
 	
-    private Integer [] productIds = { CommonUtils.LoanType.HOME_LOAN.getValue(),CommonUtils.LoanType.PERSONAL_LOAN.getValue()};
+    private Integer [] productIds = { CommonUtils.LoanType.HOME_LOAN.getValue(),CommonUtils.LoanType.PERSONAL_LOAN.getValue(),CommonUtils.LoanType.AUTO_LOAN.getValue()};
     
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		HomeLoanParameterRequest homeLoanParameterRequest = null;
+		AgriLoanParameterRequest agriLoanParameterRequest = null;
+		AutoLoanParameterRequest autoLoanParameterRequest = null;
 		try {
 
 			if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
@@ -248,6 +322,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				case MFI_LOAN:
 					productMasterTemp = new MFILoanParameterTemp();
 					break;
+				case AGRI_LOAN:
+					productMasterTemp = new AgriLoanParameterTemp();
+					break;
+				case AUTO_LOAN:
+					productMasterTemp = new AutoLoanParameterTemp();
+					break;
+					
 
 				default:
 					break;
@@ -408,7 +489,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						productMasterTemp = mfiLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
-
+						
+					case AGRI_LOAN:
+						AgriLoanParameterTemp agriLoanParameterTemp = new AgriLoanParameterTemp();
+						agriLoanParameterRequest = agriLoanParameterService.get(addProductRequest.getLoanId());
+						BeanUtils.copyProperties(agriLoanParameterRequest, agriLoanParameterTemp,"id");
+						productMasterTemp = agriLoanParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
+						break;
+						
+					case AUTO_LOAN:
+						AutoLoanParameterTemp autoLoanParameterTemp = new AutoLoanParameterTemp();
+						autoLoanParameterRequest = autoLoanParameterService.getAutoLoanParameterRequest(addProductRequest.getLoanId());
+						BeanUtils.copyProperties(autoLoanParameterRequest, autoLoanParameterTemp,"id");
+						productMasterTemp = autoLoanParameterTemp;
+						productMasterTemp.setIsParameterFilled(true);
+						break;
 					default:
 						break;
 					}
@@ -571,6 +667,60 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						
 						//Saving Loan Purpose Amount Mapping
 						loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), productMaster2.getId());						
+					}
+				}
+				
+				if(LoanType.AGRI_LOAN.getId().equals(loanType.getId())) {
+					// Saving Mapping Current CURRENT_EMPLOYMENT
+					
+					if(!CommonUtils.isObjectNullOrEmpty(agriLoanParameterRequest)) {
+						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.DISTRICT, agriLoanParameterRequest.getDistrictIds());
+						
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.CROP, agriLoanParameterRequest.getCropIds());
+						
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.IRRIGATED_UNIRRIGATED, agriLoanParameterRequest.getIrriUnirriIds());
+					}
+				}
+				
+				if(LoanType.AUTO_LOAN.getId().equals(loanType.getId())) {
+					// Saving Mapping Current CURRENT_EMPLOYMENT
+					
+					if(!CommonUtils.isObjectNullOrEmpty(autoLoanParameterRequest)) {
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.CURRENT_EMPLOYMENT,
+								autoLoanParameterRequest.getCurrentEmploymentStatusIds());
+
+						// Saving Mapping Current RESIDENTIAL
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.RESIDENTIAL, autoLoanParameterRequest.getResidentialStatusIds());
+
+						// Saving Mapping Current BORROWER_TYPE
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.BORROWER_TYPE, autoLoanParameterRequest.getBorrowerTypeIds());
+
+						// Saving Mapping Current SALARY_MODE
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.SALARY_MODE, autoLoanParameterRequest.getSalaryModeIds());
+
+						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, autoLoanParameterRequest.getBorrSalAccIds());
+						
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.EMPLOYMENT_WITH, autoLoanParameterRequest.getEmploymentWithIds());
+						
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, autoLoanParameterRequest.getSelfEmployedWithIds());
+						
+						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
+								CommonUtils.ParameterTypes.REPAYMENT_MODE, autoLoanParameterRequest.getRepaymentModeIds());
+						
+						//Saving Loan Purpose Amount Mapping
+						loanPurposeAmountMappingService.deleteAndSave(autoLoanParameterRequest.getLoanPurposeAmountMappingRequests(), productMaster2.getId());						
 					}
 				}
 				return true;
@@ -992,7 +1142,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				case HOME_LOAN:
 					productMaster = homeLoanParameterRepository.findOne(productMappingId);
 					break;
-				case CAR_LOAN:
+				case AUTO_LOAN:
 					productMaster = carLoanParameterRepository.findOne(productMappingId);
 					break;
 				case PERSONAL_LOAN:
@@ -1080,7 +1230,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Long userOrgId) {
+	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Long userOrgId,Integer productId) {
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 
@@ -1088,25 +1238,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			List<ProductMasterTemp> results = null;
 			if (userType == 1) {
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
+					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productId));
 				} else {
-					results = productMasterTempRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
+					results = productMasterTempRepository.getUserRetailProductList(userId,Arrays.asList(productId));
 				}
-				/*
-				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
-				 * (ProductMaster master : results) { if (master.getProductId()
-				 * == 3) { requests.add(homeLoanParameterService.
-				 * getHomeLoanParameterRequest(master. getId())); } else if
-				 * (master.getProductId() == 7) {
-				 * requests.add(personalLoanParameterService.
-				 * getPersonalLoanParameterRequest( master.getId())); } else if
-				 * (master.getProductId() == 12) {
-				 * requests.add(carLoanParameterService.
-				 * getCarLoanParameterRequest(master.getId( ))); } else if
-				 * (master.getProductId() == 13) {
-				 * requests.add(lapLoanParameterService.getLapParameterRequest(
-				 * master.getId())); } } }
-				 */
 				for (ProductMasterTemp productMaster : results) {
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
@@ -1121,21 +1256,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else {
 					results = productMasterTempRepository.getUserCorporateProductList(userId);
 				}
-				/*
-				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
-				 * (ProductMaster master : results) { if (master.getProductId()
-				 * == 1) {
-				 * requests.add(productMasterRepository.getOne()(master.getId())
-				 * ); } else if (master.getProductId() == 2) {
-				 * requests.add(termLoanParameterService.
-				 * getTermLoanParameterRequest(master. getId())); } else if
-				 * (master.getProductId() == 15) {
-				 * requests.add(unsecuredLoanParameterService.
-				 * getUnsecuredLoanParameterRequest( master.getId())); } else if
-				 * (master.getProductId() == 16) {
-				 * requests.add(wcTlParameterService.getWcTlRequest(master.getId
-				 * ())); } } }
-				 */
 				for (ProductMasterTemp productMaster : results) {
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
@@ -1148,46 +1268,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			List<ProductMaster> results = null;
 			if (userType == 1) {
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
+					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productId));
 				} else {
-					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
+					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productId));
 				}
-				/*
-				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
-				 * (ProductMaster master : results) { if (master.getProductId()
-				 * == 3) { requests.add(homeLoanParameterService.
-				 * getHomeLoanParameterRequest(master. getId())); } else if
-				 * (master.getProductId() == 7) {
-				 * requests.add(personalLoanParameterService.
-				 * getPersonalLoanParameterRequest( master.getId())); } else if
-				 * (master.getProductId() == 12) {
-				 * requests.add(carLoanParameterService.
-				 * getCarLoanParameterRequest(master.getId( ))); } else if
-				 * (master.getProductId() == 13) {
-				 * requests.add(lapLoanParameterService.getLapParameterRequest(
-				 * master.getId())); } } }
-				 */
 			} else {
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 					results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
 				} else {
 					results = productMasterRepository.getUserCorporateProductList(userId);
 				}
-				/*
-				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
-				 * (ProductMaster master : results) { if (master.getProductId()
-				 * == 1) {
-				 * requests.add(productMasterRepository.getOne()(master.getId())
-				 * ); } else if (master.getProductId() == 2) {
-				 * requests.add(termLoanParameterService.
-				 * getTermLoanParameterRequest(master. getId())); } else if
-				 * (master.getProductId() == 15) {
-				 * requests.add(unsecuredLoanParameterService.
-				 * getUnsecuredLoanParameterRequest( master.getId())); } else if
-				 * (master.getProductId() == 16) {
-				 * requests.add(wcTlParameterService.getWcTlRequest(master.getId
-				 * ())); } } }
-				 */
 			}
 			for (ProductMaster productMaster : results) {
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
@@ -1197,14 +1287,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMasterRequests.add(productMasterRequest);
 			}
 		}
-		/*
-		 * if (CommonUtils.isListNullOrEmpty(results)) return null; for
-		 * (ProductMaster master : results) { ProductMasterRequest request = new
-		 * ProductMasterRequest(); BeanUtils.copyProperties(master, request);
-		 * request.setIsMatched(productMasterRepository.
-		 * getMatchedAndActiveProduct(userId).size() > 0 ? true : false);
-		 * requests.add(request); }
-		 */
 		
 		CommonDocumentUtils.endHook(logger, "getListByUserType");
 
@@ -1382,17 +1464,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else {
 					return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(), role, userId);
 				}
-			} 
-			else if (master.getProductId() == 7) {
+			}else if (master.getProductId() == 7) {
 				return personalLoanParameterService.getPersonalLoanParameterRequestTemp(master.getId(), role, userId);
+			}else if (master.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
+				return autoLoanParameterService.getTemp(master.getId(), role, userId);
 			}else if (master.getProductId() == 3) {
 				return homeLoanParameterService.getTemp(master.getId(), role, userId);
-			}
-			/*
-				 * else if (master.getProductId() == 15) { return
-				 * unsecuredLoanParameterService.
-				 * getUnsecuredLoanParameterRequest(master.getId()); }
-				 */ else if (master.getProductId() == 16) {
+			}else if (master.getProductId() == 16) {
 				return wcTlParameterService.getWcTlRequestTemp(master.getId(), role, userId);
 			}
 			else if (master.getProductId() == 17) {
@@ -1406,7 +1484,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			} else if (master.getProductId() == 7) {
 				return personalLoanParameterService.getPersonalLoanParameterRequest(master.getId());
 			} else if (master.getProductId() == 12) {
-				return carLoanParameterService.getCarLoanParameterRequest(master.getId());
+				return autoLoanParameterService.getAutoLoanParameterRequest(master.getId());
 			} else if (master.getProductId() == 13) {
 				return lapLoanParameterService.getLapParameterRequest(master.getId());
 			}
@@ -1625,6 +1703,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				BeanUtils.copyProperties(retailProduct, homeLoanParameterRequest);
 				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
 				return homeLoanParameterService.saveOrUpdateTemp(homeLoanParameterRequest);
+			}else if (retailProduct.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue() ) {
+				AutoLoanParameterRequest autoLoanParameterRequest = (AutoLoanParameterRequest)retailProduct;
+				BeanUtils.copyProperties(retailProduct, autoLoanParameterRequest);
+				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
+				return autoLoanParameterService.saveOrUpdateTemp(autoLoanParameterRequest);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);

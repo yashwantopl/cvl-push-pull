@@ -84,7 +84,7 @@ public class RetailModelServiceImpl implements RetailModelService {
 		logger.info(CommonUtils.ENTRY_IN + SAVE_TO_TEMP_METHOD);
 		RetailModelTemp retailModelTemp = retailModelTempRepository.findById(modelRequest.getId());
 		if (retailModelTemp == null) {
-			if (CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
+			if (CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId()) || CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
 				retailModelTemp = new HomeLoanModelTemp();
 				retailModelTemp.setCreatedBy(modelRequest.getUserId());
 				retailModelTemp.setCreatedDate(new Date());
@@ -134,10 +134,40 @@ public class RetailModelServiceImpl implements RetailModelService {
 		}
 		return list;
 	}
+	
+	@Override
+	public List<RetailModelRequest> getTempByOrgIdAndBusinessTypeId(Long orgId, Integer businessTypeId) {
+		List<RetailModelTemp> responses = retailModelTempRepository.findByOrgIdAndBusinessTypeIdAndIsCopiedAndIsApproved(orgId,businessTypeId,false,false);
+		if(CommonUtils.isListNullOrEmpty(responses)) {
+			return Collections.emptyList();
+		}
+		List<RetailModelRequest> list = new ArrayList<>(responses.size());
+		for(RetailModelTemp modelTemp : responses) {
+			RetailModelRequest  modelRequest = new RetailModelRequest();
+			BeanUtils.copyProperties(modelTemp, modelRequest);
+			list.add(modelRequest);
+		}
+		return list;
+	}
 
 	@Override
 	public List<RetailModelRequest> get(Long orgId) {
 		List<RetailModel> responses = retailModelRepository.findByOrgId(orgId);
+		if(CommonUtils.isListNullOrEmpty(responses)) {
+			return Collections.emptyList();
+		}
+		List<RetailModelRequest> list = new ArrayList<>(responses.size());
+		for(RetailModel modelTemp : responses) {
+			RetailModelRequest  modelRequest = new RetailModelRequest();
+			BeanUtils.copyProperties(modelTemp, modelRequest);
+			list.add(modelRequest);
+		}
+		return list;
+	}
+	
+	@Override
+	public List<RetailModelRequest> getByOrgIdAndBusinessTypeId(Long orgId, Integer businessTypeId) {
+		List<RetailModel> responses = retailModelRepository.findByOrgIdAndBusinessTypeId(orgId, businessTypeId);
 		if(CommonUtils.isListNullOrEmpty(responses)) {
 			return Collections.emptyList();
 		}
