@@ -808,7 +808,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				eligibilityReq.setApplicationId(applicationId);
 				eligibilityReq.setFpProductMappingId(productId);
 				EligibilityResponse eligibilityResp= eligibilityClient.getRetailLoanData(eligibilityReq);
-				if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
+				if(!CommonUtils.isObjectNullOrEmpty(eligibilityResp)){
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), PersonalEligibilityRequest.class), new HashMap<>()));
 				}
 			}catch (Exception e) {
