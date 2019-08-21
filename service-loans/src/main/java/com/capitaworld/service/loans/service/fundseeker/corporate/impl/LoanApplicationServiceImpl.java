@@ -85,7 +85,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorpora
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
@@ -4893,7 +4893,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster = new PrimaryHomeLoanDetail();
 			break;
 		case AUTO_LOAN:
-			applicationMaster = new PrimaryCarLoanDetail();
+			applicationMaster = new PrimaryAutoLoanDetail();
 			break;
 		case UNSECURED_LOAN:
 			applicationMaster = new PrimaryUnsecuredLoanDetail();
