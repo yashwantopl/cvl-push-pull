@@ -286,6 +286,8 @@ public class LoansClient {
     
     private static final String GET_APPLICATION_CAMPAIGN_CODE = "/loan_application/getApplicationCampCode";
     private static final String GET_FINANCIAL_DATA = "/cma/getFinancialDetailsForBankIntegration";
+    
+    private static final String LOAN_AMOUNT_FOR_INELIGIBLE = "/get/loan_amount_for_ineligible";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2884,6 +2886,23 @@ public class LoansClient {
 		}
 	}
 	
+	
+	/**
+	 * GET Loan Amount For In-eligible case For (LOS/LLMS SBI)  
+	 * @param applicationId
+	 * 
+	 */
+	public LoansResponse getLoanAmountForInEligibileCase(Long applicationId)  {
+		String url = loansBaseUrl.concat(LOAN_AMOUNT_FOR_INELIGIBLE).concat("/" + applicationId);
+		
+		logger.info("url for Getting LOAN_AMOUNT_FOR_INELIGIBLE DETAILS=================>{} = {} = {}" , url , AND_FOR_APPLICATION_ID , applicationId);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(REQ_AUTH, "true");
+		HttpEntity<?> entity = new HttpEntity<>(null, headers);
+		return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		
+	}
 }
 
 
