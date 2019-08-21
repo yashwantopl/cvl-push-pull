@@ -5,8 +5,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -78,7 +76,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.DateWiseComparator;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
@@ -123,7 +120,6 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-import com.google.gson.internal.LinkedHashTreeMap;
 
 @Service
 @Transactional
@@ -1392,18 +1388,18 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest) {
 		LinkedHashMap<String,Object>comparisionData=new LinkedHashMap<>();
 		GstResponse gstResp = null;
-		Map<String,Object> bsMap=new TreeMap(new DateWiseComparator());
+		Map<String,Object> bsMap=new HashMap<>();
 		try {
 			GSTR1Request request=new GSTR1Request();
 			request.setApplicationId(applicationId);
 			gstResp = gstClient.getbankComparisonData(request);
 			ReportRequest requestReport = new ReportRequest(applicationId);
-			bsMap  = analyzerClient.getDetailsByCategoryWise(requestReport).getMap();
+			bsMap  = (LinkedHashMap<String, Object>)analyzerClient.getDetailsByCategoryWise(requestReport).getData();
 		}catch (Exception e) {
 			logger.error("Exception in getting gst and BS data for teaserview {}",e);
 		}
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
-		SimpleDateFormat sdf1=new SimpleDateFormat("MMM yy");
+		SimpleDateFormat sdf1=new SimpleDateFormat("MMMyy");
 		SimpleDateFormat displayFormate=new SimpleDateFormat("MM-yyyy");
 		// gst vs bank statement month wise purchase		
 		if(bsMap != null && !bsMap.isEmpty() && gstResp != null && gstResp.getData() != null) {
