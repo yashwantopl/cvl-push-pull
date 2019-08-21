@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.service.loans.model.AutoLoanModelRequest;
 import com.capitaworld.service.loans.model.HomeLoanModelRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.RetailModelRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
+import com.capitaworld.service.loans.service.fundprovider.AutoLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.RetailModelService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -46,6 +47,9 @@ public class RetailModelController {
 	
 	@Autowired
 	private HomeLoanModelService homeLoanModelService;
+	
+	@Autowired
+	private AutoLoanModelService autoLoanModelService;
 
 	@PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> create(@RequestBody RetailModelRequest  retailModelRequest,
@@ -78,8 +82,8 @@ public class RetailModelController {
 		}
 	}
 	
-	@GetMapping(value = "/get_temp_list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getTempList(HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+	@GetMapping(value = "/get_temp_list/{businessTypeId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTempList(HttpServletRequest request,@PathVariable("businessTypeId") Integer businessTypeId, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info(CommonUtils.ENTRY_IN + METHOD_GET_TEMP_LIST);
 		try {
 			// request must not be null
@@ -93,7 +97,7 @@ public class RetailModelController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			logger.info(CommonUtils.EXIT_FROM + METHOD_GET_TEMP_LIST);
-			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),retailModelService.getTemp(userOrgId)), HttpStatus.OK);
+			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),retailModelService.getTempByOrgIdAndBusinessTypeId(userOrgId,businessTypeId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while Getting Loan Purpose Model TempList Details==> {} ", e);
 			logger.info(CommonUtils.EXIT_FROM + METHOD_GET_TEMP_LIST + " with Error");
@@ -101,8 +105,8 @@ public class RetailModelController {
 		}
 	}
 
-	@GetMapping(value = "/get_list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+	@GetMapping(value = "/get_list/{businessTypeId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(HttpServletRequest request,@PathVariable("businessTypeId") Integer businessTypeId, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info(CommonUtils.ENTRY_IN + METHOD_GET_LIST);
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -113,7 +117,7 @@ public class RetailModelController {
 				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			logger.info(CommonUtils.EXIT_FROM + METHOD_GET_LIST);
-			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),retailModelService.get(userOrgId)), HttpStatus.OK);
+			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),retailModelService.getByOrgIdAndBusinessTypeId(userOrgId, businessTypeId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while Getting Loan Purpose Model TempList Details==> {} ", e);
 			logger.info(CommonUtils.EXIT_FROM + METHOD_GET_LIST + " with Error");
@@ -241,5 +245,89 @@ public class RetailModelController {
 					HttpStatus.OK);
 		}
 	}
+	
+	// -----------------------------------------	AUTO LOAN START ----------------------------------------
+	@PostMapping(value = "/al/get_temp/{modelId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> alGetTemp(@RequestBody List<Long> roles,@PathVariable("modelId") Long modelId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			// request must not be null
+			if (roles == null || roles.isEmpty()) {
+				logger.warn("Roles Must not be Null == >{}" , roles);
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG , userId);
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),autoLoanModelService.getTemp(modelId, roles.get(0), userId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Purpose Model Details For AutoLoan==> {} ", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@PostMapping(value = "/al/get/{modelId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> alGet(@RequestBody List<Long> roles,@PathVariable("modelId") Long modelId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			// request must not be null
+			if (roles == null || roles.isEmpty()) {
+				logger.warn("Roles Must not be Null == >{}" , roles);
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG , userId);
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<>( new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),autoLoanModelService.get(modelId, roles.get(0), userId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Purpose Model Details For AutoLoan==> {} ", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@PostMapping(value = "/al/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> alUpdate(@RequestBody AutoLoanModelRequest autoLoanModelRequest,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info(CommonUtils.ENTRY_IN + METHOD_CREATE);
+		try {
+			// request must not be null
+
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			if (userId == null) {
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG , userId);
+				logger.info(CommonUtils.EXIT_FROM + METHOD_CREATE);
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			autoLoanModelRequest.setUserId(userId);
+			autoLoanModelRequest.setOrgId(userOrgId);
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				autoLoanModelRequest.setClientId(clientId);
+			}
+			logger.info(CommonUtils.EXIT_FROM + METHOD_CREATE);
+			return new ResponseEntity<>( new LoansResponse(CommonUtils.STATUS_UPDATED, HttpStatus.OK.value(),autoLoanModelService.saveToTemp(autoLoanModelRequest)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saving Loan Purpose Model Details==> {} ", e);
+			logger.info(CommonUtils.EXIT_FROM + METHOD_CREATE_WITH_ERROR );
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	// -----------------------------------------	AUTO LOAN END ----------------------------------------
+	
 	
 }

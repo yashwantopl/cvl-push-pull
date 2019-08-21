@@ -26,6 +26,8 @@ public interface RetailModelTempRepository extends JpaRepository<RetailModelTemp
 	 */
 	public List<RetailModelTemp> findByOrgIdAndIsCopiedAndIsApproved(Long orgId,boolean isCopied,boolean isApproved);
 	
+	public List<RetailModelTemp> findByOrgIdAndBusinessTypeIdAndIsCopiedAndIsApproved(Long orgId,Integer businessTypeId,boolean isCopied,boolean isApproved);
+	
 	/**
 	 * Updating Status of InProgress Loan Purpose Model
 	 * @param id
