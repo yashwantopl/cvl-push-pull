@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.model.micro_finance;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 
 public class MfiApplicantDetailsReq {
@@ -324,6 +326,10 @@ public class MfiApplicantDetailsReq {
 	private Integer loanTenure;
 	
 	private List<MFIFinancialArrangementRequest> financialArrangementDetails;
+	
+	private LoanSanctionRequest sanctionDetail;
+	
+	private List<LoanDisbursementRequest> disbursementDetails;
 	
 
 	public Integer getStatus() {
@@ -1790,4 +1796,22 @@ public class MfiApplicantDetailsReq {
 	public void setCoApplicantDetails(List<AadharDetailsReq> coApplicantDetails) {
 		this.coApplicantDetails = coApplicantDetails;
 	}
+
+	public LoanSanctionRequest getSanctionDetail() {
+		return sanctionDetail;
+	}
+
+	public void setSanctionDetail(LoanSanctionRequest sanctionDetail) {
+		this.sanctionDetail = sanctionDetail;
+	}
+
+	public List<LoanDisbursementRequest> getDisbursementDetails() {
+		return disbursementDetails;
+	}
+
+	public void setDisbursementDetails(List<LoanDisbursementRequest> disbursementDetails) {
+		this.disbursementDetails = disbursementDetails;
+	}
+	
+	
 }
