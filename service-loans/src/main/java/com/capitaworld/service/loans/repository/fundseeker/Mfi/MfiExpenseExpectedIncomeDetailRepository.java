@@ -24,4 +24,8 @@ public interface MfiExpenseExpectedIncomeDetailRepository extends JpaRepository<
     @Modifying
     @Query("update MfiExpenseExpectedIncomeDetails n set n.businessInBrief =:businessBrif,n.monthlyCashflow =:monthlyCashflow,n.monthlyExpenditure =:monthlyExpenditure,n.monthlyIncome =:monthlyIncome,n.cashFlow =:cashFlow where n.applicationId =:applicationId and n.type =:type")
     public int updateBusinessBrief(@Param("businessBrif") Integer businessBrif,@Param("monthlyCashflow") Double monthlyCashflow,@Param("monthlyExpenditure") Double monthlyExpenditure,@Param("monthlyIncome") Double monthlyIncome,@Param("cashFlow") Double cashFlow,@Param("applicationId") Long applicationId,@Param("type") Integer type);
+
+    @Modifying
+    @Query("update MfiExpenseExpectedIncomeDetails n set n.netSaving =:netSaving where n.applicationId =:applicationId and n.type =:type and n.isActive = true")
+    public int updateNetSaving(@Param("netSaving") Double netSaving,@Param("applicationId") Long applicationId,@Param("type") Integer type);
 }
