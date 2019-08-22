@@ -29,16 +29,16 @@ public class ALOneformPrimaryRes implements Serializable {
 	
 	
 	// Vehicle details
-	Integer vehicleType; 
-	Integer vehicleCategory; 
-	Integer vehicleSegment; 
-	Integer vehicleAge; 
-	Integer vehicleEngineVolume; 
-	Integer vechicleUse; 
-	Long vehicleExShowRoomPrice;
-	Long vehicleOnRoadPrice; 
-	Long vehicleAgreedPurchasePrice;
-	Boolean isVehicleHypothecation;
+	private Integer vehicleType; 
+	private Integer vehicleCategory; 
+	private Integer vehicleSegment; 
+	private Integer vehicleAge; 
+	private Integer vehicleEngineVolume; 
+	private Integer vechicleUse; 
+	private Long vehicleExShowRoomPrice;
+	private Long vehicleOnRoadPrice; 
+	private Long vehicleAgreedPurchasePrice;
+	private Boolean isVehicleHypothecation;
 	
 	// Declaration
 	private Boolean isCheckOffDirectPayEmi;
@@ -276,7 +276,5 @@ public class ALOneformPrimaryRes implements Serializable {
 		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
 	}
 
-	
-	
 
 }
