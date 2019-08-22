@@ -427,6 +427,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		// FOR MFI MAKER MfiIncomeAndExpenditureReq
 		MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIMaker = expectedIncomeDetailRepository
 				.findByApplicationIdAndType(applicationId, 1);
+		detailsReq.setNetSaving(mfiIncomeAndExpendMFIMaker.getNetSaving());
 
 		MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = detailsRepository
 				.findIncomeAndExpenditureDetailsByAppId(applicationId, 1);
