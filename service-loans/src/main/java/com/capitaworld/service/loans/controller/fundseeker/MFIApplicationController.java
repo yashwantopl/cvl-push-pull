@@ -874,7 +874,7 @@ public class MFIApplicationController {
 		}
 	}
 	@GetMapping(value = "/proceedFinancialDetails/{applicationId}/{creditWorthiness}")
-	public ResponseEntity<LoansResponse> proceedFinancialDetails(@PathVariable("applicationId") String applicationIdEnc,@PathVariable(value = "creditWorthiness",required = false) String creditWorthinessEnc,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> proceedFinancialDetails(@PathVariable("applicationId") String applicationIdEnc,@PathVariable("creditWorthiness") String creditWorthinessEnc, HttpServletRequest request) {
 		try {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if (userId == null) {

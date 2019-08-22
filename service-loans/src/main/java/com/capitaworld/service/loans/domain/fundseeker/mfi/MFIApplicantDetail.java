@@ -371,8 +371,10 @@ public class MFIApplicantDetail implements Serializable {
 	private Boolean isBusinessPremiseVisited;
 	@Column(name = "repayment_track")
 	private Integer repaymentTrack;
+
 	@Column(name = "creadit_worthiness")
 	private Integer creaditWorthiness;
+
 	@Column(name = "loan_liability_ratio")
 	private Double loanLiabilityRatio;
 	@Column(name = "competition")
