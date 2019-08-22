@@ -235,3 +235,14 @@ ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN min_vehicl
 ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN max_vehicle_age DOUBLE DEFAULT NULL;
 ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN is_vehicle_age_display BIT(1) DEFAULT FALSE;
 ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN is_vehicle_age_mandatory BIT(1) DEFAULT FALSE;
+
+
+ALTER TABLE `loan_application`.`fp_auto_loan_details` ADD COLUMN min_dscr DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_auto_loan_details` ADD COLUMN max_dscr DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_auto_loan_details` ADD COLUMN is_dscr_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_auto_loan_details` ADD COLUMN is_dscr_mandatory BIT(1) DEFAULT FALSE;
+
+ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN min_dscr DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN max_dscr DOUBLE DEFAULT NULL;
+ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN is_dscr_display BIT(1) DEFAULT FALSE;
+ALTER TABLE `loan_application`.`fp_auto_loan_details_temp` ADD COLUMN is_dscr_mandatory BIT(1) DEFAULT FALSE;
