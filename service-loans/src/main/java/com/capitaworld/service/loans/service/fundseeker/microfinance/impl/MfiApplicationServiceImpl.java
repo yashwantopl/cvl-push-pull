@@ -279,7 +279,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			if (response != null) {
 				logger.debug("uploadImageForMfi() :: response is not null");
 				if(!CommonUtils.isObjectNullOrEmpty(response.getFilePath())) {
-					return response.getFilePath();
+					return response.getId().toString();
 				} else {
 					logger.debug("uploadImageForMfi() :: error while upload Files response not 200");
 					return null;
@@ -629,8 +629,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				for (MfiAssetsDetailsReq mfiassetsDetailsReq : mfiAssetsDetailsReq.getAssetsDetails()) {
 					mfiAssetsLiabilityDetails = new MfiAssetsLiabilityDetails();
 					BeanUtils.copyProperties(mfiassetsDetailsReq, mfiAssetsLiabilityDetails);
-					ParticularsMfi particularsMfi = ParticularsMfi
-							.fromId(mfiassetsDetailsReq.getParticulars().toString());
+					ParticularsMfi particularsMfi = ParticularsMfi.fromId(mfiassetsDetailsReq.getParticulars().toString());
 					mfiAssetsDetailsReq.setAssetsLiabilityType(particularsMfi.getType());
 					mfiAssetsLiabilityDetails.setApplicationId(mfiassetsDetailsReq.getApplicationId());
 					mfiAssetsLiabilityDetails.setType(ASSETS);
