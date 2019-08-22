@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.model.RetailModelRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.repository.fundprovider.RetailModelRepository;
 import com.capitaworld.service.loans.repository.fundprovider.RetailModelTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.AutoLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.RetailModelService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -47,6 +48,9 @@ public class RetailModelServiceImpl implements RetailModelService {
 	
 	@Autowired
 	private HomeLoanModelService homeLoanModelService;
+	
+	@Autowired
+	private AutoLoanModelService autoLoanModelService;
 	
 	@Autowired
 	private WorkflowClient workflowClient;
@@ -203,6 +207,9 @@ public class RetailModelServiceImpl implements RetailModelService {
 			Boolean result = false;
 			if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 				result = homeLoanModelService.copyTempToMaster(workflowData.getId());
+				fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
+			} else if(CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(businessTypeId)) {
+				result = autoLoanModelService.copyTempToMaster(workflowData.getId());
 				fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
 			}
 			int updateStatus = retailModelTempRepository.changeStatus(workflowData.getId(), CommonUtils.Status.APPROVED, true, false, true, new Date());

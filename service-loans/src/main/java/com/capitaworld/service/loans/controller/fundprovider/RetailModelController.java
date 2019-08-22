@@ -232,8 +232,8 @@ public class RetailModelController {
 			}
 			workflowData.setUserId(userId);
 			String msg = "Model Successfully sent to Checker";
-			if (WorkflowUtils.Action.SEND_FOR_APPROVAL.equals(workflowData.getActionId())) {
-				msg = "Purpose of Loan Model sent for approval";
+			if (WorkflowUtils.Action.APPROVED.equals(workflowData.getActionId())) {
+				msg = "Purpose of Loan Model Successfully Approved";
 			}else if (WorkflowUtils.Action.SEND_BACK.equals(workflowData.getActionId())) {
 				msg = "Purpose of Model is successfully sent back to Maker";
 			}
