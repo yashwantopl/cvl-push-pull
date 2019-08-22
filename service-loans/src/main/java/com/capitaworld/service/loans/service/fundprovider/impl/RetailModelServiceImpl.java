@@ -18,6 +18,7 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.domain.fundprovider.AutoLoanModelTemp;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModel;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModelTemp;
 import com.capitaworld.service.loans.domain.fundprovider.RetailModel;
@@ -85,7 +86,11 @@ public class RetailModelServiceImpl implements RetailModelService {
 		RetailModelTemp retailModelTemp = retailModelTempRepository.findById(modelRequest.getId());
 		if (retailModelTemp == null) {
 			if (CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId()) || CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
-				retailModelTemp = new HomeLoanModelTemp();
+				if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
+					retailModelTemp = new HomeLoanModelTemp();
+				} else {
+					retailModelTemp = new AutoLoanModelTemp();
+				}
 				retailModelTemp.setCreatedBy(modelRequest.getUserId());
 				retailModelTemp.setCreatedDate(new Date());
 				retailModelTemp.setIsApproved(false);
