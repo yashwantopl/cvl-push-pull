@@ -38,6 +38,7 @@ import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiBankDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiFinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiPpiScoringMaster;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
@@ -65,6 +66,7 @@ import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiBankDetailsRep
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpectedIncomeDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiFinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiPpiScoringRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -73,6 +75,7 @@ import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.enums.ParticularsMfi;
+import com.capitaworld.service.oneform.enums.PpiPersonDetailMFI;
 import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
 
 @Service
@@ -129,6 +132,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	
 	@Autowired
 	private LoanDisbursementService loanDisbursementService;
+	
+	@Autowired
+	private MfiPpiScoringRepository mfiPpiScoringRepository;
 
 	/**
 	 * Save basic profile details with images
@@ -453,6 +459,20 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			
 		} catch (LoansException e) {
 			logger.error("Exception : "+e.getMessage());
+		}
+		
+		List<MfiPpiScoringMaster> mfiPpiScoringMasters = mfiPpiScoringRepository.findAll();
+		if(mfiPpiScoringMasters != null && !mfiPpiScoringMasters.isEmpty()) {
+			detailsReq.setPpiNoFamilyMemberScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.MEMBERS_FAMILY.getId(), mfiApplicantDetail.getPpiNoFamilyMember()));
+			detailsReq.setPpiAcadamicHeadFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.ACADAMIC_STANDARD.getId(), mfiApplicantDetail.getPpiAcadamicHeadFamily()));
+			detailsReq.setPpiStoveInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_GAS_BURNER.getId(), mfiApplicantDetail.getPpiStoveInFamily()));
+			detailsReq.setPpiPressureCookerInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_PRESSURE_COOCKER.getId(), mfiApplicantDetail.getPpiPressureCookerInFamily()));
+			detailsReq.setPpiTvInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_TALIVISION.getId(), mfiApplicantDetail.getPpiTvInFamily()));
+			detailsReq.setPpiFanInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_FAN.getId(), mfiApplicantDetail.getPpiFanInFamily()));
+			detailsReq.setPpiVehicleInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_VEHICLE.getId(), mfiApplicantDetail.getPpiVehicleInFamily()));
+			detailsReq.setPpiDressingTableInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_ALMIRAH.getId(), mfiApplicantDetail.getPpiDressingTableInFamily()));
+			detailsReq.setPpiOtherTableInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_CHAIR.getId(), mfiApplicantDetail.getPpiOtherTableInFamily()));
+			detailsReq.setPpiRafrigeratorInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_REFRIGERATOR.getId(), mfiApplicantDetail.getPpiRafrigeratorInFamily()));
 		}
 		
 		return detailsReq;
@@ -1164,6 +1184,18 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			return true;
 		}
 		return false;
+	}
+	
+	
+	public Double getScoringOfPpiQuestion(List<MfiPpiScoringMaster> mfiPpiScoringMasters, Integer queId, Integer ansId) {
+		Double result = null;
+		if(mfiPpiScoringMasters != null && queId != null && ansId != null)
+		for(MfiPpiScoringMaster mfiPpiScoringMaster : mfiPpiScoringMasters) {
+			if(mfiPpiScoringMaster.getQueId().equals(queId) && mfiPpiScoringMaster.getAnsId().equals(ansId)) {
+				return mfiPpiScoringMaster.getScoreValue();
+			}
+		}
+		return result;
 	}
 
 }
