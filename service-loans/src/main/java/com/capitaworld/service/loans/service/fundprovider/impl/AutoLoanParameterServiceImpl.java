@@ -404,7 +404,7 @@ public class AutoLoanParameterServiceImpl implements AutoLoanParameterService {
 	public Boolean saveOrUpdateTemp(AutoLoanParameterRequest autoLoanParameterRequest) {
 		logger.info("saveOrUpdateTemp Start");
 		AutoLoanParameterTemp autoLoanParameter = autoLoanParameterTempRepository.findOne(autoLoanParameterRequest.getId());
-		if (autoLoanParameter == null) {
+ 		if (autoLoanParameter == null) {
 			return false;
 		}
 

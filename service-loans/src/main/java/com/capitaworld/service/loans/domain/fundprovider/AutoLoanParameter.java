@@ -240,6 +240,17 @@ public class AutoLoanParameter extends ProductMaster implements Serializable {
 	@Column(name = "is_nmtlr_mandatory")
 	private Boolean isNmtlrMandatory = false;
 	
+	// DSCR (only for proprietorship/partnership firms, corporate entities etc. except HUF.)
+	
+	@Column(name = "min_dscr")
+	private Double minDscr;
+	@Column(name = "max_dscr")
+	private Double maxDscr;
+	@Column(name = "is_dscr_display")
+	private Boolean isDscrDisplay = false;
+	@Column(name = "is_dscr_mandatory")
+	private Boolean isDscrMandatory = false;
+	
 	
 //	EMI/ MI (Net or Gross)
 	
@@ -1167,4 +1178,38 @@ public class AutoLoanParameter extends ProductMaster implements Serializable {
 	public void setIsVehicleAgeMandatory(Boolean isVehicleAgeMandatory) {
 		this.isVehicleAgeMandatory = isVehicleAgeMandatory;
 	}
+
+	public Double getMinDscr() {
+		return minDscr;
+	}
+
+	public void setMinDscr(Double minDscr) {
+		this.minDscr = minDscr;
+	}
+
+	public Double getMaxDscr() {
+		return maxDscr;
+	}
+
+	public void setMaxDscr(Double maxDscr) {
+		this.maxDscr = maxDscr;
+	}
+
+	public Boolean getIsDscrDisplay() {
+		return isDscrDisplay;
+	}
+
+	public void setIsDscrDisplay(Boolean isDscrDisplay) {
+		this.isDscrDisplay = isDscrDisplay;
+	}
+
+	public Boolean getIsDscrMandatory() {
+		return isDscrMandatory;
+	}
+
+	public void setIsDscrMandatory(Boolean isDscrMandatory) {
+		this.isDscrMandatory = isDscrMandatory;
+	}
+	
+	
 }
