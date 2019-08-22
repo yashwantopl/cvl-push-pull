@@ -331,6 +331,8 @@ public class MfiApplicantDetailsReq {
 
 	private Double loanAmountBankMaker;
 
+	private Double totalEmi;
+
 	private Long jobId;
 
 	private Integer status;
@@ -1905,6 +1907,11 @@ public class MfiApplicantDetailsReq {
 		this.ppiOtherTableInFamilyScore = ppiOtherTableInFamilyScore;
 	}
 
-	
-	
+	public Double getTotalEmi() {
+		return totalEmi;
+	}
+
+	public void setTotalEmi(Double totalEmi) {
+		this.totalEmi = totalEmi;
+	}
 }
