@@ -49,6 +49,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	public Double getExistingLimits(@Param("id")Long id,@Param("loanType") List<String> loanType);
 	
 	
+	@Query("select sum(o.collateralSecurityAmount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and LOWER(o.loanType) IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.applicationProposalMapping IS NULL")
+	public Double getAmountOfCollateralExistingLoan(@Param("id")Long id,@Param("loanType") List<String> loanType);
+	
 	@Query("select sum(o.outstandingAmount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and LOWER(o.loanType) IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.applicationProposalMapping IS NULL" )
 	public Double getOutStandingAmount(@Param("id")Long id,@Param("loanType") List<String> loanType);
 	
