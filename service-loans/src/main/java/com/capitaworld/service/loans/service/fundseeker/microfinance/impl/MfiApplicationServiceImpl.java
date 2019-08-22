@@ -1118,7 +1118,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	public Boolean proceedFinancialFinalData(Long applicationId, Long createdBy, Integer creditWorthiness) {
 		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByAppIdAndType(applicationId,1);
 		List<MFIFinancialArrangementRequest> financialDetailsAppId = getFinancialDetailsAppId(applicationId, createdBy);
-		Double totalLoanAmount = 0.0,totalAssets = 0.0, allEmi = 0.0;
+		Double totalLoanAmount = 0.0,totalAssets = 0.0, allEmi = 0.0,expense = 0.0,netSaving = 0.0;
 		//for calculate Amount and emi total
 		for (MFIFinancialArrangementRequest arrangementRequest:financialDetailsAppId){
 			totalLoanAmount = totalLoanAmount +  arrangementRequest.getAmount(); //sum of all Loan Amount
@@ -1133,14 +1133,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		Double ratio = (totalAssets - totalLoanAmount) / totalLoanAmount;
 		mfiApplicationDetail.setLoanLiabilityRatio(ratio); // Liability Ratio
 		mfiApplicationDetail.setCreaditWorthiness(creditWorthiness); //creditworthiness
+		mfiApplicationDetail.setTotalEmi(allEmi);
 		detailsRepository.save(mfiApplicationDetail);
 		//get details from Expected increase in income
 		MfiExpenseExpectedIncomeDetails expectedIncomeDetails = expectedIncomeDetailRepository.findByApplicationIdAndType(applicationId,1);
-		Double expense = expectedIncomeDetails.getTotalExpense() + allEmi;
-		Double netSaving = expectedIncomeDetails.getTotalMonthlyIncomeForFamily() - expense;
+		netSaving = expectedIncomeDetails.getTotalMonthlyIncomeForFamily() - (expectedIncomeDetails.getTotalExpense() + allEmi);
 		//update net-saving
-		expectedIncomeDetailRepository.updateNetSaving(netSaving, applicationId,1);
-		expectedIncomeDetailRepository.updateNetSaving(netSaving, applicationId,2);
+		expectedIncomeDetailRepository.updateNetSaving(netSaving, applicationId);
+//		expectedIncomeDetailRepository.updateNetSaving(netSaving, applicationId,2);
 
 		return true;
 	}
