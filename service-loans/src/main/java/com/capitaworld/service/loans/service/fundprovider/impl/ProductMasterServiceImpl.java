@@ -1536,8 +1536,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
 					return homeLoanParameterService.saveMasterFromTemp(mappingId);
-				}
-				else if (corporateProduct.getProductId() == CommonUtils.LoanType.MFI.getValue()) {
+				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
+					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
+					return autoLoanParameterService.saveMasterFromTemp(mappingId);
+				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.MFI.getValue()) {
 					CommonDocumentUtils.endHook(logger, SAVE_MFI);
 					return mfiLoanParameterService.saveMasterFromTemp(mappingId);
 				}

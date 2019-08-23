@@ -88,6 +88,11 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 	private Double maxNmtlr;
 	private Boolean isNmtlrDisplay = false;
 	private Boolean isNmtlrMandatory = false;
+	
+	private Double minDscr;
+	private Double maxDscr;
+	private Boolean isDscrDisplay = false;
+	private Boolean isDscrMandatory = false;
 
 	// Total Current Job Experience (Yrs.)
 	private Integer minCurrentJobExperience;
@@ -786,6 +791,38 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 
 	public void setIsVehicleAgeMandatory(Boolean isVehicleAgeMandatory) {
 		this.isVehicleAgeMandatory = isVehicleAgeMandatory;
+	}
+
+	public Double getMinDscr() {
+		return minDscr;
+	}
+
+	public void setMinDscr(Double minDscr) {
+		this.minDscr = minDscr;
+	}
+
+	public Double getMaxDscr() {
+		return maxDscr;
+	}
+
+	public void setMaxDscr(Double maxDscr) {
+		this.maxDscr = maxDscr;
+	}
+
+	public Boolean getIsDscrDisplay() {
+		return isDscrDisplay;
+	}
+
+	public void setIsDscrDisplay(Boolean isDscrDisplay) {
+		this.isDscrDisplay = isDscrDisplay;
+	}
+
+	public Boolean getIsDscrMandatory() {
+		return isDscrMandatory;
+	}
+
+	public void setIsDscrMandatory(Boolean isDscrMandatory) {
+		this.isDscrMandatory = isDscrMandatory;
 	}
 	
 }

@@ -18,6 +18,7 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.domain.fundprovider.AutoLoanModelTemp;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModel;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModelTemp;
 import com.capitaworld.service.loans.domain.fundprovider.RetailModel;
@@ -26,6 +27,7 @@ import com.capitaworld.service.loans.model.RetailModelRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.repository.fundprovider.RetailModelRepository;
 import com.capitaworld.service.loans.repository.fundprovider.RetailModelTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.AutoLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.RetailModelService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -46,6 +48,9 @@ public class RetailModelServiceImpl implements RetailModelService {
 	
 	@Autowired
 	private HomeLoanModelService homeLoanModelService;
+	
+	@Autowired
+	private AutoLoanModelService autoLoanModelService;
 	
 	@Autowired
 	private WorkflowClient workflowClient;
@@ -85,7 +90,11 @@ public class RetailModelServiceImpl implements RetailModelService {
 		RetailModelTemp retailModelTemp = retailModelTempRepository.findById(modelRequest.getId());
 		if (retailModelTemp == null) {
 			if (CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId()) || CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
-				retailModelTemp = new HomeLoanModelTemp();
+				if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
+					retailModelTemp = new HomeLoanModelTemp();
+				} else {
+					retailModelTemp = new AutoLoanModelTemp();
+				}
 				retailModelTemp.setCreatedBy(modelRequest.getUserId());
 				retailModelTemp.setCreatedDate(new Date());
 				retailModelTemp.setIsApproved(false);
@@ -198,6 +207,9 @@ public class RetailModelServiceImpl implements RetailModelService {
 			Boolean result = false;
 			if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 				result = homeLoanModelService.copyTempToMaster(workflowData.getId());
+				fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
+			} else if(CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(businessTypeId)) {
+				result = autoLoanModelService.copyTempToMaster(workflowData.getId());
 				fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
 			}
 			int updateStatus = retailModelTempRepository.changeStatus(workflowData.getId(), CommonUtils.Status.APPROVED, true, false, true, new Date());

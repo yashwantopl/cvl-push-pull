@@ -48,7 +48,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Boolean isCampaignUser(Long userId) {
 		try {
 			List<String> list =  (List<String>) entityManager
-					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1",String.class)
+					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
 					.setParameter(CommonUtils.USER_ID, userId)
 					.getResultList();
 			return !CommonUtils.isListNullOrEmpty(list);

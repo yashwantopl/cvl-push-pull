@@ -238,6 +238,7 @@ public class MfiApplicantDetailsReq {
 	private Double monthlyCashflow;
 	private Double monthlyExpenditure;
 	private Double monthlyIncome;
+	
 	private Integer ppiNoFamilyMember;
 	private Integer ppiAcadamicHeadFamily;
 	private Integer ppiRafrigeratorInFamily;
@@ -248,6 +249,17 @@ public class MfiApplicantDetailsReq {
 	private Integer ppiVehicleInFamily;
 	private Integer ppiDressingTableInFamily;
 	private Integer ppiOtherTableInFamily;
+	
+	private Double ppiNoFamilyMemberScore;
+	private Double ppiAcadamicHeadFamilyScore;
+	private Double ppiRafrigeratorInFamilyScore;
+	private Double ppiStoveInFamilyScore;
+	private Double ppiPressureCookerInFamilyScore;
+	private Double ppiTvInFamilyScore;
+	private Double ppiFanInFamilyScore;
+	private Double ppiVehicleInFamilyScore;
+	private Double ppiDressingTableInFamilyScore;
+	private Double ppiOtherTableInFamilyScore;
 
 	private Double totalMonthlyIncomeForFamily;
 	private List<MfiAssetsDetailsReq> assetsDetails;
@@ -318,6 +330,8 @@ public class MfiApplicantDetailsReq {
 	private Double loanAmountMFIChecker;
 
 	private Double loanAmountBankMaker;
+
+	private Double totalEmi;
 
 	private Long jobId;
 
@@ -1812,6 +1826,92 @@ public class MfiApplicantDetailsReq {
 	public void setDisbursementDetails(List<LoanDisbursementRequest> disbursementDetails) {
 		this.disbursementDetails = disbursementDetails;
 	}
-	
-	
+
+	public Double getPpiNoFamilyMemberScore() {
+		return ppiNoFamilyMemberScore;
+	}
+
+	public void setPpiNoFamilyMemberScore(Double ppiNoFamilyMemberScore) {
+		this.ppiNoFamilyMemberScore = ppiNoFamilyMemberScore;
+	}
+
+	public Double getPpiAcadamicHeadFamilyScore() {
+		return ppiAcadamicHeadFamilyScore;
+	}
+
+	public void setPpiAcadamicHeadFamilyScore(Double ppiAcadamicHeadFamilyScore) {
+		this.ppiAcadamicHeadFamilyScore = ppiAcadamicHeadFamilyScore;
+	}
+
+	public Double getPpiRafrigeratorInFamilyScore() {
+		return ppiRafrigeratorInFamilyScore;
+	}
+
+	public void setPpiRafrigeratorInFamilyScore(Double ppiRafrigeratorInFamilyScore) {
+		this.ppiRafrigeratorInFamilyScore = ppiRafrigeratorInFamilyScore;
+	}
+
+	public Double getPpiStoveInFamilyScore() {
+		return ppiStoveInFamilyScore;
+	}
+
+	public void setPpiStoveInFamilyScore(Double ppiStoveInFamilyScore) {
+		this.ppiStoveInFamilyScore = ppiStoveInFamilyScore;
+	}
+
+	public Double getPpiPressureCookerInFamilyScore() {
+		return ppiPressureCookerInFamilyScore;
+	}
+
+	public void setPpiPressureCookerInFamilyScore(Double ppiPressureCookerInFamilyScore) {
+		this.ppiPressureCookerInFamilyScore = ppiPressureCookerInFamilyScore;
+	}
+
+	public Double getPpiTvInFamilyScore() {
+		return ppiTvInFamilyScore;
+	}
+
+	public void setPpiTvInFamilyScore(Double ppiTvInFamilyScore) {
+		this.ppiTvInFamilyScore = ppiTvInFamilyScore;
+	}
+
+	public Double getPpiFanInFamilyScore() {
+		return ppiFanInFamilyScore;
+	}
+
+	public void setPpiFanInFamilyScore(Double ppiFanInFamilyScore) {
+		this.ppiFanInFamilyScore = ppiFanInFamilyScore;
+	}
+
+	public Double getPpiVehicleInFamilyScore() {
+		return ppiVehicleInFamilyScore;
+	}
+
+	public void setPpiVehicleInFamilyScore(Double ppiVehicleInFamilyScore) {
+		this.ppiVehicleInFamilyScore = ppiVehicleInFamilyScore;
+	}
+
+	public Double getPpiDressingTableInFamilyScore() {
+		return ppiDressingTableInFamilyScore;
+	}
+
+	public void setPpiDressingTableInFamilyScore(Double ppiDressingTableInFamilyScore) {
+		this.ppiDressingTableInFamilyScore = ppiDressingTableInFamilyScore;
+	}
+
+	public Double getPpiOtherTableInFamilyScore() {
+		return ppiOtherTableInFamilyScore;
+	}
+
+	public void setPpiOtherTableInFamilyScore(Double ppiOtherTableInFamilyScore) {
+		this.ppiOtherTableInFamilyScore = ppiOtherTableInFamilyScore;
+	}
+
+	public Double getTotalEmi() {
+		return totalEmi;
+	}
+
+	public void setTotalEmi(Double totalEmi) {
+		this.totalEmi = totalEmi;
+	}
 }
