@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.model.corporate;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,6 +36,8 @@ public class CoLendingRequest {
 		this.bankId = bankId;
 	}
 
+	public CoLendingRequest() {
+	}
 
 	//getter setter
 	public String getName() {
