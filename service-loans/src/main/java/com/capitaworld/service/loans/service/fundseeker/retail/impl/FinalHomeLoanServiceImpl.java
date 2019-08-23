@@ -1,27 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
-import com.capitaworld.api.workflow.model.WorkflowRequest;
-import com.capitaworld.api.workflow.model.WorkflowResponse;
-import com.capitaworld.api.workflow.utility.WorkflowUtils;
-import com.capitaworld.client.workflow.WorkflowClient;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.domain.fundseeker.retail.*;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.*;
-import com.capitaworld.service.loans.repository.fundseeker.retail.*;
-import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EducationalStatusMst;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.Title;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -29,12 +11,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankAccountHeldDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.EmpAgriculturistType;
+import com.capitaworld.service.loans.domain.fundseeker.retail.EmpSalariedType;
+import com.capitaworld.service.loans.domain.fundseeker.retail.EmpSelfEmployedType;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FixedDepositsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.OtherCurrentAssetDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.OtherIncomeDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.OtherPropertyDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PurchasePropertyDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.EmpAgriculturistTypeRequest;
+import com.capitaworld.service.loans.model.retail.EmpSalariedTypeRequest;
+import com.capitaworld.service.loans.model.retail.EmpSelfEmployedTypeRequest;
+import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherPropertyDetailsRequest;
+import com.capitaworld.service.loans.model.retail.PurchasePropertyDetailsRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.BankAccountHeldDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.EmpAgriculturistTypeRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.EmpSalariedTypeRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.EmpSelfEmployedTypeRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailOldRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FixedDepositsDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.OtherCurrentAssetDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.OtherIncomeDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.OtherPropertyDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EducationalStatusMst;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.Title;
 
 @Service
 @Transactional
@@ -71,6 +101,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
 	@Autowired
 	private EmpAgriculturistTypeRepository empAgriculturistTypeRepository;
+	
+	@Autowired
+	private ApplicationProposalMappingRepository appProposalMappingRepo;
 
 	@Autowired
 	private BankAccountHeldDetailRepository bankAccountHeldDetailRepository;
@@ -167,6 +200,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
 			//Update Bowl Count Flag
 			loanApplicationRepository.setFinalFilledCount(finalHomeLoanDetailRequest.getApplicationId(), finalUserId, finalHomeLoanDetailRequest.getFinalFilledCount());
+			/* Update Applicant Finally Filled */
+			appProposalMappingRepo.setIsApplicantFinalFilled(finalHomeLoanDetailRequest.getProposalId(), userId);
+			
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Home Loan Details:-",e);
@@ -178,7 +214,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
 		RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByProposalId(finalHomeLoanDetailRequest.getApplicationId(),finalHomeLoanDetailRequest.getProposalId());
 		Title.getById(retailApplicantDetail.getTitleId()).getValue();
-		finalHomeLoanDetailRequest.setName(Title.getById(retailApplicantDetail.getTitleId()).getValue() +" " + retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getMiddleName() + " " + retailApplicantDetail.getFatherName());
+		finalHomeLoanDetailRequest.setName(Title.getById(retailApplicantDetail.getTitleId()).getValue() +" " + retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getMiddleName() + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFatherName()) ? retailApplicantDetail.getFatherName() : "" ));
 		finalHomeLoanDetailRequest.setFatherFullName(retailApplicantDetail.getFatherName());
 
 		Address permanentAddress = new Address();

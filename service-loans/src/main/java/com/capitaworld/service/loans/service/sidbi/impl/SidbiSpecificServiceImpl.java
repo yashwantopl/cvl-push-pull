@@ -215,7 +215,7 @@ public class SidbiSpecificServiceImpl implements SidbiSpecificService{
 			if(primaryCorpDetailObj.getIsAllowSwitchExistingLender()!=null && primaryCorpDetailObj.getIsAllowSwitchExistingLender()) {
 				if(primaryCorpDetailObj.getLoanAmount()==primaryCorpDetailObj.getAdditionalLoanAmount()) {
 					loanAmount=primaryCorpDetailObj.getLoanAmount();
-					FinancialArrangementsDetailRequest arrangementsDetailRequest =financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
+					FinancialArrangementsDetailRequest arrangementsDetailRequest = financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
 					loanAmount+=arrangementsDetailRequest.getAmount();
 				}else {
 					loanAmount=primaryCorpDetailObj.getLoanAmount();

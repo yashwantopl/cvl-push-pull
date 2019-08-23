@@ -17,7 +17,7 @@ public class PersonalDetailsReq {
 
 	private Long id;
 	private Long applicationId;
-
+	//1.family details
 	private String fatherName;
 	private String motherName;
 	private String spouseName;
@@ -25,52 +25,53 @@ public class PersonalDetailsReq {
 	private Integer noDependent;
 	private String spouseMobile;
 
+	//2.nominee details
 	private String nomineeName;
 	private Date nomineeBirthDate;
 	private Integer relationWithNomineeId;
-	private String nomineeAddress;
 	private String nomineePincode;
-
-	private Integer educationQualification;
-	private Integer religion;
-//	private String cast;
-	private Double landHolding;
-	private Integer houseType;
-
-	private String nameOfFirm;
-	private Integer businessType;
-//	private Boolean lifeInsurance;
-//	private String sumInsured;
-
 	private String nomineeState;
 	private String nomineeCity;
 	private String nomineeDistrict;
 	private String nomineeLocation;
 	private String nomineeHouseNo;
 	private String nomineeLandmark;
+
+	//3. Academic & Other Details
+	private Integer educationQualification;
 	private Integer academicReligion;
 	private Integer academicCaste;
 	private Integer isAcademicLifeInsurance;
-	private Integer houseOwnership;
+	private Double academicSumInsured;
+
+	//4. Business & Other Details
+	private Double landHolding;
 	private Integer areaType;
+	private Integer houseType;
+	private Integer houseOwnership;
+	private String nameOfFirm;
+	private Integer businessType;
 	private Integer businessPremises;
 	private Integer expInSameLine;
-	private Double academicSumInsured;
+	private Boolean isBusinessPremiseVisited;
+
+	//flag for update All Details
 	private Boolean isPersonalDetailsFilled;
 	private Boolean isFamilyDetailsFilled;
 	private Boolean isNomineeDetailsFilled;
 	private Boolean isAcadamicDetailsFilled;
+
+
 
 	public PersonalDetailsReq() {
 	}
 
 	public PersonalDetailsReq(Long applicationId, String fatherName, String motherName, String spouseName,
 			Date spouseBirthDate, Integer noDependent, String spouseMobile, String nomineeName, Date nomineeBirthDate,
-			Integer relationWithNomineeId, String nomineeAddress, String nomineePincode, Integer educationQualification,
-			Integer religion, Double landHolding, Integer houseType, String nameOfFirm, Integer businessType,
-			String nomineeState, String nomineeCity, String nomineeDistrict, String nomineeLocation,
+			Integer relationWithNomineeId, String nomineePincode, Integer educationQualification, Double landHolding, Integer houseType,
+			String nameOfFirm, Integer businessType,String nomineeState, String nomineeCity, String nomineeDistrict, String nomineeLocation,
 			String nomineeHouseNo, String nomineeLandmark, Integer academicReligion, Integer academicCaste,
-							  Integer isAcademicLifeInsurance, Integer houseOwnership, Integer areaType, Integer businessPremises,
+			Integer isAcademicLifeInsurance, Integer houseOwnership, Integer areaType, Integer businessPremises,
 			Integer expInSameLine, Double academicSumInsured, Boolean isPersonalDetailsFilled) {
 		super();
 		this.applicationId = applicationId;
@@ -83,10 +84,8 @@ public class PersonalDetailsReq {
 		this.nomineeName = nomineeName;
 		this.nomineeBirthDate = nomineeBirthDate;
 		this.relationWithNomineeId = relationWithNomineeId;
-		this.nomineeAddress = nomineeAddress;
 		this.nomineePincode = nomineePincode;
 		this.educationQualification = educationQualification;
-		this.religion = religion;
 		this.landHolding = landHolding;
 		this.houseType = houseType;
 		this.nameOfFirm = nameOfFirm;
@@ -180,14 +179,6 @@ public class PersonalDetailsReq {
 		this.nomineeName = nomineeName;
 	}
 
-	public String getNomineeAddress() {
-		return nomineeAddress;
-	}
-
-	public void setNomineeAddress(String nomineeAddress) {
-		this.nomineeAddress = nomineeAddress;
-	}
-
 	public String getNomineePincode() {
 		return nomineePincode;
 	}
@@ -202,14 +193,6 @@ public class PersonalDetailsReq {
 
 	public void setEducationQualification(Integer educationQualification) {
 		this.educationQualification = educationQualification;
-	}
-
-	public Integer getReligion() {
-		return religion;
-	}
-
-	public void setReligion(Integer religion) {
-		this.religion = religion;
 	}
 
 	public Double getLandHolding() {
@@ -411,5 +394,13 @@ public class PersonalDetailsReq {
 
 	public void setAcademicSumInsured(Double academicSumInsured) {
 		this.academicSumInsured = academicSumInsured;
+	}
+
+	public Boolean getIsBusinessPremiseVisited() {
+		return isBusinessPremiseVisited;
+	}
+
+	public void setIsBusinessPremiseVisited(Boolean isBusinessPremiseVisited) {
+		this.isBusinessPremiseVisited = isBusinessPremiseVisited;
 	}
 }

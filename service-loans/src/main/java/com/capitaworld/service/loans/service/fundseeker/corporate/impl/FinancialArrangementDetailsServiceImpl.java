@@ -172,12 +172,14 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	    logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
 	    Integer loanType = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
 	    Double existingLimits = 0.0d;
+	    Double existingLoanCollateralAmount = 0.0d;
 	    List<String> loanTypes = null;
 	    if(loanType ==null){
 	    	   logger.info("=====RETAIL LOAN EMI ===============");
 	    }else if(loanType == 2) {// Working Capital
 	    	loanTypes = Arrays.asList(new String[]{"cash credit","overdraft","loan - commercial cash credit"});
 	    	 existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
+	    	 existingLoanCollateralAmount =	financialArrangementDetailsRepository.getAmountOfCollateralExistingLoan(applicationId,loanTypes); // Get Amount of Collateral buero
 	    }else if(loanType == 1) { //Term Loan
 	    	loanTypes = Arrays.asList(new String[]{
 	    			"demand loan",
@@ -196,6 +198,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
 		arrangementsDetailRequest.setAmount(existingLimits);
 		arrangementsDetailRequest.setEmi(totalEmi);
+		arrangementsDetailRequest.setCollateralSecurityAmount(existingLoanCollateralAmount);
 		return arrangementsDetailRequest;		
 		
 	}

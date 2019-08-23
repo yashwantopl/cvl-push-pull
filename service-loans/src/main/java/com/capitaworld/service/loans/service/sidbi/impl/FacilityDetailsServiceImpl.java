@@ -79,7 +79,7 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
 		try {
 			List<FacilityDetails> facilityDetailsList = facilityDetailsRepository.getFacilityDetailsListAppId(applicationId);
 			facilityDetailsRequestList = new ArrayList<>(facilityDetailsList.size());
-
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(facilityDetailsList) && facilityDetailsList.size() == 0){
 			    Integer purposeLoanId = primaryCorporateDetailRepository.getPurposeLoanId(applicationId);
                 FacilityDetailsRequest facilityDetailsRequest = new FacilityDetailsRequest();
@@ -87,19 +87,19 @@ public class FacilityDetailsServiceImpl implements FacilityDetailsService{
                 Double loanAmt = sidbiSpecificService.getLoanAmountByApplicationId(applicationId);
 
 			    if (purposeLoanId == 1){
-                    facilityDetailsRequest.setRupeeTermLoan(loanAmt);
+                    facilityDetailsRequest.setRupeeTermLoan(CommonUtils.convertTwoDecimalValuesIn(loanAmt, sidbiCurrencyRateObj.getRate()));
                 }
                 else {
-                    facilityDetailsRequest.setWorkingCapitalFund(loanAmt);
+                    facilityDetailsRequest.setWorkingCapitalFund(CommonUtils.convertTwoDecimalValuesIn(loanAmt, sidbiCurrencyRateObj.getRate()));
                 }
-			    this.convertValuesIn(facilityDetailsRequest, applicationId);
+//			    this.convertValuesIn(facilityDetailsRequest, applicationId);
                 facilityDetailsRequestList.add(facilityDetailsRequest);
             }
             else {
                 for (FacilityDetails detail : facilityDetailsList) {
                     FacilityDetailsRequest facilityDetailsRequest = new FacilityDetailsRequest();
                     BeanUtils.copyProperties(detail, facilityDetailsRequest);
-                    this.convertValuesIn(facilityDetailsRequest, applicationId);
+//                    this.convertValuesIn(facilityDetailsRequest, applicationId);
                     facilityDetailsRequestList.add(facilityDetailsRequest);
                 }
             }

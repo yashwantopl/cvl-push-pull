@@ -567,7 +567,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
-			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? primaryCorporateDetail.getProductServiceDescription() : null);
+			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
 		}
 		
 		//ONE-FORM DATA
@@ -1343,7 +1343,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//gstRelatedParty Data Fetch
 		try {
 			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", !CommonUtils.isObjectNullOrEmpty(gstRelatedPartyRequests) ? gstRelatedPartyRequests : null);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
@@ -2271,19 +2271,20 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-1+"");
 				if(operatingStatementDetails != null) {
 					yearSalesPurchase.put("year",currentYear-1);
-					yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
-					yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+					yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
+					yearSalesPurchase.put("rowMaterialIndigenous",operatingStatementDetails.getRawMaterialsIndigenous());
 					financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 				}
 		}catch (Exception e) {
 			logger.info("Exception in getting financial fist year details {}",e);
 		}
 		try {
+			yearSalesPurchase = new HashMap<>();
 			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
 			if(operatingStatementDetails != null) {
-				yearSalesPurchase.put("year",currentYear-1);
-				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
-				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				yearSalesPurchase.put("year",currentYear-2);
+				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
+				yearSalesPurchase.put("rowMaterialIndigenous",operatingStatementDetails.getRawMaterialsIndigenous());
 				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}
 		}catch (Exception e) {
@@ -2291,11 +2292,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		try {
+			yearSalesPurchase = new HashMap<>();
 			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
 			if(operatingStatementDetails != null) {
-				yearSalesPurchase.put("year",currentYear-1);
-				yearSalesPurchase.put("grossSale",financialInputRequest.getGrossSalesFy());
-				yearSalesPurchase.put("totalCostSales",operatingStatementDetails.getTotalCostSales());
+				yearSalesPurchase.put("year",currentYear-3);
+				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
+				yearSalesPurchase.put("rowMaterialIndigenous",operatingStatementDetails.getRawMaterialsIndigenous());
 				financialYearAndSalesAndPurchase.add(yearSalesPurchase);
 			}
 		}catch (Exception e) {

@@ -28,8 +28,11 @@ import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
+import com.capitaworld.service.loans.model.retail.AgriLoanParameterRequest;
+import com.capitaworld.service.loans.model.retail.AutoLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
+import com.capitaworld.service.loans.service.fundprovider.AgriLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -61,6 +64,9 @@ public class ProductMasterController {
 
 	@Autowired
 	private ProductMasterService productMasterService;
+	
+	@Autowired
+	private AgriLoanParameterService agriLoanParameterService;
 
 	@RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> addProduct(@RequestBody AddProductRequest addProductRequest,
@@ -331,9 +337,9 @@ public class ProductMasterController {
 		}
 	}
 
-	@GetMapping(value = "/getListByUserType/{userType}/{applicationStage}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getListByUserType/{userType}/{applicationStage}/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getListByUserType(HttpServletRequest request,
-			@PathVariable(value = "userType") String userType,@PathVariable(value = "applicationStage")String applicationStage,
+			@PathVariable(value = "userType") String userType,@PathVariable(value = "applicationStage")String applicationStage,@PathVariable(value = "productId")String productId,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, GET_LIST_BY_USER_TYPE);
@@ -361,7 +367,7 @@ public class ProductMasterController {
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(productMasterService.getListByUserType(userId, Integer.parseInt(CommonUtils.decode(userType)),Integer.parseInt(CommonUtils.decode(applicationStage)),userOrgId));
+			loansResponse.setListData(productMasterService.getListByUserType(userId, Integer.parseInt(CommonUtils.decode(userType)),Integer.parseInt(CommonUtils.decode(applicationStage)),userOrgId,Integer.parseInt(CommonUtils.decode(productId))));
 			CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 
@@ -908,6 +914,94 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving saveRetailInTemp  Parameter==>", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
+	@PostMapping(value = "/saveRetailAutoLoan", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveRetailAutoLoan(
+			@RequestBody AutoLoanParameterRequest retailProduct,HttpServletRequest request) {
+		CommonDocumentUtils.startHook(logger, "save");
+		try {
+			if (retailProduct.getId() == null) {
+				logger.warn(CORPORATE_PRODUCT_ID_CAN_NOT_BE_EMPTY_MSG, retailProduct);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			if(userId == null){
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			retailProduct.setUserId(userId);
+			retailProduct.setUserOrgId(userOrgId);
+			boolean response = productMasterService.saveRetailInTemp(retailProduct);
+			if (response) {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saving saveRetailInTemp  Parameter==>", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
+	@PostMapping(value = "/saveAgriLoan", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveAgriLoan(
+			@RequestBody AgriLoanParameterRequest agriLoanParameterRequest,HttpServletRequest request) {
+		CommonDocumentUtils.startHook(logger, "save");
+		try {
+			if (agriLoanParameterRequest.getId() == null) {
+				logger.warn("Id Must Not be Null", agriLoanParameterRequest);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			if(userId == null){
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			agriLoanParameterRequest.setUserId(userId);
+			agriLoanParameterRequest.setUserOrgId(userOrgId);
+			boolean response = agriLoanParameterService.saveOrUpdateTemp(agriLoanParameterRequest);
+			if (response) {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saving Agri Loan Parameter==>", e);
 			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

@@ -21,11 +21,15 @@ import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
 public interface MfiIncomeDetailsRepository extends JpaRepository<MfiIncomeDetails,Long> {
 	
 
-	@Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq(fn.id, fn.applicationId,fn.occupation,fn.netIncome,fn.frequencyIncome,fn.monthlyIncome,fn.yearlyIncome,fn.relationId,fn.type,fn.incomeDays) from MfiIncomeDetails fn where fn.applicationId = :appId and fn.type =:type and fn.isActive = true")
+	@Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq(fn.id, fn.applicationId,fn.occupation,fn.frequencyIncome,fn.monthlyIncome,fn.yearlyIncome,fn.relationId,fn.type,fn.incomeDays,fn.monthlyIncomeChecker) from MfiIncomeDetails fn where fn.applicationId = :appId and fn.type =:type and fn.isActive = true")
 	public List<MfiIncomeDetailsReq> findIncomeDetailsByAppId(@Param("appId") Long appId,@Param("type") Integer type);
+
+	@Query("from MfiIncomeDetails n where  n.isActive = true and n.applicationId =:appId and n.type=:type and n.relationId=1")
+	public MfiIncomeDetails findIncomeDetailsByAppIdAndType(@Param("appId") Long appId,@Param("type") Integer type);
 
 	@Modifying
 	@Query("update MfiIncomeDetails n set n.isActive = false where n.applicationId =:applicationId")
 	public int inActiveMappingByAppId(@Param("applicationId") Long applicationId);
+
 	
 }

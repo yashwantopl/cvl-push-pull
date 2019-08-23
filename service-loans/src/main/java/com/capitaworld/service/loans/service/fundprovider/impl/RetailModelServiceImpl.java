@@ -18,6 +18,7 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.domain.fundprovider.AutoLoanModelTemp;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModel;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanModelTemp;
 import com.capitaworld.service.loans.domain.fundprovider.RetailModel;
@@ -26,6 +27,7 @@ import com.capitaworld.service.loans.model.RetailModelRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.repository.fundprovider.RetailModelRepository;
 import com.capitaworld.service.loans.repository.fundprovider.RetailModelTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.AutoLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundprovider.RetailModelService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -46,6 +48,9 @@ public class RetailModelServiceImpl implements RetailModelService {
 	
 	@Autowired
 	private HomeLoanModelService homeLoanModelService;
+	
+	@Autowired
+	private AutoLoanModelService autoLoanModelService;
 	
 	@Autowired
 	private WorkflowClient workflowClient;
@@ -84,8 +89,12 @@ public class RetailModelServiceImpl implements RetailModelService {
 		logger.info(CommonUtils.ENTRY_IN + SAVE_TO_TEMP_METHOD);
 		RetailModelTemp retailModelTemp = retailModelTempRepository.findById(modelRequest.getId());
 		if (retailModelTemp == null) {
-			if (CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
-				retailModelTemp = new HomeLoanModelTemp();
+			if (CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId()) || CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
+				if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(modelRequest.getBusinessTypeId())) {
+					retailModelTemp = new HomeLoanModelTemp();
+				} else {
+					retailModelTemp = new AutoLoanModelTemp();
+				}
 				retailModelTemp.setCreatedBy(modelRequest.getUserId());
 				retailModelTemp.setCreatedDate(new Date());
 				retailModelTemp.setIsApproved(false);
@@ -134,10 +143,40 @@ public class RetailModelServiceImpl implements RetailModelService {
 		}
 		return list;
 	}
+	
+	@Override
+	public List<RetailModelRequest> getTempByOrgIdAndBusinessTypeId(Long orgId, Integer businessTypeId) {
+		List<RetailModelTemp> responses = retailModelTempRepository.findByOrgIdAndBusinessTypeIdAndIsCopiedAndIsApproved(orgId,businessTypeId,false,false);
+		if(CommonUtils.isListNullOrEmpty(responses)) {
+			return Collections.emptyList();
+		}
+		List<RetailModelRequest> list = new ArrayList<>(responses.size());
+		for(RetailModelTemp modelTemp : responses) {
+			RetailModelRequest  modelRequest = new RetailModelRequest();
+			BeanUtils.copyProperties(modelTemp, modelRequest);
+			list.add(modelRequest);
+		}
+		return list;
+	}
 
 	@Override
 	public List<RetailModelRequest> get(Long orgId) {
 		List<RetailModel> responses = retailModelRepository.findByOrgId(orgId);
+		if(CommonUtils.isListNullOrEmpty(responses)) {
+			return Collections.emptyList();
+		}
+		List<RetailModelRequest> list = new ArrayList<>(responses.size());
+		for(RetailModel modelTemp : responses) {
+			RetailModelRequest  modelRequest = new RetailModelRequest();
+			BeanUtils.copyProperties(modelTemp, modelRequest);
+			list.add(modelRequest);
+		}
+		return list;
+	}
+	
+	@Override
+	public List<RetailModelRequest> getByOrgIdAndBusinessTypeId(Long orgId, Integer businessTypeId) {
+		List<RetailModel> responses = retailModelRepository.findByOrgIdAndBusinessTypeId(orgId, businessTypeId);
 		if(CommonUtils.isListNullOrEmpty(responses)) {
 			return Collections.emptyList();
 		}
@@ -168,6 +207,9 @@ public class RetailModelServiceImpl implements RetailModelService {
 			Boolean result = false;
 			if(CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId)) {
 				result = homeLoanModelService.copyTempToMaster(workflowData.getId());
+				fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
+			} else if(CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(businessTypeId)) {
+				result = autoLoanModelService.copyTempToMaster(workflowData.getId());
 				fpAsyncComp.sendEmailToAdminMakerWhenPurposeOfLoanApprovedOrRevertBeck(workflowData.getUserId(), workflowData.getId(), workflowData.getActionId(),true);
 			}
 			int updateStatus = retailModelTempRepository.changeStatus(workflowData.getId(), CommonUtils.Status.APPROVED, true, false, true, new Date());
