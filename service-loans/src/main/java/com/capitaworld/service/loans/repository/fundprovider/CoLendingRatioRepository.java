@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.repository.fundprovider;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,6 @@ public interface CoLendingRatioRepository extends JpaRepository<CoLendingRatio, 
 	@Query("from CoLendingRatio clr where clr.bankId =:bankId and isActive=true")
 	public List<CoLendingRatio> listAllActiveByBankId(@Param("bankId")Long bankId);
 
+	@Query("SELECT new com.capitaworld.service.loans.model.corporate.CoLendingRequest(clr.bankId) FROM CoLendingRatio clr WHERE clr.userOrgId =:userOrgId AND isActive = TRUE AND clr.isProposalActive = TRUE")
+	public List<CoLendingRequest> listByOrgId(@Param("userOrgId") Long userOrgId);
 }

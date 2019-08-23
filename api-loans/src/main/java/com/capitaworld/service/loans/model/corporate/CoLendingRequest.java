@@ -33,6 +33,13 @@ public class CoLendingRequest {
 	
 	private String reason;
 
+	//constructor
+	public CoLendingRequest(Long bankId) {
+		this.bankId = bankId;
+	}
+
+
+	//getter setter
 	public String getName() {
 		return name;
 	}
@@ -105,7 +112,6 @@ public class CoLendingRequest {
 		this.workflowData = workflowData;
 	}
 
-
 	public Long getBankId() {
 		return bankId;
 	}
@@ -138,15 +144,4 @@ public class CoLendingRequest {
 		this.reason = reason;
 	}
 
-
-	
-
-	
-	
-
-	
-	
-	
-	
-	
 }

@@ -220,8 +220,9 @@ public class CoLendingServiceImpl implements CoLendingService {
 			return false;
 		}
 	}
-	
-	
-	
 
+	@Override
+	public List<CoLendingRequest> listByOrgId(Long userOrgId) {
+		return coLendingRatioRepository.listByOrgId(userOrgId);
+	}
 }
