@@ -79,8 +79,7 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isEmiMiDisplay = false;
 	private Boolean isEmiMiMandatory = false;
 	
-	private Double minCollateralSecurity;
-	private Double maxCollateralSecurity;
+	private Boolean isCollateralSecurity;
 	private Boolean isCollateralSecurityDisplay = false;
 	private Boolean isCollateralSecurityMandatory = false;
 	
@@ -440,20 +439,12 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 		this.isEmiMiMandatory = isEmiMiMandatory;
 	}
 
-	public Double getMinCollateralSecurity() {
-		return minCollateralSecurity;
+	public Boolean getIsCollateralSecurity() {
+		return isCollateralSecurity;
 	}
 
-	public void setMinCollateralSecurity(Double minCollateralSecurity) {
-		this.minCollateralSecurity = minCollateralSecurity;
-	}
-
-	public Double getMaxCollateralSecurity() {
-		return maxCollateralSecurity;
-	}
-
-	public void setMaxCollateralSecurity(Double maxCollateralSecurity) {
-		this.maxCollateralSecurity = maxCollateralSecurity;
+	public void setIsCollateralSecurity(Boolean isCollateralSecurity) {
+		this.isCollateralSecurity = isCollateralSecurity;
 	}
 
 	public Boolean getIsCollateralSecurityDisplay() {
