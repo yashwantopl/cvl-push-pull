@@ -1678,6 +1678,53 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	}*/
 
 	@Override
+	public Map<String ,Object> getGstReportData(String panNo){
+		Map <String ,Object> map = new HashMap<String, Object>();
+		CAMGSTData resp = null;
+		GSTR1Request gstr1Request = new GSTR1Request();
+		gstr1Request.setPan(panNo);
+		map.put("date", simpleDateFormat.format(new Date()));
+		try {
+			GstResponse response = gstClient.getGstDataByPan(gstr1Request);
+			DecimalFormat df = new DecimalFormat(".##");
+			if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
+				for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+					resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+					if(resp.getMomSales() != null) {
+                        List<MomSales> momSalesResp1 = resp.getMomSales();
+                        List<MomSales> responseMom= new ArrayList<>();
+                        
+                        for (MomSales sales1 : momSalesResp1) {
+                        	StringBuilder str = new StringBuilder(sales1.getMonth());
+                        	sales1.setMonth(str.insert(2, '-').toString());
+                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
+                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
+                            responseMom.add(sales1);
+                        }
+                        data.put("monthWiseMomSales", responseMom);
+                    }
+					Double totalSales =0.0d;
+					if(resp.getMomSales() != null) {
+						List<MomSales> momSalesResp = resp.getMomSales();
+						for (MomSales sales : momSalesResp) {
+							
+							totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
+						}
+						map.put("totalMomSales", df.format(totalSales));
+					}
+				}
+				map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
+			}else {
+				logger.info("Gst Data Null");
+			}
+			return map;
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting gstData By Pan" ,e);
+		}
+		return null;
+	}
+	
+	@Override
 	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);

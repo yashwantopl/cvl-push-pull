@@ -756,8 +756,8 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				} else {
 					hlTeaserViewResponse.setEffectiveRoi(proposalMappingRequestString.getMclrRoi() == null && proposalMappingRequestString.getSpreadRoi() == null ? "-" : proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : proposalMappingRequestString.getSpreadRoi().toString());				
 				}
-			    hlTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
-			    hlTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+			    hlTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null && proposalMappingRequestString.getConsessionRoi() != 0.0 && proposalMappingRequestString.getConsessionRoi() != 0 ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
+			    hlTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 			    if (hlTeaserViewResponse.getEffectiveRoi() != null) {
 					hlTeaserViewResponse.setFinalRoi(proposalMappingRequestString.getConsessionRoi() != null ? String.valueOf(Double.valueOf(hlTeaserViewResponse.getEffectiveRoi()) - Double.valueOf(proposalMappingRequestString.getConsessionRoi())) : "-" );
 				} else {

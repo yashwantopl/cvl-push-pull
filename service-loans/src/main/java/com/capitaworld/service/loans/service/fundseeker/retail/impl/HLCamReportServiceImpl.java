@@ -897,7 +897,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					effectiveRoi = proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi() : proposalMappingRequestString.getSpreadRoi();
 				}
 				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
-				roiData.put("concessionRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? proposalMappingRequestString.getConsessionRoi() : "-");
+				roiData.put("concessionRoi", proposalMappingRequestString.getConsessionRoi() != null && proposalMappingRequestString.getConsessionRoi() != 0.0 && proposalMappingRequestString.getConsessionRoi() != 0 ? proposalMappingRequestString.getConsessionRoi() : "-");
 				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				if(effectiveRoi != null) {
 					finalRoi = !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? effectiveRoi - proposalMappingRequestString.getConsessionRoi() : null;
