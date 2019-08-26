@@ -214,7 +214,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
 		RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByProposalId(finalHomeLoanDetailRequest.getApplicationId(),finalHomeLoanDetailRequest.getProposalId());
 		Title.getById(retailApplicantDetail.getTitleId()).getValue();
-		finalHomeLoanDetailRequest.setName(Title.getById(retailApplicantDetail.getTitleId()).getValue() +" " + retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getMiddleName() + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFatherName()) ? retailApplicantDetail.getFatherName() : "" ));
+		finalHomeLoanDetailRequest.setName(Title.getById(retailApplicantDetail.getTitleId()).getValue() +" " + retailApplicantDetail.getFirstName() + " " +   (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName()) ? retailApplicantDetail.getMiddleName() : "" ) + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()) ? retailApplicantDetail.getLastName() : "" ));
 		finalHomeLoanDetailRequest.setFatherFullName(retailApplicantDetail.getFatherName());
 
 		Address permanentAddress = new Address();
@@ -230,7 +230,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 		finalHomeLoanDetailRequest.setEducationalQualification(EducationStatusRetailMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
 		finalHomeLoanDetailRequest.setEmployeeType(retailApplicantDetail.getEmploymentType());
 		finalHomeLoanDetailRequest.setStatusId(retailApplicantDetail.getStatusId());
-		finalHomeLoanDetailRequest.setEducationalQualification(EducationalStatusMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
+//		finalHomeLoanDetailRequest.setEducationalQualification(EducationalStatusMst.getById(retailApplicantDetail.getEducationQualification()).getValue());
 	}
 
     private void addEmployementDetails(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest) {
