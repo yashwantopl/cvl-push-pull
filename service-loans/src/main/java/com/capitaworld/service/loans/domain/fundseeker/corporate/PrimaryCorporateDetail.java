@@ -136,11 +136,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     
     @Column(name = "is_allow_switch_existing_lender")
     private Boolean isAllowSwitchExistingLender;
-    
-    //do not open it ask nilay for that
    
-    /*@Column(name="borrower_dcld_projected_sales")
-    private Double borrowerDcldProjectedSales;*/
+    @Column(name="borrower_dcld_projected_sales")
+    private Double borrowerDcldProjectedSales;
     
   //End By Akshay for OnePager Eligibility
 
@@ -422,12 +420,12 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.productServiceDescription = productServiceDescription;
     }
 
-	/*public Double getBorrowerDcldProjectedSales() {
+	public Double getBorrowerDcldProjectedSales() {
 		return borrowerDcldProjectedSales;
 	}
 
 	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
 		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
-	}*/
+	}
     
 }

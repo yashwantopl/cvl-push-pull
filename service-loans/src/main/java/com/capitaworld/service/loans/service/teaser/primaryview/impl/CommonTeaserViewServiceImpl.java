@@ -101,9 +101,9 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 			loansResponse.setData(personalLoansViewService.getPersonalLoansPrimaryViewDetails(applicantId));
 			loansResponse.setMessage(LoanType.PERSONAL_LOAN.getId().toString());
 			break;
-		case CAR_LOAN:
+		case AUTO_LOAN:
 			loansResponse.setData(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId));
-			loansResponse.setMessage(LoanType.CAR_LOAN.getId().toString());
+			loansResponse.setMessage(LoanType.AUTO_LOAN.getId().toString());
 			break;
 		case HOME_LOAN:
 			loansResponse.setData(homeLoanPrimaryViewService.getHomeLoanPrimaryViewDetails(applicantId));
@@ -150,9 +150,9 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 			loansResponse.setData(personalLoanFinalViewService.getPersonalLoanFinalViewDetails(applicantId));
 			loansResponse.setMessage(LoanType.PERSONAL_LOAN.getId().toString());
 			break;
-		case CAR_LOAN:
+		case AUTO_LOAN:
 			loansResponse.setData(carLoanFinalViewService.getCarLoanFinalViewDetails(applicantId));
-			loansResponse.setMessage(LoanType.CAR_LOAN.getId().toString());
+			loansResponse.setMessage(LoanType.AUTO_LOAN.getId().toString());
 			break;
 		case HOME_LOAN:
 			loansResponse.setData(homeLoanFinalViewService.getHomeLoanFinalViewDetails(applicantId));

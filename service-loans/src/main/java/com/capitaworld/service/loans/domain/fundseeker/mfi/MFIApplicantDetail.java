@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.mfi;
 
+import com.capitaworld.cibil.api.utility.EncryptionUtils;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
@@ -190,6 +191,8 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "total_cash_flow")
 	private Double totalCashFlow;
+	@Column(name = "total_emi")
+	private Double totalEmi;
 
 	@Column(name = "repayment_frequency")
 	private Integer repaymentFrequency;
@@ -326,6 +329,8 @@ public class MFIApplicantDetail implements Serializable {
 
 	@Column(name = "address_proof_type")
 	private Integer addressProofType;
+
+	@Convert(converter = EncryptionUtils.class)
 	@Column(name = "address_proof_no")
 	private String addressProofNo;
 
@@ -366,10 +371,12 @@ public class MFIApplicantDetail implements Serializable {
 	private Boolean isBusinessPremiseVisited;
 	@Column(name = "repayment_track")
 	private Integer repaymentTrack;
+
 	@Column(name = "creadit_worthiness")
 	private Integer creaditWorthiness;
+
 	@Column(name = "loan_liability_ratio")
-	private String loanLiabilityRatio;
+	private Double loanLiabilityRatio;
 	@Column(name = "competition")
 	private Integer competition;
 	@Column(name = "loan_amount_recomandation")
@@ -1428,23 +1435,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.isLoanassessmentDetailsFilled = isLoanassessmentDetailsFilled;
 	}
 
-//	public Double getTotalExpense() {
-//		return totalExpense;
-//	}
-//
-//	public void setTotalExpense(Double totalExpense) {
-//		this.totalExpense = totalExpense;
-//	}
-//
-//	public Double getTotalMonthlyIncomeForFamily() {
-//		return totalMonthlyIncomeForFamily;
-//	}
-//
-//	public void setTotalMonthlyIncomeForFamily(Double totalMonthlyIncomeForFamily) {
-//		this.totalMonthlyIncomeForFamily = totalMonthlyIncomeForFamily;
-//	}
-
-	
 	public Double getLoanAmountRecomandation() {
 		return loanAmountRecomandation;
 	}
@@ -1469,11 +1459,11 @@ public class MFIApplicantDetail implements Serializable {
 		this.moratoriumRecomandation = moratoriumRecomandation;
 	}
 
-	public String getLoanLiabilityRatio() {
+	public Double getLoanLiabilityRatio() {
 		return loanLiabilityRatio;
 	}
 
-	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
+	public void setLoanLiabilityRatio(Double loanLiabilityRatio) {
 		this.loanLiabilityRatio = loanLiabilityRatio;
 	}
 
@@ -1531,5 +1521,13 @@ public class MFIApplicantDetail implements Serializable {
 
 	public void setAadharImg(String aadharImg) {
 		this.aadharImg = aadharImg;
+	}
+
+	public Double getTotalEmi() {
+		return totalEmi;
+	}
+
+	public void setTotalEmi(Double totalEmi) {
+		this.totalEmi = totalEmi;
 	}
 }

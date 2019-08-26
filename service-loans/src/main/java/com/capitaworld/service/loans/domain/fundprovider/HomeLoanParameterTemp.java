@@ -241,54 +241,6 @@ public class HomeLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "is_ltv_mandatory")
 	private Boolean isLtvMandatory = false;
 
-	// Minimum % of Gross Monthly Income as Take Home Pay
-//	@Column(name = "min_grss_mon_income_as_home_pay_sal_indiv")
-//	private Double minGrssMonIncomeAsHomePaySalIndiv;
-//	@Column(name = "is_grss_mon_income_as_home_pay_sal_indiv_display")
-//	private Boolean isGrssMonIncomeAsHomePaySalIndivDisplay = false;
-//	@Column(name = "is_grss_mon_income_as_home_pay_sal_indiv_mandatory")
-//	private Boolean isGrssMonIncomeAsHomePaySalIndivMandatory = false;
-//
-//	// Maximum % of Net Income as Permissible EMI
-//	@Column(name = "max_net_income_permiss_emi_sal_indiv")
-//	private Double maxNetIncomePermissEMISalIndiv;
-//	@Column(name = "is_net_income_permiss_emi_sal_indiv_display")
-//	private Boolean isNetIncomePermissEMISalIndivDisplay = false;
-//	@Column(name = "is_net_income_permiss_emi_sal_indiv_mandatory")
-//	private Boolean isNetIncomePermissEMISalIndivMandatory = false;
-//
-//	// Maximum Number of Times of Gross Monthly Income to be considered 
-//	@Column(name = "max_time_consi_month_grss_income_sal_indiv")
-//	private Double maxTimeConsiMonthGrssIncomeSalIndiv;
-//	@Column(name = "is_time_consi_month_grss_income_sal_indiv_display")
-//	private Boolean isTimeConsiMonthGrssIncomeSalIndivDisplay = false;
-//	@Column(name = "is_time_consi_month_grss_income_sal_indiv_mandatory")
-//	private Boolean isTimeConsiMonthGrssIncomeSalIndivMandatory = false;
-//
-//	// Minimum % of Gross Monthly Income as Take Home Pay
-//	@Column(name = "max_grss_mon_income_as_home_pay_oth_thn_sal_indi")
-//	private Double maxGrssMonIncomeAsHomePayOthThnSalIndi;
-//	@Column(name = "is_grss_mon_income_as_home_pay_oth_thn_sal_indi_display")
-//	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiDisplay = false;
-//	@Column(name = "is_grss_mon_income_as_home_pay_oth_thn_sal_indi_mandatory")
-//	private Boolean isGrssMonIncomeAsHomePayOthThnSalIndiMandatory = false;
-//
-//	// Maximum % of Net Income as Permissible EMI
-//	@Column(name = "max_net_income_permiss_emi_oth_thn_sal_indiv")
-//	private Double maxNetIncomePermissEMIOthThnSalIndi;
-//	@Column(name = "is_net_income_permiss_emi_oth_thn_sal_indiv_display")
-//	private Boolean isNetIncomePermissEMIOthThnSalIndiDisplay = false;
-//	@Column(name = "is_net_income_permiss_emi_oth_thn_sal_indiv_mandatory")
-//	private Boolean isNetIncomePermissEMIOthThnSalIndiMandatory = false;
-//
-//	// Maximum Number of Times of Gross Monthly Income to be considered 
-//	@Column(name = "max_time_consi_month_grss_income_oth_thn_sal_indi")
-//	private Double maxTimeConsiMonthGrssIncomeOthThnSalIndi;
-//	@Column(name = "is_time_consi_month_grss_income_oth_thn_sal_indi_display")
-//	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiDisplay = false;
-//	@Column(name = "is_time_consi_month_grss_income_oth_thn_sal_indi_mandatory")
-//	private Boolean isTimeConsiMonthGrssIncomeOthThnSalIndiMandatory = false;
-
 	//No. of Co-Applicant
 	@Column(name = "no_of_co_app_or_gua")
 	private Integer noOfCoAppOrGua;

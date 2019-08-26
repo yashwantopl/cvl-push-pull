@@ -83,6 +83,12 @@ public class ApplicationSequenceServiceImpl implements ApplicationSequenceServic
                 applicationSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
                 CommonDocumentUtils.endHook(logger, GET_APPLICATION_SEQUENCE_NUMBER);
                 return "CW-AWCTL-"+sequenceNumber;
+            case 17://MFI applications
+                sequenceNumber = applicationSequenceRepository.getApplicationSequenceNumber(Long.valueOf(productId));
+                sequenceNumber+=1;
+                applicationSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
+                CommonDocumentUtils.endHook(logger, GET_APPLICATION_SEQUENCE_NUMBER);
+                return "CW-AMFI-"+sequenceNumber;
             default:
                 return null;
         }

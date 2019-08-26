@@ -743,3 +743,4 @@ ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN modified
 ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN from_date DATETIME;
 ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN field_value VARCHAR(100);
 ALTER TABLE `loan_application`.`fp_offline_app_config_audit` ADD COLUMN field_type INT;
+ALTER TABLE `loan_application`.`fs_corporate_current_financial_arrangements_details` ADD COLUMN entry_no VARCHAR(100);

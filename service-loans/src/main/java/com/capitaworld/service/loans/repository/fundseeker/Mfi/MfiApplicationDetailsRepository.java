@@ -26,6 +26,9 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
  
     @Query("select mf from MFIApplicantDetail mf where mf.applicationId.id =:applicationId and  mf.type =:type and mf.isActive = true ")
     public MFIApplicantDetail findByApplicationIdAndAndTypeIsActive(@Param("applicationId") Long applicationId,@Param("type") Integer type);
+
+    @Query("select mf from MFIApplicantDetail mf where mf.applicationId.id =:applicationId and  mf.type =:type and mf.isActive = true ")
+    public List<MFIApplicantDetail> findByCoApplicationIdAndAndTypeIsActive(@Param("applicationId") Long applicationId,@Param("type") Integer type);
      
 
     @Query("select new com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq(fn.applicationId.id,fn.fatherName,fn.motherName,fn.spouseName,fn.spouseBirthDate,fn.noDependent,fn.spouseMobile,fn.nomineeName,fn.nomineeBirthDate,\n" +
@@ -41,7 +44,7 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
     @Query("select new com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq(fn.applicationId.id,fn.loanType,fn.purposeOfLoan,fn.loanAmountRequired,fn.costOfEquipment,fn.workingCapOfEquipment,fn.totalCostEquipment,fn.promoterContribution,fn.loanRequiredFromSidbi,fn.totalMeanFinance,fn.totalCashFlow,fn.repaymentFrequency,fn.insurenceRequired,fn.insurenceCompanyName,fn.insurencePremium,fn.isProjectDetailsFilled,me.businessInBrief,me.monthlyCashflow,me.monthlyExpenditure,me.monthlyIncome) from MFIApplicantDetail fn, MfiExpenseExpectedIncomeDetails me where me.applicationId = fn.applicationId.id and fn.applicationId.id = :appId and fn.isActive = true and fn.type =:type")
     public List<ProjectDetailsReq> findProjectDetailsByAppId(@Param("appId") Long appId,@Param("type") Integer type);
     
-    @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq(fn.applicationId.id,me.educationExpense,me.medicalExpense,me.foodExpense,me.otherExpense,fn.ppiNoFamilyMember,fn.ppiAcadamicHeadFamily,fn.ppiRafrigeratorInFamily,fn.ppiStoveInFamily,fn.ppiPressureCookerInFamily,fn.ppiTvInFamily,fn.ppiFanInFamily,fn.ppiVehicleInFamily,fn.ppiDressingTableInFamily,fn.ppiOtherTableInFamily,me.houseHoldExpense,me.clothesExpense,me.type) from MFIApplicantDetail fn, MfiExpenseExpectedIncomeDetails me where me.applicationId = fn.applicationId.id  and fn.applicationId.id = :appId and me.isActive = true and me.type =:type")
+    @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiIncomeAndExpenditureReq(fn.applicationId.id,me.educationExpense,me.medicalExpense,me.foodExpense,me.otherExpense,fn.ppiNoFamilyMember,fn.ppiAcadamicHeadFamily,fn.ppiRafrigeratorInFamily,fn.ppiStoveInFamily,fn.ppiPressureCookerInFamily,fn.ppiTvInFamily,fn.ppiFanInFamily,fn.ppiVehicleInFamily,fn.ppiDressingTableInFamily,fn.ppiOtherTableInFamily,me.houseHoldExpense,me.clothesExpense,me.type) from MFIApplicantDetail fn, MfiExpenseExpectedIncomeDetails me where me.applicationId = fn.applicationId.id  and fn.applicationId.id = :appId and fn.type=:type and me.isActive = true and me.type =:type")
 	public MfiIncomeAndExpenditureReq findIncomeAndExpenditureDetailsByAppId(@Param("appId") Long appId,@Param("type") Integer type);
     
     @Query("select new com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetailsReq(fn.applicationId.id,fn.purposeOfLoan,fn.clientType,fn.isBusinessPremiseVisited,fn.repaymentTrack,fn.creaditWorthiness,fn.loanLiabilityRatio,fn.competition) from MFIApplicantDetail fn where fn.applicationId.id = :appId and fn.isActive = true and fn.type =:type")

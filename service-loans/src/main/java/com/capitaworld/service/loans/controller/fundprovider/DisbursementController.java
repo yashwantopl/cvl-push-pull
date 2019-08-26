@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.retail.CarLoanParameterRequest;
-import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
+import com.capitaworld.service.loans.model.retail.AutoLoanParameterRequest;
+import com.capitaworld.service.loans.service.fundprovider.AutoLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 @RestController

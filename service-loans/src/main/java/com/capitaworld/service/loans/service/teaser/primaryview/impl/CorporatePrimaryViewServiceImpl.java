@@ -5,8 +5,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -78,7 +76,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.DateWiseComparator;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
@@ -123,7 +120,6 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-import com.google.gson.internal.LinkedHashTreeMap;
 
 @Service
 @Transactional
@@ -1392,18 +1388,18 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest) {
 		LinkedHashMap<String,Object>comparisionData=new LinkedHashMap<>();
 		GstResponse gstResp = null;
-		Map<String,Object> bsMap=new TreeMap(new DateWiseComparator());
+		Map<String,Object> bsMap=new HashMap<>();
 		try {
 			GSTR1Request request=new GSTR1Request();
 			request.setApplicationId(applicationId);
 			gstResp = gstClient.getbankComparisonData(request);
 			ReportRequest requestReport = new ReportRequest(applicationId);
-			bsMap  = analyzerClient.getDetailsByCategoryWise(requestReport).getMap();
+			bsMap  = (LinkedHashMap<String, Object>)analyzerClient.getDetailsByCategoryWise(requestReport).getData();
 		}catch (Exception e) {
 			logger.error("Exception in getting gst and BS data for teaserview {}",e);
 		}
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
-		SimpleDateFormat sdf1=new SimpleDateFormat("MMM yy");
+		SimpleDateFormat sdf1=new SimpleDateFormat("MMMyy");
 		SimpleDateFormat displayFormate=new SimpleDateFormat("MM-yyyy");
 		// gst vs bank statement month wise purchase		
 		if(bsMap != null && !bsMap.isEmpty() && gstResp != null && gstResp.getData() != null) {
@@ -1527,7 +1523,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
 							
 							for (Map<String, Object> itrSales:  financialInputRequest.getYearSalesPurchasList()) {
-								if(itrSales != null  /*&& !String.valueOf(itrSales.get("year")).equals("2017")*/ && yearWiseDomestic.getKey().contains(String.valueOf(itrSales.get("year"))) && yearWiseDomestic.getKey().equals(exp.getKey())) {
+								if(itrSales != null  /*&& !String.valueOf(itrSales.get("year")).equals("2017")*/ && yearWiseDomestic.getKey().split("-")[0].contains(String.valueOf(itrSales.get("year"))) && yearWiseDomestic.getKey().equals(exp.getKey())) {
 								
 									LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
 									gstPurchaseVsBankStatementMonthly.put("year", yearWiseDomestic.getKey() != null ? yearWiseDomestic.getKey() : " - ");
@@ -1588,7 +1584,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
 						financialInputRequest.getYearSalesPurchasList().stream().sorted(new DateComparator2());		
 						for(Map<String, Object> fi: financialInputRequest.getYearSalesPurchasList()) {
-							if(fi != null /*&& !String.valueOf(fi.get("year")).equals("2017") */&& y.getKey().contains(String.valueOf(fi.get("year")))) {
+							if(fi != null /*&& !String.valueOf(fi.get("year")).equals("2017") */&& y.getKey().split("-")[0].contains(String.valueOf(fi.get("year")))) {
 								LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
 								gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ?y.getKey().toString() : " - ");
 								gstPurchaseVsBankStatementMonthly.put("gstPurchase", y.getValue()!= null && y.getValue().toString() != "0" ?CommonUtils.convertStringFormate(y.getValue().toString()) : " - ");
