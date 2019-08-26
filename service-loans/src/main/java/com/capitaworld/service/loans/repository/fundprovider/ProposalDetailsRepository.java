@@ -135,11 +135,17 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT * FROM proposal_details as  pd WHERE pd.application_id =:applicationId and is_active=true",nativeQuery = true)
     public ProposalDetails getByApplicationIdAndFPProductId(@Param("applicationId") Long applicationId);
 
+    @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id=:proposalStatus AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4 AND np_org_id=:npOrgId)",nativeQuery = true)
+    public List<BigInteger> getProposalsByProposalStatusAndBusinessTypeId(@Param("proposalStatus") Long proposalStatus,@Param("npOrgId") Long npOrgId);
+
     @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id=:proposalStatus AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4)",nativeQuery = true)
-    public List<BigInteger> getProposalsByProposalStatusAndBusinessTypeId(@Param("proposalStatus") Long proposalStatus);
+    public List<BigInteger> getProposalsByProposalStatusAndBusinessTypeIdForSidbi(@Param("proposalStatus") Long proposalStatus);
+
+    @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4 AND np_org_id=:npOrgId)",nativeQuery = true)
+    public List<BigInteger> getProposalsByProposalStatusListAndBusinessTypeId(@Param("proposalStatus") List<Long> proposalStatus,@Param("npOrgId") Long npOrgId);
 
     @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4)",nativeQuery = true)
-    public List<BigInteger> getProposalsByProposalStatusListAndBusinessTypeId(@Param("proposalStatus") List<Long> proposalStatus);
+    public List<BigInteger> getProposalsByProposalStatusListAndBusinessTypeIdForSidbi(@Param("proposalStatus") List<Long> proposalStatus);
 
     @Query(value="SELECT display_org_name FROM `users`.`user_organisation_master` WHERE user_org_id =:id",nativeQuery= true)
     public String getOrgNameById(@Param("id") Long id);
