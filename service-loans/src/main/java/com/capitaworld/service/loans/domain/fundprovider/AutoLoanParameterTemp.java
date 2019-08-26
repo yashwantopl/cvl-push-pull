@@ -263,10 +263,8 @@ public class AutoLoanParameterTemp extends ProductMasterTemp implements Serializ
 	
 //	Collateral Security (Hypothecation of vehicle purchased out of Bank Finance)
 	
-	@Column(name = "min_collateral_security")
-	private Double minCollateralSecurity;
-	@Column(name = "max_collateral_security")
-	private Double maxCollateralSecurity;
+	@Column(name = "is_collateral_security")
+	private Boolean isCollateralSecurity;
 	@Column(name = "is_collateral_security_display")
 	private Boolean isCollateralSecurityDisplay = false;
 	@Column(name = "is_collateral_security_mandatory")
@@ -974,20 +972,12 @@ public class AutoLoanParameterTemp extends ProductMasterTemp implements Serializ
 		this.isEmiMiMandatory = isEmiMiMandatory;
 	}
 
-	public Double getMinCollateralSecurity() {
-		return minCollateralSecurity;
+	public Boolean getIsCollateralSecurity() {
+		return isCollateralSecurity;
 	}
 
-	public void setMinCollateralSecurity(Double minCollateralSecurity) {
-		this.minCollateralSecurity = minCollateralSecurity;
-	}
-
-	public Double getMaxCollateralSecurity() {
-		return maxCollateralSecurity;
-	}
-
-	public void setMaxCollateralSecurity(Double maxCollateralSecurity) {
-		this.maxCollateralSecurity = maxCollateralSecurity;
+	public void setIsCollateralSecurity(Boolean isCollateralSecurity) {
+		this.isCollateralSecurity = isCollateralSecurity;
 	}
 
 	public Boolean getIsCollateralSecurityDisplay() {

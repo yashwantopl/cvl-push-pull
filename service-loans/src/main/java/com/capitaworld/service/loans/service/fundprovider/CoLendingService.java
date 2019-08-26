@@ -18,6 +18,6 @@ public interface CoLendingService {
 	Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 	
 	Boolean removeCoLendingProposal(Long id);
-	
 
+	List<CoLendingRequest> listByOrgId(Long userOrgId);
 }
