@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundprovider;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 
@@ -18,6 +19,8 @@ public interface CoLendingService {
 	Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 	
 	Boolean removeCoLendingProposal(Long id);
+
+	Boolean addReasonByJobId(DataRequest dataRequest);
 	
 
 }

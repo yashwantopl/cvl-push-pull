@@ -23,6 +23,7 @@ import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
 import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
@@ -197,7 +198,7 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 			}
 			WorkflowResponse workflowResponse = workflowClient.updateJob(request);
-			return false;
+			return true;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
@@ -219,6 +220,25 @@ public class CoLendingServiceImpl implements CoLendingService {
 			logger.error("Error while removeCoLendingProposal",e);
 			return false;
 		}
+	}
+
+	@Override
+	public Boolean addReasonByJobId(DataRequest dataRequest) {
+		// TODO Auto-generated method stub
+		
+		CommonDocumentUtils.startHook(logger, "addReasonByJobId");
+		try {
+			
+			coLendingRatioRepository.addReasonByJobId(dataRequest.getValue(),dataRequest.getId());
+			return true;
+		}
+
+		catch(Exception e)
+		{
+			logger.error("Error while addReasonByJobId",e);
+			return false;
+		}
+		
 	}
 	
 	
