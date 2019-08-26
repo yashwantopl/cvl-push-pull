@@ -617,7 +617,7 @@ public class CamReportPdfDetailsController {
 
 			if (byteArr != null && byteArr.length > 0) {
 				httpServletResponse.setContentType("application/octet-stream");
-				httpServletResponse.setHeader("Content-Disposition", String.format("inline; filename=GST\"" + " Data Report" + "\""));
+				httpServletResponse.setHeader("Content-Disposition", String.format("inline; filename=GST\"" + " GSTDataReport.pdf" + "\""));
 				httpServletResponse.setContentLength((int) byteArr.length);
 				InputStream inputStream = new ByteArrayInputStream(byteArr); 
 				FileCopyUtils.copy(inputStream, httpServletResponse.getOutputStream());
