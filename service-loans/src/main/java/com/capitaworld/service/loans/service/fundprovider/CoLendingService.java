@@ -23,4 +23,5 @@ public interface CoLendingService {
 	Boolean addReasonByJobId(DataRequest dataRequest);
 	
 
+	List<CoLendingRequest> listByOrgId(Long userOrgId);
 }

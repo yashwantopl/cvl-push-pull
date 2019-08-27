@@ -244,4 +244,8 @@ public class CoLendingServiceImpl implements CoLendingService {
 	
 	
 
+	@Override
+	public List<CoLendingRequest> listByOrgId(Long userOrgId) {
+		return coLendingRatioRepository.listByOrgId(userOrgId);
+	}
 }

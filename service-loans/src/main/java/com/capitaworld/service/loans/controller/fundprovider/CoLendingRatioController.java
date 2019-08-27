@@ -1,20 +1,18 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.WorkflowData;
+import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
+import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -24,6 +22,7 @@ import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/co_lending")
@@ -32,9 +31,7 @@ public class CoLendingRatioController {
 	private static final Logger logger = LoggerFactory.getLogger(CoLendingRatioController.class);
 
 	@Autowired
-	private CoLendingService coLendingService; 	
-
-	
+	private CoLendingService coLendingService;
 
 
 	@GetMapping(value = "/getList/{role}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -270,6 +267,29 @@ public class CoLendingRatioController {
 		}
 	}
 
-	
-	
+	/**
+	 * get accepted bank id from NBFC organization id
+	 * @param id
+	 * @return LoansResponse
+	 */
+	@GetMapping(value = "/getBankList/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getConfirmBankList(@PathVariable(value = "id") Long id) {
+		logger.info("in /getBankList/{}", id);
+		// request must not be null
+		try {
+			if (id == null) {
+				logger.warn("organization id is mandatory");
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(coLendingService.listByOrgId(id));
+			CommonDocumentUtils.endHook(logger, "end getBankList");
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while removeCoLendingProposal", e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
