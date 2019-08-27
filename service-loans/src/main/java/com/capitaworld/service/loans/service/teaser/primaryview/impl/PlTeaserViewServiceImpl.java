@@ -1087,8 +1087,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					} else {
 						plTeaserViewResponse.setEffectiveRoi(proposalMappingRequestString.getMclrRoi() == null && proposalMappingRequestString.getSpreadRoi() == null ? "-" : proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : proposalMappingRequestString.getSpreadRoi().toString());				
 					}
-				 plTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
-				 plTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+				 plTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null && proposalMappingRequestString.getConsessionRoi() != 0.0 && proposalMappingRequestString.getConsessionRoi() != 0 ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
+				 plTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				    if (plTeaserViewResponse.getEffectiveRoi() != null) {
 				    	plTeaserViewResponse.setFinalRoi(proposalMappingRequestString.getConsessionRoi() != null ? String.valueOf(Double.valueOf(plTeaserViewResponse.getEffectiveRoi()) - Double.valueOf(proposalMappingRequestString.getConsessionRoi())) : "-" );
 					} else {

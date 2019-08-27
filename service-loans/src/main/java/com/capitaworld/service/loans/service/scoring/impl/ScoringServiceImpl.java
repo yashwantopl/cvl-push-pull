@@ -7040,7 +7040,7 @@ public class ScoringServiceImpl implements ScoringService {
         if (!CommonUtils.isListNullOrEmpty(scoringRequestLoansList)) {
             applicationId = scoringRequestLoansList.get(0).getApplicationId();
             mfiApplicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(applicationId, 1);
-             mfiIncomeDetails=mfiIncomeDetailsRepository.findIncomeDetailsByAppIdAndType(applicationId,2);
+             mfiIncomeDetails=mfiIncomeDetailsRepository.findIncomeDetailsByAppIdAndType(applicationId,1);
         }
         for (ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList) {
             ScoreParameterMFIRequest scoreParameterMFIRequest = null;
@@ -7167,7 +7167,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MFI.ANNUAL_INCOME_AS_APPLICABLE_MFI:
                                 try {
 //                                    AreaTypeMfi areaType = AreaTypeMfi.fromId(mfiApplicantDetail.getAreaType());
-                                    Double annualIncome = (mfiIncomeDetails.getMonthlyIncome() * 12);
+                                    Double annualIncome = (mfiIncomeDetails.getMonthlyIncomeChecker() * 12);
                                     AnnualIncomeRural annualIncomeRural = AnnualIncomeRural.getRangeByValue(annualIncome, mfiApplicantDetail.getAreaType());
                                     if (!CommonUtils.isObjectNullOrEmpty(annualIncomeRural)) {
                                         scoreParameterMFIRequest.setAnnualIncome(annualIncomeRural.getId().longValue());

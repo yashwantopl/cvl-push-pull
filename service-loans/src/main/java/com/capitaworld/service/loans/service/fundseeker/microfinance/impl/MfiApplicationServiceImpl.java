@@ -180,14 +180,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				mfiApplicationDetail.setType(aadharDetailsReq.getType());
 
 				// image upload to DMS S3 server recent Image
-				String profileImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getApplicationId());
+				String profileImgToDms = uploadImageForMfi(uploadingFile, applicationId);
 				mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
 
 				// image upload to DMS S3 server Address proof Image
 				String addressProofImgToDms = "";
 				int count = 0;
 				for (MultipartFile addressProofFile : addressProofFiles){ //multiple files for address proof
-					String imageForMfi = uploadImageForMfi(addressProofFile, aadharDetailsReq.getApplicationId());
+					String imageForMfi = uploadImageForMfi(addressProofFile, applicationId);
 					if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
 						addressProofImgToDms = (count == 0 ? "" : (addressProofImgToDms + ",")) + imageForMfi;
 					}
@@ -631,7 +631,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					mfiAssetsLiabilityDetails = new MfiAssetsLiabilityDetails();
 					BeanUtils.copyProperties(mfiassetsDetailsReq, mfiAssetsLiabilityDetails);
 					ParticularsMfi particularsMfi = ParticularsMfi.fromId(mfiassetsDetailsReq.getParticulars().toString());
-					mfiAssetsDetailsReq.setAssetsLiabilityType(particularsMfi.getType());
+					mfiAssetsLiabilityDetails.setAssetsLiabilityType(particularsMfi.getType());
 					mfiAssetsLiabilityDetails.setApplicationId(mfiassetsDetailsReq.getApplicationId());
 					mfiAssetsLiabilityDetails.setType(ASSETS);
 					MfiAssetsDetailsRepository.save(mfiAssetsLiabilityDetails);
