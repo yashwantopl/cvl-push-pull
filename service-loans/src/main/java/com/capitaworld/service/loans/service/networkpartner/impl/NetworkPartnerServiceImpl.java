@@ -2074,11 +2074,16 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
 						FundProviderDetailsRequest.class);
-				return fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "" : fundProviderDetailsRequest.getLastName());
+				if(fundProviderDetailsRequest.getFirstName() != null) {
+					if(fundProviderDetailsRequest.getLastName() != null) {
+						return fundProviderDetailsRequest.getFirstName() + " " + fundProviderDetailsRequest.getLastName();
+					}
+					return fundProviderDetailsRequest.getFirstName();
+				}
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
 			}
 		}
-		return "-";
+		return null;
 	}
 }
