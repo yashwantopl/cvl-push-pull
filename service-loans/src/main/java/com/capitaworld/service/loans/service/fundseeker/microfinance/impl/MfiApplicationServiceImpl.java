@@ -631,7 +631,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					mfiAssetsLiabilityDetails = new MfiAssetsLiabilityDetails();
 					BeanUtils.copyProperties(mfiassetsDetailsReq, mfiAssetsLiabilityDetails);
 					ParticularsMfi particularsMfi = ParticularsMfi.fromId(mfiassetsDetailsReq.getParticulars().toString());
-					mfiAssetsDetailsReq.setAssetsLiabilityType(particularsMfi.getType());
+					mfiAssetsLiabilityDetails.setAssetsLiabilityType(particularsMfi.getType());
 					mfiAssetsLiabilityDetails.setApplicationId(mfiassetsDetailsReq.getApplicationId());
 					mfiAssetsLiabilityDetails.setType(ASSETS);
 					MfiAssetsDetailsRepository.save(mfiAssetsLiabilityDetails);

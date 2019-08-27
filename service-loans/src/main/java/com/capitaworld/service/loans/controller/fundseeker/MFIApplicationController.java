@@ -451,7 +451,7 @@ public class MFIApplicationController {
 		}
 	}
 
-    @PostMapping(value = "/saveAssetsLiabilityDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/saveAssetsLiabilityDetails", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> saveAssetsLiabilityDetails(@RequestBody String mfiAssetsDataReq, HttpServletRequest request) {
         try {
             logger.info("service call saveAssetsLiabilityDetails----------->");
@@ -533,7 +533,7 @@ public class MFIApplicationController {
 		}
 	}
 
-	@PostMapping(value = "/saveLoanAssessmentDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/saveLoanAssessmentDetails", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanAssessmentDetails(
 			@RequestBody String mfiLoanAssessmentDataReq, HttpServletRequest request) {
 		try {
@@ -576,7 +576,7 @@ public class MFIApplicationController {
 	}
 
 
-	@PostMapping(value = "/saveLoanRecomandationDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/saveLoanRecomandationDetails", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanRecomandationDetails(@RequestBody String mfiLoanRecomandationDataReq, HttpServletRequest request) {
 		try {
 			logger.info("service call saveLoanAssessmentDetails----------->");
@@ -722,7 +722,7 @@ public class MFIApplicationController {
 		}
 	}
 
-	@PostMapping(value = "/getWorkflowData", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/getWorkflowData", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getWorkflowData(@RequestBody WorkflowRequest workflowRequest,
 														 HttpServletRequest request) {
 		try {
@@ -799,7 +799,7 @@ public class MFIApplicationController {
 		}
 	}
 
-	@PostMapping(value = "/getMfiConversation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/getMfiConversation", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getMfiConversation(@RequestBody MFIConversationReq mfiConversationReq,
 															HttpServletRequest request) {
 		try {
