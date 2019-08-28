@@ -3,9 +3,12 @@ package com.capitaworld.service.loans.model.micro_finance;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class MfiApplicantDetailsReq {
 
@@ -22,7 +25,9 @@ public class MfiApplicantDetailsReq {
 	private String lastName;
 
 	private String middleName;
-
+	
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date birthDate;
 
 	private Integer genderId;
@@ -82,7 +87,8 @@ public class MfiApplicantDetailsReq {
 	private String motherName;
 
 	private String spouseName;
-
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date spouseBirthDate;
 
 	private String spouseMobile;
@@ -90,7 +96,8 @@ public class MfiApplicantDetailsReq {
 	private Integer noDependent;
 
 	private String nomineeName;
-
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date nomineeBirthDate;
 
 	private Integer relationWithNomineeId;
@@ -138,7 +145,8 @@ public class MfiApplicantDetailsReq {
 	private Double insurencePremium;
 
 	private Long createdBy;
-
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date createdDate;
 
 	private Boolean isActive;
@@ -344,6 +352,348 @@ public class MfiApplicantDetailsReq {
 	private LoanSanctionRequest sanctionDetail;
 	
 	private List<LoanDisbursementRequest> disbursementDetails;
+	
+	/* STRING FOR ENUMS */
+	private String maritalStatus;
+	private String gender;
+	private String relationWithNominee;
+	private String eduQualification;
+	private String houseType1;
+	private String repayFreq;
+	private String academicReli;
+	private String academicCast;
+	private String houseOwnerShip;
+	private String areaType1;
+	private String businessPremises1;
+	private String addressProofType1;
+	private String dateOfBirth;
+	private String businessType1;
+	private String accountType1;
+	private String businessNameString;
+	private String ppiAcadamicHeadFamily1;
+	private String loanTypeString;
+	private String purposeOfLoanString;
+	private String clientType1;
+	private String repayTrack;
+	private String competition1;
+	private List<Resource> listOfImages;
+	
+	List<String> byteList; 
+	private Double mfiMakerTotalExpense;
+	private Double mfiCheckerTotalExpense;
+	private Double totalIncomeChecker;
+	private Double netSavingChecker;
+	private Double increasedIncomeChecker;
+	private Double totalCashFlowChecker;
+	/* STRING FOR ENUMS */
+	
+	
+	
+	/* GETTER SETTERS */
+	
+	
+	
+	
+	
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+
+	
+
+	public Double getTotalCashFlowChecker() {
+		return totalCashFlowChecker;
+	}
+
+
+
+
+	public void setTotalCashFlowChecker(Double totalCashFlowChecker) {
+		this.totalCashFlowChecker = totalCashFlowChecker;
+	}
+
+
+
+
+	public Double getIncreasedIncomeChecker() {
+		return increasedIncomeChecker;
+	}
+
+
+
+
+	public void setIncreasedIncomeChecker(Double increasedIncomeChecker) {
+		this.increasedIncomeChecker = increasedIncomeChecker;
+	}
+
+
+
+
+	public Double getNetSavingChecker() {
+		return netSavingChecker;
+	}
+
+
+
+
+	public void setNetSavingChecker(Double netSavingChecker) {
+		this.netSavingChecker = netSavingChecker;
+	}
+
+
+
+
+	public Double getTotalIncomeChecker() {
+		return totalIncomeChecker;
+	}
+
+
+
+
+	public void setTotalIncomeChecker(Double totalIncomeChecker) {
+		this.totalIncomeChecker = totalIncomeChecker;
+	}
+
+
+
+
+	public Double getMfiMakerTotalExpense() {
+		return mfiMakerTotalExpense;
+	}
+
+
+
+
+	public void setMfiMakerTotalExpense(Double mfiMakerTotalExpense) {
+		this.mfiMakerTotalExpense = mfiMakerTotalExpense;
+	}
+
+
+
+
+	public Double getMfiCheckerTotalExpense() {
+		return mfiCheckerTotalExpense;
+	}
+
+
+
+
+	public void setMfiCheckerTotalExpense(Double mfiCheckerTotalExpense) {
+		this.mfiCheckerTotalExpense = mfiCheckerTotalExpense;
+	}
+
+
+
+
+	public List<Resource> getListOfImages() {
+		return listOfImages;
+	}
+
+
+
+
+	public void setListOfImages(List<Resource> listOfImages) {
+		this.listOfImages = listOfImages;
+	}
+
+
+
+
+	public String getCompetition1() {
+		return competition1;
+	}
+
+
+	public void setCompetition1(String competition1) {
+		this.competition1 = competition1;
+	}
+
+
+	public String getRepayTrack() {
+		return repayTrack;
+	}
+
+
+	public void setRepayTrack(String repayTrack) {
+		this.repayTrack = repayTrack;
+	}
+
+
+	public String getClientType1() {
+		return clientType1;
+	}
+
+
+	public void setClientType1(String clientType1) {
+		this.clientType1 = clientType1;
+	}
+
+
+	public String getPurposeOfLoanString() {
+		return purposeOfLoanString;
+	}
+
+
+	public void setPurposeOfLoanString(String purposeOfLoanString) {
+		this.purposeOfLoanString = purposeOfLoanString;
+	}
+
+
+	public String getLoanTypeString() {
+		return loanTypeString;
+	}
+
+
+	public void setLoanTypeString(String loanTypeString) {
+		this.loanTypeString = loanTypeString;
+	}
+
+
+	public String getPpiAcadamicHeadFamily1() {
+		return ppiAcadamicHeadFamily1;
+	}
+
+
+	public void setPpiAcadamicHeadFamily1(String ppiAcadamicHeadFamily1) {
+		this.ppiAcadamicHeadFamily1 = ppiAcadamicHeadFamily1;
+	}
+
+
+	public String getBusinessNameString() {
+		return businessNameString;
+	}
+
+
+	public void setBusinessNameString(String businessNameString) {
+		this.businessNameString = businessNameString;
+	}
+
+
+	public String getAccountType1() {
+		return accountType1;
+	}
+
+
+	public void setAccountType1(String accountType1) {
+		this.accountType1 = accountType1;
+	}
+
+
+	public String getBusinessType1() {
+		return businessType1;
+	}
+
+
+	public void setBusinessType1(String businessType1) {
+		this.businessType1 = businessType1;
+	}
+
+
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getRelationWithNominee() {
+		return relationWithNominee;
+	}
+
+	public void setRelationWithNominee(String relationWithNominee) {
+		this.relationWithNominee = relationWithNominee;
+	}
+
+	public String getEduQualification() {
+		return eduQualification;
+	}
+
+	public void setEduQualification(String eduQualification) {
+		this.eduQualification = eduQualification;
+	}
+
+	public String getHouseType1() {
+		return houseType1;
+	}
+
+	public void setHouseType1(String houseType1) {
+		this.houseType1 = houseType1;
+	}
+
+	public String getRepayFreq() {
+		return repayFreq;
+	}
+
+	public void setRepayFreq(String repayFreq) {
+		this.repayFreq = repayFreq;
+	}
+
+	public String getAcademicReli() {
+		return academicReli;
+	}
+
+	public void setAcademicReli(String academicReli) {
+		this.academicReli = academicReli;
+	}
+
+	public String getAcademicCast() {
+		return academicCast;
+	}
+
+	public void setAcademicCast(String academicCast) {
+		this.academicCast = academicCast;
+	}
+
+	public String getHouseOwnerShip() {
+		return houseOwnerShip;
+	}
+
+	public void setHouseOwnerShip(String houseOwnerShip) {
+		this.houseOwnerShip = houseOwnerShip;
+	}
+
+	public String getAreaType1() {
+		return areaType1;
+	}
+
+	public void setAreaType1(String areaType1) {
+		this.areaType1 = areaType1;
+	}
+
+	public String getBusinessPremises1() {
+		return businessPremises1;
+	}
+
+	public void setBusinessPremises1(String businessPremises1) {
+		this.businessPremises1 = businessPremises1;
+	}
+
+	public String getAddressProofType1() {
+		return addressProofType1;
+	}
+
+	public void setAddressProofType1(String addressProofType1) {
+		this.addressProofType1 = addressProofType1;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+	
+	/* GETTER SETTERS */
+	
 	
 
 	public Integer getStatus() {
@@ -1914,4 +2264,21 @@ public class MfiApplicantDetailsReq {
 	public void setTotalEmi(Double totalEmi) {
 		this.totalEmi = totalEmi;
 	}
+
+
+
+
+	public List<String> getByteList() {
+		return byteList;
+	}
+
+
+
+
+	public void setByteList(List<String> byteList) {
+		this.byteList = byteList;
+	}
+
+
+
 }
