@@ -38,45 +38,6 @@ public class ScoreParameterRetailRequest {
     private Double avgEODBalToTotalDeposite;
     private Double tentureOfTheLoan;
 
-    @Override
-    public String toString() {
-        return "ScoreParameterRetailRequest{" +
-                "isWorkingExperience_p=" + isWorkingExperience_p +
-                ", isCibilScore_p=" + isCibilScore_p +
-                ", isAge_p=" + isAge_p +
-                ", isEducationQualifaction_p=" + isEducationQualifaction_p +
-                ", isEmployementType_p=" + isEmployementType_p +
-                ", isHouseOwnership_p=" + isHouseOwnership_p +
-                ", isMaritalStatus_p=" + isMaritalStatus_p +
-                ", isCategoryInfo_p=" + isCategoryInfo_p +
-                ", isFixedObligationRatio_p=" + isFixedObligationRatio_p +
-                ", isChequeBounce_p=" + isChequeBounce_p +
-                ", isDPD_p=" + isDPD_p +
-                ", isNetAnnualIncome_p=" + isNetAnnualIncome_p +
-                ", isEmiNmi_p=" + isEmiNmi_p +
-                ", isNoOfYearCurrentLocation_p=" + isNoOfYearCurrentLocation_p +
-                ", isNetWrothToLoanAmount_p=" + isNetWrothToLoanAmount_p +
-                ", isAvgEODBalToTotalDeposite_p=" + isAvgEODBalToTotalDeposite_p +
-                ", isTentureOfTheLoan_p=" + isTentureOfTheLoan_p +
-                ", workingExperience=" + workingExperience +
-                ", cibilScore=" + cibilScore +
-                ", age=" + age +
-                ", educationQualification=" + educationQualification +
-                ", employmentType=" + employmentType +
-                ", houseOwnership=" + houseOwnership +
-                ", maritalStatus=" + maritalStatus +
-                ", categoryInfo=" + categoryInfo +
-                ", fixedObligationRatio=" + fixedObligationRatio +
-                ", chequeBounce=" + chequeBounce +
-                ", dpd=" + dpd +
-                ", netAnnualIncome=" + netAnnualIncome +
-                ", nmi=" + nmi +
-                ", noOfYearCurrentLocation=" + noOfYearCurrentLocation +
-                ", netWrothToLoanAmount=" + netWrothToLoanAmount +
-                ", avgEODBalToTotalDeposite=" + avgEODBalToTotalDeposite +
-                ", tentureOfTheLoan=" + tentureOfTheLoan +
-                '}';
-    }
 
     public Boolean getWorkingExperience_p() {
         return isWorkingExperience_p;
@@ -341,4 +302,45 @@ public class ScoreParameterRetailRequest {
     public void setTentureOfTheLoan(Double tentureOfTheLoan) {
         this.tentureOfTheLoan = tentureOfTheLoan;
     }
+
+	
+	  @Override
+	    public String toString() {
+	        return "ScoreParameterRetailRequest{" +
+	                "isWorkingExperience_p=" + isWorkingExperience_p +
+	                ", isCibilScore_p=" + isCibilScore_p +
+	                ", isAge_p=" + isAge_p +
+	                ", isEducationQualifaction_p=" + isEducationQualifaction_p +
+	                ", isEmployementType_p=" + isEmployementType_p +
+	                ", isHouseOwnership_p=" + isHouseOwnership_p +
+	                ", isMaritalStatus_p=" + isMaritalStatus_p +
+	                ", isCategoryInfo_p=" + isCategoryInfo_p +
+	                ", isFixedObligationRatio_p=" + isFixedObligationRatio_p +
+	                ", isChequeBounce_p=" + isChequeBounce_p +
+	                ", isDPD_p=" + isDPD_p +
+	                ", isNetAnnualIncome_p=" + isNetAnnualIncome_p +
+	                ", isEmiNmi_p=" + isEmiNmi_p +
+	                ", isNoOfYearCurrentLocation_p=" + isNoOfYearCurrentLocation_p +
+	                ", isNetWrothToLoanAmount_p=" + isNetWrothToLoanAmount_p +
+	                ", isAvgEODBalToTotalDeposite_p=" + isAvgEODBalToTotalDeposite_p +
+	                ", isTentureOfTheLoan_p=" + isTentureOfTheLoan_p +
+	                ", workingExperience=" + workingExperience +
+	                ", cibilScore=" + cibilScore +
+	                ", age=" + age +
+	                ", educationQualification=" + educationQualification +
+	                ", employmentType=" + employmentType +
+	                ", houseOwnership=" + houseOwnership +
+	                ", maritalStatus=" + maritalStatus +
+	                ", categoryInfo=" + categoryInfo +
+	                ", fixedObligationRatio=" + fixedObligationRatio +
+	                ", chequeBounce=" + chequeBounce +
+	                ", dpd=" + dpd +
+	                ", netAnnualIncome=" + netAnnualIncome +
+	                ", nmi=" + nmi +
+	                ", noOfYearCurrentLocation=" + noOfYearCurrentLocation +
+	                ", netWrothToLoanAmount=" + netWrothToLoanAmount +
+	                ", avgEODBalToTotalDeposite=" + avgEODBalToTotalDeposite +
+	                ", tentureOfTheLoan=" + tentureOfTheLoan +
+	                '}';
+	    }
 }
