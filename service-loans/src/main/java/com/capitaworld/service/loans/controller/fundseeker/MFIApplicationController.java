@@ -34,6 +34,15 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+import org.json.simple.JSONObject;
+import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.loans.utils.DDRMultipart;
+
 @RestController
 @RequestMapping("/mfi")
 public class MFIApplicationController {
@@ -41,6 +50,12 @@ public class MFIApplicationController {
 
 	@Autowired
 	private MfiApplicationService mfiApplicationService;
+	
+	@Autowired
+	  private ReportsClient reportsClient;
+
+	  @Autowired
+	  private DMSClient dmsClient;
 
 	/**
 	 * save Aadhar detail For create new Application in MFI Application
@@ -952,6 +967,83 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	
+	/* TO Download Report */
+
+	  @GetMapping(value = "/getReportDetails/{applicationId}/{type}")
+	  public ResponseEntity<LoansResponse> getReportDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("type") Integer type,
+	      HttpServletRequest request) {
+
+	    if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+	      logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+	      return new ResponseEntity<LoansResponse>(
+	          new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND,
+	              HttpStatus.BAD_REQUEST.value()),
+	          HttpStatus.OK);
+	    }
+
+	    try {
+	      Map<String, Object> response = mfiApplicationService.getReportDetails(applicationId); 
+	      Map<String, Object> applicantDetails = mfiApplicationService.getApplicantDetails1(applicationId, type);
+	      //Map<String, Object> applicantDetails = mfiApplicationService.getApplicantDetails1(applicationId);
+	      CommonDocumentUtils.startHook(logger, "getApplicantDetails");     
+	      ReportRequest reportRequest = new ReportRequest();
+	      response.putAll(applicantDetails);
+	      reportRequest.setParams(response);
+//	      reportRequest.setParams(applicantDetails);
+	      reportRequest.setTemplate("MFICAMPRIMARY");
+	      reportRequest.setType("MFICAMPRIMARY");
+	      logger.info("========================>" + reportRequest);
+	      byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+	      MultipartFile multipartFile = new DDRMultipart(byteArr);
+	      JSONObject jsonObj = new JSONObject();
+	      jsonObj.put("applicationId", applicationId);
+	      jsonObj.put("productDocumentMappingId", 355L);
+	      jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+	      jsonObj.put("originalFileName", "PLCAMPRIMARYREPORT" + applicationId + ".pdf");
+
+	      DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+	      if (documentResponse.getStatus() == 200) {
+	        logger.info("" + documentResponse);
+	        return new ResponseEntity<LoansResponse>(
+	            new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),
+	            HttpStatus.OK);
+	      } else {
+	        return new ResponseEntity<LoansResponse>(
+	            new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	            HttpStatus.OK);
+	      }
+	    } catch (Exception e) {
+	      logger.error("Error while getting MAP Details==>", e);
+	      return new ResponseEntity<LoansResponse>(
+	          new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	          HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+
+	    /*
+	     * 
+	     * 
+	     * 
+	     * try {
+	     * 
+	     * CommonDocumentUtils.startHook(logger, "Downloading report");
+	     * MfiApplicantDetailsReq applicantDetails =
+	     * mfiApplicationService.getApplicantDetails(applicationId);
+	     * CommonDocumentUtils.endHook(logger, "getApplicantDetails"); return new
+	     * ResponseEntity<LoansResponse>(new
+	     * LoansResponse("Successfully Fetch Applicant or coApplicant details."
+	     * ,HttpStatus.OK.value(), applicantDetails), HttpStatus.OK);
+	     * 
+	     * } catch (Exception e) {
+	     * logger.error("Error while Get All applicant or coApplicant Details ==>", e);
+	     * return new ResponseEntity<LoansResponse>(new
+	     * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
+	     * HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK); }
+	     */
+	  }
+	  
+
 	
 	
 
