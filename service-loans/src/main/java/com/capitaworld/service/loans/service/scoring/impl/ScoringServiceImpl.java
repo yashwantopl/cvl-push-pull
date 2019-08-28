@@ -6444,7 +6444,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         int commercialVal = 0;
                                         int maxDpd = 0;
                                         for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
-                                            String cibilResponseObj = cibilDirectorsResponseList.get(i).toString();
+                                            String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
                                             if(cibilResponseObj.contains("|")){
                                                 String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
                                                 if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
@@ -6452,9 +6452,11 @@ public class ScoringServiceImpl implements ScoringService {
                                             }else {
                                                 commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(i).toString());
                                             }
+                                            logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
                                             if(maxDpd <= commercialVal){
                                                 maxDpd = commercialVal;
                                             }
+                                            logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
                                             scoringParameterRequest.setDpd(maxDpd);
                                             scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
                                         }
