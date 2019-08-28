@@ -45,8 +45,6 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(alLoanDetailRequest.getApplicationId());
 			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 				retailApplicantDetail.setLoanAmountRequired(alLoanDetailRequest.getLoanAmountRequired());
-				retailApplicantDetail.setLoanPurposeQueType(alLoanDetailRequest.getLoanPurposeQueType());
-				retailApplicantDetail.setLoanPurposeQueValue(alLoanDetailRequest.getLoanPurposeQueValue());
 				retailApplicantDetail.setTenureRequired(alLoanDetailRequest.getTenureRequired());
 				retailApplicantDetail.setRepaymentMode(alLoanDetailRequest.getRepaymentMode());
 				retailApplicantDetail.setModifiedDate(new Date());
@@ -54,6 +52,8 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				retailApplicantDetail.setGrossMonthlyIncome(alLoanDetailRequest.getGrossMonthlyIncome());
 				retailApplicantDetail.setMonthlyIncome(alLoanDetailRequest.getMonthlyIncome());
 				retailApplicantDetail.setBorrowerContribution(alLoanDetailRequest.getBorrowerContribution());
+				retailApplicantDetail.setLoanPurpose(alLoanDetailRequest.getLoanPurpose());
+				retailApplicantDetail.setLoanPurposeQueType(alLoanDetailRequest.getLoanPurposeQueType());
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 			}
 			
@@ -104,13 +104,14 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setLoanAmountRequired(retailApplicantDetail.getLoanAmountRequired());
 			res.setBorrowerContribution(retailApplicantDetail.getBorrowerContribution());
 			res.setLoanPurposeOther(retailApplicantDetail.getLoanPurposeOther());
-			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
 			res.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
 			res.setTenureRequired(retailApplicantDetail.getTenureRequired());
 			res.setEmploymentType(retailApplicantDetail.getEmploymentType());
 			res.setRepaymentMode(retailApplicantDetail.getRepaymentMode());		
 			res.setMonthlyIncome(retailApplicantDetail.getMonthlyIncome());
 			res.setGrossMonthlyIncome(retailApplicantDetail.getGrossMonthlyIncome());
+			res.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
+			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
 		}
 		PrimaryAutoLoanDetail primaryAutoLoanDetail = autoLoanDetailRepository.findById(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
@@ -129,7 +130,6 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setIsCheckOffNotChangeSalAcc(primaryAutoLoanDetail.getIsCheckOffNotChangeSalAcc());
 			res.setIsCheckOffPayOutstndAmount(primaryAutoLoanDetail.getIsCheckOffPayOutstndAmount());
 			res.setIsCheckOffShiftSalAcc(primaryAutoLoanDetail.getIsCheckOffShiftSalAcc());
-			
 		}
 		return res;
 	}

@@ -1399,27 +1399,50 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Sanction);
 		proposalStatusList.add(13L);
 		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Ineligible);
-		List <BigInteger> sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeId(proposalStatusList);
+		List <BigInteger> sanctionDisRejIneligibleProposal = new ArrayList<>();
+		if(request.getUserOrgId() != 10){
+			sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeId(proposalStatusList,request.getUserOrgId());
+		}else{
+			sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeIdForSidbi(proposalStatusList);
+		}
+
 
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MFI_CHECKER== request.getUserRoleId()){
 
 			if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_PENDING
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
-				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
-						request.getDdrStatusId(),
-						request.getUserOrgId(),
-						request.getProductTypeId(),
-						request.getBusinessTypeId(),
-						new PageRequest(request.getPageIndex(),request.getSize()));
-
-				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
-					//add also proposal sent to sidbi checker
-					applicationIdList.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
-							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+				if(request.getUserOrgId() !=10) {
+					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+							request.getDdrStatusId(),
 							request.getUserOrgId(),
 							request.getProductTypeId(),
 							request.getBusinessTypeId(),
-							new PageRequest(request.getPageIndex(),request.getSize())));
+							new PageRequest(request.getPageIndex(), request.getSize()));
+				}else {
+					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPaginationForSidbi(
+							request.getDdrStatusId(),
+							request.getProductTypeId(),
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(), request.getSize()));
+				}
+
+				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
+
+					if(request.getUserOrgId() !=10) {
+						//add also proposal sent to sidbi checker
+						applicationIdList.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+								CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+								request.getUserOrgId(),
+								request.getProductTypeId(),
+								request.getBusinessTypeId(),
+								new PageRequest(request.getPageIndex(), request.getSize())));
+					}else {
+						applicationIdList.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPaginationForSidbi(
+								CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+								request.getProductTypeId(),
+								request.getBusinessTypeId(),
+								new PageRequest(request.getPageIndex(), request.getSize())));
+					}
 				}
 				for(BigInteger appid : sanctionDisRejIneligibleProposal){
 					if(applicationIdList.contains(appid)){
@@ -1430,9 +1453,17 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Rejected
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Disbursed
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Ineligible){
-				applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId());
+				if(request.getUserOrgId() !=10) {
+					applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId(), request.getUserOrgId());
+				}else {
+					applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(request.getDdrStatusId());
+				}
 				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction){
-					applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
+					if(request.getUserOrgId() !=10) {
+						applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L, request.getUserOrgId()));
+					}else{
+						applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(13L));
+					}
 				}
 
 			}
@@ -1441,19 +1472,35 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
 
 				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_PENDING){
-					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
-							CommonUtils.MFIApplicationStatus.MFI_Submitted,
-							request.getUserOrgId(),
-							request.getProductTypeId(),
-							request.getBusinessTypeId(),
-							new PageRequest(request.getPageIndex(),request.getSize()));
+					if(request.getUserOrgId() !=10) {
+						applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+								CommonUtils.MFIApplicationStatus.MFI_Submitted,
+								request.getUserOrgId(),
+								request.getProductTypeId(),
+								request.getBusinessTypeId(),
+								new PageRequest(request.getPageIndex(), request.getSize()));
+					}else{
+						applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPaginationForSidbi(
+								CommonUtils.MFIApplicationStatus.MFI_Submitted,
+								request.getProductTypeId(),
+								request.getBusinessTypeId(),
+								new PageRequest(request.getPageIndex(), request.getSize()));
+					}
 				}else if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Submitted){
-					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
-							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
-							request.getUserOrgId(),
-							request.getProductTypeId(),
-							request.getBusinessTypeId(),
-							new PageRequest(request.getPageIndex(),request.getSize()));
+					if(request.getUserOrgId() !=10) {
+						applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+								CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+								request.getUserOrgId(),
+								request.getProductTypeId(),
+								request.getBusinessTypeId(),
+								new PageRequest(request.getPageIndex(), request.getSize()));
+					}else {
+						applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPaginationForSidbi(
+								CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+								request.getProductTypeId(),
+								request.getBusinessTypeId(),
+								new PageRequest(request.getPageIndex(), request.getSize()));
+					}
 				}
 
 				for(BigInteger appid : sanctionDisRejIneligibleProposal){
@@ -1465,19 +1512,35 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Rejected
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Disbursed
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Ineligible){
-				applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId());
+				if(request.getUserOrgId() !=10) {
+					applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId(), request.getUserOrgId());
+				}else {
+					applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(request.getDdrStatusId());
+				}
 				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction){
-					applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
+					if(request.getUserOrgId() != 10) {
+						applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L, request.getUserOrgId()));
+					}else {
+						applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(13L));
+					}
 				}
 			}
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER== request.getUserRoleId()){
 			if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_PENDING){
-				applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
-						CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
-						request.getUserOrgId(),
-						request.getProductTypeId(),
-						request.getBusinessTypeId(),
-						new PageRequest(request.getPageIndex(),request.getSize()));
+				if(request.getUserOrgId() !=10) {
+					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPagination(
+							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+							request.getUserOrgId(),
+							request.getProductTypeId(),
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(), request.getSize()));
+				}else {
+					applicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserOrgIdPaginationForSidbi(
+							CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+							request.getProductTypeId(),
+							request.getBusinessTypeId(),
+							new PageRequest(request.getPageIndex(), request.getSize()));
+				}
 				for(BigInteger appid : sanctionDisRejIneligibleProposal){
 					if(applicationIdList.contains(appid)){
 						applicationIdList.remove(appid);
@@ -1487,9 +1550,17 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Rejected
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Disbursed
 					|| request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Ineligible){
-				applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId());
+				if(request.getUserOrgId() !=10) {
+					applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(request.getDdrStatusId(), request.getUserOrgId());
+				}else {
+					applicationIdList = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(request.getDdrStatusId());
+				}
 				if(request.getDdrStatusId()==CommonUtils.MFIApplicationStatus.MFI_Sanction){
-					applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
+					if(request.getUserOrgId() !=10) {
+						applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L, request.getUserOrgId()));
+					}else {
+						applicationIdList.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(13L));
+					}
 				}
 			}
 		}else{
@@ -1515,6 +1586,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				} else {
 					nhbsApplicationsResponse.setDdrStatus("-");
 				}
+				
+				nhbsApplicationsResponse.setAgentName(getFpMakerName(proposalMapping.getFpMakerId()));
+				
 
 				if (CommonUtils.BusinessType.MFI.getId().equals(proposalMapping.getBusinessTypeId())) {
 					MFIApplicantDetail applicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(proposalMapping.getId(), 1);
@@ -1764,39 +1838,78 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		proposalStatusList.add(13L);
 		proposalStatusList.add(CommonUtils.MFIApplicationStatus.MFI_Ineligible);
 
-		List <BigInteger> sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeId(proposalStatusList);
+		List <BigInteger> sanctionDisRejIneligibleProposal = new ArrayList<>();
+		if(npOrgId != 10){
+			sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeId(proposalStatusList,npOrgId);
+		}else {
+			sanctionDisRejIneligibleProposal = proposalDetailsRepository.getProposalsByProposalStatusListAndBusinessTypeIdForSidbi(proposalStatusList);
+		}
 
 		// Sanction proposal Count
-		List<BigInteger> sanctionPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Sanction) ;
-		sanctionPropsalCount.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L));
-		countObj.put("sanctionPropsalCount", sanctionPropsalCount.size());
+		if(npOrgId != 10) {
+			List<BigInteger> sanctionPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Sanction, npOrgId);
+			sanctionPropsalCount.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(13L, npOrgId));
+			countObj.put("sanctionPropsalCount", sanctionPropsalCount.size());
 
-		// Disbursed proposal Count
-		List<BigInteger> dibusedPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Disbursed) ;
-		countObj.put("dibusedPropsalCount", dibusedPropsalCount.size());
+			// Disbursed proposal Count
+			List<BigInteger> dibusedPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Disbursed,npOrgId) ;
+			countObj.put("dibusedPropsalCount", dibusedPropsalCount.size());
 
-		// Rejected proposal Count
-		List<BigInteger> rejectedProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Rejected);
-		countObj.put("rejectedProposalCount", rejectedProposalCount.size());
+			// Rejected proposal Count
+			List<BigInteger> rejectedProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Rejected,npOrgId);
+			countObj.put("rejectedProposalCount", rejectedProposalCount.size());
 
-		// Ineligible proposal Count
-		List<BigInteger> ineligibleProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Ineligible);
-		countObj.put("ineligibleProposalCount", rejectedProposalCount.size());
+			// Ineligible proposal Count
+			List<BigInteger> ineligibleProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeId(CommonUtils.MFIApplicationStatus.MFI_Ineligible,npOrgId);
+			countObj.put("ineligibleProposalCount", rejectedProposalCount.size());
+		}else {
+			List<BigInteger> sanctionPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(CommonUtils.MFIApplicationStatus.MFI_Sanction);
+			sanctionPropsalCount.addAll(proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(13L));
+			countObj.put("sanctionPropsalCount", sanctionPropsalCount.size());
+
+			// Disbursed proposal Count
+			List<BigInteger> dibusedPropsalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(CommonUtils.MFIApplicationStatus.MFI_Disbursed) ;
+			countObj.put("dibusedPropsalCount", dibusedPropsalCount.size());
+
+			// Rejected proposal Count
+			List<BigInteger> rejectedProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(CommonUtils.MFIApplicationStatus.MFI_Rejected);
+			countObj.put("rejectedProposalCount", rejectedProposalCount.size());
+
+			// Ineligible proposal Count
+			List<BigInteger> ineligibleProposalCount = proposalDetailsRepository.getProposalsByProposalStatusAndBusinessTypeIdForSidbi(CommonUtils.MFIApplicationStatus.MFI_Ineligible);
+			countObj.put("ineligibleProposalCount", rejectedProposalCount.size());
+		}
+
+
 
 		if (com.capitaworld.service.users.utils.CommonUtils.UserRoles.MFI_CHECKER == nhbsApplicationRequest.getUserRoleId()) {
 			// Pending proposal
-			List<BigInteger> pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_PENDING,
-					npOrgId,
-					nhbsApplicationRequest.getProductTypeId());
+			List<BigInteger> pendingProposalApplicationIdList = new ArrayList<>();
+			if(npOrgId != 10) {
+				pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_PENDING,
+						npOrgId,
+						nhbsApplicationRequest.getProductTypeId());
+			}else {
+				pendingProposalApplicationIdList = loanApplicationRepository.getFPAssignedToCheckerProposalsCountForSidbi(CommonUtils.MFIApplicationStatus.MFI_PENDING,
+						nhbsApplicationRequest.getProductTypeId());
+			}
 
 
 			// Sent to Sidbi maker
-			List<BigInteger> assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted, npOrgId,
-					nhbsApplicationRequest.getProductTypeId());
-
-			//add also proposal sent to sidbi checker
-			assignToMFICheckerPropsalCount.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi, npOrgId,
-					nhbsApplicationRequest.getProductTypeId()));
+			List<BigInteger> assignToMFICheckerPropsalCount = new ArrayList<>();
+			if(npOrgId != 10) {
+				assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted, npOrgId,
+						nhbsApplicationRequest.getProductTypeId());
+				//add also proposal sent to sidbi checker
+				assignToMFICheckerPropsalCount.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi, npOrgId,
+						nhbsApplicationRequest.getProductTypeId()));
+			}else {
+				assignToMFICheckerPropsalCount = loanApplicationRepository.getFPAssignedToCheckerProposalsCountForSidbi(CommonUtils.MFIApplicationStatus.MFI_Submitted,
+						nhbsApplicationRequest.getProductTypeId());
+				//add also proposal sent to sidbi checker
+				assignToMFICheckerPropsalCount.addAll(loanApplicationRepository.getFPAssignedToCheckerProposalsCountForSidbi(CommonUtils.MFIApplicationStatus.MFI_Submitted_Sidbi,
+						nhbsApplicationRequest.getProductTypeId()));
+			}
 
 
 			for(BigInteger appid : sanctionDisRejIneligibleProposal){
@@ -2061,5 +2174,26 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		
 		logger.info(MSG_EXIT_FROM_SET_FP_MAKER);
 		return false;
+	}
+	
+	public String getFpMakerName(Long fpMakerId) {
+		if (!CommonUtils.isObjectNullOrEmpty(fpMakerId)) {
+			UsersRequest usersRequestForMaker = new UsersRequest();
+			usersRequestForMaker.setId(fpMakerId);
+			try {
+				UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
+				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+						FundProviderDetailsRequest.class);
+				if(fundProviderDetailsRequest.getFirstName() != null) {
+					if(fundProviderDetailsRequest.getLastName() != null) {
+						return fundProviderDetailsRequest.getFirstName() + " " + fundProviderDetailsRequest.getLastName();
+					}
+					return fundProviderDetailsRequest.getFirstName();
+				}
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
+			}
+		}
+		return null;
 	}
 }

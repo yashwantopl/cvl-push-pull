@@ -78,6 +78,8 @@ public class NhbsApplicationsResponse implements Serializable{
 	private String applicationWith;
 
 	private Integer businessTypeId;
+	
+	private String agentName;;
 
 	public Long getProposalId() {
 		return proposalId;
@@ -343,4 +345,14 @@ public class NhbsApplicationsResponse implements Serializable{
 	public void setSanction(boolean sanction) {
 		isSanction = sanction;
 	}
+
+	public String getAgentName() {
+		return agentName;
+	}
+
+	public void setAgentName(String agentName) {
+		this.agentName = agentName;
+	}
+	
+	
 }
