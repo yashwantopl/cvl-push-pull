@@ -1617,6 +1617,10 @@ public class ScoringServiceImpl implements ScoringService {
         		// ENDS HERE 
         		Boolean isWomenApplicant = false;
     			
+        		if(retailApplicantDetail == null) {
+        			retailApplicantDetail = retailApplicantDetailRepository.findByApplicationId(applicationId);
+        		}
+        		
             	if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
             		
             		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsCheckOffDirectPayEmi())){

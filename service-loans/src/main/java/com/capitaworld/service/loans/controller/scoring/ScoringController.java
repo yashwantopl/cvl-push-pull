@@ -382,7 +382,7 @@ public class ScoringController {
                     new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
         }
         try {
-        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null);
+        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null,null,null);
         	  logger.info("concesssionResponse ===>concesssionResponse=======>"+concesssionResponse);
         	  	LoansResponse loanResponse = new LoansResponse();
             
