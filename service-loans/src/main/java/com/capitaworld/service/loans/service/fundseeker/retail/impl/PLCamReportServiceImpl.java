@@ -86,6 +86,7 @@ import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
 import com.capitaworld.service.oneform.enums.LoanPurposePL;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
@@ -323,10 +324,52 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 
 			// for name is edited or not:
 			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
-			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equals(nameAsPerItr)){
+			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equalsIgnoreCase(nameAsPerItr)){
 				map.put("nameEdited","-");
 			}else{
 				map.put("nameEdited",fullName);
+			}
+			
+			map.put("nameOfEmployer",plRetailApplicantRequest.getNameOfEmployer() != null ? StringEscapeUtils.escapeXml(plRetailApplicantRequest.getNameOfEmployer()) : "-");
+			
+			try {
+				//as per OccupationNature enum id
+				switch (plRetailApplicantRequest.getEmploymentType() != null ? plRetailApplicantRequest.getEmploymentType() : 0) {
+				
+				case 2:
+					//switch as per EmploymentWithPL id
+					switch (plRetailApplicantRequest.getEmploymentWith() != null ? plRetailApplicantRequest.getEmploymentWith() :0) {
+					
+						case 1://central gov
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getCentralGovId().longValue(), GetStringFromIdForMasterData.CENTRAL_GOV.getValue())));
+							break;
+						case 2://state gov
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getStateGovId().longValue(), GetStringFromIdForMasterData.STATE_GOV.getValue())));
+							break;
+						case 3://psu
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getPsuId().longValue(), GetStringFromIdForMasterData.PSU.getValue())));
+							break;
+						case 4: //company
+							map.put("nameOfEmployer",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getNameOfEmployer()) ? StringEscapeUtils.escapeXml(plRetailApplicantRequest.getNameOfEmployer()) : "-");
+							break;
+						case 5://educational insitute
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getEduInstId().longValue(), GetStringFromIdForMasterData.INSITUTE.getValue())));
+							break;
+						case 8: //bank
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getBankNameId().longValue(), GetStringFromIdForMasterData.BANK.getValue())));
+							break;
+						case 9: //Insurance company
+							map.put("nameOfEmployer",StringEscapeUtils.escapeXml(oneFormClient.getMasterTableData(plRetailApplicantRequest.getInsuranceNameId().longValue(), GetStringFromIdForMasterData.INSURANCE_COMP.getValue())));
+							break;
+		
+						default:
+							break;
+					}
+					break;
+					
+				}
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching details of nameOfEmployer of Applicants in HL Cam Report of applicationId==>{} with EmploymentType==>{}  and EmploymentWith=={}" , applicationId, plRetailApplicantRequest.getEmploymentType() ,plRetailApplicantRequest.getEmploymentWith());
 			}
 
 			//KEY VERTICAL FUNDING
