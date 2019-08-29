@@ -75,9 +75,19 @@ public class ScoringController {
         return scoringService.calculateRetailHomeLoanScoringList(scoringRequestLoansList);
     }
     
+    @PostMapping(value = "/calculate_score/retail_al_list", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreRetailAL(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+        return scoringService.calculateRetailAutoLoanScoringList(scoringRequestLoansList);
+    }
+    
     @PostMapping(value = "/calculate_score/retail_hl_list_coapplicant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> calculateScoreRetailHLForCoApplicant(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
         return scoringService.calculateRetailHomeLoanScoringListForCoApplicant(scoringRequestLoansList);
+    }
+    
+    @PostMapping(value = "/calculate_score/retail_al_list_coapplicant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreRetailALForCoApplicant(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+    	return scoringService.calculateRetailAutoLoanScoringListForCoApplicant(scoringRequestLoansList);
     }
 
     @RequestMapping(value = "/calculate_score/corporate/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -367,12 +377,12 @@ public class ScoringController {
     @RequestMapping(value = "/getConcessionDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getRetailConcessionDetails(@RequestBody ScoringRequestLoans scoringRequestLoans) {
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())) {
-            logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty======>");
+            logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty====== >");
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
         }
         try {
-        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null);
+        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null,null,null);
         	  logger.info("concesssionResponse ===>concesssionResponse=======>"+concesssionResponse);
         	  	LoansResponse loanResponse = new LoansResponse();
             

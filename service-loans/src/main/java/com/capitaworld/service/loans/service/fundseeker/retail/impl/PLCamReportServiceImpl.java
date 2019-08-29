@@ -434,7 +434,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 //			BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 			
 			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-			map.put("proposedEmi", proposalMappingRequestString.getEmi() != null ? CommonUtils.convertValue(proposalMappingRequestString.getEmi()) : "-");
+			map.put("proposedEmi", proposalMappingRequestString.getEmi() != null ? CommonUtils.convertValueWithoutDecimal(proposalMappingRequestString.getEmi()) : "-");
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 			
 			//For ROI Calculation
@@ -809,7 +809,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				eligibilityReq.setFpProductMappingId(productId);
 				EligibilityResponse eligibilityResp= eligibilityClient.getRetailLoanData(eligibilityReq);
 				if(!CommonUtils.isObjectNullOrEmpty(eligibilityResp)){
-				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), PersonalEligibilityRequest.class), new HashMap<>()));
+					//map.put("assLimits",CommonUtils.convertToValueForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), PersonalEligibilityRequest.class), new HashMap<>()));
+					map.put("assLimits",CommonUtils.printFieldsForValue((LinkedHashMap<String, Object>)eligibilityResp.getData(), new HashMap<>()));
 				}
 			}catch (Exception e) {
 				logger.error("Error while getting Eligibility data : ",e);

@@ -61,6 +61,7 @@ public class ScoringRequestLoans {
 	private Double eligibleTenure;
 	private Double timesMultiplier;
 	private Double monthlyObligation;
+	private Double netTakeHomepay;
 	
 	private Integer noOfCoApplicantFP;
 	private Integer noOfCoApplicantFS;
@@ -484,6 +485,15 @@ public class ScoringRequestLoans {
 
 	public void setIsConsiderCoAppIncome(Boolean isConsiderCoAppIncome) {
 		this.isConsiderCoAppIncome = isConsiderCoAppIncome;
+	}
+	
+
+	public Double getNetTakeHomepay() {
+		return netTakeHomepay;
+	}
+
+	public void setNetTakeHomepay(Double netTakeHomepay) {
+		this.netTakeHomepay = netTakeHomepay;
 	}
 
 	@Override

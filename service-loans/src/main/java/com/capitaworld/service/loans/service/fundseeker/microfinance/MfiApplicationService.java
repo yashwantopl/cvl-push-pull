@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance;
 
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -88,5 +89,8 @@ public interface MfiApplicationService {
 	
 	public Object saveOrUpdateAllApplicantsDetails(MultipartFile uploadingFile,MultipartFile addressProof,MultipartFile consentformImg,MultipartFile aadharImg,MfiApplicantDetailsReq mfiApplicantDetailsReq,Long userId,Long orgId);
 
+	public Map<String, Object> getReportDetails(Long applicationId);
+	
+	public Map<String, Object> getApplicantDetails1(Long applicationId, Integer type);
 
 }
