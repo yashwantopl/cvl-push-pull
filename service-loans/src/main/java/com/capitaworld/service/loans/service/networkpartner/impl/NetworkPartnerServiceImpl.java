@@ -1587,6 +1587,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setDdrStatus("-");
 				}
 				
+				nhbsApplicationsResponse.setOrgName(getOrganisationName(proposalMapping.getNpOrgId()));
 				nhbsApplicationsResponse.setAgentName(getFpMakerName(proposalMapping.getFpMakerId()));
 				
 
@@ -2189,6 +2190,23 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						return fundProviderDetailsRequest.getFirstName() + " " + fundProviderDetailsRequest.getLastName();
 					}
 					return fundProviderDetailsRequest.getFirstName();
+				}
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
+			}
+		}
+		return null;
+	}
+	
+	public String getOrganisationName(Long orgId) {
+		if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
+			try {
+				UserResponse userResponseForName = usersClient.getOrgNameByOrgId(orgId);
+				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+						FundProviderDetailsRequest.class);
+				if(fundProviderDetailsRequest != null) {
+					
+					return fundProviderDetailsRequest.getOrganisationName();
 				}
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
