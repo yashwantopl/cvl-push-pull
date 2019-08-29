@@ -79,8 +79,11 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	private Integer businessTypeId;
 	
-	private String agentName;;
+	private String agentName;
 
+	private String orgName;
+	
+	
 	public Long getProposalId() {
 		return proposalId;
 	}
@@ -353,6 +356,16 @@ public class NhbsApplicationsResponse implements Serializable{
 	public void setAgentName(String agentName) {
 		this.agentName = agentName;
 	}
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+	
+	
 	
 	
 }

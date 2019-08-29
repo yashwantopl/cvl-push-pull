@@ -478,13 +478,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MFIApplicantDetail mfiApplicantDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(applicationId,
 				type);
 
-//		Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicantDetail, 1);
-//		System.out.println("isconsolidated==============>" + consolidateDetails.get("isConsolidated"));
-//		System.out.println("consolidateName=============>" + consolidateDetails.get("consolidateName"));
-//		mfiApplicantDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
-//		mfiApplicantDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
-//		detailsRepository.save(mfiApplicantDetail);
-		
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 
 		MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
@@ -860,6 +853,9 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 			MFIApplicantDetail mfiApplicationDetail = detailsRepository
 					.findByAppIdAndType(loanRecomandationReq.getApplicationId(), 1);
+			
+			MFIApplicantDetail mfiApplicationDetail1 = detailsRepository
+					.findByAppIdAndType(loanRecomandationReq.getApplicationId(), 2);
 
 			// for status change to 10 display in Checker this code for submit application
 			// or add in consent form
@@ -904,6 +900,31 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			loansResponse.setId(objectFromMap.getJob().getId()); // jobId for submit current step and action
 			loansResponse.setMessage("Successfully Saved.");
 			loansResponse.setStatus(HttpStatus.OK.value());
+			
+			
+			if (!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail)) {
+				Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicationDetail);
+				mfiApplicationDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
+				mfiApplicationDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+				detailsRepository.save(mfiApplicationDetail);
+			}
+			if (!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail1)) {
+				Map<String, Object> consolidateDetails1 = getConsolidateInfo(mfiApplicationDetail1);
+				mfiApplicationDetail1.setIsConsolidated((Boolean) consolidateDetails1.get("isConsolidated"));
+				mfiApplicationDetail1.setConsolidatedName((String) consolidateDetails1.get("consolidateName"));
+				detailsRepository.save(mfiApplicationDetail1);
+			}
+//			for (int i = 1; i <= 2; i++) {
+//				MFIApplicantDetail mfiApplicationDetail11 = detailsRepository
+//						.findByAppIdAndType(loanRecomandationReq.getApplicationId(), i);
+//				if (!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail11)) {
+//					Map<String, Object> consolidateDetails1 = getConsolidateInfo(mfiApplicationDetail11);
+//					mfiApplicationDetail11.setIsConsolidated((Boolean) consolidateDetails1.get("isConsolidated"));
+//					mfiApplicationDetail11.setConsolidatedName((String) consolidateDetails1.get("consolidateName"));
+//					detailsRepository.save(mfiApplicationDetail11);
+//				}
+//			}
+			
 			return loansResponse;
 		}
 		return false;
@@ -2037,7 +2058,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	}
 
 	@Override
-	public Map<String, Object> getConsolidateInfo(MFIApplicantDetail mfiApplicationDetail, Integer type) {
+	public Map<String, Object> getConsolidateInfo(MFIApplicantDetail mfiApplicationDetail) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Boolean isconsolidated = false;
 		String consolidatename = "";
@@ -2045,12 +2066,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			String firstName = mfiApplicationDetail.getFirstName();
 			String lastName = mfiApplicationDetail.getLastName();
 			String fullName = firstName.concat(lastName).trim();
-			System.out.println("call method==============" + fullName);
-			System.out.println("consolidateUrl==============>"+consolidateUrl);
-			
-			String CONS_FILE_PATH="cw.mfi.consolidated.xml.location";
-			String a=""+consolidateUrl+"";
-			File fXmlFile = null;
+
+			File fXmlFile = new File(consolidateUrl);
 			DocumentBuilderFactory dbFactory = null;
 			DocumentBuilder dBuilder = null;
 			Document doc = null;
@@ -2078,10 +2095,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				String fourthNameXML = checkStringNulld(iElement.getElementsByTagName("FOURTH_NAME"));
 
 				String compareStr = firstNameXML.concat(secondNameXML).concat(thirdNameXML).concat(fourthNameXML);
-				System.out.println("compared Str=========>"+compareStr);
 				if (fullName.equalsIgnoreCase(compareStr)) {
-					System.out.println("compared Str=========>"
-							+ firstNameXML.concat(secondNameXML).concat(thirdNameXML).concat(fourthNameXML));
 					isconsolidated = true;
 					consolidatename = firstNameXML + " " + secondNameXML + " " + thirdNameXML + " " + fourthNameXML;
 					break;
@@ -2095,12 +2109,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					Node aliasNode = aliasNodeList.item(alias);
 					Element aliasElement = (Element) aliasNode;
 					// System.out.println("ALIAS Node Name :" + aliasElement.getNodeName());
-					System.out.println(
-							"ALIAS_NAME : " + checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME")));
 					if ((firstName + " " + lastName)
 							.equalsIgnoreCase(checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME")))) {
-						System.out.println("compared Str=========>"
-								+ checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME")));
 						isconsolidated = true;
 						consolidatename = checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME"));
 						break;
@@ -2111,8 +2121,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		} catch (Exception e) {
 			logger.error("Error while comparing name with consolidate list");
 		}
-		System.out.println("final result====>" + isconsolidated);
-		System.out.println("final cons name=====>" + consolidatename);
 		map.put("isConsolidated", isconsolidated);
 		map.put("consolidateName", consolidatename);
 		return map;
