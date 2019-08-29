@@ -1902,8 +1902,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				+ mfiIncomeAndExpendMFIChecker.getEducationExpense() + mfiIncomeAndExpendMFIChecker.getMedicalExpense()
 				+ mfiIncomeAndExpendMFIChecker.getFoodExpense() + mfiIncomeAndExpendMFIChecker.getClothesExpense()
 				+ mfiIncomeAndExpendMFIChecker.getOtherExpense());
-		detailsReq.setNetSavingChecker(
-				totalIncomeChecker - detailsReq.getMfiCheckerTotalExpense() - detailsReq.getTotalEmi());
+		if(!CommonUtils.isObjectNullOrEmpty(detailsReq.getMfiCheckerTotalExpense()) && !CommonUtils.isObjectNullOrEmpty(detailsReq.getTotalEmi()))
+		{
+			detailsReq.setNetSavingChecker(
+					totalIncomeChecker - detailsReq.getMfiCheckerTotalExpense() - detailsReq.getTotalEmi());
+		}
+
 		detailsReq.setIncreasedIncomeChecker(mfiIncomeAndExpendMFIChecker.getMonthlyIncome());
 		detailsReq.setTotalCashFlow(detailsReq.getNetSavingChecker() + detailsReq.getIncreasedIncomeChecker());
 
