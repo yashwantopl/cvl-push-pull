@@ -401,6 +401,20 @@ public class MFIApplicantDetail implements Serializable {
 	private Double loanAmountBankMaker;
 	@Column(name = "job_id")
 	private Long jobId;
+	
+	@Column(name = "dpn_doc")
+	private String dpnDoc;
+	
+	@Column(name = "loi_doc")
+	private String loiDoc;
+	
+	@Column(name = "loh_doc")
+	private String lohDoc;
+	
+	@Column(name = "agreement_doc")
+	private String agreementDoc;
+	
+	
 
 	public Double getLoanAmountMFIChecker() {
 		return loanAmountMFIChecker;
@@ -1530,4 +1544,38 @@ public class MFIApplicantDetail implements Serializable {
 	public void setTotalEmi(Double totalEmi) {
 		this.totalEmi = totalEmi;
 	}
+
+	public String getDpnDoc() {
+		return dpnDoc;
+	}
+
+	public void setDpnDoc(String dpnDoc) {
+		this.dpnDoc = dpnDoc;
+	}
+
+	public String getLoiDoc() {
+		return loiDoc;
+	}
+
+	public void setLoiDoc(String loiDoc) {
+		this.loiDoc = loiDoc;
+	}
+
+	public String getLohDoc() {
+		return lohDoc;
+	}
+
+	public void setLohDoc(String lohDoc) {
+		this.lohDoc = lohDoc;
+	}
+
+	public String getAgreementDoc() {
+		return agreementDoc;
+	}
+
+	public void setAgreementDoc(String agreementDoc) {
+		this.agreementDoc = agreementDoc;
+	}
+	
+	
 }

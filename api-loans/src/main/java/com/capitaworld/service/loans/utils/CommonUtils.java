@@ -42,6 +42,7 @@ public class CommonUtils {
 	public static final int USER_TYPE_SERVICEPROVIDER = 3;
 	public static final String INVALID_REQUEST = "Invalid Request !";
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong !";
+	public static final String WRONG_FILE_FORMAT = "Please upload PDF file only";
 	public static final String CORPORATE = "Corporate";
 	public static final String RETAIL = "Retail";
 	public static final String ONE_FORM = "oneForm";

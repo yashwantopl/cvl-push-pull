@@ -1,12 +1,13 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.utils.EncryptionUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -969,6 +970,46 @@ public class MFIApplicationController {
 	}
 	
 	
+	@RequestMapping(value = "/documentUpload", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.ALL_VALUE)
+	public ResponseEntity<LoansResponse> documentUpload(@RequestPart("uploadRequest") String uploadRequestString,
+			@RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest request) {
+		try {
+			Long userId = (Long)request.getAttribute(CommonUtils.USER_ID);
+			CommonDocumentUtils.startHook(logger, "uploadDoc");
+			if (CommonUtils.isObjectNullOrEmpty(uploadRequestString)) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			
+			for (MultipartFile multipartFile : multipartFiles) {
+
+                String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+                
+                if(!"pdf".equalsIgnoreCase(extension)) {
+                	logger.warn("File format is not PDF...!");
+    				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.WRONG_FILE_FORMAT, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                }
+			}
+			MfiApplicantDetailsReq mfiApplicantDetailsReq = MultipleJSONObjectHelper.getObjectFromString(uploadRequestString, MfiApplicantDetailsReq.class);
+			
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq)||CommonUtils.isObjectNullOrEmpty(multipartFiles)) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			boolean documentUpload = mfiApplicationService.uploadDocuments(multipartFiles, mfiApplicantDetailsReq);
+            CommonDocumentUtils.endHook(logger, "save");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), documentUpload), HttpStatus.OK);
+			
+
+		} catch (Exception e) {
+			logger.error("Error while document upload "+e.getMessage());
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	/* TO Download Report */
 
 	  @GetMapping(value = "/getReportDetails/{applicationId}/{type}")

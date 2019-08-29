@@ -248,14 +248,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				mfiApplicationDetail.setType(aadharDetailsReq.getType());
 
 				// image upload to DMS S3 server recent Image
-				String profileImgToDms = uploadImageForMfi(uploadingFile, applicationId);
+				String profileImgToDms = uploadImageForMfi(uploadingFile, applicationId, 593);
 				mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
 
 				// image upload to DMS S3 server Address proof Image
 				String addressProofImgToDms = "";
 				int count = 0;
 				for (MultipartFile addressProofFile : addressProofFiles){ //multiple files for address proof
-					String imageForMfi = uploadImageForMfi(addressProofFile, applicationId);
+					String imageForMfi = uploadImageForMfi(addressProofFile, applicationId, 593);
 					if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
 						addressProofImgToDms = (count == 0 ? "" : (addressProofImgToDms + ",")) + imageForMfi;
 					}
@@ -275,7 +275,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(aadharDetailsReq.getApplicationId()));
 			if (uploadingFile != null) {
 				// image upload to DMS S3 server recent Image
-				String profileImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getApplicationId());
+				String profileImgToDms = uploadImageForMfi(uploadingFile, aadharDetailsReq.getApplicationId(), 593);
 				mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
 			}
 			mfiApplicationDetail.setStatus(CommonUtils.PENDING);
@@ -304,7 +304,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		String consentImgToDms = "";
 		int count = 0;
 		for (MultipartFile uploadingFile : multipartFiles){
-			String imageForMfi = uploadImageForMfi(uploadingFile, aadharDetailsReq.getApplicationId());
+			String imageForMfi = uploadImageForMfi(uploadingFile, aadharDetailsReq.getApplicationId(), 593);
 			if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
 				consentImgToDms = (count == 0 ? "" : (consentImgToDms + ",")) + imageForMfi;
 			}
@@ -324,10 +324,10 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	 * @param userId
 	 * @return
 	 */
-	private String uploadImageForMfi(MultipartFile multipartFile, Long userId) {
+	private String uploadImageForMfi(MultipartFile multipartFile, Long userId, Integer productDocMappingId) {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("applicationId", userId);
-		jsonObj.put("productDocumentMappingId", 593);// this is productmappingid 593 for save in amazon s3
+		jsonObj.put("productDocumentMappingId", productDocMappingId);// this is productmappingid 593 for save in amazon s3
 		jsonObj.put("userType", DocumentAlias.UERT_TYPE_APPLICANT);
 		jsonObj.put("originalFileName", multipartFile.getOriginalFilename());
 		try {
@@ -446,7 +446,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			BeanUtils.copyProperties(bankDetailsReq, mfiBankDetails);
 			BankListMfi bankListMfi = BankListMfi.fromValue(bankDetailsReq.getBankName());
 			mfiBankDetails.setBankId(Long.valueOf(bankListMfi.getId()));
-			String bankPassbookToDms = uploadImageForMfi(uploadingFile, bankDetailsReq.getApplicationId());
+			String bankPassbookToDms = uploadImageForMfi(uploadingFile, bankDetailsReq.getApplicationId(), 593);
 			mfiBankDetails.setPassbookImg(bankPassbookToDms);
 			bankDetailsRepository.save(mfiBankDetails);
 			detailsRepository.updateBankFilledFlag(bankDetailsReq.getApplicationId());
@@ -1238,19 +1238,19 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 
 			// image upload to DMS S3 server recent Image
-			String profileImgToDms = uploadImageForMfi(uploadingFile, applicationId);
+			String profileImgToDms = uploadImageForMfi(uploadingFile, applicationId, 593);
 			mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
 
 			// image upload to DMS S3 server for address proof
-			String addressImgToDms = uploadImageForMfi(addressProof, applicationId);
+			String addressImgToDms = uploadImageForMfi(addressProof, applicationId, 593);
 			mfiApplicationDetail.setAddressProofImg(addressImgToDms);
 
 			// image upload to DMS S3 server for consentform
-			String consentImgToDms = uploadImageForMfi(consentformImg, applicationId);
+			String consentImgToDms = uploadImageForMfi(consentformImg, applicationId, 593);
 			mfiApplicationDetail.setConsentFormImg(consentImgToDms);
 
 			// image upload to DMS S3 server for aadhar Image
-			String aadharImgToDms = uploadImageForMfi(aadharImg, applicationId);
+			String aadharImgToDms = uploadImageForMfi(aadharImg, applicationId, 593);
 			mfiApplicationDetail.setAadharImg(aadharImgToDms);
 
 			mfiApplicationDetail.setIsPersonalDetailsFilled(true);
@@ -1685,5 +1685,37 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 	
 	
 	
+
+	@Override
+	public boolean uploadDocuments(MultipartFile[] uploadingFiles, MfiApplicantDetailsReq mfiApplicantDetailsReq) {
+//		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiApplicantDetailsReq.getId());
+		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(
+				mfiApplicantDetailsReq.getApplicationId(), mfiApplicantDetailsReq.getType());
+		
+		if(!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail)) {
+			int count = 0;
+			for (MultipartFile uploadingFile : uploadingFiles){
+				String imageForMfi = uploadImageForMfi(uploadingFile, mfiApplicantDetailsReq.getApplicationId(), 597+count);
+				if(!CommonUtils.isObjectNullOrEmpty(imageForMfi)){
+					switch (count) {
+					case 0: mfiApplicationDetail.setDpnDoc(imageForMfi);
+							break;
+					case 1: mfiApplicationDetail.setLoiDoc(imageForMfi);
+							break;
+					case 2: mfiApplicationDetail.setLohDoc(imageForMfi);
+							break;
+					case 3: mfiApplicationDetail.setAgreementDoc(imageForMfi);
+							break;
+					default:
+						break;
+					}
+				}
+				count++;
+			}
+			detailsRepository.save(mfiApplicationDetail);
+			return true;
+		}
+		return false;
+	}
 
 }
