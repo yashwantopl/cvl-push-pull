@@ -14,17 +14,6 @@ import java.util.regex.Pattern;
 
 import javax.transaction.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.*;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpectedIncomeDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
-import com.capitaworld.service.oneform.enums.*;
-import com.capitaworld.service.scoring.MCLRReqRes;
-import com.capitaworld.service.scoring.model.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -60,7 +49,6 @@ import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.MonthlyDetail;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.analyzer.model.common.Xn;
-import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
