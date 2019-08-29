@@ -1,11 +1,13 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
-
-import com.capitaworld.service.loans.utils.EncryptionUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -14,9 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
@@ -33,16 +46,8 @@ import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
-import org.json.simple.JSONObject;
-import com.capitaworld.api.reports.ReportRequest;
-import com.capitaworld.api.workflow.model.WorkflowRequest;
-import com.capitaworld.client.reports.ReportsClient;
-import com.capitaworld.service.dms.client.DMSClient;
-import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.loans.utils.DDRMultipart;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 @RestController
 @RequestMapping("/mfi")
@@ -1018,77 +1023,96 @@ public class MFIApplicationController {
 
 	/* TO Download Report */
 
-	  @GetMapping(value = "/getReportDetails/{applicationId}/{type}")
-	  public ResponseEntity<LoansResponse> getReportDetails(@PathVariable("applicationId") Long applicationId, @PathVariable("type") Integer type,
-	      HttpServletRequest request) {
+	@GetMapping(value = "/getReportDetails/{applicationId}/{type}")
+	public byte[] getReportDetails(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("type") Integer type, HttpServletRequest request) {
 
-	    if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
-	      logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
-	      return new ResponseEntity<LoansResponse>(
-	          new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND,
-	              HttpStatus.BAD_REQUEST.value()),
-	          HttpStatus.OK);
-	    }
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		/*
+		 * if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+		 * logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND,
+		 * applicationId); return new ResponseEntity<LoansResponse>( new
+		 * LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND,
+		 * HttpStatus.BAD_REQUEST.value()), HttpStatus.OK); }
+		 */
 
-	    try {
-	      Map<String, Object> response = mfiApplicationService.getReportDetails(applicationId); 
-	      Map<String, Object> applicantDetails = mfiApplicationService.getApplicantDetails1(applicationId, type);
-	      //Map<String, Object> applicantDetails = mfiApplicationService.getApplicantDetails1(applicationId);
-	      CommonDocumentUtils.startHook(logger, "getApplicantDetails");     
-	      ReportRequest reportRequest = new ReportRequest();
-	      response.putAll(applicantDetails);
-	      reportRequest.setParams(response);
-//	      reportRequest.setParams(applicantDetails);
-	      reportRequest.setTemplate("MFICAMPRIMARY");
-	      reportRequest.setType("MFICAMPRIMARY");
-	      logger.info("========================>" + reportRequest);
-	      byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-	      MultipartFile multipartFile = new DDRMultipart(byteArr);
-	      JSONObject jsonObj = new JSONObject();
-	      jsonObj.put("applicationId", applicationId);
-	      jsonObj.put("productDocumentMappingId", 355L);
-	      jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-	      jsonObj.put("originalFileName", "PLCAMPRIMARYREPORT" + applicationId + ".pdf");
+		try {
+			Map<String, Object> response = mfiApplicationService.getReportDetails(applicationId);
+			Map<String, Object> applicantDetails = mfiApplicationService.getApplicantDetails1(applicationId, type);
+			CommonDocumentUtils.startHook(logger, "getApplicantDetails");
+			ReportRequest reportRequest = new ReportRequest();
+			response.putAll(applicantDetails);
+			reportRequest.setParams(response);
+			//reportRequest.setParams(applicantDetails);
+			
+			  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			  ZipOutputStream zos = new ZipOutputStream(baos);
+//			reportRequest.setTemplate("MFICAMPRIMARY");
+//			reportRequest.setType("MFICAMPRIMARY");
+			
+			List<String> tempaltes  =  new ArrayList<String>();  //["MFICAMPRIMARY" A "MFICAMDPN"	 + "MFICAMLOANDHO" + "MFICAMLOL"];
+			tempaltes.add("MFICAMPRIMARY");
+			tempaltes.add("MFICAMDPN");
+			tempaltes.add("MFICAMLOANDHO");
+			tempaltes.add("MFICAMLOL");
+			
+			
+			for (int i = 0; i < tempaltes.size(); i++) {
+				reportRequest.setTemplate(tempaltes.get(i));
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				 ZipEntry entry = new ZipEntry(tempaltes.get(i) + ".pdf");
+			        entry.setSize(byteArr.length);
+			        zos.putNextEntry(entry);
+			        zos.write(byteArr);
+			}
+			 zos.closeEntry();
+			    zos.close();			 		
+			    return baos.toByteArray();
+			
+			
+			/*
+			 * //for dpn page reportRequest.setTemplate("MFICAMDPN");
+			 * reportRequest.setType("MFICAMDPN");
+			 * 
+			 * // for lon cum dho page reportRequest.setTemplate("MFICAMLOANDHO");
+			 * reportRequest.setType("MFICAMLOANDHO");
+			 * 
+			 * // for lol page reportRequest.setTemplate("MFICAMLOL");
+			 * reportRequest.setType("MFICAMLOL");
+			 */
 
-	      DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
-	      if (documentResponse.getStatus() == 200) {
-	        logger.info("" + documentResponse);
-	        return new ResponseEntity<LoansResponse>(
-	            new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),
-	            HttpStatus.OK);
-	      } else {
-	        return new ResponseEntity<LoansResponse>(
-	            new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-	            HttpStatus.OK);
-	      }
-	    } catch (Exception e) {
-	      logger.error("Error while getting MAP Details==>", e);
-	      return new ResponseEntity<LoansResponse>(
-	          new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-	          HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
+			/*logger.info("========================>" + reportRequest);
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			MultipartFile multipartFile = new DDRMultipart(byteArr);
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("applicationId", applicationId);
+			jsonObj.put("productDocumentMappingId", 355L);
+			jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+			jsonObj.put("originalFileName", "MFICAMREPORT" + applicationId + ".pdf");
 
-	    /*
-	     * 
-	     * 
-	     * 
-	     * try {
-	     * 
-	     * CommonDocumentUtils.startHook(logger, "Downloading report");
-	     * MfiApplicantDetailsReq applicantDetails =
-	     * mfiApplicationService.getApplicantDetails(applicationId);
-	     * CommonDocumentUtils.endHook(logger, "getApplicantDetails"); return new
-	     * ResponseEntity<LoansResponse>(new
-	     * LoansResponse("Successfully Fetch Applicant or coApplicant details."
-	     * ,HttpStatus.OK.value(), applicantDetails), HttpStatus.OK);
-	     * 
-	     * } catch (Exception e) {
-	     * logger.error("Error while Get All applicant or coApplicant Details ==>", e);
-	     * return new ResponseEntity<LoansResponse>(new
-	     * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
-	     * HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK); }
-	     */
-	  }
+			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+			if (documentResponse.getStatus() == 200) {
+				logger.info("" + documentResponse);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),
+						HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
+			}
+		}*/ }catch (Exception e) {
+			logger.error("Error while getting MAP Details==>", e);
+			return null;
+			/*
+			 * return new ResponseEntity<LoansResponse>( new
+			 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
+			 * HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+			 */
+		}
+
+	
+	}
 	  
 
 	

@@ -409,6 +409,9 @@ public class MfiApplicantDetailsReq {
     private Boolean isConsolidated;
     private String consolidatedName;
 
+    	List<String> byteListAddProof;
+	List<String> ByteListPassImg;
+
 	/* GETTER SETTERS */
 	
 	public String getMaritalStatus() {
@@ -2294,8 +2297,36 @@ public class MfiApplicantDetailsReq {
 	public void setByteList(List<String> byteList) {
 		this.byteList = byteList;
 	}
+	
+	
 
 
+
+
+	public List<String> getByteListAddProof() {
+		return byteListAddProof;
+	}
+
+
+
+
+	public void setByteListAddProof(List<String> byteListAddProof) {
+		this.byteListAddProof = byteListAddProof;
+	}
+
+
+
+
+	public List<String> getByteListPassImg() {
+		return ByteListPassImg;
+	}
+
+
+
+
+	public void setByteListPassImg(List<String> byteListPassImg) {
+		ByteListPassImg = byteListPassImg;
+	}
 
 
 
