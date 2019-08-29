@@ -20,7 +20,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private String transactionNo;
 	private Double roi;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date sanctionDate;
 	
 	private Long branch;
@@ -46,6 +46,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Long businessTypeId;
 	private Boolean flag;
 	private String message;
+	private String sanctionAmtinWords;
 
 	public Boolean getFlag() {
 		return flag;
@@ -269,6 +270,16 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	public void setIsPartiallyDisbursedOffline(Boolean isPartiallyDisbursedOffline) {
 		this.isPartiallyDisbursedOffline = isPartiallyDisbursedOffline;
+	}
+	
+	
+
+	public String getSanctionAmtinWords() {
+		return sanctionAmtinWords;
+	}
+
+	public void setSanctionAmtinWords(String sanctionAmtinWords) {
+		this.sanctionAmtinWords = sanctionAmtinWords;
 	}
 
 	@Override
