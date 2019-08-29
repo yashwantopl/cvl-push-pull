@@ -1723,8 +1723,19 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 		MfiApplicantDetailsReq detailsReq = new MfiApplicantDetailsReq();
 		BeanUtils.copyProperties(mfiApplicantDetail, detailsReq);
-
 		
+		
+		if (loanApplicationMaster.getFpMakerId() != null) {
+			// get fp maker name from fp_maker_id
+			detailsReq.setMakerName(getFpMakerName(loanApplicationMaster.getFpMakerId(), MAKERNAME));
+			detailsReq.setPiName(getFpMakerName(loanApplicationMaster.getFpMakerId(), PINAME));
+			detailsReq.setPiAddress(getFpMakerName(loanApplicationMaster.getFpMakerId(), PIADDRESS));
+			detailsReq.setLoginUser(getFpMakerName(loanApplicationMaster.getFpMakerId(), MAKERNAME));
+		}
+		PurposeOfLoanMFI purposeOfLoanMFI = PurposeOfLoanMFI.getById(mfiApplicantDetail.getPurposeOfLoan());
+		detailsReq.setLoanPurposeStr(purposeOfLoanMFI.getValue());
+		detailsReq.setCurrDateStr(CommonUtils.getCurrentDate("dd-MM-yyyy"));
+
 		/* ENUM CONVERSION */
 		detailsReq.setMaritalStatus(MaritalStatusMst.getById(mfiApplicantDetail.getMaritalStatusId()).getValue());
 		detailsReq.setGender(Gender.getById(mfiApplicantDetail.getGenderId()).getValue());
@@ -1752,7 +1763,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		/* ENUM CONVERSION */
 
 		detailsReq.setStatus(loanApplicationMaster.getApplicationStatusMaster().getId().intValue()); // for current
-
+		
+		//FOR CONSENT IMAGE
 //	    List<Resource> urlList = new ArrayList<Resource>();
 		List<String> byteList = new ArrayList<String>();
 		String[] ids = (String[]) mfiApplicantDetail.getConsentFormImg().split(",");
@@ -1769,23 +1781,32 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 //	    detailsReq.setListOfImages(urlList);
 
 		detailsReq.setByteList(byteList);
+		//FOR CONSENT IMAGE
+		
+		/* FOR ADDRESS PROOF */
+		List<String> byteListAddProof = new ArrayList<String>();
+		String[] idsAddProof = (String[]) mfiApplicantDetail.getAddressProofImg().split(",");
+		for (int i = 0; i < idsAddProof.length; i++) {
+			try {
+				ByteArrayResource resp = (ByteArrayResource) dmsClient.productDownloadDocument(Long.valueOf(idsAddProof[i]));
+				byte[] bytes = resp.getByteArray(); // Files.readAllBytes(Paths.get(resp.getFile().getAbsolutePath()));
+				String encoded = Base64.getEncoder().encodeToString(bytes).toString();
+				byteListAddProof.add(encoded);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}			
+		detailsReq.setByteListAddProof(byteListAddProof);
+		/* FOR ADDRESS PROOF */
+		
 
-		// detailsReq.setListOfImages(resp);
-
-		/*
-		 * DocumentRequest documentRequest = new DocumentRequest();
-		 * documentRequest.setApplicationId(applicationId);
-		 * 
-		 * documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		 * documentRequest.setProductDocumentMappingId(DocumentAlias.
-		 * FUND_SEEKER_PROFIEL_PICTURE); try { DocumentResponse documentResponse =
-		 * dmsClient.listProductDocument(documentRequest);
-		 * detailsReq.setListOfImages(documentResponse.getDataList()); } catch
-		 * (DocumentException e) { logger.error(CommonUtils.EXCEPTION,e); }
-		 */
-
+		
+		
+		
 		// status value
 		detailsReq.setRepaymentTrack(mfiApplicantDetail.getRepaymentTrack());
+		
+		
 		// for bank details
 		MfiBankDetails byApplicationId = bankDetailsRepository.findByApplicationId(applicationId);
 		if (byApplicationId != null) {
@@ -1793,6 +1814,28 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			detailsReq.setBankName(BankListMfi.fromId(byApplicationId.getBankId().toString()).toString());
 			detailsReq.setAcHolderName(byApplicationId.getAccountHolderName());
 			detailsReq.setAccountType1(AccountTypeMfi.getById(byApplicationId.getAccountType()).toString());
+			
+			
+			/* FOR PASSBOOK PHOTO */
+			List<String> byteListPassBook = new ArrayList<String>();
+			String[] idsPassBook = (String[]) byApplicationId.getPassbookImg().split(",");
+			for (int i = 0; i < idsPassBook.length; i++) {
+				try {
+					ByteArrayResource resp = (ByteArrayResource) dmsClient.productDownloadDocument(Long.valueOf(idsPassBook[i]));
+					byte[] bytes = resp.getByteArray(); // Files.readAllBytes(Paths.get(resp.getFile().getAbsolutePath()));
+					String encoded = Base64.getEncoder().encodeToString(bytes).toString();
+					byteListPassBook.add(encoded);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			detailsReq.setByteListPassImg(byteListPassBook);
+
+			/* FOR PASSBOOK PHOTO */
+			
+			
+			
 
 		}
 		// for assets and liability
@@ -1908,6 +1951,54 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		return map;
 	}
 
+	public String getCurrLoginUser(Long userId) {
+
+		if (!CommonUtils.isObjectNullOrEmpty(userId)) {
+			try {
+				UserResponse userResponseForName = usersClient.getUserBasicDetails(userId);
+				UserResponse uResponse = MultipleJSONObjectHelper
+						.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(), UserResponse.class);
+				return uResponse.getData().toString();
+
+			} catch (Exception e) {
+				logger.error("Exception : " + e.getMessage());
+			}
+		}
+		return "-";
+	}
+
+	public String getFpMakerName(Long fpMakerId, Integer flag) { // pi reprentative name
+		if (!CommonUtils.isObjectNullOrEmpty(fpMakerId)) {
+			UsersRequest usersRequestForMaker = new UsersRequest();
+			usersRequestForMaker.setId(fpMakerId);
+			try {
+				UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
+				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
+				if (flag == 0) {// pi repre name
+					return (fundProviderDetailsRequest.getFirstName() == null ? "N/A"
+							: fundProviderDetailsRequest.getFirstName()) + " "
+							+ (fundProviderDetailsRequest.getLastName() == null ? ""
+									: fundProviderDetailsRequest.getLastName());
+				} else if (flag == 1) {// pi name
+					return (fundProviderDetailsRequest.getOrganizationName() == null ? "N/A"
+							: fundProviderDetailsRequest.getOrganizationName());
+				} else if (flag == 2) { // pi address
+					return (fundProviderDetailsRequest.getStreetAddress() == null ? "_"
+							: fundProviderDetailsRequest.getStreetAddress())
+							+ " "
+							+ (fundProviderDetailsRequest.getAddress() == null ? "_"
+									: fundProviderDetailsRequest.getAddress())
+							+ " " + (fundProviderDetailsRequest.getLandmark() == null ? "_"
+									: fundProviderDetailsRequest.getLandmark());
+				}
+			} catch (Exception e) {
+				logger.error("Exception : " + e.getMessage());
+			}
+		}
+		return "-";
+	}
+
 	@Override
 	public boolean uploadDocuments(MultipartFile[] uploadingFiles, MfiApplicantDetailsReq mfiApplicantDetailsReq) {
 //		MFIApplicantDetail mfiApplicationDetail = detailsRepository.findOne(mfiApplicantDetailsReq.getId());
@@ -1943,38 +2034,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			return true;
 		}
 		return false;
-	}
-
-	public String getFpMakerName(Long fpMakerId, Integer flag) { // pi reprentative name
-		if (!CommonUtils.isObjectNullOrEmpty(fpMakerId)) {
-			UsersRequest usersRequestForMaker = new UsersRequest();
-			usersRequestForMaker.setId(fpMakerId);
-			try {
-				UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
-				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
-						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
-				if (flag == 0) {// pi repre name
-					return (fundProviderDetailsRequest.getFirstName() == null ? "N/A"
-							: fundProviderDetailsRequest.getFirstName()) + " "
-							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
-				} else if (flag == 1) {// pi name
-					return (fundProviderDetailsRequest.getOrganizationName() == null ? "N/A"
-							: fundProviderDetailsRequest.getOrganizationName());
-				} else if (flag == 2) { // pi address
-					return (fundProviderDetailsRequest.getStreetAddress() == null ? "_"
-							: fundProviderDetailsRequest.getStreetAddress())
-							+ " "
-							+ (fundProviderDetailsRequest.getAddress() == null ? "_"
-									: fundProviderDetailsRequest.getAddress())
-							+ " " + (fundProviderDetailsRequest.getLandmark() == null ? "_"
-									: fundProviderDetailsRequest.getLandmark());
-				}
-			} catch (Exception e) {
-				logger.error("Exception : " + e.getMessage());
-			}
-		}
-		return "-";
 	}
 
 	@Override
