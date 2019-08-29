@@ -2676,7 +2676,7 @@ public class ScoringServiceImpl implements ScoringService {
                      for(Object object : (List)analyzerResponse.getData()) {
                     	 Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
      					if(dataBs != null) {
-     						if(!EligibilityUtils.isObjectNullOrEmpty(dataBs.getCoAppId())) {
+     						if(EligibilityUtils.isObjectNullOrEmpty(dataBs.getCoAppId())) {
      							continue; 							
      						}
      						coApplicantBankStatementDatas.add(dataBs);
@@ -3288,7 +3288,7 @@ public class ScoringServiceImpl implements ScoringService {
                      for(Object object : (List)analyzerResponse.getData()) {
                     	 Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
      					if(dataBs != null) {
-     						if(!EligibilityUtils.isObjectNullOrEmpty(dataBs.getCoAppId())) {
+     						if(EligibilityUtils.isObjectNullOrEmpty(dataBs.getCoAppId())) {
      							continue; 							
      						}
      						coApplicantBankStatementDatas.add(dataBs);
