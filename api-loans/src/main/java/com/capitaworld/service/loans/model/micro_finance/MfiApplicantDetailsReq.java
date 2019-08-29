@@ -3,9 +3,12 @@ package com.capitaworld.service.loans.model.micro_finance;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class MfiApplicantDetailsReq {
 
@@ -22,7 +25,9 @@ public class MfiApplicantDetailsReq {
 	private String lastName;
 
 	private String middleName;
-
+	
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date birthDate;
 
 	private Integer genderId;
@@ -82,7 +87,8 @@ public class MfiApplicantDetailsReq {
 	private String motherName;
 
 	private String spouseName;
-
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date spouseBirthDate;
 
 	private String spouseMobile;
@@ -90,7 +96,8 @@ public class MfiApplicantDetailsReq {
 	private Integer noDependent;
 
 	private String nomineeName;
-
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date nomineeBirthDate;
 
 	private Integer relationWithNomineeId;
@@ -138,7 +145,8 @@ public class MfiApplicantDetailsReq {
 	private Double insurencePremium;
 
 	private Long createdBy;
-
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date createdDate;
 
 	private Boolean isActive;
@@ -344,6 +352,364 @@ public class MfiApplicantDetailsReq {
 	private LoanSanctionRequest sanctionDetail;
 	
 	private List<LoanDisbursementRequest> disbursementDetails;
+	
+	/* STRING FOR ENUMS */
+	private String maritalStatus;
+	private String gender;
+	private String relationWithNominee;
+	private String eduQualification;
+	private String houseType1;
+	private String repayFreq;
+	private String academicReli;
+	private String academicCast;
+	private String houseOwnerShip;
+	private String areaType1;
+	private String businessPremises1;
+	private String addressProofType1;
+	private String dateOfBirth;
+	private String businessType1;
+	private String accountType1;
+	private String businessNameString;
+	private String ppiAcadamicHeadFamily1;
+	private String loanTypeString;
+	private String purposeOfLoanString;
+	private String clientType1;
+	private String repayTrack;
+	private String competition1;
+	private List<Resource> listOfImages;
+	
+	List<String> byteList; 
+	private Double mfiMakerTotalExpense;
+	private Double mfiCheckerTotalExpense;
+	private Double totalIncomeChecker;
+	private Double netSavingChecker;
+	private Double increasedIncomeChecker;
+	private Double totalCashFlowChecker;
+	
+
+	private String dpnDoc;
+	private String loiDoc;
+	private String lohDoc;
+	private String agreementDoc;
+	
+	private String dpnDocFileName;
+	private String loiDocFileName;
+	private String lohDocFileName;
+	private String agreementDocFileName;
+	
+
+	private Long userId;
+	private Long orgId;
+	private String makerName;
+    private String loanPurposeStr;
+    private String currDateStr;
+    private String piName;
+    private String piAddress;
+    private String loginUser;
+    private Boolean isConsolidated;
+    private String consolidatedName;
+
+	/* GETTER SETTERS */
+	
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+
+	
+
+	public Double getTotalCashFlowChecker() {
+		return totalCashFlowChecker;
+	}
+
+
+
+
+	public void setTotalCashFlowChecker(Double totalCashFlowChecker) {
+		this.totalCashFlowChecker = totalCashFlowChecker;
+	}
+
+
+
+
+	public Double getIncreasedIncomeChecker() {
+		return increasedIncomeChecker;
+	}
+
+
+
+
+	public void setIncreasedIncomeChecker(Double increasedIncomeChecker) {
+		this.increasedIncomeChecker = increasedIncomeChecker;
+	}
+
+
+
+
+	public Double getNetSavingChecker() {
+		return netSavingChecker;
+	}
+
+
+
+
+	public void setNetSavingChecker(Double netSavingChecker) {
+		this.netSavingChecker = netSavingChecker;
+	}
+
+
+
+
+	public Double getTotalIncomeChecker() {
+		return totalIncomeChecker;
+	}
+
+
+
+
+	public void setTotalIncomeChecker(Double totalIncomeChecker) {
+		this.totalIncomeChecker = totalIncomeChecker;
+	}
+
+
+
+
+	public Double getMfiMakerTotalExpense() {
+		return mfiMakerTotalExpense;
+	}
+
+
+
+
+	public void setMfiMakerTotalExpense(Double mfiMakerTotalExpense) {
+		this.mfiMakerTotalExpense = mfiMakerTotalExpense;
+	}
+
+
+
+
+	public Double getMfiCheckerTotalExpense() {
+		return mfiCheckerTotalExpense;
+	}
+
+
+
+
+	public void setMfiCheckerTotalExpense(Double mfiCheckerTotalExpense) {
+		this.mfiCheckerTotalExpense = mfiCheckerTotalExpense;
+	}
+
+
+
+
+	public List<Resource> getListOfImages() {
+		return listOfImages;
+	}
+
+
+
+
+	public void setListOfImages(List<Resource> listOfImages) {
+		this.listOfImages = listOfImages;
+	}
+
+
+
+
+	public String getCompetition1() {
+		return competition1;
+	}
+
+
+	public void setCompetition1(String competition1) {
+		this.competition1 = competition1;
+	}
+
+
+	public String getRepayTrack() {
+		return repayTrack;
+	}
+
+
+	public void setRepayTrack(String repayTrack) {
+		this.repayTrack = repayTrack;
+	}
+
+
+	public String getClientType1() {
+		return clientType1;
+	}
+
+
+	public void setClientType1(String clientType1) {
+		this.clientType1 = clientType1;
+	}
+
+
+	public String getPurposeOfLoanString() {
+		return purposeOfLoanString;
+	}
+
+
+	public void setPurposeOfLoanString(String purposeOfLoanString) {
+		this.purposeOfLoanString = purposeOfLoanString;
+	}
+
+
+	public String getLoanTypeString() {
+		return loanTypeString;
+	}
+
+
+	public void setLoanTypeString(String loanTypeString) {
+		this.loanTypeString = loanTypeString;
+	}
+
+
+	public String getPpiAcadamicHeadFamily1() {
+		return ppiAcadamicHeadFamily1;
+	}
+
+
+	public void setPpiAcadamicHeadFamily1(String ppiAcadamicHeadFamily1) {
+		this.ppiAcadamicHeadFamily1 = ppiAcadamicHeadFamily1;
+	}
+
+
+	public String getBusinessNameString() {
+		return businessNameString;
+	}
+
+
+	public void setBusinessNameString(String businessNameString) {
+		this.businessNameString = businessNameString;
+	}
+
+
+	public String getAccountType1() {
+		return accountType1;
+	}
+
+
+	public void setAccountType1(String accountType1) {
+		this.accountType1 = accountType1;
+	}
+
+
+	public String getBusinessType1() {
+		return businessType1;
+	}
+
+
+	public void setBusinessType1(String businessType1) {
+		this.businessType1 = businessType1;
+	}
+
+
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getRelationWithNominee() {
+		return relationWithNominee;
+	}
+
+	public void setRelationWithNominee(String relationWithNominee) {
+		this.relationWithNominee = relationWithNominee;
+	}
+
+	public String getEduQualification() {
+		return eduQualification;
+	}
+
+	public void setEduQualification(String eduQualification) {
+		this.eduQualification = eduQualification;
+	}
+
+	public String getHouseType1() {
+		return houseType1;
+	}
+
+	public void setHouseType1(String houseType1) {
+		this.houseType1 = houseType1;
+	}
+
+	public String getRepayFreq() {
+		return repayFreq;
+	}
+
+	public void setRepayFreq(String repayFreq) {
+		this.repayFreq = repayFreq;
+	}
+
+	public String getAcademicReli() {
+		return academicReli;
+	}
+
+	public void setAcademicReli(String academicReli) {
+		this.academicReli = academicReli;
+	}
+
+	public String getAcademicCast() {
+		return academicCast;
+	}
+
+	public void setAcademicCast(String academicCast) {
+		this.academicCast = academicCast;
+	}
+
+	public String getHouseOwnerShip() {
+		return houseOwnerShip;
+	}
+
+	public void setHouseOwnerShip(String houseOwnerShip) {
+		this.houseOwnerShip = houseOwnerShip;
+	}
+
+	public String getAreaType1() {
+		return areaType1;
+	}
+
+	public void setAreaType1(String areaType1) {
+		this.areaType1 = areaType1;
+	}
+
+	public String getBusinessPremises1() {
+		return businessPremises1;
+	}
+
+	public void setBusinessPremises1(String businessPremises1) {
+		this.businessPremises1 = businessPremises1;
+	}
+
+	public String getAddressProofType1() {
+		return addressProofType1;
+	}
+
+	public void setAddressProofType1(String addressProofType1) {
+		this.addressProofType1 = addressProofType1;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+	
+	/* GETTER SETTERS */
+	
 	
 
 	public Integer getStatus() {
@@ -1914,4 +2280,216 @@ public class MfiApplicantDetailsReq {
 	public void setTotalEmi(Double totalEmi) {
 		this.totalEmi = totalEmi;
 	}
+
+
+
+
+	public List<String> getByteList() {
+		return byteList;
+	}
+
+
+
+
+	public void setByteList(List<String> byteList) {
+		this.byteList = byteList;
+	}
+
+
+
+
+
+	public String getDpnDoc() {
+		return dpnDoc;
+  }
+	public String getMakerName() {
+		return makerName;
+	}
+
+
+
+
+
+	public void setDpnDoc(String dpnDoc) {
+		this.dpnDoc = dpnDoc;
+  }
+	public void setMakerName(String makerName) {
+		this.makerName = makerName;
+	}
+
+
+
+
+
+	public String getLoiDoc() {
+		return loiDoc;
+  }
+	public String getLoanPurposeStr() {
+		return loanPurposeStr;
+	}
+
+
+
+
+
+	public void setLoiDoc(String loiDoc) {
+		this.loiDoc = loiDoc;
+  }
+	public void setLoanPurposeStr(String loanPurposeStr) {
+		this.loanPurposeStr = loanPurposeStr;
+	}
+
+
+
+
+
+	public String getLohDoc() {
+		return lohDoc;
+  }
+	public String getCurrDateStr() {
+		return currDateStr;
+	}
+
+
+
+
+
+	public void setLohDoc(String lohDoc) {
+		this.lohDoc = lohDoc;
+  }
+	public void setCurrDateStr(String currDateStr) {
+		this.currDateStr = currDateStr;
+	}
+
+
+
+
+
+	public String getAgreementDoc() {
+		return agreementDoc;
+  }
+	public String getPiName() {
+		return piName;
+	}
+
+
+
+
+
+	public void setAgreementDoc(String agreementDoc) {
+		this.agreementDoc = agreementDoc;
+  }
+	public void setPiName(String piName) {
+		this.piName = piName;
+	}
+
+
+
+
+	public String getDpnDocFileName() {
+		return dpnDocFileName;
+  }
+	public String getPiAddress() {
+		return piAddress;
+	}
+
+
+
+
+
+	public void setDpnDocFileName(String dpnDocFileName) {
+		this.dpnDocFileName = dpnDocFileName;
+  }
+	public void setPiAddress(String piAddress) {
+		this.piAddress = piAddress;
+	}
+
+
+
+
+	public String getLoiDocFileName() {
+		return loiDocFileName;
+  }
+	public String getLoginUser() {
+		return loginUser;
+	}
+
+
+
+
+	public void setLoiDocFileName(String loiDocFileName) {
+		this.loiDocFileName = loiDocFileName;
+  }
+	public void setLoginUser(String loginUser) {
+		this.loginUser = loginUser;
+	}
+
+
+
+
+	public String getLohDocFileName() {
+		return lohDocFileName;
+  }
+	public Boolean getIsConsolidated() {
+		return isConsolidated;
+	}
+
+
+
+
+	public void setLohDocFileName(String lohDocFileName) {
+		this.lohDocFileName = lohDocFileName;
+  }
+	public void setIsConsolidated(Boolean isConsolidated) {
+		this.isConsolidated = isConsolidated;
+	}
+
+
+
+
+
+	public String getAgreementDocFileName() {
+		return agreementDocFileName;
+  }
+	public String getConsolidatedName() {
+		return consolidatedName;
+	}
+
+
+
+
+	public void setAgreementDocFileName(String agreementDocFileName) {
+		this.agreementDocFileName = agreementDocFileName;
+  }
+	public void setConsolidatedName(String consolidatedName) {
+		this.consolidatedName = consolidatedName;
+	}
+
+
+
+	public Long getUserId() {
+		return userId;
+	}
+
+
+
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+
+
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+
+
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
 }
