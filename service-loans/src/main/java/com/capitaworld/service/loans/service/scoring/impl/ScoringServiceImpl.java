@@ -2449,7 +2449,10 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.DPD:
             				try {
-                                Integer maxDPD = Collections.max(dpds);
+            					Integer maxDPD = 0;
+            					if(!CommonUtils.isListNullOrEmpty(dpds)) {
+            						maxDPD = Collections.max(dpds);
+            					}
                                 logger.info("Max DPD===>{}",maxDPD);
                                 if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
                                     scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
@@ -3075,7 +3078,10 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.HomeLoan.DPD:
             				try {
-                                Integer maxDPD = Collections.max(dpds);
+            					Integer maxDPD = 0;
+            					if(!CommonUtils.isListNullOrEmpty(dpds)) {
+            						maxDPD = Collections.max(dpds);
+            					}
                                 logger.info("Max DPD Of CoApplicant===>{}",maxDPD);
                                 if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
                                     scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
@@ -3685,7 +3691,10 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.AutoLoan.DPD:
             				try {
-                                Integer maxDPD = Collections.max(dpds);
+            					Integer maxDPD = 0;
+            					if(!CommonUtils.isListNullOrEmpty(dpds)) {
+            						maxDPD = Collections.max(dpds);
+            					}
                                 logger.info("Max DPD Of CoApplicant===>{}",maxDPD);
                                 if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
                                     scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
@@ -8510,7 +8519,10 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.AutoLoan.DPD:
             				try {
-                                Integer maxDPD = Collections.max(dpds);
+            					Integer maxDPD = 0;
+            					if(!CommonUtils.isListNullOrEmpty(dpds)) {
+            						maxDPD = Collections.max(dpds);
+            					}
                                 logger.info("Max DPD===>{}",maxDPD);
                                 if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
                                     scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
