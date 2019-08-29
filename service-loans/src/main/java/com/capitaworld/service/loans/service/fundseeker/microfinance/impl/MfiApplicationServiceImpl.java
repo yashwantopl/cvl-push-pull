@@ -38,6 +38,7 @@ import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
