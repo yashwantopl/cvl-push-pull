@@ -61,4 +61,7 @@ public interface MfiApplicationDetailsRepository extends JpaRepository<MFIApplic
 
     @Query("select new com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq(ma.id,ma.applicationId.id,ma.firstName,ma.lastName,sm.status) from MFIApplicantDetail ma Left Join ma.applicationId lm Left Join lm.applicationStatusMaster sm where sm.id IN (11,12,13,14,15,16) and lm.fpMakerId =:userId and lm.npOrgId =:userOrgId")
     public AadharDetailsReq getApprovedApplications(@Param("userId") Long userId,@Param("userOrgId") Long userOrgId);
+    
+    @Query("select mf from MFIApplicantDetail mf where mf.applicationId.id =:applicationId and mf.isActive = true ")
+    public MFIApplicantDetail findByApplicationId(@Param("applicationId") Long applicationId);
 }
