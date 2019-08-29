@@ -2518,17 +2518,18 @@ public class ScoringServiceImpl implements ScoringService {
 	            				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.AVG_EOD_BALANCE:
-            				Double eod = 0.0d;
+            				Double totalEODBalAvg = 0.0d;
+            				Double totalCredit = 0.0d;
+            				
             				for(Data bankStatementData : bankStatementDatas) {
             					if(bankStatementData.getSummaryInfo() != null) {
                 					if(!CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit())) {
-                						Double totalEODBalAvg = Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
-                						Double totalCredit = Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit());
-                						eod = eod + (totalEODBalAvg / totalCredit);
+                						totalEODBalAvg = totalEODBalAvg + Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
+                						totalCredit = totalCredit + Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit());
                 					}
                 				}            					
             				}
-            				scoreParameterRetailRequest.setAvgEodBalToToalDep(eod);
+            				scoreParameterRetailRequest.setAvgEodBalToToalDep((totalEODBalAvg / totalCredit));
     						scoreParameterRetailRequest.setIsAvgEodBalToToalDep_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.LOAN_TO_INCOME_RATIO:
