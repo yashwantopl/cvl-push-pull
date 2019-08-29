@@ -87,8 +87,10 @@ public interface MfiApplicationService {
 
 	public boolean saveConsentFormImage(MultipartFile[] uploadingFile,AadharDetailsReq aadharDetailsReq);
 	
-	public Object saveOrUpdateAllApplicantsDetails(MultipartFile uploadingFile,MultipartFile addressProof,MultipartFile consentformImg,MultipartFile aadharImg,MfiApplicantDetailsReq mfiApplicantDetailsReq,Long userId,Long orgId);
-
+	public boolean uploadDocuments(MultipartFile[] uploadingFile, MfiApplicantDetailsReq mfiApplicantDetailsReq);
+	
+	public Object saveOrUpdateAllApplicantsDetails(MultipartFile uploadingFile, MultipartFile addressProof,
+			MultipartFile consentformImg, MultipartFile aadharImg, MfiApplicantDetailsReq mfiApplicantDetailsReq);
 	public Map<String, Object> getReportDetails(Long applicationId);
 	
 	public Map<String, Object> getApplicantDetails1(Long applicationId, Integer type);

@@ -402,6 +402,23 @@ public class MFIApplicantDetail implements Serializable {
 	@Column(name = "job_id")
 	private Long jobId;
 
+	@Column(name = "dpn_doc")
+	private String dpnDoc;
+
+	@Column(name = "loi_doc")
+	private String loiDoc;
+
+	@Column(name = "loh_doc")
+	private String lohDoc;
+
+	@Column(name = "agreement_doc")
+	private String agreementDoc;
+
+	@Column(name = "isconsolidated")
+	private Boolean isConsolidated;
+	@Column(name = "consolidatedname")
+	private String consolidatedName;
+
 	public Double getLoanAmountMFIChecker() {
 		return loanAmountMFIChecker;
 	}
@@ -418,9 +435,9 @@ public class MFIApplicantDetail implements Serializable {
 		this.loanAmountBankMaker = loanAmountBankMaker;
 	}
 
-	//	@Column(name = "total_expense")
+	// @Column(name = "total_expense")
 //	private Double totalExpense;
-	
+
 //	@Column(name = "total_monthly_income_for_family")
 //	private Double totalMonthlyIncomeForFamily;
 	private Integer status;
@@ -1273,7 +1290,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.expInSameLine = expInSameLine;
 	}
 
-
 	public Date getNomineeBirthDate() {
 		return nomineeBirthDate;
 	}
@@ -1426,7 +1442,6 @@ public class MFIApplicantDetail implements Serializable {
 		this.creaditWorthiness = creaditWorthiness;
 	}
 
-
 	public Boolean getIsLoanassessmentDetailsFilled() {
 		return isLoanassessmentDetailsFilled;
 	}
@@ -1530,4 +1545,37 @@ public class MFIApplicantDetail implements Serializable {
 	public void setTotalEmi(Double totalEmi) {
 		this.totalEmi = totalEmi;
 	}
+
+	public String getDpnDoc() {
+		return dpnDoc;
+	}
+
+	public void setDpnDoc(String dpnDoc) {
+		this.dpnDoc = dpnDoc;
+	}
+
+	public String getLoiDoc() {
+		return loiDoc;
+	}
+
+	public void setLoiDoc(String loiDoc) {
+		this.loiDoc = loiDoc;
+	}
+
+	public String getLohDoc() {
+		return lohDoc;
+	}
+
+	public void setLohDoc(String lohDoc) {
+		this.lohDoc = lohDoc;
+	}
+
+	public String getAgreementDoc() {
+		return agreementDoc;
+	}
+
+	public void setAgreementDoc(String agreementDoc) {
+		this.agreementDoc = agreementDoc;
+	}
+
 }

@@ -11,8 +11,21 @@ public class TutorialsViewAudits {
     private Long tutorialId;
     private Integer loanType;
     private Date viewDate;
+    private int pageIndex;
+	private int size;
+    
+	private String roleName;
+	private String branchName;
+    
+    public TutorialsViewAudits() {
+	}
 
-    public Long getId() {
+	public TutorialsViewAudits(Long id) {
+		super();
+		this.id = id;
+	}
+
+	public Long getId() {
         return id;
     }
 
@@ -67,8 +80,40 @@ public class TutorialsViewAudits {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+    
+    public int getPageIndex() {
+		return pageIndex;
+	}
 
-    @Override
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+	
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
+
+	@Override
     public String toString() {
         return "TutorialsViewAudits{" +
                 "id=" + id +

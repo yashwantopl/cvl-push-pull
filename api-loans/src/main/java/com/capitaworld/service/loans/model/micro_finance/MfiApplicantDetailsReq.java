@@ -385,15 +385,31 @@ public class MfiApplicantDetailsReq {
 	private Double netSavingChecker;
 	private Double increasedIncomeChecker;
 	private Double totalCashFlowChecker;
-	/* STRING FOR ENUMS */
 	
+
+	private String dpnDoc;
+	private String loiDoc;
+	private String lohDoc;
+	private String agreementDoc;
 	
+	private String dpnDocFileName;
+	private String loiDocFileName;
+	private String lohDocFileName;
+	private String agreementDocFileName;
 	
+
+	private Long userId;
+	private Long orgId;
+	private String makerName;
+    private String loanPurposeStr;
+    private String currDateStr;
+    private String piName;
+    private String piAddress;
+    private String loginUser;
+    private Boolean isConsolidated;
+    private String consolidatedName;
+
 	/* GETTER SETTERS */
-	
-	
-	
-	
 	
 	public String getMaritalStatus() {
 		return maritalStatus;
@@ -2280,5 +2296,200 @@ public class MfiApplicantDetailsReq {
 	}
 
 
+
+
+
+	public String getDpnDoc() {
+		return dpnDoc;
+  }
+	public String getMakerName() {
+		return makerName;
+	}
+
+
+
+
+
+	public void setDpnDoc(String dpnDoc) {
+		this.dpnDoc = dpnDoc;
+  }
+	public void setMakerName(String makerName) {
+		this.makerName = makerName;
+	}
+
+
+
+
+
+	public String getLoiDoc() {
+		return loiDoc;
+  }
+	public String getLoanPurposeStr() {
+		return loanPurposeStr;
+	}
+
+
+
+
+
+	public void setLoiDoc(String loiDoc) {
+		this.loiDoc = loiDoc;
+  }
+	public void setLoanPurposeStr(String loanPurposeStr) {
+		this.loanPurposeStr = loanPurposeStr;
+	}
+
+
+
+
+
+	public String getLohDoc() {
+		return lohDoc;
+  }
+	public String getCurrDateStr() {
+		return currDateStr;
+	}
+
+
+
+
+
+	public void setLohDoc(String lohDoc) {
+		this.lohDoc = lohDoc;
+  }
+	public void setCurrDateStr(String currDateStr) {
+		this.currDateStr = currDateStr;
+	}
+
+
+
+
+
+	public String getAgreementDoc() {
+		return agreementDoc;
+  }
+	public String getPiName() {
+		return piName;
+	}
+
+
+
+
+
+	public void setAgreementDoc(String agreementDoc) {
+		this.agreementDoc = agreementDoc;
+  }
+	public void setPiName(String piName) {
+		this.piName = piName;
+	}
+
+
+
+
+	public String getDpnDocFileName() {
+		return dpnDocFileName;
+  }
+	public String getPiAddress() {
+		return piAddress;
+	}
+
+
+
+
+
+	public void setDpnDocFileName(String dpnDocFileName) {
+		this.dpnDocFileName = dpnDocFileName;
+  }
+	public void setPiAddress(String piAddress) {
+		this.piAddress = piAddress;
+	}
+
+
+
+
+	public String getLoiDocFileName() {
+		return loiDocFileName;
+  }
+	public String getLoginUser() {
+		return loginUser;
+	}
+
+
+
+
+	public void setLoiDocFileName(String loiDocFileName) {
+		this.loiDocFileName = loiDocFileName;
+  }
+	public void setLoginUser(String loginUser) {
+		this.loginUser = loginUser;
+	}
+
+
+
+
+	public String getLohDocFileName() {
+		return lohDocFileName;
+  }
+	public Boolean getIsConsolidated() {
+		return isConsolidated;
+	}
+
+
+
+
+	public void setLohDocFileName(String lohDocFileName) {
+		this.lohDocFileName = lohDocFileName;
+  }
+	public void setIsConsolidated(Boolean isConsolidated) {
+		this.isConsolidated = isConsolidated;
+	}
+
+
+
+
+
+	public String getAgreementDocFileName() {
+		return agreementDocFileName;
+  }
+	public String getConsolidatedName() {
+		return consolidatedName;
+	}
+
+
+
+
+	public void setAgreementDocFileName(String agreementDocFileName) {
+		this.agreementDocFileName = agreementDocFileName;
+  }
+	public void setConsolidatedName(String consolidatedName) {
+		this.consolidatedName = consolidatedName;
+	}
+
+
+
+	public Long getUserId() {
+		return userId;
+	}
+
+
+
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+
+
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+
+
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
 
 }
