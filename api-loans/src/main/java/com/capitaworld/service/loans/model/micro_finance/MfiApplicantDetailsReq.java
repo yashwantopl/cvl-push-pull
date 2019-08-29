@@ -385,15 +385,19 @@ public class MfiApplicantDetailsReq {
 	private Double netSavingChecker;
 	private Double increasedIncomeChecker;
 	private Double totalCashFlowChecker;
-	/* STRING FOR ENUMS */
 	
+	private String dpnDoc;
+	private String loiDoc;
+	private String lohDoc;
+	private String agreementDoc;
+	
+	private String dpnDocFileName;
+	private String loiDocFileName;
+	private String lohDocFileName;
+	private String agreementDocFileName;
 	
 	
 	/* GETTER SETTERS */
-	
-	
-	
-	
 	
 	public String getMaritalStatus() {
 		return maritalStatus;
@@ -2277,6 +2281,118 @@ public class MfiApplicantDetailsReq {
 
 	public void setByteList(List<String> byteList) {
 		this.byteList = byteList;
+	}
+
+
+
+
+	public String getDpnDoc() {
+		return dpnDoc;
+	}
+
+
+
+
+	public void setDpnDoc(String dpnDoc) {
+		this.dpnDoc = dpnDoc;
+	}
+
+
+
+
+	public String getLoiDoc() {
+		return loiDoc;
+	}
+
+
+
+
+	public void setLoiDoc(String loiDoc) {
+		this.loiDoc = loiDoc;
+	}
+
+
+
+
+	public String getLohDoc() {
+		return lohDoc;
+	}
+
+
+
+
+	public void setLohDoc(String lohDoc) {
+		this.lohDoc = lohDoc;
+	}
+
+
+
+
+	public String getAgreementDoc() {
+		return agreementDoc;
+	}
+
+
+
+
+	public void setAgreementDoc(String agreementDoc) {
+		this.agreementDoc = agreementDoc;
+	}
+
+
+
+
+	public String getDpnDocFileName() {
+		return dpnDocFileName;
+	}
+
+
+
+
+	public void setDpnDocFileName(String dpnDocFileName) {
+		this.dpnDocFileName = dpnDocFileName;
+	}
+
+
+
+
+	public String getLoiDocFileName() {
+		return loiDocFileName;
+	}
+
+
+
+
+	public void setLoiDocFileName(String loiDocFileName) {
+		this.loiDocFileName = loiDocFileName;
+	}
+
+
+
+
+	public String getLohDocFileName() {
+		return lohDocFileName;
+	}
+
+
+
+
+	public void setLohDocFileName(String lohDocFileName) {
+		this.lohDocFileName = lohDocFileName;
+	}
+
+
+
+
+	public String getAgreementDocFileName() {
+		return agreementDocFileName;
+	}
+
+
+
+
+	public void setAgreementDocFileName(String agreementDocFileName) {
+		this.agreementDocFileName = agreementDocFileName;
 	}
 
 
