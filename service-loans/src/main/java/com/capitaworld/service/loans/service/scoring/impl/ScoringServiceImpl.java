@@ -24,6 +24,7 @@ import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpecte
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.scoring.MCLRReqRes;
+import com.capitaworld.service.scoring.REPOReqRes;
 import com.capitaworld.service.scoring.model.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -6968,9 +6969,24 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
     @Override
+    public List<GenericCheckerReqRes> sendToCheckerREPO(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException {
+        return scoringClient.sendToCheckerREPO(genericCheckerReqResList, userId);
+    }
+
+    @Override
     public ScoringResponse createJob(MCLRReqRes mclrReqRes) {
         try {
             return scoringClient.createJob(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while creating job for MCLR: ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse createJobForREPO(REPOReqRes repoReqRes) {
+        try {
+            return scoringClient.createJobForRepo(repoReqRes);
         } catch (Exception e) {
             logger.error("error while creating job for MCLR: ", e);
             return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
@@ -6988,9 +7004,29 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
     @Override
+    public ScoringResponse getREPOForChecker(REPOReqRes repoReqRes) {
+        try {
+            return scoringClient.getREPOForChecker(repoReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
     public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes) {
         try {
             return scoringClient.getMCLRHistory(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse getREPOHistoryDetail(REPOReqRes repoReqRes) {
+        try {
+            return scoringClient.getREPOHistory(repoReqRes);
         } catch (Exception e) {
             logger.error("error while getting MCLR history detail : ", e);
             return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
@@ -7011,6 +7047,16 @@ public class ScoringServiceImpl implements ScoringService {
     public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes) {
         try {
             return scoringClient.saveMCLR(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while saving MCLR details : ", e);
+            return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringResponse saveREPODetails(REPOReqRes repoReqRes) {
+        try {
+            return scoringClient.saveREPO(repoReqRes);
         } catch (Exception e) {
             logger.error("error while saving MCLR details : ", e);
             return new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
