@@ -86,6 +86,8 @@ public interface MfiApplicationService {
 
 	public boolean saveConsentFormImage(MultipartFile[] uploadingFile,AadharDetailsReq aadharDetailsReq);
 	
+	public boolean uploadDocuments(MultipartFile[] uploadingFile, MfiApplicantDetailsReq mfiApplicantDetailsReq);
+	
 	public Object saveOrUpdateAllApplicantsDetails(MultipartFile uploadingFile,MultipartFile addressProof,MultipartFile consentformImg,MultipartFile aadharImg,MfiApplicantDetailsReq mfiApplicantDetailsReq,Long userId,Long orgId);
 
 
