@@ -391,8 +391,16 @@ public class MfiApplicantDetailsReq {
 	
 	/* GETTER SETTERS */
 	
-	
-	
+	private Long userId;
+	private Long orgId;
+	private String makerName;
+    private String loanPurposeStr;
+    private String currDateStr;
+    private String piName;
+    private String piAddress;
+    private String loginUser;
+    private Boolean isConsolidated;
+    private String consolidatedName;
 	
 	
 	public String getMaritalStatus() {
@@ -2280,5 +2288,145 @@ public class MfiApplicantDetailsReq {
 	}
 
 
+
+
+	public String getMakerName() {
+		return makerName;
+	}
+
+
+
+
+	public void setMakerName(String makerName) {
+		this.makerName = makerName;
+	}
+
+
+
+
+	public String getLoanPurposeStr() {
+		return loanPurposeStr;
+	}
+
+
+
+
+	public void setLoanPurposeStr(String loanPurposeStr) {
+		this.loanPurposeStr = loanPurposeStr;
+	}
+
+
+
+
+	public String getCurrDateStr() {
+		return currDateStr;
+	}
+
+
+
+
+	public void setCurrDateStr(String currDateStr) {
+		this.currDateStr = currDateStr;
+	}
+
+
+
+
+	public String getPiName() {
+		return piName;
+	}
+
+
+
+
+	public void setPiName(String piName) {
+		this.piName = piName;
+	}
+
+
+
+
+	public String getPiAddress() {
+		return piAddress;
+	}
+
+
+
+
+	public void setPiAddress(String piAddress) {
+		this.piAddress = piAddress;
+	}
+
+
+
+
+	public String getLoginUser() {
+		return loginUser;
+	}
+
+
+
+
+	public void setLoginUser(String loginUser) {
+		this.loginUser = loginUser;
+	}
+
+
+
+
+	public Boolean getIsConsolidated() {
+		return isConsolidated;
+	}
+
+
+
+
+	public void setIsConsolidated(Boolean isConsolidated) {
+		this.isConsolidated = isConsolidated;
+	}
+
+
+
+
+	public String getConsolidatedName() {
+		return consolidatedName;
+	}
+
+
+
+
+	public void setConsolidatedName(String consolidatedName) {
+		this.consolidatedName = consolidatedName;
+	}
+
+
+
+
+	public Long getUserId() {
+		return userId;
+	}
+
+
+
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+
+
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+
+
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
+	
 
 }

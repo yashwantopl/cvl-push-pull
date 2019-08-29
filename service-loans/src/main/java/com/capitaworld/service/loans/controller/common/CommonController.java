@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -463,11 +464,12 @@ public class CommonController {
 		}
 	}
 
-	@GetMapping(value = "/getTutorialsAudit/{tutorialId}")
-	public ResponseEntity<LoansResponse> getTutorialsAudit(@PathVariable("tutorialId") Long tutorialId) {
+//	@GetMapping(value = "/getTutorialsAudit")
+	@RequestMapping(value = "/getTutorialsAudit", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTutorialsAudit(@RequestBody TutorialsViewAudits tutorialsViewAudits,HttpServletRequest request) {
 		logger.info("Enter in getTutorialsAudit");
 		try {
-			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAudit(tutorialId)), HttpStatus.OK);
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAudit(tutorialsViewAudits)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsAudit",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);

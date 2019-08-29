@@ -1,21 +1,32 @@
 package com.capitaworld.service.loans.service.fundseeker.microfinance.impl;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
-import com.capitaworld.service.loans.utils.EncryptionUtils;
-import com.capitaworld.service.oneform.enums.BankListMfi;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.api.eligibility.model.MFIRequest;
 import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
@@ -23,6 +34,7 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.cibil.api.exception.CibilException;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
@@ -59,6 +71,7 @@ import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetail
 import com.capitaworld.service.loans.model.micro_finance.MfiLoanRecomandationReq;
 import com.capitaworld.service.loans.model.micro_finance.PersonalDetailsReq;
 import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
+import com.capitaworld.service.loans.model.teaser.primaryview.MFITeaserViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MFIConversationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
@@ -69,20 +82,13 @@ import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiFinancialArran
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiPpiScoringRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
+import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.ParticularsMfi;
-import com.capitaworld.service.oneform.enums.PpiPersonDetailMFI;
-import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
@@ -90,7 +96,6 @@ import com.capitaworld.service.oneform.enums.AccountTypeMfi;
 import com.capitaworld.service.oneform.enums.AddressProofType;
 import com.capitaworld.service.oneform.enums.AreaTypeMfi;
 import com.capitaworld.service.oneform.enums.BankListMfi;
-import com.capitaworld.service.oneform.enums.BusinessInBriefMstMFI;
 import com.capitaworld.service.oneform.enums.BusinessTypeMfi;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.ClientTypeMfi;
@@ -101,22 +106,11 @@ import com.capitaworld.service.oneform.enums.HeadFamilyEduMfi;
 import com.capitaworld.service.oneform.enums.HouseTypeMfi;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OwnershipOfHouse;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.api.eligibility.model.MFIRequest;
-import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
-import com.capitaworld.client.eligibility.EligibilityClient;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.loans.model.teaser.primaryview.MFITeaserViewResponse;
-import com.capitaworld.service.oneform.enums.PurposeOfLoan;
+import com.capitaworld.service.oneform.enums.ParticularsMfi;
+import com.capitaworld.service.oneform.enums.PpiPersonDetailMFI;
 import com.capitaworld.service.oneform.enums.PurposeOfLoanMFI;
 import com.capitaworld.service.oneform.enums.RelationMstMFI;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
-import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.model.ProposalScoreDetailResponse;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
@@ -124,7 +118,6 @@ import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.scoring.utils.ScoreParameter.MFI;
-import com.capitaworld.service.scoring.utils.ScoreParameter.Retail;
 
 
 
@@ -918,6 +911,97 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 		return null;
 	}
+	public boolean checkIsSaveorNot(Integer type, MfiApplicantDetailsReq mfiApplicantDetailsReq) {
+		if (type == CommonUtils.BASIC_DETAILS) {
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getFirstName())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getLastName())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getGenderId())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getMaritalStatusId())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getBirthDate())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAddressProfType())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAddressProofNo())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAddressPincode())) {
+				return false;
+			}
+		} else if (type == CommonUtils.PERSONAL_DETAILS) {
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getFatherName())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getNoDependent())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getEducationQualification())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAcademicReligion())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAcademicCaste())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getLandHolding())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAreaType())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getBusinessType())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getHouseOwnership())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getNameOfFirm())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getBusinessPremises())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getExpInSameLine())) {
+				return false;
+			}
+		} else if (type == CommonUtils.BANK_DETAILS) {
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getBankId())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAccountNo())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getAccountType())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getBranchName())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getIfscCode())) {
+				return false;
+			}
+		} else if (type == CommonUtils.INCOME_EXPENDITURE) {
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getOtherExpense())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getMedicalExpense())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getEducationExpense())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getFoodExpense())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getHouseHoldExpense())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getClothesExpense())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getPpiNoFamilyMember())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getPpiAcadamicHeadFamily())) {
+				return false;
+			}
+		} else if (type == CommonUtils.PROJECT_DETAILS) {
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getLoanType())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getLoanAmountRequired())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getPurposeOfLoan())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getRepaymentFrequency())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getCostOfEquipment())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getWorkingCapOfEquipment())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getPromoterContribution())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getLoanRequiredFromSidbi())) {
+				return false;
+			} else if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getBusinessInBrief())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getMonthlyCashflow())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getMonthlyExpenditure())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getMonthlyIncome())) {
+				return false;
+			}
+		} else if (type == CommonUtils.LOAN_ASSESMENT) {
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getClientType())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getRepaymentTrack())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getCreaditWorthiness())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getCompetition())) {
+				return false;
+			}
+		} else if (type == CommonUtils.LOAN_RECOMANDATION) {
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getLoanAmountRecomandation())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getTenureRecomandation())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getMoratoriumRecomandation())
+					|| CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq.getInstallmentRecomandation())) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public ProposalRequestResponce getProposalDetails(ProposalRequestResponce proposalRequestResponce) {
@@ -1226,100 +1310,110 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public Object saveOrUpdateAllApplicantsDetails(MultipartFile uploadingFile, MultipartFile addressProof,
-												   MultipartFile consentformImg, MultipartFile aadharImg, MfiApplicantDetailsReq mfiApplicantDetailsReq,
-												   Long userId, Long orgId) {
+			MultipartFile consentformImg, MultipartFile aadharImg, MfiApplicantDetailsReq mfiApplicantDetailsReq) {
 
-		Long applicationId = applicationService.createMfiLoan(userId, true, 6, orgId);
+		Long applicationId = applicationService.createMfiLoan(mfiApplicantDetailsReq.getUserId(), true, 6,
+				mfiApplicantDetailsReq.getOrgId());
 
+		// SAVE PERSONAL,PROJECT,LOANASSESSMENT DETAILS
 		MFIApplicantDetail mfiApplicationDetail;
-		if (null != mfiApplicantDetailsReq.getId()) {
-			mfiApplicationDetail = new MFIApplicantDetail();
-			BeanUtils.copyProperties(mfiApplicantDetailsReq, mfiApplicationDetail);
-			mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+		mfiApplicationDetail = new MFIApplicantDetail();
+		BeanUtils.copyProperties(mfiApplicantDetailsReq, mfiApplicationDetail);
+		mfiApplicationDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 
-			// image upload to DMS S3 server recent Image
-			String profileImgToDms = uploadImageForMfi(uploadingFile, applicationId, 593);
-			mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
+		// image upload to DMS S3 server recent Image
+		String profileImgToDms = uploadImageForMfi(uploadingFile, mfiApplicantDetailsReq.getUserId(),593);
+		mfiApplicationDetail.setProfileImg(profileImgToDms); // save path for recent Image
 
-			// image upload to DMS S3 server for address proof
-			String addressImgToDms = uploadImageForMfi(addressProof, applicationId, 593);
-			mfiApplicationDetail.setAddressProofImg(addressImgToDms);
+		// image upload to DMS S3 server for address proof
+		String addressImgToDms = uploadImageForMfi(addressProof, mfiApplicantDetailsReq.getUserId(),593);
+		mfiApplicationDetail.setAddressProofImg(addressImgToDms);
 
-			// image upload to DMS S3 server for consentform
-			String consentImgToDms = uploadImageForMfi(consentformImg, applicationId, 593);
-			mfiApplicationDetail.setConsentFormImg(consentImgToDms);
+		// image upload to DMS S3 server for consentform
+		String consentImgToDms = uploadImageForMfi(consentformImg, mfiApplicantDetailsReq.getUserId(),593);
+		mfiApplicationDetail.setConsentFormImg(consentImgToDms);
 
-			// image upload to DMS S3 server for aadhar Image
-			String aadharImgToDms = uploadImageForMfi(aadharImg, applicationId, 593);
-			mfiApplicationDetail.setAadharImg(aadharImgToDms);
-
+		// image upload to DMS S3 server for aadhar Image
+		String aadharImgToDms = uploadImageForMfi(aadharImg, mfiApplicantDetailsReq.getUserId(),593);
+		mfiApplicationDetail.setAadharImg(aadharImgToDms);
+		boolean checkPersonalSaveornot = checkIsSaveorNot(CommonUtils.PERSONAL_DETAILS, mfiApplicantDetailsReq);
+		if (checkPersonalSaveornot) {
 			mfiApplicationDetail.setIsPersonalDetailsFilled(true);
-			mfiApplicationDetail.setIsProjectDetailsFilled(true);
-			mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
-			mfiApplicationDetail.setIsActive(true);
-			mfiApplicationDetail.setCreatedBy(userId);
-			mfiApplicationDetail.setCreatedDate(new Date());
-			mfiApplicationDetail.setStatus(CommonUtils.PENDING);
-			detailsRepository.save(mfiApplicationDetail);
+		} else {
+			mfiApplicationDetail.setIsPersonalDetailsFilled(false);
 		}
+
+		boolean checkProjectSaveornot = checkIsSaveorNot(CommonUtils.PROJECT_DETAILS, mfiApplicantDetailsReq);
+		if (checkProjectSaveornot) {
+			mfiApplicationDetail.setIsProjectDetailsFilled(true);
+		} else {
+			mfiApplicationDetail.setIsProjectDetailsFilled(false);
+		}
+
+		boolean checkLoanSaveornot = checkIsSaveorNot(CommonUtils.LOAN_ASSESMENT, mfiApplicantDetailsReq);
+		if (checkLoanSaveornot) {
+			mfiApplicationDetail.setIsLoanassessmentDetailsFilled(true);
+		} else {
+			mfiApplicationDetail.setIsLoanassessmentDetailsFilled(false);
+		}
+
+		mfiApplicationDetail.setIsActive(true);
+		mfiApplicationDetail.setCreatedBy(mfiApplicantDetailsReq.getUserId());
+		mfiApplicationDetail.setCreatedDate(new Date());
+		mfiApplicationDetail.setStatus(CommonUtils.PENDING);
+		detailsRepository.save(mfiApplicationDetail);
 
 		// SAVE INCOME DETAILS LIST
 		Double totalIncome = 0.0;
-		if (null != mfiApplicantDetailsReq.getId()) {
-			// save data in expense and expected income details for agent type 1 for agent
-			if (!CommonUtils.isListNullOrEmpty(mfiApplicantDetailsReq.getIncomeDetailsReqList())) { // save income
-				// details
-				MfiIncomeDetailsRepository.inActiveMappingByAppId(mfiApplicantDetailsReq.getApplicationId());
-				// for MFI Agent data from users
-				for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq.getIncomeDetailsReqList()) {
-					MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
-					BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
-					totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
-					mfiIncomeDetails.setType(1);
-					mfiIncomeDetails.setIsActive(true);
-					MfiIncomeDetailsRepository.save(mfiIncomeDetails);
-				}
-				// save PPI and is income filled true
-				MFIApplicantDetail mfiApplicationDetail1 = detailsRepository.findOne(mfiApplicantDetailsReq.getId());
-				Integer type = mfiApplicationDetail1.getType();
-				mfiApplicationDetail1.setIsIncomeDetailsFilled(true);
-				mfiApplicationDetail1.setType(type);
-				detailsRepository.save(mfiApplicationDetail1);
+		if (!CommonUtils.isListNullOrEmpty(mfiApplicantDetailsReq.getIncomeDetailsReqList())) { // save income details
+			MfiIncomeDetailsRepository.inActiveMappingByAppId(applicationId);
+			// for MFI Agent data from users
+			for (MfiIncomeDetailsReq mfiIncomeDetailsReq : mfiApplicantDetailsReq.getIncomeDetailsReqList()) {
+				MfiIncomeDetails mfiIncomeDetails = new MfiIncomeDetails();
+				BeanUtils.copyProperties(mfiIncomeDetailsReq, mfiIncomeDetails);
+				totalIncome = totalIncome + mfiIncomeDetails.getMonthlyIncome();
+				mfiIncomeDetails.setType(1);
+				mfiIncomeDetails.setIsActive(true);
+				mfiIncomeDetails.setApplicationId(applicationId);
+				MfiIncomeDetailsRepository.save(mfiIncomeDetails);
 			}
+			// save PPI and is income filled true
+			Integer type = mfiApplicationDetail.getType();
+			mfiApplicationDetail.setIsIncomeDetailsFilled(true);
+			mfiApplicationDetail.setType(type);
+			detailsRepository.save(mfiApplicationDetail);
 		}
 
 		// SAVE ASSETS LIABILITY DETAILS
 		MfiAssetsLiabilityDetails mfiAssetsLiabilityDetails = null;
 		if (!CommonUtils.isListNullOrEmpty(mfiApplicantDetailsReq.getAssetsDetails())
-				|| !CommonUtils.isListNullOrEmpty(mfiApplicantDetailsReq.getLiabilityDetails())) { // to save assets
-			// details
+				|| !CommonUtils.isListNullOrEmpty(mfiApplicantDetailsReq.getLiabilityDetails())) {
 			if (!CommonUtils.isListNullOrEmpty(mfiApplicantDetailsReq.getAssetsDetails())) { // to save assets details
 				for (MfiAssetsDetailsReq mfiassetsDetailsReq : mfiApplicantDetailsReq.getAssetsDetails()) {
 					mfiAssetsLiabilityDetails = new MfiAssetsLiabilityDetails();
 					BeanUtils.copyProperties(mfiassetsDetailsReq, mfiAssetsLiabilityDetails);
-					mfiAssetsLiabilityDetails.setApplicationId(mfiassetsDetailsReq.getApplicationId());
+					mfiAssetsLiabilityDetails.setApplicationId(applicationId);
 					mfiAssetsLiabilityDetails.setType(ASSETS);
 					MfiAssetsDetailsRepository.save(mfiAssetsLiabilityDetails);
 				}
 			}
 			if (!CommonUtils.isListNullOrEmpty(mfiApplicantDetailsReq.getLiabilityDetails())) { // to save liability
-				// details
+																								// details
 				for (MfiAssetsDetailsReq mfiDetailsReq : mfiApplicantDetailsReq.getLiabilityDetails()) {
 					mfiAssetsLiabilityDetails = new MfiAssetsLiabilityDetails();
 					BeanUtils.copyProperties(mfiDetailsReq, mfiAssetsLiabilityDetails);
-					mfiAssetsLiabilityDetails.setApplicationId(mfiDetailsReq.getApplicationId());
+					mfiAssetsLiabilityDetails.setApplicationId(applicationId);
 					mfiAssetsLiabilityDetails.setType(LIABILITY);
 					MfiAssetsDetailsRepository.save(mfiAssetsLiabilityDetails);
 				}
 			}
 			// set flag filled assets
-			MFIApplicantDetail mfiApplicationDetail1 = detailsRepository.findOne(mfiApplicantDetailsReq.getId());
-			mfiApplicationDetail1.setIsAssetsDetailsFilled(true);
-			detailsRepository.save(mfiApplicationDetail1);
-			return true;
+			mfiApplicationDetail.setIsAssetsDetailsFilled(true);
+			detailsRepository.save(mfiApplicationDetail);
 		}
-		return false;
+		return true;
 	}
+
 
 
 	public Double getScoringOfPpiQuestion(List<MfiPpiScoringMaster> mfiPpiScoringMasters, Integer queId, Integer ansId) {
