@@ -478,12 +478,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MFIApplicantDetail mfiApplicantDetail = detailsRepository.findByApplicationIdAndAndTypeIsActive(applicationId,
 				type);
 
-		Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicantDetail, 1);
-		System.out.println("isconsolidated==============>" + consolidateDetails.get("isConsolidated"));
-		System.out.println("consolidateName=============>" + consolidateDetails.get("consolidateName"));
-		mfiApplicantDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
-		mfiApplicantDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
-		detailsRepository.save(mfiApplicantDetail);
+//		Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicantDetail, 1);
+//		System.out.println("isconsolidated==============>" + consolidateDetails.get("isConsolidated"));
+//		System.out.println("consolidateName=============>" + consolidateDetails.get("consolidateName"));
+//		mfiApplicantDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
+//		mfiApplicantDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+//		detailsRepository.save(mfiApplicantDetail);
 		
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 
