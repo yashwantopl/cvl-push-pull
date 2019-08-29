@@ -377,12 +377,12 @@ public class ScoringController {
     @RequestMapping(value = "/getConcessionDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getRetailConcessionDetails(@RequestBody ScoringRequestLoans scoringRequestLoans) {
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())) {
-            logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty======>");
+            logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty====== >");
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
         }
         try {
-        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null);
+        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null,null,null);
         	  logger.info("concesssionResponse ===>concesssionResponse=======>"+concesssionResponse);
         	  	LoansResponse loanResponse = new LoansResponse();
             
