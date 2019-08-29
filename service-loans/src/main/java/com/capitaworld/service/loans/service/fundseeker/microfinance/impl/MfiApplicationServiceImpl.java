@@ -540,6 +540,67 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			detailsReq.setPpiOtherTableInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_CHAIR.getId(), mfiApplicantDetail.getPpiOtherTableInFamily()));
 			detailsReq.setPpiRafrigeratorInFamilyScore(getScoringOfPpiQuestion(mfiPpiScoringMasters, PpiPersonDetailMFI.IS_REFRIGERATOR.getId(), mfiApplicantDetail.getPpiRafrigeratorInFamily()));
 		}
+		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getDpnDoc()) 
+				&& !CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getLoiDoc()) 
+				&& !CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getLohDoc()) 
+				&& !CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getAgreementDoc())) 
+		{
+			
+			
+			try {
+				DocumentRequest documentRequest = new DocumentRequest();
+				List<Long> productDocMappingIds = new ArrayList<>();
+				productDocMappingIds.add(597l);
+				productDocMappingIds.add(598l);
+				productDocMappingIds.add(599l);
+				productDocMappingIds.add(600l);
+				
+				System.out.println("productDocMappingIds: "+productDocMappingIds);
+				
+				documentRequest.setProMapIds(productDocMappingIds);
+				documentRequest.setApplicationId(applicationId);
+				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+				
+				DocumentResponse documentResponse = dmsClient.listProDocByMultiProMapId(documentRequest);
+				System.out.println("documentResponse: "+documentResponse);
+				if (documentResponse != null && documentResponse.getStatus() == 200) {
+					List<Map<String, Object>> list = documentResponse.getDataList();
+					if (!CommonUtils.isListNullOrEmpty(list)) {
+						StorageDetailsResponse response = null;
+						for(Map<String, Object> objs : list) {
+							response = MultipleJSONObjectHelper.getObjectFromMap(objs, StorageDetailsResponse.class);
+							if(!CommonUtils.isObjectNullOrEmpty(response)) {
+								System.out.println("getOriginalFileName : "+response.getOriginalFileName());
+								
+								switch (response.getProductMappingId().intValue()) {
+									case 597:
+										detailsReq.setDpnDocFileName(response.getOriginalFileName());
+										break;
+									case 598:
+										detailsReq.setLoiDocFileName(response.getOriginalFileName());
+										break;
+									case 599:
+										detailsReq.setLohDocFileName(response.getOriginalFileName());
+										break;
+									case 600:
+										detailsReq.setAgreementDocFileName(response.getOriginalFileName());
+										break;
+									default:
+										break;
+								}
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Document detail Exception : "+e.getMessage());
+			}
+			
+		}
+		
+		
 
 		return detailsReq;
 
