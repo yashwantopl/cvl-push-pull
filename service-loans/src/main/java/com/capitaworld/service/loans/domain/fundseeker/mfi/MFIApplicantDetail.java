@@ -1578,4 +1578,21 @@ public class MFIApplicantDetail implements Serializable {
 		this.agreementDoc = agreementDoc;
 	}
 
+	public Boolean getIsConsolidated() {
+		return isConsolidated;
+	}
+
+	public void setIsConsolidated(Boolean isConsolidated) {
+		this.isConsolidated = isConsolidated;
+	}
+
+	public String getConsolidatedName() {
+		return consolidatedName;
+	}
+
+	public void setConsolidatedName(String consolidatedName) {
+		this.consolidatedName = consolidatedName;
+	}
+	
+
 }

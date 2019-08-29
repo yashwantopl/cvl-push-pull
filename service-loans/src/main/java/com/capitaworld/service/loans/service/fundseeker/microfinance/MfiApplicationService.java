@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalRequestResponce;
@@ -94,5 +95,7 @@ public interface MfiApplicationService {
 	public Map<String, Object> getReportDetails(Long applicationId);
 	
 	public Map<String, Object> getApplicantDetails1(Long applicationId, Integer type);
+	
+	Map<String, Object> getConsolidateInfo(MFIApplicantDetail mfiApplicationDetail, Integer type);
 
 }
