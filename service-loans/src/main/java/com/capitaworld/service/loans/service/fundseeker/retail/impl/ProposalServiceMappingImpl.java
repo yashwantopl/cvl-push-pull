@@ -2428,15 +2428,25 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> " + request.toString());
 
 			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
+				logger.info("request.getDisbursementDate()",request.getDisbursementDate());
+			logger.info("connectlogModifiedDate",connectlogModifiedDate);
 			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)) {
 				if (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0) {
-				return	new ProposalMappingResponse("Please insert valid disbursement date",
+				logger.info("first condition");
+					logger.info("request.getDisbursementDate().compareTo(connectlogModifiedDate)<0",request.getDisbursementDate().compareTo(connectlogModifiedDate)<0);
+					logger.info("request.getDisbursementDate().compareTo(new Date())>0",request.getDisbursementDate().compareTo(new Date())>0);
+					return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 				}
 			}
 			DateTimeComparator comparator = DateTimeComparator.getDateOnlyInstance();
 			//Comparing Date only
 			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0) {
+				logger.info("second condition");
+				logger.info("!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)",!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate));
+				logger.info("connectlogModifiedDate",connectlogModifiedDate);
+				logger.info("request.getDisbursementDate()",request.getDisbursementDate());
+				logger.info("comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0",comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0);
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 			}
