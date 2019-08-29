@@ -96,6 +96,6 @@ public interface MfiApplicationService {
 	
 	public Map<String, Object> getApplicantDetails1(Long applicationId, Integer type);
 	
-	Map<String, Object> getConsolidateInfo(MFIApplicantDetail mfiApplicationDetail, Integer type);
+	Map<String, Object> getConsolidateInfo(MFIApplicantDetail mfiApplicationDetail);
 
 }
