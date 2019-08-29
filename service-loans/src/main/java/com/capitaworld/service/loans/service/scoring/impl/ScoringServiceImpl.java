@@ -2584,7 +2584,7 @@ public class ScoringServiceImpl implements ScoringService {
         ScoringRequestLoans scoringRequestLoansReq = null;
         Double netMonthlyIncome = 0.0d;
         Double grossMonthlyIncome = 0.0d;
-        List<Data> coApplicantBankStatementDatas = null;
+        List<Data> coApplicantBankStatementDatas = Collections.emptyList();
         Double totalEMI = 0.0;
         CibilScoreLogRequest cibilResponse = null;
         List<Integer> dpds = Collections.emptyList();
@@ -3199,7 +3199,7 @@ public class ScoringServiceImpl implements ScoringService {
         ScoringRequestLoans scoringRequestLoansReq = null;
         Double netMonthlyIncome = 0.0d;
         Double grossMonthlyIncome = 0.0d;
-        List<Data> coApplicantBankStatementDatas = null;
+        List<Data> coApplicantBankStatementDatas = Collections.emptyList();
         Double totalEMI = 0.0;
         List<Integer> dpds = Collections.emptyList();
         CibilScoreLogRequest cibilResponse = null;
