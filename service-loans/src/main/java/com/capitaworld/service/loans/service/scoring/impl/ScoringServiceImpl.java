@@ -8511,11 +8511,11 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.AutoLoan.LTV:
-            				if(primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null) {
+            				if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
                 				try {
 									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setLtv(scoringRequestLoans.getElAmountOnAverageScoring());
-										scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue());
+										scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue());
 										scoreParameterRetailRequest.setIsLTV_p(true);
 									}else {
 										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
@@ -8601,8 +8601,11 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setIsBorrowerMargin_p(retailApplicantDetail.getBorrowerContribution() != null);
             				break;
             			case ScoreParameter.Retail.AutoLoan.SECURITY_COVERAGE:
-            				scoreParameterRetailRequest.setSecurityCoverage(null);
-            				scoreParameterRetailRequest.setIsSecurityCoverage_p(false);
+            				if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
+            					scoreParameterRetailRequest.setSecurityCoverage(primaryAutoLoanDetail.getVehicleOnRoadPrice() / scoringRequestLoans.getElAmountOnAverageScoring());
+                				scoreParameterRetailRequest.setIsSecurityCoverage_p(true);
+            				}
+            				
             				break;
             			case ScoreParameter.Retail.AutoLoan.CAR_SEGMENT:
             				scoreParameterRetailRequest.setCarSegment(primaryAutoLoanDetail.getVehicleSegment());
