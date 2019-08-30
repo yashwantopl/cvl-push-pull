@@ -1086,7 +1086,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
-				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentStatus()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
+				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
@@ -1154,11 +1154,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					
 				case 4://Self Employed
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				case 5://Self Employed Professional
 					
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? OccupationHL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				default:
