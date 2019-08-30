@@ -526,6 +526,12 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			for (MFIApplicantDetail coApplicantDetail : byCoApplicationIdAndAndTypeIsActive) {
 				AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();
 				BeanUtils.copyProperties(coApplicantDetail, aadharDetailsReq);
+				aadharDetailsReq.setIsConsolidated(coApplicantDetail.getIsConsolidated());
+				if(coApplicantDetail.getConsolidatedName()==null) {
+					aadharDetailsReq.setConsolidatedName("");
+				}else {
+					aadharDetailsReq.setConsolidatedName(coApplicantDetail.getConsolidatedName());
+				}
 				aadharDetailsReqs.add(aadharDetailsReq);
 			}
 			detailsReq.setCoApplicantDetails(aadharDetailsReqs);
