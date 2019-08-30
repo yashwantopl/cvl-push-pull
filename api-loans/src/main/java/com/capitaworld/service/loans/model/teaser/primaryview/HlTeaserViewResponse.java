@@ -201,8 +201,15 @@ public class HlTeaserViewResponse {
 	private String concessionRoiBased;
 	private String finalRoi;
 	private String noteOfBorrower;
-
+	private String scoringBasedOn;
 	
+	public String getScoringBasedOn() {
+		return scoringBasedOn;
+	}
+
+	public void setScoringBasedOn(String scoringBasedOn) {
+		this.scoringBasedOn = scoringBasedOn;
+	}
 
 	public List<Object> getCibilConsumerReport() {
 		return cibilConsumerReport;
