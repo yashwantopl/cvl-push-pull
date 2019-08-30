@@ -748,7 +748,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			proposalMappingResponse = proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
 			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
 			if(proposalMappingRequestString != null) {
-				hlTeaserViewResponse.setScoringBasedOn(proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
+				hlTeaserViewResponse.setScoringBasedOn(proposalMappingRequest.getScoringModelBasedOn() != null && proposalMappingRequest.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
 			    hlTeaserViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
 			    hlTeaserViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
 			    
