@@ -97,6 +97,9 @@ public class AadharDetailsReq implements Serializable {
     private String profilePic;
     private String addressProofImg;
     private String consentFormImg;
+    
+    private Boolean isConsolidated;
+    private String consolidatedName;
 
     public AadharDetailsReq() {
     }
@@ -551,4 +554,22 @@ public class AadharDetailsReq implements Serializable {
     public void setConsentFormImg(String consentFormImg) {
         this.consentFormImg = consentFormImg;
     }
+
+	public Boolean getIsConsolidated() {
+		return isConsolidated;
+	}
+
+	public void setIsConsolidated(Boolean isConsolidated) {
+		this.isConsolidated = isConsolidated;
+	}
+
+	public String getConsolidatedName() {
+		return consolidatedName;
+	}
+
+	public void setConsolidatedName(String consolidatedName) {
+		this.consolidatedName = consolidatedName;
+	}
+    
+    
 }

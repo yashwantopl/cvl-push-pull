@@ -485,6 +485,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
 				Double effectiveRoi = null;
 				Double finalRoi = null;
+				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
 				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
 				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
 				if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
@@ -775,9 +776,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.ADDI_INCOME_SPOUSE_PL, CommonUtils.printFields(collect.get(0),null));
 					}
-					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMI_NMI_PL)).collect(Collectors.toList());
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMI_NMI_RATIO_PL)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(Retail.EMI_NMI_PL, collect.get(0));
+						companyMap.put(Retail.EMI_NMI_RATIO_PL, collect.get(0));
 					} 
 
 					scoreResponse.add(companyMap);
