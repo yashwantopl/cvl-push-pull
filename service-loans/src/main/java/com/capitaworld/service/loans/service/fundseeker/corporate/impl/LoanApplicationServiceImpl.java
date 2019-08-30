@@ -8412,6 +8412,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRepository.save(loanApplicationMaster);
 			loanApplicationRepository.updateLoanType(applicationId,loanTypeId);
 			logger.info("Loan Type Updated");
+			try {
+				if(loanTypeId == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+					coApplicantDetailRepository.inactiveCoApplicant(applicationId);	
+				}
+			} catch (Exception e) {
+				logger.error("Exception while update coapplicant active",e);
+			}
 			fpAsyncComp.sendEmailToFsWhenSubProductOfRetailSelectedByUser(loanApplicationMaster);
 			return  true;
 		}
