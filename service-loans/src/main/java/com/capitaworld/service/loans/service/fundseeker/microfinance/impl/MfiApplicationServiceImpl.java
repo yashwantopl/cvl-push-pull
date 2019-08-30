@@ -107,6 +107,7 @@ import com.capitaworld.service.oneform.enums.AccountTypeMfi;
 import com.capitaworld.service.oneform.enums.AddressProofType;
 import com.capitaworld.service.oneform.enums.AreaTypeMfi;
 import com.capitaworld.service.oneform.enums.BankListMfi;
+import com.capitaworld.service.oneform.enums.BusinessInBriefMstMFI;
 import com.capitaworld.service.oneform.enums.BusinessTypeMfi;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.ClientTypeMfi;
@@ -1753,31 +1754,31 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			detailsReq.setPiAddress(getFpMakerName(loanApplicationMaster.getFpMakerId(), PIADDRESS));
 			detailsReq.setLoginUser(getFpMakerName(loanApplicationMaster.getFpMakerId(), MAKERNAME));
 		}
-		PurposeOfLoanMFI purposeOfLoanMFI = PurposeOfLoanMFI.getById(mfiApplicantDetail.getPurposeOfLoan());
-		detailsReq.setLoanPurposeStr(purposeOfLoanMFI.getValue());
+		BusinessInBriefMstMFI purposeOfLoanMFI = BusinessInBriefMstMFI.getById(mfiApplicantDetail.getPurposeOfLoan());
+		detailsReq.setLoanPurposeStr(CommonUtils.isObjectNullOrEmpty(purposeOfLoanMFI.getValue()) ? purposeOfLoanMFI.getValue().toString() : "-");
 		detailsReq.setCurrDateStr(CommonUtils.getCurrentDate("dd-MM-yyyy"));
 
 		/* ENUM CONVERSION */
-		detailsReq.setMaritalStatus(MaritalStatusMst.getById(mfiApplicantDetail.getMaritalStatusId()).getValue());
-		detailsReq.setGender(Gender.getById(mfiApplicantDetail.getGenderId()).getValue());
+		detailsReq.setMaritalStatus(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getMaritalStatusId()) ? MaritalStatusMst.getById(mfiApplicantDetail.getMaritalStatusId()).getValue() : "");
+		detailsReq.setGender(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getGenderId()) ? Gender.getById(mfiApplicantDetail.getGenderId()).getValue() : "");
 		detailsReq.setEduQualification(StringEscapeUtils
 				.escapeXml(HeadFamilyEduMfi.getById(mfiApplicantDetail.getEducationQualification()).getValue()));
-		detailsReq.setRelationWithNominee(
-				RelationMstMFI.getById(mfiApplicantDetail.getRelationWithNomineeId()).getValue());
-		detailsReq.setHouseType1(HouseTypeMfi.getById(mfiApplicantDetail.getHouseType()).getValue());
-		detailsReq.setRepayFreq(FrequencyPaymentMstMFI.getById(mfiApplicantDetail.getRepaymentFrequency()).getValue());
-		detailsReq.setAcademicReli(ReligionRetailMst.getById(mfiApplicantDetail.getAcademicReligion()).getValue());
-		detailsReq.setAcademicCast(CastCategory.getById(mfiApplicantDetail.getAcademicCaste()).getValue());
-		detailsReq.setHouseOwnerShip(OwnershipOfHouse.getById(mfiApplicantDetail.getHouseOwnership()).getValue());
-		detailsReq.setAreaType1(AreaTypeMfi.getById(mfiApplicantDetail.getAreaType()).getValue());
-		detailsReq.setBusinessPremises1(OwnershipOfHouse.getById(mfiApplicantDetail.getBusinessPremises()).getValue());
-		detailsReq.setAddressProofType1(AddressProofType.getById(mfiApplicantDetail.getAddressProofType()).getValue());
-		detailsReq.setBirthDate(mfiApplicantDetail.getBirthDate());
-		detailsReq.setBusinessType1(BusinessTypeMfi.getById(mfiApplicantDetail.getBusinessType()).getValue());
+		detailsReq.setRelationWithNominee(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getRelationWithNomineeId()) ?
+				RelationMstMFI.getById(mfiApplicantDetail.getRelationWithNomineeId()).getValue() : "");
+		detailsReq.setHouseType1(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getHouseType()) ? HouseTypeMfi.getById(mfiApplicantDetail.getHouseType()).getValue() : "");
+		detailsReq.setRepayFreq(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getRepaymentFrequency()) ? FrequencyPaymentMstMFI.getById(mfiApplicantDetail.getRepaymentFrequency()).getValue() : "");
+		detailsReq.setAcademicReli(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getAcademicReligion()) ? ReligionRetailMst.getById(mfiApplicantDetail.getAcademicReligion()).getValue() : "");
+		detailsReq.setAcademicCast(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getAcademicCaste()) ? CastCategory.getById(mfiApplicantDetail.getAcademicCaste()).getValue() : "");
+		detailsReq.setHouseOwnerShip(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getHouseOwnership()) ? OwnershipOfHouse.getById(mfiApplicantDetail.getHouseOwnership()).getValue() : "");
+		detailsReq.setAreaType1(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getAreaType()) ? AreaTypeMfi.getById(mfiApplicantDetail.getAreaType()).getValue() : "");
+		detailsReq.setBusinessPremises1(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getBusinessPremises()) ? OwnershipOfHouse.getById(mfiApplicantDetail.getBusinessPremises()).getValue() : "");
+		detailsReq.setAddressProofType1(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getAddressProofType()) ? AddressProofType.getById(mfiApplicantDetail.getAddressProofType()).getValue() : "");
+		detailsReq.setBirthDate(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getBirthDate()) ? mfiApplicantDetail.getBirthDate() : null);
+		detailsReq.setBusinessType1(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getBusinessType()) ? BusinessTypeMfi.getById(mfiApplicantDetail.getBusinessType()).getValue() : "");
 		System.out.println("mfiApplicantDetail.getLoanType()------::" + mfiApplicantDetail.getLoanType());
-		detailsReq.setLoanTypeString(PurposeOfLoanMFI.getById(mfiApplicantDetail.getLoanType()).getValue());
-		detailsReq.setPurposeOfLoanString(PurposeOfLoanMFI.getById(mfiApplicantDetail.getPurposeOfLoan()).getValue());
-		detailsReq.setProfileImg(mfiApplicantDetail.getProfileImg());
+		//detailsReq.setLoanTypeString(BusinessInBriefMstMFI.getById(mfiApplicantDetail.getLoanType()).getValue());
+		//detailsReq.setPurposeOfLoanString(PurposeOfLoanMFI.getById(mfiApplicantDetail.getPurposeOfLoan()).getValue());
+		detailsReq.setProfileImg(CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail.getProfileImg()) ? mfiApplicantDetail.getProfileImg() : "No Image");
 		// detailsReq.setConsentFormImg(mfiApplicantDetail.getConsentFormImg());
 		System.out.println("Image Here ===============>>>>>>>>>>>" + mfiApplicantDetail.getProfileImg());
 
@@ -1909,7 +1910,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 
 		detailsReq.setIncreasedIncomeChecker(mfiIncomeAndExpendMFIChecker.getMonthlyIncome());
-		detailsReq.setTotalCashFlow(detailsReq.getNetSavingChecker() + detailsReq.getIncreasedIncomeChecker());
+		detailsReq.setTotalCashFlow(CommonUtils.isObjectNullOrEmpty(detailsReq.getNetSavingChecker() + detailsReq.getIncreasedIncomeChecker()) ? detailsReq.getNetSavingChecker() + detailsReq.getIncreasedIncomeChecker() : 0);
 
 		List<MFIApplicantDetail> byCoApplicationIdAndAndTypeIsActive = detailsRepository
 				.findByCoApplicationIdAndAndTypeIsActive(applicationId, 2);
