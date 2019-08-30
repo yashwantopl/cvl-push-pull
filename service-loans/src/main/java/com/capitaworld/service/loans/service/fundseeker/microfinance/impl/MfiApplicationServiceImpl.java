@@ -905,14 +905,22 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			
 			if (!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail)) {
 				Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicationDetail);
-				mfiApplicationDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
-				mfiApplicationDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+				if (null != (Boolean) consolidateDetails.get("isConsolidated")) {
+					mfiApplicationDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
+				}
+				if (null != (String) consolidateDetails.get("consolidateName")) {
+					mfiApplicationDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+				}
 				detailsRepository.save(mfiApplicationDetail);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail1)) {
 				Map<String, Object> consolidateDetails1 = getConsolidateInfo(mfiApplicationDetail1);
-				mfiApplicationDetail1.setIsConsolidated((Boolean) consolidateDetails1.get("isConsolidated"));
-				mfiApplicationDetail1.setConsolidatedName((String) consolidateDetails1.get("consolidateName"));
+				if (null != (Boolean) consolidateDetails1.get("isConsolidated")) {
+					mfiApplicationDetail1.setIsConsolidated((Boolean) consolidateDetails1.get("isConsolidated"));
+				}
+				if (null != (String) consolidateDetails1.get("consolidateName")) {
+					mfiApplicationDetail1.setConsolidatedName((String) consolidateDetails1.get("consolidateName"));
+				}
 				detailsRepository.save(mfiApplicationDetail1);
 			}
 //			for (int i = 1; i <= 2; i++) {
@@ -1546,6 +1554,15 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			// set flag filled assets
 			mfiApplicationDetail.setIsAssetsDetailsFilled(true);
 			detailsRepository.save(mfiApplicationDetail);
+			
+			Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicationDetail);
+			if (null != (Boolean) consolidateDetails.get("isConsolidated")) {
+				mfiApplicationDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
+			}
+			if (null != (String) consolidateDetails.get("consolidateName")) {
+				mfiApplicationDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+			}
+			detailsRepository.save(mfiApplicationDetail);
 		}
 		return true;
 	}
@@ -2068,8 +2085,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		Boolean isconsolidated = false;
 		String consolidatename = "";
 		try {
-			String firstName = mfiApplicationDetail.getFirstName();
-			String lastName = mfiApplicationDetail.getLastName();
+			String firstName = mfiApplicationDetail.getFirstName().trim();
+			String lastName = mfiApplicationDetail.getLastName().trim();
 			String fullName = firstName.concat(lastName).trim();
 
 			File fXmlFile = new File(consolidateUrl);
@@ -2103,6 +2120,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				if (fullName.equalsIgnoreCase(compareStr)) {
 					isconsolidated = true;
 					consolidatename = firstNameXML + " " + secondNameXML + " " + thirdNameXML + " " + fourthNameXML;
+					logger.info("MATCH FOUND======={}=====>", consolidatename);
 					break;
 				}
 			}
@@ -2113,14 +2131,15 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				for (int alias = 0; alias < aliasNodeList.getLength(); alias++) {
 					Node aliasNode = aliasNodeList.item(alias);
 					Element aliasElement = (Element) aliasNode;
-					// System.out.println("ALIAS Node Name :" + aliasElement.getNodeName());
+//					logger.info("ALIAS Node Name======={}=====>",aliasElement.getNodeName());
 					if ((firstName + " " + lastName)
 							.equalsIgnoreCase(checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME")))) {
+						logger.info("MATCH FOUND IN ALIAS======={}=====>",
+								checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME")));
 						isconsolidated = true;
 						consolidatename = checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME"));
 						break;
 					}
-
 				}
 			}
 		} catch (Exception e) {
@@ -2142,5 +2161,4 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 		return "";
 	}
-
 }
