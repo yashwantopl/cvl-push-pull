@@ -82,7 +82,7 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 			List<MeansOfFinanceDetail> financeMeansDetails = meansOfFinanceDetailRepository
 					.listFinanceMeansFromAppId(applicationId, userId);
 			List<TotalCostOfProjectRequest> financeMeansRequests = new ArrayList<>();
-			
+			SidbiCurrencyRate sidbiCurrencyRateObj = sidbiSpecificService.getValuesIn(applicationId);
 			if(financeMeansDetails == null || financeMeansDetails.isEmpty()) {
 				
 				PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findByApplicationIdId(applicationId);
@@ -94,20 +94,23 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 					
 					if(systems.getId().equals(1)) {
 						Double promoterContribution = primaryCorporateDetail != null ? primaryCorporateDetail.getPromoterContribution() : 0;
-						financeMeansDetailRequest.setToBeIncurred(promoterContribution);
+//						financeMeansDetailRequest.setToBeIncurred(promoterContribution);
+						financeMeansDetailRequest.setToBeIncurred(CommonUtils.convertTwoDecimalValuesIn(promoterContribution, sidbiCurrencyRateObj.getRate()));
 					}else if(systems.getId().equals(4)) {
 						Integer loanType = primaryCorporateDetail != null ? primaryCorporateDetail.getPurposeOfLoanId() : 0;
 						if(loanType == 1) {
 							Double loanAmt = sidbiSpecificService.getLoanAmountByApplicationId(applicationId);
-							financeMeansDetailRequest.setToBeIncurred(loanAmt);
+//							financeMeansDetailRequest.setToBeIncurred(loanAmt);
+							financeMeansDetailRequest.setToBeIncurred(CommonUtils.convertTwoDecimalValuesIn(loanAmt, sidbiCurrencyRateObj.getRate()));
 						}
 					}
 					Double totalCost = (financeMeansDetailRequest.getAlreadyIncurred() != null ? financeMeansDetailRequest.getAlreadyIncurred() : 0)
 							+ (financeMeansDetailRequest.getToBeIncurred() != null ? financeMeansDetailRequest.getToBeIncurred() : 0); 
 					
-					financeMeansDetailRequest.setTotalCost(totalCost);
+//					financeMeansDetailRequest.setTotalCost(totalCost);
+					financeMeansDetailRequest.setTotalCost(CommonUtils.convertTwoDecimalValuesIn(totalCost, sidbiCurrencyRateObj.getRate()));
 					
-					this.convertValuesIn(financeMeansDetailRequest, applicationId, userId);
+//					this.convertValuesIn(financeMeansDetailRequest, applicationId, userId);
 					financeMeansRequests.add(financeMeansDetailRequest);
                 }
 			}else {
@@ -118,7 +121,7 @@ public class MeansOfFinanceDetailServiceImpl implements MeansOfFinanceDetailServ
 					Double totalCost = (financeMeansDetailRequest.getAlreadyIncurred() != null ? financeMeansDetailRequest.getAlreadyIncurred() : 0)
 							+ (financeMeansDetailRequest.getToBeIncurred() != null ? financeMeansDetailRequest.getToBeIncurred() : 0); 
 					financeMeansDetailRequest.setTotalCost(totalCost);
-					this.convertValuesIn(financeMeansDetailRequest, applicationId, userId);
+//					this.convertValuesIn(financeMeansDetailRequest, applicationId, userId);
 					financeMeansRequests.add(financeMeansDetailRequest);
 				}
 			}

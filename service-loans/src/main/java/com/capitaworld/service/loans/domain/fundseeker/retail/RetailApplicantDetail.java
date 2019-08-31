@@ -601,6 +601,9 @@ public class RetailApplicantDetail implements Serializable {
     
     @Column(name="kid")
     private String kid;
+    
+    @Column(name="borrower_contribution")
+    private Long borrowerContribution;
 
     private String remarks;
 
@@ -614,6 +617,8 @@ public class RetailApplicantDetail implements Serializable {
 	private Boolean isCheckOffPayOutstndAmount;
 	@Column(name="is_check_off_not_change_sal_acc")
 	private Boolean isCheckOffNotChangeSalAcc;
+	@Column(name="is_cibil_terms_agree")
+	private Boolean isCibilTermsAgree;
 
 
 	public RetailApplicantDetail() {
@@ -2172,5 +2177,21 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setIsOwnedProp(Boolean isOwnedProp) {
 		this.isOwnedProp = isOwnedProp;
+	}
+
+	public Long getBorrowerContribution() {
+		return borrowerContribution;
+	}
+
+	public void setBorrowerContribution(Long borrowerContribution) {
+		this.borrowerContribution = borrowerContribution;
+	}
+
+	public Boolean getIsCibilTermsAgree() {
+		return isCibilTermsAgree;
+	}
+
+	public void setIsCibilTermsAgree(Boolean isCibilTermsAgree) {
+		this.isCibilTermsAgree = isCibilTermsAgree;
 	}
 }

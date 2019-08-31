@@ -43,4 +43,20 @@ public interface RetailModelService {
 	 * @return
 	 */
 	public Boolean processWorkflow(WorkflowData workflowData,Integer businessTypeId);
+	
+	/**
+	 * 
+	 * @param orgId
+	 * @param businessTypeId
+	 * @return
+	 */
+	public List<RetailModelRequest> getByOrgIdAndBusinessTypeId(Long orgId, Integer businessTypeId);
+	
+	/**
+	 * 
+	 * @param orgId
+	 * @param businessTypeId
+	 * @return
+	 */
+	public List<RetailModelRequest> getTempByOrgIdAndBusinessTypeId(Long orgId, Integer businessTypeId);
 }

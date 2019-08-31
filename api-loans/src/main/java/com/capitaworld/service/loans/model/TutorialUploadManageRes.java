@@ -30,6 +30,8 @@ public class TutorialUploadManageRes implements Serializable {
     private Long createdBy;
 
     private Date createdDate;
+    
+    private Long viewCount;
 
     public Long getId() {
         return id;
@@ -102,4 +104,14 @@ public class TutorialUploadManageRes implements Serializable {
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
+
+	public Long getViewCount() {
+		return viewCount;
+	}
+
+	public void setViewCount(Long viewCount) {
+		this.viewCount = viewCount;
+	}
+    
+    
 }

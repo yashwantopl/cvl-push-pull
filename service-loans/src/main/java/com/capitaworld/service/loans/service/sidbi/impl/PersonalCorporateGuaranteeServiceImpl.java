@@ -83,7 +83,7 @@ private static final Logger logger = LoggerFactory.getLogger(PrimaryCollateralSe
 			for (PersonalCorporateGuarantee detail : personalCorporateGuaranteeList) {
 				PersonalCorporateGuaranteeRequest personalCorporateGuaranteeRequest = new PersonalCorporateGuaranteeRequest();
 				BeanUtils.copyProperties(detail, personalCorporateGuaranteeRequest);
-				this.convertValuesIn(personalCorporateGuaranteeRequest, applicationId);
+//				this.convertValuesIn(personalCorporateGuaranteeRequest, applicationId);
 				personalCorporateGuaranteeRequestList.add(personalCorporateGuaranteeRequest);
 			}
 			return personalCorporateGuaranteeRequestList;

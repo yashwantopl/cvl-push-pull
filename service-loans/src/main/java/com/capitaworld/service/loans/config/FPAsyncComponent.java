@@ -276,7 +276,8 @@ public class FPAsyncComponent {
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-						&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())){
+						&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()
+								|| applicationRequest.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue())){
 					domainId = DomainValue.RETAIL.getId();
 					address = applicationRequest.getAddress();
 				}
@@ -3238,6 +3239,8 @@ public class FPAsyncComponent {
 					 param.put(LOAN_TYPE, "Personal Loan");
 				}else if(retailModel.getBusinessTypeId() != null && retailModel.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
 					 param.put(LOAN_TYPE, "Home Loan");
+				}else if(retailModel.getBusinessTypeId() != null && retailModel.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId()) {
+					 param.put(LOAN_TYPE, "Auto Loan");
 				}else { 
 					 param.put(LOAN_TYPE, "Retail Loan");
 				} 

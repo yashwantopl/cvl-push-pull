@@ -9,11 +9,11 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -48,7 +48,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Boolean isCampaignUser(Long userId) {
 		try {
 			List<String> list =  (List<String>) entityManager
-					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1",String.class)
+					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
 					.setParameter(CommonUtils.USER_ID, userId)
 					.getResultList();
 			return !CommonUtils.isListNullOrEmpty(list);
@@ -437,6 +437,38 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
+	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit) {
+		try {
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spGetAgriApplicationsByOrgIdAndStatus");
+			storedProcedureQuery.registerStoredProcedureParameter("orgId",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("stus",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("fromLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("toLimit",Integer.class, ParameterMode.IN);
+			storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
+			if(status == null) {
+				status = -1;
+			}
+			if(fromLimit == null) {
+				fromLimit = -1;
+			}
+			if(toLimit == null) {
+				toLimit = -1;
+			}
+			
+			storedProcedureQuery.setParameter("toLimit",toLimit);				
+			storedProcedureQuery.setParameter("fromLimit",fromLimit);
+			storedProcedureQuery.setParameter("stus",status);
+			storedProcedureQuery.setParameter("orgId",orgId);
+			storedProcedureQuery.execute();
+			return (String)storedProcedureQuery.getOutputParameterValue("result");
+			
+		} catch (Exception e) {
+			logger.error("EXCEPTION spGetAgriApplicationsByOrgIdAndStatus :=- {}", e);
+		}
+		return null;
+	}
+	
+	@Override
 	public Boolean retailPrefillData(String input) {
 		try {
 			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfile");
@@ -489,10 +521,16 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 	}
 
-	public String getTutorialsAudit(Long tutorialId){
-		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('id',a.id,'userName',u.email,'viewDate',a.view_date,'roleName',r.role_name)) AS CHAR) FROM `loan_application`.tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id WHERE a.tutorial_id =:tutorialId")
-				.setParameter("tutorialId", tutorialId)
+	@SuppressWarnings("unchecked")
+	public String getTutorialsAudit(TutorialsViewAudits request){
+		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('id',a.id,'userName',u.email,'viewDate',a.view_date,'roleName',r.role_name,'branchName',b.name)) AS CHAR) FROM `loan_application`.tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id LEFT JOIN users.`branch_master` b ON u.branch_id=b.id\r\n" + 
+				" WHERE a.tutorial_id =:tutorialId")
+				.setParameter("tutorialId", request.getTutorialId())
+				.setFirstResult(request.getPageIndex())
+				.setMaxResults(request.getSize())
 				.getResultList();
+		System.out.println("request.getPageIndex()================>"+request.getPageIndex());
+		System.out.println("=============>"+request.getSize());
 			return CommonUtils.isListNullOrEmpty(tutorialViewAudit) ? null : CommonUtils.isObjectNullOrEmpty(tutorialViewAudit.get(0)) ? null : tutorialViewAudit.get(0);
 	}
 
