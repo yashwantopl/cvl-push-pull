@@ -292,7 +292,7 @@ public class LoansClient {
     private static final String GET_FINANCIAL_DATA = "/cma/getFinancialDetailsForBankIntegration";
     
     private static final String LOAN_AMOUNT_FOR_INELIGIBLE = "/get/loan_amount_for_ineligible";
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;

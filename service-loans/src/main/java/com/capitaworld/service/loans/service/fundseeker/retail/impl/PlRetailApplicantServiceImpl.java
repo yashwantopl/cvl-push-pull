@@ -143,7 +143,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	applicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
                 	applicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
                 	applicantDetail.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp());
-                	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);	
+                	applicantDetail.setIsCibilTermsAgree(plRetailApplicantRequest.getIsCibilTermsAgree());
+                	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
                 } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
                 	applicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
                 	applicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
@@ -235,6 +236,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     	coApplicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
                     	coApplicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
                         coApplicantDetail.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp());
+                        coApplicantDetail.setIsCibilTermsAgree(plRetailApplicantRequest.getIsCibilTermsAgree());
                     	if (plRetailApplicantRequest.getContactAddress() != null) {
         					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
         					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());

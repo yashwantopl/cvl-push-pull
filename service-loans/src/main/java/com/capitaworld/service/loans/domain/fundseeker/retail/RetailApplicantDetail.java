@@ -617,6 +617,8 @@ public class RetailApplicantDetail implements Serializable {
 	private Boolean isCheckOffPayOutstndAmount;
 	@Column(name="is_check_off_not_change_sal_acc")
 	private Boolean isCheckOffNotChangeSalAcc;
+	@Column(name="is_cibil_terms_agree")
+	private Boolean isCibilTermsAgree;
 
 
 	public RetailApplicantDetail() {
@@ -2184,5 +2186,12 @@ public class RetailApplicantDetail implements Serializable {
 	public void setBorrowerContribution(Long borrowerContribution) {
 		this.borrowerContribution = borrowerContribution;
 	}
-	
+
+	public Boolean getIsCibilTermsAgree() {
+		return isCibilTermsAgree;
+	}
+
+	public void setIsCibilTermsAgree(Boolean isCibilTermsAgree) {
+		this.isCibilTermsAgree = isCibilTermsAgree;
+	}
 }
