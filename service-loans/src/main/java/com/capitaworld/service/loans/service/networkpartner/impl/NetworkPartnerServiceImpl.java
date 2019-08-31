@@ -1586,6 +1586,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				} else {
 					nhbsApplicationsResponse.setDdrStatus("-");
 				}
+				
+				nhbsApplicationsResponse.setOrgName(getOrganisationName(proposalMapping.getNpOrgId()));
+				nhbsApplicationsResponse.setAgentName(getFpMakerName(proposalMapping.getFpMakerId()));
+				
 
 				if (CommonUtils.BusinessType.MFI.getId().equals(proposalMapping.getBusinessTypeId())) {
 					MFIApplicantDetail applicantDetail = mfiApplicationDetailsRepository.findByAppIdAndType(proposalMapping.getId(), 1);
@@ -2171,5 +2175,43 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		
 		logger.info(MSG_EXIT_FROM_SET_FP_MAKER);
 		return false;
+	}
+	
+	public String getFpMakerName(Long fpMakerId) {
+		if (!CommonUtils.isObjectNullOrEmpty(fpMakerId)) {
+			UsersRequest usersRequestForMaker = new UsersRequest();
+			usersRequestForMaker.setId(fpMakerId);
+			try {
+				UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
+				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+						FundProviderDetailsRequest.class);
+				if(fundProviderDetailsRequest.getFirstName() != null) {
+					if(fundProviderDetailsRequest.getLastName() != null) {
+						return fundProviderDetailsRequest.getFirstName() + " " + fundProviderDetailsRequest.getLastName();
+					}
+					return fundProviderDetailsRequest.getFirstName();
+				}
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
+			}
+		}
+		return null;
+	}
+	
+	public String getOrganisationName(Long orgId) {
+		if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
+			try {
+				UserResponse userResponseForName = usersClient.getOrgNameByOrgId(orgId);
+				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+						FundProviderDetailsRequest.class);
+				if(fundProviderDetailsRequest != null) {
+					
+					return fundProviderDetailsRequest.getOrganisationName();
+				}
+			} catch (Exception e) {
+				logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
+			}
+		}
+		return null;
 	}
 }

@@ -1058,6 +1058,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("lifeInsurancePolicyScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					manufacturing++;
 					continue;
+				case ScoreParameter.PAYMENT_RECORDS_WITH_LENDERS: // NEW MSME
+					map.put("paymentRecordswithLendersActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("paymentRecordswithLendersScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("paymentRecordswithLendersScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					manufacturing++;
+					continue;
 				case ScoreParameter.REPAYMENT_PERIOD:
 					map.put("repaymentPeriodActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("repaymentPeriodScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
@@ -1099,6 +1105,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("turnActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("turnOverScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("turnOverScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					financial++;
+					continue;	
+				case ScoreParameter.PAT_NET_SALES_RATIO: // New MSME
+					map.put("patnetSalesRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("patnetSalesRatioActualScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("patnetSalesRatioActualScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					financial++;
 					continue;	
 				case ScoreParameter.QUALITY_OF_RECEIVABLES:
@@ -1172,6 +1184,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("nocblsmActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("nocblsmScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("nocbScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					business++;
+					continue;	
+				case ScoreParameter.STATUTORY_COMPLIANCE: // New MSME
+					map.put("statutoryComplianceActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("statutoryComplianceScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("statutoryComplianceScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					business++;
 					continue;	
 				default:
@@ -1341,12 +1359,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//gstRelatedParty Data Fetch
-		try {
+		/*try {
 			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
 			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
-		}
+		}*/
 
 
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
@@ -1399,12 +1417,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//GST Comparision by Maaz
-		try{
+		/*try{
 			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
-		}
+		}*/
 
 		/**ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);

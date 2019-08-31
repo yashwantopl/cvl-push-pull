@@ -588,8 +588,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try {
 			postOneForm = connectClient.postOneForm(applicationId, userId, businessTypeId);
 			if (postOneForm != null) {
-				logger.info("postOneForm=======================>Client Connect Response=============>{}",
-						postOneForm.toString());
+				/*logger.info("postOneForm=======================>Client Connect Response=============>{}",
+						postOneForm.toString());*/
 				if(!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 4){
 					return new LoansResponse("Your request could not be processed now, please try again after sometime.", HttpStatus.METHOD_FAILURE.value());
 				}else if (!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 6) {

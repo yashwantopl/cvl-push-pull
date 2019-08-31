@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.scoring.MCLRReqRes;
+import com.capitaworld.service.scoring.REPOReqRes;
 import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
@@ -75,9 +76,19 @@ public class ScoringController {
         return scoringService.calculateRetailHomeLoanScoringList(scoringRequestLoansList);
     }
     
+    @PostMapping(value = "/calculate_score/retail_al_list", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreRetailAL(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+        return scoringService.calculateRetailAutoLoanScoringList(scoringRequestLoansList);
+    }
+    
     @PostMapping(value = "/calculate_score/retail_hl_list_coapplicant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> calculateScoreRetailHLForCoApplicant(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
         return scoringService.calculateRetailHomeLoanScoringListForCoApplicant(scoringRequestLoansList);
+    }
+    
+    @PostMapping(value = "/calculate_score/retail_al_list_coapplicant", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreRetailALForCoApplicant(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+    	return scoringService.calculateRetailAutoLoanScoringListForCoApplicant(scoringRequestLoansList);
     }
 
     @RequestMapping(value = "/calculate_score/corporate/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -279,6 +290,25 @@ public class ScoringController {
         }
     }
 
+    @RequestMapping(value = "/sendToCheckerREPO", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes>> sendToCheckerREPO(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+        logger.info("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> ",genericCheckerReqResList.size());
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes> genericCheckerReqRes = scoringService.sendToCheckerREPO(genericCheckerReqResList, userId);
+            logger.info("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> ", genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes>>(genericCheckerReqRes, HttpStatus.OK);
+        } catch (Exception e) {
+            List<GenericCheckerReqRes> res = new ArrayList<GenericCheckerReqRes>();
+            GenericCheckerReqRes reqres = new GenericCheckerReqRes();
+            reqres.setActionFlag(false);
+            res.add(reqres);
+            logger.error("Error while saving scoring model detail : ", e);
+            return new ResponseEntity<List<GenericCheckerReqRes>>(res, HttpStatus.OK);
+        }
+    }
+
 
     @RequestMapping(value = "/create_job", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ScoringResponse> createJob(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest httpRequest) {
@@ -298,6 +328,52 @@ public class ScoringController {
     public ResponseEntity<ScoringResponse> getMclrHistory(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest request) {
         try {
             ScoringResponse scoringResponse = scoringService.getMCLRHistoryDetail(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+/*
+    @RequestMapping(value = "/sendToCheckerREPO", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes>> sendToCheckerREPO(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+        logger.info("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> ",genericCheckerReqResList.size());
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes> genericCheckerReqRes = scoringService.sendToCheckerREPO(genericCheckerReqResList, userId);
+            logger.info("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> ", genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes>>(genericCheckerReqRes, HttpStatus.OK);
+        } catch (Exception e) {
+            List<GenericCheckerReqRes> res = new ArrayList<GenericCheckerReqRes>();
+            GenericCheckerReqRes reqres = new GenericCheckerReqRes();
+            reqres.setActionFlag(false);
+            res.add(reqres);
+            logger.error("Error while saving scoring model detail : ", e);
+            return new ResponseEntity<List<GenericCheckerReqRes>>(res, HttpStatus.OK);
+        }
+    }*/
+
+
+    @RequestMapping(value = "/create_job_for_repo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> createJobForREPO(@RequestBody REPOReqRes repoReqRes, HttpServletRequest httpRequest) {
+
+        try {
+            repoReqRes.setUserId((Long) httpRequest.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.createJobForREPO(repoReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/get_repo_history", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getRepoHistory(@RequestBody REPOReqRes repoReqRes, HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getREPOHistoryDetail(repoReqRes);
             return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
         } catch (Exception e) {
             ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
@@ -333,11 +409,39 @@ public class ScoringController {
         }
     }
 
+    @RequestMapping(value = "/save_repo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> saveREPO(@RequestBody REPOReqRes repoReqRes,
+                                                    HttpServletRequest request) throws RatingException {
+
+        try {
+            repoReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.saveREPODetails(repoReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
     @RequestMapping(value = "/getMCLRForChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ScoringResponse> getMCLRForChecker(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest request) {
         try {
             mclrReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
             ScoringResponse scoringResponse = scoringService.getMCLRForChecker(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/getREPOForChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getREPOForChecker(@RequestBody REPOReqRes repoReqRes, HttpServletRequest request) {
+        try {
+            repoReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.getREPOForChecker(repoReqRes);
             return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
         } catch (Exception e) {
             ScoringResponse res = new ScoringResponse(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
@@ -367,12 +471,12 @@ public class ScoringController {
     @RequestMapping(value = "/getConcessionDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getRetailConcessionDetails(@RequestBody ScoringRequestLoans scoringRequestLoans) {
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())) {
-            logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty======>");
+            logger.warn("Request Data Can Not Find Appplication ID Is Null Or Empty====== >");
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()), HttpStatus.OK);
         }
         try {
-        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null);
+        	  Object[] concesssionResponse = scoringService.getRetailConcessionDetails(scoringRequestLoans, null, null, null,null,null);
         	  logger.info("concesssionResponse ===>concesssionResponse=======>"+concesssionResponse);
         	  	LoansResponse loanResponse = new LoansResponse();
             

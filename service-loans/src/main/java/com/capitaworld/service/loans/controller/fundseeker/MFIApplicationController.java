@@ -1,21 +1,35 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.service.loans.utils.EncryptionUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 import com.capitaworld.service.loans.model.micro_finance.AadharDetailsReq;
@@ -32,7 +46,8 @@ import com.capitaworld.service.loans.model.micro_finance.ProjectDetailsReq;
 import com.capitaworld.service.loans.service.fundseeker.microfinance.MfiApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import org.springframework.web.multipart.MultipartFile;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 @RestController
 @RequestMapping("/mfi")
@@ -41,6 +56,12 @@ public class MFIApplicationController {
 
 	@Autowired
 	private MfiApplicationService mfiApplicationService;
+	
+	@Autowired
+	  private ReportsClient reportsClient;
+
+	  @Autowired
+	  private DMSClient dmsClient;
 
 	/**
 	 * save Aadhar detail For create new Application in MFI Application
@@ -912,37 +933,43 @@ public class MFIApplicationController {
 	}
 	
 	@PostMapping(value = "/saveAllApplicantsDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveAllApplicantsDetails(@RequestPart("profileimg") MultipartFile uploadingFile,@RequestPart("addressproof") MultipartFile addressProof,@RequestPart("consentformimg") MultipartFile consentformImg,@RequestPart("aadharimg") MultipartFile aadharImg,@RequestPart("requestData") String requestData,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveAllApplicantsDetails(
+			@RequestPart("profileimg") MultipartFile uploadingFile,
+			@RequestPart("addressproof") MultipartFile addressProof,
+			@RequestPart("consentformimg") MultipartFile consentformImg,
+			@RequestPart("aadharimg") MultipartFile aadharImg, @RequestPart("requestData") String requestData,
+			HttpServletRequest request) {
 		try {
-			
-			MfiApplicantDetailsReq mfiApplicantDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, MfiApplicantDetailsReq.class);
+
+			MfiApplicantDetailsReq mfiApplicantDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData,
+					MfiApplicantDetailsReq.class);
 			CommonDocumentUtils.startHook(logger, "save All Applicants details");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
-			
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			mfiApplicantDetailsReq.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+			mfiApplicantDetailsReq.setOrgId((Long) request.getAttribute(CommonUtils.USER_ORG_ID));
+
+			if (mfiApplicantDetailsReq.getUserId() == null) {
+				logger.warn("userId  can not be empty ==>" + mfiApplicantDetailsReq.getUserId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-            if(mfiApplicantDetailsReq.getId() == null){
-                logger.warn("Id  can not be empty ==>");
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
-            
-            
-			Object allApplicantDetails = mfiApplicationService.saveOrUpdateAllApplicantsDetails(uploadingFile,addressProof,consentformImg,aadharImg,mfiApplicantDetailsReq,userId,userOrgId);
-			if(allApplicantDetails instanceof Boolean) {
+
+			Object allApplicantDetails = mfiApplicationService.saveOrUpdateAllApplicantsDetails(uploadingFile,
+					addressProof, consentformImg, aadharImg, mfiApplicantDetailsReq);
+			if (allApplicantDetails instanceof Boolean) {
 				boolean personalInfo = (Boolean) allApplicantDetails;
 				CommonDocumentUtils.endHook(logger, "save All Applicant details");
-				if(personalInfo) {
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-							HttpStatus.OK);
+				if (personalInfo) {
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
 				} else {
-					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(allApplicantDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(allApplicantDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
@@ -952,6 +979,111 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	
+	@RequestMapping(value = "/documentUpload", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.ALL_VALUE)
+	public ResponseEntity<LoansResponse> documentUpload(@RequestPart("uploadRequest") String uploadRequestString,
+			@RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest request) {
+		try {
+			Long userId = (Long)request.getAttribute(CommonUtils.USER_ID);
+			CommonDocumentUtils.startHook(logger, "uploadDoc");
+			if (CommonUtils.isObjectNullOrEmpty(uploadRequestString)) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			
+			for (MultipartFile multipartFile : multipartFiles) {
+
+                String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+                
+                if(!"pdf".equalsIgnoreCase(extension)) {
+                	logger.warn("File format is not PDF...!");
+    				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.WRONG_FILE_FORMAT, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                }
+			}
+			MfiApplicantDetailsReq mfiApplicantDetailsReq = MultipleJSONObjectHelper.getObjectFromString(uploadRequestString, MfiApplicantDetailsReq.class);
+			
+			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq)||CommonUtils.isObjectNullOrEmpty(multipartFiles)) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			boolean documentUpload = mfiApplicationService.uploadDocuments(multipartFiles, mfiApplicantDetailsReq);
+            CommonDocumentUtils.endHook(logger, "save");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), documentUpload), HttpStatus.OK);
+			
+
+		} catch (Exception e) {
+			logger.error("Error while document upload "+e.getMessage());
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/* TO Download Report */
+
+	@GetMapping(value = "/getReportDetails/{applicationId}/{type}")
+	public byte[] getReportDetails(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("type") Integer type, HttpServletRequest request) {
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		/*
+		 * if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+		 * logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND,
+		 * applicationId); return new ResponseEntity<LoansResponse>( new
+		 * LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND,
+		 * HttpStatus.BAD_REQUEST.value()), HttpStatus.OK); }
+		 */
+
+		try {
+			Map<String, Object> response = mfiApplicationService.getReportDetails(applicationId);
+			Map<String, Object> applicantDetails = mfiApplicationService.getApplicantDetails1(applicationId, type);
+			CommonDocumentUtils.startHook(logger, "getApplicantDetails");
+			ReportRequest reportRequest = new ReportRequest();
+			response.putAll(applicantDetails);
+			reportRequest.setParams(response);
+			//reportRequest.setParams(applicantDetails);
+			
+			  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			  ZipOutputStream zos = new ZipOutputStream(baos);
+//			reportRequest.setTemplate("MFICAMPRIMARY");
+//			reportRequest.setType("MFICAMPRIMARY");
+			
+			List<String> tempaltes  =  new ArrayList<String>();  //["MFICAMPRIMARY" A "MFICAMDPN"	 + "MFICAMLOANDHO" + "MFICAMLOL"];
+			tempaltes.add("MFICAMPRIMARY");
+			tempaltes.add("MFICAMDPN");
+			tempaltes.add("MFICAMLOANDHO");
+			tempaltes.add("MFICAMLOL");
+			
+			
+			for (int i = 0; i < tempaltes.size(); i++)
+			{
+				reportRequest.setTemplate(tempaltes.get(i));
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+
+				if (byteArr != null) {
+					ZipEntry entry = new ZipEntry(tempaltes.get(i) + ".pdf");
+					entry.setSize(byteArr.length);
+					zos.putNextEntry(entry);
+					zos.write(byteArr);
+					
+				}
+
+			}
+			zos.closeEntry();
+			zos.close();
+			return baos.toByteArray();
+			
+		}
+		catch (Exception e) {
+			logger.error("Error while getting MAP Details==>", e);
+			}
+		
+		return null;
+	}
+	  
+
 	
 	
 
