@@ -1,5 +1,5 @@
 
-CREATE TABLE `fp_auto_loan_details` (
+CREATE TABLE `loan_application`.`fp_auto_loan_details` (
   `fp_product_id` BIGINT(20) UNSIGNED NOT NULL,
   `currency` INT(2) DEFAULT NULL,    
   `min_age` DOUBLE DEFAULT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE `fp_auto_loan_details` (
 
 
 
-CREATE TABLE `fp_auto_loan_details_temp` (
+CREATE TABLE `loan_application`.`fp_auto_loan_details_temp` (
   `fp_product_id` BIGINT(20) UNSIGNED NOT NULL,
   `currency` INT(2) DEFAULT NULL,    
   `min_age` DOUBLE DEFAULT NULL,
