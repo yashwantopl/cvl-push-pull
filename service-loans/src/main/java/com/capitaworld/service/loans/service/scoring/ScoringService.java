@@ -4,10 +4,13 @@ import java.io.IOException;
 
 import java.util.List;
 
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.scoring.MCLRReqRes;
+import com.capitaworld.service.scoring.REPOReqRes;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.ScoringResponse;
@@ -36,6 +39,10 @@ public interface ScoringService {
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
     
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList);
+
+    public ResponseEntity<LoansResponse> calculateRetailAutoLoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList);
+
+    public ResponseEntity<LoansResponse> calculateRetailAutoLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
 
     public ResponseEntity<LoansResponse> calculateMFILoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
 
@@ -67,18 +74,28 @@ public interface ScoringService {
 
     public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes);
 
+    public ScoringResponse getREPOHistoryDetail(REPOReqRes repoReqRes);
+
     public ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes);
 
     public ScoringResponse getMCLRForChecker(MCLRReqRes mclrReqRes);
+
+    public ScoringResponse getREPOForChecker(REPOReqRes repoReqRes);
 
     public ScoringResponse getEffectiveMCLRDetails(MCLRReqRes mclrReqRes);
 
     public ScoringResponse createJob(MCLRReqRes mclrReqRes);
 
+    public ScoringResponse createJobForREPO(REPOReqRes repoReqRes);
+
     public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes);
 
+    public ScoringResponse saveREPODetails(REPOReqRes repoReqRes);
+
     public List<GenericCheckerReqRes> sendToCheckerMCLR(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
-    
-    public Object [] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList);
-    
+
+    public List<GenericCheckerReqRes> sendToCheckerREPO(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
+
+    public Object [] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList,RetailApplicantDetail retailApplicantDetail,CibilScoreLogRequest cibilResponse1);
+
 }

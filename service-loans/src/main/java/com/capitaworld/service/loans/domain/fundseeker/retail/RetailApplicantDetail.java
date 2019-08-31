@@ -601,6 +601,9 @@ public class RetailApplicantDetail implements Serializable {
     
     @Column(name="kid")
     private String kid;
+    
+    @Column(name="borrower_contribution")
+    private Long borrowerContribution;
 
     private String remarks;
 
@@ -2173,4 +2176,13 @@ public class RetailApplicantDetail implements Serializable {
 	public void setIsOwnedProp(Boolean isOwnedProp) {
 		this.isOwnedProp = isOwnedProp;
 	}
+
+	public Long getBorrowerContribution() {
+		return borrowerContribution;
+	}
+
+	public void setBorrowerContribution(Long borrowerContribution) {
+		this.borrowerContribution = borrowerContribution;
+	}
+	
 }

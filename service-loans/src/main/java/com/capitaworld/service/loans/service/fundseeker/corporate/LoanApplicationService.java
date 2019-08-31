@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -15,6 +13,9 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanPanCheckRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.TutorialUploadManageRes;
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
+import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import com.capitaworld.service.loans.model.api_model.ProfileReqRes;
 import com.capitaworld.service.loans.model.common.BasicDetailFS;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
@@ -187,6 +188,8 @@ public interface LoanApplicationService {
 	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId);
 
 	public Long createMfiLoan(Long userId,Boolean isActive,Integer businessTypeId,Long userOrgId);
+	
+	public Long createAgriLoan(Long userId,Integer businessTypeId,Long orgId);
 
 	public Long createRetailLoan(Long userId, Boolean isActive, Integer businessTypeId);
 
@@ -270,7 +273,7 @@ public interface LoanApplicationService {
 
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest);
 
-	public String getTutorialsAudit(Long tutorialId);
+	public JSONObject getTutorialsAudit(TutorialsViewAudits request);
 
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId);
 	

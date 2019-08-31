@@ -593,6 +593,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				} catch (DocumentException e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_SOFTPING_CONSUMER);
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					plTeaserViewResponse.setCibilReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				
 		
 
 		// pl final view details filled from here
@@ -1072,6 +1080,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
 			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
 			if(proposalMappingRequestString != null) {
+				plTeaserViewResponse.setScoringBasedOn(proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
 				plTeaserViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
 				plTeaserViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
 				 if (!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
@@ -1079,8 +1088,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					} else {
 						plTeaserViewResponse.setEffectiveRoi(proposalMappingRequestString.getMclrRoi() == null && proposalMappingRequestString.getSpreadRoi() == null ? "-" : proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : proposalMappingRequestString.getSpreadRoi().toString());				
 					}
-				 plTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
-				 plTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? proposalMappingRequestString.getConcessionBasedOnType() : "Concession");
+				 plTeaserViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null && proposalMappingRequestString.getConsessionRoi() != 0.0 && proposalMappingRequestString.getConsessionRoi() != 0 ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
+				 plTeaserViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				    if (plTeaserViewResponse.getEffectiveRoi() != null) {
 				    	plTeaserViewResponse.setFinalRoi(proposalMappingRequestString.getConsessionRoi() != null ? String.valueOf(Double.valueOf(plTeaserViewResponse.getEffectiveRoi()) - Double.valueOf(proposalMappingRequestString.getConsessionRoi())) : "-" );
 					} else {
@@ -1252,6 +1261,13 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			plTeaserViewResponse.setIrtXMLReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_SOFTPING_CONSUMER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			plTeaserViewResponse.setCibilConsumerReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}

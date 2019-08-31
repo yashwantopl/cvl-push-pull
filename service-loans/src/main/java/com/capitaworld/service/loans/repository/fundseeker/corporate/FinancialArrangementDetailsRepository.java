@@ -49,6 +49,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	public Double getExistingLimits(@Param("id")Long id,@Param("loanType") List<String> loanType);
 	
 	
+	@Query("select sum(o.collateralSecurityAmount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and LOWER(o.loanType) IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.applicationProposalMapping IS NULL")
+	public Double getAmountOfCollateralExistingLoan(@Param("id")Long id,@Param("loanType") List<String> loanType);
+	
 	@Query("select sum(o.outstandingAmount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and LOWER(o.loanType) IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.applicationProposalMapping IS NULL" )
 	public Double getOutStandingAmount(@Param("id")Long id,@Param("loanType") List<String> loanType);
 	
@@ -84,7 +87,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NOT NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
 	public Double getTotalEmiOfAllDirByApplicationId(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType);
 	
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
+
+	/*@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")*/
+	@Query(value="select SUM(GREATEST(o.emi,o.bureau_or_calculated_emi)) from fs_corporate_current_financial_arrangements_details o where o.application_id =:applicationId and o.director_id IS NULL and o.is_active = true and LOWER(o.loan_type) NOT IN (:loanType) and o.outstanding_amount IS NOT NULL and o.outstanding_amount > 0",nativeQuery = true)
 	public Double getTotalEmiByApplicationIdSoftPing(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType);
 	
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail =:coApplicantId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")

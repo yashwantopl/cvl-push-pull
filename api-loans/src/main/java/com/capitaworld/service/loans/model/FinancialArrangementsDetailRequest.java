@@ -60,6 +60,7 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	
 	private Double bureauOutstandingAmount;
 	private Double bureauOrCalculatedEmi;
+	private String entryNo;
 	private Boolean isBureauEmi;
 
 	public Long getId() {
@@ -246,4 +247,11 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 		this.isBureauEmi = isBureauEmi;
 	}
 
+	public String getEntryNo() {
+		return entryNo;
+	}
+
+	public void setEntryNo(String entryNo) {
+		this.entryNo = entryNo;
+	}
 }

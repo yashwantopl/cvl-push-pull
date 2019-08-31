@@ -41,6 +41,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelatio
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
@@ -110,6 +111,9 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
 
 	@Autowired
 	private ReportsClient reportsClient;
@@ -395,6 +399,15 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 					coApp.put("residenceSinceYearMonths", (years!= null ?  years+ " years" : "")+ " " +(months != null ? months+" months":""));
 				}else {
 					coApp.put("residenceSinceYearMonths", coApplicantDetail.getResidenceSinceMonth() != null ? coApplicantDetail.getResidenceSinceMonth()+" months":"");
+				}
+				
+				//INCOME DETAILS - NET INCOME Of Co-Applicant
+				try {
+					List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = coApplicantIncomeService.getAllByCoAppId(coApplicantDetail.getId());
+					
+					coApp.put("incomeDetailsOfCoApp", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null );
+				} catch (Exception e) {
+					logger.error("Error while getting income details : ",e);
 				}
 
 				coApp.put("gender", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getGenderId()) ? Gender.getById(coApplicantDetail.getGenderId()).getValue(): "-");

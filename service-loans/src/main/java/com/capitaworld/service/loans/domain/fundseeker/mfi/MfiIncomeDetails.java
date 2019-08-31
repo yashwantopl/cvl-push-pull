@@ -31,6 +31,9 @@ public class MfiIncomeDetails implements Serializable {
     @Column(name = "monthly_income")
     private Double monthlyIncome;
 
+    @Column(name = "monthly_income_checker")
+    private Double monthlyIncomeChecker;
+
     @Column(name = "yearly_income")
     private Double yearlyIncome;
 
@@ -125,5 +128,13 @@ public class MfiIncomeDetails implements Serializable {
 
     public void setIncomeDays(Integer incomeDays) {
         this.incomeDays = incomeDays;
+    }
+
+    public Double getMonthlyIncomeChecker() {
+        return monthlyIncomeChecker;
+    }
+
+    public void setMonthlyIncomeChecker(Double monthlyIncomeChecker) {
+        this.monthlyIncomeChecker = monthlyIncomeChecker;
     }
 }

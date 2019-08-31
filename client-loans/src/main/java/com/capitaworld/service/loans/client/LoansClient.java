@@ -49,6 +49,7 @@ import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestRespo
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
@@ -157,6 +158,7 @@ public class LoansClient {
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
+	private static final String MFI_FINANCIAL_ARRANGEMENT_DETAILS = "/mfi/saveFinancialDetails";
 	private static final String CREDIT_RATING_DETAILS_CIBIL = "/credit_rating_organization_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
@@ -206,6 +208,8 @@ public class LoansClient {
 	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
 	private static final String CALCULATE_SCORING_RETAIL_HL_LIST = "/score/calculate_score/retail_hl_list";
 	private static final String CALCULATE_SCORING_RETAIL_HL_LIST_COAPPLICANT = "/score/calculate_score/retail_hl_list_coapplicant";
+	private static final String CALCULATE_SCORING_RETAIL_AL_LIST = "/score/calculate_score/retail_al_list";
+	private static final String CALCULATE_SCORING_RETAIL_AL_LIST_COAPPLICANT = "/score/calculate_score/retail_al_list_coapplicant";
 
 	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCMADetailForEligibility/";
 	
@@ -286,6 +290,8 @@ public class LoansClient {
     
     private static final String GET_APPLICATION_CAMPAIGN_CODE = "/loan_application/getApplicationCampCode";
     private static final String GET_FINANCIAL_DATA = "/cma/getFinancialDetailsForBankIntegration";
+    
+    private static final String LOAN_AMOUNT_FOR_INELIGIBLE = "/get/loan_amount_for_ineligible";
 
     private static final String LOAN_AMOUNT_FOR_INELIGIBLE = "/get/loan_amount_for_ineligible";
 	
@@ -1498,6 +1504,20 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse saveMfiFinancialArrangementDetail(List<MFIFinancialArrangementRequest> detailRequests, Long applicationId, Long userId, Long applicantId) throws ExcelException {
+		String url = loansBaseUrl.concat(MFI_FINANCIAL_ARRANGEMENT_DETAILS).concat("/" + applicationId + "/" + userId + "/" + applicantId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<MFIFinancialArrangementRequest>> entity = new HttpEntity<>(detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in saveMfiFinancialArrangementDetail : ",e);
+			throw new ExcelException(url + " " + e.getCause().getMessage());
+		}
+	}
+	
 	public LoansResponse saveCreditRatingDetailFromCibil(List<CreditRatingOrganizationDetailRequest> detailRequests, Long userId,
 			Long clientId, Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(CREDIT_RATING_DETAILS_CIBIL)
@@ -1930,7 +1950,21 @@ public class LoansClient {
 			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<>(scoringRequestLoansList,headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
-			logger.error("Exception in calculateScoringRetailPLList : ",e);
+			logger.error("Exception in calculateScoringRetailHLList : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse calculateScoringRetailALList(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_RETAIL_AL_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<>(scoringRequestLoansList,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in calculateScoringRetailALList : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
@@ -1945,6 +1979,20 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in calculateScoringRetailPLList : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse calculateScoringRetailALListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_RETAIL_AL_LIST_COAPPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<>(scoringRequestLoansList,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in calculateScoringRetailALListForCoApplicant : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
@@ -2885,6 +2933,7 @@ public class LoansClient {
 			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
+
 	/**
 	 * GET Loan Amount For In-eligible case For (LOS/LLMS SBI)  
 	 * @param applicationId

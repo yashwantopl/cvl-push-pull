@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -29,6 +30,7 @@ import com.capitaworld.service.loans.model.sidbi.PersonalCorporateGuaranteeReque
 import com.capitaworld.service.loans.model.sidbi.PrimaryCollateralSecurityRequest;
 import com.capitaworld.service.loans.model.sidbi.RawMaterialDetailsRequest;
 import com.capitaworld.service.loans.model.sidbi.SidbiBasicDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.sidbi.FacilityDetailsService;
 import com.capitaworld.service.loans.service.sidbi.PersonalCorporateGuaranteeService;
@@ -63,6 +65,9 @@ public class SidbiSpecificController {
     
     @Autowired
 	private PrimaryCorporateDetailRepository  primaryCorporateDetailRepository;
+    
+    @Autowired
+    ApplicationProposalMappingRepository appProposalMappingRepository;
     
 	@PostMapping(value = "/savePrimaryCollateralSecurity", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePrimaryCollateralSecurity(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
@@ -418,10 +423,43 @@ public class SidbiSpecificController {
 	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
 	    }
-	
-	@GetMapping(value = "/get/loan_amount_for_ineligible/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> loanAmountForInEligibileCase(@PathVariable("applicationId") Long applicationId,HttpServletRequest request) throws LoansException {
-		try {
+
+		@GetMapping(value = "/get/applicationCode/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	    public ResponseEntity<LoansResponse> applicationCode(@PathVariable("applicationId") Long applicationId,HttpServletRequest request) throws LoansException {
+	        try {
+	            CommonDocumentUtils.startHook(logger, "applicationCode");
+	            
+	            if (applicationId == null) {
+	                logger.warn("applicationId==> ==>{}" , applicationId);
+	                return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+	            }
+	            
+	            LoansResponse loansResponse = null;
+	            HashMap<String, Object> map =new HashMap<String, Object>();
+	            
+	            ApplicationProposalMapping appProposalMappingObj = appProposalMappingRepository.getByApplicationId(applicationId);
+	            if(!CommonUtils.isObjectNullOrEmpty(appProposalMappingObj) && !CommonUtils.isObjectNullOrEmpty(appProposalMappingObj.getApplicationCode())) {
+	            	loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());	            	
+		            map.put("applicationCode",appProposalMappingObj.getApplicationCode());
+	            }else {
+	            	loansResponse = new LoansResponse("Data not Found.", HttpStatus.OK.value());
+	            }
+	            
+				loansResponse.setMap(map);
+	            
+	            CommonDocumentUtils.endHook(logger, "applicationCode");
+	            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+	        } catch (Exception e) {
+	            logger.error("Error while applicationCode==>", e);
+	            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
+
+		
+		@GetMapping(value = "/get/loan_amount_for_ineligible/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> loanAmountForInEligibileCase(@PathVariable("applicationId") Long applicationId,HttpServletRequest request) throws LoansException {
+		    try {
 		        CommonDocumentUtils.startHook(logger, "loanAmountAsPerEligibility");
 		        
 		        if (applicationId == null) {
@@ -442,5 +480,5 @@ public class SidbiSpecificController {
 		        return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		    }
 		}
-	
+
 }

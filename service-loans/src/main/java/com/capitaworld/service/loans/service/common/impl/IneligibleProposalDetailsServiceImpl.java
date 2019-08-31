@@ -196,37 +196,47 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				isCreateNew = true;
 			}
 
-			if(!CommonUtils.isObjectNullOrEmpty(gstin)) {
-				//UPDARE STATUS FOR SAME GSTIN OLD APPLICATIONS
-				List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
-				for(IneligibleProposalDetails inlProposal : inlProposalList) {
-					//CHECK IF SAME BANK PROPOSAL AVAILABLE FOR THIS GSTIN
-					if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
-						// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
-						if(CommonUtils.isObjectNullOrEmpty(inlProposal.getIsSanctioned()) || !inlProposal.getIsSanctioned()) {
-							// CHECK 60 DAY IN-PRINCIPLE VALIDITY
-							long dateDiff = daysBetween(new Date(), inlProposal.getCreatedDate());
+			try {
+				Integer currentAppLoanTypeId = primaryCorporateDetailRepository.getPurposeLoanId(inlPropReq.getApplicationId());
+				if(!CommonUtils.isObjectNullOrEmpty(gstin)) {
+					//UPDARE STATUS FOR SAME GSTIN OLD APPLICATIONS
+					List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
+					for(IneligibleProposalDetails inlProposal : inlProposalList) {
+						Integer loanTypeId = primaryCorporateDetailRepository.getPurposeLoanId(inlProposal.getApplicationId());
+						if(loanTypeId == currentAppLoanTypeId) {//CHECK IF SAME LOAN ID THEN WE NEED TO CHECK BELOW CONDITION
+							//CHECK IF SAME BANK PROPOSAL AVAILABLE FOR THIS GSTIN primaryCorporateDetailRepository
+							if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
+								// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
+								if(CommonUtils.isObjectNullOrEmpty(inlProposal.getIsSanctioned()) || !inlProposal.getIsSanctioned()) {
+									// CHECK 60 DAY IN-PRINCIPLE VALIDITY
+									long dateDiff = daysBetween(new Date(), inlProposal.getCreatedDate());
 
-							String value = loanRepository.getCommonPropertiesValue(com.capitaworld.commons.lib.common.CommonUtils.COMMON_PROPERTIES.CONNECT_MSME_INPRINCIPLE_DATE_RANGE);
-							Integer DAY_DIFFERENCE_FOR_INPRINCIPLE = 0;
-							if(CommonUtils.isObjectNullOrEmpty(value)) {//IF NULL IN COMMON PROPERTIES THEN DEFAULT VALUE IS 60 DAYS
-								DAY_DIFFERENCE_FOR_INPRINCIPLE = 60;
-							} else {
-								DAY_DIFFERENCE_FOR_INPRINCIPLE = Integer.valueOf(value);
-							}
-							if (dateDiff < DAY_DIFFERENCE_FOR_INPRINCIPLE) {
-								inlProposal.setIsActive(false);
-								inlProposal.setModifiedBy(inlPropReq.getUserId());
-								inlProposal.setModifiedDate(new Date());
-								inlProposal.setStatus(InEligibleProposalStatus.OTHER_BANK);
-								ineligibleProposalDetailsRepository.save(inlProposal);
-							}
-						} else {
-							continue;
+									String value = loanRepository.getCommonPropertiesValue(com.capitaworld.commons.lib.common.CommonUtils.COMMON_PROPERTIES.CONNECT_MSME_INPRINCIPLE_DATE_RANGE);
+									Integer DAY_DIFFERENCE_FOR_INPRINCIPLE = 0;
+									if(CommonUtils.isObjectNullOrEmpty(value)) {//IF NULL IN COMMON PROPERTIES THEN DEFAULT VALUE IS 60 DAYS
+										DAY_DIFFERENCE_FOR_INPRINCIPLE = 60;
+									} else {
+										DAY_DIFFERENCE_FOR_INPRINCIPLE = Integer.valueOf(value);
+									}
+									if (dateDiff < DAY_DIFFERENCE_FOR_INPRINCIPLE) {
+										inlProposal.setIsActive(false);
+										inlProposal.setModifiedBy(inlPropReq.getUserId());
+										inlProposal.setModifiedDate(new Date());
+										inlProposal.setStatus(InEligibleProposalStatus.OTHER_BANK);
+										ineligibleProposalDetailsRepository.save(inlProposal);
+										//isCreateNew = true;
+									}
+								} else {
+									continue;
+								}
+							}	
 						}
 					}
 				}
+			} catch (Exception e) {
+				logger.error("Exception while check GSTIN in save ineligible proposal details",e);
 			}
+			
 
 			if(isCreateNew) {
 				inlProposalDetails = new IneligibleProposalDetails();
@@ -239,7 +249,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				inlProposalDetails.setBusinessTypeId(inlPropReq.getBusinessTypeId());
 				try {
 					//SET GSTIN
-					inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));
+					inlProposalDetails.setGstin(gstin);
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
@@ -267,7 +277,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				try {
 					//SET GSTIN
 					if(CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getGstin())) {
-						inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));
+						inlProposalDetails.setGstin(gstin);
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);

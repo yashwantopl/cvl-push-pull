@@ -23,13 +23,9 @@ public class MfiLoanAssessmentDetailsReq {
 	private Boolean isBusinessPremiseVisited;
 	private Integer repaymentTrack;
 	private Integer creaditWorthiness;
-	private String loanLiabilityRatio;
+	private Double loanLiabilityRatio;
 	private Integer competition;
-	private Double loanAmountRecomandation;
-	private Integer tenureRecomandation;
-	private Integer moratoriumRecomandation;
-	private Double interestRateRecomandation;
-	private Integer installmentRecomandation;
+
 	private Boolean isLoanassessmentDetailsFilled;
 
 	//For Cash Flow Assessment
@@ -51,10 +47,8 @@ public class MfiLoanAssessmentDetailsReq {
 		this.totalCashFlow = totalCashFlow;
 	}
 
-	public MfiLoanAssessmentDetailsReq(Long applicationId, Integer purposeOfLoan, Integer clientType,
-									   Boolean isBusinessPremiseVisited, Integer repaymentTrack, Integer creaditWorthiness,
-									   String loanLiabilityRatio, Integer competition, Double loanAmountRecomandation, Integer tenureRecomandation,
-									   Integer moratoriumRecomandation, Double interestRateRecomandation, Integer installmentRecomandation) {
+	public MfiLoanAssessmentDetailsReq(Long applicationId, Integer purposeOfLoan, Integer clientType, Boolean isBusinessPremiseVisited, Integer repaymentTrack, Integer creaditWorthiness,
+									   Double loanLiabilityRatio, Integer competition) {
 		super();
 		this.applicationId = applicationId;
 		this.purposeOfLoan = purposeOfLoan;
@@ -64,11 +58,6 @@ public class MfiLoanAssessmentDetailsReq {
 		this.creaditWorthiness = creaditWorthiness;
 		this.loanLiabilityRatio = loanLiabilityRatio;
 		this.competition = competition;
-		this.loanAmountRecomandation = loanAmountRecomandation;
-		this.tenureRecomandation = tenureRecomandation;
-		this.moratoriumRecomandation = moratoriumRecomandation;
-		this.interestRateRecomandation = interestRateRecomandation;
-		this.installmentRecomandation = installmentRecomandation;
 	}
 	public Long getId() {
 		return id;
@@ -112,48 +101,22 @@ public class MfiLoanAssessmentDetailsReq {
 	public void setCreaditWorthiness(Integer creaditWorthiness) {
 		this.creaditWorthiness = creaditWorthiness;
 	}
-	public String getLoanLiabilityRatio() {
+
+	public Double getLoanLiabilityRatio() {
 		return loanLiabilityRatio;
 	}
-	public void setLoanLiabilityRatio(String loanLiabilityRatio) {
+
+	public void setLoanLiabilityRatio(Double loanLiabilityRatio) {
 		this.loanLiabilityRatio = loanLiabilityRatio;
 	}
+
 	public Integer getCompetition() {
 		return competition;
 	}
 	public void setCompetition(Integer competition) {
 		this.competition = competition;
 	}
-	public Double getLoanAmountRecomandation() {
-		return loanAmountRecomandation;
-	}
-	public void setLoanAmountRecomandation(Double loanAmountRecomandation) {
-		this.loanAmountRecomandation = loanAmountRecomandation;
-	}
-	public Integer getTenureRecomandation() {
-		return tenureRecomandation;
-	}
-	public void setTenureRecomandation(Integer tenureRecomandation) {
-		this.tenureRecomandation = tenureRecomandation;
-	}
-	public Integer getMoratoriumRecomandation() {
-		return moratoriumRecomandation;
-	}
-	public void setMoratoriumRecomandation(Integer moratoriumRecomandation) {
-		this.moratoriumRecomandation = moratoriumRecomandation;
-	}
-	public Double getInterestRateRecomandation() {
-		return interestRateRecomandation;
-	}
-	public void setInterestRateRecomandation(Double interestRateRecomandation) {
-		this.interestRateRecomandation = interestRateRecomandation;
-	}
-	public Integer getInstallmentRecomandation() {
-		return installmentRecomandation;
-	}
-	public void setInstallmentRecomandation(Integer installmentRecomandation) {
-		this.installmentRecomandation = installmentRecomandation;
-	}
+
 	public Boolean getIsLoanassessmentDetailsFilled() {
 		return isLoanassessmentDetailsFilled;
 	}

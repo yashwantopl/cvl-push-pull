@@ -192,4 +192,11 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 
     @Query("from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.orgId =:orgId and lm.isActive = true")
     public List<ApplicationProposalMapping> getListByApplicationIdAndOrgId(@Param("applicationId") Long applicationId, @Param("orgId") Long orgId);
+    
+    @Modifying
+    @Query("update ApplicationProposalMapping apm set apm.isApplicantFinalFilled = true, apm.modifiedDate = NOW(), apm.modifiedBy =:userId where apm.proposalId =:proposalId and apm.isActive = true")
+    public int setIsApplicantFinalFilled(@Param("proposalId") Long proposalId, @Param("userId")  Long userId);
+    
+    
+    
 }

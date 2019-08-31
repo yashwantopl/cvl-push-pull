@@ -25,13 +25,6 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
-import com.capitaworld.service.loans.domain.GstRelatedParty;
-import com.capitaworld.service.loans.domain.common.MaxInvestmentBankwise;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
-import com.capitaworld.service.loans.repository.common.*;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +32,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +52,8 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.domain.GstRelatedParty;
+import com.capitaworld.service.loans.domain.common.MaxInvestmentBankwise;
 import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
 import com.capitaworld.service.loans.domain.common.PaymentGatewayAuditMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
@@ -83,9 +79,10 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgro
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
+import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
@@ -93,6 +90,28 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AchievementDetailRequest;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.LoanPanCheckRequest;
+import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
+import com.capitaworld.service.loans.model.ReportResponse;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.TutorialUploadManageRes;
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.model.api_model.CorporateProfileRequest;
 import com.capitaworld.service.loans.model.api_model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.api_model.GuarantorsCorporateDetailRequest;
@@ -113,8 +132,16 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
+import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
+import com.capitaworld.service.loans.repository.common.MaxInvestmentBankwiseRepository;
+import com.capitaworld.service.loans.repository.common.MinMaxProductDetailRepository;
+import com.capitaworld.service.loans.repository.common.PaymentGatewayAuditMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiTutorialsViewAuditsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -390,6 +417,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
 	
+	@Autowired
+	private MfiTutorialsViewAuditsRepository mfiTutorialsViewAuditsRepository;
+	
 	public static final DecimalFormat decim = new DecimalFormat("#,###.00");
 	
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
@@ -635,7 +665,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					// create record in fs retail applicant
 					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
-				case CAR_LOAN:
+				case AUTO_LOAN:
 					break;
 
 				default:
@@ -1900,7 +1930,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}
 
-				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue() || loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())
+				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue() || loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue())
 					&& (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled()) || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
 						return false;
 				}
@@ -3450,10 +3480,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					.getById(applicationMaster.getProductId());
 			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
 					&& (loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
-							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
+							|| loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()))
                     && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
                             || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
-					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+					if (loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
@@ -3563,7 +3593,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationProposalMapping.getProductId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanType) && (applicationProposalMapping.getIsApplicantFinalFilled() == null || !applicationProposalMapping.getIsApplicantFinalFilled())) {
-					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
+					if (loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else if(loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill HOME-LOAN FINAL details to Move Next !");
@@ -4892,8 +4922,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case HOME_LOAN:
 			applicationMaster = new PrimaryHomeLoanDetail();
 			break;
-		case CAR_LOAN:
-			applicationMaster = new PrimaryCarLoanDetail();
+		case AUTO_LOAN:
+			applicationMaster = new PrimaryAutoLoanDetail();
 			break;
 		case UNSECURED_LOAN:
 			applicationMaster = new PrimaryUnsecuredLoanDetail();
@@ -6135,6 +6165,36 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
 		usersRequest.setId(userId);
 		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Exit in createMsmeLoan");
+		return corporateLoan.getId();
+	}
+	
+	@Override
+	public Long createAgriLoan(Long userId,Integer businessTypeId,Long orgId){
+		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.AgriLoanStatus.PENDING.getId()));
+//		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+		corporateLoan.setCreatedBy(userId);
+		corporateLoan.setCreatedDate(new Date());
+		corporateLoan.setUserId(userId);
+		corporateLoan.setProductId(17);
+		corporateLoan.setBusinessTypeId(6);
+		corporateLoan.setFpMakerId(userId);
+		corporateLoan.setNpOrgId(orgId);
+		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
+//		corporateLoan.setBusinessTypeId(businessTypeId);
+		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
+		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
+		logger.info("Going to Create new Corporate UserId===>{}", userId);
+		corporateLoan = loanApplicationRepository.save(corporateLoan);
+		logger.info("Created New Corporate Loan of User Id==>{}", userId);
+		logger.info("Setting Last Application is as Last access Id in User Table---->" + corporateLoan.getIsActive());
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
+		usersRequest.setId(userId);
+		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Successfully get result");
 		logger.info("Exit in createMsmeLoan");
 		return corporateLoan.getId();
 	}
@@ -8352,6 +8412,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRepository.save(loanApplicationMaster);
 			loanApplicationRepository.updateLoanType(applicationId,loanTypeId);
 			logger.info("Loan Type Updated");
+			try {
+				if(loanTypeId == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+					coApplicantDetailRepository.inactiveCoApplicant(applicationId);	
+				}
+			} catch (Exception e) {
+				logger.error("Exception while update coapplicant active",e);
+			}
 			fpAsyncComp.sendEmailToFsWhenSubProductOfRetailSelectedByUser(loanApplicationMaster);
 			return  true;
 		}
@@ -8403,6 +8470,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					for(GstRelatedParty gstRelatedParty : gstRelatedPartyDetails){
 						GstRelatedPartyRequest gstRelatedPartyRequest = new GstRelatedPartyRequest();
 						BeanUtils.copyProperties(gstRelatedParty, gstRelatedPartyRequest);
+						gstRelatedPartyRequest.setPan(gstRelatedParty.getPan().toUpperCase());
 						gstRelatedPartyRequest.setRelationShip("Self-Declared - GST");
 						gstRelatedPartyRequest.setSales(" - ");
 						gstRelatedPartyRequest.setPurchase(" - ");
@@ -8481,9 +8549,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return loanRepository.saveTutorialsAudits(longLatrequest);
 	}
 
+	@SuppressWarnings({ "unchecked", "null" })
 	@Override
-	public String getTutorialsAudit(Long tutorialId) {
-		return loanRepository.getTutorialsAudit(tutorialId);
+	public JSONObject getTutorialsAudit(TutorialsViewAudits request) {
+//		return loanRepository.getTutorialsAudit(request);
+		List<BigInteger> newtutorialSize = null;
+		TutorialsViewAudits tutorialsViewAudits;
+		JSONObject tutorialObj = new JSONObject();
+		List<Object[]> detailsReq = mfiTutorialsViewAuditsRepository.getTutorialListData(request.getTutorialId(),
+				new PageRequest(request.getPageIndex(), request.getSize()));
+		List<TutorialsViewAudits> TutorialList = new ArrayList<TutorialsViewAudits>();
+		for(Object[] obj : detailsReq) {
+			tutorialsViewAudits = new TutorialsViewAudits();
+			tutorialsViewAudits.setUserName((String)obj[1]);
+			tutorialsViewAudits.setRoleName((String)obj[2]);
+			tutorialsViewAudits.setBranchName((String)obj[3]);
+			tutorialsViewAudits.setViewDate((Date)obj[4]);
+			TutorialList.add(tutorialsViewAudits);
+		}
+		newtutorialSize = mfiTutorialsViewAuditsRepository.getTutorialCount(request.getTutorialId());
+		tutorialObj.put("tutorialData", TutorialList);
+		tutorialObj.put("totaltutorial", newtutorialSize.size());
+		return tutorialObj;
 	}
 	
 	@Override

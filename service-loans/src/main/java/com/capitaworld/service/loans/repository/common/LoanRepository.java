@@ -4,7 +4,7 @@ import com.capitaworld.service.loans.model.TutorialsViewAudits;
 
 import java.util.List;
 
-public interface LoanRepository {
+public interface LoanRepository{
 
 	public Object[] getRoleIdAndBranchIdByUserId(Long userId);
 	
@@ -61,7 +61,7 @@ public interface LoanRepository {
 
 	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest);
 
-	public String getTutorialsAudit(Long tutorialId);
+	public String getTutorialsAudit(TutorialsViewAudits request);
 
 	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId);
 	
@@ -74,4 +74,6 @@ public interface LoanRepository {
 	public Boolean isCampaignUser(Long userId);
 	
 	public String getCampaignUser(Long userId);
+	
+	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit);
 }
