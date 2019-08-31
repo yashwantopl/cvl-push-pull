@@ -889,7 +889,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
 				Double effectiveRoi = null;
 				Double finalRoi = null;
-				roiData.put("scoringBasedOn" , proposalMappingRequest.getScoringModelBasedOn() != null && proposalMappingRequest.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
+				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
 				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
 				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
 				if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
