@@ -344,3 +344,6 @@ insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_a
 insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) values(NULL,NOW(),TRUE,NULL,NULL,NULL,'206','8','3',FALSE,NULL);
 
 
+
+
+ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `borrower_contribution` BIGINT(20) NULL;
