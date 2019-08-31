@@ -1257,8 +1257,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 		CibilResponse cibilReportMfi = null;
 
-		try {
-			cibilReportMfi = null;//cibilClient.getCibilReportMfi(applicationId, userId);
+		/*try {
+			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
 				CibilResponse data = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) cibilReportMfi.getData(), CibilResponse.class);
@@ -1287,7 +1287,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.info("IOException for generate report");
-		}
+		}*/
 		loansResponse.setMessage("Something went wrong while call cibil report");
 		loansResponse.setData(null);
 		loansResponse.setStatus(HttpStatus.OK.value());
