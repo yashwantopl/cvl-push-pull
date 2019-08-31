@@ -526,12 +526,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			for (MFIApplicantDetail coApplicantDetail : byCoApplicationIdAndAndTypeIsActive) {
 				AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();
 				BeanUtils.copyProperties(coApplicantDetail, aadharDetailsReq);
-				aadharDetailsReq.setIsConsolidated(coApplicantDetail.getIsConsolidated());
-				if(coApplicantDetail.getConsolidatedName()==null) {
-					aadharDetailsReq.setConsolidatedName("");
-				}else {
-					aadharDetailsReq.setConsolidatedName(coApplicantDetail.getConsolidatedName());
-				}
 				aadharDetailsReqs.add(aadharDetailsReq);
 			}
 			detailsReq.setCoApplicantDetails(aadharDetailsReqs);
@@ -1944,13 +1938,34 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		List<AadharDetailsReq> aadharDetailsReqs = new ArrayList<>();
 		if (!CommonUtils.isListNullOrEmpty(byCoApplicationIdAndAndTypeIsActive)) {
 			for (MFIApplicantDetail coApplicantDetail : byCoApplicationIdAndAndTypeIsActive) {
-				AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();
+				AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();				
 				BeanUtils.copyProperties(coApplicantDetail, aadharDetailsReq);
+				aadharDetailsReq.setGender(aadharDetailsReq.getGenderId() != null ? Gender.getById(aadharDetailsReq.getGenderId()).getValue(): "");
+				aadharDetailsReq.setMaritalStatus(aadharDetailsReq.getMaritalStatusId() != null ? MaritalStatusMst.getById(aadharDetailsReq.getMaritalStatusId()).getValue() : "");
+				aadharDetailsReq.setAddressProof(aadharDetailsReq.getAddressProofType() != null ? AddressProofType.getById(aadharDetailsReq.getAddressProofType()).getValue() : "");
+				/* FOR CO_APP IMAGE */
+				List<String> byteListCoAppImg = new ArrayList<String>();
+				String[] idsCoAppAddProof = (String[]) aadharDetailsReq.getAddressProofImg().split(",");
+				for (int i = 0; i < idsAddProof.length; i++) {
+					try {
+						ByteArrayResource resp = (ByteArrayResource) dmsClient.productDownloadDocument(Long.valueOf(idsCoAppAddProof[i]));
+						byte[] bytes = resp.getByteArray(); // Files.readAllBytes(Paths.get(resp.getFile().getAbsolutePath()));
+						String encoded = Base64.getEncoder().encodeToString(bytes).toString();
+						byteListCoAppImg.add(encoded);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}			
+				//aadharDetailsReq.setCoAppAddProof(byteListCoAppImg);
+				detailsReq.setCoAppAddProof(byteListCoAppImg);
+				/* FOR CO_APP IMAGE */
+				
 				aadharDetailsReqs.add(aadharDetailsReq);
 			}
-			detailsReq.setCoApplicantDetails(aadharDetailsReqs);
+			
+			detailsReq.setCoApplicantDetails(!CommonUtils.isListNullOrEmpty(aadharDetailsReqs) ? aadharDetailsReqs : null);
 		} else {
-			detailsReq.setCoApplicantDetails(Collections.EMPTY_LIST);
+			detailsReq.setCoApplicantDetails(null);
 		}
 
 		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository
@@ -2089,7 +2104,6 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		return false;
 	}
 
-	@Override
 	public Map<String, Object> getConsolidateInfo(MFIApplicantDetail mfiApplicationDetail) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Boolean isconsolidated = false;
