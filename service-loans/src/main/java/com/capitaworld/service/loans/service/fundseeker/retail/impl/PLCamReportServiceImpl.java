@@ -644,9 +644,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.DAY_PAST_DUE_PL, CommonUtils.printFields(collect.get(0),null));
 					}
-					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NET_ANNUAL_INCOME_PL)).collect(Collectors.toList());
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.ANNUAL_INCOME_PL)).collect(Collectors.toList()); 
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(Retail.NET_ANNUAL_INCOME_PL, CommonUtils.printFields(collect.get(0),null));
+						companyMap.put(Retail.ANNUAL_INCOME_PL, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMI_NMI_PL)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
