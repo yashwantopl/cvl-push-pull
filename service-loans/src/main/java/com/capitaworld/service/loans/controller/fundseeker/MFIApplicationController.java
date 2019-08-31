@@ -1057,61 +1057,30 @@ public class MFIApplicationController {
 			tempaltes.add("MFICAMLOL");
 			
 			
-			for (int i = 0; i < tempaltes.size(); i++) {
+			for (int i = 0; i < tempaltes.size(); i++)
+			{
 				reportRequest.setTemplate(tempaltes.get(i));
 				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-				 ZipEntry entry = new ZipEntry(tempaltes.get(i) + ".pdf");
-			        entry.setSize(byteArr.length);
-			        zos.putNextEntry(entry);
-			        zos.write(byteArr);
-			}
-			 zos.closeEntry();
-			    zos.close();			 		
-			    return baos.toByteArray();
-			
-			
-			/*
-			 * //for dpn page reportRequest.setTemplate("MFICAMDPN");
-			 * reportRequest.setType("MFICAMDPN");
-			 * 
-			 * // for lon cum dho page reportRequest.setTemplate("MFICAMLOANDHO");
-			 * reportRequest.setType("MFICAMLOANDHO");
-			 * 
-			 * // for lol page reportRequest.setTemplate("MFICAMLOL");
-			 * reportRequest.setType("MFICAMLOL");
-			 */
 
-			/*logger.info("========================>" + reportRequest);
-			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			MultipartFile multipartFile = new DDRMultipart(byteArr);
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("applicationId", applicationId);
-			jsonObj.put("productDocumentMappingId", 355L);
-			jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-			jsonObj.put("originalFileName", "MFICAMREPORT" + applicationId + ".pdf");
+				if (byteArr != null) {
+					ZipEntry entry = new ZipEntry(tempaltes.get(i) + ".pdf");
+					entry.setSize(byteArr.length);
+					zos.putNextEntry(entry);
+					zos.write(byteArr);
+					
+				}
 
-			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
-			if (documentResponse.getStatus() == 200) {
-				logger.info("" + documentResponse);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),
-						HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
 			}
-		}*/ }catch (Exception e) {
-			logger.error("Error while getting MAP Details==>", e);
-			return null;
-			/*
-			 * return new ResponseEntity<LoansResponse>( new
-			 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
-			 * HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
-			 */
+			zos.closeEntry();
+			zos.close();
+			return baos.toByteArray();
+			
 		}
-
-	
+		catch (Exception e) {
+			logger.error("Error while getting MAP Details==>", e);
+			}
+		
+		return null;
 	}
 	  
 

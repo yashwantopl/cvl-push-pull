@@ -1,11 +1,13 @@
 package com.capitaworld.service.loans.model.micro_finance;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -26,6 +28,8 @@ public class AadharDetailsReq implements Serializable {
     private String email;
     private String lastName;
     private String middleName;
+    
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date birthDate;
 
     private Integer genderId;
@@ -100,6 +104,11 @@ public class AadharDetailsReq implements Serializable {
     
     private Boolean isConsolidated;
     private String consolidatedName;
+    
+    private String gender;
+    private String maritalStatus;
+    private String addressProof;
+    
 
     public AadharDetailsReq() {
     }
@@ -570,6 +579,31 @@ public class AadharDetailsReq implements Serializable {
 	public void setConsolidatedName(String consolidatedName) {
 		this.consolidatedName = consolidatedName;
 	}
-    
-    
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public String getAddressProof() {
+		return addressProof;
+	}
+
+	public void setAddressProof(String addressProof) {
+		this.addressProof = addressProof;
+	}
+
+	
+	
 }
