@@ -1505,7 +1505,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			EligibilityResponse eligibilityResp= eligibilityClient.getHLLoanData(eligibilityReq);
 			if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
 				//mapData.put("assLimit", CommonUtils.convertToValueForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), RetailEligibilityRequest.class), new HashMap<>()));
-				map.put("assLimits",CommonUtils.printFieldsForValue((LinkedHashMap<String, Object>)eligibilityResp.getData(),new HashMap<>()));
+				map.put("assLimits",CommonUtils.printFieldsForDecimalValue((LinkedHashMap<String, Object>)eligibilityResp.getData(),new HashMap<>()));
 			}
 		}catch (Exception e) {
 			logger.error("Error while getting Eligibility data : ",e);
