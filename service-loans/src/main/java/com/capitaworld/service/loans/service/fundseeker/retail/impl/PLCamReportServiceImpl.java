@@ -854,7 +854,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				EligibilityResponse eligibilityResp= eligibilityClient.getRetailLoanData(eligibilityReq);
 				if(!CommonUtils.isObjectNullOrEmpty(eligibilityResp)){
 					//map.put("assLimits",CommonUtils.convertToValueForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), PersonalEligibilityRequest.class), new HashMap<>()));
-					map.put("assLimits",CommonUtils.printFieldsForValue((LinkedHashMap<String, Object>)eligibilityResp.getData(), new HashMap<>()));
+					map.put("assLimits",CommonUtils.printFieldsForDecimalValue((LinkedHashMap<String, Object>)eligibilityResp.getData(), new HashMap<>()));
 				}
 			}catch (Exception e) {
 				logger.error("Error while getting Eligibility data : ",e);
