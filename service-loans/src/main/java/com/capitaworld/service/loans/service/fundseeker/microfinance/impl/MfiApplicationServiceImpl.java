@@ -1258,7 +1258,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		CibilResponse cibilReportMfi = null;
 
 		try {
-			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+			cibilReportMfi = null;//cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
 				CibilResponse data = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) cibilReportMfi.getData(), CibilResponse.class);
