@@ -143,7 +143,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	applicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
                 	applicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
                 	applicantDetail.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp());
-                	applicantDetail.setIsOwnedProp(plRetailApplicantRequest.getIsCibilTermsAgree());
+                	applicantDetail.setIsCibilTermsAgree(plRetailApplicantRequest.getIsCibilTermsAgree());
                 	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
                 } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
                 	applicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
