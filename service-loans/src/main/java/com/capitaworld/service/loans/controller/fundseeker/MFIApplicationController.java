@@ -16,14 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.reports.ReportRequest;
@@ -56,19 +49,19 @@ public class MFIApplicationController {
 
 	@Autowired
 	private MfiApplicationService mfiApplicationService;
-	
-	@Autowired
-	  private ReportsClient reportsClient;
 
-	  @Autowired
-	  private DMSClient dmsClient;
+	@Autowired
+	private ReportsClient reportsClient;
+
+	@Autowired
+	private DMSClient dmsClient;
 
 	/**
 	 * save Aadhar detail For create new Application in MFI Application
 	 *
 	 */
 	@PostMapping(value = "/saveAdharDetailsWithMultiImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveAdharDetailsWithMultiImage(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile[] addressProofFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveAdharDetailsWithMultiImage(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile[] addressProofFile, @RequestPart("requestData") String requestData, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save aadhar details");
@@ -83,7 +76,12 @@ public class MFIApplicationController {
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
-			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
+			AadharDetailsReq aadharDetailsReq;
+			if (isEncrypted  != null && isEncrypted == 0) {
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+			} else {
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
+			}
 			aadharDetailsReq.setUserId(userId);
 			aadharDetailsReq.setOrgId(userOrgId);
 			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(uploadingFile, addressProofFile,aadharDetailsReq);
@@ -99,7 +97,7 @@ public class MFIApplicationController {
 	}
 
 	@PostMapping(value = "/saveAdharDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile addressProofFile,@RequestPart("addressFile1") MultipartFile addressProofFile1, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveAdharDetails(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("addressFile") MultipartFile addressProofFile,@RequestPart("addressFile1") MultipartFile addressProofFile1, @RequestPart("requestData") String requestData, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save aadhar details");
@@ -114,12 +112,17 @@ public class MFIApplicationController {
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
-			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
+			AadharDetailsReq aadharDetailsReq;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+			} else {
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
+			}
 			aadharDetailsReq.setUserId(userId);
 			aadharDetailsReq.setOrgId(userOrgId);
-            MultipartFile[]  addressProofFiles = new MultipartFile[2];
-            addressProofFiles[0] = addressProofFile;
-            addressProofFiles[1] = addressProofFile1;
+			MultipartFile[]  addressProofFiles = new MultipartFile[2];
+			addressProofFiles[0] = addressProofFile;
+			addressProofFiles[1] = addressProofFile1;
 			AadharDetailsReq aadharDetails = mfiApplicationService.saveOrUpdateAadharDetails(uploadingFile, addressProofFiles,aadharDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse(aadharDetails.getMessage(), HttpStatus.OK.value(), aadharDetails), HttpStatus.OK);
@@ -132,24 +135,32 @@ public class MFIApplicationController {
 		}
 	}
 	@PostMapping(value = "/saveConsentFormImages", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveConsentFormImages(@RequestPart("file") MultipartFile[] uploadingFile, @RequestPart("requestData") String requestData, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveConsentFormImages(@RequestPart("file") MultipartFile[] uploadingFile, @RequestPart("requestData") String requestData, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "save Consent Form Images Multiple details");
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (userId == null) {
-                logger.warn("userId  can not be empty ==>" + userId);
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
-            }
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+			}
 			if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile)){
 				logger.warn("Data Should not be null ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
 			}
-			AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
+
+			AadharDetailsReq aadharDetailsReq;
+			if (isEncrypted  != null && isEncrypted == 0){
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+			}else {
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
+			}
+
+
 			aadharDetailsReq.setUserId(userId);
-            boolean consentFormImage = mfiApplicationService.saveConsentFormImage(uploadingFile, aadharDetailsReq);
-            CommonDocumentUtils.endHook(logger, "save");
+			boolean consentFormImage = mfiApplicationService.saveConsentFormImage(uploadingFile, aadharDetailsReq);
+			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), consentFormImage), HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -160,37 +171,44 @@ public class MFIApplicationController {
 		}
 	}
 
-    @PostMapping(value = "/saveConsentFormImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("file1") MultipartFile uploadingFile1, @RequestPart("requestData") String requestData, HttpServletRequest request) {
-        try {
-            // request must not be null
-            CommonDocumentUtils.startHook(logger, "save Consent Form Images diff parameters details");
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (userId == null) {
-                logger.warn("userId  can not be empty ==>" + userId);
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
-            }
-            if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile)|| CommonUtils.isObjectNullOrEmpty(uploadingFile1)){
-                logger.warn("Data Should not be null ==>");
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
-            }
-            AadharDetailsReq aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
-            aadharDetailsReq.setUserId(userId);
-            MultipartFile[] multipartFiles = new MultipartFile[2];
-            multipartFiles[0] = uploadingFile;
-            multipartFiles[1] = uploadingFile1;
-            boolean consentFormImage = mfiApplicationService.saveConsentFormImage(multipartFiles, aadharDetailsReq);
-            CommonDocumentUtils.endHook(logger, "save");
-            return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), consentFormImage), HttpStatus.OK);
+	@PostMapping(value = "/saveConsentFormImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveConsentFormImage(@RequestPart("file") MultipartFile uploadingFile,@RequestPart("file1") MultipartFile uploadingFile1, @RequestPart("requestData") String requestData, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted,  HttpServletRequest request) {
+		try {
+			// request must not be null
+			CommonDocumentUtils.startHook(logger, "save Consent Form Images diff parameters details");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+			}
+			if(CommonUtils.isObjectNullOrEmpty(requestData) || CommonUtils.isObjectNullOrEmpty(uploadingFile)|| CommonUtils.isObjectNullOrEmpty(uploadingFile1)){
+				logger.warn("Data Should not be null ==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+			}
 
-        } catch (Exception e) {
-            logger.error("Error while saving save Adhar Details Details ==>", e);
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.OK);
-        }
-    }
+			AadharDetailsReq aadharDetailsReq;
+			if (isEncrypted  != null && isEncrypted == 0){ //for encryption
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, AadharDetailsReq.class);
+			}else {//for skip encryption
+				aadharDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), AadharDetailsReq.class);
+			}
+
+			aadharDetailsReq.setUserId(userId);
+			MultipartFile[] multipartFiles = new MultipartFile[2];
+			multipartFiles[0] = uploadingFile;
+			multipartFiles[1] = uploadingFile1;
+			boolean consentFormImage = mfiApplicationService.saveConsentFormImage(multipartFiles, aadharDetailsReq);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), consentFormImage), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving save Adhar Details Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@GetMapping(value = "/getAadharDetails/{applicationId}/{type}")
 	public ResponseEntity<LoansResponse> getAadharDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
@@ -215,7 +233,7 @@ public class MFIApplicationController {
 	}
 
 	@PostMapping(value = "/savePersonalDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> savePersonalDetails(@RequestBody String personalDataReq,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> savePersonalDetails(@RequestBody String personalDataReq, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			CommonDocumentUtils.startHook(logger, "save personal details");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -223,7 +241,13 @@ public class MFIApplicationController {
 				logger.warn("userId  can not be empty ==>" + userId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			PersonalDetailsReq personalDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(personalDataReq), PersonalDetailsReq.class);
+			PersonalDetailsReq personalDetailsReq;
+			if (isEncrypted  != null && isEncrypted == 0){
+				personalDetailsReq = MultipleJSONObjectHelper.getObjectFromString(personalDataReq, PersonalDetailsReq.class);
+			}else {
+				personalDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(personalDataReq), PersonalDetailsReq.class);
+			}
+
 			if(personalDetailsReq.getId() == null){
 				logger.warn("Id  can not be empty ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -274,10 +298,16 @@ public class MFIApplicationController {
 	}
 
 	@PostMapping(value = "/saveProjectDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveProjectDetails(@RequestBody String projectDataReq) {
+	public ResponseEntity<LoansResponse> saveProjectDetails(@RequestBody String projectDataReq, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted) {
 		try {
 			CommonDocumentUtils.startHook(logger, "save project details");
-			ProjectDetailsReq projectDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(projectDataReq), ProjectDetailsReq.class);
+			ProjectDetailsReq projectDetailsReq;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				projectDetailsReq = MultipleJSONObjectHelper.getObjectFromString(projectDataReq, ProjectDetailsReq.class);
+			} else {
+				projectDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(projectDataReq), ProjectDetailsReq.class);
+			}
+
 			if(projectDetailsReq.getId() == null){
 				logger.warn("Id  can not be empty ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -308,7 +338,7 @@ public class MFIApplicationController {
 	}
 
 	@PostMapping(value = "/saveBankDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveBankDetails(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveBankDetails(@RequestPart("file") MultipartFile uploadingFile, @RequestPart("requestData") String requestData, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted ,HttpServletRequest request) {
 		try {
 			CommonDocumentUtils.startHook(logger, "save bank details");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -320,12 +350,17 @@ public class MFIApplicationController {
 				logger.warn("Data  can not be empty ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			MfiBankDetailsReq mfiBankDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), MfiBankDetailsReq.class);
+			MfiBankDetailsReq mfiBankDetailsReq;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				mfiBankDetailsReq = MultipleJSONObjectHelper.getObjectFromString(requestData, MfiBankDetailsReq.class);
+			} else {
+				mfiBankDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(requestData), MfiBankDetailsReq.class);
+			}
 			if(mfiBankDetailsReq.getApplicationId() == null){
-                logger.warn("applicationId  can not be empty ==>");
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
-            mfiBankDetailsReq.setUserId(userId);
+				logger.warn("applicationId  can not be empty ==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			mfiBankDetailsReq.setUserId(userId);
 			Object bankDetails = mfiApplicationService.saveOrUpdateBankDetails(uploadingFile,mfiBankDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save bank details");
 			if(bankDetails instanceof Boolean){
@@ -376,7 +411,7 @@ public class MFIApplicationController {
 
 	@GetMapping(value = "/getApplicantDetails/{applicationId}/{type}")
 	public ResponseEntity<LoansResponse> getApplicantDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type,
-			HttpServletRequest request) {
+															 HttpServletRequest request) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "getApplicantDetails");
@@ -413,7 +448,7 @@ public class MFIApplicationController {
 	}
 
 	@PostMapping(value = "/saveIncomeExpenditureDetails", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveIncomeExpenditureDetails(@RequestBody String mfiIncomeAndExpenditureDataReq, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveIncomeExpenditureDetails(@RequestBody String mfiIncomeAndExpenditureDataReq, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			CommonDocumentUtils.startHook(logger, "save Income expenditure");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -423,7 +458,13 @@ public class MFIApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiIncomeAndExpenditureDataReq), MfiIncomeAndExpenditureReq.class);
+			MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				mfiIncomeAndExpenditureReq = MultipleJSONObjectHelper.getObjectFromString(mfiIncomeAndExpenditureDataReq, MfiIncomeAndExpenditureReq.class);
+			} else {
+				mfiIncomeAndExpenditureReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiIncomeAndExpenditureDataReq), MfiIncomeAndExpenditureReq.class);
+			}
+
 			if(mfiIncomeAndExpenditureReq.getId() == null){
 				logger.warn("Id  can not be empty ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -472,43 +513,48 @@ public class MFIApplicationController {
 		}
 	}
 
-    @PostMapping(value = "/saveAssetsLiabilityDetails", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> saveAssetsLiabilityDetails(@RequestBody String mfiAssetsDataReq, HttpServletRequest request) {
-        try {
-            logger.info("service call saveAssetsLiabilityDetails----------->");
-            CommonDocumentUtils.startHook(logger, "save");
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+	@PostMapping(value = "/saveAssetsLiabilityDetails", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveAssetsLiabilityDetails(@RequestBody String mfiAssetsDataReq , @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
+		try {
+			logger.info("service call saveAssetsLiabilityDetails----------->");
+			CommonDocumentUtils.startHook(logger, "save");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
-            if (userId == null) {
-                logger.warn("userId  can not be empty ==>" + userId);
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 
-			MfiAssetsDetailsReq mfiAssetsDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiAssetsDataReq), MfiAssetsDetailsReq.class);
+			MfiAssetsDetailsReq mfiAssetsDetailsReq;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				mfiAssetsDetailsReq = MultipleJSONObjectHelper.getObjectFromString(mfiAssetsDataReq, MfiAssetsDetailsReq.class);
+			} else {
+				mfiAssetsDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiAssetsDataReq), MfiAssetsDetailsReq.class);
+			}
 			if(mfiAssetsDetailsReq.getId() == null || mfiAssetsDetailsReq.getApplicationId() == null){
 				logger.warn("Id / application id  can not be empty ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			mfiAssetsDetailsReq.setUserId(userId);
 			LoansResponse assetsLiabilityDetails = mfiApplicationService.saveOrUpdateAssetsLiabilityDetails(mfiAssetsDetailsReq);
-            CommonDocumentUtils.endHook(logger, "save");
-            if(assetsLiabilityDetails == null){
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.OK);
-            } else {
-                return new ResponseEntity<LoansResponse>(assetsLiabilityDetails,HttpStatus.OK);
-            }
+			CommonDocumentUtils.endHook(logger, "save");
+			if(assetsLiabilityDetails == null){
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(assetsLiabilityDetails,HttpStatus.OK);
+			}
 
 
-        } catch (Exception e) {
-            logger.error("Error while saving save Assets and Liability Details ==>", e);
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.OK);
-        }
-    }
+		} catch (Exception e) {
+			logger.error("Error while saving save Assets and Liability Details ==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@GetMapping(value = "/getAssetsLiabilityDetails/{applicationId}")
 	public ResponseEntity<LoansResponse> getAssetsLiabilityDetails(@PathVariable("applicationId") Long applicationId) {
@@ -556,7 +602,7 @@ public class MFIApplicationController {
 
 	@PostMapping(value = "/saveLoanAssessmentDetails", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanAssessmentDetails(
-			@RequestBody String mfiLoanAssessmentDataReq, HttpServletRequest request) {
+			@RequestBody String mfiLoanAssessmentDataReq, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			logger.info("service call saveLoanAssessmentDetails----------->");
 			CommonDocumentUtils.startHook(logger, "save");
@@ -567,23 +613,28 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiLoanAssessmentDataReq), MfiLoanAssessmentDetailsReq.class);
+			MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				mfiLoanAssessmentDetailsReq = MultipleJSONObjectHelper.getObjectFromString(mfiLoanAssessmentDataReq, MfiLoanAssessmentDetailsReq.class);
+			} else {
+				mfiLoanAssessmentDetailsReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiLoanAssessmentDataReq), MfiLoanAssessmentDetailsReq.class);
+			}
 			if(mfiLoanAssessmentDetailsReq.getId() == null){
-                logger.warn("Id can not be empty ==>");
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
+				logger.warn("Id can not be empty ==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 
 			Object loanAssessmentDetails = mfiApplicationService.saveOrUpdateLoanAssessmentDetails(mfiLoanAssessmentDetailsReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			if(loanAssessmentDetails instanceof Boolean) {
-                boolean loanAssessmentDetail = (Boolean) loanAssessmentDetails;
-                if(loanAssessmentDetail) {
-                    return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-                            HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                            HttpStatus.OK);
-                }
+				boolean loanAssessmentDetail = (Boolean) loanAssessmentDetails;
+				if(loanAssessmentDetail) {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+							HttpStatus.OK);
+				} else {
+					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.OK);
+				}
 			} else {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(loanAssessmentDetails.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
@@ -598,7 +649,7 @@ public class MFIApplicationController {
 
 
 	@PostMapping(value = "/saveLoanRecomandationDetails", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveLoanRecomandationDetails(@RequestBody String mfiLoanRecomandationDataReq, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveLoanRecomandationDetails(@RequestBody String mfiLoanRecomandationDataReq, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			logger.info("service call saveLoanAssessmentDetails----------->");
 			CommonDocumentUtils.startHook(logger, "save");
@@ -609,7 +660,12 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			MfiLoanRecomandationReq mfiLoanRecomandationReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiLoanRecomandationDataReq), MfiLoanRecomandationReq.class);
+			MfiLoanRecomandationReq mfiLoanRecomandationReq;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				mfiLoanRecomandationReq = MultipleJSONObjectHelper.getObjectFromString(mfiLoanRecomandationDataReq, MfiLoanRecomandationReq.class);
+			} else{
+				mfiLoanRecomandationReq = MultipleJSONObjectHelper.getObjectFromString(new EncryptionUtils().decriptWithKey(mfiLoanRecomandationDataReq), MfiLoanRecomandationReq.class);
+			}
 			if(mfiLoanRecomandationReq.getId() == null){
 				logger.warn("Id can not be empty ==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -619,8 +675,8 @@ public class MFIApplicationController {
 			Object loanAssessmentDetails = mfiApplicationService.saveOrUpdateLoanRecommandationDetails(mfiLoanRecomandationReq);
 			CommonDocumentUtils.endHook(logger, "save");
 			if(loanAssessmentDetails instanceof Boolean) {
-					return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-							HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("fail to save data.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>((LoansResponse) loanAssessmentDetails,HttpStatus.OK);
 			}
@@ -655,7 +711,7 @@ public class MFIApplicationController {
 		}
 	}
 	@GetMapping(value = "/getCashFlowAssesmentByAppId/{applicationId}/{type}")
-	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type) {
+	public ResponseEntity<LoansResponse> getCashFlowAssesmentByAppId(@PathVariable("applicationId") Long applicationId,@PathVariable("type") Integer type, @PathVariable(value="isEncrypted",required = false) Integer isEncrypted) {
 		try {
 
 			CommonDocumentUtils.startHook(logger, "getCashFlowAssesmentByAppId");
@@ -664,10 +720,15 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-		MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId,type);
+			MfiLoanAssessmentDetailsReq mfiLoanAssessmentDetailsReq = mfiApplicationService.getCashFlowAssesmentByAppId(applicationId,type);
 			CommonDocumentUtils.endHook(logger, "getCashFlowAssesmentByAppId");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
-					HttpStatus.OK.value(),  new EncryptionUtils().encryptionWithKey(mfiLoanAssessmentDetailsReq.toString())), HttpStatus.OK);
+			if(isEncrypted  != null && isEncrypted == 0) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
+						HttpStatus.OK.value(), mfiLoanAssessmentDetailsReq), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Loan Assessment details.",
+						HttpStatus.OK.value(), new EncryptionUtils().encryptionWithKey(mfiLoanAssessmentDetailsReq.toString())), HttpStatus.OK);
+			}
 
 		} catch (Exception e) {
 			logger.error("Error while get CashFlow Assesment By AppId ==>", e);
@@ -794,7 +855,7 @@ public class MFIApplicationController {
 		}
 	}
 	@GetMapping(value = "/callBureauGetFinancialDetails/{applicationId}/{applicantId}/{type}",  produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") String applicationEncId, @PathVariable("applicantId") String applicantEncId, @PathVariable("type") Integer type, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> callBueroGetFinancialDetails(@PathVariable("applicationId") String applicationEncId, @PathVariable("applicantId") String applicantEncId, @PathVariable("type") Integer type, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted, HttpServletRequest request) {
 		try {
 			logger.info("service call callBueroGetFinancialDetails----------->");
 			CommonDocumentUtils.startHook(logger, "fetch");
@@ -805,8 +866,15 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			Long applicationId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicationEncId));
-			Long applicantId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicantEncId));
+			Long applicationId,applicantId;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				applicationId = Long.valueOf(applicationEncId);
+				applicantId = Long.valueOf(applicantEncId);
+			} else {
+				applicationId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicationEncId));
+				applicantId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicantEncId));
+			}
+
 			LoansResponse loansResponse = mfiApplicationService.callBureauGetFinancialDetails(applicationId, applicantId, userId, type);
 			if (!CommonUtils.isObjectNullOrEmpty(loansResponse)) {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -862,10 +930,10 @@ public class MFIApplicationController {
 		}
 
 	}
-	
+
 	@PostMapping(value = "/saveFinancialDetails/{applicationId}/{userId}/{applicantId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveFinancialDetails(@RequestBody List<MFIFinancialArrangementRequest> financialDataList, @PathVariable("applicationId") Long applicationId, 
-			@PathVariable("userId") Long createdBy, @PathVariable("applicantId") Long applicantId) {
+	public ResponseEntity<LoansResponse> saveFinancialDetails(@RequestBody List<MFIFinancialArrangementRequest> financialDataList, @PathVariable("applicationId") Long applicationId,
+															  @PathVariable("userId") Long createdBy, @PathVariable("applicantId") Long applicantId) {
 		try {
 			if (financialDataList == null) {
 				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -880,11 +948,11 @@ public class MFIApplicationController {
 	@PostMapping(value = "/saveFinancialData", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinancialData(@RequestBody MFIFinancialArrangementRequest financialData,HttpServletRequest request) {
 		try {
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (userId == null) {
-                logger.warn("userId  can not be empty ==>" + userId);
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 			if (financialData == null) {
 				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -895,21 +963,27 @@ public class MFIApplicationController {
 		}
 	}
 	@GetMapping(value = "/proceedFinancialDetails/{applicationId}/{creditWorthiness}")
-	public ResponseEntity<LoansResponse> proceedFinancialDetails(@PathVariable("applicationId") String applicationIdEnc,@PathVariable("creditWorthiness") String creditWorthinessEnc, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> proceedFinancialDetails(@PathVariable("applicationId") String applicationIdEnc, @PathVariable("creditWorthiness") String creditWorthinessEnc, @RequestParam(value="isEncrypted",required = false) Integer isEncrypted , HttpServletRequest request) {
 		try {
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (userId == null) {
-                logger.warn("userId  can not be empty ==>" + userId);
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
-            Long applicationId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicationIdEnc));
-            Integer creditWorthiness = Integer.valueOf(new EncryptionUtils().decriptWithKey(creditWorthinessEnc));
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			Long applicationId;Integer creditWorthiness;
+			if(isEncrypted  != null && isEncrypted == 0) {
+				applicationId = Long.valueOf(applicationIdEnc);
+				creditWorthiness = Integer.valueOf(creditWorthinessEnc);
+			} else  {
+				applicationId = Long.valueOf(new EncryptionUtils().decriptWithKey(applicationIdEnc));
+				creditWorthiness = Integer.valueOf(new EncryptionUtils().decriptWithKey(creditWorthinessEnc));
+			}
 			return new ResponseEntity<>(new LoansResponse("Saved successfully", HttpStatus.OK.value(), mfiApplicationService.proceedFinancialFinalData(applicationId, userId, creditWorthiness)), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
-	
+
 	@GetMapping(value = "/getFinancialDetails/{applicationId}/{applicantId}")
 	public ResponseEntity<LoansResponse> getFinancialDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("applicantId") Long applicantId) {
 		try {
@@ -919,7 +993,7 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			List<MFIFinancialArrangementRequest> mfiFinancialArrangementRequest = mfiApplicationService.getFinancialDetailsAppId(applicationId,applicantId);
-			
+
 			CommonDocumentUtils.endHook(logger, "Get Financial Details");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Fetch Financial details.",
 					HttpStatus.OK.value(), mfiFinancialArrangementRequest), HttpStatus.OK);
@@ -931,7 +1005,7 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	
+
 	@PostMapping(value = "/saveAllApplicantsDetails", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveAllApplicantsDetails(
 			@RequestPart("profileimg") MultipartFile uploadingFile,
@@ -979,11 +1053,11 @@ public class MFIApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	
-	
+
+
 	@RequestMapping(value = "/documentUpload", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.ALL_VALUE)
 	public ResponseEntity<LoansResponse> documentUpload(@RequestPart("uploadRequest") String uploadRequestString,
-			@RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest request) {
+														@RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest request) {
 		try {
 			Long userId = (Long)request.getAttribute(CommonUtils.USER_ID);
 			CommonDocumentUtils.startHook(logger, "uploadDoc");
@@ -991,27 +1065,27 @@ public class MFIApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
-			
+
+
 			for (MultipartFile multipartFile : multipartFiles) {
 
-                String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
-                
-                if(!"pdf".equalsIgnoreCase(extension)) {
-                	logger.warn("File format is not PDF...!");
-    				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.WRONG_FILE_FORMAT, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-                }
+				String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+
+				if(!"pdf".equalsIgnoreCase(extension)) {
+					logger.warn("File format is not PDF...!");
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.WRONG_FILE_FORMAT, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
 			}
 			MfiApplicantDetailsReq mfiApplicantDetailsReq = MultipleJSONObjectHelper.getObjectFromString(uploadRequestString, MfiApplicantDetailsReq.class);
-			
+
 			if (CommonUtils.isObjectNullOrEmpty(mfiApplicantDetailsReq)||CommonUtils.isObjectNullOrEmpty(multipartFiles)) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			boolean documentUpload = mfiApplicationService.uploadDocuments(multipartFiles, mfiApplicantDetailsReq);
-            CommonDocumentUtils.endHook(logger, "save");
-            return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), documentUpload), HttpStatus.OK);
-			
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("successfull upload images", HttpStatus.OK.value(), documentUpload), HttpStatus.OK);
+
 
 		} catch (Exception e) {
 			logger.error("Error while document upload "+e.getMessage());
@@ -1025,7 +1099,7 @@ public class MFIApplicationController {
 
 	@GetMapping(value = "/getReportDetails/{applicationId}/{type}")
 	public byte[] getReportDetails(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("type") Integer type, HttpServletRequest request) {
+								   @PathVariable("type") Integer type, HttpServletRequest request) {
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		/*
@@ -1044,19 +1118,19 @@ public class MFIApplicationController {
 			response.putAll(applicantDetails);
 			reportRequest.setParams(response);
 			//reportRequest.setParams(applicantDetails);
-			
-			  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			  ZipOutputStream zos = new ZipOutputStream(baos);
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ZipOutputStream zos = new ZipOutputStream(baos);
 //			reportRequest.setTemplate("MFICAMPRIMARY");
 //			reportRequest.setType("MFICAMPRIMARY");
-			
+
 			List<String> tempaltes  =  new ArrayList<String>();  //["MFICAMPRIMARY" A "MFICAMDPN"	 + "MFICAMLOANDHO" + "MFICAMLOL"];
 			tempaltes.add("MFICAMPRIMARY");
 			tempaltes.add("MFICAMDPN");
 			tempaltes.add("MFICAMLOANDHO");
 			tempaltes.add("MFICAMLOL");
-			
-			
+
+
 			for (int i = 0; i < tempaltes.size(); i++)
 			{
 				reportRequest.setTemplate(tempaltes.get(i));
@@ -1067,24 +1141,24 @@ public class MFIApplicationController {
 					entry.setSize(byteArr.length);
 					zos.putNextEntry(entry);
 					zos.write(byteArr);
-					
+
 				}
 
 			}
 			zos.closeEntry();
 			zos.close();
 			return baos.toByteArray();
-			
+
 		}
 		catch (Exception e) {
 			logger.error("Error while getting MAP Details==>", e);
-			}
-		
+		}
+
 		return null;
 	}
-	  
 
-	
-	
+
+
+
 
 }
