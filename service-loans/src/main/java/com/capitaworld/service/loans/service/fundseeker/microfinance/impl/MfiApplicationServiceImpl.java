@@ -1975,6 +1975,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		try {
 			LoanSanctionRequest loanSanctionRequest = loanSanctionService.getSanctionDetail(applicationId);
 			List<LoanDisbursementRequest> disbursementList = loanDisbursementService.getDisbursedList(applicationId);
+			loanSanctionRequest.setSanctionAmtinWords(CommonUtils.convertRupeesInWords((int)Math.round(loanSanctionRequest.getSanctionAmount()!=null? loanSanctionRequest.getSanctionAmount():0)));
 			detailsReq.setSanctionDetail(loanSanctionRequest);
 			detailsReq.setDisbursementDetails(disbursementList);
 
