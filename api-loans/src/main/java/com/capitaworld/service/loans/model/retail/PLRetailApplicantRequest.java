@@ -145,6 +145,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Boolean isCheckOffPayOutstndAmount;
     private Boolean isCheckOffNotChangeSalAcc;
     private Boolean isOwnedProp;
+    private Boolean isCibilTermsAgree;
 
     public Integer getLoanPurposeQueType() {
 		return loanPurposeQueType;
@@ -1032,5 +1033,13 @@ public class PLRetailApplicantRequest implements Serializable {
 
     public void setIsOwnedProp(Boolean isOwnedProp) {
         this.isOwnedProp = isOwnedProp;
+    }
+
+    public Boolean getIsCibilTermsAgree() {
+        return isCibilTermsAgree;
+    }
+
+    public void setIsCibilTermsAgree(Boolean isCibilTermsAgree) {
+        this.isCibilTermsAgree = isCibilTermsAgree;
     }
 }

@@ -1379,8 +1379,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId,
-			Long createdBy, Long applicantId) {
-		mfiFinancialRepository.inActive(createdBy, applicationId, applicantId);
+			Long createdBy, Long applicantId,Integer provider) {
+		mfiFinancialRepository.inActive(createdBy, applicationId, applicantId,provider);
 		for (MFIFinancialArrangementRequest req : financialDataList) {
 			MfiFinancialArrangementsDetail arrangementsDetail = new MfiFinancialArrangementsDetail();
 			BeanUtils.copyProperties(req, arrangementsDetail);
@@ -1975,6 +1975,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		try {
 			LoanSanctionRequest loanSanctionRequest = loanSanctionService.getSanctionDetail(applicationId);
 			List<LoanDisbursementRequest> disbursementList = loanDisbursementService.getDisbursedList(applicationId);
+			loanSanctionRequest.setSanctionAmtinWords(CommonUtils.convertRupeesInWords((int)Math.round(loanSanctionRequest.getSanctionAmount()!=null? loanSanctionRequest.getSanctionAmount():0)));
 			detailsReq.setSanctionDetail(loanSanctionRequest);
 			detailsReq.setDisbursementDetails(disbursementList);
 
