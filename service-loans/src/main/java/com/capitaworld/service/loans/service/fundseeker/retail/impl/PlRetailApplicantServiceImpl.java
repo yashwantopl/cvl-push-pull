@@ -389,6 +389,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	saveFinObj.setEmi(null);
                 }
                 
+                if(reqObj.getBureauOrCalculatedEmi() == null){
+                	saveFinObj.setBureauOrCalculatedEmi(0.0);
+                }
+                
                 financialArrangementsDetails.add(saveFinObj);
             }
             
