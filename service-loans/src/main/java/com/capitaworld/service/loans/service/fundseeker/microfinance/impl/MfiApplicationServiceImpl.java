@@ -1255,38 +1255,14 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			return loansResponse;
 
 		}
-		CibilResponse cibilReportMfi = null;
-
 		try {
-			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+			CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
-				CibilResponse data = MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>) cibilReportMfi.getData(), CibilResponse.class);
-				if (data.getStatus() != 200) {
-					loansResponse.setMessage(data.getMessage());
-					loansResponse.setStatus(data.getStatus());
-					loansResponse.setData(cibilReportMfi.getData());
-					return loansResponse;
-				}
-
-				List<MFIFinancialArrangementRequest> financialDetailsAppId = getFinancialDetailsAppId(applicationId,
-						userId);
-				bureauCall = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
-						.getStringfromObject(financialDetailsAppId);
-				if (!CommonUtils.isObjectNullOrEmpty(bureauCall)) {
-					encryption = new EncryptionUtils().encryptionWithKey(bureauCall);
-					loansResponse.setMessage("Successfully Fetch Existing Loan details and bureau report.");
-					loansResponse.setStatus(HttpStatus.OK.value());
-					loansResponse.setData(encryption);
-					return loansResponse;
-				}
+				loansResponse.setData(cibilReportMfi.getData());
+				return loansResponse;
 			}
 		} catch (CibilException e) {
-			e.printStackTrace();
-			logger.info("CibilException error while getReport");
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.info("IOException for generate report");
+			logger.info("CibilException error while getReport [{}]",e);
 		}
 		loansResponse.setMessage("Something went wrong while call cibil report");
 		loansResponse.setData(null);
