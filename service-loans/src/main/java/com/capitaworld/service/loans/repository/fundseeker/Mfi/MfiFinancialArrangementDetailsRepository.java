@@ -18,8 +18,8 @@ import com.capitaworld.service.loans.model.micro_finance.MfiLoanAssessmentDetail
 public interface MfiFinancialArrangementDetailsRepository extends JpaRepository<MfiFinancialArrangementsDetail, Long> {
 	
 	@Modifying
-	@Query("update MfiFinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:createdBy where pm.applicationId.id =:applicationId and pm.isActive = true and pm.applicantId =:applicantId")
-	public int inActive(@Param("createdBy") Long createdBy, @Param("applicationId") Long applicationId, @Param("applicantId") Long applicantId);
+	@Query("update MfiFinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:createdBy where pm.applicationId.id =:applicationId and pm.isActive = true and pm.applicantId =:applicantId and pm.provider =:provider")
+	public int inActive(@Param("createdBy") Long createdBy, @Param("applicationId") Long applicationId, @Param("applicantId") Long applicantId, @Param("provider") Integer provider);
 
 	
 	@Query("select new com.capitaworld.service.loans.model.mfi.MFIFinancialArrangementRequest(fn.id,fn.applicationId.id,fn.financialInstitutionName,fn.otherInstitutionName,fn.amount,fn.loanDate,fn.reportedDate,fn.loanType,fn.emi,fn.createdBy,fn.createdDate,fn.modifiedBy,fn.modifiedDate,fn.outstandingAmount,fn.isManuallyAdded,fn.bureauOutstandingAmount,fn.bankerOutstandingAmount,fn.bureauOrCalculatedEmi,fn.isBureauEmi,fn.isActive,fn.provider,fn.applicantId) from MfiFinancialArrangementsDetail fn where fn.applicationId.id= :appId and fn.applicantId =:applicantId and fn.isActive=true")
