@@ -1258,6 +1258,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		try {
 			CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
+				loansResponse.setStatus(HttpStatus.OK.value());
+				loansResponse.setMessage("Both Bureu Called successful");
 				loansResponse.setData(cibilReportMfi.getData());
 				return loansResponse;
 			}
