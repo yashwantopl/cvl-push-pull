@@ -677,7 +677,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			logger.error("..........::::::::----->> Error while calling HL Income Details <<-----:::::::::.....",e);
 		}
 		/*get epfoData*/
-		try {
+	/*	try {
 			EmployerRequest epfReq=new EmployerRequest();
 			epfReq.setApplicationId(toApplicationId);
 			EkycResponse epfRes=epfClient.getEpfData(epfReq);
@@ -688,7 +688,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			}
 		} catch (Exception e) {
 			logger.info("error"+e);
-		}
+		}*/
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);

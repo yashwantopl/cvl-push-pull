@@ -1513,7 +1513,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		/*************************************************************FINAL DETAILS***********************************************************/
 		
 		//ekyc data
-		try {
+		/*try {
 			EmployerRequest epfReq = new EmployerRequest();
 			epfReq.setApplicationId(applicationId);
 			EkycResponse epfRes = epfClient.getEpfData(epfReq);
@@ -1524,7 +1524,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 		} catch (Exception e) {
 			logger.info("Error/Exception while fetching ekyc Data in HL Cam of ApplicationId==>{} Error:",applicationId ,e);
-		}
+		}*/
 		
 		if(isFinalView) {
 			

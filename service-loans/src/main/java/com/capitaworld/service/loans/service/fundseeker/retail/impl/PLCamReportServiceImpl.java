@@ -832,7 +832,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				logger.error("Error while getting scoring data : ",e);
 			}
 		/*get epfoData*/
-		try {
+		/*try {
 			EmployerRequest epfReq = new EmployerRequest();
 			epfReq.setApplicationId(applicationId);
 			EkycResponse epfRes = epfClient.getEpfData(epfReq);
@@ -843,7 +843,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}
 		} catch (Exception e) {
 			logger.info("",e);
-		}
+		}*/
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(applicationId);
