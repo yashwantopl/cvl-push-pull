@@ -489,7 +489,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 
 		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
 		try {
-			Date inPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId());
+			Date inPrincipleDate = loanApplicationRepository.getInPrincipleDate(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? simpleDateFormat.format(inPrincipleDate):"-");
 			}
@@ -1513,7 +1513,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		/*************************************************************FINAL DETAILS***********************************************************/
 		
 		//ekyc data
-		try {
+		/*try {
 			EmployerRequest epfReq = new EmployerRequest();
 			epfReq.setApplicationId(applicationId);
 			EkycResponse epfRes = epfClient.getEpfData(epfReq);
@@ -1524,7 +1524,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 		} catch (Exception e) {
 			logger.info("Error/Exception while fetching ekyc Data in HL Cam of ApplicationId==>{} Error:",applicationId ,e);
-		}
+		}*/
 		
 		if(isFinalView) {
 			
