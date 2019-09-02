@@ -270,7 +270,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 		try {
 			Object obj = "-";
-			 dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
+			 dateOfProposal = loanApplicationRepository.getInPrincipleDate(toApplicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 		     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
 			}else{
