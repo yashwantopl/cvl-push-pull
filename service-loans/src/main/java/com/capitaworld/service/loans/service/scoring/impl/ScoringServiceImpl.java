@@ -1724,7 +1724,7 @@ public class ScoringServiceImpl implements ScoringService {
                   			isCreaditHisotryLessThenSixMonths = true;
                   	}
 
-                 	if(cibilActualScore ==  -1){
+                 	if(cibilActualScore.equals(-1d)){
                  			isNoCreaditHistory = true;
                  		}
                  }catch (Exception e) {
