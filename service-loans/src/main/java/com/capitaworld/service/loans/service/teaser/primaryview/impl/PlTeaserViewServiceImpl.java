@@ -428,14 +428,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 		
 		/*get epfoData*/
-		EmployerRequest epfReq=new EmployerRequest();
+		/*EmployerRequest epfReq=new EmployerRequest();
 		epfReq.setApplicationId(toApplicationId);
 		EkycResponse epfRes=epfClient.getEpfData(epfReq);
 		if(epfRes != null && epfRes.getData()!= null) {
 			plTeaserViewResponse.setEpfData(epfRes.getData());
 		}else {
 			logger.info("epfo data is null for===>>"+toApplicationId);
-		}
+		}*/
 		 
 		
 		//PROPOSAL RESPONSE
