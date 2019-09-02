@@ -270,7 +270,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 		try {
 			Object obj = "-";
-			 dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
+			 dateOfProposal = loanApplicationRepository.getInPrincipleDate(toApplicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 		     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
 			}else{
@@ -677,7 +677,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			logger.error("..........::::::::----->> Error while calling HL Income Details <<-----:::::::::.....",e);
 		}
 		/*get epfoData*/
-		try {
+	/*	try {
 			EmployerRequest epfReq=new EmployerRequest();
 			epfReq.setApplicationId(toApplicationId);
 			EkycResponse epfRes=epfClient.getEpfData(epfReq);
@@ -688,7 +688,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			}
 		} catch (Exception e) {
 			logger.info("error"+e);
-		}
+		}*/
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);
