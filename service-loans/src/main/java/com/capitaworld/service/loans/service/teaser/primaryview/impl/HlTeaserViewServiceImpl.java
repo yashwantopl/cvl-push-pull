@@ -80,6 +80,7 @@ import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
@@ -251,6 +252,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
+	
 	
 	Date dateOfProposal =null;
 	@Override
@@ -1237,6 +1242,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 				} catch (Exception e) {
 					logger.error("error while fetching itr data from itrClient",e);
+				}
+				
+				try {
+					List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = coApplicantIncomeService.getAllByCoAppId(coApplicantDetail.getId());
+					plRetailApplicantResponse.setRetailApplicantIncomeRequestList(!CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
+				} catch (Exception e) {
+					logger.error("Error while getting income details : ",e);
 				}
 				
 				
