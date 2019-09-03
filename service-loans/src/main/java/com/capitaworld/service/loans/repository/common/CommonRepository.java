@@ -23,4 +23,6 @@ public interface CommonRepository {
 	public String getNoteForHLCam(Long applicationId);
 	
 	public Object[] getInEligibleByApplicationId(Long applicationId);
+	
+	public String getSidbiAmount();
 }
