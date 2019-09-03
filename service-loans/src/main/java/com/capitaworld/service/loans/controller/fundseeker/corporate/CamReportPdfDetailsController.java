@@ -30,6 +30,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.UniformProductCamReportService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ALCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
@@ -58,6 +59,9 @@ public class CamReportPdfDetailsController {
 	
 	@Autowired
 	private HLCamReportService hlCamReportService;
+	
+	@Autowired
+	private ALCamReportService alCamReportService;
 
 	@Autowired
 	private ReportsClient reportsClient;
@@ -598,6 +602,41 @@ public class CamReportPdfDetailsController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+	
+	@GetMapping(value = "/getPrimaryALCamData/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimaryALCamDataByProposalId(@PathVariable(value = "proposalId") Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId") Long productId, HttpServletRequest request) {
+		
+		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(productId) || CommonUtils.isObjectNullOrEmpty(proposalId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		}
+		try {
+			Map<String, Object> response = alCamReportService.getCamReportDetailsByProposalId(applicationId, productId, proposalId, false);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("ALCAMPRIMARY");
+			reportRequest.setType("ALCAMPRIMARY");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			MultipartFile multipartFile = new DDRMultipart(byteArr);
+			JSONObject jsonObj = new JSONObject();
+
+			jsonObj.put("applicationId", applicationId);
+			jsonObj.put("productDocumentMappingId", 355L);
+			jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+			jsonObj.put("originalFileName", "ALCAMPRIMARYREPORT" + applicationId + ".pdf");
+
+			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+			if (documentResponse.getStatus() == 200) {
+				logger.info("DocumentResponse Data==>{}",documentResponse);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@GetMapping(value = "/getGstDataReport/{panNo}" , produces = MediaType.APPLICATION_JSON_VALUE)
