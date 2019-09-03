@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -86,6 +87,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private CommonRepository commonRepository;
 	
 	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 	
@@ -806,7 +810,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		CorporateApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectListNull(applicantDetail)) {
 			obj.put("entityName", applicantDetail.getOrganisationName());
-			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+			obj.put("amount", commonRepository.getSidbiAmount() != null ? commonRepository.getSidbiAmount() : 1180);
 			obj.put("panNo", corporateApplicantDetailRepository.getPanNoByApplicationId(applicationId));
 		}
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.getOne(applicationId);
