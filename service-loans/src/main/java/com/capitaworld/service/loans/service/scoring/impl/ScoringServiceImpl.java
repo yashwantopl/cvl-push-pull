@@ -2001,8 +2001,8 @@ public class ScoringServiceImpl implements ScoringService {
 				return new ResponseEntity<>(new LoansResponse("Error while Getting BankList From Analyser for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 
-			//Getting All Loans
-			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
+			//Getting All Loans 
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
@@ -8088,7 +8088,7 @@ public class ScoringServiceImpl implements ScoringService {
     							dpds.add(Integer.parseInt(cibilDpdVal[1]));
     						}
     					}else {
-    						dpds.add(Integer.parseInt(cibilResponseList.get(i).toString()));
+    						dpds.add(Integer.parseInt(cibilResponseObj));
     					}
     				}
     			}
