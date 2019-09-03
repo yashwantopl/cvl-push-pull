@@ -733,13 +733,16 @@ public class CamReportPdfDetailsController {
 			Map<String, Object> response = new HashMap<String, Object>();
 				
 			if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
-				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}");
+				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = plCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
 			}else if(loanType == LoanType.HOME_LOAN.getValue()) {
-				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}");
+				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
+			}else if(loanType == LoanType.AUTO_LOAN.getValue()) {
+				logger.info("Fetching Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				response = alCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
 			}else {
-				logger.info("Fetching Data of MSME by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}");
+				logger.info("Fetching Data of MSME by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId, camType);
 			}
 			
