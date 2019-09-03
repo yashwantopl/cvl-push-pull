@@ -24,6 +24,7 @@ import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailITRManualResponse;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
@@ -74,7 +75,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Autowired
 	private LoanRepository loanRepository;
 	
-	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
+	@Autowired
+	private CommonRepository commonRepository;
+	
+	//private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws LoansException {
@@ -449,7 +453,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			obj.put("name", applicantDetail.getFirstName() + " " + applicantDetail.getMiddleName() + " " + applicantDetail.getLastName());
 			obj.put("pan", applicantDetail.getPan());
-			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+			obj.put("amount", commonRepository.getSidbiAmount() != null ? commonRepository.getSidbiAmount() : "1180");
 		}
 		return obj;
 	}

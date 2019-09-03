@@ -91,7 +91,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Autowired
 	private CommonRepository commonRepository;
 	
-	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
+	//private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 	
 	@Autowired
 	private Environment environment;
