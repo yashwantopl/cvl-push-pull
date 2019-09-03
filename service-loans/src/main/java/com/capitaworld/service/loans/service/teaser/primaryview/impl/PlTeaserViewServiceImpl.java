@@ -428,14 +428,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 		
 		/*get epfoData*/
-		EmployerRequest epfReq=new EmployerRequest();
+		/*EmployerRequest epfReq=new EmployerRequest();
 		epfReq.setApplicationId(toApplicationId);
 		EkycResponse epfRes=epfClient.getEpfData(epfReq);
 		if(epfRes != null && epfRes.getData()!= null) {
 			plTeaserViewResponse.setEpfData(epfRes.getData());
 		}else {
 			logger.info("epfo data is null for===>>"+toApplicationId);
-		}
+		}*/
 		 
 		
 		//PROPOSAL RESPONSE
@@ -778,7 +778,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
+				Date dateOfProposal = loanApplicationRepository.getInPrincipleDate(toApplicationId);
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
