@@ -2002,7 +2002,7 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 
 			//Getting All Loans
-			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
