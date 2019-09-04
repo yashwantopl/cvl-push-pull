@@ -1236,6 +1236,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState())) {
 					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getAddressState().longValue(),
 							oneFormClient));
+					address.setRegionId(applicantDetail.getAddressState().longValue());
 				}
 			}else{
 				address.setStreetAddress(applicantDetail.getPermanentStreetName());
@@ -1251,6 +1252,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
 					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getPermanentStateId().longValue(),
 							oneFormClient));
+					address.setRegionId(applicantDetail.getPermanentStateId().longValue());
 				}	
 			}
 
