@@ -340,6 +340,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState())) {
 					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getAddressState().longValue(),
 							oneFormClient));
+					address.setRegionId(applicantDetail.getAddressState());
 				}
 			}else{
 				address.setStreetAddress(applicantDetail.getPermanentStreetName());
@@ -352,6 +353,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
 					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getPermanentStateId().longValue(),
 							oneFormClient));
+					address.setRegionId(applicantDetail.getPermanentStateId().longValue());
 				}	
 			}
 			
