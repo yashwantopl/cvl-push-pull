@@ -493,7 +493,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				}else {
 					effectiveRoi = proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi() : proposalMappingRequestString.getSpreadRoi();
 				}
-				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
+				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? CommonUtils.convertValue(effectiveRoi) : "-");
 				roiData.put("concessionRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConsessionRoi()) ? proposalMappingRequestString.getConsessionRoi() : "-");
 				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				if(effectiveRoi != null) {
@@ -501,7 +501,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				}else {
 					finalRoi = null;
 				}
-				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? finalRoi : "-");
+				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? CommonUtils.convertValue(finalRoi) : "-");
 			}
 			map.put("roiData", !CommonUtils.isObjectNullOrEmpty(roiData) ? roiData : null);
 		}

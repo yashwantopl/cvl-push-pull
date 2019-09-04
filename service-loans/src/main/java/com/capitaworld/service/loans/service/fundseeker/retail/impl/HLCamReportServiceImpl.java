@@ -897,7 +897,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}else {
 					effectiveRoi = proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi() : proposalMappingRequestString.getSpreadRoi();
 				}
-				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
+				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? CommonUtils.convertValue(effectiveRoi) : "-");
 				roiData.put("concessionRoi", proposalMappingRequestString.getConsessionRoi() != null && proposalMappingRequestString.getConsessionRoi() != 0.0 && proposalMappingRequestString.getConsessionRoi() != 0 ? proposalMappingRequestString.getConsessionRoi() : "-");
 				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				if(effectiveRoi != null) {
@@ -905,7 +905,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}else {
 					finalRoi = null;
 				}
-				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? finalRoi : "-");
+				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? CommonUtils.convertValue(finalRoi) : "-");
 			}
 			map.put("roiData", !CommonUtils.isObjectNullOrEmpty(roiData) ? roiData : null);
 		}
