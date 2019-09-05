@@ -25,4 +25,7 @@ public interface CommonRepository {
 	public Object[] getInEligibleByApplicationId(Long applicationId);
 	
 	public String getSidbiAmount();
+	
+	public List<Object[]> getBankDetails(Long applicationId, Long orgId);
+	
 }
