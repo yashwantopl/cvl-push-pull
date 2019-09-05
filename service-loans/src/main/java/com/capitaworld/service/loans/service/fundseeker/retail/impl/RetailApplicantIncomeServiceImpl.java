@@ -71,6 +71,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeDetail.setOtherSource(appIncomeReq.getOtherSource());
 			appIncomeDetail.setPgbp(appIncomeReq.getPgbp());
 			appIncomeDetail.setHouseProperty(appIncomeReq.getHouseProperty());
+			appIncomeDetail.setFormType(appIncomeReq.getFormType());
 			appIncomeRepository.save(appIncomeDetail);
 			return true;
 		} catch (Exception e) {

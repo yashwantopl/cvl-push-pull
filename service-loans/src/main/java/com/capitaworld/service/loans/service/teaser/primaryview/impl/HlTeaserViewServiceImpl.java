@@ -137,6 +137,9 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.exception.UserException;
+import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -239,6 +242,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	private CommonRepository commonRepo;
 	
 	@Autowired
+	private UsersClient usersClient;
+	
+	@Autowired
 	private EPFClient epfClient;
 	
     @Autowired
@@ -271,7 +277,6 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		} catch (LoansException e2) {
 			logger.error("Exveption in getting profile value from retail profile for application {}",toApplicationsId);
 		}*/
-		
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 		try {
 			Object obj = "-";
@@ -295,6 +300,18 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		hlTeaserViewResponse.setTenure(applicationProposalMapping.getTenure()!=null ? ((applicationProposalMapping.getTenure()).toString()) + " Years":" - ");
 		hlTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		hlTeaserViewResponse.setAppId(toApplicationId);
+		
+		try {
+			UserResponse campaignUser=usersClient.isExists(userid,null);
+			if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+				hlTeaserViewResponse.setCampaignType("Bank Specific");
+			}else {
+				hlTeaserViewResponse.setCampaignType("Market Place");
+			}
+		} catch (UserException e2) {
+			// TODO Auto-generated catch block
+			logger.info("error while campaign user check"+e2);
+		}
 		
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
