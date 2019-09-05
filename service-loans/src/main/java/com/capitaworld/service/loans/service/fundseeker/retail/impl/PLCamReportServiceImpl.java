@@ -476,13 +476,13 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
 			if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
 				
-				String bankAddress = (listBankData.get(0)[4] != null ? listBankData.get(0)[4] : "") + (listBankData.get(0)[5] != null ? " ," + listBankData.get(0)[5] : "") 
-						+ (listBankData.get(0)[6] != null ? " ," +listBankData.get(0)[6] : "") + (listBankData.get(0)[7] != null ? " - " + listBankData.get(0)[7] : "");
+				String bankAddress = (listBankData.get(0)[5] != null ? listBankData.get(0)[5] : "") + (listBankData.get(0)[6] != null ? " ," + listBankData.get(0)[6] : "") 
+						+ (listBankData.get(0)[7] != null ? " ," +listBankData.get(0)[7] : "") + (listBankData.get(0)[8] != null ? " - " + listBankData.get(0)[8] : "");
 				bankData.put("currentBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(bankAddress) : "-");
-				bankData.put("bankName", listBankData.get(0)[8] != null ? listBankData.get(0)[8] : "-");
+				bankData.put("bankName", listBankData.get(0)[9] != null ? listBankData.get(0)[9] : "-");
 				if(listBankData.size() > 1 && !CommonUtils.isObjectNullOrEmpty(listBankData.get(1))) {
-					String prevBankAddress = (listBankData.get(1)[4] != null ? listBankData.get(1)[4] : "") + (listBankData.get(1)[5] != null ? " ," + listBankData.get(1)[5] : "") 
-							+ (listBankData.get(1)[6] != null ? " ," +listBankData.get(1)[6] : "") + (listBankData.get(1)[7] != null ? " - " + listBankData.get(1)[7] : "");
+					String prevBankAddress = (listBankData.get(1)[5] != null ? listBankData.get(1)[5] : "") + (listBankData.get(1)[6] != null ? " ," + listBankData.get(1)[6] : "") 
+							+ (listBankData.get(1)[7] != null ? " ," +listBankData.get(1)[7] : "") + (listBankData.get(1)[8] != null ? " - " + listBankData.get(1)[8] : "");
 					bankData.put("previousBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(prevBankAddress) : "-");
 				}
 			}
