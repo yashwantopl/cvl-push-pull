@@ -128,4 +128,15 @@ public class CommonRepositoryImpl  implements CommonRepository {
 			return null;
 		}
 	}
+	
+	@Override
+	public List<Object[]> getBankDetails(Long applicationId, Long orgId){
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId");
+		storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("applicationId" ,applicationId);
+		storedProcedureQuery.setParameter("orgId" ,orgId);
+		
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
 }
