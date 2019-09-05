@@ -55,6 +55,8 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	private String capitalGainGrossString;
 	private String otherSourceGrossString;
 	
+	private String formType;
+	
 	public Long getId() {
 		return id;
 	}
@@ -293,4 +295,12 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	public void setProposalId(Long proposalId) {
 		this.proposalId = proposalId;
 	}
+	public String getFormType() {
+		return formType;
+	}
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+	
 }

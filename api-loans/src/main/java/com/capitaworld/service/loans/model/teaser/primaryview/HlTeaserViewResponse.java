@@ -171,7 +171,7 @@ public class HlTeaserViewResponse {
 	private Integer superBuildUpArea;
 	private Integer carpetArea;
 	private Integer totalPriceOfProperty;
-    
+    private String campaignType;
     private String fatherName;
 	private String motherName;
 	private String educationStatus;
@@ -1331,6 +1331,13 @@ public class HlTeaserViewResponse {
 		this.marketValOfProp = marketValOfProp;
 	}
 
+	public String getCampaignType() {
+		return campaignType;
+	}
+
+	public void setCampaignType(String campaignType) {
+		this.campaignType = campaignType;
+	}
 
 	
 }

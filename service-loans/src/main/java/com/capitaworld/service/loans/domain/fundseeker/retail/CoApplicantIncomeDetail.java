@@ -85,6 +85,9 @@ public class CoApplicantIncomeDetail extends AuditActivity implements Serializab
 
 	@Column(name = "other_source_mode")
 	private String otherSourceMode;
+	
+	@Column(name = "form_type")
+	private String formType;
 
 
 	public Long getId() {
@@ -253,6 +256,14 @@ public class CoApplicantIncomeDetail extends AuditActivity implements Serializab
 
 	public void setCoAppId(Long coAppId) {
 		this.coAppId = coAppId;
+	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
 	}
 	
 }
