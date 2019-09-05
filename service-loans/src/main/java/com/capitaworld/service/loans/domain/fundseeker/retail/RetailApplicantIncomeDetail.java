@@ -82,6 +82,9 @@ public class RetailApplicantIncomeDetail extends AuditActivity implements Serial
 
 	@Column(name = "other_source_mode")
 	private String otherSourceMode;
+	
+	@Column(name = "form_type")
+	private String formType;
 
 
 	public Long getId() {
@@ -242,6 +245,14 @@ public class RetailApplicantIncomeDetail extends AuditActivity implements Serial
 
 	public void setProposalId(Long proposalId) {
 		this.proposalId = proposalId;
+	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
 	}
 	
 }
