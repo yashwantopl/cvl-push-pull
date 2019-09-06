@@ -140,14 +140,14 @@ public class LoansMain {
 	
 	@Bean
 	public EPFClient epfClient() {
-		EPFClient epfClient = new EPFClient(ekycUrl);
+		EPFClient epfClient = new EPFClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.ekyc));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(epfClient);
 		return epfClient;
 	}
 	
 	@Bean
 	public DMSClient dmsMasterClient() {
-		DMSClient dmsClient = new DMSClient(dmsUrl);
+		DMSClient dmsClient = new DMSClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.dms));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(dmsClient);
 		return dmsClient;
 	}
@@ -161,7 +161,7 @@ public class LoansMain {
 
 	@Bean
 	public UsersClient userMasterClient() {
-		UsersClient usersClient = new UsersClient(userURL);
+		UsersClient usersClient = new UsersClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.users));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(usersClient);
 		return usersClient;
 	}
@@ -189,7 +189,7 @@ public class LoansMain {
 
 	@Bean
 	public CIBILClient cibilClient() {
-		CIBILClient cibilClient = new CIBILClient(cibilUrl);
+		CIBILClient cibilClient = new CIBILClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.cibil));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(cibilClient);
 		return cibilClient;
 	}
@@ -252,7 +252,7 @@ public class LoansMain {
 
 	@Bean
 	public WorkflowClient workFlowClient() {
-		WorkflowClient workflowClient = new WorkflowClient(workFlowClientUrl);
+		WorkflowClient workflowClient = new WorkflowClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.workflow));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(workflowClient);
 		return workflowClient;
 	}
@@ -280,7 +280,7 @@ public class LoansMain {
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(authUrl);
+		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}
