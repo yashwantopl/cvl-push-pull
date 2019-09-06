@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
@@ -331,6 +332,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	CorporatePrimaryViewService corporatePrimaryViewService;
+	
+	@Value("${capitaworld.gstdata.enable}")
+	private Boolean gstDataEnable;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -1359,11 +1363,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//gstRelatedParty Data Fetch
-		try {
-			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
-		}catch (Exception e) {
-			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
+		if(gstDataEnable != null && gstDataEnable) {
+			try {
+				Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+				map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
+			}catch (Exception e) {
+				logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
+			}
 		}
 
 
@@ -1417,11 +1423,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//GST Comparision by Maaz
-		try{
-			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
-			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
-		}catch (Exception e) {
-			logger.error("error in getting gst comparision data : {}",e);
+		if(gstDataEnable != null && gstDataEnable) {
+			try{
+				FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+				map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+			}catch (Exception e) {
+				logger.error("error in getting gst comparision data : {}",e);
+			}
 		}
 
 		/**ReportRequest reportRequest = new ReportRequest();
