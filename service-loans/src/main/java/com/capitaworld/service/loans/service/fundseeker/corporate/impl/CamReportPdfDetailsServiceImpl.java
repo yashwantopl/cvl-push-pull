@@ -1421,7 +1421,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
-		
+		map.put("gstEnable", gstDataEnable != null && gstDataEnable ? "true" : null);
 		//GST Comparision by Maaz
 		if(gstDataEnable != null && gstDataEnable) {
 			try{
