@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.AlTeaserViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
@@ -36,6 +37,7 @@ import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.teaser.primaryview.AlTeaserViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HlTeaserViewService;
@@ -72,6 +74,9 @@ public class PrimaryViewController {
 	
 	@Autowired
 	private HlTeaserViewService hlTeaserViewService;
+	
+	@Autowired
+	private AlTeaserViewService alTeaserViewService;
 	
 	@Autowired
 	private MFITeaserViewService mfiTeaserViewService;
@@ -198,11 +203,8 @@ public class PrimaryViewController {
 	
 	
 	@GetMapping(value = "/HlTeaserView/{toApplicationId}/{productMappingId}/{isFinalView}/{proposalId}")
-	public @ResponseBody ResponseEntity<LoansResponse> HlTeaserView(@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "productMappingId") Long productMappingId,
-			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request,@PathVariable(value = "isFinalView") Boolean isFinalView,@PathVariable("proposalId") Long proposalId) {
-
+	public @ResponseBody ResponseEntity<LoansResponse> HlTeaserView(@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "productMappingId") Long productMappingId,@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request,@PathVariable(value = "isFinalView") Boolean isFinalView,@PathVariable("proposalId") Long proposalId) {
 		logger.info("In HL View Ctrl of applicationId==>{}   productMappingId==>{}" , toApplicationId , productMappingId);
-
 		// GET USER ID AND USER TYPE
 		Long userId = null;
 		Integer userType = null;
@@ -268,6 +270,73 @@ public class PrimaryViewController {
 			} catch (Exception e) {
 				logger.error("",e);
 				loansResponse.setData(hlPrimaryViewResponse);
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		}
+	}
+	
+	@GetMapping(value = "/alTeaserView/{toApplicationId}/{productMappingId}/{isFinalView}/{proposalId}")
+	public @ResponseBody ResponseEntity<LoansResponse> alTeaserView(@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "productMappingId") Long productMappingId,@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request,@PathVariable(value = "isFinalView") Boolean isFinalView,@PathVariable("proposalId") Long proposalId) {
+		logger.info("In AL View Ctrl of applicationId==>{}   productMappingId==>{}" , toApplicationId , productMappingId);
+		// GET USER ID AND USER TYPE
+		Long userId = null;
+		Integer userType = null;
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		}
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER) {
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if (response != null && response.getData() != null) {
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}
+				} catch (Exception e) {
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
+				}
+			}
+
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		}
+		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		} else {
+			LoansResponse loansResponse = new LoansResponse();
+			AlTeaserViewResponse alPrimaryViewResponse = null;
+			try {
+				logger.info("GET AL PRIMARY TEASER VIEW OF USER OF APPLICATION ID==>{}  PRODUCT MAPPING ID==>{}  USER TYPE==>{}  USER ID==>{}", toApplicationId, productMappingId ,userType ,userId);
+				alPrimaryViewResponse = alTeaserViewService.getAlTeaserView(toApplicationId, userType, userId,productMappingId, isFinalView, proposalId);
+				if (!CommonUtils.isObjectNullOrEmpty(alPrimaryViewResponse)) {
+					logger.info("Response of Teaser View==>{}" , alPrimaryViewResponse.toString());
+					loansResponse.setData(alPrimaryViewResponse);
+					loansResponse.setMessage("AL Primary Details");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				} else {
+					loansResponse.setMessage("No data found for Al final view");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error("",e);
+				loansResponse.setData(alPrimaryViewResponse);
 				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

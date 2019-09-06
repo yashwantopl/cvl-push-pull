@@ -119,4 +119,24 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	public Object[] getInEligibleByApplicationId(Long applicationId) {
 		return (Object[]) manager.createNativeQuery("SELECT ine.user_org_id,ine.branch_id FROM `loan_application`.`ineligible_proposal_details` ine WHERE ine.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
 	}
+	
+	@Override
+	public String getSidbiAmount() {
+		try {
+			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'paymentAmount' and cp.type= 'sidbiFees' and cp.is_active=true").getSingleResult();
+		}catch (Exception e) {
+			return null;
+		}
+	}
+	
+	@Override
+	public List<Object[]> getBankDetails(Long applicationId, Long orgId){
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId");
+		storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("applicationId" ,applicationId);
+		storedProcedureQuery.setParameter("orgId" ,orgId);
+		
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
 }

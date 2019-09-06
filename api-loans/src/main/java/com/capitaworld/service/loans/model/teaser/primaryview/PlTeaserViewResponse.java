@@ -218,6 +218,7 @@ public class PlTeaserViewResponse {
 	private String finalRoi;
 	private String noteOfBorrower;
 	private String scoringBasedOn;
+	private String campaignType;
 	
 	public String getScoringBasedOn() {
 		return scoringBasedOn;
@@ -1231,4 +1232,11 @@ public class PlTeaserViewResponse {
 	public void setIsNameEdited(Boolean nameEdited) {
 		isNameEdited = nameEdited;
 	}
+	public String getCampaignType() {
+		return campaignType;
+	}
+	public void setCampaignType(String campaignType) {
+		this.campaignType = campaignType;
+	}
+	
 }
