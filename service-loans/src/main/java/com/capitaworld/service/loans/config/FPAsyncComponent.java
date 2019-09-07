@@ -1499,7 +1499,8 @@ public class FPAsyncComponent {
 		String emailSubject = "";
 		if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
 			emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
-		}else if (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()){
+		}else if (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue() 
+					|| applicationRequest.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue()){
 			emailSubject = "Maker Assigned - For Quick "+proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()+" Approval ";			
 		}
 		try {
