@@ -139,4 +139,22 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
+
+	@Override
+	public Boolean updateRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception {
+		try {
+			manager.createNamedQuery("UPDATE connect.connect_log set is_related_party_filled = TRUE,modified_date=now() where application_id=:applicationId").setParameter("applicationId", true);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+		
+	}
+
+	@Override
+	public Boolean getRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception {
+		return Boolean.valueOf(manager.createNativeQuery("select  cl.is_related_party_filled from connect.connect_log cl where cl.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult().toString());
+	}
+	
+	
 }
