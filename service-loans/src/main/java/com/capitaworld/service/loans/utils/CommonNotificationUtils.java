@@ -39,7 +39,7 @@ public class CommonNotificationUtils {
 
 		public static String getSubjectName(Long x,String fpName) {
 			if(x == NotificationAlias.EMAIL_PRIMARY_VIEW_FS) {
-				return fpName + " viewed your teaser"; 
+				return fpName + " viewed your proposal"; 
 			} else if(x == NotificationAlias.EMAIL_FINAL_VIEW_FS) {
 				return fpName + " viewed your final details"; 
 			} else if(x == NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY) {

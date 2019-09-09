@@ -58,4 +58,33 @@ public class RelatedPartyController {
 		}
 	}
 	
+	@PostMapping(value="checkGstType",consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkGstType(@RequestBody GstRelatedPartyRequest relatedPartyRequest) {
+		LoansResponse response=new LoansResponse();
+		try {
+			response.setData(service.checkGstType(relatedPartyRequest));
+			response.setStatus(HttpStatus.OK.value());
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);	
+		}catch (Exception e) {
+			response.setData(null);
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
+		}
+	}
+	
+	@PostMapping(value="updateRelatedParyFlagOnConnect",consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveRelatedPartyFlagOnConnect(@RequestBody GstRelatedPartyRequest relatedPartyRequest) {
+		LoansResponse response=new LoansResponse();
+		try {
+			response.setData(service.updateRelatedPartyFilledFlageOnConnect(relatedPartyRequest.getApplicationId()));
+			response.setStatus(HttpStatus.OK.value());
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);	
+		}catch (Exception e) {
+			response.setData(null);
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
+		}
+	}
+	
+	
 }

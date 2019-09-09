@@ -2,20 +2,30 @@ package com.capitaworld.service.loans.service.common.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.service.gst.GstCalculation;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.util.CommonUtils.GstType;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.GstRelatedParty;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.RelatedPartyService;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
   *@auther : Maaz Shaikh
@@ -28,6 +38,14 @@ public class RelatedPartyServiceImpl implements RelatedPartyService {
 	
 	@Autowired
 	private CorporateApplicantDetailRepository corporateRepository;
+	
+	@Autowired
+	private CommonRepository commonRepo;
+	
+	@Autowired
+	private GstClient gstClient;
+	
+	private static Logger logger = LoggerFactory.getLogger(RelatedPartyServiceImpl.class);
 	
 	@Modifying
 	@Transactional(rollbackOn=Exception.class)
@@ -76,6 +94,32 @@ public class RelatedPartyServiceImpl implements RelatedPartyService {
 		}
 		
 		return status;
+	}
+
+	@Override
+	public Boolean updateRelatedPartyFilledFlageOnConnect(Long applicationId) throws Exception {
+		return commonRepo.updateRelatedPartyFilledFlagOnConnect(applicationId);
+	}
+
+	@Override
+	public Boolean checkGstType(GstRelatedPartyRequest request) throws Exception {
+		Boolean status = false;
+		GSTR1Request gstRequest=new GSTR1Request();
+		gstRequest.setApplicationId(request.getApplicationId());
+		try {
+			GstResponse calculations = gstClient.getCalculations(gstRequest);
+			GstCalculation calc=MultipleJSONObjectHelper.getObjectFromMap((Map)calculations.getData(), GstCalculation.class);
+			if(calc != null && calc.getGstType() != null) {
+				 if(GstType.COMPOSITE.equals(calc.getGstType()) || GstType.GST_NOT_APPLICABLE.equals(calc.getGstType())){
+					 updateRelatedPartyFilledFlageOnConnect(request.getApplicationId());
+					 status=commonRepo.getRelatedPartyFilledFlagOnConnect(request.getApplicationId());
+				 }
+			}
+			return status;
+		}catch (Exception e) {
+			logger.error("Exception in getting gst type details for relatedparty {}",e);
+			return status;
+		}
 	}
 
 	
