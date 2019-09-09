@@ -7977,8 +7977,6 @@ public class ScoringServiceImpl implements ScoringService {
 
 	@Override
 	public ResponseEntity<LoansResponse> calculateRetailAutoLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
-
-
         RetailApplicantDetail retailApplicantDetail = null;
         Boolean isItrMannualFilled = false;
         Long applicationId = null;
@@ -8117,7 +8115,7 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 
 			//Getting All Loans
-			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
@@ -8636,7 +8634,7 @@ public class ScoringServiceImpl implements ScoringService {
                 				try {
 									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setLtv(scoringRequestLoans.getElAmountOnAverageScoring());
-										scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue());
+										scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue());
 										scoreParameterRetailRequest.setIsLTV_p(true);
 									}else {
 										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
