@@ -1,14 +1,22 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.retail.FinalCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.finalview.CarLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.FinalCarLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
@@ -16,13 +24,6 @@ import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewSe
 import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -46,7 +47,7 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 	private RetailFinalCommonApplicantService finalCommonService;
 	
 	@Autowired
-	private FinalCarLoanDetailRepository finalCLRepository;
+	private FinalAutoLoanDetailRepository finalCLRepository;
 	
 	@Autowired
 	private CarLoanPrimaryViewService carLoanPrimaryViewService;
@@ -87,17 +88,17 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 			}
 			
 			//Car Loan final details
-			FinalCarLoanDetail finalCLDetails = finalCLRepository.getByApplicationID(applicantId, applicationMaster.getUserId());
+			FinalAutoLoanDetail finalCLDetails = finalCLRepository.getByApplicationIdAndUserId(applicantId, applicationMaster.getUserId());
 			try {
-				clFinalViewResponse.setColor(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarColour()) ? finalCLDetails.getCarColour() : "-" );
-				clFinalViewResponse.setSupplier(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarSupplier()) ? finalCLDetails.getCarSupplier() : "-");
-				clFinalViewResponse.setRegistrationNumber(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarRegistrationNumber()) ? finalCLDetails.getCarRegistrationNumber() : "-");
-				clFinalViewResponse.setVehicleCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getVehicleCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getVehicleCost().toString()) : "-");
-				clFinalViewResponse.setInsuaranceCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getInsuranceCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getInsuranceCost().toString()) : "-");
-				clFinalViewResponse.setAccessoriesCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getAccessoriesCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getAccessoriesCost().toString()) : "-");
-				clFinalViewResponse.setRoadTaxCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getRoadTax()) ? CommonUtils.CurrencyFormat(finalCLDetails.getRoadTax().toString()) : "-");
-				clFinalViewResponse.setOtherCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getOthersCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getOthersCost().toString()) : "-");
-				clFinalViewResponse.setTotalCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getLoanTotalCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getLoanTotalCost().toString()) : "-");
+//				clFinalViewResponse.setColor(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarColour()) ? finalCLDetails.getCarColour() : "-" );
+//				clFinalViewResponse.setSupplier(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarSupplier()) ? finalCLDetails.getCarSupplier() : "-");
+//				clFinalViewResponse.setRegistrationNumber(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarRegistrationNumber()) ? finalCLDetails.getCarRegistrationNumber() : "-");
+//				clFinalViewResponse.setVehicleCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getVehicleCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getVehicleCost().toString()) : "-");
+//				clFinalViewResponse.setInsuaranceCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getInsuranceCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getInsuranceCost().toString()) : "-");
+//				clFinalViewResponse.setAccessoriesCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getAccessoriesCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getAccessoriesCost().toString()) : "-");
+//				clFinalViewResponse.setRoadTaxCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getRoadTax()) ? CommonUtils.CurrencyFormat(finalCLDetails.getRoadTax().toString()) : "-");
+//				clFinalViewResponse.setOtherCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getOthersCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getOthersCost().toString()) : "-");
+//				clFinalViewResponse.setTotalCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getLoanTotalCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getLoanTotalCost().toString()) : "-");
 				
            
 			} catch (Exception e) {

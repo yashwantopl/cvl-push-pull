@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.capitaworld.service.oneform.enums.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.api.ekyc.model.EkycResponse;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
-import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -63,7 +59,6 @@ import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
@@ -76,12 +71,12 @@ import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
+import com.capitaworld.service.loans.service.fundseeker.retail.ALCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.HLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
@@ -97,6 +92,28 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.DesignationList;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmploymentWithPL;
+import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
+import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
+import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
+import com.capitaworld.service.oneform.enums.MaritalStatusMst;
+import com.capitaworld.service.oneform.enums.OccupationHL;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
+import com.capitaworld.service.oneform.enums.SalaryModeMst;
+import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -106,13 +123,12 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter.Retail;
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
-public class HLCamReportServiceImpl implements HLCamReportService{
+public class ALCamReportServiceImpl implements ALCamReportService {
+
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -205,13 +221,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	private CommonRepository commonRepository;
 	
 	@Autowired
-	private ProposalDetailsRepository proposalDetailsRepository;
-	
-	@Autowired
 	private EPFClient epfClient;
-	
-	@Autowired
-	private UsersClient usersClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -866,40 +876,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
 		}*/
 		
-		//Fetch Bank Details
-		try {
-			Map<String, Object> bankData = new HashMap<String, Object>();
-			Long orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
-			List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
-			if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
-				
-				String bankAddress = (listBankData.get(0)[5] != null ? listBankData.get(0)[5] : "") + (listBankData.get(0)[6] != null ? " ," + listBankData.get(0)[6] : "") 
-						+ (listBankData.get(0)[7] != null ? " ," +listBankData.get(0)[7] : "") + (listBankData.get(0)[8] != null ? " - " + listBankData.get(0)[8] : "");
-				bankData.put("currentBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(bankAddress) : "-");
-				bankData.put("bankName", listBankData.get(0)[9] != null ? listBankData.get(0)[9] : "-");
-				if(listBankData.size() > 1 && !CommonUtils.isObjectNullOrEmpty(listBankData.get(1))) {
-					String prevBankAddress = (listBankData.get(1)[5] != null ? listBankData.get(1)[5] : "") + (listBankData.get(1)[6] != null ? " ," + listBankData.get(1)[6] : "") 
-							+ (listBankData.get(1)[7] != null ? " ," +listBankData.get(1)[7] : "") + (listBankData.get(1)[8] != null ? " - " + listBankData.get(1)[8] : "");
-					bankData.put("previousBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(prevBankAddress) : "-");
-				}
-			}
-			
-			try {
-	            UserResponse campaignUser=usersClient.isExists(loanApplicationMaster.getUserId(),null);
-	            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
-	                bankData.put("typeOfUser", "Bank Specific");
-	            }else {
-	            	bankData.put("typeOfUser", "Market Place");
-	            }
-	        } catch (Exception e2) {
-	            logger.info("error while campaign user check ==>" , e2);
-	        }
-			map.put("bankDetails", bankData);
-			
-		}catch (Exception e) {
-			logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
-		}
-		
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();
@@ -940,7 +916,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}else {
 					effectiveRoi = proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi() : proposalMappingRequestString.getSpreadRoi();
 				}
-				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? CommonUtils.convertValue(effectiveRoi) : "-");
+				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(effectiveRoi) ? effectiveRoi : "-");
 				roiData.put("concessionRoi", proposalMappingRequestString.getConsessionRoi() != null && proposalMappingRequestString.getConsessionRoi() != 0.0 && proposalMappingRequestString.getConsessionRoi() != 0 ? proposalMappingRequestString.getConsessionRoi() : "-");
 				roiData.put("concessionRoiBased", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getConcessionBasedOnType()) ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
 				if(effectiveRoi != null) {
@@ -948,7 +924,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}else {
 					finalRoi = null;
 				}
-				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? CommonUtils.convertValue(finalRoi) : "-");
+				roiData.put("finalRoi", !CommonUtils.isObjectNullOrEmpty(finalRoi) ? finalRoi : "-");
 			}
 			map.put("roiData", !CommonUtils.isObjectNullOrEmpty(roiData) ? roiData : null);
 		}
@@ -1994,5 +1970,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		}
 		return null;
 	}
+
 
 }

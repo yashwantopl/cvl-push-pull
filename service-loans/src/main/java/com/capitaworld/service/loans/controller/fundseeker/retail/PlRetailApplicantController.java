@@ -167,9 +167,11 @@ public class PlRetailApplicantController {
     }
     
     @PostMapping(value = "/primary/saveBankRelation/{applicationId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> saveBankRelation(@RequestBody BankRelationshipRequest bankRelationshipRequest, HttpServletRequest request, @PathVariable("applicationId")  Long applicationId) {
+    public ResponseEntity<LoansResponse> saveBankRelation(@RequestBody BankRelationshipRequest bankRelationshipRequest, HttpServletRequest request, @PathVariable("applicationId")  Long applicationId, @RequestParam(value = "userId",required = false)  Long userId) {
         try {
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(userId == null){
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
             if (bankRelationshipRequest == null) {
                 return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }

@@ -441,7 +441,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 		FundSeekerInputRequestResponse fsInputRes = new FundSeekerInputRequestResponse();
 		fsInputRes.setApplicationId(fsInputReq.getApplicationId());
-
+		fsInputRes.setCurrentFinancialYear(CommonUtils.getFinancialYear());
 		try {
 			CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(fsInputReq.getApplicationId());

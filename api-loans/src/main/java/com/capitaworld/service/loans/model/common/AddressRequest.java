@@ -12,6 +12,7 @@ public class AddressRequest implements Serializable {
 	private String premiseNo;// Required
 	private String landMark;// Required
 	private String region;// Required
+	private Long regionId;
 	private String addressType;// Required
 	private String city;
 	private String postalCode;
@@ -74,6 +75,14 @@ public class AddressRequest implements Serializable {
 
 	public void setLandMark(String landMark) {
 		this.landMark = landMark;
+	}
+	
+	public Long getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
 	}
 
 	@Override

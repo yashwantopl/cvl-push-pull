@@ -106,7 +106,7 @@ public class MobileLoanServiceImpl implements MobileService {
 				
 				} else if(loantype.getValue() == LoanType.AUTO_LOAN.getValue()) {
 					logger.info("Get Applicant Car Loan Primary Details");
-					response.setData(primaryCarLoanService.getOneformPrimaryDetails(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId()));
+					response.setData(primaryCarLoanService.getOneformPrimaryDetails(mobileUserRequest.getApplicationId()));
 				
 				} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
 					logger.info("Get Applicant LAP Loan Primary Details");

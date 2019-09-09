@@ -23,4 +23,13 @@ public interface CommonRepository {
 	public String getNoteForHLCam(Long applicationId);
 	
 	public Object[] getInEligibleByApplicationId(Long applicationId);
+	
+	public String getSidbiAmount();
+	
+	public List<Object[]> getBankDetails(Long applicationId, Long orgId);
+	
+	public Boolean updateRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception;
+	
+	public Boolean getRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception;
+	
 }

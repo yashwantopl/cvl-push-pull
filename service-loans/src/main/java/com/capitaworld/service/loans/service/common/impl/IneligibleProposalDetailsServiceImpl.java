@@ -1048,8 +1048,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 									request.setIsStaticContent(false);
 									request.setData(dataList);
 									request.setParams(new HashMap<>());
-									request.setDocumentName("SdibiDocumentList");
-									documentList.add(new ContentAttachment("SidbiDocumentList.pdf", reportsClient.getReport(request)));
+									request.setDocumentName("DocumentList");
+									documentList.add(new ContentAttachment("DocumentList.pdf", reportsClient.getReport(request)));
 								}catch (Exception e) {
 									logger.info("Error/Exception while getting document list for sidbi specific ==>{} ...Error==>{}",applicationId,e);
 								}
