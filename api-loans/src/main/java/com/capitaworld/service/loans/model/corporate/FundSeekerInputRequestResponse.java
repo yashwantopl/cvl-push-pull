@@ -156,6 +156,8 @@ public class FundSeekerInputRequestResponse {
     
     private Double borrowerDcldProjectedSales;
     
+    private String currentFinancialYear;
+    
 	public Long getUserId() {
         return userId;
     }
@@ -719,6 +721,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
 		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
+	}
+
+	public String getCurrentFinancialYear() {
+		return currentFinancialYear;
+	}
+
+	public void setCurrentFinancialYear(String currentFinancialYear) {
+		this.currentFinancialYear = currentFinancialYear;
 	}
 
 	
