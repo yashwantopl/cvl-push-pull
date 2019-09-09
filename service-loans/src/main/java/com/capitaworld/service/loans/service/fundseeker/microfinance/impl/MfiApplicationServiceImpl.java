@@ -535,7 +535,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository
 				.getFinancialDetailsByApplicationId(applicationId);
 		detailsReq.setFinancialArrangementDetails(financialArrangementRequests);
-
+		
+		Double totalEmi = 0.0;
+		for (MFIFinancialArrangementRequest arrangementRequest : financialArrangementRequests) {
+			totalEmi = totalEmi + arrangementRequest.getEmi(); // sum of all Emi
+		}
+		detailsReq.setTotalEmi(totalEmi);
+		
 		try {
 			LoanSanctionRequest loanSanctionRequest = loanSanctionService.getSanctionDetail(applicationId);
 			List<LoanDisbursementRequest> disbursementList = loanDisbursementService.getDisbursedList(applicationId);
