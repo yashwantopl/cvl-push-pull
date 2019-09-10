@@ -8568,14 +8568,15 @@ public class ScoringServiceImpl implements ScoringService {
         					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
             			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE:
-	            				if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
-		            					scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge().doubleValue());	            						
-	            					}else {
-	            						scoreParameterRetailRequest.setVechileAge(0.0d);
-	            					}
-	            					scoreParameterRetailRequest.setIsVehicleAge_p(true);
-	            				}
+	            				if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
+	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
+	            						scoreParameterRetailRequest.setIsVehicleAge_p(true);
+		            					scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge().doubleValue());
+		            				}
+	        					}else {
+	        						scoreParameterRetailRequest.setIsVehicleAge_p(true);
+	        						scoreParameterRetailRequest.setVechileAge(0.0d);
+	        					}
             				break;
             			case ScoreParameter.Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
