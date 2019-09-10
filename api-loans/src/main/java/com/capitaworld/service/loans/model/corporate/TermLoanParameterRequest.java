@@ -741,6 +741,12 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private List<DataRequest> cityList = Collections.emptyList();
 
 	private List<DataRequest> unInterestedIndustrylist = Collections.emptyList();
+	
+	private List<DataRequest> nbfcRatioMasterList = Collections.emptyList();
+	
+	private List<Long> nbfcRatioSelectedList = Collections.emptyList();
+	
+	private List<Long> nbfcRatioIds;
 
 	public Integer getCurrency() {
 		return currency;
@@ -1817,6 +1823,32 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setIsCommercialCibilFor3MonthMandatory(Boolean isCommercialCibilFor3MonthMandatory) {
 		this.isCommercialCibilFor3MonthMandatory = isCommercialCibilFor3MonthMandatory;
 	}
+
+	public List<DataRequest> getNbfcRatioMasterList() {
+		return nbfcRatioMasterList;
+	}
+
+	public void setNbfcRatioMasterList(List<DataRequest> nbfcRatioMasterList) {
+		this.nbfcRatioMasterList = nbfcRatioMasterList;
+	}
+
+	public List<Long> getNbfcRatioSelectedList() {
+		return nbfcRatioSelectedList;
+	}
+
+	public void setNbfcRatioSelectedList(List<Long> nbfcRatioSelectedList) {
+		this.nbfcRatioSelectedList = nbfcRatioSelectedList;
+	}
+
+	public List<Long> getNbfcRatioIds() {
+		return nbfcRatioIds;
+	}
+
+	public void setNbfcRatioIds(List<Long> nbfcRatioIds) {
+		this.nbfcRatioIds = nbfcRatioIds;
+	}
+
+	
 	
 	
 	
