@@ -8570,7 +8570,7 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setRepaymentPeriod(retailApplicantDetail.getRepaymentMode());
         					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
-            			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE:
+            			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE_FOUR_WHEELER:
 	            				if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
 	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
 	            						scoreParameterRetailRequest.setIsVehicleAge_p(true);
