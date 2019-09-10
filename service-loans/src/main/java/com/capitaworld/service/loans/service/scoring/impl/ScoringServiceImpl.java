@@ -116,7 +116,6 @@ import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AnnualIncomeRural;
 import com.capitaworld.service.oneform.enums.AutoDetailPurposeofLoan;
-import com.capitaworld.service.oneform.enums.AutoPurposeofLoan;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
@@ -8669,7 +8668,7 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.AutoLoan.LOAN_PURPOSE:
             				if(retailApplicantDetail.getLoanPurpose() != null) {
-            					if(AutoPurposeofLoan.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
             						if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_LUXURY_CAR.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
             							scoreParameterRetailRequest.setLoanPurpose(5);
             						}else if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_SUV_MUV.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
@@ -8681,15 +8680,15 @@ public class ScoringServiceImpl implements ScoringService {
             						}else if(AutoDetailPurposeofLoan.ELECTRIC_NON_CONVENTIONAL_CAR_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
             							scoreParameterRetailRequest.setLoanPurpose(7);
             						}
-            					}else if(AutoPurposeofLoan.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					}else if(AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
             						if(AutoDetailPurposeofLoan.TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
             							scoreParameterRetailRequest.setLoanPurpose(8);
             						}else if(AutoDetailPurposeofLoan.ELECTRIC_NON_CONVENTIONAL_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
             							scoreParameterRetailRequest.setLoanPurpose(9);
             						}
-            					}else if(AutoPurposeofLoan.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					}else if(AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
             						scoreParameterRetailRequest.setLoanPurpose(11);
-            					}else if(AutoPurposeofLoan.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					}else if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
             						scoreParameterRetailRequest.setLoanPurpose(10);
             					}
             					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
