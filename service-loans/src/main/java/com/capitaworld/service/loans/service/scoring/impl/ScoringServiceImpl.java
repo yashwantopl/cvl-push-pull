@@ -8207,6 +8207,8 @@ public class ScoringServiceImpl implements ScoringService {
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
                 scoreParameterRetailRequest.setVechileType(primaryAutoLoanDetail.getVehicleType());
                 scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge() != null ? primaryAutoLoanDetail.getVehicleAge().doubleValue() : null);
+                scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null ? primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue() : 0.0d);
+                scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null ? primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue() : 0.0d);
                 logger.info("scoringRequestLoans.getFoir()=>{}==For ApplicationId====>{}==>For FpProductId===>{}",scoringRequestLoans.getFoir(),applicationId,fpProductId);
                 scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
