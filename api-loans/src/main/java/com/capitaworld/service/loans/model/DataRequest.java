@@ -14,6 +14,7 @@ public class DataRequest implements Serializable{
 	private String value;
 	private Long productId;
 	private Long mappingId;
+	private Double tenure;
 	
 	
 	public DataRequest() {
@@ -51,6 +52,16 @@ public class DataRequest implements Serializable{
 	public void setMappingId(Long mappingId) {
 		this.mappingId = mappingId;
 	}
+
+	public Double getTenure() {
+		return tenure;
+	}
+
+	public void setTenure(Double tenure) {
+		this.tenure = tenure;
+	}
+
+	
 	
 	
 

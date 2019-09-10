@@ -297,7 +297,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 								? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				Long jobId = null;
-				System.out.println(loanType);
 
 				switch (loanType) {
 				case WORKING_CAPITAL:
@@ -364,7 +363,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						if (addProductRequest.getBusinessTypeId()==2) {
 							
 							NtbTermLoanParameterTemp ntbTermLoanParameterTemp = new NtbTermLoanParameterTemp();
-							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId());
+							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId(),addProductRequest.getRoleId());
 
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
@@ -384,7 +383,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							productMasterTemp.setIsParameterFilled(true);
 						} else {
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
-							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
+							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId(),addProductRequest.getRoleId());
 
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
@@ -406,7 +405,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						break;
 					case WCTL_LOAN:
 						WcTlParameterTemp wcTlParameterTemp= new WcTlParameterTemp();
-						WcTlParameterRequest wcTlParameterRequest=wcTlParameterService.getWcTlRequest(addProductRequest.getLoanId());
+						WcTlParameterRequest wcTlParameterRequest=wcTlParameterService.getWcTlRequest(addProductRequest.getLoanId(),addProductRequest.getRoleId());
 
 						//set multiple value in temp
 						industrySecIdList=wcTlParameterRequest.getIndustrylist();
@@ -544,6 +543,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMasterTemp.setStatusId(1);
 				productMasterTemp.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
+				productMasterTemp.setProductType(addProductRequest.getProductType());
 				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMasterTemp);
 				
 				//save gst type for only WC
@@ -1494,14 +1494,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			} else if (master.getProductId() == 2) {
 
 				if (master.getBusinessTypeId() != null && master.getBusinessTypeId() == 2) {
-					return termLoanParameterService.getNtbTermLoanParameterRequest(master.getId());
+					return termLoanParameterService.getNtbTermLoanParameterRequest(master.getId(),role);
 				} else {
-					return termLoanParameterService.getTermLoanParameterRequest(master.getId());
+					return termLoanParameterService.getTermLoanParameterRequest(master.getId(),role);
 				}
 			} else if (master.getProductId() == 15) {
 				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
 			} else if (master.getProductId() == 16) {
-				return wcTlParameterService.getWcTlRequest(master.getId());
+				return wcTlParameterService.getWcTlRequest(master.getId(),role);
 			}
 			else if (master.getProductId() == 17) {
 				return mfiLoanParameterService.getMFILoanParameterRequest(master.getId());

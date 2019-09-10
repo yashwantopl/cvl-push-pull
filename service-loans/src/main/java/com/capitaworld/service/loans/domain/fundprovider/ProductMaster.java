@@ -111,6 +111,9 @@ public abstract class ProductMaster implements Serializable {
 	@Column(name="action_for")
 	private String actionFor;
 	
+	@Column(name="nbfc_product_type")
+	private Integer productType;
+	
 	
 
 	public ProductMaster() {
@@ -335,4 +338,14 @@ public abstract class ProductMaster implements Serializable {
 	public void setScoreModelIdCoAppIdOthThnSal(Long scoreModelIdCoAppIdOthThnSal) {
 		this.scoreModelIdCoAppIdOthThnSal = scoreModelIdCoAppIdOthThnSal;
 	}
+
+	public Integer getProductType() {
+		return productType;
+	}
+
+	public void setProductType(Integer productType) {
+		this.productType = productType;
+	}
+	
+	
 }

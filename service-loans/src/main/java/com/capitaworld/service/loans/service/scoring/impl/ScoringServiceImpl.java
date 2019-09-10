@@ -8568,10 +8568,15 @@ public class ScoringServiceImpl implements ScoringService {
         					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
             			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE:
-	            				if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            					scoreParameterRetailRequest.setIsVehicleAge_p(true);
-	            					scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge().doubleValue());
-	            				}
+	            				if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
+	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
+	            						scoreParameterRetailRequest.setIsVehicleAge_p(true);
+		            					scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge().doubleValue());
+		            				}
+	        					}else {
+	        						scoreParameterRetailRequest.setIsVehicleAge_p(true);
+	        						scoreParameterRetailRequest.setVechileAge(0.0d);
+	        					}
             				break;
             			case ScoreParameter.Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
@@ -8716,12 +8721,15 @@ public class ScoringServiceImpl implements ScoringService {
         					scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
             				break;
             			case ScoreParameter.Retail.AutoLoan.BORROWER_MARGIN:
+            				if(retailApplicantDetail.getBorrowerContribution() != null && primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null) {
+            					scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution().doubleValue() / primaryAutoLoanDetail.getVehicleAgreedPurchasePrice().doubleValue() * 100);
+            					scoreParameterRetailRequest.setIsBorrowerMargin_p(true);
+            				}
             				scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution() != null  ? retailApplicantDetail.getBorrowerContribution().doubleValue() : null);
-            				scoreParameterRetailRequest.setIsBorrowerMargin_p(retailApplicantDetail.getBorrowerContribution() != null);
             				break;
             			case ScoreParameter.Retail.AutoLoan.SECURITY_COVERAGE:
-            				if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
-            					scoreParameterRetailRequest.setSecurityCoverage(primaryAutoLoanDetail.getVehicleOnRoadPrice() / scoringRequestLoans.getElAmountOnAverageScoring());
+            				if(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null) {
+            					scoreParameterRetailRequest.setSecurityCoverage((primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() / scoringRequestLoans.getElAmountOnAverageScoring()) * 100);
                 				scoreParameterRetailRequest.setIsSecurityCoverage_p(true);
             				}
 
