@@ -8571,15 +8571,30 @@ public class ScoringServiceImpl implements ScoringService {
         					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
             			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE_FOUR_WHEELER:
-	            				if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
+            				if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
 	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            						scoreParameterRetailRequest.setIsVehicleAge_p(true);
-		            					scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge().doubleValue());
+	            						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
+		            					scoreParameterRetailRequest.setVechileAgeFourWheeler(primaryAutoLoanDetail.getVehicleAge().doubleValue());
 		            				}
 	        					}else {
-	        						scoreParameterRetailRequest.setIsVehicleAge_p(true);
-	        						scoreParameterRetailRequest.setVechileAge(0.0d);
+	        						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
+	        						scoreParameterRetailRequest.setVechileAgeFourWheeler(0.0d);
 	        					}
+            				}
+            				break;
+            			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE_TWO_WHEELER:
+            				if(AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
+	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
+	            						scoreParameterRetailRequest.setIsVehicleAgeTwoWheeler_p(true);
+		            					scoreParameterRetailRequest.setVechileAgeTwoWheeler(primaryAutoLoanDetail.getVehicleAge().doubleValue());
+		            				}
+	        					}else {
+	        						scoreParameterRetailRequest.setIsVehicleAgeTwoWheeler_p(true);
+	        						scoreParameterRetailRequest.setVechileAgeTwoWheeler(0.0d);
+	        					}
+            				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
