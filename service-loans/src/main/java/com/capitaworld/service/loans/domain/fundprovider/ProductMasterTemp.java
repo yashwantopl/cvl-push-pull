@@ -162,6 +162,9 @@ public class ProductMasterTemp implements Serializable {
 
 	@Column(name = "is_manual_fill")
 	private Boolean isManualFill;
+	
+	@Column(name = "nbfc_product_type")
+	private Integer productType;
 
 
 	public ProductMasterTemp() {
@@ -518,4 +521,11 @@ public class ProductMasterTemp implements Serializable {
 	public void setScoreModelIdCoAppIdOthThnSal(Long scoreModelIdCoAppIdOthThnSal) {
 		this.scoreModelIdCoAppIdOthThnSal = scoreModelIdCoAppIdOthThnSal;
 	}
+	public Integer getProductType() {
+		return productType;
+	}
+	public void setProductType(Integer productType) {
+		this.productType = productType;
+	}
+	
 }

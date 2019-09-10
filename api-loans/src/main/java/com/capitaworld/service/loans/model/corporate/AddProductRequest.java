@@ -46,6 +46,10 @@ public class AddProductRequest {
 	private Boolean isBureuCommercial;
 
 	private Boolean isManualFill;
+	
+	private Integer productType;
+	
+	private Long roleId;
 
 	
 	public Integer getProductId() {
@@ -208,4 +212,25 @@ public class AddProductRequest {
 	public void setIsManualFill(Boolean isManualFill) {
 		this.isManualFill = isManualFill;
 	}
+
+	public Integer getProductType() {
+		return productType;
+	}
+
+	public void setProductType(Integer productType) {
+		this.productType = productType;
+	}
+
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+
+	
+	
+	
+	
 }

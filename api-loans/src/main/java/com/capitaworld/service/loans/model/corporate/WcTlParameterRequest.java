@@ -303,6 +303,12 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
     private Boolean isCommercialCibilFor3MonthDisplay = false;
 
     private Boolean isCommercialCibilFor3MonthMandatory = false;
+    
+    private List<DataRequest> nbfcRatioMasterList = Collections.emptyList();
+	
+	private List<Long> nbfcRatioSelectedList = Collections.emptyList();
+	
+	private List<Long> nbfcRatioIds;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1512,6 +1518,31 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.isCommercialCibilFor3MonthMandatory = isCommercialCibilFor3MonthMandatory;
 	}
 
+	public List<DataRequest> getNbfcRatioMasterList() {
+		return nbfcRatioMasterList;
+	}
+
+	public void setNbfcRatioMasterList(List<DataRequest> nbfcRatioMasterList) {
+		this.nbfcRatioMasterList = nbfcRatioMasterList;
+	}
+
+	public List<Long> getNbfcRatioSelectedList() {
+		return nbfcRatioSelectedList;
+	}
+
+	public void setNbfcRatioSelectedList(List<Long> nbfcRatioSelectedList) {
+		this.nbfcRatioSelectedList = nbfcRatioSelectedList;
+	}
+
+	public List<Long> getNbfcRatioIds() {
+		return nbfcRatioIds;
+	}
+
+	public void setNbfcRatioIds(List<Long> nbfcRatioIds) {
+		this.nbfcRatioIds = nbfcRatioIds;
+	}
+
+	
 	
 	
 
