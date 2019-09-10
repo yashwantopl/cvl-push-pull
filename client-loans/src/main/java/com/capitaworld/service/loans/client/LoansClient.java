@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.retail.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -56,11 +57,6 @@ import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
-import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -292,6 +288,9 @@ public class LoansClient {
     private static final String GET_FINANCIAL_DATA = "/cma/getFinancialDetailsForBankIntegration";
     
     private static final String LOAN_AMOUNT_FOR_INELIGIBLE = "/get/loan_amount_for_ineligible";
+
+	private static final String SAVE_BANK_RELATION = "/sbi_pl/primary/saveBankRelation/";
+
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1502,8 +1501,8 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse saveMfiFinancialArrangementDetail(List<MFIFinancialArrangementRequest> detailRequests, Long applicationId, Long userId, Long applicantId) throws ExcelException {
-		String url = loansBaseUrl.concat(MFI_FINANCIAL_ARRANGEMENT_DETAILS).concat("/" + applicationId + "/" + userId + "/" + applicantId);
+	public LoansResponse saveMfiFinancialArrangementDetail(List<MFIFinancialArrangementRequest> detailRequests, Long applicationId, Long userId, Long applicantId, Integer provider) throws ExcelException {
+		String url = loansBaseUrl.concat(MFI_FINANCIAL_ARRANGEMENT_DETAILS).concat("/" + applicationId + "/" + userId + "/" + applicantId + "/" + provider);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -2948,6 +2947,28 @@ public class LoansClient {
 		HttpEntity<?> entity = new HttpEntity<>(null, headers);
 		return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		
+	}
+
+	/**
+	 * Save bank relation
+	 * @param relationReq
+	 * @param applicationId
+	 * @param userId
+	 * @return
+	 * @throws LoansException
+	 */
+	public LoansResponse saveBankRelation(BankRelationshipRequest relationReq , Long applicationId, Long userId) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_BANK_RELATION) + "/" + applicationId + "?userId=" + userId;
+		logger.info("saveBankRelation url-------------->>", url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<BankRelationshipRequest> entity = new HttpEntity<BankRelationshipRequest>(relationReq, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			throw new LoansException();
+		}
 	}
 }
 

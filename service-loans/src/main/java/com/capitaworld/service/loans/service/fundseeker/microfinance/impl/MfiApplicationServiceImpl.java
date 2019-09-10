@@ -107,6 +107,7 @@ import com.capitaworld.service.oneform.enums.AccountTypeMfi;
 import com.capitaworld.service.oneform.enums.AddressProofType;
 import com.capitaworld.service.oneform.enums.AreaTypeMfi;
 import com.capitaworld.service.oneform.enums.BankListMfi;
+import com.capitaworld.service.oneform.enums.BusinessInBriefMstMFI;
 import com.capitaworld.service.oneform.enums.BusinessTypeMfi;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.ClientTypeMfi;
@@ -534,7 +535,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository
 				.getFinancialDetailsByApplicationId(applicationId);
 		detailsReq.setFinancialArrangementDetails(financialArrangementRequests);
-
+		
+		Double totalEmi = 0.0;
+		for (MFIFinancialArrangementRequest arrangementRequest : financialArrangementRequests) {
+			totalEmi = totalEmi + arrangementRequest.getEmi(); // sum of all Emi
+		}
+		detailsReq.setTotalEmi(totalEmi);
+		
 		try {
 			LoanSanctionRequest loanSanctionRequest = loanSanctionService.getSanctionDetail(applicationId);
 			List<LoanDisbursementRequest> disbursementList = loanDisbursementService.getDisbursedList(applicationId);
@@ -904,14 +911,22 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			
 			if (!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail)) {
 				Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicationDetail);
-				mfiApplicationDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
-				mfiApplicationDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+				if (null != (Boolean) consolidateDetails.get("isConsolidated")) {
+					mfiApplicationDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
+				}
+				if (null != (String) consolidateDetails.get("consolidateName")) {
+					mfiApplicationDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+				}
 				detailsRepository.save(mfiApplicationDetail);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(mfiApplicationDetail1)) {
 				Map<String, Object> consolidateDetails1 = getConsolidateInfo(mfiApplicationDetail1);
-				mfiApplicationDetail1.setIsConsolidated((Boolean) consolidateDetails1.get("isConsolidated"));
-				mfiApplicationDetail1.setConsolidatedName((String) consolidateDetails1.get("consolidateName"));
+				if (null != (Boolean) consolidateDetails1.get("isConsolidated")) {
+					mfiApplicationDetail1.setIsConsolidated((Boolean) consolidateDetails1.get("isConsolidated"));
+				}
+				if (null != (String) consolidateDetails1.get("consolidateName")) {
+					mfiApplicationDetail1.setConsolidatedName((String) consolidateDetails1.get("consolidateName"));
+				}
 				detailsRepository.save(mfiApplicationDetail1);
 			}
 //			for (int i = 1; i <= 2; i++) {
@@ -1246,38 +1261,16 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			return loansResponse;
 
 		}
-		CibilResponse cibilReportMfi = null;
-
 		try {
-			cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+			CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
 			if (cibilReportMfi.getStatus() == 200) {
-				CibilResponse data = MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>) cibilReportMfi.getData(), CibilResponse.class);
-				if (data.getStatus() != 200) {
-					loansResponse.setMessage(data.getMessage());
-					loansResponse.setStatus(data.getStatus());
-					loansResponse.setData(cibilReportMfi.getData());
-					return loansResponse;
-				}
-
-				List<MFIFinancialArrangementRequest> financialDetailsAppId = getFinancialDetailsAppId(applicationId,
-						userId);
-				bureauCall = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper
-						.getStringfromObject(financialDetailsAppId);
-				if (!CommonUtils.isObjectNullOrEmpty(bureauCall)) {
-					encryption = new EncryptionUtils().encryptionWithKey(bureauCall);
-					loansResponse.setMessage("Successfully Fetch Existing Loan details and bureau report.");
-					loansResponse.setStatus(HttpStatus.OK.value());
-					loansResponse.setData(encryption);
-					return loansResponse;
-				}
+				loansResponse.setStatus(HttpStatus.OK.value());
+				loansResponse.setMessage("Both Bureu Called successful");
+				loansResponse.setData(cibilReportMfi.getData());
+				return loansResponse;
 			}
 		} catch (CibilException e) {
-			e.printStackTrace();
-			logger.info("CibilException error while getReport");
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.info("IOException for generate report");
+			logger.info("CibilException error while getReport [{}]",e);
 		}
 		loansResponse.setMessage("Something went wrong while call cibil report");
 		loansResponse.setData(null);
@@ -1370,8 +1363,8 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 
 	@Override
 	public Boolean saveFinancialDetails(List<MFIFinancialArrangementRequest> financialDataList, Long applicationId,
-			Long createdBy, Long applicantId) {
-		mfiFinancialRepository.inActive(createdBy, applicationId, applicantId);
+			Long createdBy, Long applicantId,Integer provider) {
+		mfiFinancialRepository.inActive(createdBy, applicationId, applicantId,provider);
 		for (MFIFinancialArrangementRequest req : financialDataList) {
 			MfiFinancialArrangementsDetail arrangementsDetail = new MfiFinancialArrangementsDetail();
 			BeanUtils.copyProperties(req, arrangementsDetail);
@@ -1544,6 +1537,15 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			}
 			// set flag filled assets
 			mfiApplicationDetail.setIsAssetsDetailsFilled(true);
+			detailsRepository.save(mfiApplicationDetail);
+			
+			Map<String, Object> consolidateDetails = getConsolidateInfo(mfiApplicationDetail);
+			if (null != (Boolean) consolidateDetails.get("isConsolidated")) {
+				mfiApplicationDetail.setIsConsolidated((Boolean) consolidateDetails.get("isConsolidated"));
+			}
+			if (null != (String) consolidateDetails.get("consolidateName")) {
+				mfiApplicationDetail.setConsolidatedName((String) consolidateDetails.get("consolidateName"));
+			}
 			detailsRepository.save(mfiApplicationDetail);
 		}
 		return true;
@@ -1753,37 +1755,37 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			detailsReq.setPiAddress(getFpMakerName(loanApplicationMaster.getFpMakerId(), PIADDRESS));
 			detailsReq.setLoginUser(getFpMakerName(loanApplicationMaster.getFpMakerId(), MAKERNAME));
 		}
-		PurposeOfLoanMFI purposeOfLoanMFI = PurposeOfLoanMFI.getById(mfiApplicantDetail.getPurposeOfLoan());
-		detailsReq.setLoanPurposeStr(purposeOfLoanMFI.getValue());
+		BusinessInBriefMstMFI purposeOfLoanMFI = BusinessInBriefMstMFI.getById(mfiApplicantDetail.getPurposeOfLoan());
+		detailsReq.setLoanPurposeStr(CommonUtils.isObjectNullOrEmpty(purposeOfLoanMFI.getValue()) ? purposeOfLoanMFI.getValue().toString() : "-");
 		detailsReq.setCurrDateStr(CommonUtils.getCurrentDate("dd-MM-yyyy"));
 
 		/* ENUM CONVERSION */
-		detailsReq.setMaritalStatus(MaritalStatusMst.getById(mfiApplicantDetail.getMaritalStatusId()).getValue());
-		detailsReq.setGender(Gender.getById(mfiApplicantDetail.getGenderId()).getValue());
-		detailsReq.setEduQualification(StringEscapeUtils
-				.escapeXml(HeadFamilyEduMfi.getById(mfiApplicantDetail.getEducationQualification()).getValue()));
-		detailsReq.setRelationWithNominee(
-				RelationMstMFI.getById(mfiApplicantDetail.getRelationWithNomineeId()).getValue());
-		detailsReq.setHouseType1(HouseTypeMfi.getById(mfiApplicantDetail.getHouseType()).getValue());
-		detailsReq.setRepayFreq(FrequencyPaymentMstMFI.getById(mfiApplicantDetail.getRepaymentFrequency()).getValue());
-		detailsReq.setAcademicReli(ReligionRetailMst.getById(mfiApplicantDetail.getAcademicReligion()).getValue());
-		detailsReq.setAcademicCast(CastCategory.getById(mfiApplicantDetail.getAcademicCaste()).getValue());
-		detailsReq.setHouseOwnerShip(OwnershipOfHouse.getById(mfiApplicantDetail.getHouseOwnership()).getValue());
-		detailsReq.setAreaType1(AreaTypeMfi.getById(mfiApplicantDetail.getAreaType()).getValue());
-		detailsReq.setBusinessPremises1(OwnershipOfHouse.getById(mfiApplicantDetail.getBusinessPremises()).getValue());
-		detailsReq.setAddressProofType1(AddressProofType.getById(mfiApplicantDetail.getAddressProofType()).getValue());
-		detailsReq.setBirthDate(mfiApplicantDetail.getBirthDate());
-		detailsReq.setBusinessType1(BusinessTypeMfi.getById(mfiApplicantDetail.getBusinessType()).getValue());
+		detailsReq.setMaritalStatus(mfiApplicantDetail.getMaritalStatusId() !=null ? MaritalStatusMst.getById(mfiApplicantDetail.getMaritalStatusId()).getValue() : "");
+		detailsReq.setGender( mfiApplicantDetail.getGenderId() !=null ? Gender.getById(mfiApplicantDetail.getGenderId()).getValue() : "");
+		detailsReq.setEduQualification( mfiApplicantDetail.getEducationQualification()!= null ? StringEscapeUtils
+				.escapeXml(HeadFamilyEduMfi.getById(mfiApplicantDetail.getEducationQualification()).getValue()) : "");
+		detailsReq.setRelationWithNominee(mfiApplicantDetail.getRelationWithNomineeId()!= null ?
+				RelationMstMFI.getById(mfiApplicantDetail.getRelationWithNomineeId()).getValue() : "");
+		detailsReq.setHouseType1( mfiApplicantDetail.getHouseType() != null ? HouseTypeMfi.getById(mfiApplicantDetail.getHouseType()).getValue() : "");
+		detailsReq.setRepayFreq( mfiApplicantDetail.getRepaymentFrequency()!= null ? FrequencyPaymentMstMFI.getById(mfiApplicantDetail.getRepaymentFrequency()).getValue() : "");
+		detailsReq.setAcademicReli( mfiApplicantDetail.getAcademicReligion() != null ? ReligionRetailMst.getById(mfiApplicantDetail.getAcademicReligion()).getValue() : "");
+		detailsReq.setAcademicCast( mfiApplicantDetail.getAcademicCaste()!= null ? CastCategory.getById(mfiApplicantDetail.getAcademicCaste()).getValue() : "");
+		detailsReq.setHouseOwnerShip(mfiApplicantDetail.getHouseOwnership() !=null ? OwnershipOfHouse.getById(mfiApplicantDetail.getHouseOwnership()).getValue() : "");
+		detailsReq.setAreaType1( mfiApplicantDetail.getAreaType() != null ? AreaTypeMfi.getById(mfiApplicantDetail.getAreaType()).getValue() : "");
+		detailsReq.setBusinessPremises1(mfiApplicantDetail.getBusinessPremises() != null ? OwnershipOfHouse.getById(mfiApplicantDetail.getBusinessPremises()).getValue() : "");
+		detailsReq.setAddressProofType1( mfiApplicantDetail.getAddressProofType() != null ? AddressProofType.getById(mfiApplicantDetail.getAddressProofType()).getValue() : "");
+		detailsReq.setBirthDate( mfiApplicantDetail.getBirthDate() != null ? mfiApplicantDetail.getBirthDate() : null);
+		detailsReq.setBusinessType1( mfiApplicantDetail.getBusinessType() != null ? BusinessTypeMfi.getById(mfiApplicantDetail.getBusinessType()).getValue() : "");
 		System.out.println("mfiApplicantDetail.getLoanType()------::" + mfiApplicantDetail.getLoanType());
-		detailsReq.setLoanTypeString(PurposeOfLoanMFI.getById(mfiApplicantDetail.getLoanType()).getValue());
-		detailsReq.setPurposeOfLoanString(PurposeOfLoanMFI.getById(mfiApplicantDetail.getPurposeOfLoan()).getValue());
-		detailsReq.setProfileImg(mfiApplicantDetail.getProfileImg());
+		//detailsReq.setLoanTypeString(BusinessInBriefMstMFI.getById(mfiApplicantDetail.getLoanType()).getValue());
+		//detailsReq.setPurposeOfLoanString(PurposeOfLoanMFI.getById(mfiApplicantDetail.getPurposeOfLoan()).getValue());
+		detailsReq.setProfileImg(mfiApplicantDetail.getProfileImg() != null ? mfiApplicantDetail.getProfileImg() : "No Image");
 		// detailsReq.setConsentFormImg(mfiApplicantDetail.getConsentFormImg());
 		System.out.println("Image Here ===============>>>>>>>>>>>" + mfiApplicantDetail.getProfileImg());
 
 		/* ENUM CONVERSION */
 
-		detailsReq.setStatus(loanApplicationMaster.getApplicationStatusMaster().getId().intValue()); // for current
+		detailsReq.setStatus( loanApplicationMaster.getApplicationStatusMaster().getId() != null ? loanApplicationMaster.getApplicationStatusMaster().getId().intValue() : 0); // for current
 		
 		//FOR CONSENT IMAGE
 //	    List<Resource> urlList = new ArrayList<Resource>();
@@ -1825,7 +1827,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		
 		
 		// status value
-		detailsReq.setRepaymentTrack(mfiApplicantDetail.getRepaymentTrack());
+		detailsReq.setRepaymentTrack(mfiApplicantDetail.getRepaymentTrack()!=null ? mfiApplicantDetail.getRepaymentTrack() : 0);
 		
 		
 		// for bank details
@@ -1880,11 +1882,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		// FOR MFI MAKER MfiIncomeAndExpenditureReq
 		MfiExpenseExpectedIncomeDetails mfiIncomeAndExpendMFIMaker = expectedIncomeDetailRepository
 				.findByApplicationIdAndType(applicationId, 1);
-		detailsReq.setNetSaving(mfiIncomeAndExpendMFIMaker.getNetSaving());
-		detailsReq.setMfiMakerTotalExpense(mfiIncomeAndExpendMFIMaker.getHouseHoldExpense()
-				+ mfiIncomeAndExpendMFIMaker.getEducationExpense() + mfiIncomeAndExpendMFIMaker.getMedicalExpense()
-				+ mfiIncomeAndExpendMFIMaker.getFoodExpense() + mfiIncomeAndExpendMFIMaker.getClothesExpense()
-				+ mfiIncomeAndExpendMFIMaker.getOtherExpense());
+		detailsReq.setNetSaving( mfiIncomeAndExpendMFIMaker.getNetSaving() != null ? mfiIncomeAndExpendMFIMaker.getNetSaving() : 0 );
+		detailsReq.setMfiMakerTotalExpense((mfiIncomeAndExpendMFIMaker.getHouseHoldExpense() !=null ? mfiIncomeAndExpendMFIMaker.getHouseHoldExpense() : 0) 
+				+ (mfiIncomeAndExpendMFIMaker.getEducationExpense() !=null ? mfiIncomeAndExpendMFIMaker.getEducationExpense() : 0)
+				+ (mfiIncomeAndExpendMFIMaker.getMedicalExpense() != null ? mfiIncomeAndExpendMFIMaker.getMedicalExpense() : 0)
+				+ (mfiIncomeAndExpendMFIMaker.getFoodExpense() != null ? mfiIncomeAndExpendMFIMaker.getFoodExpense() : 0) 
+				+ (mfiIncomeAndExpendMFIMaker.getClothesExpense() !=null ? mfiIncomeAndExpendMFIMaker.getClothesExpense() : 0) 
+				+ (mfiIncomeAndExpendMFIMaker.getOtherExpense() != null ? mfiIncomeAndExpendMFIMaker.getOtherExpense() : 0));
 
 		MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq = detailsRepository
 				.findIncomeAndExpenditureDetailsByAppId(applicationId, 1);
@@ -1898,31 +1902,54 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		MfiIncomeAndExpenditureReq mfiIncomeAndExpenditureReq2 = new MfiIncomeAndExpenditureReq();
 		BeanUtils.copyProperties(mfiIncomeAndExpendMFIChecker, mfiIncomeAndExpenditureReq2);
 		detailsReq.setMfiIncomeAndExpenditureReqMFIChecker(mfiIncomeAndExpenditureReq2);
-		detailsReq.setMfiCheckerTotalExpense(mfiIncomeAndExpendMFIChecker.getHouseHoldExpense()
-				+ mfiIncomeAndExpendMFIChecker.getEducationExpense() + mfiIncomeAndExpendMFIChecker.getMedicalExpense()
-				+ mfiIncomeAndExpendMFIChecker.getFoodExpense() + mfiIncomeAndExpendMFIChecker.getClothesExpense()
-				+ mfiIncomeAndExpendMFIChecker.getOtherExpense());
+		detailsReq.setMfiCheckerTotalExpense((mfiIncomeAndExpendMFIChecker.getHouseHoldExpense() != null ?mfiIncomeAndExpendMFIChecker.getHouseHoldExpense() : 0)
+				+ (mfiIncomeAndExpendMFIChecker.getEducationExpense() != null ? mfiIncomeAndExpendMFIChecker.getEducationExpense() : 0) 
+				+ (mfiIncomeAndExpendMFIChecker.getMedicalExpense()!=null ? mfiIncomeAndExpendMFIChecker.getMedicalExpense() : 0)
+				+ (mfiIncomeAndExpendMFIChecker.getFoodExpense()!=null ? mfiIncomeAndExpendMFIChecker.getFoodExpense() : 0) 
+				+ (mfiIncomeAndExpendMFIChecker.getClothesExpense()!=null ? mfiIncomeAndExpendMFIChecker.getClothesExpense() : 0)
+				+ (mfiIncomeAndExpendMFIChecker.getOtherExpense() !=null ? mfiIncomeAndExpendMFIChecker.getOtherExpense() : 0));
 		if(!CommonUtils.isObjectNullOrEmpty(detailsReq.getMfiCheckerTotalExpense()) && !CommonUtils.isObjectNullOrEmpty(detailsReq.getTotalEmi()))
 		{
 			detailsReq.setNetSavingChecker(
 					totalIncomeChecker - detailsReq.getMfiCheckerTotalExpense() - detailsReq.getTotalEmi());
 		}
 
-		detailsReq.setIncreasedIncomeChecker(mfiIncomeAndExpendMFIChecker.getMonthlyIncome());
-		detailsReq.setTotalCashFlow(detailsReq.getNetSavingChecker() + detailsReq.getIncreasedIncomeChecker());
-
+		detailsReq.setIncreasedIncomeChecker(mfiIncomeAndExpendMFIChecker.getMonthlyIncome() !=null ? mfiIncomeAndExpendMFIChecker.getMonthlyIncome() : 0);
+		detailsReq.setTotalCashFlow(CommonUtils.isObjectNullOrEmpty(detailsReq.getNetSavingChecker() != null ? detailsReq.getNetSavingChecker() : 0 + detailsReq.getIncreasedIncomeChecker()) ? detailsReq.getNetSavingChecker() + detailsReq.getIncreasedIncomeChecker() : 0);
+		
 		List<MFIApplicantDetail> byCoApplicationIdAndAndTypeIsActive = detailsRepository
 				.findByCoApplicationIdAndAndTypeIsActive(applicationId, 2);
 		List<AadharDetailsReq> aadharDetailsReqs = new ArrayList<>();
 		if (!CommonUtils.isListNullOrEmpty(byCoApplicationIdAndAndTypeIsActive)) {
 			for (MFIApplicantDetail coApplicantDetail : byCoApplicationIdAndAndTypeIsActive) {
-				AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();
+				AadharDetailsReq aadharDetailsReq = new AadharDetailsReq();				
 				BeanUtils.copyProperties(coApplicantDetail, aadharDetailsReq);
+				aadharDetailsReq.setGender(aadharDetailsReq.getGenderId() != null ? Gender.getById(aadharDetailsReq.getGenderId()).getValue(): "");
+				aadharDetailsReq.setMaritalStatus(aadharDetailsReq.getMaritalStatusId() != null ? MaritalStatusMst.getById(aadharDetailsReq.getMaritalStatusId()).getValue() : "");
+				aadharDetailsReq.setAddressProof(aadharDetailsReq.getAddressProofType() != null ? AddressProofType.getById(aadharDetailsReq.getAddressProofType()).getValue() : "");
+				/* FOR CO_APP IMAGE */
+				List<String> byteListCoAppImg = new ArrayList<String>();
+				String[] idsCoAppAddProof = (String[]) aadharDetailsReq.getAddressProofImg().split(",");
+				for (int i = 0; i < idsAddProof.length; i++) {
+					try {
+						ByteArrayResource resp = (ByteArrayResource) dmsClient.productDownloadDocument(Long.valueOf(idsCoAppAddProof[i]));
+						byte[] bytes = resp.getByteArray(); // Files.readAllBytes(Paths.get(resp.getFile().getAbsolutePath()));
+						String encoded = Base64.getEncoder().encodeToString(bytes).toString();
+						byteListCoAppImg.add(encoded);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}			
+				//aadharDetailsReq.setCoAppAddProof(byteListCoAppImg);
+				detailsReq.setCoAppAddProof(byteListCoAppImg);
+				/* FOR CO_APP IMAGE */
+				
 				aadharDetailsReqs.add(aadharDetailsReq);
 			}
-			detailsReq.setCoApplicantDetails(aadharDetailsReqs);
+			
+			detailsReq.setCoApplicantDetails(!CommonUtils.isListNullOrEmpty(aadharDetailsReqs) ? aadharDetailsReqs : null);
 		} else {
-			detailsReq.setCoApplicantDetails(Collections.EMPTY_LIST);
+			detailsReq.setCoApplicantDetails(null);
 		}
 
 		List<MFIFinancialArrangementRequest> financialArrangementRequests = mfiFinancialRepository
@@ -1932,6 +1959,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		try {
 			LoanSanctionRequest loanSanctionRequest = loanSanctionService.getSanctionDetail(applicationId);
 			List<LoanDisbursementRequest> disbursementList = loanDisbursementService.getDisbursedList(applicationId);
+			loanSanctionRequest.setSanctionAmtinWords(CommonUtils.convertRupeesInWords((int)Math.round(loanSanctionRequest.getSanctionAmount()!=null? loanSanctionRequest.getSanctionAmount():0)));
 			detailsReq.setSanctionDetail(loanSanctionRequest);
 			detailsReq.setDisbursementDetails(disbursementList);
 
@@ -1963,13 +1991,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 					PpiPersonDetailMFI.IS_REFRIGERATOR.getId(), mfiApplicantDetail.getPpiRafrigeratorInFamily()));
 
 			/* ARUn ENUMS */
-			detailsReq.setPpiAcadamicHeadFamily1(StringEscapeUtils
-					.escapeXml(HeadFamilyEduMfi.getById(mfiApplicantDetail.getPpiAcadamicHeadFamily()).getValue()));
-			detailsReq.setClientType1(ClientTypeMfi.getById(mfiApplicantDetail.getClientType()).getValue());
-			detailsReq.setRepayTrack(mfiApplicantDetail.getRepaymentTrack() != 0
+			detailsReq.setPpiAcadamicHeadFamily1(mfiApplicantDetail.getPpiAcadamicHeadFamily() != null  ? StringEscapeUtils
+					.escapeXml(HeadFamilyEduMfi.getById(mfiApplicantDetail.getPpiAcadamicHeadFamily()).getValue()) :  "");
+			detailsReq.setClientType1( mfiApplicantDetail.getClientType() !=null ? ClientTypeMfi.getById(mfiApplicantDetail.getClientType()).getValue() : "");
+			detailsReq.setRepayTrack(mfiApplicantDetail.getRepaymentTrack() != null
 					? FrequencyPaymentMstMFI.getById(mfiApplicantDetail.getRepaymentTrack()).getValue()
 					: "0");
-			detailsReq.setCompetition1(CompetitionMfi.getById(mfiApplicantDetail.getCompetition()).getValue());
+			detailsReq.setCompetition1( mfiApplicantDetail.getCompetition()!=null ?  CompetitionMfi.getById(mfiApplicantDetail.getCompetition()).getValue() : "");
 		}
 		map.put("applicantDataObject", detailsReq);
 
@@ -2061,14 +2089,13 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		return false;
 	}
 
-	@Override
 	public Map<String, Object> getConsolidateInfo(MFIApplicantDetail mfiApplicationDetail) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Boolean isconsolidated = false;
 		String consolidatename = "";
 		try {
-			String firstName = mfiApplicationDetail.getFirstName();
-			String lastName = mfiApplicationDetail.getLastName();
+			String firstName = mfiApplicationDetail.getFirstName().trim();
+			String lastName = mfiApplicationDetail.getLastName().trim();
 			String fullName = firstName.concat(lastName).trim();
 
 			File fXmlFile = new File(consolidateUrl);
@@ -2102,6 +2129,7 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				if (fullName.equalsIgnoreCase(compareStr)) {
 					isconsolidated = true;
 					consolidatename = firstNameXML + " " + secondNameXML + " " + thirdNameXML + " " + fourthNameXML;
+					logger.info("MATCH FOUND======={}=====>", consolidatename);
 					break;
 				}
 			}
@@ -2112,14 +2140,15 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 				for (int alias = 0; alias < aliasNodeList.getLength(); alias++) {
 					Node aliasNode = aliasNodeList.item(alias);
 					Element aliasElement = (Element) aliasNode;
-					// System.out.println("ALIAS Node Name :" + aliasElement.getNodeName());
+//					logger.info("ALIAS Node Name======={}=====>",aliasElement.getNodeName());
 					if ((firstName + " " + lastName)
 							.equalsIgnoreCase(checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME")))) {
+						logger.info("MATCH FOUND IN ALIAS======={}=====>",
+								checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME")));
 						isconsolidated = true;
 						consolidatename = checkStringNulld(aliasElement.getElementsByTagName("ALIAS_NAME"));
 						break;
 					}
-
 				}
 			}
 		} catch (Exception e) {
@@ -2141,5 +2170,4 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 		}
 		return "";
 	}
-
 }

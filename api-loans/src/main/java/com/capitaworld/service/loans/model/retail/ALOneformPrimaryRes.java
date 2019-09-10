@@ -26,7 +26,7 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Long borrowerContribution;
 	private Double monthlyIncome;
 	private Double grossMonthlyIncome;
-	
+	private Long clientId;  
 	
 	// Vehicle details
 	private Integer vehicleType; 
@@ -34,7 +34,7 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Integer vehicleSegment; 
 	private Integer vehicleAge; 
 	private Integer vehicleEngineVolume; 
-	private Integer vechicleUse; 
+	private Integer vehicleUse; 
 	private Long vehicleExShowRoomPrice;
 	private Long vehicleOnRoadPrice; 
 	private Long vehicleAgreedPurchasePrice;
@@ -46,6 +46,8 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Boolean isCheckOffShiftSalAcc;
 	private Boolean isCheckOffPayOutstndAmount;
 	private Boolean isCheckOffNotChangeSalAcc;
+	
+	private String currencyValue;
 	
 	
 	public ALOneformPrimaryRes() {
@@ -164,12 +166,12 @@ public class ALOneformPrimaryRes implements Serializable {
 		this.vehicleEngineVolume = vehicleEngineVolume;
 	}
 
-	public Integer getVechicleUse() {
-		return vechicleUse;
+	public Integer getVehicleUse() {
+		return vehicleUse;
 	}
 
-	public void setVechicleUse(Integer vechicleUse) {
-		this.vechicleUse = vechicleUse;
+	public void setVehicleUse(Integer vechicleUse) {
+		this.vehicleUse = vechicleUse;
 	}
 
 	public Long getVehicleExShowRoomPrice() {
@@ -276,5 +278,20 @@ public class ALOneformPrimaryRes implements Serializable {
 		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
 	}
 
+	public String getCurrencyValue() {
+		return currencyValue;
+	}
 
+	public void setCurrencyValue(String currencyValue) {
+		this.currencyValue = currencyValue;
+	}
+
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
+	
 }

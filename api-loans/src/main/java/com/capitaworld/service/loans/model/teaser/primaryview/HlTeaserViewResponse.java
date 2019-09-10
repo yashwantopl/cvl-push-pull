@@ -171,7 +171,7 @@ public class HlTeaserViewResponse {
 	private Integer superBuildUpArea;
 	private Integer carpetArea;
 	private Integer totalPriceOfProperty;
-    
+    private String campaignType;
     private String fatherName;
 	private String motherName;
 	private String educationStatus;
@@ -201,8 +201,15 @@ public class HlTeaserViewResponse {
 	private String concessionRoiBased;
 	private String finalRoi;
 	private String noteOfBorrower;
-
+	private String scoringBasedOn;
 	
+	public String getScoringBasedOn() {
+		return scoringBasedOn;
+	}
+
+	public void setScoringBasedOn(String scoringBasedOn) {
+		this.scoringBasedOn = scoringBasedOn;
+	}
 
 	public List<Object> getCibilConsumerReport() {
 		return cibilConsumerReport;
@@ -1324,6 +1331,13 @@ public class HlTeaserViewResponse {
 		this.marketValOfProp = marketValOfProp;
 	}
 
+	public String getCampaignType() {
+		return campaignType;
+	}
+
+	public void setCampaignType(String campaignType) {
+		this.campaignType = campaignType;
+	}
 
 	
 }

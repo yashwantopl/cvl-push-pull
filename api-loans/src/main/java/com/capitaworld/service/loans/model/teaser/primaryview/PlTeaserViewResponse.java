@@ -217,10 +217,16 @@ public class PlTeaserViewResponse {
 	private String concessionRoiBased;
 	private String finalRoi;
 	private String noteOfBorrower;
+	private String scoringBasedOn;
+	private String campaignType;
 	
-	
-	
+	public String getScoringBasedOn() {
+		return scoringBasedOn;
+	}
 
+	public void setScoringBasedOn(String scoringBasedOn) {
+		this.scoringBasedOn = scoringBasedOn;
+	}
 	
 	public List<Object> getCibilConsumerReport() {
 		return cibilConsumerReport;
@@ -1226,4 +1232,11 @@ public class PlTeaserViewResponse {
 	public void setIsNameEdited(Boolean nameEdited) {
 		isNameEdited = nameEdited;
 	}
+	public String getCampaignType() {
+		return campaignType;
+	}
+	public void setCampaignType(String campaignType) {
+		this.campaignType = campaignType;
+	}
+	
 }

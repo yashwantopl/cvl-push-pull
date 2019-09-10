@@ -1,5 +1,5 @@
 
-CREATE TABLE `fp_auto_loan_details` (
+CREATE TABLE `loan_application`.`fp_auto_loan_details` (
   `fp_product_id` BIGINT(20) UNSIGNED NOT NULL,
   `currency` INT(2) DEFAULT NULL,    
   `min_age` DOUBLE DEFAULT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE `fp_auto_loan_details` (
 
 
 
-CREATE TABLE `fp_auto_loan_details_temp` (
+CREATE TABLE `loan_application`.`fp_auto_loan_details_temp` (
   `fp_product_id` BIGINT(20) UNSIGNED NOT NULL,
   `currency` INT(2) DEFAULT NULL,    
   `min_age` DOUBLE DEFAULT NULL,
@@ -293,7 +293,7 @@ INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`,
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(199,'INCOME_TO_INSTALLMENT_RATIO_AL','1','2019-05-25 18:16:56',NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(200,'AVG_EOD_BALANCE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(201,'CAR_SEGMENT_AL','2',NOW(),NULL,NULL,NULL,TRUE,NULL);
-INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(202,',SECURITY_COVERAGE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(202,'SECURITY_COVERAGE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(203,'TAKE_HOME_PAY_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);	
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(204,'BORROWER_MARGIN_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);	
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(205,'AGE_OF_VEHICLE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
@@ -344,3 +344,6 @@ insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_a
 insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) values(NULL,NOW(),TRUE,NULL,NULL,NULL,'206','8','3',FALSE,NULL);
 
 
+
+
+ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `borrower_contribution` BIGINT(20) NULL;

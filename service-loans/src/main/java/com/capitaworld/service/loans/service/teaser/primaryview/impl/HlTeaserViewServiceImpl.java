@@ -80,6 +80,7 @@ import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
@@ -136,6 +137,9 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.exception.UserException;
+import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -238,6 +242,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	private CommonRepository commonRepo;
 	
 	@Autowired
+	private UsersClient usersClient;
+	
+	@Autowired
 	private EPFClient epfClient;
 	
     @Autowired
@@ -251,6 +258,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
+	
 	
 	Date dateOfProposal =null;
 	@Override
@@ -266,11 +277,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		} catch (LoansException e2) {
 			logger.error("Exveption in getting profile value from retail profile for application {}",toApplicationsId);
 		}*/
-		
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 		try {
 			Object obj = "-";
-			 dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
+			 dateOfProposal = loanApplicationRepository.getInPrincipleDate(toApplicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 		     hlTeaserViewResponse.setDateOfProposal(dateOfProposal);
 			}else{
@@ -290,6 +300,18 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		hlTeaserViewResponse.setTenure(applicationProposalMapping.getTenure()!=null ? ((applicationProposalMapping.getTenure()).toString()) + " Years":" - ");
 		hlTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		hlTeaserViewResponse.setAppId(toApplicationId);
+		
+		try {
+			UserResponse campaignUser=usersClient.isExists(userid,null);
+			if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+				hlTeaserViewResponse.setCampaignType("Bank Specific");
+			}else {
+				hlTeaserViewResponse.setCampaignType("Market Place");
+			}
+		} catch (UserException e2) {
+			// TODO Auto-generated catch block
+			logger.info("error while campaign user check"+e2);
+		}
 		
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -677,7 +699,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			logger.error("..........::::::::----->> Error while calling HL Income Details <<-----:::::::::.....",e);
 		}
 		/*get epfoData*/
-		try {
+	/*	try {
 			EmployerRequest epfReq=new EmployerRequest();
 			epfReq.setApplicationId(toApplicationId);
 			EkycResponse epfRes=epfClient.getEpfData(epfReq);
@@ -688,7 +710,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			}
 		} catch (Exception e) {
 			logger.info("error"+e);
-		}
+		}*/
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);
@@ -748,6 +770,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			proposalMappingResponse = proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
 			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
 			if(proposalMappingRequestString != null) {
+				hlTeaserViewResponse.setScoringBasedOn(proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
 			    hlTeaserViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
 			    hlTeaserViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
 			    
@@ -1085,7 +1108,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
-				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentStatus()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
+				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
@@ -1153,11 +1176,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					
 				case 4://Self Employed
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				case 5://Self Employed Professional
 					
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? OccupationHL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				default:
@@ -1234,6 +1259,13 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 
 				} catch (Exception e) {
 					logger.error("error while fetching itr data from itrClient",e);
+				}
+				
+				try {
+					List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = coApplicantIncomeService.getAllByCoAppId(coApplicantDetail.getId());
+					plRetailApplicantResponse.setRetailApplicantIncomeRequestList(!CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
+				} catch (Exception e) {
+					logger.error("Error while getting income details : ",e);
 				}
 				
 				

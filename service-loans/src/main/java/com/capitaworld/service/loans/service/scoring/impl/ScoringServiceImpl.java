@@ -741,9 +741,10 @@ public class ScoringServiceImpl implements ScoringService {
         Double netMonthlyIncome = 0.0d;
         Double grossMonthlyIncome = 0.0d;
         Double totalEMI = 0.0d;
+        List<Data> bankStatementDatas = null;
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
-        Data bankStatementData;
+        //Data bankStatementData;
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
 
         // CALL ELIGIBILITY CLIENT FOR GROSS AND NET MONTHLY INCOME PURPOSE
@@ -774,6 +775,28 @@ public class ScoringServiceImpl implements ScoringService {
             logger.info("Gross Annual Income For ApplicationId======{}======>{}",applicationIdTmp,grossMonthlyIncome);
         }
 
+        try {
+            ReportRequest reportRequest = new ReportRequest();
+            reportRequest.setApplicationId(applicationIdTmp);
+            AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+            if(analyzerResponse == null) {
+                return new ResponseEntity<>(new LoansResponse("Analyser Response Found null For Scoring Calculation PL For the ApplicationId===>" + applicationIdTmp, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+            }
+            bankStatementDatas = new ArrayList<>(5);
+            for(Object object : (List)analyzerResponse.getData()) {
+                Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
+                if(dataBs != null) {
+                    if(!EligibilityUtils.isObjectNullOrEmpty(dataBs.getCoAppId())) {
+                        continue;
+                    }
+                    bankStatementDatas.add(dataBs);
+                }
+            }
+        }catch(Exception e) {
+            logger.error("Error while getting Bank Statement Details===>{}",e);
+            return new ResponseEntity<>(new LoansResponse("Error while Getting Bank Statemtnt Report for ApplicationID====>" + applicationIdTmp + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+        }
+
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
@@ -794,6 +817,7 @@ public class ScoringServiceImpl implements ScoringService {
                 }
                 logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
             }
+/*
             try {
                 ReportRequest reportRequest = new ReportRequest();
                 reportRequest.setApplicationId(applicationId);
@@ -809,6 +833,7 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.error("Error while getting Bank Statement Details===>{}",e);
                 return new ResponseEntity<>(new LoansResponse("Error while Getting Bank Statemtnt Report for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
+*/
 
             ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
 
@@ -1337,8 +1362,18 @@ public class ScoringServiceImpl implements ScoringService {
                                 try {
                                     Double totalEODBalAvg=0.0;
                                     Double deposite = 0.0;
-                                    boolean isAvgEod = true;
-                                        if(bankStatementData != null &&
+                                    boolean isAvgEod = false;
+
+                                    for(Data bankStatementData : bankStatementDatas) {
+                                        if(bankStatementData.getSummaryInfo() != null) {
+                                            if(!CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit())) {
+                                                totalEODBalAvg = totalEODBalAvg + Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg());
+                                                deposite = deposite + Double.parseDouble(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit());
+                                                isAvgEod = true;
+                                            }
+                                        }
+                                    }
+                                     /*   if(bankStatementData != null &&
                                                 bankStatementData.getSummaryInfo() != null &&
                                                 bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg() != null &&
                                                 bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit() != null) {
@@ -1348,7 +1383,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         }else{
                                             isAvgEod =false;
                                             logger.info("error while gettig AVG_EOD_BAL_TO_TOTAL_DEPOSITE_PL parameter value ===>{},{}",totalEODBalAvg,deposite);
-                                    }
+                                    }*/
 
                                     if(isAvgEod){
                                         scoreParameterRetailRequest.setIsAvgEODBalToTotalDeposite_p(true);
@@ -1444,20 +1479,25 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             case ScoreParameter.Retail.AVG_DEPOS_LAST_6_MONTH_PL:
                                 Double value = 0.0d;
-                                if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
-                                    value = Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()) / 6;
-                                    logger.info("AVG_DEPOS_LAST_6_MONTH value===>{}",value);
+                                for(Data bankStatementData : bankStatementDatas) {
+                                    if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails() != null  && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit())) {
+                                        value = value + Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalChqDeposit()); // / 6
+                                    }
                                 }
                                 scoreParameterRetailRequest.setAvgOfTotalCheDepsitLast6Month(value);
                                 scoreParameterRetailRequest.setIsAvgOfTotalCheDepsitLast6Month_p(true);
                                 break;
                             case ScoreParameter.Retail.CHEQUE_BOUNCE_LAST_1_MONTH_PL:
                                 try {
-                                    if(bankStatementData != null && bankStatementData.getCheckBounceForLast1Month() != null) {
-                                        scoreParameterRetailRequest.setChequeBouncelast1Month(bankStatementData.getCheckBounceForLast1Month().doubleValue());
-                                    }else {
-                                        scoreParameterRetailRequest.setChequeBouncelast1Month(0.0d);
+
+                                    Double chequelast6Month = 0.0d;
+                                    scoreParameterRetailRequest.setChequeBouncelast1Month(0.0d);
+                                    for(Data bankStatementData : bankStatementDatas) {
+                                        if(!CommonUtils.isObjectNullOrEmpty(bankStatementData.getCheckBounceForLast6Month())) {
+                                            chequelast6Month = chequelast6Month + bankStatementData.getCheckBounceForLast6Month().doubleValue();
+                                        }
                                     }
+                                    scoreParameterRetailRequest.setChequeBouncelast1Month(chequelast6Month);
                                     scoreParameterRetailRequest.setIsChequeBounceLast1Month_p(true);
                                 }catch(Exception e) {
                                     logger.error("Error while Getting Cheque Bounse of Last 6 Month");
@@ -1684,7 +1724,7 @@ public class ScoringServiceImpl implements ScoringService {
                   			isCreaditHisotryLessThenSixMonths = true;
                   	}
 
-                 	if(cibilActualScore ==  -1){
+                 	if(cibilActualScore.equals(-1d)){
                  			isNoCreaditHistory = true;
                  		}
                  }catch (Exception e) {
@@ -1961,8 +2001,8 @@ public class ScoringServiceImpl implements ScoringService {
 				return new ResponseEntity<>(new LoansResponse("Error while Getting BankList From Analyser for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 
-			//Getting All Loans
-			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
+			//Getting All Loans 
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
@@ -7937,8 +7977,6 @@ public class ScoringServiceImpl implements ScoringService {
 
 	@Override
 	public ResponseEntity<LoansResponse> calculateRetailAutoLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
-
-
         RetailApplicantDetail retailApplicantDetail = null;
         Boolean isItrMannualFilled = false;
         Long applicationId = null;
@@ -8048,7 +8086,7 @@ public class ScoringServiceImpl implements ScoringService {
     							dpds.add(Integer.parseInt(cibilDpdVal[1]));
     						}
     					}else {
-    						dpds.add(Integer.parseInt(cibilResponseList.get(i).toString()));
+    						dpds.add(Integer.parseInt(cibilResponseObj));
     					}
     				}
     			}
@@ -8077,7 +8115,7 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 
 			//Getting All Loans
-			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
@@ -8596,7 +8634,7 @@ public class ScoringServiceImpl implements ScoringService {
                 				try {
 									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
 										scoreParameterRetailRequest.setLtv(scoringRequestLoans.getElAmountOnAverageScoring());
-										scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue());
+										scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue());
 										scoreParameterRetailRequest.setIsLTV_p(true);
 									}else {
 										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());

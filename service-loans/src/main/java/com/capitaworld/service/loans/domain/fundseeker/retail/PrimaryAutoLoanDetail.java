@@ -23,6 +23,11 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@OneToOne
+	@JoinColumn(name = "application_id")
+	private LoanApplicationMaster applicationId;
+
+	
 	@Column(name="vehicle_type")
 	Integer vehicleType;
 	
@@ -260,4 +265,13 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 	public void setIsCheckOffNotChangeSalAcc(Boolean isCheckOffNotChangeSalAcc) {
 		this.isCheckOffNotChangeSalAcc = isCheckOffNotChangeSalAcc;
 	}
+
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(LoanApplicationMaster applicationId) {
+		this.applicationId = applicationId;
+	}
+	
 }

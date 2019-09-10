@@ -114,6 +114,9 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.exception.UserException;
+import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -149,6 +152,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 	@Autowired
 	private DMSClient dmsClient;
+	
+	@Autowired
+	private UsersClient usersClient;
+	
 
 	@Autowired
 	private MatchEngineClient matchEngineClient;
@@ -428,14 +435,14 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 		
 		/*get epfoData*/
-		EmployerRequest epfReq=new EmployerRequest();
+		/*EmployerRequest epfReq=new EmployerRequest();
 		epfReq.setApplicationId(toApplicationId);
 		EkycResponse epfRes=epfClient.getEpfData(epfReq);
 		if(epfRes != null && epfRes.getData()!= null) {
 			plTeaserViewResponse.setEpfData(epfRes.getData());
 		}else {
 			logger.info("epfo data is null for===>>"+toApplicationId);
-		}
+		}*/
 		 
 		
 		//PROPOSAL RESPONSE
@@ -774,11 +781,23 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		plTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		plTeaserViewResponse.setAppId(toApplicationId);
 		 
+		
+		try {
+			UserResponse campaignUser=usersClient.isExists(userid,null);
+			if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+				plTeaserViewResponse.setCampaignType("Bank Specific");
+			}else {
+				plTeaserViewResponse.setCampaignType("Market Place");
+			}
+		} catch (UserException e2) {
+			// TODO Auto-generated catch block
+			logger.info("error while campaign user check"+e2);
+		}
 
 		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
 			try {
 				Object obj = "-";
-				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId());
+				Date dateOfProposal = loanApplicationRepository.getInPrincipleDate(toApplicationId);
 				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
 			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
 				}else{
@@ -1080,6 +1099,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
 			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
 			if(proposalMappingRequestString != null) {
+				plTeaserViewResponse.setScoringBasedOn(proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
 				plTeaserViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
 				plTeaserViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
 				 if (!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {

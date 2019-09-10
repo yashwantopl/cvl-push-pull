@@ -966,8 +966,7 @@ public class FPAsyncComponent {
 						try {
 							logger.info("Calling One form client for getting state by state list Id");
 							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-									.getListData();
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
 							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 								MasterResponse masterResponse = MultipleJSONObjectHelper
 										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -987,7 +986,9 @@ public class FPAsyncComponent {
 
 			//	when proposal belongs to PL or HL
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue())){
+				&& (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() 
+				|| applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()
+				|| applicationRequest.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue())){
 				domainId = DomainValue.RETAIL.getId();
 				fsName=applicationRequest.getUserName();
 				address=applicationRequest.getAddress();
@@ -1499,7 +1500,8 @@ public class FPAsyncComponent {
 		String emailSubject = "";
 		if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
 			emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
-		}else if (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()){
+		}else if (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue() 
+					|| applicationRequest.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue()){
 			emailSubject = "Maker Assigned - For Quick "+proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()+" Approval ";			
 		}
 		try {

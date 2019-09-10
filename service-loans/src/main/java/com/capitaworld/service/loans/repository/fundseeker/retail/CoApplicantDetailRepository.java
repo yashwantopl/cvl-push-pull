@@ -23,8 +23,11 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	@Modifying
 	//@Query("UPDATE CoApplicantDetail o set o.isActive = false where o.isActive = true and o.applicationId.id =:applicationId and o.applicationId.userId =:userId and o.id =:id")
 	@Query("update CoApplicantDetail coa set coa.isActive = false,coa.modifiedDate = NOW() where coa.applicationId.id =:applicationId  and coa.id =:id and coa.isActive = true")
-	public int inactiveCoApplicant(@Param("applicationId") Long applicationId,
-			@Param("id") Long id);
+	public int inactiveCoApplicant(@Param("applicationId") Long applicationId,@Param("id") Long id);
+	
+	@Modifying
+	@Query("update CoApplicantDetail coa set coa.isActive = false,coa.modifiedDate = NOW() where coa.applicationId.id =:applicationId and coa.isActive = true")
+	public int inactiveCoApplicant(@Param("applicationId") Long applicationId);
 
 	@Query("from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and (cd.isItrSkip = false or cd.isItrSkip = null) and cd.applicationId.userId =:userId ORDER BY cd.id")
 	public List<CoApplicantDetail> getList(@Param("applicationId") Long applicationId, @Param("userId") Long userId);

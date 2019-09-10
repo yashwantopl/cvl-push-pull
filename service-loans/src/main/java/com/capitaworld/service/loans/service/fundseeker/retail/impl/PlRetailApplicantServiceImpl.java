@@ -143,7 +143,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	applicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
                 	applicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
                 	applicantDetail.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp());
-                	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);	
+                	applicantDetail.setIsCibilTermsAgree(plRetailApplicantRequest.getIsCibilTermsAgree());
+                	copyAddressFromRequestToDomain(plRetailApplicantRequest, applicantDetail);
                 } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.EMPLOYMENT_INFO) {
                 	applicantDetail.setIsEmploymentInfoFilled(plRetailApplicantRequest.getIsEmploymentInfoFilled());
                 	applicantDetail.setEmploymentType(plRetailApplicantRequest.getEmploymentType());
@@ -235,6 +236,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     	coApplicantDetail.setResidenceSinceYear(plRetailApplicantRequest.getResidenceSinceYear());
                     	coApplicantDetail.setResidenceSinceMonth(plRetailApplicantRequest.getResidenceSinceMonth());
                         coApplicantDetail.setIsOwnedProp(plRetailApplicantRequest.getIsOwnedProp());
+                        coApplicantDetail.setIsCibilTermsAgree(plRetailApplicantRequest.getIsCibilTermsAgree());
                     	if (plRetailApplicantRequest.getContactAddress() != null) {
         					coApplicantDetail.setAddressPremiseName(plRetailApplicantRequest.getContactAddress().getPremiseNumber());
         					coApplicantDetail.setAddressStreetName(plRetailApplicantRequest.getContactAddress().getStreetName());
@@ -385,6 +387,10 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 	}
                 	saveFinObj.setAmount(null);
                 	saveFinObj.setEmi(null);
+                }
+                
+                if(reqObj.getBureauOrCalculatedEmi() == null){
+                	saveFinObj.setBureauOrCalculatedEmi(0.0);
                 }
                 
                 financialArrangementsDetails.add(saveFinObj);
@@ -1441,7 +1447,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromCoAppId(coAppId);
                 for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 	financialRequest = new FinancialArrangementsDetailRequest();
-                	financialRequest.setId(creditCardsDetail.getId());
+//                	financialRequest.setId(creditCardsDetail.getId());
                     financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                     financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                     financialRequest.setLoanType("Credit Card");
@@ -1468,7 +1474,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 List<CreditCardsDetail> creditCardsDetailList= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
                 for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 	financialRequest = new FinancialArrangementsDetailRequest();
-                	financialRequest.setId(creditCardsDetail.getId());
+//                	financialRequest.setId(creditCardsDetail.getId());
                     financialRequest.setFinancialInstitutionName(creditCardsDetail.getIssuerName());
                     financialRequest.setOutstandingAmount(creditCardsDetail.getOutstandingBalance());
                     financialRequest.setLoanType("Credit Card");

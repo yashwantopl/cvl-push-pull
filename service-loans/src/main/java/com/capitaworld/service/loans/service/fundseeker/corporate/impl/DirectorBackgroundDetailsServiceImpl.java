@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailRequest;
 import com.capitaworld.service.loans.model.EmploymentDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -44,7 +45,9 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	@Autowired
 	private ConnectClient connectClient;
 	
-	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
+	@Autowired
+	private CommonRepository commonRepository;
+	//private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 	
 	@Autowired
 	private Environment environment;
@@ -139,7 +142,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 				dirBackDetailReq.setDirectorsName(detail.getDirectorsName());
 				dirBackDetailReq.setId(detail.getId());
 				dirBackDetailReq.setIsMainDirector(detail.getIsMainDirector());
-				dirBackDetailReq.setAmount(environment.getProperty(SIDBI_AMOUNT));
+				dirBackDetailReq.setAmount(commonRepository.getSidbiAmount() != null ? commonRepository.getSidbiAmount() : "1180");
 				dirBackDetailReqList.add(dirBackDetailReq);
 			}
 			return dirBackDetailReqList;

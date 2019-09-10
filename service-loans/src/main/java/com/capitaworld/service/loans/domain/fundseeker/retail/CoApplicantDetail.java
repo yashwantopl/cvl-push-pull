@@ -492,6 +492,9 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name="is_owned_prop")
 	private Boolean isOwnedProp;
+
+	@Column(name="is_cibil_terms_agree")
+	private Boolean isCibilTermsAgree;
 	
 
 	public CoApplicantDetail() {
@@ -1735,5 +1738,13 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setIsOwnedProp(Boolean isOwnedProp) {
 		this.isOwnedProp = isOwnedProp;
+	}
+
+	public Boolean getIsCibilTermsAgree() {
+		return isCibilTermsAgree;
+	}
+
+	public void setIsCibilTermsAgree(Boolean isCibilTermsAgree) {
+		this.isCibilTermsAgree = isCibilTermsAgree;
 	}
 }
