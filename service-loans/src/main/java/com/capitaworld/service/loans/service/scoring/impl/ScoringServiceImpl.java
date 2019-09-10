@@ -8575,11 +8575,11 @@ public class ScoringServiceImpl implements ScoringService {
             					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
 	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
 	            						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
-		            					scoreParameterRetailRequest.setVechileAgeFourWheeler(primaryAutoLoanDetail.getVehicleAge().doubleValue());
+	            						// VechileAge is Being set in Starting of Four Loop
 		            				}
 	        					}else {
 	        						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
-	        						scoreParameterRetailRequest.setVechileAgeFourWheeler(0.0d);
+	        						scoreParameterRetailRequest.setVechileAge(0.0d);
 	        					}
             				}
             				break;
@@ -8588,11 +8588,11 @@ public class ScoringServiceImpl implements ScoringService {
             					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
 	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
 	            						scoreParameterRetailRequest.setIsVehicleAgeTwoWheeler_p(true);
-		            					scoreParameterRetailRequest.setVechileAgeTwoWheeler(primaryAutoLoanDetail.getVehicleAge().doubleValue());
+	            						// VechileAge is Being set in Starting of Four Loop
 		            				}
 	        					}else {
 	        						scoreParameterRetailRequest.setIsVehicleAgeTwoWheeler_p(true);
-	        						scoreParameterRetailRequest.setVechileAgeTwoWheeler(0.0d);
+	        						scoreParameterRetailRequest.setVechileAge(0.0d);
 	        					}
             				}
             				break;
