@@ -8205,6 +8205,8 @@ public class ScoringServiceImpl implements ScoringService {
           // ENDS HERE CONCESSION BASED ON RATE OF INTEREST:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
+                scoreParameterRetailRequest.setVechileType(primaryAutoLoanDetail.getVehicleType());
+                scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge() != null ? primaryAutoLoanDetail.getVehicleAge().doubleValue() : null);
                 logger.info("scoringRequestLoans.getFoir()=>{}==For ApplicationId====>{}==>For FpProductId===>{}",scoringRequestLoans.getFoir(),applicationId,fpProductId);
                 scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
