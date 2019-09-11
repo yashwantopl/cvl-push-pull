@@ -43,8 +43,8 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 	@Column(name="vehicle_engine_volume")
 	Integer vehicleEngineVolume; 
 	
-	@Column(name="vechicle_use")
-	Integer vechicleUse; 
+	@Column(name="vehicle_use")
+	Integer vehicleUse; 
 	
 	@Column(name="vehicle_ex_show_room_price")
 	Long vehicleExShowRoomPrice;
@@ -167,15 +167,14 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 	}
 
 
-	public Integer getVechicleUse() {
-		return vechicleUse;
+	
+	public Integer getVehicleUse() {
+		return vehicleUse;
 	}
 
-
-	public void setVechicleUse(Integer vechicleUse) {
-		this.vechicleUse = vechicleUse;
+	public void setVehicleUse(Integer vehicleUse) {
+		this.vehicleUse = vehicleUse;
 	}
-
 
 	public Long getVehicleExShowRoomPrice() {
 		return vehicleExShowRoomPrice;
