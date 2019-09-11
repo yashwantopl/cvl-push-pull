@@ -8570,32 +8570,17 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setRepaymentPeriod(retailApplicantDetail.getRepaymentMode());
         					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
-            			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE_FOUR_WHEELER:
-            				if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
+            			case ScoreParameter.Retail.AutoLoan.AGE_OF_VEHICLE:
+	        					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
 	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
+	            						scoreParameterRetailRequest.setIsVehicleAge_p(true);
 	            						// VechileAge is Being set in Starting of Four Loop
 		            				}
 	        					}else {
-	        						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
+	        						scoreParameterRetailRequest.setIsVehicleAge_p(true);
 	        						scoreParameterRetailRequest.setVechileAge(0.0d);
 	        					}
-            				}
-            				break;
-            			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE_TWO_WHEELER:
-            				if(AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
-	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
-	            						// VechileAge is Being set in Starting of Four Loop
-		            				}
-	        					}else {
-	        						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
-	        						scoreParameterRetailRequest.setVechileAge(0.0d);
-	        					}
-            				}
-            				break;
+	        				break;
             			case ScoreParameter.Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
             				for(Data bankStatementData : bankStatementDatas) {
@@ -8739,15 +8724,14 @@ public class ScoringServiceImpl implements ScoringService {
         					scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
             				break;
             			case ScoreParameter.Retail.AutoLoan.BORROWER_MARGIN:
-            				if(retailApplicantDetail.getBorrowerContribution() != null && primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null) {
-            					scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution().doubleValue() / primaryAutoLoanDetail.getVehicleAgreedPurchasePrice().doubleValue() * 100);
+            				if(retailApplicantDetail.getBorrowerContribution() != null && primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null) {
+            					scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution().doubleValue() / primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue() * 100);
             					scoreParameterRetailRequest.setIsBorrowerMargin_p(true);
             				}
-            				scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution() != null  ? retailApplicantDetail.getBorrowerContribution().doubleValue() : null);
             				break;
             			case ScoreParameter.Retail.AutoLoan.SECURITY_COVERAGE:
-            				if(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null) {
-            					scoreParameterRetailRequest.setSecurityCoverage((primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() / scoringRequestLoans.getElAmountOnAverageScoring()) * 100);
+            				if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
+            					scoreParameterRetailRequest.setSecurityCoverage((primaryAutoLoanDetail.getVehicleOnRoadPrice() / scoringRequestLoans.getElAmountOnAverageScoring()) * 100);
                 				scoreParameterRetailRequest.setIsSecurityCoverage_p(true);
             				}
 
