@@ -188,6 +188,8 @@ public class CommonUtils {
 		public static final Long ADMIN_MAKER = 10l;
 		public static final Long ADMIN_CHECKER = 11l;
 		public static final Long SMECC = 12l;
+		public static final Long ZO = 14l;
+		public static final Long RO = 13l;
 	}
 
 	public static final class DenominationInAmount {
