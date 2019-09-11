@@ -63,6 +63,7 @@ import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
+import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.BranchUserResponse;
@@ -420,6 +421,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						subject = "Home Loan Offline Application";
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Home Loan");
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
+					}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId()) {
+						subject = "Auto Loan Offline Application";
+						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Auto Loan");
+						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
 					} else {
 						// Type ==For getting Loan=====For Existing and NTB====================
 						PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
@@ -627,8 +632,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		}
 	}
 
-	private Map<String, Object> getFsNameAndDetailsForAllProduct(Long applicationId,
-			LoanApplicationRequest applicationRequest) {
+	private Map<String, Object> getFsNameAndDetailsForAllProduct(Long applicationId, LoanApplicationRequest applicationRequest) {
 		Map<String, Object> notificationParams = new HashMap();
 		String fsName = null;
 		String address = null;
@@ -661,8 +665,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, "NA");
 			}
 			return notificationParams;
-		} else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() || 
-				applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
+		} else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() 
+				|| applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()
+				|| applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId()) {
 			try {
 				// for fs name and address only
 				RetailApplicantRequest plRequest = retailApplicantSercive.get(applicationId);
@@ -672,56 +677,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, plRequest.getFirstName());
 					address = asyncComp.murgedAddress(plRequest.getAddressPremiseName(), plRequest.getAddressLandmark(), plRequest.getAddressStreetName(), plRequest.getAddressCity(), null, plRequest.getAddressState());
 					
-					/*String primiseName = plRequest.getAddressPremiseName() != "" ? plRequest.getAddressPremiseName()
-							: "";
-					String streetName = plRequest.getAddressStreetName() != "" ? plRequest.getAddressStreetName() : "";
-					String landMark = plRequest.getAddressLandmark() != "" ? plRequest.getAddressLandmark() : "";
-					address = null;
-					if (primiseName != "" && primiseName != null){
-						address = primiseName;
-					}
-
-					if (streetName != "" && streetName != null)
-						if(address != null){
-							address = address + "," + streetName;
-						}else{
-							address = streetName;
-						}
-
-					if (landMark != "" && landMark != null){
-						if(address != null){
-							address = address + "," + landMark;
-						}else{
-							address = landMark;
-						}
-					}
-
-					String city = "";
-					try {
-						city = CommonDocumentUtils.getCity(Long.valueOf(plRequest.getAddressCity().toString()),
-								oneFormClient);
-						if (city != ""){
-							if(address != null){
-								address = address + "," + city;
-							}else{
-								address = city;
-							}
-						}
-
-					} catch (Exception e) {
-						logger.error("Error in getting city from city id" + e);
-					}
-					String state = "";
-					try {
-						state = CommonDocumentUtils.getState(Long.valueOf(plRequest.getAddressState().toString()),
-								oneFormClient);
-						if (state != "")
-							address = address + "," + state;
-					} catch (Exception e) {
-						logger.error("Error in getting state from state id" + e);
-					}
-					logger.info("address is:" + address);*/
-
 					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, address);
 				}
 			} catch (Exception e) {
