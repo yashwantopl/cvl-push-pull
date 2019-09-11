@@ -8573,27 +8573,14 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.AutoLoan.AGE_OF_VEHICLE:
 	        					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
 	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
+	            						scoreParameterRetailRequest.setIsVehicleAge_p(true);
 	            						// VechileAge is Being set in Starting of Four Loop
 		            				}
 	        					}else {
-	        						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
+	        						scoreParameterRetailRequest.setIsVehicleAge_p(true);
 	        						scoreParameterRetailRequest.setVechileAge(0.0d);
 	        					}
 	        				break;
-            			/*case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE_TWO_WHEELER:
-            				if(AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
-	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
-	            						// VechileAge is Being set in Starting of Four Loop
-		            				}
-	        					}else {
-	        						scoreParameterRetailRequest.setIsVehicleAgeFourWheeler_p(true);
-	        						scoreParameterRetailRequest.setVechileAge(0.0d);
-	        					}
-            				}
-            				break;*/
             			case ScoreParameter.Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
             				for(Data bankStatementData : bankStatementDatas) {
