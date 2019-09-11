@@ -85,7 +85,7 @@ public class TermLoanParameterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			TermLoanParameterRequest parameterRequest= termLoanParameterService.getTermLoanParameterRequest(id);
+			TermLoanParameterRequest parameterRequest= termLoanParameterService.getTermLoanParameterRequest(id,310l);
 			if (parameterRequest != null) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(parameterRequest);

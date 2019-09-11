@@ -91,6 +91,8 @@ public class ProductMasterRequest implements Serializable {
 	//total limits
 	private List<Integer> gstType;
 	
+	private Integer productType;
+	
 
 	public ProductMasterRequest() {
 		// Do nothing because of X and Y.
@@ -395,5 +397,15 @@ public class ProductMasterRequest implements Serializable {
 	public void setScoreModelIdCoAppIdOthThnSal(Long scoreModelIdCoAppIdOthThnSal) {
 		this.scoreModelIdCoAppIdOthThnSal = scoreModelIdCoAppIdOthThnSal;
 	}
+
+	public Integer getProductType() {
+		return productType;
+	}
+
+	public void setProductType(Integer productType) {
+		this.productType = productType;
+	}
+	
+	
 	
 }

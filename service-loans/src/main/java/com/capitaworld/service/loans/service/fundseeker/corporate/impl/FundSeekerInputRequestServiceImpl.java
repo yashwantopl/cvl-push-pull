@@ -441,7 +441,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 		FundSeekerInputRequestResponse fsInputRes = new FundSeekerInputRequestResponse();
 		fsInputRes.setApplicationId(fsInputReq.getApplicationId());
-
+		fsInputRes.setCurrentFinancialYear(CommonUtils.getFinancialYear());
 		try {
 			CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(fsInputReq.getApplicationId());
@@ -583,10 +583,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	}
 
 	@Override
-	public LoansResponse callMatchEngineClient(Long applicationId, Long userId, Integer businessTypeId) {
+	public LoansResponse callMatchEngineClient(Long applicationId, Long userId, Integer businessTypeId,boolean isNbfcUser) {
 		ConnectResponse postOneForm;
 		try {
-			postOneForm = connectClient.postOneForm(applicationId, userId, businessTypeId);
+			postOneForm = connectClient.postOneForm(applicationId, userId, businessTypeId,isNbfcUser);
 			if (postOneForm != null) {
 				/*logger.info("postOneForm=======================>Client Connect Response=============>{}",
 						postOneForm.toString());*/

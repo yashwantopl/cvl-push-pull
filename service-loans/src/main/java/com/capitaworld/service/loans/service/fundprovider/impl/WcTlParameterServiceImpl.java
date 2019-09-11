@@ -25,6 +25,7 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
@@ -35,6 +36,8 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMapping;
 import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMappingTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NbfcRatioMapping;
+import com.capitaworld.service.loans.domain.fundprovider.NbfcRatioMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -42,6 +45,7 @@ import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -52,6 +56,8 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRe
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
@@ -130,6 +136,16 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 
 	@Autowired
 	private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
+	
+	@Autowired
+	private CoLendingRatioRepository coLendingRatioRepository;
+	
+	@Autowired
+	private NbfcRatioMappingTempRepository nbfcRatioMappingTempRepository; 
+	
+	@Autowired
+	private NbfcRatioMappingRepository nbfcRatioMappingRepository; 
+
 
 	@Override
 	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest, Long mappingId) {
@@ -196,6 +212,10 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		// gst type
 		fpGstTypeMappingRepository.inActiveMasterByFpProductId(wcTlParameterRequest.getId());
 		saveLoanGstType(wcTlParameterRequest);
+		
+		//save nbfc ratio mapping
+		nbfcRatioMappingRepository.inActiveByFpProductId(wcTlParameterRequest.getId());
+		saveNbfcRatioMapping(wcTlParameterRequest);
 
 		// Ravina
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, wcTlParameter2.getId());
@@ -206,7 +226,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	}
 
 	@Override
-	public WcTlParameterRequest getWcTlRequest(Long id) {
+	public WcTlParameterRequest getWcTlRequest(Long id,Long role) {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
 		WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 		WcTlParameter loanParameter = wcTlLoanParameterRepository.getById(id);
@@ -325,6 +345,33 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
+		List<DataRequest>  ratioMasterList;
+		List<CoLendingRatio> listAllActiveByOrgkId;
+		if(!CommonUtils.isObjectNullOrEmpty(role))
+		{
+		if(role.equals(WorkflowUtils.Role.NBFC_CHECKER) || role.equals(WorkflowUtils.Role.NBFC_MAKER))
+		{
+			listAllActiveByOrgkId =coLendingRatioRepository.listAllActiveProposalByOrgId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+			
+		}
+		else
+		{
+			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+		}
+		
+		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
+		{
+			DataRequest dataRequest=new DataRequest();
+			dataRequest.setId(coLendingRatio.getId());
+			dataRequest.setValue(coLendingRatio.getName());
+			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			ratioMasterList.add(dataRequest);
+		}
+		
+		wcTlParameterRequest.setNbfcRatioMasterList(ratioMasterList);
+		}
 
 		wcTlParameterRequest.setMsmeFundingIds(
 				msmeValueMappingService.getDataListFromFpProductId(2, id, wcTlParameterRequest.getUserId()));
@@ -332,6 +379,8 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		wcTlParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		wcTlParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
+		
+		wcTlParameterRequest.setNbfcRatioIds(nbfcRatioMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return wcTlParameterRequest;
 	}
@@ -590,6 +639,37 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				logger.error(ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG, e);
 			}
 		}
+		
+		List<DataRequest>  ratioMasterList;
+		List<CoLendingRatio> listAllActiveByOrgkId;
+		//add nbfc ratio list
+		if(!CommonUtils.isObjectNullOrEmpty(role))
+		{
+		if(role.equals(WorkflowUtils.Role.NBFC_CHECKER) || role.equals(WorkflowUtils.Role.NBFC_MAKER))
+		{
+			listAllActiveByOrgkId =coLendingRatioRepository.listAllActiveProposalByOrgId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+			
+		}
+		else
+		{
+			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+		}
+		
+		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
+		{
+			DataRequest dataRequest=new DataRequest();
+			dataRequest.setId(coLendingRatio.getId());
+			dataRequest.setValue(coLendingRatio.getName());
+			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			ratioMasterList.add(dataRequest);
+		}
+		
+		wcTlParameterRequest.setNbfcRatioMasterList(ratioMasterList);
+		}
+		
+		
 		wcTlParameterRequest.setJobId(loanParameter.getJobId());
 		// set workflow buttons
 
@@ -620,6 +700,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		wcTlParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingTempRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		wcTlParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
+		wcTlParameterRequest.setNbfcRatioIds(nbfcRatioMappingTempRepository.getTempIdsByFpProductId(wcTlParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
 		return wcTlParameterRequest;
 	}
@@ -697,18 +778,45 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(WcTlParameter.getId());
 		saveNegativeIndustryTemp(wcTlParameterRequest);
+		
+		//save nbfc ratio mapping
+		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(WcTlParameter.getId());
+		saveNbfcRatioMappingTemp(wcTlParameterRequest);
 
 		// loan arrangements
 		loanArrangementMappingTempRepository.inActiveMasterByFpProductId(wcTlParameterRequest.getId());
 		saveLoanArrangementsTemp(wcTlParameterRequest);
 
-		// Ravina
+		//save nbfc ratio mapping
+		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(wcTlParameterRequest.getId());
+		saveNbfcRatioMappingTemp(wcTlParameterRequest);
+		
+		// vinita
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(wcTlParameterRequest.getMsmeFundingIds(),
 				wcTlParameterRequest.getId(), wcTlParameterRequest.getUserId());
 		logger.info("updated = {}", isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdateTemp");
 		return true;
 
+	}
+	
+	private void saveNbfcRatioMappingTemp(WcTlParameterRequest wcparam) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNbfcRatioMappingTemp");
+		NbfcRatioMappingTemp nbfc= null;
+		for (Long dataRequest : wcparam.getNbfcRatioIds()) {
+			nbfc = new NbfcRatioMappingTemp();
+			nbfc.setFpProductId(wcparam.getId());
+			nbfc.setRatioId(dataRequest);
+			
+			nbfc.setCreatedDate(new Date());
+			nbfc.setModifiedDate(new Date());
+			nbfc.setIsActive(true);
+			// create by and update
+			nbfcRatioMappingTempRepository.save(nbfc);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNbfcRatioMappingTemp");
+		
 	}
 
 	private void saveIndustryTemp(WcTlParameterRequest workingCapitalParameterRequest) {
@@ -728,6 +836,25 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			industrySectorTempRepository.save(industrySectorDetail);
 		}
 		logger.info("end saveIndustryTemp");
+	}
+	
+	private void saveNbfcRatioMapping(WcTlParameterRequest wcTlParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNbfcRatioMapping");
+		NbfcRatioMapping nbfc= null;
+		for (Long dataRequest : wcTlParameterRequest.getNbfcRatioIds()) {
+			nbfc = new NbfcRatioMapping();
+			nbfc.setFpProductId(wcTlParameterRequest.getId());
+			nbfc.setRatioId(dataRequest);
+			
+			nbfc.setCreatedDate(new Date());
+			nbfc.setModifiedDate(new Date());
+			nbfc.setIsActive(true);
+			// create by and update
+			nbfcRatioMappingRepository.save(nbfc);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNbfcRatioMapping");
+		
 	}
 
 	private void saveSectorTemp(WcTlParameterRequest workingCapitalParameterRequest) {
