@@ -1261,17 +1261,17 @@ public class MfiApplicationServiceImpl implements MfiApplicationService {
 			return loansResponse;
 
 		}
-		try {
-			CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
-			if (cibilReportMfi.getStatus() == 200) {
-				loansResponse.setStatus(HttpStatus.OK.value());
-				loansResponse.setMessage("Both Bureu Called successful");
-				loansResponse.setData(cibilReportMfi.getData());
-				return loansResponse;
-			}
-		} catch (CibilException e) {
-			logger.info("CibilException error while getReport [{}]",e);
-		}
+// 		try {
+// 			CibilResponse cibilReportMfi = cibilClient.getCibilReportMfi(applicationId, userId);
+// 			if (cibilReportMfi.getStatus() == 200) {
+// 				loansResponse.setStatus(HttpStatus.OK.value());
+// 				loansResponse.setMessage("Both Bureu Called successful");
+// 				loansResponse.setData(cibilReportMfi.getData());
+// 				return loansResponse;
+// 			}
+// 		} catch (CibilException e) {
+// 			logger.info("CibilException error while getReport [{}]",e);
+// 		}
 		loansResponse.setMessage("Something went wrong while call cibil report");
 		loansResponse.setData(null);
 		loansResponse.setStatus(HttpStatus.OK.value());
