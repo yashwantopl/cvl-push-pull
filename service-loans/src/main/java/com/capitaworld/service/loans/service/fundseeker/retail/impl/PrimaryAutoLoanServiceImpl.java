@@ -81,7 +81,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				primaryAutoLoanDetail.setVehicleSegment(alLoanDetailRequest.getVehicleSegment());
 				primaryAutoLoanDetail.setVehicleAge(alLoanDetailRequest.getVehicleAge());
 				primaryAutoLoanDetail.setVehicleEngineVolume(alLoanDetailRequest.getVehicleEngineVolume());
-				primaryAutoLoanDetail.setVechicleUse(alLoanDetailRequest.getVehicleUse());
+				primaryAutoLoanDetail.setVehicleUse(alLoanDetailRequest.getVehicleUse());
 				primaryAutoLoanDetail.setVehicleExShowRoomPrice(alLoanDetailRequest.getVehicleExShowRoomPrice());
 				primaryAutoLoanDetail.setVehicleOnRoadPrice(alLoanDetailRequest.getVehicleOnRoadPrice());
 				primaryAutoLoanDetail.setVehicleAgreedPurchasePrice(alLoanDetailRequest.getVehicleAgreedPurchasePrice());
@@ -136,7 +136,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setVehicleSegment(primaryAutoLoanDetail.getVehicleSegment());
 			res.setVehicleAge(primaryAutoLoanDetail.getVehicleAge());
 			res.setVehicleEngineVolume(primaryAutoLoanDetail.getVehicleEngineVolume());
-			res.setVehicleUse(primaryAutoLoanDetail.getVechicleUse());
+			res.setVehicleUse(primaryAutoLoanDetail.getVehicleUse());
 			res.setVehicleExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice());
 			res.setVehicleOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice());
 			res.setVehicleAgreedPurchasePrice(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice());
@@ -209,7 +209,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				res.setVehicleSegment(primaryAutoLoanDetail.getVehicleSegment());
 				res.setVehicleAge(primaryAutoLoanDetail.getVehicleAge());
 				res.setVehicleEngineVolume(primaryAutoLoanDetail.getVehicleEngineVolume());
-				res.setVehicleUse(primaryAutoLoanDetail.getVechicleUse());
+				res.setVehicleUse(primaryAutoLoanDetail.getVehicleUse());
 				res.setVehicleExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice());
 				res.setVehicleOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice());
 				res.setVehicleAgreedPurchasePrice(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice());
@@ -248,7 +248,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			primaryAutoLoanDetail.setVehicleSegment(alDetail.getVehicleSegment());
 			primaryAutoLoanDetail.setVehicleAge(alDetail.getVehicleAge());
 			primaryAutoLoanDetail.setVehicleEngineVolume(alDetail.getVehicleEngineVolume());
-			primaryAutoLoanDetail.setVechicleUse(alDetail.getVehicleUse());
+			primaryAutoLoanDetail.setVehicleUse(alDetail.getVehicleUse());
 			primaryAutoLoanDetail.setVehicleExShowRoomPrice(alDetail.getVehicleExShowRoomPrice());
 			primaryAutoLoanDetail.setVehicleOnRoadPrice(alDetail.getVehicleOnRoadPrice());
 			primaryAutoLoanDetail.setVehicleAgreedPurchasePrice(alDetail.getVehicleAgreedPurchasePrice());
