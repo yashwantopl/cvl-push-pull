@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.connect.api.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capitaworld.connect.api.ConnectAuditErrorCode;
-import com.capitaworld.connect.api.ConnectLogAuditRequest;
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
@@ -176,7 +173,7 @@ public class FundSeekerInputRequestController {
 
 
     @RequestMapping(value = "/match/{businessTypeId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> callMatchengine(@RequestBody Long applicationId,@PathVariable("businessTypeId") Integer businessTypeId,HttpServletRequest request)
+    public ResponseEntity<LoansResponse> callMatchengine(@RequestBody ConnectRequest connectRequest, @PathVariable("businessTypeId") Integer businessTypeId, HttpServletRequest request)
             throws LoansException
     {
         try
@@ -186,7 +183,7 @@ public class FundSeekerInputRequestController {
         		   return new ResponseEntity<LoansResponse>(
                            new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-        	logger.info("Application Id for Getting============>{}",applicationId);
+        	logger.info("Application Id for Getting============>{}",connectRequest.getApplicationId());
         	//Commented by Akshay discussed with Hiren
 
 /*            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
@@ -195,7 +192,7 @@ public class FundSeekerInputRequestController {
                         new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
               } */
 
-            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(applicationId,userId,businessTypeId,false);
+            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(connectRequest.getApplicationId(),userId,businessTypeId,connectRequest.getIsNbfcUser());
             logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
             return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
 
