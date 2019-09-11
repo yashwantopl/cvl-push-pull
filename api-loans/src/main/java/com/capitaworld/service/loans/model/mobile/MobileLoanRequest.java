@@ -15,7 +15,8 @@ public class MobileLoanRequest implements Serializable{
 	private Date fromDate;
 	private Date toDate;
 	private Integer businessTypeId;
-	
+	private boolean isNbfcUser;
+
 	
 	public MobileLoanRequest() {
 		
@@ -115,5 +116,13 @@ public class MobileLoanRequest implements Serializable{
 
 	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
+	}
+
+	public boolean getIsNbfcUser() {
+		return isNbfcUser;
+	}
+
+	public void setNbfcUser(boolean nbfcUser) {
+		isNbfcUser = nbfcUser;
 	}
 }

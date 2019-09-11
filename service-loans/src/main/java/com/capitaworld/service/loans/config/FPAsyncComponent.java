@@ -3070,7 +3070,9 @@ public class FPAsyncComponent {
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 
 			if(applicationRequest != null && applicationRequest.getProductId() != null 
-					&& (applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() ||applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
+					&& (applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() 
+					||applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue()
+					|| applicationRequest.getProductId() == LoanType.AUTO_LOAN.getValue())) {
 				domainId = DomainValue.RETAIL.getId();
 			}
 			
@@ -3098,7 +3100,8 @@ public class FPAsyncComponent {
 				fpName = organisationRequest.getOrganisationName();
 			}
 			//============================================================
-			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) && loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION) ){
+			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) 
+					&& loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
 				subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
 			}
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
@@ -3148,25 +3151,25 @@ public class FPAsyncComponent {
 
 			}
 			if (fs != null && !CommonUtils.isObjectNullOrEmpty(fs.getMobile())) {
-				Map<String, Object> smsParameters = new HashMap<String, Object>();
+//				Map<String, Object> smsParameters = new HashMap<String, Object>();
 				String to = "91" + fs.getMobile();
-				smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : PARAMETERS_SIR_MADAM);
-				smsParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
-				smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
-				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
+				mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : PARAMETERS_SIR_MADAM);
+				mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
+				mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
+				mailParameters.put("url", URL_WWW_PSBLOANS_COM);
 
-				sendSMSNotification(applicationRequest.getUserId().toString(), smsParameters,
+				sendSMSNotification(applicationRequest.getUserId().toString(), mailParameters,
 						NotificationAlias.SMS_FS_CHECKER_SANCTIONED,domainId, to);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserId())) {
-				Map<String, Object> sysParameters = new HashMap<String, Object>();
+//				Map<String, Object> sysParameters = new HashMap<String, Object>();
 
-				sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : PARAMETERS_SIR_MADAM);
-				sysParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
-				sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
+				mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : PARAMETERS_SIR_MADAM);
+				mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
+				mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
 
 				sendSYSNotification(loanSanctionDomainOld.getApplicationId(), applicationRequest.getUserId().toString(),
-						sysParameters, NotificationAlias.SYS_FS_CHECKER_SANCTIONED,
+						mailParameters, NotificationAlias.SYS_FS_CHECKER_SANCTIONED,
 						applicationRequest.getUserId().toString(),domainId, applicationRequest.getUserId().toString());
 			}
 

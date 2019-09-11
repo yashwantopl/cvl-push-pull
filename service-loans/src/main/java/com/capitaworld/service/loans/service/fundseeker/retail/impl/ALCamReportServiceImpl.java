@@ -39,6 +39,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.OtherPropertyDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PurchasePropertyDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -56,6 +57,7 @@ import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryAutoLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -65,6 +67,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelatio
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanCoAppDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.OtherPropertyDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
@@ -92,6 +95,8 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AutoDetailPurposeofLoan;
+import com.capitaworld.service.oneform.enums.AutoLoanPurposeType;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.DesignationList;
@@ -113,6 +118,11 @@ import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.VehicleCategory;
+import com.capitaworld.service.oneform.enums.VehicleEngineVolume;
+import com.capitaworld.service.oneform.enums.VehicleSegment;
+import com.capitaworld.service.oneform.enums.VehicleType;
+import com.capitaworld.service.oneform.enums.VehicleUse;
 import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -219,6 +229,9 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	
 	@Autowired
 	private CommonRepository commonRepository;
+	
+	@Autowired
+	private PrimaryAutoLoanDetailRepository primaryAutoLoanDetailRepository;
 	
 	@Autowired
 	private EPFClient epfClient;
@@ -342,7 +355,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				operatingBusinessSince = (sinceWhen.getYears()) + " years" + " " +(!CommonUtils.isObjectNullOrEmpty(sinceWhen.getMonths()) ? sinceWhen.getMonths() + " months" : "");
 			}
 			
-			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue() : "-");
+			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? StringEscapeUtils.escapeXml(AutoDetailPurposeofLoan.getById(plRetailApplicantRequest.getLoanPurposeQueType()).getValue()) : "-");
 			map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue()) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
 			
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "-");
@@ -516,6 +529,30 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		// ENDS HERE===================>
+		
+		//Fetching Loan Details
+		try {
+			if(userId != null) {
+				Map<String ,Object> loanDetails = new HashMap<String, Object>();
+				PrimaryAutoLoanDetail primaryAutoLoanDetail = primaryAutoLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
+					PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
+					BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
+					loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
+					loanDetails.put("vehicleType", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleType()) ? VehicleType.getById(primaryAutoLoanDetailRequest.getVehicleType()).getValue() : "-");
+					loanDetails.put("vehicleCategory", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleCategory()) ? VehicleCategory.getById(primaryAutoLoanDetailRequest.getVehicleCategory()).getValue() : "-");
+					loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
+					loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
+					loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");
+					loanDetails.put("vehicleShowroomPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice())) : "-");
+					loanDetails.put("vehicleOnRoadPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice())) : "-");
+					loanDetails.put("isVehicleHypothecation", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getIsVehicleHypothecation()) && primaryAutoLoanDetailRequest.getIsVehicleHypothecation() ? "Yes" : "No");
+				}
+				map.put("loanDetails", loanDetails);
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
+		}
 
 		try {
 			//Fetching CoApplicantDetails
@@ -935,40 +972,12 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
 			logger.error("Error while getting primary Details : ",e);
 		}
 		
-		//Property Details
-		try {
-			Map<String ,Object> propertyDetails = new HashMap<String, Object>(); 
-			HLOneformPrimaryRes response = primaryHomeLoanService.getOneformPrimaryDetails(applicationId);
-			if(response != null) {
-				propertyDetails.put("costOfProperty", !CommonUtils.isObjectNullOrEmpty(response.getCostOfProp()) ? CommonUtils.convertValueWithoutDecimal(response.getCostOfProp()) : "-");
-				propertyDetails.put("propertyValue",!CommonUtils.isObjectNullOrEmpty(response.getMarketValProp()) ? CommonUtils.convertValueWithoutDecimal(response.getMarketValProp()) : "-");
-				propertyDetails.put("propertyAge", !CommonUtils.isObjectNullOrEmpty(response.getOldPropYear()) ? response.getOldPropYear() : "-");
-				propertyDetails.put("propertyPremise", !CommonUtils.isObjectNullOrEmpty(response.getPropPremiseName()) ? CommonUtils.printFields(response.getPropPremiseName(),null) + "," : "");
-				propertyDetails.put("propertyStreetName", !CommonUtils.isObjectNullOrEmpty(response.getPropStreetName()) ? CommonUtils.printFields(response.getPropStreetName(),null) + "," : "");
-				propertyDetails.put("propertyLandmark", !CommonUtils.isObjectNullOrEmpty(response.getPropLandmark()) ? CommonUtils.printFields(response.getPropLandmark(),null) + "," : "");
-				propertyDetails.put("propertyCountry", !CommonUtils.isObjectNullOrEmpty(response.getPropCountry()) ? StringEscapeUtils.escapeXml(getCountryName(response.getPropCountry().intValue())) : "");
-				propertyDetails.put("propertyState", !CommonUtils.isObjectNullOrEmpty(response.getPropState()) ? StringEscapeUtils.escapeXml(getStateName(response.getPropState().intValue())) : "");
-				propertyDetails.put("propertyCity", !CommonUtils.isObjectNullOrEmpty(response.getPropCity()) ? StringEscapeUtils.escapeXml(getCityName(response.getPropCity())) : "");
-				propertyDetails.put("propertyPincode", !CommonUtils.isObjectNullOrEmpty(response.getPropPincode()) ? response.getPropPincode() : "");
-				try {
-					if(!CommonUtils.isObjectNullOrEmpty(response.getPropdistrictMappingId())) {
-						propertyDetails.put("propertyAddress",CommonUtils.printFields(pincodeDateService.getById(response.getPropdistrictMappingId()),null));				
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-			map.put("propertyDetails", !CommonUtils.isObjectNullOrEmpty(propertyDetails) ? propertyDetails : null);
-		} catch (Exception e) {
-			logger.error("Error while getting property Details : ",e);
-		}
-
 		//INCOME DETAILS - NET INCOME
 		try {
 			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
