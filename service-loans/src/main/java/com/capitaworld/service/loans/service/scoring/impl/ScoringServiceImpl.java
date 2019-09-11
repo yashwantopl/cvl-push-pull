@@ -8667,34 +8667,10 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.LOAN_PURPOSE:
-            				if(retailApplicantDetail.getLoanPurpose() != null) {
-            					if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_LUXURY_CAR.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(5);
-            						}else if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_SUV_MUV.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(6);
-            						}else if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_MID_CAR.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(4);
-            						}else if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_SMALL_CAR.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(3);
-            						}else if(AutoDetailPurposeofLoan.ELECTRIC_NON_CONVENTIONAL_CAR_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(7);
-            						}
-            					}else if(AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						if(AutoDetailPurposeofLoan.TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(8);
-            						}else if(AutoDetailPurposeofLoan.ELECTRIC_NON_CONVENTIONAL_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(9);
-            						}
-            					}else if(AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						scoreParameterRetailRequest.setLoanPurpose(11);
-            					}else if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						scoreParameterRetailRequest.setLoanPurpose(10);
-            					}
-            					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
+            					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurposeQueType());
+            					scoreParameterRetailRequest.setIsLoanPurpose_p(retailApplicantDetail.getLoanPurposeQueType() != null);
             					scoreParameterRetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
             					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
-            				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.INCOME_PROOF:
 	            				if(isItrMannualFilled == null || !isItrMannualFilled) {
