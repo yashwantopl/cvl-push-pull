@@ -24,7 +24,7 @@ public interface FundSeekerInputRequestService {
 
     public ResponseEntity<LoansResponse> getDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest);
     
-    public LoansResponse callMatchEngineClient(Long applicationId,Long userId,Integer businessTypeId);
+    public LoansResponse callMatchEngineClient(Long applicationId,Long userId,Integer businessTypeId,boolean isNbfcUser);
     
     
     /**
