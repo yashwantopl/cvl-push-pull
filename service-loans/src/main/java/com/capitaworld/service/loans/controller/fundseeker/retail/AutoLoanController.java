@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.ALOneformPrimaryRes;
+import com.capitaworld.service.loans.model.retail.FinalAutoLoanCoApplicantDetailRequest;
 import com.capitaworld.service.loans.model.retail.FinalAutoLoanDetailRequest;
-import com.capitaworld.service.loans.model.retail.FinalCarLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalHomeLoanCoApplicantDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryAutoLoanDetailRequest;
-import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
-import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
+import com.capitaworld.service.loans.service.fundseeker.retail.FinalAutoLoanCoAppService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalAutoLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -38,6 +38,9 @@ public class AutoLoanController {
 
 	@Autowired
 	private FinalAutoLoanService finalAutoLoanService;
+	
+	@Autowired
+	private FinalAutoLoanCoAppService finalAutoLoanCoAppService;
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody PrimaryAutoLoanDetailRequest autoLoanDetailRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -117,6 +120,66 @@ public class AutoLoanController {
 		}
 	}
 	
+	@RequestMapping(value = "${final}/saveCoApp", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCoAppFinal(@RequestBody FinalAutoLoanCoApplicantDetailRequest finalAutoLoanDetailRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			// request must not be null
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				finalAutoLoanDetailRequest.setClientId(clientId);
+			}
+
+			if (finalAutoLoanDetailRequest == null) {
+				logger.warn("finalAutoLoanDetailRequest Object can not be empty ==>" + finalAutoLoanDetailRequest);
+				return new ResponseEntity<LoansResponse>( new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			if (finalAutoLoanDetailRequest.getApplicationId() == null) {
+				logger.warn("Application ID must not be empty ==>" + finalAutoLoanDetailRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			boolean response = finalAutoLoanCoAppService.saveOrUpdate(finalAutoLoanDetailRequest, userId);
+			if (response) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saving Final Auto Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
+	@RequestMapping(value = "${final}/getCoApp/{coAppId}/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCoAppFinal(@PathVariable("coAppId") Long coAppId,@PathVariable("applicationId") Long applicationId,@PathVariable("proposalId") Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (applicationId == null) {
+				logger.warn("ID Require to get Final auto Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			FinalAutoLoanCoApplicantDetailRequest response = finalAutoLoanCoAppService.get(coAppId,applicationId, userId,proposalId);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Final home Details==>", e);
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	
 	
 	@RequestMapping(value = "oneForm/loanReqDetails/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getLoanReqDetails(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
@@ -136,8 +199,8 @@ public class AutoLoanController {
 		}
 	}
 	
-	@RequestMapping(value = "${primary}/get/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId, @PathVariable("proposalId") Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+	@RequestMapping(value = "${primary}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
