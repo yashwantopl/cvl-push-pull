@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
@@ -44,6 +45,9 @@ public class RelatedPartyServiceImpl implements RelatedPartyService {
 	
 	@Autowired
 	private GstClient gstClient;
+	
+	@Autowired
+	private ConnectClient connectClient;
 	
 	private static Logger logger = LoggerFactory.getLogger(RelatedPartyServiceImpl.class);
 	
@@ -98,7 +102,7 @@ public class RelatedPartyServiceImpl implements RelatedPartyService {
 
 	@Override
 	public Boolean updateRelatedPartyFilledFlageOnConnect(Long applicationId) throws Exception {
-		return commonRepo.updateRelatedPartyFilledFlagOnConnect(applicationId);
+		return connectClient.saveRelatedPartyFlag(applicationId).getIsRelatedPartyFilled();
 	}
 
 	@Override
@@ -111,9 +115,8 @@ public class RelatedPartyServiceImpl implements RelatedPartyService {
 			GstCalculation calc=MultipleJSONObjectHelper.getObjectFromMap((Map)calculations.getData(), GstCalculation.class);
 			if(calc != null && calc.getGstType() != null) {
 				 if(GstType.COMPOSITE.equals(calc.getGstType()) || GstType.GST_NOT_APPLICABLE.equals(calc.getGstType())){
-					 updateRelatedPartyFilledFlageOnConnect(request.getApplicationId());
-					 status=commonRepo.getRelatedPartyFilledFlagOnConnect(request.getApplicationId());
-				 }
+					 status=updateRelatedPartyFilledFlageOnConnect(request.getApplicationId());
+				 }	
 			}
 			return status;
 		}catch (Exception e) {
