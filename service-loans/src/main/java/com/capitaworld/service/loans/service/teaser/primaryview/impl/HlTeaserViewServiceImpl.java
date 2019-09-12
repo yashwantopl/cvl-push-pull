@@ -22,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.api.ekyc.model.EkycResponse;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
@@ -31,7 +29,6 @@ import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
-import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -119,7 +116,7 @@ import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
-import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.PropertySubType;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.Religion;
@@ -355,7 +352,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
 				
 				//Emp Salaried Type of Applicant
-				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
+				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNatureNTB.SALARIED.getId()) {
 					try {
 						List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
 						
@@ -368,7 +365,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				}
 				
 				/*employment type*/
-				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentType(plRetailApplicantRequest.getEmploymentType() != null ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue().toString() : "-");
 				
 				//as per OccupationNature enum id
 				switch (plRetailApplicantRequest.getEmploymentType() != null ? plRetailApplicantRequest.getEmploymentType() : 0) {
@@ -1087,7 +1084,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setAadharNumber(coApplicantDetail.getAadharNumber());
 				plRetailApplicantResponse.setMobile(coApplicantDetail.getMobile());
 				plRetailApplicantResponse.setCompanyName(coApplicantDetail.getCompanyName());
-				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year") : "") + "" +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() !=null ? (coApplicantDetail.getTotalExperienceYear() +" year") : "") + "" + (coApplicantDetail.getTotalExperienceMonth() != null ? (coApplicantDetail.getTotalExperienceMonth() +" months") :  "" ));
@@ -1132,7 +1129,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				}
 				
 				/*employment type*/
-				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				
 				//as per OccupationNature enum id
 				switch (coApplicantDetail.getEmploymentType() != null ? coApplicantDetail.getEmploymentType() : 0) {
