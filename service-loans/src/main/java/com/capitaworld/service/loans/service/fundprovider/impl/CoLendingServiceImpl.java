@@ -248,4 +248,21 @@ public class CoLendingServiceImpl implements CoLendingService {
 	public List<CoLendingRequest> listByOrgId(Long userOrgId) {
 		return coLendingRatioRepository.listByOrgId(userOrgId);
 	}
+
+	@Override
+	public Boolean inactiveCoLendingProposal(Long id) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "inactiveCoLendingProposal");
+		try {
+			
+			coLendingRatioRepository.inActiveRatioAndProposal(id);
+			return true;
+		}
+
+		catch(Exception e)
+		{
+			logger.error("Error while removeCoLendingProposal",e);
+			return false;
+		}
+	}
 }

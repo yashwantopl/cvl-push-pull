@@ -17,6 +17,10 @@ public interface CoLendingRatioRepository extends JpaRepository<CoLendingRatio, 
 	public int inActiveRatio(@Param("id") Long id);
 	
 	@Modifying
+	@Query("update CoLendingRatio clr set clr.isActive = false,clr.isProposalActive = false where clr.id=:id and clr.isActive = true")
+	public int inActiveRatioAndProposal(@Param("id") Long id);
+	
+	@Modifying
 	@Query("update CoLendingRatio clr set clr.isProposalActive=:status where clr.jobId=:jobId and clr.isActive = true")
 	public int updateActivatedRatio(@Param("jobId") Long jobId,@Param("status") Boolean status);
 
