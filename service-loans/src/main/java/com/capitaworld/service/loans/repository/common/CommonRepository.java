@@ -28,8 +28,8 @@ public interface CommonRepository {
 	
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId);
 	
-	public Boolean updateRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception;
+/*	public Boolean updateRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception;
 	
 	public Boolean getRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception;
-	
+*/	
 }
