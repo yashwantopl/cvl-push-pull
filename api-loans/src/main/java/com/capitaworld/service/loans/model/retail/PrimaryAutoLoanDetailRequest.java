@@ -30,6 +30,8 @@ public class PrimaryAutoLoanDetailRequest extends LoanApplicationRequest impleme
 		private Double grossMonthlyIncome;
 		private Long clientId;  
 		
+		private String primaryFilledCount;
+		
 		// Vehicle details
 		private Integer vehicleType; 
 		private Integer vehicleCategory; 
@@ -363,5 +365,17 @@ public class PrimaryAutoLoanDetailRequest extends LoanApplicationRequest impleme
 	public void setNegativeList(List<Long> negativeList) {
 		this.negativeList = negativeList;
 	}
+
+
+	public String getPrimaryFilledCount() {
+		return primaryFilledCount;
+	}
+
+
+	public void setPrimaryFilledCount(String primaryFilledCount) {
+		this.primaryFilledCount = primaryFilledCount;
+	}
+	
+	
 
 }

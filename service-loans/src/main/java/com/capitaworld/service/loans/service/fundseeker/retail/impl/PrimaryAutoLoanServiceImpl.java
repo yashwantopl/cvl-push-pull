@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
@@ -71,29 +72,38 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				retailApplicantDetail.setLoanPurpose(alLoanDetailRequest.getLoanPurpose());
 				retailApplicantDetail.setLoanPurposeQueType(alLoanDetailRequest.getLoanPurposeQueType());
 				retailApplicantDetailRepository.save(retailApplicantDetail);
-			}
+		
+				//************************ SAVE VEHICLE DETAILS *****************************
+				PrimaryAutoLoanDetail primaryAutoLoanDetail = autoLoanDetailRepository.findById(alLoanDetailRequest.getApplicationId()); 
+				
+				if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
+					primaryAutoLoanDetail.setModifiedDate(new Date());
+					primaryAutoLoanDetail.setModifiedBy(primaryAutoLoanDetail.getUserId());
+				} else {
+					primaryAutoLoanDetail = new PrimaryAutoLoanDetail();
+					primaryAutoLoanDetail.setApplicationId(new LoanApplicationMaster(alLoanDetailRequest.getApplicationId()));
+					primaryAutoLoanDetail.setIsActive(true);
+					primaryAutoLoanDetail.setCreatedDate(new Date());
+					primaryAutoLoanDetail.setCreatedBy(alLoanDetailRequest.getUserId());
+				}
+					primaryAutoLoanDetail.setVehicleType(alLoanDetailRequest.getVehicleType());
+					primaryAutoLoanDetail.setVehicleCategory(alLoanDetailRequest.getVehicleCategory());
+					primaryAutoLoanDetail.setVehicleSegment(alLoanDetailRequest.getVehicleSegment());
+					primaryAutoLoanDetail.setVehicleAge(alLoanDetailRequest.getVehicleAge());
+					primaryAutoLoanDetail.setVehicleEngineVolume(alLoanDetailRequest.getVehicleEngineVolume());
+					primaryAutoLoanDetail.setVehicleUse(alLoanDetailRequest.getVehicleUse());
+					primaryAutoLoanDetail.setVehicleExShowRoomPrice(alLoanDetailRequest.getVehicleExShowRoomPrice());
+					primaryAutoLoanDetail.setVehicleOnRoadPrice(alLoanDetailRequest.getVehicleOnRoadPrice());
+					primaryAutoLoanDetail.setVehicleAgreedPurchasePrice(alLoanDetailRequest.getVehicleAgreedPurchasePrice());
+					primaryAutoLoanDetail.setIsVehicleHypothecation(alLoanDetailRequest.getIsVehicleHypothecation());
+					primaryAutoLoanDetail.setIsCheckOffAgreeToPayOutstanding(alLoanDetailRequest.getIsCheckOffAgreeToPayOutstanding());
+					primaryAutoLoanDetail.setIsCheckOffDirectPayEmi(alLoanDetailRequest.getIsCheckOffDirectPayEmi());
+					primaryAutoLoanDetail.setIsCheckOffNotChangeSalAcc(alLoanDetailRequest.getIsCheckOffNotChangeSalAcc());
+					primaryAutoLoanDetail.setIsCheckOffPayOutstndAmount(alLoanDetailRequest.getIsCheckOffPayOutstndAmount());
+					primaryAutoLoanDetail.setIsCheckOffShiftSalAcc(alLoanDetailRequest.getIsCheckOffShiftSalAcc());
+					autoLoanDetailRepository.save(primaryAutoLoanDetail); 
 			
-			//************************ SAVE VEHICLE DETAILS *****************************
-			PrimaryAutoLoanDetail primaryAutoLoanDetail = autoLoanDetailRepository.findById(alLoanDetailRequest.getApplicationId()); 
-			if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
-				primaryAutoLoanDetail.setVehicleType(alLoanDetailRequest.getVehicleType());
-				primaryAutoLoanDetail.setVehicleCategory(alLoanDetailRequest.getVehicleCategory());
-				primaryAutoLoanDetail.setVehicleSegment(alLoanDetailRequest.getVehicleSegment());
-				primaryAutoLoanDetail.setVehicleAge(alLoanDetailRequest.getVehicleAge());
-				primaryAutoLoanDetail.setVehicleEngineVolume(alLoanDetailRequest.getVehicleEngineVolume());
-				primaryAutoLoanDetail.setVehicleUse(alLoanDetailRequest.getVehicleUse());
-				primaryAutoLoanDetail.setVehicleExShowRoomPrice(alLoanDetailRequest.getVehicleExShowRoomPrice());
-				primaryAutoLoanDetail.setVehicleOnRoadPrice(alLoanDetailRequest.getVehicleOnRoadPrice());
-				primaryAutoLoanDetail.setVehicleAgreedPurchasePrice(alLoanDetailRequest.getVehicleAgreedPurchasePrice());
-				primaryAutoLoanDetail.setIsVehicleHypothecation(alLoanDetailRequest.getIsVehicleHypothecation());
-				primaryAutoLoanDetail.setIsCheckOffAgreeToPayOutstanding(alLoanDetailRequest.getIsCheckOffAgreeToPayOutstanding());
-				primaryAutoLoanDetail.setIsCheckOffDirectPayEmi(alLoanDetailRequest.getIsCheckOffDirectPayEmi());
-				primaryAutoLoanDetail.setIsCheckOffNotChangeSalAcc(alLoanDetailRequest.getIsCheckOffNotChangeSalAcc());
-				primaryAutoLoanDetail.setIsCheckOffPayOutstndAmount(alLoanDetailRequest.getIsCheckOffPayOutstndAmount());
-				primaryAutoLoanDetail.setIsCheckOffShiftSalAcc(alLoanDetailRequest.getIsCheckOffShiftSalAcc());
-				autoLoanDetailRepository.save(primaryAutoLoanDetail); 
 			}
-			
 			return true; 
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryAutoLoan Details : ",e);
@@ -263,8 +273,8 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			primaryAutoLoanDetail.setIsActive(true);
 			autoLoanDetailRepository.save(primaryAutoLoanDetail); 
 		}
-		//Updating Primary Flag
-//		loanApplicationRepository.setPrimaryFilledCount(primaryAutoLoanDetail.getId(), finalUserId, alOneformPrimaryRes.getPrimaryFilledCount());
+//		Updating Primary Flag
+		loanApplicationRepository.setPrimaryFilledCount(primaryAutoLoanDetail.getId(), finalUserId, alDetail.getPrimaryFilledCount());
 		//save negative list
 		fsNegativeFpListRepository.inActiveMappingByApplicationId(primaryAutoLoanDetail.getApplicationId().getId());
 		saveNegativeList(primaryAutoLoanDetail.getApplicationId().getId(), alDetail.getNegativeList());

@@ -223,6 +223,41 @@ public class CoLendingRatioController {
 		}
 	}
 	
+	@GetMapping(value = "/inactiveCoLendingProposal/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> inactiveCoLendingProposal(HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId,@PathVariable(value = "id")Long id) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger,"start inactiveCoLendingProposal");
+		try {
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}		
+			//get org id
+			
+			if (userId == null) {
+				logger.warn("User Id is mandatory", userId);
+				CommonDocumentUtils.endHook(logger, "end inactiveCoLendingProposal");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(coLendingService.inactiveCoLendingProposal(id));
+			CommonDocumentUtils.endHook(logger, "end inactiveCoLendingProposal");
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while inactiveCoLendingProposal", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	@RequestMapping(value = "/saveReasonForRatio", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveReasonForRatio(@RequestBody DataRequest dataRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {

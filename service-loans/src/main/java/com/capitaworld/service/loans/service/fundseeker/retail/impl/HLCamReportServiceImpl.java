@@ -400,7 +400,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 			
 			
-			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNature.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "-");
+			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "-");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ?EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
 			map.put("sinceSalaryWhen", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getSalaryBankYear()) ? plRetailApplicantRequest.getSalaryBankYear() + " years" : "")+" "+(plRetailApplicantRequest.getSalaryBankMonth() != null ? plRetailApplicantRequest.getSalaryBankMonth() +" months" : ""));
 			map.put("retailApplicantProfile", CommonUtils.printFields(plRetailApplicantRequest, null));
@@ -606,7 +606,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 
 				coApp.put("gender", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getGenderId()) ? Gender.getById(coApplicantDetail.getGenderId()).getValue(): "-");
 				coApp.put("birthDate",!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())? simpleDateFormat.format(coApplicantDetail.getBirthDate()):"-");
-				coApp.put("employmentType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentType()) ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue() : "-");
+				coApp.put("employmentType", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentType()) ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue() : "-");
 				
 				/*employment type*/
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
@@ -807,7 +807,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					if(coApplicantDetail.getEmploymentType() != null) {
 						
 						//Emp Salaried Type
-						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.SALARIED.getId()) {
+						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNatureNTB.SALARIED.getId()) {
 							try {
 								List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalIdCoAppId(proposalId, 0 ,coApplicantDetail.getId());
 								
@@ -820,7 +820,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						}
 						
 						//Emp SelfEmployed Type
-						if(coApplicantDetail.getEmploymentType() != null && (coApplicantDetail.getEmploymentType() == OccupationNature.BUSINESS.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED.getId() || coApplicantDetail.getEmploymentType() == OccupationNature.SELF_EMPLOYED_PROFESSIONAL.getId())) {
+						if(coApplicantDetail.getEmploymentType() != null && (coApplicantDetail.getEmploymentType() == OccupationNatureNTB.OTHERS.getId() || coApplicantDetail.getEmploymentType() == OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId() || coApplicantDetail.getEmploymentType() == OccupationNatureNTB.SELF_EMPLOYED_PROFESSIONAL.getId())) {
 							try {
 								List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalIdAndCoAppId(proposalId, 0 ,coApplicantDetail.getId());
 								
@@ -833,7 +833,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 						}
 						
 						//Emp Agriculturist Type
-						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNature.AGRICULTURIST.getId()) {
+						if(coApplicantDetail.getEmploymentType() != null && coApplicantDetail.getEmploymentType() == OccupationNatureNTB.AGRICULTURIST.getId()) {
 							try {
 								List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalIdAndCoAppId(proposalId, 0 ,coApplicantDetail.getId());
 								
@@ -1697,7 +1697,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				if(plRetailApplicantRequest != null) {
 					
 					//Emp Salaried Type
-					if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
+					if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNatureNTB.SALARIED.getId()) {
 						try {
 							List<EmpSalariedTypeRequest> empSalariedDetail = empFinancialDetailsService.getSalariedEmpFinDetailListByProposalId(proposalId, 0);
 							
@@ -1710,7 +1710,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					}
 					
 					//Emp SelfEmployed Type
-					if(plRetailApplicantRequest.getEmploymentType() != null && (plRetailApplicantRequest.getEmploymentType() == OccupationNature.BUSINESS.getId() || plRetailApplicantRequest.getEmploymentType() == OccupationNature.SELF_EMPLOYED.getId() || plRetailApplicantRequest.getEmploymentType() == OccupationNature.SELF_EMPLOYED_PROFESSIONAL.getId())) {
+					if(plRetailApplicantRequest.getEmploymentType() != null && (plRetailApplicantRequest.getEmploymentType() == OccupationNatureNTB.OTHERS.getId() || plRetailApplicantRequest.getEmploymentType() == OccupationNatureNTB.SELF_EMPLOYED_NON_PROFESSIONAL.getId() || plRetailApplicantRequest.getEmploymentType() == OccupationNatureNTB.SELF_EMPLOYED_PROFESSIONAL.getId())) {
 						try {
 							List<EmpSelfEmployedTypeRequest> empSelfEmployedTypeDetail = empFinancialDetailsService.getSelfEmpFinDetailListByProposalId(proposalId, 0);
 							
@@ -1723,7 +1723,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					}
 					
 					//Emp Agriculturist Type
-					if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.AGRICULTURIST.getId()) {
+					if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNatureNTB.AGRICULTURIST.getId()) {
 						try {
 							List<EmpAgriculturistTypeRequest> empAgriculturistTypeDetail = empFinancialDetailsService.getAgriculturistEmpFinDetailListByProposalId(proposalId, 0);
 							
