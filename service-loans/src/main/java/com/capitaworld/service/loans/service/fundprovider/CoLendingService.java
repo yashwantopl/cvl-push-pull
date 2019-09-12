@@ -19,6 +19,8 @@ public interface CoLendingService {
 	Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 	
 	Boolean removeCoLendingProposal(Long id);
+	
+	Boolean inactiveCoLendingProposal(Long id);
 
 	Boolean addReasonByJobId(DataRequest dataRequest);
 	
