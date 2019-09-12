@@ -318,6 +318,9 @@ public class AutoLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "is_ex_showroom_price")
 	private Boolean isExShowroomPrice;
 	
+	@Column(name = "is_agreed_purchase_price")
+	private Boolean isAgreedPurchasePrice;
+	
 	@Column(name = "ltv_for_eligibility")
 	private Integer ltvForEligibility;
 	
@@ -1194,5 +1197,13 @@ public class AutoLoanParameterTemp extends ProductMasterTemp implements Serializ
 
 	public void setIsDscrMandatory(Boolean isDscrMandatory) {
 		this.isDscrMandatory = isDscrMandatory;
+	}
+
+	public Boolean getIsAgreedPurchasePrice() {
+		return isAgreedPurchasePrice;
+	}
+
+	public void setIsAgreedPurchasePrice(Boolean isAgreedPurchasePrice) {
+		this.isAgreedPurchasePrice = isAgreedPurchasePrice;
 	}
 }
