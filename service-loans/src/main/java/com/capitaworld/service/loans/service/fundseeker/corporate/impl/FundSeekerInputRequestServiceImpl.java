@@ -583,7 +583,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	}
 
 	@Override
-	public LoansResponse callMatchEngineClient(Long applicationId, Long userId, Integer businessTypeId,boolean isNbfcUser) {
+	public LoansResponse callMatchEngineClient(Long applicationId, Long userId, Integer businessTypeId,Boolean isNbfcUser) {
 		ConnectResponse postOneForm;
 		try {
 			postOneForm = connectClient.postOneForm(applicationId, userId, businessTypeId,isNbfcUser);
