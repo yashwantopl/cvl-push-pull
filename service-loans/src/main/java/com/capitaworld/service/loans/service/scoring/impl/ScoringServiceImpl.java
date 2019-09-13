@@ -1092,11 +1092,11 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.Retail.CATEGORY_INFO_PL: {
 
-                                try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith())) {
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith())) {
 
-                                        Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
-                                        Long employmentWithPlValue=null;
+                                    Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
+                                    Long employmentWithPlValue=null;
 
                                         if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())  //1
                                         {
@@ -1160,10 +1160,10 @@ public class ScoringServiceImpl implements ScoringService {
                                 } catch (Exception e) {
                                     logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
-                                }
+                                }                          
 
-                                break;
-                            }
+                            break;
+                        }
                             case ScoreParameter.Retail.FIXED_OBLI_INFO_RATIO_PL: {
 
                                 totalEMI = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
@@ -2000,7 +2000,7 @@ public class ScoringServiceImpl implements ScoringService {
 				return new ResponseEntity<>(new LoansResponse("Error while Getting BankList From Analyser for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 
-			//Getting All Loans 
+			//Getting All Loans
 			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
