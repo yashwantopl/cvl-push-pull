@@ -349,3 +349,6 @@ insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_a
 
 
 ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `borrower_contribution` BIGINT(20) NULL;
+
+alter table loan_application.fp_auto_loan_details add column is_agreed_purchase_price bit(2) default false;
+alter table loan_application.fp_auto_loan_details_temp add column is_agreed_purchase_price bit(2) default false;
