@@ -15,6 +15,7 @@ public class DataRequest implements Serializable{
 	private Long productId;
 	private Long mappingId;
 	private Double tenure;
+	private String label;
 	
 	
 	public DataRequest() {
@@ -61,6 +62,15 @@ public class DataRequest implements Serializable{
 		this.tenure = tenure;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	
 	
 	
 	

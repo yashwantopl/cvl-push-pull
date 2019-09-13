@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +24,7 @@ import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
+import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
@@ -44,9 +43,9 @@ import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
-import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
@@ -68,6 +67,8 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -157,7 +158,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	private NbfcRatioMappingTempRepository nbfcRatioMappingTempRepository; 
 	
 	@Autowired
-	private NbfcRatioMappingRepository nbfcRatioMappingRepository; 
+	private NbfcRatioMappingRepository nbfcRatioMappingRepository;
+	
+	@Autowired
+	private CoLendingService coLendingService; 
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
@@ -376,14 +380,22 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
 			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
 		}
-		
+		//List<FpCoLendingBanks> bankList = coLendingService.getBankList();
 		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
 		{
 			DataRequest dataRequest=new DataRequest();
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
-			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
 			ratioMasterList.add(dataRequest);
+			//create text for ratio
+			
+			
+					
+			
+			
 		}
 		
 		termLoanParameterRequest.setNbfcRatioMasterList(ratioMasterList);
@@ -678,7 +690,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			DataRequest dataRequest=new DataRequest();
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
-			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
 			ratioMasterList.add(dataRequest);
 		}
 		
@@ -1071,7 +1085,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			DataRequest dataRequest=new DataRequest();
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
-			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
 			ratioMasterList.add(dataRequest);
 		}
 		
@@ -1472,7 +1488,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			DataRequest dataRequest=new DataRequest();
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
-			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
 			ratioMasterList.add(dataRequest);
 		}
 		

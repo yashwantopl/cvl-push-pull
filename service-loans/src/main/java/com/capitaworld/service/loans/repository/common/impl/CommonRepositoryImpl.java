@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -140,21 +141,10 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
-	@Override
-	public Boolean updateRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception {
-		try {
-			manager.createNamedQuery("UPDATE connect.connect_log set is_related_party_filled = TRUE,modified_date=now() where application_id=:applicationId").setParameter("applicationId", true);
-			return true;
-		}catch (Exception e) {
-			return false;
-		}
-		
-	}
-
-	@Override
+	/*@Override
 	public Boolean getRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception {
 		return Boolean.valueOf(manager.createNativeQuery("select  cl.is_related_party_filled from connect.connect_log cl where cl.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult().toString());
 	}
-	
+	*/
 	
 }

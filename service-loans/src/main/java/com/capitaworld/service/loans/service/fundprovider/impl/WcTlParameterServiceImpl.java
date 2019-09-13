@@ -366,7 +366,9 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			DataRequest dataRequest=new DataRequest();
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
-			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
 			ratioMasterList.add(dataRequest);
 		}
 		
@@ -662,7 +664,9 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			DataRequest dataRequest=new DataRequest();
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
-			dataRequest.setTenure(coLendingRatio.getBankRatio());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
 			ratioMasterList.add(dataRequest);
 		}
 		
