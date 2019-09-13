@@ -45,7 +45,7 @@ import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalAutoLoanDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
@@ -67,7 +67,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProductMasterReposi
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
@@ -111,8 +111,6 @@ import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
-import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
-import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
@@ -250,7 +248,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 	private EPFClient epfClient;
 	
 	@Autowired
-	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
+	private FinalAutoLoanDetailRepository finalAutoLoanDetailRepository;
 
 	@Autowired
 	private PurchasePropertyDetailsRepository purchasePropertyDetailsRepository;
@@ -504,9 +502,9 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				
 				// loan Details 
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
-				alTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
+				alTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
 				/*detailed purpose of loan*/
-				alTeaserViewResponse.setDetailedLoanPur(plRetailApplicantRequest.getLoanPurposeQueType() != null ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue().toString() : "-");
+				alTeaserViewResponse.setDetailedLoanPur(plRetailApplicantRequest.getLoanPurposeQueType() != null ? AutoDetailPurposeofLoan.getById(plRetailApplicantRequest.getLoanPurposeQueType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
@@ -592,7 +590,6 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		
 		// Auto details
 		ALOneformPrimaryRes autoDetails = primaryAutoloanService.getOneformPrimaryDetails(toApplicationId);
-		alTeaserViewResponse.setLoanAmount(autoDetails.getLoanAmountRequired().longValue());
 		alTeaserViewResponse.setPurposeOfLoan(autoDetails.getLoanPurpose() != null ? AutoLoanPurposeType.getById(autoDetails.getLoanPurpose()).getValue() : null);
 		alTeaserViewResponse.setDetailedLoanPur(autoDetails.getLoanPurposeQueType() != null ? AutoDetailPurposeofLoan.getById(autoDetails.getLoanPurposeQueType()).getValue() : null);		
 		alTeaserViewResponse.setVehicleType(autoDetails.getVehicleType() != null ? VehicleType.getById(autoDetails.getVehicleType()).getValue() : "");
@@ -1026,7 +1023,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
 			List<CoApplicantDetail> coApplicantList = coAppService.getCoApplicantList(applicationId);
-			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
+			FinalAutoLoanDetail finalAutoLoanDetail = finalAutoLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
 			for (CoApplicantDetail coApplicantDetail : coApplicantList) {
 				PLRetailApplicantResponse plRetailApplicantResponse=new PLRetailApplicantResponse();
 				
@@ -1241,8 +1238,8 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 
 				//co-add
 				try {
-					if(finalHomeLoanDetail != null) {
-						PincodeDataResponse pindata=pincodeDateService.getById(finalHomeLoanDetail.getCorrespondencePinCode().longValue());
+					if(finalAutoLoanDetail != null) {
+						PincodeDataResponse pindata=pincodeDateService.getById(finalAutoLoanDetail.getCorrespondencePinCode().longValue());
 						plRetailApplicantResponse.setCorrAddDist(pindata.getDistrictName());
 						plRetailApplicantResponse.setCorrAddTaluko(pindata.getTaluka());
 						pindata.getTaluka();
@@ -1253,8 +1250,8 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
-				if(finalHomeLoanDetail!= null){
-					plRetailApplicantResponse.setCorrAdd( (finalHomeLoanDetail.getCorrespondencePremiseNo()!=null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondencePremiseNo())) :"") + (finalHomeLoanDetail.getCorrespondenceStreetName() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceStreetName())) : "") + (finalHomeLoanDetail.getCorrespondenceLandmark() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceLandmark())) : "")+ (plRetailApplicantResponse.getCorrAddDist() != null ?(CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddDist())) :"")+ (plRetailApplicantResponse.getCorrAddTaluko() != null ? (CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddTaluko())) : "") + (finalHomeLoanDetail.getCorrespondencePinCode() != null ? (finalHomeLoanDetail.getCorrespondencePinCode()) : ""));
+				if(finalAutoLoanDetail!= null){
+					plRetailApplicantResponse.setCorrAdd( (finalAutoLoanDetail.getCorrespondencePremiseNo()!=null ? (CommonUtils.commaReplace(finalAutoLoanDetail.getCorrespondencePremiseNo())) :"") + (finalAutoLoanDetail.getCorrespondenceStreetName() != null ? (CommonUtils.commaReplace(finalAutoLoanDetail.getCorrespondenceStreetName())) : "") + (finalAutoLoanDetail.getCorrespondenceLandmark() != null ? (CommonUtils.commaReplace(finalAutoLoanDetail.getCorrespondenceLandmark())) : "")+ (plRetailApplicantResponse.getCorrAddDist() != null ?(CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddDist())) :"")+ (plRetailApplicantResponse.getCorrAddTaluko() != null ? (CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddTaluko())) : "") + (finalAutoLoanDetail.getCorrespondencePinCode() != null ? (finalAutoLoanDetail.getCorrespondencePinCode()) : ""));
 				}
 
 				
