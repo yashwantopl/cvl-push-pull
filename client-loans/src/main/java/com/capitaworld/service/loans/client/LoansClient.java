@@ -2930,8 +2930,7 @@ public class LoansClient {
 			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
-	
-	
+
 	/**
 	 * GET Loan Amount For In-eligible case For (LOS/LLMS SBI)  
 	 * @param applicationId
