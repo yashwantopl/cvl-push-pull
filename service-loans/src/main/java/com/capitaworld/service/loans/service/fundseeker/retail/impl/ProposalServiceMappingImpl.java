@@ -3021,14 +3021,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest,Long businessTypeId) {
+		
 		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
 		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
+		logger.info("Enter in Search Proposal Service ---------------------------->Role Id --------> " + roleId);
 		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
 		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
 			return Collections.emptyList();
 		}
 		if (roleId == CommonUtils.UsersRoles.FP_CHECKER || roleId == CommonUtils.UsersRoles.SMECC || roleId == CommonUtils.UsersRoles.HO
 				 || roleId == CommonUtils.UsersRoles.ZO || roleId == CommonUtils.UsersRoles.RO) {
+			logger.info("CALL SP -----> UserId --------> " + loginOrgId + "------Value-----" + reportRequest.getValue() + "------Number-----" + reportRequest.getNumber() + "------businessTypeId-----" + businessTypeId + "------branchId-----" + branchId);
 			List<Object[]> objList = loanRepository.getSerachProposalListByRoleSP(loginOrgId, reportRequest.getValue(), loginUserId, reportRequest.getNumber().longValue(), businessTypeId, branchId);
 			if (objList.size() > 0) {
 				return setValue(objList, true);
