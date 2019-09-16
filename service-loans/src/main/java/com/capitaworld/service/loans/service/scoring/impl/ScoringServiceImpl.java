@@ -8204,7 +8204,6 @@ public class ScoringServiceImpl implements ScoringService {
           // ENDS HERE CONCESSION BASED ON RATE OF INTEREST:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
-                scoreParameterRetailRequest.setVechileType(primaryAutoLoanDetail.getVehicleType());
                 scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge() != null ? primaryAutoLoanDetail.getVehicleAge().doubleValue() : null);
                 scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null ? primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue() : 0.0d);
                 scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null ? primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue() : 0.0d);
@@ -8572,7 +8571,7 @@ public class ScoringServiceImpl implements ScoringService {
         					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
             			case ScoreParameter.Retail.AutoLoan.AGE_OF_VEHICLE:
-	        					if(VehicleType.SECOND_HAND.getId().equals(primaryAutoLoanDetail.getVehicleType())) {
+	        					if(AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
 	            					if(primaryAutoLoanDetail.getVehicleAge() != null) {
 	            						scoreParameterRetailRequest.setIsVehicleAge_p(true);
 	            						// VechileAge is Being set in Starting of Four Loop

@@ -86,8 +86,6 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 					primaryAutoLoanDetail.setCreatedDate(new Date());
 					primaryAutoLoanDetail.setCreatedBy(alLoanDetailRequest.getUserId());
 				}
-					primaryAutoLoanDetail.setVehicleType(alLoanDetailRequest.getVehicleType());
-					primaryAutoLoanDetail.setVehicleCategory(alLoanDetailRequest.getVehicleCategory());
 					primaryAutoLoanDetail.setVehicleSegment(alLoanDetailRequest.getVehicleSegment());
 					primaryAutoLoanDetail.setVehicleAge(alLoanDetailRequest.getVehicleAge());
 					primaryAutoLoanDetail.setVehicleEngineVolume(alLoanDetailRequest.getVehicleEngineVolume());
@@ -141,8 +139,6 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 		}
 		PrimaryAutoLoanDetail primaryAutoLoanDetail = autoLoanDetailRepository.findById(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
-			res.setVehicleType(primaryAutoLoanDetail.getVehicleType());
-			res.setVehicleCategory(primaryAutoLoanDetail.getVehicleCategory());
 			res.setVehicleSegment(primaryAutoLoanDetail.getVehicleSegment());
 			res.setVehicleAge(primaryAutoLoanDetail.getVehicleAge());
 			res.setVehicleEngineVolume(primaryAutoLoanDetail.getVehicleEngineVolume());
@@ -214,8 +210,6 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
-				res.setVehicleType(primaryAutoLoanDetail.getVehicleType());
-				res.setVehicleCategory(primaryAutoLoanDetail.getVehicleCategory());
 				res.setVehicleSegment(primaryAutoLoanDetail.getVehicleSegment());
 				res.setVehicleAge(primaryAutoLoanDetail.getVehicleAge());
 				res.setVehicleEngineVolume(primaryAutoLoanDetail.getVehicleEngineVolume());
@@ -253,8 +247,6 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 		}
 		 
 		if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
-			primaryAutoLoanDetail.setVehicleType(alDetail.getVehicleType());
-			primaryAutoLoanDetail.setVehicleCategory(alDetail.getVehicleCategory());
 			primaryAutoLoanDetail.setVehicleSegment(alDetail.getVehicleSegment());
 			primaryAutoLoanDetail.setVehicleAge(alDetail.getVehicleAge());
 			primaryAutoLoanDetail.setVehicleEngineVolume(alDetail.getVehicleEngineVolume());
