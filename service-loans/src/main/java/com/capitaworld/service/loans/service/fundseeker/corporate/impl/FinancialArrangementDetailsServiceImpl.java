@@ -126,9 +126,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setIsActive(true);
 			arrangementsDetail.setBureauOrCalculatedEmi(req.getEmi());
 			arrangementsDetail.setBureauOutstandingAmount(req.getOutstandingAmount());
-			if(arrangementsDetail.getAmount() != null && arrangementsDetail.getAmount() > 0 && arrangementsDetail.getOutstandingAmount() > arrangementsDetail.getAmount()) {
+			/*if(arrangementsDetail.getAmount() != null && arrangementsDetail.getAmount() > 0 && arrangementsDetail.getOutstandingAmount() > arrangementsDetail.getAmount()) {
 				arrangementsDetail.setOutstandingAmount(arrangementsDetail.getAmount());
-			}
+			}*/
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
 		return true;
@@ -164,9 +164,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setDirectorBackgroundDetail(directorId);
 			arrangementsDetail.setBureauOrCalculatedEmi(req.getEmi());
 			arrangementsDetail.setBureauOutstandingAmount(req.getOutstandingAmount());
-			if(arrangementsDetail.getAmount() != null && arrangementsDetail.getAmount() > 0 && arrangementsDetail.getOutstandingAmount() > arrangementsDetail.getAmount()) {
+			/*if(arrangementsDetail.getAmount() != null && arrangementsDetail.getAmount() > 0 && arrangementsDetail.getOutstandingAmount() > arrangementsDetail.getAmount()) {
 				arrangementsDetail.setOutstandingAmount(arrangementsDetail.getAmount());
-			}
+			}*/
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
 		return true;
