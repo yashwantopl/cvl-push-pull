@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,9 +111,6 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
-	private Environment environment;
-
-	@Autowired
 	private OneFormClient oneFormClient;
 
 	@Autowired
@@ -153,8 +149,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	/*@Autowired
-	private NotificationClient notificationClient;*/
+	@Autowired
+	private MatchEngineClient matchEngineClient;
 
 	@Autowired
 	private LogService logService;
@@ -272,7 +268,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
 
-			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
+
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -823,7 +819,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
 
-			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
+
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -1583,10 +1579,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		ProposalMappingResponse response = new ProposalMappingResponse();
 
-		ProposalDetailsClient client = new ProposalDetailsClient(
-				environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
-			response = client.changeStatus(request);
+			response = proposalDetailsClient.changeStatus(request);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
