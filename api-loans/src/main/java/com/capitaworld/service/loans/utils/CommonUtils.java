@@ -150,6 +150,9 @@ public class CommonUtils {
 
 	public static final String CREDIT_CARD = "Credit Card";
 
+	public static final Integer	NBFC_FLOW = 1;
+	public static final Integer	NBFC_BANK_FLOW = 2;
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class PaymentStatus {
