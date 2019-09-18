@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.repository.colending.impl;
 
 import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
-import com.capitaworld.service.loans.service.colending.impl.CoLendingFlowServiceFlowServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -29,6 +28,41 @@ public class CoLendingFlowRepositoryImpl implements CoLendingFlowRepository{
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("Error while getting Stage and Status");
+        }
+        return null;
+    }
+
+    public Object[] getRatioNbfcBankProduct(Long applicationId){
+        try {
+            return  (Object[]) entityManager
+                    .createNativeQuery("SELECT ratio_id,tenure,nbfc_ratio,bank_ratio FROM nbfc_ratio_mapping n "
+                                + "INNER JOIN fp_co_lending_ratio ra ON ra.id=n.ratio_id AND ra.is_active=TRUE AND ra.is_proposal_active=TRUE "
+                                + "WHERE n.fp_product_id IN (SELECT fp_product_id FROM proposal_details WHERE application_id=:applicationId) "
+                                + "AND n.is_active=TRUE GROUP BY n.ratio_id HAVING COUNT(n.ratio_id)>1 ORDER BY n.id ASC LIMIT 1")
+                    .setParameter("applicationId", applicationId)
+                    .getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error in getRatioNbfcBankProduct()");
+        }
+        return null;
+    }
+
+    public Integer saveBlendedValues(Long applicationId,Long nbfcOrgId,Long bankOrgId){
+        try {
+          Integer val = entityManager
+                    .createNativeQuery("INSERT INTO nbfc_proposal_blended_rate (application_id,nbfc_org_id,bank_org_id,bl_exisiting_amount,bl_additional_amount,bl_amount, "
+                                        + "bl_tenure,bl_roi,bl_emi,bl_processing_fee,created_date,modified_date) "
+                                        + "SELECT application_id,:nbfcOrgId,:bankOrgId,SUM(existing_loan_amount),SUM(additional_loan_amount), "
+                                        + "SUM(el_amount),el_tenure,SUM(el_roi),SUM(emi),SUM(processing_fee),NOW(),NOW()  FROM proposal_details WHERE application_id=:applicationId")
+                    .setParameter("applicationId", applicationId)
+                    .setParameter("nbfcOrgId", nbfcOrgId)
+                    .setParameter("bankOrgId", bankOrgId)
+                    .executeUpdate();
+          return val;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error in saveBlendedValues()");
         }
         return null;
     }
