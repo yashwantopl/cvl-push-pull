@@ -27,13 +27,6 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
 
-	
-	@Column(name="vehicle_type")
-	Integer vehicleType;
-	
-	@Column(name="vehicle_category")
-	Integer vehicleCategory;
-	
 	@Column(name="vehicle_segment")
 	Integer vehicleSegment; 
 	
@@ -74,66 +67,8 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 	private Boolean isCheckOffNotChangeSalAcc;
 	
 	
-//	@Column(name="car_model_name")
-//	private String carModelName;
-//
-//	@Column(name="car_type")
-//	private Integer carType;
-//
-//	@Column(name="car_varient")
-//	private String carVarient;
-//
-//	@Column(name="certified_dealer")
-//	private Boolean certifiedDealer;
-//
-//	@Column(name="dealer_name")
-//	private String dealerName;
-//
-//	@Temporal(TemporalType.TIMESTAMP)
-//	@Column(name="delivery_date")
-//	private Date deliveryDate;
-//
-//	@Column(name="down_payment")
-//	private Double downPayment;
-//
-//	@Column(name="manufacturer_name")
-//	private String manufacturerName;
-//
-//	@Column(name="new_car_purchase_type")
-//	private Integer newCarPurchaseType;
-//
-//	@Column(name="on_road_car_price")
-//	private Double onRoadCarPrice;
-//
-//	@Temporal(TemporalType.TIMESTAMP)
-//	@Column(name="purchase_preowned_date")
-//	private Date purchasePreownedDate;
-//
-//	@Temporal(TemporalType.TIMESTAMP)
-//	@Column(name="purchase_reimbursment_date")
-//	private Date purchaseReimbursmentDate;
-	
 	public PrimaryAutoLoanDetail() {
 		// TODO Auto-generated constructor stub
-	}
-
-	public Integer getVehicleType() {
-		return vehicleType;
-	}
-
-
-	public void setVehicleType(Integer vehicleType) {
-		this.vehicleType = vehicleType;
-	}
-
-
-	public Integer getVehicleCategory() {
-		return vehicleCategory;
-	}
-
-
-	public void setVehicleCategory(Integer vehicleCategory) {
-		this.vehicleCategory = vehicleCategory;
 	}
 
 

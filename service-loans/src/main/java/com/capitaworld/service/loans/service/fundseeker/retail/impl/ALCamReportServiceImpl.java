@@ -522,8 +522,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
 					BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
 					loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
-					loanDetails.put("vehicleType", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleType()) ? VehicleType.getById(primaryAutoLoanDetailRequest.getVehicleType()).getValue() : "-");
-					loanDetails.put("vehicleCategory", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleCategory()) ? VehicleCategory.getById(primaryAutoLoanDetailRequest.getVehicleCategory()).getValue() : "-");
 					loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
 					loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
 					loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");

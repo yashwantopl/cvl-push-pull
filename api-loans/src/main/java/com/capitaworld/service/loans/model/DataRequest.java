@@ -17,7 +17,6 @@ public class DataRequest implements Serializable{
 	private Double tenure;
 	private String label;
 	
-	private static final long serialVersionUID = 1L;
 	
 	public DataRequest() {
 		// Do nothing because of X and Y.

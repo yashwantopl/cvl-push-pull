@@ -6,4 +6,8 @@ package com.capitaworld.service.loans.repository.colending;
 
 public interface CoLendingFlowRepository {
     public Object[] getStageAndStatus(Long userId);
+
+    public Object[] getRatioNbfcBankProduct(Long applicationId);
+
+    public Integer saveBlendedValues(Long applicationId,Long nbfcOrgId,Long bankOrgId);
 }

@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.controller.colending;
 
 import com.capitaworld.service.loans.model.ClientListingCoLending;
 import com.capitaworld.service.loans.model.SpClientListing;
+import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.model.UserResponse;
@@ -13,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -89,6 +87,35 @@ public class ColendingController {
             logger.error(SOMETHING_WENT_WRONG_WHILE_FETCHING_CO_LENDING_CLIENT_COUNT_MSG,e);
             return new ResponseEntity<UserResponse>(
                     new UserResponse(SOMETHING_WENT_WRONG_WHILE_FETCHING_CO_LENDING_CLIENT_COUNT_MSG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+
+    }
+
+    @RequestMapping(value = "/nbfc/finalCalculation/{applicationId}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserResponse> nbfcFlowBlendedCalculation(@PathVariable("applicationId") Long applicationId, HttpServletRequest request){
+        if(CommonUtils.isObjectNullOrEmpty(applicationId)){
+            return new ResponseEntity<UserResponse>(
+                    new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.OK);
+        }
+        try {
+            Boolean isRateCalculated = coLendingFlowService.calculateBlendedRateNbfc(applicationId);
+            if(!CommonUtils.isObjectNullOrEmpty(isRateCalculated) && isRateCalculated){
+                logger.info("co-origination's flow,blended rate calculated");
+                return new ResponseEntity<UserResponse>(
+                        new UserResponse(isRateCalculated,"co-origination's flow,blended rate calculated", HttpStatus.OK.value()),
+                        HttpStatus.OK);
+            }else{
+                logger.info("co-origination's flow,blended rate calculated-->"+isRateCalculated);
+                return new ResponseEntity<UserResponse>(
+                        new UserResponse("Something went wrong whileco-origination's flow,blended rate calculation", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                        HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            logger.error("Something went wrong whileco-origination's flow,blended rate calculation - nbfcFlowBlendedCalculation()",e);
+            return new ResponseEntity<UserResponse>(
+                    new UserResponse("Something went wrong whileco-origination's flow,blended rate calculation - nbfcFlowBlendedCalculation()", HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
         }
 

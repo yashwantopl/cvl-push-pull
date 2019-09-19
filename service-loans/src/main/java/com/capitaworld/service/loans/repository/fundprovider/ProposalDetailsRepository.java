@@ -150,5 +150,6 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value="SELECT display_org_name FROM `users`.`user_organisation_master` WHERE user_org_id =:id",nativeQuery= true)
     public String getOrgNameById(@Param("id") Long id);
 
+    public List<ProposalDetails> findByApplicationId(Long applicationId);
 }
 
