@@ -2958,8 +2958,8 @@ public class LoansClient {
 	 * @throws LoansException
 	 */
 	public LoansResponse saveBankRelation(BankRelationshipRequest relationReq , Long applicationId, Long userId) throws LoansException {
-		String url = loansBaseUrl.concat(SAVE_BANK_RELATION) + "/" + applicationId + "?userId=" + userId;
-		logger.info("saveBankRelation url-------------->>", url);
+		String url = loansBaseUrl.concat(SAVE_BANK_RELATION) + applicationId + "?userId=" + userId;
+		logger.info("save Bank Relation url-------------->> [{}]", url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2967,6 +2967,7 @@ public class LoansClient {
 			HttpEntity<BankRelationshipRequest> entity = new HttpEntity<BankRelationshipRequest>(relationReq, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
+			logger.error("Exception in saveBankRelation : ",e);
 			throw new LoansException();
 		}
 	}
