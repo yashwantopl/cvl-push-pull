@@ -14,6 +14,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.capitaworld.service.loans.model.DataRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.WorkflowData;
+import com.capitaworld.service.loans.model.corporate.AddProductRequest;
+import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
+import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
@@ -212,6 +220,85 @@ public class CoLendingRatioController {
 			return new ResponseEntity<>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping(value = "/inactiveCoLendingProposal/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> inactiveCoLendingProposal(HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId,@PathVariable(value = "id")Long id) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger,"start inactiveCoLendingProposal");
+		try {
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}		
+			//get org id
+			
+			if (userId == null) {
+				logger.warn("User Id is mandatory", userId);
+				CommonDocumentUtils.endHook(logger, "end inactiveCoLendingProposal");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(coLendingService.inactiveCoLendingProposal(id));
+			CommonDocumentUtils.endHook(logger, "end inactiveCoLendingProposal");
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while inactiveCoLendingProposal", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/saveReasonForRatio", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveReasonForRatio(@RequestBody DataRequest dataRequest,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		CommonDocumentUtils.startHook(logger, "saveReasonForRatio");
+		try {
+			// request must not be null
+
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+
+			if (userId == null) {
+				logger.warn("user Id can not be " + userId);
+				CommonDocumentUtils.endHook(logger, "saveReasonForRatio");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			if (dataRequest == null) {
+				logger.warn("dataRequest Object can not be empty ==>" + dataRequest);
+				CommonDocumentUtils.endHook(logger, "saveReasonForRatio");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			
+
+			Boolean response = coLendingService.addReasonByJobId(dataRequest);
+			if (response) {
+				CommonDocumentUtils.endHook(logger, "saveReasonForRatio");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				CommonDocumentUtils.endHook(logger, "saveReasonForRatio");
+				return new ResponseEntity<>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saveReasonForRatio ==>", e);
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 

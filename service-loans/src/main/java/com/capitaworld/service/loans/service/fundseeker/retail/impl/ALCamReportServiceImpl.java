@@ -38,8 +38,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.OtherPropertyDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PurchasePropertyDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
@@ -52,10 +51,10 @@ import com.capitaworld.service.loans.model.retail.EmpAgriculturistTypeRequest;
 import com.capitaworld.service.loans.model.retail.EmpSalariedTypeRequest;
 import com.capitaworld.service.loans.model.retail.EmpSelfEmployedTypeRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
-import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryAutoLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -64,8 +63,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanCoAppDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.OtherPropertyDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -80,7 +78,6 @@ import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDeta
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -92,6 +89,8 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AutoDetailPurposeofLoan;
+import com.capitaworld.service.oneform.enums.AutoLoanPurposeType;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.DesignationList;
@@ -101,8 +100,6 @@ import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
-import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
-import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
@@ -113,6 +110,11 @@ import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.VehicleCategory;
+import com.capitaworld.service.oneform.enums.VehicleEngineVolume;
+import com.capitaworld.service.oneform.enums.VehicleSegment;
+import com.capitaworld.service.oneform.enums.VehicleType;
+import com.capitaworld.service.oneform.enums.VehicleUse;
 import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -146,9 +148,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	private FixedDepositsDetailService fixedDepositsDetailService;
 	
 	@Autowired
-	private OtherPropertyDetailsRepository otherPropertyDetailsRepository;
-	
-	@Autowired
 	private OtherCurrentAssetDetailService otherCurrentAssetDetailService;
 	
 	@Autowired
@@ -162,9 +161,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
-	
-	@Autowired
-	private PurchasePropertyDetailsRepository purchasePropertyDetailsRepository;
 	
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -203,9 +199,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	private CoApplicantService coApplicantService;
 	
 	@Autowired
-	private PrimaryHomeLoanService primaryHomeLoanService;
-	
-	@Autowired
 	private ITRClient itrClient;
 	
 	@Autowired
@@ -219,6 +212,9 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	
 	@Autowired
 	private CommonRepository commonRepository;
+	
+	@Autowired
+	private PrimaryAutoLoanDetailRepository primaryAutoLoanDetailRepository;
 	
 	@Autowired
 	private EPFClient epfClient;
@@ -342,7 +338,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				operatingBusinessSince = (sinceWhen.getYears()) + " years" + " " +(!CommonUtils.isObjectNullOrEmpty(sinceWhen.getMonths()) ? sinceWhen.getMonths() + " months" : "");
 			}
 			
-			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue() : "-");
+			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? StringEscapeUtils.escapeXml(AutoDetailPurposeofLoan.getById(plRetailApplicantRequest.getLoanPurposeQueType()).getValue()) : "-");
 			map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue()) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
 			
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "-");
@@ -516,6 +512,28 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		// ENDS HERE===================>
+		
+		//Fetching Loan Details
+		try {
+			if(userId != null) {
+				Map<String ,Object> loanDetails = new HashMap<String, Object>();
+				PrimaryAutoLoanDetail primaryAutoLoanDetail = primaryAutoLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
+					PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
+					BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
+					loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
+					loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
+					loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
+					loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");
+					loanDetails.put("vehicleShowroomPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice())) : "-");
+					loanDetails.put("vehicleOnRoadPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice())) : "-");
+					loanDetails.put("isVehicleHypothecation", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getIsVehicleHypothecation()) && primaryAutoLoanDetailRequest.getIsVehicleHypothecation() ? "Yes" : "No");
+				}
+				map.put("loanDetails", loanDetails);
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
+		}
 
 		try {
 			//Fetching CoApplicantDetails
@@ -883,7 +901,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			matchRequest.setProductId(productId);
 			matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
-			logger.info("matchesResponse"+matchResponse);
+			logger.info("matchesResponse ==>{}", matchResponse);
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : null);
 		}
 		catch (Exception e) {
@@ -935,40 +953,12 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
 			logger.error("Error while getting primary Details : ",e);
 		}
 		
-		//Property Details
-		try {
-			Map<String ,Object> propertyDetails = new HashMap<String, Object>(); 
-			HLOneformPrimaryRes response = primaryHomeLoanService.getOneformPrimaryDetails(applicationId);
-			if(response != null) {
-				propertyDetails.put("costOfProperty", !CommonUtils.isObjectNullOrEmpty(response.getCostOfProp()) ? CommonUtils.convertValueWithoutDecimal(response.getCostOfProp()) : "-");
-				propertyDetails.put("propertyValue",!CommonUtils.isObjectNullOrEmpty(response.getMarketValProp()) ? CommonUtils.convertValueWithoutDecimal(response.getMarketValProp()) : "-");
-				propertyDetails.put("propertyAge", !CommonUtils.isObjectNullOrEmpty(response.getOldPropYear()) ? response.getOldPropYear() : "-");
-				propertyDetails.put("propertyPremise", !CommonUtils.isObjectNullOrEmpty(response.getPropPremiseName()) ? CommonUtils.printFields(response.getPropPremiseName(),null) + "," : "");
-				propertyDetails.put("propertyStreetName", !CommonUtils.isObjectNullOrEmpty(response.getPropStreetName()) ? CommonUtils.printFields(response.getPropStreetName(),null) + "," : "");
-				propertyDetails.put("propertyLandmark", !CommonUtils.isObjectNullOrEmpty(response.getPropLandmark()) ? CommonUtils.printFields(response.getPropLandmark(),null) + "," : "");
-				propertyDetails.put("propertyCountry", !CommonUtils.isObjectNullOrEmpty(response.getPropCountry()) ? StringEscapeUtils.escapeXml(getCountryName(response.getPropCountry().intValue())) : "");
-				propertyDetails.put("propertyState", !CommonUtils.isObjectNullOrEmpty(response.getPropState()) ? StringEscapeUtils.escapeXml(getStateName(response.getPropState().intValue())) : "");
-				propertyDetails.put("propertyCity", !CommonUtils.isObjectNullOrEmpty(response.getPropCity()) ? StringEscapeUtils.escapeXml(getCityName(response.getPropCity())) : "");
-				propertyDetails.put("propertyPincode", !CommonUtils.isObjectNullOrEmpty(response.getPropPincode()) ? response.getPropPincode() : "");
-				try {
-					if(!CommonUtils.isObjectNullOrEmpty(response.getPropdistrictMappingId())) {
-						propertyDetails.put("propertyAddress",CommonUtils.printFields(pincodeDateService.getById(response.getPropdistrictMappingId()),null));				
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-			map.put("propertyDetails", !CommonUtils.isObjectNullOrEmpty(propertyDetails) ? propertyDetails : null);
-		} catch (Exception e) {
-			logger.error("Error while getting property Details : ",e);
-		}
-
 		//INCOME DETAILS - NET INCOME
 		try {
 			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
@@ -1710,76 +1700,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							logger.error("Error/Exception while fetching data of Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 						}
 					}
-				}
-				
-				try {
-					if(plRetailApplicantRequest != null) {
-					
-						if(plRetailApplicantRequest.getLoanPurpose() != null && plRetailApplicantRequest.getLoanPurpose() == HomeLoanPurpose.PURCHASE.getId()) {
-							//Purchase Property Details
-							try {
-								List<Map<String, Object>> listDataOfProperty = new ArrayList<Map<String,Object>>(); 
-								List<PurchasePropertyDetails> purchasePropertyDetails = purchasePropertyDetailsRepository.getListByApplicationId(applicationId);
-								for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
-									Map<String , Object> purchasePropertyDetailsReq = new HashMap<String, Object>();
-									purchasePropertyDetailsReq.put("propertyName", purchasePropertyDetail.getPropertyName() != null ? purchasePropertyDetail.getPropertyName() : "-");
-									purchasePropertyDetailsReq.put("cityName" ,purchasePropertyDetail.getCity() != null ? StringEscapeUtils.escapeXml(getCityName(purchasePropertyDetail.getCity().longValue())) : "-");
-									purchasePropertyDetailsReq.put("stateName" ,purchasePropertyDetail.getState() != null ? StringEscapeUtils.escapeXml(getStateName(purchasePropertyDetail.getState())) : "-");
-									purchasePropertyDetailsReq.put("buildUpArea" ,purchasePropertyDetail.getBuildUpArea() != null ? purchasePropertyDetail.getBuildUpArea() : "-");
-									purchasePropertyDetailsReq.put("carpetArea" ,purchasePropertyDetail.getCarpetArea() != null ? purchasePropertyDetail.getCarpetArea() : "-");
-									purchasePropertyDetailsReq.put("superBuildUpArea" ,purchasePropertyDetail.getSuperBuildUpArea() != null ? purchasePropertyDetail.getSuperBuildUpArea() : "-");
-									purchasePropertyDetailsReq.put("totalPriceOfProperty" ,purchasePropertyDetail.getTotalPriceOfProperty() != null ? CommonUtils.convertValueWithoutDecimal(purchasePropertyDetail.getTotalPriceOfProperty().doubleValue()) : "-");
-									listDataOfProperty.add(purchasePropertyDetailsReq);		
-								}
-								
-								retailMap.put("purchasePropertyDetails", !CommonUtils.isObjectListNull(listDataOfProperty) ? listDataOfProperty : null);	
-							}catch (Exception e) {
-								logger.error("Error/Exception while fetching ListData of Property Details of ApplicationId==>{}" , applicationId);
-							}
-						}else if(plRetailApplicantRequest.getLoanPurpose() != null && plRetailApplicantRequest.getLoanPurpose() == HomeLoanPurpose.CONSTRUCTION_EXPANSION.getId()) {
-							//Other Property Details
-							try {
-								List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
-								List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
-								for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
-									if(otherPropertyDetail != null && otherPropertyDetail.getTotalCostOfLand() != null) {
-										Map<String ,Object> constructionDetails = new HashMap<String, Object>();	
-										constructionDetails.put("totalCostOfLand", otherPropertyDetail.getTotalCostOfLand() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfLand().doubleValue()) : "-");
-										constructionDetails.put("totalCostOfConstruction", otherPropertyDetail.getTotalCostOfConstruction() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfConstruction().doubleValue()) : "-");
-										constructionDetails.put("timeForCompletionConstruction" ,otherPropertyDetail.getTimeForCompletionConstruction() != null ? otherPropertyDetail.getTimeForCompletionConstruction() : "-");
-										
-										otherPropertyListData.add(!CommonUtils.isObjectListNull(constructionDetails) ? constructionDetails : null);
-									}
-								}
-								
-								retailMap.put("constructionDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
-							}catch (Exception e) {
-								logger.error("Error/Exception while fetching ListData of Property Other Details of ApplicationId==>{}",applicationId);
-							}
-						}else if(plRetailApplicantRequest.getLoanPurpose() != null && plRetailApplicantRequest.getLoanPurpose() == HomeLoanPurpose.REPAIRS_RENOVATIONS.getId()) {
-							//Other Property Details
-							try {
-								List<Map<String, Object>> otherPropertyListData = new ArrayList<Map<String,Object>>();
-								List<OtherPropertyDetails> otherPropertyDetails= otherPropertyDetailsRepository.getListByApplicationId(applicationId);
-								for(OtherPropertyDetails otherPropertyDetail : otherPropertyDetails){
-									if(otherPropertyDetail != null && otherPropertyDetail.getTotalCostOfRenovation() != null) {
-										Map<String ,Object> repairDetails = new HashMap<String, Object>();
-										repairDetails.put("typeOfRepairRenovation", otherPropertyDetail.getTypeOfRepairRenovation() != null ? otherPropertyDetail.getTypeOfRepairRenovation() : "-");
-										repairDetails.put("totalCostOfRenovation", otherPropertyDetail.getTotalCostOfRenovation() != null ? CommonUtils.convertValueWithoutDecimal(otherPropertyDetail.getTotalCostOfRenovation().doubleValue()) : "-");
-										repairDetails.put("timeForCompletionRenovation" ,otherPropertyDetail.getTimeForCompletionRenovation() != null ? otherPropertyDetail.getTimeForCompletionRenovation() : "-");
-										
-										otherPropertyListData.add(!CommonUtils.isObjectListNull(repairDetails) ? repairDetails : null);
-									}
-								}
-								
-								retailMap.put("repairDetails", !CommonUtils.isObjectListNull(otherPropertyListData) ? otherPropertyListData : null);
-							}catch (Exception e) {
-								logger.error("Error/Exception while fetching ListData of Property Other Details of ApplicationId==>{}",applicationId);
-							}
-						}
-					}
-				}catch (Exception e) {
-					// TODO: handle exception
 				}
 				
 				//References Details

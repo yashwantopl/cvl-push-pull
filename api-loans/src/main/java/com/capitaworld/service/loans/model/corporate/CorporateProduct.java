@@ -207,6 +207,8 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
 	
+	private List<Long> nbfcRatioIds;
+	
 	private Integer cgtmseCoverage;
 	
 	private Integer cashMargin;
@@ -2076,6 +2078,20 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setIsCommercialCibilFor3MonthMandatory(Boolean isCommercialCibilFor3MonthMandatory) {
 		this.isCommercialCibilFor3MonthMandatory = isCommercialCibilFor3MonthMandatory;
 	}
+
+	public List<Long> getNbfcRatioIds() {
+		return nbfcRatioIds;
+	}
+
+	public void setNbfcRatioIds(List<Long> nbfcRatioIds) {
+		this.nbfcRatioIds = nbfcRatioIds;
+	}
+
+	public void setMaxLoanAmount(Double maxLoanAmount) {
+		this.maxLoanAmount = maxLoanAmount;
+	}
+	
+	
 
 	
 	

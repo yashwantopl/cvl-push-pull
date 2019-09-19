@@ -1837,7 +1837,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				response = dmsClient.importDocument(documentImportRequest);
 
 				if (response != null && (response.getStatus() == 200)) {
-					logger.info("================= Sucessfull file uploaded ==================> ",response);               
+					//logger.info("================= Sucessfull file uploaded ==================> ",response);
 				}
 			}
 		} catch (DocumentException | IOException e) {

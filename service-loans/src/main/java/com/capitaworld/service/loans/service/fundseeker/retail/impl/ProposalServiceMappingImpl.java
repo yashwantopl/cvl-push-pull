@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
-import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +44,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -63,6 +62,7 @@ import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
@@ -80,7 +80,6 @@ import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
 import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
@@ -91,7 +90,6 @@ import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
-import com.capitaworld.service.notification.utils.NotificationApiUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -111,9 +109,6 @@ import com.capitaworld.service.users.model.UsersRequest;
 @Service
 @Transactional
 public class ProposalServiceMappingImpl implements ProposalService {
-
-	@Autowired
-	private Environment environment;
 
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -154,8 +149,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
-	/*@Autowired
-	private NotificationClient notificationClient;*/
+	@Autowired
+	private MatchEngineClient matchEngineClient;
 
 	@Autowired
 	private LogService logService;
@@ -273,7 +268,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
 
-			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
+
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -824,7 +819,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
 
-			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
+
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -1584,10 +1579,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		ProposalMappingResponse response = new ProposalMappingResponse();
 
-		ProposalDetailsClient client = new ProposalDetailsClient(
-				environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
-			response = client.changeStatus(request);
+			response = proposalDetailsClient.changeStatus(request);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -2443,13 +2436,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> " + request.toString());
 
 			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
-				logger.info("request.getDisbursementDate(){}",request.getDisbursementDate());
-			logger.info("connectlogModifiedDate{}",connectlogModifiedDate);
+				if(!CommonUtils.isObjectNullOrEmpty(request.getDisbursementDate()))
+				{
+				request.getDisbursementDate().setHours(0);
+				request.getDisbursementDate().setMinutes(0);
+				request.getDisbursementDate().setSeconds(0);
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate))
+				{
+				connectlogModifiedDate.setHours(0);
+				connectlogModifiedDate.setMinutes(0);
+				connectlogModifiedDate.setSeconds(0);
+				}
+				
 			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)) {
 				if (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0) {
-				logger.info("first condition");
-					logger.info("request.getDisbursementDate().compareTo(connectlogModifiedDate)<0{}",request.getDisbursementDate().compareTo(connectlogModifiedDate)<0);
-					logger.info("request.getDisbursementDate().compareTo(new Date())>0{}",request.getDisbursementDate().compareTo(new Date())>0);
 					return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 				}
@@ -2457,11 +2458,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			DateTimeComparator comparator = DateTimeComparator.getDateOnlyInstance();
 			//Comparing Date only
 			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0) {
-				logger.info("second condition");
-				logger.info("!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)",!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate));
-				logger.info("connectlogModifiedDate",connectlogModifiedDate);
-				logger.info("request.getDisbursementDate()",request.getDisbursementDate());
-				logger.info("comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0",comparator.compare(request.getDisbursementDate(), connectlogModifiedDate) < 0);
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 			}
@@ -3019,13 +3015,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest,Long businessTypeId) {
+		
 		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
 		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
+		//logger.info("Enter in Search Proposal Service ---------------------------->Role Id --------> " + roleId);
 		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
 		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
 			return Collections.emptyList();
 		}
-		if (roleId == CommonUtils.UsersRoles.FP_CHECKER || roleId == CommonUtils.UsersRoles.SMECC || roleId == CommonUtils.UsersRoles.HO) {
+		if (roleId == CommonUtils.UsersRoles.FP_CHECKER || roleId == CommonUtils.UsersRoles.SMECC || roleId == CommonUtils.UsersRoles.HO
+				 || roleId == CommonUtils.UsersRoles.ZO || roleId == CommonUtils.UsersRoles.RO) {
+			logger.info("GLOBAL SEARCH CALL SP -----> ORG ID --------> " + loginOrgId + "------UserId-----" + loginUserId + "------Value-----" + reportRequest.getValue() + "------Number-----" + reportRequest.getNumber() + "------businessTypeId-----" + businessTypeId + "------branchId-----" + branchId);
 			List<Object[]> objList = loanRepository.getSerachProposalListByRoleSP(loginOrgId, reportRequest.getValue(), loginUserId, reportRequest.getNumber().longValue(), businessTypeId, branchId);
 			if (objList.size() > 0) {
 				return setValue(objList, true);

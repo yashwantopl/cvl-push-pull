@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -214,6 +214,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
+	@Value("${capitaworld.gstdata.enable}")
+	private Boolean gstCompRelFlag;
+	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@SuppressWarnings("unchecked")
@@ -1375,11 +1378,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
-		/*LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
-		corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
-			
-		Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-		corporatePrimaryViewResponse.setGstRelatedParty(gstRelatedPartyDetails);*/
+		if(gstCompRelFlag) {
+			LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
+			corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
+				
+			Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			corporatePrimaryViewResponse.setGstRelatedParty(gstRelatedPartyDetails);
+		}
 		return corporatePrimaryViewResponse;
 	}
 

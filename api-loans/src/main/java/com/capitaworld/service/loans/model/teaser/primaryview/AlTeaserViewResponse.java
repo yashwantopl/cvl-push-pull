@@ -207,6 +207,8 @@ public class AlTeaserViewResponse {
 	private Long vehicleAgreedPurchasePrice;
 	private Boolean isVehicleHypothecation;
 	
+	private String  campaignType; 
+	
 	public AlTeaserViewResponse() {
 		// TODO Auto-generated constructor stub
 	}
@@ -1631,6 +1633,14 @@ public class AlTeaserViewResponse {
 
 	public void setBorrowerContribution(Long borrowerContribution) {
 		this.borrowerContribution = borrowerContribution;
+	}
+
+	public String getCampaignType() {
+		return campaignType;
+	}
+
+	public void setCampaignType(String campaignType) {
+		this.campaignType = campaignType;
 	}
 	
 	

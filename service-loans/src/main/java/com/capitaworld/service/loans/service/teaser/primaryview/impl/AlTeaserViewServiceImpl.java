@@ -45,10 +45,7 @@ import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PurchasePropertyDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalAutoLoanDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
@@ -57,7 +54,6 @@ import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.EmpSalariedTypeRequest;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
-import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
@@ -71,7 +67,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProductMasterReposi
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PurchasePropertyDetailsRepository;
@@ -103,7 +99,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AutoDetailPurposeofLoan;
-import com.capitaworld.service.oneform.enums.AutoPurposeofLoan;
+import com.capitaworld.service.oneform.enums.AutoLoanPurposeType;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.DesignationList;
@@ -115,13 +111,10 @@ import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
-import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
-import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.PropertySubType;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.Religion;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
@@ -130,11 +123,11 @@ import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
-import com.capitaworld.service.oneform.enums.VehicleUse;
 import com.capitaworld.service.oneform.enums.VehicleCategory;
 import com.capitaworld.service.oneform.enums.VehicleEngineVolume;
 import com.capitaworld.service.oneform.enums.VehicleSegment;
 import com.capitaworld.service.oneform.enums.VehicleType;
+import com.capitaworld.service.oneform.enums.VehicleUse;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -143,7 +136,9 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
-import com.capitaworld.service.scoring.utils.ScoreParameter.Retail.AutoLoan;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.exception.UserException;
+import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -256,13 +251,16 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 	private EPFClient epfClient;
 	
 	@Autowired
-	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
+	private FinalAutoLoanDetailRepository finalAutoLoanDetailRepository;
 
 	@Autowired
 	private PurchasePropertyDetailsRepository purchasePropertyDetailsRepository;
 	
 	@Autowired
     private BankingRelationlRepository bankingRelationlRepository;
+	
+	@Autowired
+	private UsersClient usersClient;
 
 
 	@Override
@@ -291,6 +289,18 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		alTeaserViewResponse.setTenure(applicationProposalMapping.getTenure()!=null ? ((applicationProposalMapping.getTenure()).toString()) + " Years":" - ");
 		alTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
 		alTeaserViewResponse.setAppId(toApplicationId);
+		
+		try {
+			UserResponse campaignUser=usersClient.isExists(userid,null);
+			if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+				alTeaserViewResponse.setCampaignType("Bank Specific");
+			}else {
+				alTeaserViewResponse.setCampaignType("Market Place");
+			}
+		} catch (UserException e2) {
+			// TODO Auto-generated catch block
+			logger.info("error while campaign user check"+e2);
+		}
 		
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -510,9 +520,9 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				
 				// loan Details 
 				plRetailApplicantResponse.setLoanAmountRequired(plRetailApplicantRequest.getLoanAmountRequired());
-				alTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
+				alTeaserViewResponse.setPurposeOfLoan(plRetailApplicantRequest.getLoanPurpose() != null ? AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue().toString() : "NA");
 				/*detailed purpose of loan*/
-				alTeaserViewResponse.setDetailedLoanPur(plRetailApplicantRequest.getLoanPurposeQueType() != null ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue().toString() : "-");
+				alTeaserViewResponse.setDetailedLoanPur(plRetailApplicantRequest.getLoanPurposeQueType() != null ? AutoDetailPurposeofLoan.getById(plRetailApplicantRequest.getLoanPurposeQueType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setTenureRequired(plRetailApplicantRequest.getTenureRequired());
 				plRetailApplicantResponse.setRepayment(plRetailApplicantRequest.getRepayment());
 				plRetailApplicantResponse.setMonthlyIncome(plRetailApplicantRequest.getMonthlyIncome());
@@ -598,8 +608,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		
 		// Auto details
 		ALOneformPrimaryRes autoDetails = primaryAutoloanService.getOneformPrimaryDetails(toApplicationId);
-		alTeaserViewResponse.setLoanAmount(autoDetails.getLoanAmountRequired().longValue());
-		alTeaserViewResponse.setPurposeOfLoan(autoDetails.getLoanPurpose() != null ? AutoPurposeofLoan.getById(autoDetails.getLoanPurpose()).getValue() : null);
+		alTeaserViewResponse.setPurposeOfLoan(autoDetails.getLoanPurpose() != null ? AutoLoanPurposeType.getById(autoDetails.getLoanPurpose()).getValue() : null);
 		alTeaserViewResponse.setDetailedLoanPur(autoDetails.getLoanPurposeQueType() != null ? AutoDetailPurposeofLoan.getById(autoDetails.getLoanPurposeQueType()).getValue() : null);		
 		alTeaserViewResponse.setVehicleType(autoDetails.getVehicleType() != null ? VehicleType.getById(autoDetails.getVehicleType()).getValue() : "");
 		alTeaserViewResponse.setVehicleCategory(autoDetails.getVehicleCategory() != null ? VehicleCategory.getById(autoDetails.getVehicleCategory()).getValue() : "");
@@ -1032,7 +1041,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
 			List<CoApplicantDetail> coApplicantList = coAppService.getCoApplicantList(applicationId);
-			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
+			FinalAutoLoanDetail finalAutoLoanDetail = finalAutoLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
 			for (CoApplicantDetail coApplicantDetail : coApplicantList) {
 				PLRetailApplicantResponse plRetailApplicantResponse=new PLRetailApplicantResponse();
 				
@@ -1247,8 +1256,8 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 
 				//co-add
 				try {
-					if(finalHomeLoanDetail != null) {
-						PincodeDataResponse pindata=pincodeDateService.getById(finalHomeLoanDetail.getCorrespondencePinCode().longValue());
+					if(finalAutoLoanDetail != null) {
+						PincodeDataResponse pindata=pincodeDateService.getById(finalAutoLoanDetail.getCorrespondencePinCode().longValue());
 						plRetailApplicantResponse.setCorrAddDist(pindata.getDistrictName());
 						plRetailApplicantResponse.setCorrAddTaluko(pindata.getTaluka());
 						pindata.getTaluka();
@@ -1259,8 +1268,8 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
-				if(finalHomeLoanDetail!= null){
-					plRetailApplicantResponse.setCorrAdd( (finalHomeLoanDetail.getCorrespondencePremiseNo()!=null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondencePremiseNo())) :"") + (finalHomeLoanDetail.getCorrespondenceStreetName() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceStreetName())) : "") + (finalHomeLoanDetail.getCorrespondenceLandmark() != null ? (CommonUtils.commaReplace(finalHomeLoanDetail.getCorrespondenceLandmark())) : "")+ (plRetailApplicantResponse.getCorrAddDist() != null ?(CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddDist())) :"")+ (plRetailApplicantResponse.getCorrAddTaluko() != null ? (CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddTaluko())) : "") + (finalHomeLoanDetail.getCorrespondencePinCode() != null ? (finalHomeLoanDetail.getCorrespondencePinCode()) : ""));
+				if(finalAutoLoanDetail!= null){
+					plRetailApplicantResponse.setCorrAdd( (finalAutoLoanDetail.getCorrespondencePremiseNo()!=null ? (CommonUtils.commaReplace(finalAutoLoanDetail.getCorrespondencePremiseNo())) :"") + (finalAutoLoanDetail.getCorrespondenceStreetName() != null ? (CommonUtils.commaReplace(finalAutoLoanDetail.getCorrespondenceStreetName())) : "") + (finalAutoLoanDetail.getCorrespondenceLandmark() != null ? (CommonUtils.commaReplace(finalAutoLoanDetail.getCorrespondenceLandmark())) : "")+ (plRetailApplicantResponse.getCorrAddDist() != null ?(CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddDist())) :"")+ (plRetailApplicantResponse.getCorrAddTaluko() != null ? (CommonUtils.commaReplace(plRetailApplicantResponse.getCorrAddTaluko())) : "") + (finalAutoLoanDetail.getCorrespondencePinCode() != null ? (finalAutoLoanDetail.getCorrespondencePinCode()) : ""));
 				}
 
 				

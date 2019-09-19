@@ -252,6 +252,8 @@ public class AutoLoanParameterTemp extends ProductMasterTemp implements Serializ
 	
 //	EMI/ MI (Net or Gross)
 	
+	@Column(name = "nmi_mi_income_type")
+	private Integer nmiMiIncomeType;
 	@Column(name = "min_emi_mi")
 	private Double minEmiMi;
 	@Column(name = "max_emi_mi")
@@ -317,6 +319,9 @@ public class AutoLoanParameterTemp extends ProductMasterTemp implements Serializ
 	
 	@Column(name = "is_ex_showroom_price")
 	private Boolean isExShowroomPrice;
+	
+	@Column(name = "is_agreed_purchase_price")
+	private Boolean isAgreedPurchasePrice;
 	
 	@Column(name = "ltv_for_eligibility")
 	private Integer ltvForEligibility;
@@ -1194,5 +1199,21 @@ public class AutoLoanParameterTemp extends ProductMasterTemp implements Serializ
 
 	public void setIsDscrMandatory(Boolean isDscrMandatory) {
 		this.isDscrMandatory = isDscrMandatory;
+	}
+
+	public Boolean getIsAgreedPurchasePrice() {
+		return isAgreedPurchasePrice;
+	}
+
+	public void setIsAgreedPurchasePrice(Boolean isAgreedPurchasePrice) {
+		this.isAgreedPurchasePrice = isAgreedPurchasePrice;
+	}
+
+	public Integer getNmiMiIncomeType() {
+		return nmiMiIncomeType;
+	}
+
+	public void setNmiMiIncomeType(Integer nmiMiIncomeType) {
+		this.nmiMiIncomeType = nmiMiIncomeType;
 	}
 }

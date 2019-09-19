@@ -116,7 +116,6 @@ import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AnnualIncomeRural;
 import com.capitaworld.service.oneform.enums.AutoDetailPurposeofLoan;
-import com.capitaworld.service.oneform.enums.AutoPurposeofLoan;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
@@ -1093,11 +1092,11 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.Retail.CATEGORY_INFO_PL: {
 
-                                try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith())) {
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith())) {
 
-                                        Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
-                                        Long employmentWithPlValue=null;
+                                    Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
+                                    Long employmentWithPlValue=null;
 
                                         if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())  //1
                                         {
@@ -1161,10 +1160,10 @@ public class ScoringServiceImpl implements ScoringService {
                                 } catch (Exception e) {
                                     logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
-                                }
+                                }                          
 
-                                break;
-                            }
+                            break;
+                        }
                             case ScoreParameter.Retail.FIXED_OBLI_INFO_RATIO_PL: {
 
                                 totalEMI = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
@@ -2001,7 +2000,7 @@ public class ScoringServiceImpl implements ScoringService {
 				return new ResponseEntity<>(new LoansResponse("Error while Getting BankList From Analyser for ApplicationID====>" + applicationId + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 
-			//Getting All Loans 
+			//Getting All Loans
 			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
@@ -7977,8 +7976,6 @@ public class ScoringServiceImpl implements ScoringService {
 
 	@Override
 	public ResponseEntity<LoansResponse> calculateRetailAutoLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
-
-
         RetailApplicantDetail retailApplicantDetail = null;
         Boolean isItrMannualFilled = false;
         Long applicationId = null;
@@ -8117,7 +8114,7 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 
 			//Getting All Loans
-			financialArrangementsDetailList = financialArrangementDetailsRepository.listAllSecurityCorporateDetailByAppId(applicationId);
+			financialArrangementsDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
 			incomeOfItrOf3Years = loanRepository.getIncomeOfItrOf3Years(applicationId);
 			coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId);
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
@@ -8207,6 +8204,16 @@ public class ScoringServiceImpl implements ScoringService {
           // ENDS HERE CONCESSION BASED ON RATE OF INTEREST:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
+                scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null ? primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue() : 0.0d);
+                scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null ? primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue() : 0.0d);
+                scoreParameterRetailRequest.setAgreedIDV(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null ? primaryAutoLoanDetail.getVehicleAgreedPurchasePrice().doubleValue() : 0.0d);
+                if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+                	scoreParameterRetailRequest.setVechileType(VehicleType.NEW.getId());
+                	scoreParameterRetailRequest.setVechileAge(-1.0d);
+                }else if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+                	scoreParameterRetailRequest.setVechileType(VehicleType.SECOND_HAND.getId());
+                	scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge() != null ? primaryAutoLoanDetail.getVehicleAge().doubleValue() : null);
+                }
                 logger.info("scoringRequestLoans.getFoir()=>{}==For ApplicationId====>{}==>For FpProductId===>{}",scoringRequestLoans.getFoir(),applicationId,fpProductId);
                 scoreParameterRetailRequest.setFoir(scoringRequestLoans.getFoir());
                 scoringRequest.setLoanPurposeModelId(scoringRequestLoans.getLoanPurposeModelId());
@@ -8569,12 +8576,10 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setRepaymentPeriod(retailApplicantDetail.getRepaymentMode());
         					scoreParameterRetailRequest.setIsRepaymentPeriod_p(retailApplicantDetail.getRepaymentMode() != null);
             				break;
-            			case ScoreParameter.Retail.AutoLoan.AGE_VEHICLE:
-	            				if(primaryAutoLoanDetail.getVehicleAge() != null) {
-	            					scoreParameterRetailRequest.setIsVehicleAge_p(true);
-	            					scoreParameterRetailRequest.setVechileAge(primaryAutoLoanDetail.getVehicleAge().doubleValue());
-	            				}
-            				break;
+            			case ScoreParameter.Retail.AutoLoan.AGE_OF_VEHICLE:
+            					//Value is already set above
+            					scoreParameterRetailRequest.setIsVehicleAge_p(true);
+	        				break;
             			case ScoreParameter.Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH:
             				Double value = 0.0d;
             				for(Data bankStatementData : bankStatementDatas) {
@@ -8632,19 +8637,35 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.AutoLoan.LTV:
-            				if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
-                				try {
-									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
-										scoreParameterRetailRequest.setLtv(scoringRequestLoans.getElAmountOnAverageScoring());
-										scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue());
-										scoreParameterRetailRequest.setIsLTV_p(true);
-									}else {
-										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
-									}
-    							} catch (Exception e1) {
-    								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
-    							}
-            				}
+            				if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
+                    				try {
+    									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
+    										scoreParameterRetailRequest.setLtv(scoringRequestLoans.getElAmountOnAverageScoring());
+    										scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue());
+    										scoreParameterRetailRequest.setIsLTV_p(true);
+    									}else {
+    										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
+    									}
+        							} catch (Exception e1) {
+        								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
+        							}
+                				}
+                            }else if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+                            	if(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null) {
+                    				try {
+    									if(scoringRequestLoans.getElAmountOnAverageScoring() != null) {
+    										scoreParameterRetailRequest.setLtv(scoringRequestLoans.getElAmountOnAverageScoring());
+    										scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice().doubleValue());
+    										scoreParameterRetailRequest.setIsLTV_p(true);
+    									}else {
+    										logger.warn("Eligible Loan Amount Based on Income is not Set in LTV==== > {}",scoringRequestLoans.getElAmountOnAverageScoring());
+    									}
+        							} catch (Exception e1) {
+        								logger.error("Error while getting Eligibility Based On Income == >{}",e1);
+        							}
+                				}
+                            }
             				break;
             			case ScoreParameter.Retail.AutoLoan.APPLICANT_NW_TO_LOAN_AMOUNT:
             				if(retailApplicantDetail.getNetworth() != null) {
@@ -8661,34 +8682,10 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.LOAN_PURPOSE:
-            				if(retailApplicantDetail.getLoanPurpose() != null) {
-            					if(AutoPurposeofLoan.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_LUXURY_CAR.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(5);
-            						}else if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_SUV_MUV.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(6);
-            						}else if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_MID_CAR.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(4);
-            						}else if(AutoDetailPurposeofLoan.FOUR_WHEELER_LOAN_FOR_SMALL_CAR.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(3);
-            						}else if(AutoDetailPurposeofLoan.ELECTRIC_NON_CONVENTIONAL_CAR_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(7);
-            						}
-            					}else if(AutoPurposeofLoan.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						if(AutoDetailPurposeofLoan.TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(8);
-            						}else if(AutoDetailPurposeofLoan.ELECTRIC_NON_CONVENTIONAL_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurposeQueType())) {
-            							scoreParameterRetailRequest.setLoanPurpose(9);
-            						}
-            					}else if(AutoPurposeofLoan.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						scoreParameterRetailRequest.setLoanPurpose(11);
-            					}else if(AutoPurposeofLoan.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						scoreParameterRetailRequest.setLoanPurpose(10);
-            					}
-            					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
+            					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurposeQueType());
+            					scoreParameterRetailRequest.setIsLoanPurpose_p(retailApplicantDetail.getLoanPurposeQueType() != null);
             					scoreParameterRetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
             					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
-            				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.INCOME_PROOF:
 	            				if(isItrMannualFilled == null || !isItrMannualFilled) {
@@ -8718,15 +8715,30 @@ public class ScoringServiceImpl implements ScoringService {
         					scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
             				break;
             			case ScoreParameter.Retail.AutoLoan.BORROWER_MARGIN:
-            				scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution() != null  ? retailApplicantDetail.getBorrowerContribution().doubleValue() : null);
-            				scoreParameterRetailRequest.setIsBorrowerMargin_p(retailApplicantDetail.getBorrowerContribution() != null);
+            				if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(retailApplicantDetail.getBorrowerContribution() != null && primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null) {
+                					scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution().doubleValue() / primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue() * 100);
+                					scoreParameterRetailRequest.setIsBorrowerMargin_p(true);
+                				}
+                            }else if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+                            	if(retailApplicantDetail.getBorrowerContribution() != null && primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null) {
+                					scoreParameterRetailRequest.setBorrowerMargin(retailApplicantDetail.getBorrowerContribution().doubleValue() / primaryAutoLoanDetail.getVehicleAgreedPurchasePrice().doubleValue() * 100);
+                					scoreParameterRetailRequest.setIsBorrowerMargin_p(true);
+                				}
+                            }
             				break;
             			case ScoreParameter.Retail.AutoLoan.SECURITY_COVERAGE:
-            				if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
-            					scoreParameterRetailRequest.setSecurityCoverage(primaryAutoLoanDetail.getVehicleOnRoadPrice() / scoringRequestLoans.getElAmountOnAverageScoring());
-                				scoreParameterRetailRequest.setIsSecurityCoverage_p(true);
-            				}
-
+            				if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null) {
+                					scoreParameterRetailRequest.setSecurityCoverage((primaryAutoLoanDetail.getVehicleOnRoadPrice() / scoringRequestLoans.getElAmountOnAverageScoring()) * 100);
+                    				scoreParameterRetailRequest.setIsSecurityCoverage_p(true);
+                				}            					
+                            }else if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+                            	if(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null) {
+                					scoreParameterRetailRequest.setSecurityCoverage((primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() / scoringRequestLoans.getElAmountOnAverageScoring()) * 100);
+                    				scoreParameterRetailRequest.setIsSecurityCoverage_p(true);
+                				}
+                            }
             				break;
             			case ScoreParameter.Retail.AutoLoan.CAR_SEGMENT:
             				scoreParameterRetailRequest.setCarSegment(primaryAutoLoanDetail.getVehicleSegment());

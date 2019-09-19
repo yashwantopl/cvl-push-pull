@@ -150,6 +150,9 @@ public class CommonUtils {
 
 	public static final String CREDIT_CARD = "Credit Card";
 
+	public static final Integer	NBFC_FLOW = 1;
+	public static final Integer	NBFC_BANK_FLOW = 2;
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class PaymentStatus {
@@ -188,6 +191,8 @@ public class CommonUtils {
 		public static final Long ADMIN_MAKER = 10l;
 		public static final Long ADMIN_CHECKER = 11l;
 		public static final Long SMECC = 12l;
+		public static final Long ZO = 14l;
+		public static final Long RO = 13l;
 	}
 
 	public static final class DenominationInAmount {

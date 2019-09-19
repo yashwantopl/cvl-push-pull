@@ -48,12 +48,14 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	private String pgbpString;
 	private String capitalGainString;
 	private String otherSourceString;
+	private String netTotal;
 	
 	private String salaryIncomeGrossString;
 	private String housePropertyGrossString;
 	private String pgbpGrossString;
 	private String capitalGainGrossString;
 	private String otherSourceGrossString;
+	private String grossTotal;
 	
 	private String formType;
 	
@@ -68,6 +70,18 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	}
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
+	}
+	public String getNetTotal() {
+		return netTotal;
+	}
+	public void setNetTotal(String netTotal) {
+		this.netTotal = netTotal;
+	}
+	public String getGrossTotal() {
+		return grossTotal;
+	}
+	public void setGrossTotal(String grossTotal) {
+		this.grossTotal = grossTotal;
 	}
 	public Integer getYear() {
 		return year;

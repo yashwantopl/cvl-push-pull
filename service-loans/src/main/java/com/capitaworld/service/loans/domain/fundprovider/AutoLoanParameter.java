@@ -240,20 +240,9 @@ public class AutoLoanParameter extends ProductMaster implements Serializable {
 	@Column(name = "is_nmtlr_mandatory")
 	private Boolean isNmtlrMandatory = false;
 	
-	// DSCR (only for proprietorship/partnership firms, corporate entities etc. except HUF.)
-	
-	@Column(name = "min_dscr")
-	private Double minDscr;
-	@Column(name = "max_dscr")
-	private Double maxDscr;
-	@Column(name = "is_dscr_display")
-	private Boolean isDscrDisplay = false;
-	@Column(name = "is_dscr_mandatory")
-	private Boolean isDscrMandatory = false;
-	
-	
 //	EMI/ MI (Net or Gross)
-	
+	@Column(name = "nmi_mi_income_type")
+	private Integer nmiMiIncomeType;
 	@Column(name = "min_emi_mi")
 	private Double minEmiMi;
 	@Column(name = "max_emi_mi")
@@ -324,6 +313,9 @@ public class AutoLoanParameter extends ProductMaster implements Serializable {
 	
 	@Column(name = "is_ex_showroom_price")
 	private Boolean isExShowroomPrice;
+	
+	@Column(name = "is_agreed_purchase_price")
+	private Boolean isAgreedPurchasePrice;
 	
 	@Column(name = "ltv_for_eligibility")
 	private Integer ltvForEligibility;
@@ -1171,37 +1163,19 @@ public class AutoLoanParameter extends ProductMaster implements Serializable {
 		this.isVehicleAgeMandatory = isVehicleAgeMandatory;
 	}
 
-	public Double getMinDscr() {
-		return minDscr;
+	public Boolean getIsAgreedPurchasePrice() {
+		return isAgreedPurchasePrice;
 	}
 
-	public void setMinDscr(Double minDscr) {
-		this.minDscr = minDscr;
+	public void setIsAgreedPurchasePrice(Boolean isAgreedPurchasePrice) {
+		this.isAgreedPurchasePrice = isAgreedPurchasePrice;
 	}
 
-	public Double getMaxDscr() {
-		return maxDscr;
+	public Integer getNmiMiIncomeType() {
+		return nmiMiIncomeType;
 	}
 
-	public void setMaxDscr(Double maxDscr) {
-		this.maxDscr = maxDscr;
+	public void setNmiMiIncomeType(Integer nmiMiIncomeType) {
+		this.nmiMiIncomeType = nmiMiIncomeType;
 	}
-
-	public Boolean getIsDscrDisplay() {
-		return isDscrDisplay;
-	}
-
-	public void setIsDscrDisplay(Boolean isDscrDisplay) {
-		this.isDscrDisplay = isDscrDisplay;
-	}
-
-	public Boolean getIsDscrMandatory() {
-		return isDscrMandatory;
-	}
-
-	public void setIsDscrMandatory(Boolean isDscrMandatory) {
-		this.isDscrMandatory = isDscrMandatory;
-	}
-	
-	
 }

@@ -84,6 +84,12 @@ public class ProposalDetails implements Serializable {
     @Column(name="branch_id")
     private Long branchId;
 
+    @Column(name="existing_loan_amount")
+    private Double existingLoanAmount;
+
+    @Column(name="additional_loan_amount")
+    private Double additionalLoanAmount;
+
     @Column(name="el_amount")
     private Double elAmount;
 
@@ -113,7 +119,10 @@ public class ProposalDetails implements Serializable {
 
 	@Column(name="reason")
 	private String reason;
-    
+
+    @Column(name="nbfc_flow")
+    private Integer nbfcFlow;
+
     public Double getEmi() {
         return emi;
     }
@@ -356,4 +365,29 @@ public class ProposalDetails implements Serializable {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
+
+    public Integer getNbfcFlow() {
+        return nbfcFlow;
+    }
+
+    public void setNbfcFlow(Integer nbfcFlow) {
+        this.nbfcFlow = nbfcFlow;
+    }
+
+    public Double getExistingLoanAmount() {
+        return existingLoanAmount;
+    }
+
+    public void setExistingLoanAmount(Double existingLoanAmount) {
+        this.existingLoanAmount = existingLoanAmount;
+    }
+
+    public Double getAdditionalLoanAmount() {
+        return additionalLoanAmount;
+    }
+
+    public void setAdditionalLoanAmount(Double additionalLoanAmount) {
+        this.additionalLoanAmount = additionalLoanAmount;
+    }
+
 }

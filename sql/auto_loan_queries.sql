@@ -1,4 +1,4 @@
-
+ 
 CREATE TABLE `loan_application`.`fp_auto_loan_details` (
   `fp_product_id` BIGINT(20) UNSIGNED NOT NULL,
   `currency` INT(2) DEFAULT NULL,    
@@ -293,11 +293,12 @@ INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`,
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(199,'INCOME_TO_INSTALLMENT_RATIO_AL','1','2019-05-25 18:16:56',NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(200,'AVG_EOD_BALANCE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(201,'CAR_SEGMENT_AL','2',NOW(),NULL,NULL,NULL,TRUE,NULL);
-INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(202,',SECURITY_COVERAGE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(202,'SECURITY_COVERAGE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(203,'TAKE_HOME_PAY_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);	
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(204,'BORROWER_MARGIN_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);	
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(205,'AGE_OF_VEHICLE_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(206,'REPAYMENT_PERIOD_AL','2',NOW(),NULL,NULL,NULL,TRUE,NULL);
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(207,'AGE_OF_VEHICLE_TWO_AL','1',NOW(),NULL,NULL,NULL,TRUE,NULL);
 
 
 insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) values(NULL,'2019-04-22 11:38:39',TRUE,NULL,NULL,NULL,'165','8','3',TRUE,NULL);
@@ -342,8 +343,15 @@ insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_a
 insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) values(NULL,NOW(),TRUE,NULL,NULL,NULL,'204','8','3',FALSE,NULL);
 insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) values(NULL,NOW(),TRUE,NULL,NULL,NULL,'205','8','3',FALSE,NULL);
 insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) values(NULL,NOW(),TRUE,NULL,NULL,NULL,'206','8','3',FALSE,NULL);
+insert into `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) values(NULL,NOW(),TRUE,NULL,NULL,NULL,'207','8','3',FALSE,NULL);
 
 
 
 
 ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `borrower_contribution` BIGINT(20) NULL;
+
+alter table loan_application.fp_auto_loan_details add column is_agreed_purchase_price bit(2) default false;
+alter table loan_application.fp_auto_loan_details_temp add column is_agreed_purchase_price bit(2) default false;
+
+alter table loan_application.fp_auto_loan_details add column nmi_mi_income_type int(2) default null;
+alter table loan_application.fp_auto_loan_details_temp add column nmi_mi_income_type int(2) default null;

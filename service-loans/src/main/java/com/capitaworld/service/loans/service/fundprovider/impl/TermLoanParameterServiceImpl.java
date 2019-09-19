@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +23,8 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
+import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
@@ -36,14 +36,17 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMapping;
 import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NTBParameter;
+import com.capitaworld.service.loans.domain.fundprovider.NbfcRatioMapping;
+import com.capitaworld.service.loans.domain.fundprovider.NbfcRatioMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
-import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -54,6 +57,8 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRe
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LoanArrangementMappingTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NtbParameterRepository;
@@ -62,6 +67,8 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -143,6 +150,18 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Autowired
 	private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
+	
+	@Autowired
+	private CoLendingRatioRepository coLendingRatioRepository;
+	
+	@Autowired
+	private NbfcRatioMappingTempRepository nbfcRatioMappingTempRepository; 
+	
+	@Autowired
+	private NbfcRatioMappingRepository nbfcRatioMappingRepository;
+	
+	@Autowired
+	private CoLendingService coLendingService; 
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
@@ -213,7 +232,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		fpGstTypeMappingRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
 		saveLoanGstType(termLoanParameterRequest);
 
-		// Ravina
+		//save nbfc ratio mapping
+		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
+		saveNbfcRatioMapping(termLoanParameterRequest);
+		
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, termLoanParameter2.getId());
 		logger.info(UPDATED_MSG, isUpdate);
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
@@ -222,7 +244,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	}
 
 	@Override
-	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
+	public TermLoanParameterRequest getTermLoanParameterRequest(Long id, Long role) {
 		CommonDocumentUtils.startHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameter loanParameter = termLoanParameterRepository.getById(id);
@@ -342,12 +364,52 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
+		
+		List<DataRequest>  ratioMasterList;
+		List<CoLendingRatio> listAllActiveByOrgkId;
+		if(!CommonUtils.isObjectNullOrEmpty(role))
+		{
+		if(role.equals(WorkflowUtils.Role.NBFC_CHECKER) || role.equals(WorkflowUtils.Role.NBFC_MAKER))
+		{
+			listAllActiveByOrgkId =coLendingRatioRepository.listAllActiveProposalByOrgId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+			
+		}
+		else
+		{
+			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+		}
+		//List<FpCoLendingBanks> bankList = coLendingService.getBankList();
+		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
+		{
+			DataRequest dataRequest=new DataRequest();
+			dataRequest.setId(coLendingRatio.getId());
+			dataRequest.setValue(coLendingRatio.getName());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
+			ratioMasterList.add(dataRequest);
+			//create text for ratio
+			
+			
+					
+			
+			
+		}
+		
+		termLoanParameterRequest.setNbfcRatioMasterList(ratioMasterList);
+		}
+		
+		
+		
 		termLoanParameterRequest.setMsmeFundingIds(
 				msmeValueMappingService.getDataListFromFpProductId(2, id, termLoanParameterRequest.getUserId()));
 		termLoanParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 
 		termLoanParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		
 		CommonDocumentUtils.endHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		return termLoanParameterRequest;
@@ -606,6 +668,37 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequestTemp");
 
 		termLoanParameterRequest.setJobId(loanParameter.getJobId());
+		List<DataRequest>  ratioMasterList;
+		List<CoLendingRatio> listAllActiveByOrgkId;
+		//add nbfc ratio list
+		if(!CommonUtils.isObjectNullOrEmpty(role))
+		{
+		if(role.equals(WorkflowUtils.Role.NBFC_CHECKER) || role.equals(WorkflowUtils.Role.NBFC_MAKER))
+		{
+			listAllActiveByOrgkId =coLendingRatioRepository.listAllActiveProposalByOrgId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+			
+		}
+		else
+		{
+			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+		}
+		
+		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
+		{
+			DataRequest dataRequest=new DataRequest();
+			dataRequest.setId(coLendingRatio.getId());
+			dataRequest.setValue(coLendingRatio.getName());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
+			ratioMasterList.add(dataRequest);
+		}
+		
+		termLoanParameterRequest.setNbfcRatioMasterList(ratioMasterList);
+		}
+		
 
 		// set workflow buttons
 
@@ -632,11 +725,12 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		} else {
 			logger.info("you set jobId or list of roleId NULL for calling workflow");
 		}
-
+		
 		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1, id, userId));
 		termLoanParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		termLoanParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingTempRepository.getTempIdsByFpProductId(termLoanParameterRequest.getId()));
 		logger.info("end getTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
@@ -718,12 +812,16 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
+		
+		
 
 		// loan arrangements
 		loanArrangementMappingTempRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
 		saveLoanArrangementsTemp(termLoanParameterRequest);
 		
-		
+		//save nbfc ratio mapping
+		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(termLoanParameter.getId());
+		saveNbfcRatioMappingTemp(termLoanParameterRequest);
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(
 				termLoanParameterRequest.getMsmeFundingIds(), termLoanParameterRequest.getId(),
@@ -966,9 +1064,38 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG, e);
 			}
 		}
+		List<DataRequest>  ratioMasterList;
+		List<CoLendingRatio> listAllActiveByOrgkId;
+		if(!CommonUtils.isObjectNullOrEmpty(role))
+		{
+		if(role.equals(WorkflowUtils.Role.NBFC_CHECKER) || role.equals(WorkflowUtils.Role.NBFC_MAKER))
+		{
+			listAllActiveByOrgkId =coLendingRatioRepository.listAllActiveProposalByOrgId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+			
+		}
+		else
+		{
+			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+		}
+		
+		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
+		{
+			DataRequest dataRequest=new DataRequest();
+			dataRequest.setId(coLendingRatio.getId());
+			dataRequest.setValue(coLendingRatio.getName());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
+			ratioMasterList.add(dataRequest);
+		}
+		
+		termLoanParameterRequest.setNbfcRatioMasterList(ratioMasterList);
 		CommonDocumentUtils.endHook(logger, "getNtbTermLoanParameterRequestTemp");
 
 		termLoanParameterRequest.setJobId(loanParameter.getJobId());
+		}
 
 		// set workflow buttons
 
@@ -998,6 +1125,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1, id, userId));
 		termLoanParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingTempRepository.getTempIdsByFpProductId(termLoanParameterRequest.getId()));
 		logger.info("end getNtbTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
@@ -1078,7 +1206,12 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
-
+		
+		//save nbfc ratio mapping
+		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(termLoanParameter.getId());
+		saveNbfcRatioMappingTemp(termLoanParameterRequest);
+		
+		
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(
 				termLoanParameterRequest.getMsmeFundingIds(), termLoanParameterRequest.getId(),
 				termLoanParameterRequest.getUserId());
@@ -1086,6 +1219,44 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
+	}
+
+	private void saveNbfcRatioMappingTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNbfcRatioMappingTemp");
+		NbfcRatioMappingTemp nbfc= null;
+		for (Long dataRequest : termLoanParameterRequest.getNbfcRatioIds()) {
+			nbfc = new NbfcRatioMappingTemp();
+			nbfc.setFpProductId(termLoanParameterRequest.getId());
+			nbfc.setRatioId(dataRequest);
+			
+			nbfc.setCreatedDate(new Date());
+			nbfc.setModifiedDate(new Date());
+			nbfc.setIsActive(true);
+			// create by and update
+			nbfcRatioMappingTempRepository.save(nbfc);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNbfcRatioMappingTemp");
+		
+	}
+	
+	private void saveNbfcRatioMapping(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNbfcRatioMapping");
+		NbfcRatioMapping nbfc= null;
+		for (Long dataRequest : termLoanParameterRequest.getNbfcRatioIds()) {
+			nbfc = new NbfcRatioMapping();
+			nbfc.setFpProductId(termLoanParameterRequest.getId());
+			nbfc.setRatioId(dataRequest);
+			
+			nbfc.setCreatedDate(new Date());
+			nbfc.setModifiedDate(new Date());
+			nbfc.setIsActive(true);
+			// create by and update
+			nbfcRatioMappingRepository.save(nbfc);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNbfcRatioMapping");
+		
 	}
 
 	@Override
@@ -1163,8 +1334,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
 		saveNegativeIndustry(termLoanParameterRequest);
+		
+		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
+		saveNbfcRatioMapping(termLoanParameterRequest);
 
-		// Ravina
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, ntbParameter.getId());
 		logger.info(UPDATED_MSG, isUpdate);
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
@@ -1172,7 +1345,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	}
 
 	@Override
-	public TermLoanParameterRequest getNtbTermLoanParameterRequest(Long id) {
+	public TermLoanParameterRequest getNtbTermLoanParameterRequest(Long id, Long role) {
 
 		CommonDocumentUtils.startHook(logger, "getNtbTermLoanParameterRequest");
 
@@ -1294,9 +1467,39 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
+		List<DataRequest>  ratioMasterList;
+		List<CoLendingRatio> listAllActiveByOrgkId;
+		if(!CommonUtils.isObjectNullOrEmpty(role))
+		{
+		if(role.equals(WorkflowUtils.Role.NBFC_CHECKER) || role.equals(WorkflowUtils.Role.NBFC_MAKER))
+		{
+			listAllActiveByOrgkId =coLendingRatioRepository.listAllActiveProposalByOrgId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+			
+		}
+		else
+		{
+			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
+			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
+		}
+		
+		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
+		{
+			DataRequest dataRequest=new DataRequest();
+			dataRequest.setId(coLendingRatio.getId());
+			dataRequest.setValue(coLendingRatio.getName());
+			dataRequest.setTenure(coLendingRatio.getTenure());
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			dataRequest.setLabel(label);
+			ratioMasterList.add(dataRequest);
+		}
+		
+		termLoanParameterRequest.setNbfcRatioMasterList(ratioMasterList);
+		}
 		termLoanParameterRequest.setMsmeFundingIds(
 				msmeValueMappingService.getDataListFromFpProductId(2, id, termLoanParameterRequest.getUserId()));
 		termLoanParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getNtbTermLoanParameterRequest");
 		return termLoanParameterRequest;
 	}

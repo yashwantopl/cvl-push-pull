@@ -34,6 +34,7 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isLtv;
 	private Boolean isOnRoadPrice;
 	private Boolean isExShowroomPrice;
+	private Boolean isAgreedPurchasePrice;
 	private Integer ltvForEligibility;
 
 	// private Double currency;
@@ -74,6 +75,7 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 	private Boolean isRiskScoreRetailCoAppDisplay = false;
 	private Boolean isRiskScoreRetailCoAppMandatory = false;
 	
+	private Integer nmiMiIncomeType;
 	private Double minEmiMi;
 	private Double maxEmiMi;
 	private Boolean isEmiMiDisplay = false;
@@ -815,5 +817,20 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 	public void setIsDscrMandatory(Boolean isDscrMandatory) {
 		this.isDscrMandatory = isDscrMandatory;
 	}
-	
+
+	public Boolean getIsAgreedPurchasePrice() {
+		return isAgreedPurchasePrice;
+	}
+
+	public void setIsAgreedPurchasePrice(Boolean isAgreedPurchasePrice) {
+		this.isAgreedPurchasePrice = isAgreedPurchasePrice;
+	}
+
+	public Integer getNmiMiIncomeType() {
+		return nmiMiIncomeType;
+	}
+
+	public void setNmiMiIncomeType(Integer nmiMiIncomeType) {
+		this.nmiMiIncomeType = nmiMiIncomeType;
+	}
 }

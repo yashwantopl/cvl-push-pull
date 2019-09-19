@@ -946,12 +946,19 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
             applicantRequest.setCreditCardsDetailRequestList(creditCardsDetailRequestList);
 
+        	LocalDate today = LocalDate.now();
             List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
             List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
             BankRelationshipRequest bankRelationshipRequest = null;
             for(BankingRelation bankingRelation : bankingRelations) {
             	bankRelationshipRequest = new BankRelationshipRequest();
             	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	if (bankingRelation.getSinceYear() != null && bankingRelation.getSinceMonth() != null) {
+					LocalDate since = LocalDate.of(bankingRelation.getSinceYear(), bankingRelation.getSinceMonth(),1);
+					Period age = Period.between(since, today);
+					bankRelationshipRequest.setSinceYear(age.getYears());
+					bankRelationshipRequest.setSinceMonth(age.getMonths());
+				}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
             applicantRequest.setBankingRelationshipList(bankRelationshipRequests);

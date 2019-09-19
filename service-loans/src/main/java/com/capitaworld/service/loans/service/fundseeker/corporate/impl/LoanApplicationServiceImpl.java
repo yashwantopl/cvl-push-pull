@@ -1675,8 +1675,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setLastAccessApplicantId(applicationId);
 			usersRequest.setId(userId);
-			UsersClient client = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
-			return client.setLastAccessApplicant(usersRequest);
+			return userClient.setLastAccessApplicant(usersRequest);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
