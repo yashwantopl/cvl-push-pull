@@ -272,6 +272,7 @@ public class LoansClient {
     private static final String GET_PRIMARY_DETAILS_CAM = "/cam/getPrimaryDataInByteArray";
     private static final String GET_PL_PRIMARY_DETAILS_CAM = "/cam/pl/getPlPrimaryDataInByteArray";
     private static final String GET_HL_PRIMARY_DETAILS_CAM = "/cam/getHlPrimaryDataInByteArray";
+    private static final String GET_AL_PRIMARY_DETAILS_CAM = "/cam/getALPrimaryDataInByteArray";
 
     private static final String REQ_AUTH = "req_auth";
     private static final String GET_LOAN_APPLICATION_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
@@ -2761,7 +2762,24 @@ public class LoansClient {
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
-			logger.error("Exception in getPLCamReportPrimaryData : ",e);
+			logger.error("Exception in getHLCamReportPrimaryData : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	/**
+	 * Client for AL cam report primary data uses in gateway
+	 * */
+	public LoansResponse getALCamReportPrimaryData(Long applicationId,Long fpProductId, Long proposalId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_AL_PRIMARY_DETAILS_CAM+"/"+ applicationId+"/" +fpProductId + "/" +proposalId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getALCamReportPrimaryData : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
@@ -2957,8 +2975,8 @@ public class LoansClient {
 	 * @throws LoansException
 	 */
 	public LoansResponse saveBankRelation(BankRelationshipRequest relationReq , Long applicationId, Long userId) throws LoansException {
-		String url = loansBaseUrl.concat(SAVE_BANK_RELATION) + "/" + applicationId + "?userId=" + userId;
-		logger.info("saveBankRelation url-------------->>", url);
+		String url = loansBaseUrl.concat(SAVE_BANK_RELATION) + applicationId + "?userId=" + userId;
+		logger.info("save Bank Relation url-------------->> [{}]", url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2966,6 +2984,7 @@ public class LoansClient {
 			HttpEntity<BankRelationshipRequest> entity = new HttpEntity<BankRelationshipRequest>(relationReq, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
+			logger.error("Exception in saveBankRelation : ",e);
 			throw new LoansException();
 		}
 	}

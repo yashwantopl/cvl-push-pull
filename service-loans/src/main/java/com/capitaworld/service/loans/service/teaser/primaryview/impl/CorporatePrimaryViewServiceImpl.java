@@ -82,6 +82,7 @@ import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AssessedForITMst;
 import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
@@ -1134,7 +1135,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			logger.info("mca comp id==>>{}" , companyId);
-
+			VerifyAPIRequest verifyReq=new VerifyAPIRequest();
+			verifyReq.setApplicationId(toApplicationId);
+			McaResponse directorData = mcaClient.getVerifyApiData(verifyReq);
+			if(directorData!= null) {
+				corporatePrimaryViewResponse.setVerifyApiData(directorData.getData());
+			}
 			if (companyId != null) {
 				corporatePrimaryViewResponse.setMcaNotApplicable(Boolean.FALSE);
 				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
@@ -1378,13 +1384,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
-		if(gstCompRelFlag) {
+		/*if(gstCompRelFlag) {
 			LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 			corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 				
 			Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
 			corporatePrimaryViewResponse.setGstRelatedParty(gstRelatedPartyDetails);
-		}
+		}*/
 		return corporatePrimaryViewResponse;
 	}
 
