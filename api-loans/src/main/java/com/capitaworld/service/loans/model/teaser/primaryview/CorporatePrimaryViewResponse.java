@@ -151,6 +151,7 @@ public class CorporatePrimaryViewResponse {
     private String eligibilityFinancialYear;
     private Double loanObligation;
     private String cibilCmrScore;
+    private Object verifyApiData;
     
     private String productServiceDesc;
     private String msmeRankTitle;
@@ -1312,6 +1313,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setGstRelatedParty(Map<String, Object> gstRelatedParty) {
 		this.gstRelatedParty = gstRelatedParty;
+	}
+	public Object getVerifyApiData() {
+		return verifyApiData;
+	}
+	public void setVerifyApiData(Object verifyApiData) {
+		this.verifyApiData = verifyApiData;
 	}
     
 }

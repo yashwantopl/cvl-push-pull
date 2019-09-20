@@ -16,6 +16,9 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.*;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.exception.McaException;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -74,6 +77,10 @@ public class AsyncComponent {
 
 	@Autowired
 	private OneFormClient oneFormClient;
+	
+	@Autowired 
+	private McaClient mcaClient;
+	
 
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 	private static final String PARAMETERS_TOTAL_MATCHES = "total_matches";
@@ -573,6 +580,30 @@ public class AsyncComponent {
 		req.setDomainId(domainId);
 		notificationClient.send(req);
 
+	}
+	
+	/**
+	 * @author nilay.darji
+	 * @param req
+	 * @throws McaException
+	 * 
+	 */
+	private void callVerifyApiAsync(VerifyAPIRequest req) throws McaException {
+		if(req != null) {
+			logger.info("verify api async call ==>>"+req.getApplicationId());
+			mcaClient.requestVerifyApi(req);
+		}
+	}
+	@Async
+	public void callVerify(VerifyAPIRequest req){
+		if(req!= null) {
+				try {
+					callVerifyApiAsync(req);
+				} catch (McaException e) {
+					logger.info("Error While call Verify Api"+e); 
+				}	
+		}
+		
 	}
 
 	private UsersRequest getEmailMobile(Long userId) throws IOException {

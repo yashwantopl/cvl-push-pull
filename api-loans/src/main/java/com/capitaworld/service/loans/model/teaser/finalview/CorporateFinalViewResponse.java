@@ -243,6 +243,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private String comercialPanNo;
     private String productServiceDesc;
     private String msmeRankTitle;
+    private Object verifyApiData;
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
 
 	public List<?> getMatchesList() {
@@ -2268,6 +2269,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setIsCampaignUser(Boolean isCampaignUser) {
 		this.isCampaignUser = isCampaignUser;
+	}
+
+	public Object getVerifyApiData() {
+		return verifyApiData;
+	}
+
+	public void setVerifyApiData(Object verifyApiData) {
+		this.verifyApiData = verifyApiData;
 	}
 
 
