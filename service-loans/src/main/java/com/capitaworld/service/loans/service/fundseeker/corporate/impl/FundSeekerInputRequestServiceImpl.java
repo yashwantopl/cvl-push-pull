@@ -41,6 +41,7 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.GstRelatedParty;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -78,6 +79,11 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInpu
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPAN;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPANRequest;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIPara;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -143,6 +149,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private DMSClient dMSClient;
+	
+	@Autowired
+	private McaClient mcaClient;
+	
+	@Autowired
+	private AsyncComponent asyncComp;
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
@@ -336,11 +348,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			// ==== Director details
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
+			VerifyAPIRequest verifyApiReq =new VerifyAPIRequest();
+			verifyApiReq.setApplicationId(fundSeekerInputRequest.getApplicationId());
+			verifyApiReq.setVerifyAPIDINPANRequest(new VerifyAPIDINPANRequest());
+			verifyApiReq.getVerifyAPIDINPANRequest().setPara(new VerifyAPIPara());
+			verifyApiReq.getVerifyAPIDINPANRequest().getPara().setVerifyAPIDINPANs(new ArrayList<>());
 			Date dobOfProprietor = null;
 			
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 					DirectorBackgroundDetail saveDirObj = null;
+					verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(reqObj.getDirectorsName(), reqObj.getPanNo()));
 					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 						saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
@@ -380,6 +398,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					dobOfProprietor = reqObj.getDob();
 					directorBackgroundDetailsRepository.save(saveDirObj);
 				}
+				//call place for verify api async
+				asyncComp.callVerify(verifyApiReq);
 			} catch (Exception e) {
 				logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 			}
@@ -653,9 +673,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.info("Start invokeFraudAnalytics()");
 			LoansResponse res = new LoansResponse();
 			Boolean isMp = false;
-			
+			/*UserResponse configResponse =null;*/
 			    try {
 			       UserResponse response = userClient.getCampaignCodesByUserId(fundSeekerInputRequestResponse.getUserId());
+			      /* configResponse = userClient.getGeneralConfigByUserId(fundSeekerInputRequestResponse.getUserId());*/
 			       if (CommonUtils.isObjectNullOrEmpty(response) || CommonUtils.isObjectNullOrEmpty(response.getData())) {
 			          logger.info("No Codes Found for UserId===>{}", fundSeekerInputRequestResponse.getUserId());
 			          
@@ -693,8 +714,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				request.setUserId(fundSeekerInputRequestResponse.getUserId());
 				request.setData(hunterRequestDataResponse);
 				request.setIsNtb(isNTB);
+				/*request.setGeneralConfig(configResponse.getData().toString());*/
 				res.setMessage(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY);
 				res.setStatus(HttpStatus.OK.value());
+				
 
 				try {
 					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);

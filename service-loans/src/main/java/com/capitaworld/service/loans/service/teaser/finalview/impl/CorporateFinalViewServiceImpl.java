@@ -103,6 +103,7 @@ import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AbilityRaiseFunds;
 import com.capitaworld.service.oneform.enums.AccountingQuality;
@@ -1724,7 +1725,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			corporateFinalViewResponse.setCompanyId(companyId);
 			logger.info("mca comp id==>>{}" , companyId);
-
+			VerifyAPIRequest verifyReq=new VerifyAPIRequest();
+			verifyReq.setApplicationId(toApplicationId);
+			McaResponse directorData = mcaClient.getVerifyApiData(verifyReq);
+			if(directorData!= null) {
+				corporateFinalViewResponse.setVerifyApiData(directorData.getData());
+			}
 			if (companyId != null) {
 				corporateFinalViewResponse.setMcaNotApplicable(Boolean.FALSE);
 				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
