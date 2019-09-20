@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +104,9 @@ public class LoanApplicationController {
 
 	@Autowired
 	private ApplicationProposalMappingService appPropMappService;
+
+	@Autowired
+	private CoLendingFlowService coLendingFlowService;
 
 	/*@Autowired
 	private GatewayClient gatewayClient;*/
@@ -2223,7 +2227,11 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setData(loanApplicationService.updateProductDetails(loanRequest));
+			Boolean success = loanApplicationService.updateProductDetails(loanRequest);
+			if(success && loanRequest.getIsNbfcFlow() != null && !loanRequest.getIsNbfcFlow()){
+				coLendingFlowService.calculateBlendedRateNbfc(loanRequest.getId());
+			}
+			loansResponse.setData(success);
 			CommonDocumentUtils.endHook(logger, "updateProductDetails");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
