@@ -348,6 +348,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			// ==== Director details
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 			VerifyAPIRequest verifyApiReq =new VerifyAPIRequest();
+			verifyApiReq.setUserId(fundSeekerInputRequest.getUserId());
 			verifyApiReq.setApplicationId(fundSeekerInputRequest.getApplicationId());
 			verifyApiReq.setVerifyAPIDINPANRequest(new VerifyAPIDINPANRequest());
 			verifyApiReq.getVerifyAPIDINPANRequest().setPara(new VerifyAPIPara());
