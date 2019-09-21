@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -42,25 +41,22 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.config.AsyncComponent;
-import com.capitaworld.service.loans.domain.GstRelatedParty;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
+import com.capitaworld.service.loans.model.GeneralConfigData;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -86,7 +82,10 @@ import com.capitaworld.service.mca.model.verifyApi.VerifyAPIPara;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
@@ -665,38 +664,45 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	 * FundSeekerInputRequestService#invokeFraudAnalytics(com.capitaworld.service.
 	 * loans.model.corporate.FundSeekerInputRequestResponse)
 	 */
+	public static UserOrganisationRequest convertJSONToUserOrganisationRequest(String response) {
+		 ObjectMapper mapper = new ObjectMapper();
+		 try {
+			 mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+			 return mapper.readValue(response, UserOrganisationRequest.class);
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 return null;
+		 }
+	 }
+	public static String convertObjectToString(Object value) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(value);
+        } catch (Exception e) {
+            logger.error(CommonUtils.EXCEPTION ,e);
+            return null;
+        }
+    }
 	@Override
-	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-			throws LoansException {
-
+	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws LoansException {
 		try {
 			logger.info("Start invokeFraudAnalytics()");
 			LoansResponse res = new LoansResponse();
-			Boolean isMp = false;
-			/*UserResponse configResponse =null;*/
-			    try {
-			       UserResponse response = userClient.getCampaignCodesByUserId(fundSeekerInputRequestResponse.getUserId());
-			      /* configResponse = userClient.getGeneralConfigByUserId(fundSeekerInputRequestResponse.getUserId());*/
-			       if (CommonUtils.isObjectNullOrEmpty(response) || CommonUtils.isObjectNullOrEmpty(response.getData())) {
-			          logger.info("No Codes Found for UserId===>{}", fundSeekerInputRequestResponse.getUserId());
-			          
-			          isMp = true;
-			        
-			       }
-			       else {
-			    	   List<String> userCampaignDetailsList = (List<String>) response.getData();
-				          if(!CommonUtils.isListNullOrEmpty(userCampaignDetailsList)){
-				        	  isMp = false;
-				          }
-				          else {
-				          
-				          isMp = true;
-				          }
+			/*Boolean isMp = false;*/
+			UserResponse configResponse =null;
+			UserOrganisationRequest convertRes = null;
+			GeneralConfigData jsonData = null; 
+			try {
+			       configResponse = userClient.getGeneralConfigByUserId(fundSeekerInputRequestResponse.getUserId());
+			       if(configResponse!= null && configResponse.getData()!= null) {
+			    	   convertRes= convertJSONToUserOrganisationRequest(convertObjectToString(configResponse.getData()));
+				       jsonData= convertRes != null && convertRes.getGeneralConfig()!= null ? CommonUtils.convertJSONToGeneralConfigDataRespo(convertRes.getGeneralConfig()):null;
 			       }
 			    } catch (Exception e) {
-			       logger.error("Error while Getting Campaign Codes using Users Client : ",e);
+			    	e.printStackTrace();
+			       logger.error("Error while getGeneralConfigByUserId called Users Client : ",e);
 			    }
-			if ("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics"))) && isMp) {
+			if ("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics"))) && jsonData!= null && jsonData.getIsHunterActive()) {
 				Boolean isNTB = false;
 				HunterRequestDataResponse hunterRequestDataResponse = null;
 				if (fundSeekerInputRequestResponse.getBusinessTypeId() != null
@@ -704,21 +710,25 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					isNTB = true;
 					hunterRequestDataResponse = loanApplicationService
 							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
-				} else {
+				}else {
 					hunterRequestDataResponse = loanApplicationService
 							.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
 				}
-
+				/*analaytics req set*/
 				AnalyticsRequest request = new AnalyticsRequest();
 				request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
 				request.setUserId(fundSeekerInputRequestResponse.getUserId());
 				request.setData(hunterRequestDataResponse);
 				request.setIsNtb(isNTB);
-				/*request.setGeneralConfig(configResponse.getData().toString());*/
+				/*set configuartions*/
+				request.setCredentialUserName(jsonData.getUserName());
+				request.setCredentialpassword(jsonData.getPassword());
+				request.setIsHunterOn(jsonData.getIsHunterActive());
+				request.setUrl(jsonData.getUrl());
+				request.setControlBlockMsme(convertRes.getControlBlockMsme());
+				request.setControlBlockNtb(convertRes.getControlBlockNtb());
 				res.setMessage(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY);
 				res.setStatus(HttpStatus.OK.value());
-				
-
 				try {
 					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
 					if (response != null){
@@ -729,22 +739,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					logger.error("End invokeFraudAnalytics() with Error : "+e.getMessage());
 					return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 				}
-			/*	if (response != null && response.getData() != null) {
-					Boolean resp = Boolean.valueOf(response.getData().toString());
-					res.setData(resp);
-					if (resp == false) {
-						res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
-						res.setMessage(CommonUtils.HUNTER_INELIGIBLE_MESSAGE);
-					}
-				} */
-
 				logger.info("End invokeFraudAnalytics() with resp : " + res.getData());
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
-			} else {
+			}else if(jsonData != null && !jsonData.getIsHunterActive()) {
+				logger.info("Hunter is not Activated for userId==>"+fundSeekerInputRequestResponse.getUserId());
+				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
+			}else if(jsonData == null) {
+				logger.info("Hunter Credentials is null for userId==>"+fundSeekerInputRequestResponse.getUserId());
+				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
+			}else {
 				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
 				logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
-
 			}
 		} catch (Exception e) {
 			logger.error("End invokeFraudAnalytics() Error in Fraud Analytics call",e);

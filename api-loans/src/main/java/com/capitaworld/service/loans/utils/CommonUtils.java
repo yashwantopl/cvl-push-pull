@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.GeneralConfigData;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.text.NumberFormat;
 
 public class CommonUtils {
@@ -2309,5 +2311,12 @@ public class CommonUtils {
 		}
 		return date;
 	}
-
+	public static GeneralConfigData convertJSONToGeneralConfigDataRespo(String response) {
+		 ObjectMapper mapper = new ObjectMapper();
+		 try {
+			 return mapper.readValue(response, GeneralConfigData.class);
+		 } catch (Exception e) {
+			 return null;
+		 }
+	 }
 }
