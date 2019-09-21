@@ -8741,8 +8741,17 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.AutoLoan.CAR_SEGMENT:
-            				scoreParameterRetailRequest.setCarSegment(primaryAutoLoanDetail.getVehicleSegment());
-            				scoreParameterRetailRequest.setIsCarSegment_p(primaryAutoLoanDetail.getVehicleSegment() != null);
+            				if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					scoreParameterRetailRequest.setCarSegment(retailApplicantDetail.getLoanPurposeQueType());
+                				scoreParameterRetailRequest.setIsCarSegment_p(retailApplicantDetail.getLoanPurposeQueType() != null);            					
+            				}else {
+            					if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            						scoreParameterRetailRequest.setCarSegment(9); //Static Because No Enum is Avaiable
+            					}else {
+            						scoreParameterRetailRequest.setCarSegment(8); //Static Because No Enum is Avaiable           						
+            					}
+                				scoreParameterRetailRequest.setIsCarSegment_p(true);
+            				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.TAKE_HOME_PAY:
             				scoreParameterRetailRequest.setTakeHomePay(scoringRequestLoans.getNetTakeHomepay());
