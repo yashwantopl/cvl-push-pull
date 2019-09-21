@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
@@ -37,6 +43,10 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportServic
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.DDRMultipart;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 
 @RestController
 @RequestMapping("/cam")
@@ -697,6 +707,45 @@ public class CamReportPdfDetailsController {
 				InputStream inputStream = new ByteArrayInputStream(byteArr); 
 				FileCopyUtils.copy(inputStream, httpServletResponse.getOutputStream());
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, response),HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@Autowired
+	private McaClient mcaClient;
+	
+	@GetMapping(value = "/getVerifyAPIDataReport/{applicationId}" , produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getVerifyAPIDataReport(@PathVariable(value = "applicationId") Long applicationId, HttpServletResponse  httpServletResponse) {
+		logger.info("Into getVerifyAPIDataReport ");
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		}
+		try {
+			Map<String, Object> mapData = new HashMap<>();
+			VerifyAPIRequest verifyAPIRequest = new VerifyAPIRequest();
+			verifyAPIRequest.setApplicationId(applicationId);
+			McaResponse mcaResponse = mcaClient.getVerifyApiData(verifyAPIRequest);
+			
+			mapData.put("verifyApiData", !CommonUtils.isObjectNullOrEmpty(mcaResponse) && !CommonUtils.isObjectNullOrEmpty(mcaResponse.getData()) ? CommonUtils.printFields(mcaResponse.getData() ,null) : null);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(mapData);
+			reportRequest.setTemplate("VERIFYAPIDATA");
+			reportRequest.setType("VERIFYAPIDATA");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+
+			if (byteArr != null && byteArr.length > 0) {
+				httpServletResponse.setContentType("application/octet-stream");
+				httpServletResponse.setHeader("Content-Disposition", String.format("inline; filename=GST\"" + " VerifyApi.pdf" + "\""));
+				httpServletResponse.setContentLength((int) byteArr.length);
+				InputStream inputStream = new ByteArrayInputStream(byteArr); 
+				FileCopyUtils.copy(inputStream, httpServletResponse.getOutputStream());
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, mapData),HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
