@@ -106,11 +106,13 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				}
 				Object[] objects = coLendingFlowRepository.getStageAndStatus(clientResponse.getClientId());
 				if (objects!=null){
-					if ((objects[0].equals("7") || objects[0].equals("9")) && objects[1].equals("3")){
-						clientDetailCoLending.setClientStatus("In-Principle");
-					}else if(objects[0].equals("4") && objects[1].equals("3")){
+					Integer stage = (Integer) objects[0];
+					Integer status = (Integer) objects[1];
+					if ((stage == 7 || stage == 9) && status == 3) {
+						clientDetailCoLending.setClientStatus("Completed");
+					} else if (stage == 4 && status == 3) {
 						clientDetailCoLending.setClientStatus("In-Eligible");
-					}else{
+					} else {
 						clientDetailCoLending.setClientStatus("In-Progress");
 					}
 				}else{
