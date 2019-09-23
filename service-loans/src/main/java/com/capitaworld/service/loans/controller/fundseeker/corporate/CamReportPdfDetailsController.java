@@ -717,6 +717,48 @@ public class CamReportPdfDetailsController {
 	}
 	
 	@Autowired
+	private GstClient gstClient;
+	
+	@GetMapping(value = "/getGstSpecificDataReport/{panNo}/{fpUserId}/{fsUserId}" , produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getGstSpecificDataReport(@PathVariable(value = "panNo") String panNo,
+			@PathVariable(value = "fpUserId") Long fpUserId ,@PathVariable(value = "fsUserId") Long fsUserId, HttpServletResponse  httpServletResponse) {
+		logger.info("Into get Gst Specific Data Report ");
+		if (CommonUtils.isObjectNullOrEmpty(panNo) || CommonUtils.isObjectNullOrEmpty(fpUserId) || CommonUtils.isObjectNullOrEmpty(fsUserId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND , panNo);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		}
+		try {
+			Map<String, Object> mapData = new HashMap<String, Object>();
+			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setPan(panNo);
+			gstr1Request.setFpUserId(fpUserId);
+			gstr1Request.setFsUserId(fsUserId);
+			GstResponse gstResponse = gstClient.gstSpecificDetailCalculation(gstr1Request);
+			mapData.put("gstSpecificData", !CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData()) ? gstResponse.getData() : null);
+			logger.info("Data==>{}" ,mapData);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(mapData);
+			reportRequest.setTemplate("GSTSPECIFICDATA");
+			reportRequest.setType("GSTSPECIFICDATA");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+
+			if (byteArr != null && byteArr.length > 0) {
+				httpServletResponse.setContentType("application/octet-stream");
+				httpServletResponse.setHeader("Content-Disposition", String.format("inline; filename=GST\"" + " GSTSpecificDataReport.pdf" + "\""));
+				httpServletResponse.setContentLength((int) byteArr.length);
+				InputStream inputStream = new ByteArrayInputStream(byteArr); 
+				FileCopyUtils.copy(inputStream, httpServletResponse.getOutputStream());
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, mapData),HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@Autowired
 	private McaClient mcaClient;
 	
 	@GetMapping(value = "/getVerifyAPIDataReport/{applicationId}" , produces = MediaType.APPLICATION_JSON_VALUE)
