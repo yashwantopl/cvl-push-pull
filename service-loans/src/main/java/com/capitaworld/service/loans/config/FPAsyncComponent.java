@@ -2860,6 +2860,11 @@ public class FPAsyncComponent {
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 			}
+			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
+			mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
+			mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+			
 			UsersRequest maker = new UsersRequest();
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())){
 				/** attaching branch user in cc */
@@ -2879,9 +2884,6 @@ public class FPAsyncComponent {
 								ccList.add(resp.getEmail());
 								
 								if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
-									mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-									mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-									mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 									/** sending system notification to Ho,BO user*/
 									sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
 											resp.getUserId().toString(), mailParameters,
@@ -2890,7 +2892,7 @@ public class FPAsyncComponent {
 								}
 								/** sending sms notification to Ho,BO user*/
 								if (!CommonUtils.isObjectNullOrEmpty(resp.getMobile())) {
-									mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
+									
 									mailParameters.put("url", URL_WWW_PSBLOANS_COM);
 									sendSMSNotification(resp.getUserId().toString(), mailParameters,NotificationAlias.SMS_HO_CHECKER_SANCTIONED,domainId, resp.getMobile());
 								}
