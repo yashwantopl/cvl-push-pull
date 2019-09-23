@@ -214,6 +214,9 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			calcRoi = Double.valueOf(df.format(calcRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
 
+			DecimalFormat df1 = new DecimalFormat("#");
+			calcEmi = Double.valueOf(df1.format(calcEmi));
+
 			ProposalDetailsAuditNbfc proposalDetailsAuditNbfc = new ProposalDetailsAuditNbfc();
 			BeanUtils.copyProperties(proposalDetails,proposalDetailsAuditNbfc);
 			proposalDetailsAuditNbfc.setProposalId(proposalDetails.getId());
