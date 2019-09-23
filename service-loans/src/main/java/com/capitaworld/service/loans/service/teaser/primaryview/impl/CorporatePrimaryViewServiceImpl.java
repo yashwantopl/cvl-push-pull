@@ -1384,13 +1384,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
-		/*if(gstCompRelFlag) {
+		if(gstCompRelFlag) {
 			LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 			corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 				
 			Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
 			corporatePrimaryViewResponse.setGstRelatedParty(gstRelatedPartyDetails);
-		}*/
+		}
 		return corporatePrimaryViewResponse;
 	}
 
