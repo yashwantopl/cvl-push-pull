@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.teaser.finalview;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
@@ -244,7 +245,10 @@ public class CorporateFinalViewResponse implements Serializable {
     private String productServiceDesc;
     private String msmeRankTitle;
     private Object verifyApiData;
+    private Object bankComparisionData;
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
+    Map<String, Object> gstRelatedParty;
+    
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -2278,6 +2282,24 @@ public class CorporateFinalViewResponse implements Serializable {
 	public void setVerifyApiData(Object verifyApiData) {
 		this.verifyApiData = verifyApiData;
 	}
+
+	public Map<String, Object> getGstRelatedParty() {
+		return gstRelatedParty;
+	}
+
+	public void setGstRelatedParty(Map<String, Object> gstRelatedParty) {
+		this.gstRelatedParty = gstRelatedParty;
+	}
+
+	public Object getBankComparisionData() {
+		return bankComparisionData;
+	}
+
+	public void setBankComparisionData(Object bankComparisionData) {
+		this.bankComparisionData = bankComparisionData;
+	}
+	
+	
 
 
 
