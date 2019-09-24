@@ -8682,10 +8682,22 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.LOAN_PURPOSE:
+            				if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            						scoreParameterRetailRequest.setLoanPurpose(8); // Static as we do not asking to borrower for Detailed Purpose
+                					scoreParameterRetailRequest.setLoanPurposeQueType(8);
+            					}else {
+            						scoreParameterRetailRequest.setLoanPurpose(9);                					
+                					scoreParameterRetailRequest.setLoanPurposeQueType(9);
+            					}
+            					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
+            					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
+            				}else {
             					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurposeQueType());
             					scoreParameterRetailRequest.setIsLoanPurpose_p(retailApplicantDetail.getLoanPurposeQueType() != null);
             					scoreParameterRetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
-            					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
+            					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());            					
+            				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.INCOME_PROOF:
 	            				if(isItrMannualFilled == null || !isItrMannualFilled) {

@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.repository.colending;
 
+import java.math.BigInteger;
+import java.util.List;
+
 /**
  * Created by dhaval.panchal on 14-Aug-19.
  */
@@ -10,4 +13,6 @@ public interface CoLendingFlowRepository {
     public Object[] getRatioNbfcBankProduct(Long applicationId);
 
     public Integer saveBlendedValues(Long applicationId,Long nbfcOrgId,Long bankOrgId);
+
+    public List<BigInteger> getBankList(Long nbfcOrgId);
 }
