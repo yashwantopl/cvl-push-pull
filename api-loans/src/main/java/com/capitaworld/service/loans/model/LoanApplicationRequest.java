@@ -131,7 +131,7 @@ public class LoanApplicationRequest implements Serializable {
 
     private Boolean isMcqSkipped;
 
-    private Boolean nbfcFlow;
+    private Boolean isNbfcFlow;
 
 
 	public Long getProposalId() {
@@ -669,11 +669,11 @@ public class LoanApplicationRequest implements Serializable {
 	}
 
 	public Boolean getIsNbfcFlow() {
-		return nbfcFlow;
+		return isNbfcFlow;
 	}
 
-	public void setIsNbfcFlow(Boolean nbfcFlow) {
-		this.nbfcFlow = nbfcFlow;
+	public void setIsNbfcFlow(Boolean isNbfcFlow) {
+		this.isNbfcFlow = isNbfcFlow;
 	}
 
 	@Override
@@ -701,7 +701,7 @@ public class LoanApplicationRequest implements Serializable {
 				+ ", emiForPaymentayment=" + emiForPaymentayment + ", feesForPayment=" + feesForPayment
 				+ ", fpNameForPayment=" + fpNameForPayment + ", proposalId=" + proposalId + ", businessTypeId="
 				+ businessTypeId + ", applicationStatus=" + applicationStatus + ", wcRenewalStatus=" + wcRenewalStatus
-				+ ", nbfcFlow=" + nbfcFlow
+				+ ", isNbfcFlow=" + isNbfcFlow
 				+ "]";
 	}
 	
