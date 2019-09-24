@@ -122,6 +122,10 @@ public class DDRRequest implements Serializable {
 	
 	private Long orgId;
 	
+	private String latestYear;
+	private String preYear;
+	private String preToPreYear;
+	
 	//AUTO FIELD
 	private List<PromotorBackgroundDetailRequest> promoBackRespList = new ArrayList<PromotorBackgroundDetailRequest>();
 	private List<OwnershipDetailRequest> ownershipReqList = new ArrayList<OwnershipDetailRequest>();
@@ -825,4 +829,23 @@ public class DDRRequest implements Serializable {
 	public void setIsAnySeasonalPatternInSales(String isAnySeasonalPatternInSales) {
 		this.isAnySeasonalPatternInSales = isAnySeasonalPatternInSales;
 	}
+	public String getLatestYear() {
+		return latestYear;
+	}
+	public void setLatestYear(String latestYear) {
+		this.latestYear = latestYear;
+	}
+	public String getPreYear() {
+		return preYear;
+	}
+	public void setPreYear(String preYear) {
+		this.preYear = preYear;
+	}
+	public String getPreToPreYear() {
+		return preToPreYear;
+	}
+	public void setPreToPreYear(String preToPreYear) {
+		this.preToPreYear = preToPreYear;
+	}
+	
 }
