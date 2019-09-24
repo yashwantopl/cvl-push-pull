@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.capitaworld.api.payment.gateway.model.GatewayResponse;
 import com.capitaworld.api.reports.ReportRequest;
@@ -3274,23 +3275,44 @@ public class FPAsyncComponent {
 					 param.put(LOAN_TYPE, "Retail Loan");
 				} 
 				 String subject = "";
-				// Mail to Admin Makers	when purpose of loan approved or reverted	
+				/** Mail to Admin Makers	when purpose of loan approved or reverted	 */				 
+				 List<String> ccUserList=new ArrayList<>();
+				 String[] cc= {};
 				if(toAdminMaker) {
+					UsersRequest toUser=new UsersRequest();
 					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),10);
 					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
-					for (UsersRequest req:adminMakerList) {
-						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():SIR_MADAM;
+					ccUserList=adminMakerList.stream().map(mk->mk.getEmail()).collect(Collectors.toList());
+//					ccUserList=adminMakerList ;
+					if(!adminMakerList.isEmpty()) {
+						if(adminMakerList.get(0) != null) {
+							toUser=adminMakerList.get(0);
+							if(ccUserList.contains(toUser.getEmail())) {
+								ccUserList.remove(ccUserList.indexOf(toUser.getEmail()));
+							}
+						}
+					}
+					if(!ccUserList.isEmpty()) {
+						cc=new String[ccUserList.size()];
+						cc= Arrays.copyOf(ccUserList.toArray(),ccUserList.size(),String[].class);
+					}
+//					for (UsersRequest req:adminMakerList) {
+						 String fpName = toUser.getFirstName()!=null?String.valueOf(toUser.getFirstName())+" "+toUser.getLastName():SIR_MADAM;
 						 param.put(USER_NAME, fpName);
 						 if(workFlowAction == WorkflowUtils.Action.APPROVED) {
 							 subject = "New purpose of loan model "+modelName+" Approved";
-							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED, subject,domainId,null);
-							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED,domainId, userReq.getMobile());
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED, subject,domainId,cc);
+							 for (UsersRequest usersRequest : adminMakerList) {
+								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED,domainId, usersRequest.getMobile());
+							  }
 						 }else if(workFlowAction == WorkflowUtils.Action.SEND_BACK){
 							 subject = "Intimation: Re-Sent Purpose of loan Model - "+modelName+" – For Modification";
-							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERTED, subject,domainId,null);
-							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERT_BECK,domainId, userReq.getMobile());
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERTED, subject,domainId,cc);
+							 for (UsersRequest usersRequest : adminMakerList) {
+								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERT_BECK,domainId, usersRequest.getMobile());
+							 }
 						 }
-					}
+//					}
 				}else {
 					Object[] fpFullName = commonRepo.getFpFullName(makerUserId);
 					String makerName=fpFullName[0]!=null?String.valueOf(fpFullName[0])+" "+fpFullName[1]!=null?String.valueOf(fpFullName[1]):LITERAL_MAKER:LITERAL_MAKER;
@@ -3298,22 +3320,38 @@ public class FPAsyncComponent {
 					
 					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),11);
 					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
-					//	Mail to Admin Checker where pusrpose of loan created or purpose of loan approved after send back
-					for (UsersRequest req : adminMakerList) {
-						 String fpName = req.getFirstName()!=null?String.valueOf(req.getFirstName())+" "+req.getLastName():SIR_MADAM;
+					UsersRequest toUser=new UsersRequest();
+//					ccUserList=adminMakerList ;
+					if(!adminMakerList.isEmpty()) {
+						if(adminMakerList.get(0) != null) {
+//							toUser=ccUserList.get(0);
+							ccUserList.remove(0);
+						}
+					}
+					if(!ccUserList.isEmpty()) {
+						cc=new String[ccUserList.size()];
+						cc= Arrays.copyOf(ccUserList.toArray(),ccUserList.size(),String[].class);
+					}
+					/** Mail to Admin Checker where pusrpose of loan created or purpose of loan approved after send back*/
+//					for (UsersRequest req : adminMakerList) {
+						 String fpName = toUser.getFirstName()!=null?String.valueOf(toUser.getFirstName())+" "+toUser.getLastName():SIR_MADAM;
 						 param.put(USER_NAME, fpName);
 						
 						if(workFlowAction == WorkflowUtils.Action.PENDING) {
 							 subject = "Intimation: New Purpose of Loan module - "+modelName;
-							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED, subject,domainId,null);
-							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED,domainId, userReq.getMobile());
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED, subject,domainId,cc);
+							 for (UsersRequest usersRequest : adminMakerList) {
+								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED,domainId, usersRequest.getMobile());
+							  }
 						 }else if(workFlowAction == WorkflowUtils.Action.SEND_FOR_APPROVAL){
 							 subject = "Intimation: Re-sent Purpose of loan module  - "+modelName;
-							 createNotificationForEmail(req.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMINCHECKER_PURPOSE_OF_LOAN_RE_APPROVAL, subject,domainId,null);
-							 sendSMSNotification(String.valueOf(req.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_RE_APPROVAL_BY_MAKER,domainId, userReq.getMobile());
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMINCHECKER_PURPOSE_OF_LOAN_RE_APPROVAL, subject,domainId,cc);
+							 for (UsersRequest usersRequest : adminMakerList) {
+								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_RE_APPROVAL_BY_MAKER,domainId, usersRequest.getMobile());
+							}
 						 }
 					}
-				}
+//				}
 			} catch (Exception e) {
 				logger.error("Exception in sending email and sms of when purpose of loan approved:{}",e);
 			} 
