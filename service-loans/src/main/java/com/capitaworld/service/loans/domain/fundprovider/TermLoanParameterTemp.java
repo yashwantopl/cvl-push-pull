@@ -478,6 +478,18 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name="trading")
 	private BigDecimal trading;
 	/* ends here */
+	
+	@Column(name="promoter_contri")
+	private BigDecimal promotorContri;
+	
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
