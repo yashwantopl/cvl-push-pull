@@ -204,8 +204,9 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			calcTenure = minLoanAmtProposalObj.getElTenure();
 			calcRoi = (ratioVal * proposalDetails.getElRoi()) / 100;
 			calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
-			monthlyRate = calcRoi / 12;
-			calcEmi = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, -calcTenure)) * loanAmount;
+			monthlyRate = (calcRoi/100) / 12;
+			calcEmi = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, -(calcTenure*12))) * loanAmount;
+
 			logger.info("before calc loanamount->"+loanAmount+" existing Amt->"+existingAmt+" additional amr->"+additionalAmt);
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
 				additionalAmt = (ratioVal * additionalAmt) / 100;
@@ -216,7 +217,6 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			if(!CommonUtils.isObjectNullOrEmpty(loanAmount) && loanAmount!=0){
 				loanAmount = (ratioVal * loanAmount) / 100;
 			}
-			logger.info("after calc loanamount->"+loanAmount+" existing Amt->"+existingAmt+" additional amt->"+additionalAmt);
 			DecimalFormat df = new DecimalFormat("#.##");
 			calcRoi = Double.valueOf(df.format(calcRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
@@ -238,7 +238,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			proposalDetails.setElRoi(calcRoi);
 			proposalDetails.setElTenure(calcTenure);
 			proposalDetails.setModifiedDate(new Date());
-			proposalDetailsRepository.save(proposalDetails);
+
 		}catch (Exception e){
 			logger.error("Error in calcAndSaveBlednedRate()",e);
 		}
