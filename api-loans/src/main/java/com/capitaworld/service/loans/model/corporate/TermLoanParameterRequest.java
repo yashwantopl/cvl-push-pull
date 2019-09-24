@@ -366,11 +366,21 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
     private Boolean isCommercialCibilFor3MonthMandatory = false;
     
 	private BigDecimal manufacturing;
-	
 	private BigDecimal service;
-	
 	private BigDecimal trading;
+	
+	private BigDecimal promotorContri;
 
+	
+	
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
 
 	public Object getWorkflowData() {
 		return workflowData;
