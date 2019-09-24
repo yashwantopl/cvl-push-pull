@@ -149,10 +149,30 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		try {
 			List<ProposalDetails> proposalDetailsList = proposalDetailsRepository.findByApplicationId(applicationId);
 			if(!CommonUtils.isListNullOrEmpty(proposalDetailsList)){
-				ProposalDetails minLoanAmtProposalObj = proposalDetailsList
+				ProposalDetails proposalDetailsOne = proposalDetailsList.get(0);
+				ProposalDetails proposalDetailsTwo = proposalDetailsList.get(1);
+				ProposalDetails minLoanAmtProposalObj = new ProposalDetails();
+				if(proposalDetailsTwo.getElAmount() == proposalDetailsOne.getElAmount()){
+					if(proposalDetailsTwo.getElTenure() == proposalDetailsOne.getElTenure()){
+						if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+							minLoanAmtProposalObj = proposalDetailsTwo;
+						}else {
+							minLoanAmtProposalObj = proposalDetailsOne;
+						}
+					}else if(proposalDetailsTwo.getElTenure() < proposalDetailsOne.getElTenure()){
+						minLoanAmtProposalObj = proposalDetailsTwo;
+					}else {
+						minLoanAmtProposalObj = proposalDetailsOne;
+					}
+				}else if(proposalDetailsTwo.getElAmount() < proposalDetailsOne.getElAmount()){
+					minLoanAmtProposalObj = proposalDetailsTwo;
+				}else {
+					minLoanAmtProposalObj = proposalDetailsOne;
+				}
+				/*ProposalDetails minLoanAmtProposalObj = proposalDetailsList
 						.stream()
 						.min(Comparator.comparing(ProposalDetails::getElAmount))
-						.orElseThrow(NoSuchElementException::new);
+						.orElseThrow(NoSuchElementException::new);*/
 				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 				BeanUtils.copyProperties(minLoanAmtProposalObj,proposalMappingRequest);
 				Object[] ratioValues = coLendingFlowRepository.getRatioNbfcBankProduct(applicationId);
