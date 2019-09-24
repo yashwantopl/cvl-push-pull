@@ -305,6 +305,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
+		
+		Integer latestYear = getLatestYear(appId);
+		dDRRequest.setLatestYear(String.valueOf((latestYear) + "-" + ((latestYear - 1) % 100)));
+		dDRRequest.setPreYear(String.valueOf((latestYear - 1) + "-" + ((latestYear - 2) % 100)));
+		dDRRequest.setPreToPreYear(String.valueOf((latestYear - 2) + "-" + ((latestYear - 3) % 100)));
 		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			Long ddrFormId = dDRFormDetails.getId();
 			BeanUtils.copyProperties(dDRFormDetails, dDRRequest);
@@ -324,7 +329,6 @@ public class DDRFormServiceImpl implements DDRFormService {
 			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId, appId, userId, true));
 			dDRRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId, appId, userId, true));
 			
-			Integer latestYear = getLatestYear(appId);
 			dDRRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, latestYear.toString()));
 			dDRRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 1)));
 			dDRRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 2)));
@@ -347,6 +351,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 			return dDRRequest;
 		}
 
+		Integer latestYear = getLatestYear(appId);
+		dDRRequest.setLatestYear(String.valueOf((latestYear) + "-" + ((latestYear - 1) % 100)));
+		dDRRequest.setPreYear(String.valueOf((latestYear - 1) + "-" + ((latestYear - 2) % 100)));
+		dDRRequest.setPreToPreYear(String.valueOf((latestYear - 2) + "-" + ((latestYear - 3) % 100)));
+		
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(appId,proposalId);
 		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			Long ddrFormId = dDRFormDetails.getId();
@@ -367,7 +376,6 @@ public class DDRFormServiceImpl implements DDRFormService {
 			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetailsByProposalId(ddrFormId, appId,proposalId, userId, true));
 			dDRRequest.setExistingBankerDetailList(getExistingBankerDetailsByProposalId(ddrFormId, appId, proposalId,userId, true));
 
-			Integer latestYear = getLatestYear(appId);
 			dDRRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId, proposalId,String.valueOf(latestYear)));
 			dDRRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId, proposalId,String.valueOf(latestYear - 1)));
 			dDRRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId,proposalId, String.valueOf(latestYear - 2)));
