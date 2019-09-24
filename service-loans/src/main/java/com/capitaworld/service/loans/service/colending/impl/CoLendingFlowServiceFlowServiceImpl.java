@@ -207,7 +207,6 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			monthlyRate = (calcRoi/100) / 12;
 			calcEmi = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, -(calcTenure*12))) * loanAmount;
 
-			logger.info("before calc loanamount->"+loanAmount+" existing Amt->"+existingAmt+" additional amr->"+additionalAmt);
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
 				additionalAmt = (ratioVal * additionalAmt) / 100;
 			}
