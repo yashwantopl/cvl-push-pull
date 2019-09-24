@@ -19,6 +19,9 @@ public class FpCoLendingBanks {
 
 	@Column(name = "is_active")
 	private Boolean isActive;
+	
+	@Column(name = "is_nbfc")
+	private Boolean isNbfc;
 
 	public Long getId() {
 		return id;
@@ -43,6 +46,16 @@ public class FpCoLendingBanks {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+
+	public Boolean getIsNbfc() {
+		return isNbfc;
+	}
+
+	public void setIsNbfc(Boolean isNbfc) {
+		this.isNbfc = isNbfc;
+	}
+	
+	
 	
 	
 	

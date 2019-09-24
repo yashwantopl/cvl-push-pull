@@ -265,4 +265,21 @@ public class CoLendingServiceImpl implements CoLendingService {
 			return false;
 		}
 	}
+	
+	@Override
+	public Boolean activeCoLendingProposal(Long id) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "activeCoLendingProposal");
+		try {
+			
+			coLendingRatioRepository.activeRatioAndProposal(id);
+			return true;
+		}
+
+		catch(Exception e)
+		{
+			logger.error("Error while activeCoLendingProposal",e);
+			return false;
+		}
+	}
 }
