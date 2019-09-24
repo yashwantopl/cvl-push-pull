@@ -225,10 +225,6 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			calcRoi = (ratioVal * proposalDetails.getElRoi()) / 100;
 			calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
 
-			monthlyRate = (calcRoi/100) / 12;
-			Double mTenure = calcTenure*12;
-			calcEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,loanAmount);
-
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
 				additionalAmt = (ratioVal * additionalAmt) / 100;
 			}
@@ -238,6 +234,11 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			if(!CommonUtils.isObjectNullOrEmpty(loanAmount) && loanAmount!=0){
 				loanAmount = (ratioVal * loanAmount) / 100;
 			}
+
+			monthlyRate = (calcRoi/100) / 12;
+			Double mTenure = calcTenure*12;
+			calcEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,loanAmount);
+
 			DecimalFormat df = new DecimalFormat("#.##");
 			calcRoi = Double.valueOf(df.format(calcRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
