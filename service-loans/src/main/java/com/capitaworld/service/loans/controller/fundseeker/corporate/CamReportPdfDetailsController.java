@@ -719,10 +719,9 @@ public class CamReportPdfDetailsController {
 	@Autowired
 	private GstClient gstClient;
 	
-	@GetMapping(value = "/getGstSpecificDataReport/{panNo}/{fsUserId}" , produces = MediaType.APPLICATION_JSON_VALUE)
-	public byte[] getGstSpecificDataReport(@PathVariable(value = "panNo") String panNo,@PathVariable(value = "fsUserId") Long fsUserId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
-		logger.info("Into get Gst Specific Data Report with panNo==>{} and FsUserId==>{}" , panNo ,fsUserId);
-		Long fpUserId = Long.valueOf(String.valueOf(httpReq.getAttribute("userId")));
+	@GetMapping(value = "/getGstSpecificDataReport/{panNo}/{fpUserId}/{fsUserId}" , produces = MediaType.APPLICATION_JSON_VALUE)
+	public byte[] getGstSpecificDataReport(@PathVariable(value = "panNo") String panNo ,@PathVariable(value = "fpUserId") Long fpUserId,@PathVariable(value = "fsUserId") Long fsUserId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
+		logger.info("Into get Gst Specific Data Report with panNo==>{} , fpUserId==>{} and FsUserId==>{}" , panNo , fpUserId ,fsUserId);
 		if(CommonUtils.isObjectNullOrEmpty(panNo) || CommonUtils.isObjectNullOrEmpty(fpUserId) || CommonUtils.isObjectNullOrEmpty(fsUserId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND , panNo);
 			return null;
