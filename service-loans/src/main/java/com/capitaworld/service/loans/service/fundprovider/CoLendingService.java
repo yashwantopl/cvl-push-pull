@@ -27,4 +27,5 @@ public interface CoLendingService {
 	
 
 	List<CoLendingRequest> listByOrgId(Long userOrgId);
+	public Boolean activeCoLendingProposal(Long id) ;
 }
