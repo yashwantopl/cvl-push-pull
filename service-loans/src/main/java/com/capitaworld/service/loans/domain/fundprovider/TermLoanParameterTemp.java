@@ -468,6 +468,15 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 
     @Column(name="is_Commercial_cibil_for_3_month_mandatory")
     private Boolean isCommercialCibilFor3MonthMandatory = false;
+    
+	@Column(name="manufacturing")
+	private BigDecimal manufacturing;
+	
+	@Column(name="service")
+	private BigDecimal service;
+	
+	@Column(name="trading")
+	private BigDecimal trading;
 	/* ends here */
 
 	public Integer getIndividualCibil() {
@@ -1646,6 +1655,31 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 		this.isCommercialCibilFor3MonthMandatory = isCommercialCibilFor3MonthMandatory;
 	}
 
+	public BigDecimal getManufacturing() {
+		return manufacturing;
+	}
+
+	public void setManufacturing(BigDecimal manufacturing) {
+		this.manufacturing = manufacturing;
+	}
+
+	public BigDecimal getService() {
+		return service;
+	}
+
+	public void setService(BigDecimal service) {
+		this.service = service;
+	}
+
+	public BigDecimal getTrading() {
+		return trading;
+	}
+
+	public void setTrading(BigDecimal trading) {
+		this.trading = trading;
+	}
+
+	
 	
 	
 
