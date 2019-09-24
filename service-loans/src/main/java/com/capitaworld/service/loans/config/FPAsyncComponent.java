@@ -3283,7 +3283,6 @@ public class FPAsyncComponent {
 					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),10);
 					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
 					ccUserList=adminMakerList.stream().map(mk->mk.getEmail()).collect(Collectors.toList());
-//					ccUserList=adminMakerList ;
 					if(!adminMakerList.isEmpty()) {
 						if(adminMakerList.get(0) != null) {
 							toUser=adminMakerList.get(0);
@@ -3321,17 +3320,19 @@ public class FPAsyncComponent {
 					List<Object[]> adminMakerDetails = commonRepo.getBranchUserDetailsBasedOnRoleId(userReq.getUserOrgId(),11);
 					List<UsersRequest> adminMakerList = extractObjectListToUserRequest(adminMakerDetails);
 					UsersRequest toUser=new UsersRequest();
-//					ccUserList=adminMakerList ;
+					ccUserList=adminMakerList.stream().map(mk->mk.getEmail()).collect(Collectors.toList());
 					if(!adminMakerList.isEmpty()) {
 						if(adminMakerList.get(0) != null) {
-//							toUser=ccUserList.get(0);
-							ccUserList.remove(0);
+							toUser=adminMakerList.get(0);
+							if(ccUserList.contains(toUser.getEmail())) {
+								ccUserList.remove(ccUserList.indexOf(toUser.getEmail()));
+							}
 						}
 					}
 					if(!ccUserList.isEmpty()) {
 						cc=new String[ccUserList.size()];
 						cc= Arrays.copyOf(ccUserList.toArray(),ccUserList.size(),String[].class);
-					}
+					} 
 					/** Mail to Admin Checker where pusrpose of loan created or purpose of loan approved after send back*/
 //					for (UsersRequest req : adminMakerList) {
 						 String fpName = toUser.getFirstName()!=null?String.valueOf(toUser.getFirstName())+" "+toUser.getLastName():SIR_MADAM;
