@@ -3301,15 +3301,25 @@ public class FPAsyncComponent {
 						 if(workFlowAction == WorkflowUtils.Action.APPROVED) {
 							 subject = "New purpose of loan model "+modelName+" Approved";
 							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED, subject,domainId,cc);
-							 for (UsersRequest usersRequest : adminMakerList) {
-								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED,domainId, usersRequest.getMobile());
-							  }
+							 /** sending sms to all user*/
+							 adminMakerList.stream().forEach(usersRequest ->{
+								 try {
+									sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED,domainId, usersRequest.getMobile());
+								} catch (NotificationException e) {
+									logger.error("Exception in sending sms for {} and for template {}",usersRequest.getMobile(),NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED);
+								}
+							 });
 						 }else if(workFlowAction == WorkflowUtils.Action.SEND_BACK){
 							 subject = "Intimation: Re-Sent Purpose of loan Model - "+modelName+" – For Modification";
 							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERTED, subject,domainId,cc);
-							 for (UsersRequest usersRequest : adminMakerList) {
-								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERT_BECK,domainId, usersRequest.getMobile());
-							 }
+							 /** sending sms to all user*/
+							 adminMakerList.stream().forEach(usersRequest ->{
+								 try {
+									sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERT_BECK,domainId, usersRequest.getMobile());
+								} catch (NotificationException e) {
+									logger.error("Exception in sending sms for {} and for template {}",usersRequest.getMobile(),NotificationAlias.SMS_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERT_BECK);
+								} 
+							 });
 						 }
 //					}
 				}else {
@@ -3341,15 +3351,25 @@ public class FPAsyncComponent {
 						if(workFlowAction == WorkflowUtils.Action.PENDING) {
 							 subject = "Intimation: New Purpose of Loan module - "+modelName;
 							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED, subject,domainId,cc);
-							 for (UsersRequest usersRequest : adminMakerList) {
-								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED,domainId, usersRequest.getMobile());
-							  }
+							/** sending sms to all user*/
+							 adminMakerList.stream().forEach(usersRequest -> {
+								 try {
+									sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED,domainId, usersRequest.getMobile());
+								} catch (NotificationException e) {
+									logger.error("Exception in sending sms for {} and for template {}",usersRequest.getMobile(),NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED);
+								}
+							 });
 						 }else if(workFlowAction == WorkflowUtils.Action.SEND_FOR_APPROVAL){
 							 subject = "Intimation: Re-sent Purpose of loan module  - "+modelName;
 							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMINCHECKER_PURPOSE_OF_LOAN_RE_APPROVAL, subject,domainId,cc);
-							 for (UsersRequest usersRequest : adminMakerList) {
-								 sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_RE_APPROVAL_BY_MAKER,domainId, usersRequest.getMobile());
-							}
+							/** sending sms to all user*/
+							 adminMakerList.stream().forEach(usersRequest -> {
+								 try {
+									sendSMSNotification(String.valueOf(usersRequest.getUserId()), param, NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_RE_APPROVAL_BY_MAKER,domainId, usersRequest.getMobile());
+								} catch (NotificationException e) {
+									logger.error("Exception in sending sms for {} and for template {}",usersRequest.getMobile(),NotificationAlias.SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_RE_APPROVAL_BY_MAKER);
+								}
+							 });
 						 }
 					}
 //				}
