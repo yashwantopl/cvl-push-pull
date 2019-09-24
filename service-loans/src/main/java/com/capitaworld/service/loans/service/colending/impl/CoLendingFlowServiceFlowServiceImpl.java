@@ -11,6 +11,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -152,6 +153,8 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 						.stream()
 						.min(Comparator.comparing(ProposalDetails::getElAmount))
 						.orElseThrow(NoSuchElementException::new);
+				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+				BeanUtils.copyProperties(minLoanAmtProposalObj,proposalMappingRequest);
 				Object[] ratioValues = coLendingFlowRepository.getRatioNbfcBankProduct(applicationId);
 				Double tenure = 0d,nbfcRatio = 0d,bankRatio = 0d;
 				if(!CommonUtils.isObjectNullOrEmpty(ratioValues)){
@@ -176,7 +179,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 							ratioVal = bankRatio;
 							bankOrgId = proposalDetails.getUserOrgId();
 						}
-						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,minLoanAmtProposalObj);
+						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,proposalMappingRequest);
 					}
 				}
 				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId);
@@ -193,7 +196,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		return false;
 	}
 
-	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalDetails minLoanAmtProposalObj){
+	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalMappingRequest minLoanAmtProposalObj){
 		try {
 			Double calcTenure = 0d,calcRoi = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
 			Double loanAmount = minLoanAmtProposalObj.getElAmount(),existingAmt = minLoanAmtProposalObj.getExistingLoanAmount(),additionalAmt = minLoanAmtProposalObj.getAdditionalLoanAmount();
@@ -213,7 +216,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			if(!CommonUtils.isObjectNullOrEmpty(loanAmount) && loanAmount!=0){
 				loanAmount = (ratioVal * loanAmount) / 100;
 			}
-			logger.info("after calc loanamount->"+loanAmount+" existing Amt->"+existingAmt+" additional amr->"+additionalAmt);
+			logger.info("after calc loanamount->"+loanAmount+" existing Amt->"+existingAmt+" additional amt->"+additionalAmt);
 			DecimalFormat df = new DecimalFormat("#.##");
 			calcRoi = Double.valueOf(df.format(calcRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
